@@ -1,5 +1,5 @@
 import {setupTutorials} from './tutorials.js?v=16';
-import {setupGroups} from './groups.js?v=19';
+import {setupGroups} from './groups.js?v=20';
 let tutorialUI;
 import {EMPTY, cleanEntry, parseBackup} from './progress.js';
 import {getSolvers} from './community.js?v=6';
@@ -34,11 +34,29 @@ function persist() {
 function entry(id) {return state[id] || {...EMPTY};}
 function setEntry(id, patch) {if(loading)return; state[id]=cleanEntry({...entry(id),...patch});dirty[id]=state[id];const saved=persist();render();if(user)void sync();else if(saved)notice('Progress энэ browser-т хадгалагдлаа.');}
 function el(tag, cls, text) {const node=document.createElement(tag); if(cls)node.className=cls;if(text!==undefined)node.textContent=text;return node;}
+function renderHome() {
+  const active=data.problems.filter(problem=>entry(problem.id).status==='trying');
+  const list=$('home-continue-list');if(!list)return;list.replaceChildren();
+  $('home-trying-count').textContent=active.length+' бодлого';
+  for(const problem of active.slice(0,3)) {
+    const button=el('button','home-recent');button.type='button';button.disabled=loading||catalogLoading;
+    const info=el('span','home-recent-info');
+    info.append(el('strong','',problem.title),el('small','',problem.source+' · '+ratingLabel(problem)));
+    const arrow=el('span','home-recent-arrow','↗');arrow.setAttribute('aria-hidden','true');
+    button.append(info,arrow);button.onclick=()=>openProblem(problem);list.append(button);
+  }
+  if(!active.length) {
+    const empty=el('div','home-empty');
+    empty.append(el('strong','','Оролдож байгаа бодлого алга.'),el('p','','“Оролдож байгаа” гэж тэмдэглэсэн бодлогууд энд харагдана.'));
+    list.append(empty);
+  }
+}
 function render() {
   const solved=data.problems.filter(p=>entry(p.id).status==='solved').length;
   const trying=data.problems.filter(p=>entry(p.id).status==='trying').length;
   const percent=(data.problems.length?Math.round(solved/data.problems.length*100):0);
   $('total').textContent=data.problems.length;$('solved').textContent=solved;$('trying').textContent=trying;$('percent').textContent=percent+'%';$('progress').value=percent;
+  renderHome();
   const filters={query:$('search').value,source:$('source').value,status:$('status-filter').value,pack:selectedPack,tag:$('tag-filter').value,ratingBand:$('rating-filter').value,minRating:$('min-rating').value,maxRating:$('max-rating').value,priorityOnly:$('priority-only').checked,sort:$('sort').value};
   const filterKey=JSON.stringify(filters);if(filterKey!==lastFilterKey){problemPage=0;lastFilterKey=filterKey;}
   $('packs').replaceChildren();
@@ -117,7 +135,7 @@ function updateAccount() {
   social?.accountChanged();adminUI?.accountChanged();tutorialUI?.accountChanged();groupUI?.accountChanged();
   for(const id of ['full-name','first-name','last-name','school','avatar-file','remove-avatar'])$(id).disabled=profileLoading||profileSaving||!myProfile;
   $('reload-profile').hidden=!user||!!myProfile;$('reload-profile').disabled=profileLoading;
-  $('account').textContent=user?(username?'@'+username:'Миний account'):'Нэвтрэх';$('storage-label').textContent=user?'Account + энэ browser':'Энэ browser-т хадгална';
+  $('account').textContent=user?(username?'@'+username:'Миний account'):'Нэвтрэх';$('storage-label').textContent=user?'Account-д хадгална':'Энэ төхөөрөмжид хадгална';
   $('auth-form').hidden=!client||!!user;$('signout').hidden=!user;$('retry-sync').hidden=!user||!Object.keys(dirty).length;
   $('profile-form').hidden=!client||!user;$('save-username').disabled=profileLoading||profileSaving||!myProfile;$('username').disabled=profileLoading||profileSaving||!myProfile;
   $('current-username').textContent=username?'Одоогийн нэр: @'+username:'Username-ээ тохируулсны дараа бодсон хүмүүсийн жагсаалтад гарна.';

@@ -18,6 +18,10 @@ export function filterWeekdays(dates, allowedDays) {
     const allowed = new Set(allowedDays);
     return [...new Set(dates)].sort().filter(date => validDate(date) && allowed.has(new Date(date + 'T12:00:00Z').getUTCDay()));
 }
+export function selectReportRows(rows, userIds) {
+    const selected = new Set(userIds);
+    return rows.filter(row => selected.has(row.user_id));
+}
 export function shiftDate(date, delta) {
     if (!validDate(date)) throw new Error('Зөв огноо сонгоно уу.');
     const next = new Date(date + 'T12:00:00Z');

@@ -1,6 +1,6 @@
 import {createReportLatex, createReportPdf} from './group-document.js?v=19';
 import {rpc} from './accounts.js?v=17';
-import {createReportWorkbook, todayInMongolia, validDate, weekday, shiftDate, dateRange, filterWeekdays} from './group-export.js?v=18';
+import {createReportWorkbook, todayInMongolia, validDate, weekday, shiftDate, dateRange, filterWeekdays, selectReportRows} from './group-export.js?v=20';
 
 const MARKUP = `
 <div class="section-head"><div><p class="eyebrow">ХАМТДАА СУРЪЯ</p><h2>Групп ба өдрийн тэмдэглэл</h2></div><button id="group-create" class="primary" type="button" hidden>+ Групп үүсгэх</button></div>
@@ -19,7 +19,7 @@ const MARKUP = `
 <dialog id="group-members-dialog" aria-labelledby="group-members-title"><div class="dialog-head"><h2 id="group-members-title">Группын гишүүд</h2><button data-group-close="group-members-dialog" type="button" aria-label="Хаах">✕</button></div><form id="group-add-form"><label>Нэмэх хэрэглэгчийн username<input id="group-add-username" minlength="3" maxlength="24" pattern="[a-zA-Z0-9_]{3,24}" placeholder="username" required></label><button id="group-add-submit" class="primary" type="submit">Гишүүн нэмэх</button></form><p id="group-members-message" class="muted" role="status" aria-live="polite"></p><ul id="group-members-list" class="group-member-list"></ul></dialog>
 <dialog id="group-report-editor" aria-labelledby="group-report-title"><div class="dialog-head"><h2 id="group-report-title">Өдрийн тэмдэглэл</h2><button data-group-close="group-report-editor" type="button" aria-label="Хаах">✕</button></div><p id="group-report-person"></p><p id="group-report-date" class="muted"></p><p class="muted">Бүх талбар сонголттой. Бодлогын нэр, ID эсвэл холбоосыг мөр бүрт нэгээр бичээрэй. Энэ тэмдэглэл бодлогын сан дахь progress-ийг автоматаар өөрчлөхгүй.</p><form id="group-report-form"><label>Бодсон бодлогууд<textarea id="group-report-problems" maxlength="12000" rows="5" placeholder="CSES — Counting Rooms\nCF 1661B — Getting Zero"></textarea></label><div class="group-count-field"><label>Нийт бодлогын тоо<input id="group-report-count" type="number" min="0" max="100000" step="1" placeholder="Бөглөөгүй"></label><button id="group-count-lines" type="button">Жагсаалтын мөрөөр тоолох</button></div><label>Хэр хэцүү бодлогууд бодсон бэ?<textarea id="group-report-difficulty" maxlength="1200" rows="2" placeholder="Жишээ: CF 1400–1700; хоёр нь бие даан, нэг нь hint-тэй"></textarea></label><label>Судалсан сэдвүүд<textarea id="group-report-topics" maxlength="2000" rows="2" placeholder="BFS, grid, path сэргээх"></textarea></label><label>Нэмэлт тэмдэглэл<textarea id="group-report-notes" maxlength="8000" rows="3" placeholder="Хаана гацсан, юу ойлгосон, дараа юу үргэлжлүүлэх вэ?"></textarea></label><button id="group-report-save" class="primary" type="submit">Тэмдэглэл хадгалах</button><p id="group-report-message" role="status" aria-live="polite"></p></form></dialog>
 <dialog id="group-teacher-editor" aria-labelledby="group-teacher-title"><div class="dialog-head"><h2 id="group-teacher-title">Багшийн тэмдэглэл</h2><button data-group-close="group-teacher-editor" type="button" aria-label="Хаах">✕</button></div><p id="group-teacher-person"></p><p id="group-teacher-date" class="muted"></p><p class="muted">Группын болон сайтын админ засна. Группийг харах эрхтэй хүмүүс уншина. Сурагчийн өөрийн тэмдэглэл тусдаа хадгалагдана.</p><form id="group-teacher-form"><label>Багшийн тэмдэглэл<textarea id="group-teacher-note" maxlength="8000" rows="7" placeholder="Сурагчийн ахиц, зөвлөгөө, дараагийн ажил…"></textarea></label><button id="group-teacher-save" class="primary" type="submit">Багшийн тэмдэглэл хадгалах</button><p id="group-teacher-message" role="status" aria-live="polite"></p></form></dialog>
-<dialog id="group-export-dialog" aria-labelledby="group-export-title"><div class="dialog-head"><h2 id="group-export-title">Тайлан export хийх</h2><button data-group-close="group-export-dialog" type="button" aria-label="Хаах">✕</button></div><p>Excel-д өдөр бүр тусдаа sheet, A4 LaTeX/PDF-д өдөр бүр шинэ хуудаснаас эхэлнэ. PDF нь A4 хэвтээ байрлалтай, 3 сурагчийн тэмдэглэлийг зэрэгцүүлэн байрлуулна. Багана бүрийн сул зайг ашиглаж, урт тэмдэглэлийг дараагийн нүдэнд үргэлжлүүлнэ. Бүх гишүүн, тэмдэглэл бөглөөгүй сурагчид мөн орно. Өмнөх гишүүний тухайн өдрийн хадгалсан тэмдэглэл ч орно.</p><div class="group-export-range"><label>Эхлэх өдөр<input id="group-export-start" type="date"></label><label>Дуусах өдөр<input id="group-export-end" type="date"></label><button id="group-export-range-add" type="button">Эдгээр өдрийг нэмэх</button></div><div class="group-toolbar"><label>Тусдаа өдөр нэмэх<input id="group-export-date" type="date"></label><button id="group-export-date-add" type="button">Өдөр нэмэх</button><button id="group-export-clear" type="button">Сонголт цэвэрлэх</button></div><fieldset class="group-export-weekdays"><legend>Export хийх гаргууд</legend><label><input type="checkbox" data-export-weekday value="1" checked>Даваа</label><label><input type="checkbox" data-export-weekday value="2" checked>Мягмар</label><label><input type="checkbox" data-export-weekday value="3" checked>Лхагва</label><label><input type="checkbox" data-export-weekday value="4" checked>Пүрэв</label><label><input type="checkbox" data-export-weekday value="5" checked>Баасан</label><label><input type="checkbox" data-export-weekday value="6" checked>Бямба</label><label><input type="checkbox" data-export-weekday value="0" checked>Ням</label></fieldset><label>Файлын төрөл<select id="group-export-format"><option value="xlsx">Excel (.xlsx)</option><option value="latex">A4 LaTeX (.tex)</option><option value="pdf">A4 PDF (.pdf)</option></select></label><div id="group-export-dates" class="group-date-chips"></div><p id="group-export-count" class="muted"></p><p class="muted">Нэг export-д гаргийн шүүлтүүрт таарсан 1–62 өдөр. Овог, нэр, бодлогууд, тоо, хүндрэл, сэдэв, сурагчийн болон багшийн тэмдэглэл багтана. Овог, нэрээ Account хэсэгт тусад нь бөглөнө. Хуучин нэрийг тааж салгахгүй; тусдаа баганад хадгална.</p><button id="group-export-download" class="primary" type="button">Excel (.xlsx) татах</button><p id="group-export-message" role="status" aria-live="polite"></p></dialog>`;
+<dialog id="group-export-dialog" aria-labelledby="group-export-title"><div class="dialog-head"><h2 id="group-export-title">Тайлан export хийх</h2><button data-group-close="group-export-dialog" type="button" aria-label="Хаах">✕</button></div><p>Өдөр, гараг, сурагчдаа сонгоод тайлангаа татна. Excel-д өдөр бүр тусдаа sheet үүснэ. PDF нь A4 хэвтээ, 3 баганатай.</p><div class="group-export-range"><label>Эхлэх өдөр<input id="group-export-start" type="date"></label><label>Дуусах өдөр<input id="group-export-end" type="date"></label><button id="group-export-range-add" type="button">Эдгээр өдрийг нэмэх</button></div><div class="group-toolbar"><label>Тусдаа өдөр нэмэх<input id="group-export-date" type="date"></label><button id="group-export-date-add" type="button">Өдөр нэмэх</button><button id="group-export-clear" type="button">Сонголт цэвэрлэх</button></div><fieldset class="group-export-weekdays"><legend>Export хийх гаргууд</legend><label><input type="checkbox" data-export-weekday value="1" checked>Даваа</label><label><input type="checkbox" data-export-weekday value="2" checked>Мягмар</label><label><input type="checkbox" data-export-weekday value="3" checked>Лхагва</label><label><input type="checkbox" data-export-weekday value="4" checked>Пүрэв</label><label><input type="checkbox" data-export-weekday value="5" checked>Баасан</label><label><input type="checkbox" data-export-weekday value="6" checked>Бямба</label><label><input type="checkbox" data-export-weekday value="0" checked>Ням</label></fieldset><fieldset class="group-export-students"><legend>Export хийх сурагчид</legend><p class="muted">Анх нээхэд бүгд сонгогдоно. Сонголт нь Excel, PDF, LaTeX болон бүх сонгосон өдөрт хамаарна. Өмнөх гишүүний хадгалсан тэмдэглэлийг мөн сонгож болно.</p><label>Сурагч хайх<input id="group-export-student-search" type="search" placeholder="Овог, нэр эсвэл username…" maxlength="120"></label><div class="group-export-student-actions"><button id="group-export-students-all" type="button">Бүгдийг сонгох</button><button id="group-export-students-none" type="button">Сурагчдын сонголтыг цэвэрлэх</button><button id="group-export-students-retry" type="button" hidden>Жагсаалтыг дахин ачаалах</button></div><p id="group-export-students-count" class="muted" role="status" aria-live="polite"></p><div id="group-export-students-list" class="group-export-students-list"></div></fieldset><label>Файлын төрөл<select id="group-export-format"><option value="xlsx">Excel (.xlsx)</option><option value="latex">A4 LaTeX (.tex)</option><option value="pdf">A4 PDF (.pdf)</option></select></label><div id="group-export-dates" class="group-date-chips"></div><p id="group-export-count" class="muted"></p><p class="muted">Нэг export-д гаргийн шүүлтүүрт таарсан 1–62 өдөр. Овог, нэр, бодлогууд, тоо, хүндрэл, сэдэв, сурагчийн болон багшийн тэмдэглэл багтана. </p><button id="group-export-download" class="primary" type="button">Excel (.xlsx) татах</button><p id="group-export-message" role="status" aria-live="polite"></p></dialog>`;
 
 function node(tag, className = '', text) {
     const element = document.createElement(tag);
@@ -40,6 +40,9 @@ export function setupGroups(ctx) {
     let currentId = null, detail = null, rows = [], groups = [], editing = null, teacherEditing = null, editingGroup = false;
     let mutating = false, exporting = false, loadedDay = null, downloadUrl = null;
     const selectedDates = new Set();
+    const selectedStudents = new Set();
+    let exportStudents = [], exportAllStudents = true, rosterLoading = false, rosterError = '';
+    let rosterKey = null, rosterToken = 0;
     const downloadLink = node('a', 'primary', 'Бэлэн файлыг татах');
     downloadLink.hidden = true; downloadLink.style.marginTop = '12px';
     $('group-export-message').after(downloadLink);
@@ -207,8 +210,68 @@ export function setupGroups(ctx) {
         $('group-editor-message').textContent = ''; $('group-editor').showModal();
     }
     const effectiveDates = () => filterWeekdays([...selectedDates], [...root.querySelectorAll('[data-export-weekday]:checked')].map(input => Number(input.value)));
+    const effectiveStudents = () => exportStudents.filter(student => selectedStudents.has(student.user_id)).map(student => student.user_id);
+    function resetExportStudents() {
+        rosterToken++; rosterKey = null; rosterLoading = false; rosterError = '';
+        exportStudents = []; selectedStudents.clear(); exportAllStudents = true;
+        $('group-export-student-search').value = '';
+        $('group-export-students-list').replaceChildren();
+        $('group-export-students-count').textContent = '';
+    }
+    function renderExportStudents() {
+        const query = $('group-export-student-search').value.trim().toLocaleLowerCase();
+        const list = $('group-export-students-list');
+        list.hidden = !!rosterError;
+        const focusedId = list.contains(document.activeElement) ? document.activeElement.value : null;
+        list.replaceChildren();
+        const visible = exportStudents.filter(student => (personName(student) + ' ' + (student.username || '')).toLocaleLowerCase().includes(query));
+        for (const student of visible) {
+            const label = node('label', 'group-export-student');
+            const input = node('input'); input.type = 'checkbox'; input.checked = selectedStudents.has(student.user_id);
+            input.disabled = exporting || rosterLoading; input.value = student.user_id;
+            input.onchange = () => {
+                if (exporting || rosterLoading) return;
+                exportAllStudents = false;
+                if (input.checked) selectedStudents.add(student.user_id); else selectedStudents.delete(student.user_id);
+                clearDownload(); $('group-export-message').textContent = ''; renderDates();
+            };
+            const info = node('span'); info.append(node('strong', '', personName(student)));
+            const secondary = [student.username ? '@' + student.username : '', student.is_member === false ? 'Өмнөх гишүүн' : ''].filter(Boolean).join(' · ');
+            if (secondary) info.append(node('small', 'muted', secondary));
+            label.append(input, info); list.append(label);
+        }
+        if (focusedId) [...list.querySelectorAll('input')].find(input => input.value === focusedId)?.focus({preventScroll: true});
+        if (!visible.length && !rosterError) list.append(node('p', 'muted', rosterLoading ? 'Сурагчдын жагсаалтыг ачаалж байна…' : (exportStudents.length ? 'Хайлтанд тохирох сурагч олдсонгүй.' : 'Сурагчдын жагсаалтыг харахын тулд 1–62 өдөр сонгоно уу.')));
+        const count = effectiveStudents().length;
+        $('group-export-students-count').textContent = rosterLoading ? 'Жагсаалтыг шинэчилж байна…' : rosterError || `${count} / ${exportStudents.length} сурагч сонгосон.` + (!count && exportStudents.length ? ' Export хийх сурагчдаа сонгоно уу.' : '') + (query ? ` Хайлтаар ${visible.length} сурагч харагдана; бусад сонголт хэвээр.` : '');
+        $('group-export-students-retry').hidden = !rosterError;
+        for (const id of ['group-export-student-search', 'group-export-students-all', 'group-export-students-none', 'group-export-students-retry']) $(id).disabled = exporting || rosterLoading;
+    }
+    async function refreshExportStudents(dates) {
+        const key = JSON.stringify([currentId, dates]);
+        if (key === rosterKey) return;
+        rosterKey = key;
+        const request = ++rosterToken, token = version, id = currentId;
+        rosterError = ''; exportStudents = [];
+        if (!detail || !dates.length || dates.length > 62) {rosterLoading = false; return;}
+        rosterLoading = true;
+        try {
+            const result = await rpc(ctx.client(), 'study_report_data', {p_group_id: id, p_dates: dates});
+            if (!current(token) || currentId !== id || request !== rosterToken) return;
+            const unique = new Map();
+            for (const row of result) if (row.user_id) unique.set(row.user_id, row);
+            exportStudents = [...unique.values()].sort((a, b) => personName(a).localeCompare(personName(b), 'mn') || a.user_id.localeCompare(b.user_id));
+            if (exportAllStudents) for (const student of exportStudents) selectedStudents.add(student.user_id);
+        } catch (error) {
+            if (current(token) && currentId === id && request === rosterToken) rosterError = errorText(error);
+        } finally {
+            if (current(token) && currentId === id && request === rosterToken) {rosterLoading = false; renderDates();}
+        }
+    }
     function renderDates() {
         const dates = effectiveDates();
+        void refreshExportStudents(dates);
+        renderExportStudents();
         $('group-export-dates').replaceChildren();
         for (const date of dates) {
             const button = node('button', '', `${date} · ${weekday(date)} ×`); button.type = 'button';
@@ -217,7 +280,7 @@ export function setupGroups(ctx) {
             $('group-export-dates').append(button);
         }
         $('group-export-count').textContent = `${selectedDates.size} өдөр нэмсэн · Гаргийн шүүлтүүрээр ${dates.length} өдөр export хийнэ.` + (dates.length > 62 ? ' Нэг удаад 62 хүртэл өдөр: гаргаа шүүх эсвэл өдрүүдээ хасна уу.' : '');
-        $('group-export-download').disabled = exporting || !dates.length || dates.length > 62;
+        $('group-export-download').disabled = exporting || rosterLoading || !!rosterError || !effectiveStudents().length || !dates.length || dates.length > 62;
         $('group-export-format').disabled = exporting;
         for (const input of root.querySelectorAll('[data-export-weekday]')) input.disabled = exporting;
         const titles = {xlsx: 'Excel (.xlsx) татах', latex: 'A4 LaTeX (.tex) татах', pdf: 'A4 PDF (.pdf) татах'};
@@ -294,13 +357,14 @@ export function setupGroups(ctx) {
     };
     $('group-export-download').onclick = async () => {
         const dates = effectiveDates();
-        if (exporting || !dates.length || dates.length > 62 || !detail) return;
+        const students = effectiveStudents();
+        if (exporting || rosterLoading || rosterError || !students.length || !dates.length || dates.length > 62 || !detail) return;
         const group = {...detail.group}, token = version, format = $('group-export-format').value;
         exporting = true; renderDates(); $('group-export-message').textContent = 'Тайлан бэлтгэж байна…';
         try {
             const result = await rpc(ctx.client(), 'study_report_data', {p_group_id: group.id, p_dates: dates});
             if (!current(token) || currentId !== group.id) return;
-            const data = {group, dates, rows: result};
+            const data = {group, dates, rows: selectReportRows(result, students)};
             let bytes, extension, mime;
             if (format === 'pdf') {bytes = await createReportPdf(data); extension = 'pdf'; mime = 'application/pdf';}
             else if (format === 'latex') {bytes = createReportLatex(data); extension = 'tex'; mime = 'application/x-tex;charset=utf-8';}
@@ -310,7 +374,7 @@ export function setupGroups(ctx) {
             clearDownload(); downloadUrl = URL.createObjectURL(blob);
             downloadLink.href = downloadUrl; downloadLink.download = `${group.name.replace(/[<>:"/\\|?*\u0000-\u001f]/g, '_').slice(0, 60)}_${dates[0]}_${dates.at(-1)}.${extension}`;
             downloadLink.hidden = false; downloadLink.click();
-            $('group-export-message').textContent = `${dates.length} өдрийн ${format === 'xlsx' ? 'Excel' : format === 'pdf' ? 'A4 PDF' : 'A4 LaTeX'} файл бэлэн боллоо. Таталт эхлээгүй бол доорх холбоосыг дарна уу.`;
+            $('group-export-message').textContent = `${students.length} сурагчийн ${dates.length} өдрийн ${format === 'xlsx' ? 'Excel' : format === 'pdf' ? 'A4 PDF' : 'A4 LaTeX'} файл бэлэн боллоо. Таталт эхлээгүй бол доорх холбоосыг дарна уу.`;
         } catch (error) {if (current(token) && currentId === group.id) $('group-export-message').textContent = errorText(error);}
         finally {exporting = false; renderDates();}
     };
@@ -326,7 +390,7 @@ export function setupGroups(ctx) {
     $('group-count-lines').onclick = () => {$('group-report-count').value = $('group-report-problems').value.split(/\r?\n/).filter(line => line.trim()).length;};
     $('group-members-open').onclick = () => {if (detail) {$('group-members-message').textContent = ''; $('group-members-dialog').showModal();}};
     $('group-export-open').onclick = () => {
-        clearDownload();
+        clearDownload(); resetExportStudents();
         for (const input of root.querySelectorAll('[data-export-weekday]')) input.checked = true;
         selectedDates.clear(); const date = $('group-day').value || todayInMongolia(); selectedDates.add(date);
         for (const id of ['group-export-start', 'group-export-end', 'group-export-date']) $(id).value = date;
@@ -335,6 +399,17 @@ export function setupGroups(ctx) {
     $('group-export-range-add').onclick = () => dateAction(() => addDates(dateRange($('group-export-start').value, $('group-export-end').value, 3660)));
     for (const input of root.querySelectorAll('[data-export-weekday]')) input.onchange = () => {clearDownload(); $('group-export-message').textContent = ''; renderDates();};
     $('group-export-format').onchange = () => {clearDownload(); $('group-export-message').textContent = ''; renderDates();};
+    $('group-export-student-search').oninput = renderExportStudents;
+    $('group-export-students-all').onclick = () => {
+        if (exporting || rosterLoading) return;
+        exportAllStudents = true; for (const student of exportStudents) selectedStudents.add(student.user_id);
+        clearDownload(); $('group-export-message').textContent = ''; renderDates();
+    };
+    $('group-export-students-none').onclick = () => {
+        if (exporting || rosterLoading) return;
+        exportAllStudents = false; selectedStudents.clear(); clearDownload(); $('group-export-message').textContent = ''; renderDates();
+    };
+    $('group-export-students-retry').onclick = () => {if (!exporting && !rosterLoading) {rosterKey = null; renderDates();}};
     $('group-export-date-add').onclick = () => dateAction(() => {const date = $('group-export-date').value; if (!validDate(date)) throw new Error('Өдөр сонгоно уу.'); addDates([date]);});
     $('group-export-clear').onclick = () => {if (!exporting) {selectedDates.clear(); clearDownload(); $('group-export-message').textContent = ''; renderDates();}};
     window.addEventListener('hashchange', route);
@@ -344,7 +419,7 @@ export function setupGroups(ctx) {
             $('group-create').hidden = !online(); $('group-login').hidden = online();
             if (id === accountId) return;
             accountId = id; version++; detailToken++; dayToken++; listToken++;
-            closeDialogs(); clearDownload(); detail = null; rows = []; groups = []; currentId = null; editing = null; teacherEditing = null; loadedDay = null; selectedDates.clear();
+            closeDialogs(); clearDownload(); resetExportStudents(); detail = null; rows = []; groups = []; currentId = null; editing = null; teacherEditing = null; loadedDay = null; selectedDates.clear();
             for (const form of root.querySelectorAll('form')) form.reset();
             for (const id of ['group-title','group-description','group-access-note','group-report-person','group-report-date','group-day-summary','group-privacy','group-teacher-person','group-teacher-date']) $(id).textContent = '';
             $('group-list').replaceChildren(); $('group-members-list').replaceChildren(); $('group-reports').replaceChildren();
