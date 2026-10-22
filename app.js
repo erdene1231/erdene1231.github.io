@@ -1,5 +1,5 @@
 import {setupTutorials} from './tutorials.js?v=16';
-import {setupGroups} from './groups.js?v=18';
+import {setupGroups} from './groups.js?v=19';
 let tutorialUI;
 import {EMPTY, cleanEntry, parseBackup} from './progress.js';
 import {getSolvers} from './community.js?v=6';

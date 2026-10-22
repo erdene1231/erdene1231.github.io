@@ -90,16 +90,17 @@ async function loadAssets() {
     ]).then(([pdfLib, fontkit, regular, bold]) => ({pdfLib, fontkit, regular, bold})).catch(error => {assetsPromise = null; throw error;});
     return assetsPromise;
 }
-export function wrapPdfText(value, font, size, width) {
+export function wrapPdfText(value, font, size, width, firstWidth = width) {
     const lines = [];
+    const availableWidth = () => lines.length ? width : firstWidth;
     for (const paragraph of text(value).split('\n')) {
         let line = '';
         for (const word of paragraph.split(/\s+/u).filter(Boolean)) {
             const candidate = line ? line + ' ' + word : word;
-            if (font.widthOfTextAtSize(candidate, size) <= width) {line = candidate; continue;}
+            if (font.widthOfTextAtSize(candidate, size) <= availableWidth()) {line = candidate; continue;}
             if (line) {lines.push(line); line = '';}
             for (const char of word) {
-                if (line && font.widthOfTextAtSize(line + char, size) > width) {lines.push(line); line = '';}
+                if (line && font.widthOfTextAtSize(line + char, size) > availableWidth()) {lines.push(line); line = '';}
                 line += char;
             }
         }
@@ -118,61 +119,103 @@ export async function createReportPdf(data, providedAssets) {
     const charsets = new Map([[regularFont, new Set(regularFont.getCharacterSet())], [boldFont, new Set(boldFont.getCharacterSet())]]);
     const safe = (value, font) => Array.from(text(value)).map(char => char === '\n' || charsets.get(font).has(char.codePointAt(0)) ? char : `[U+${char.codePointAt(0).toString(16).toUpperCase()}]`).join('');
     const ink = rgb(.10, .16, .13), green = rgb(.10, .30, .22), muted = rgb(.36, .42, .38), lineColor = rgb(.85, .88, .85);
-    const left = 44, bottom = 43, labelWidth = 140, leading = 14.5;
-    const width = PageSizes.A4[0] - 2 * left;
-    let page, y, day, activeName = '';
-    function drawLines(lines, x, start, font, size, color = ink, step = leading) {
+    const pageSize = [PageSizes.A4[1], PageSizes.A4[0]];
+    const margin = 26, bottom = 30, gap = 10, padding = 8;
+    const width = pageSize[0] - 2 * margin;
+    const cardWidth = (width - 2 * gap) / 3, textWidth = cardWidth - 2 * padding;
+    const bodySize = 9, labelSize = 8.5, leading = 11.5, nameLeading = 13;
+    let page, y, day;
+    function drawLines(lines, x, start, font, size, color, step) {
         lines.forEach((line, i) => page.drawText(line, {x, y: start - i * step, font, size, color}));
     }
-    function drawName(continuation = false) {
-        const lines = wrapPdfText(safe(activeName + (continuation ? ' (үргэлжлэл)' : ''), boldFont), boldFont, 12, width);
-        drawLines(lines, left, y - 13, boldFont, 12, green, 17);
-        y -= lines.length * 17 + 12;
-    }
-    function startPage(continuation = false) {
+    function startPage() {
         if (pdf.getPageCount() >= 500) throw new Error('PDF хэт олон хуудастай байна. Цөөн өдөр сонгоод дахин export хийнэ үү.');
-        page = pdf.addPage(PageSizes.A4); y = PageSizes.A4[1] - 46;
-        const title = wrapPdfText(safe(data.group.name, boldFont), boldFont, 16, width);
-        drawLines(title, left, y, boldFont, 16, green, 21); y -= title.length * 21 + 8;
-        page.drawText(day.date + ' - ' + weekday(day.date), {x: left, y, font: boldFont, size: 11, color: ink}); y -= 20;
-        const info = wrapPdfText(safe(summary(day.rows), regularFont), regularFont, 9, width);
-        drawLines(info, left, y, regularFont, 9, muted, 12); y -= info.length * 12 + 16;
-        page.drawLine({start: {x: left, y: y + 7}, end: {x: left + width, y: y + 7}, color: lineColor, thickness: .7});
-        if (continuation) drawName(true);
+        page = pdf.addPage(pageSize); y = pageSize[1] - margin - 14;
+        const title = wrapPdfText(safe(data.group.name, boldFont), boldFont, 14, width);
+        drawLines(title, margin, y, boldFont, 14, green, 17); y -= title.length * 17 + 2;
+        page.drawText(day.date + ' - ' + weekday(day.date), {x: margin, y, font: boldFont, size: 10, color: ink}); y -= 15;
+        const info = wrapPdfText(safe(summary(day.rows), regularFont), regularFont, 8, width);
+        drawLines(info, margin, y, regularFont, 8, muted, 10); y -= info.length * 10 + 12;
+        page.drawLine({start: {x: margin, y: y + 5}, end: {x: margin + width, y: y + 5}, color: lineColor, thickness: .7});
     }
-    function drawField(label, value) {
-        const lines = wrapPdfText(safe(value, regularFont), regularFont, 10.5, width - labelWidth - 15);
+    function cardLines(row) {
+        const optional = [
+            ['Бодлогын хүндрэл', row.difficulty],
+            ['Бодсон бодлогууд', row.solved_problems],
+            ['Судалсан сэдвүүд', row.topics],
+            ['Нэмэлт тэмдэглэл', row.notes],
+            ['Багшийн тэмдэглэл', row.teacher_note]
+        ].filter(([, value]) => text(value).trim());
+        if (!optional.length && row.problem_count == null) return [{value: 'Тэмдэглэл бөглөөгүй.', before: 0}];
+        const fields = [['Нийт бодлого', row.problem_count ?? 'Бөглөөгүй'], ...optional];
+        return fields.flatMap(([label, value], fieldIndex) => {
+            const prefix = label + ': ';
+            const prefixWidth = boldFont.widthOfTextAtSize(prefix, labelSize);
+            return wrapPdfText(safe(text(value).trim(), regularFont), regularFont, bodySize, textWidth, textWidth - prefixWidth)
+                .map((value, index) => ({value, label, prefix: index ? '' : prefix, prefixWidth: index ? 0 : prefixWidth, before: !index && fieldIndex ? 3 : 0}));
+        });
+    }
+    function splitCard(row, index, maxHeight) {
+        const lines = cardLines(row), cards = [];
         let offset = 0;
         while (offset < lines.length) {
-            if (y - bottom < 55) startPage(true);
-            const maxLines = Math.max(1, Math.floor((y - bottom - 12) / leading));
-            const count = Math.min(maxLines, lines.length - offset);
-            const labels = wrapPdfText(safe(label + (offset ? ' (үргэлжлэл)' : ''), boldFont), boldFont, 9.5, labelWidth - 10);
-            const height = Math.max(labels.length, count) * leading + 12;
-            if (height > y - bottom) {startPage(true); continue;}
-            if (label === 'Багшийн тэмдэглэл') page.drawRectangle({x: left, y: y - height, width, height, color: rgb(.94, .97, .94)});
-            drawLines(labels, left + 5, y - 13, boldFont, 9.5, green);
-            drawLines(lines.slice(offset, offset + count), left + labelWidth, y - 13, regularFont, 10.5);
-            y -= height;
-            page.drawLine({start: {x: left, y}, end: {x: left + width, y}, color: lineColor, thickness: .4});
-            offset += count;
-            if (offset < lines.length) startPage(true);
+            const heading = `${index + 1}. ${name(row)}${offset ? ' (үргэлжлэл)' : ''}`;
+            const names = wrapPdfText(safe(heading, boldFont), boldFont, 10, textWidth);
+            const headerHeight = padding + names.length * nameLeading + 5;
+            const body = [];
+            let height = headerHeight + padding;
+            // A field that spans cards retains its label; no part of its value is cut.
+            if (offset && !lines[offset].prefix && lines[offset].label) {
+                body.push({continuation: lines[offset].label + ' (үргэлжлэл)', before: 0});
+                height += leading;
+            }
+            const start = offset;
+            while (offset < lines.length) {
+                const next = {...lines[offset], before: offset === start ? 0 : lines[offset].before};
+                if (height + next.before + leading > maxHeight) break;
+                body.push(next); height += next.before + leading; offset++;
+            }
+            if (offset === start) throw new Error('PDF-ийн гарчиг эсвэл сурагчийн нэр хэт урт байна. Нэрийг богиносгоод дахин оролдоно уу.');
+            cards.push({names, headerHeight, body, height});
+        }
+        return cards;
+    }
+    function drawCard(card, x, top, height) {
+        page.drawRectangle({x, y: top - height, width: cardWidth, height, borderColor: lineColor, borderWidth: .6});
+        page.drawRectangle({x: x + .4, y: top - card.headerHeight, width: cardWidth - .8, height: card.headerHeight - .4, color: rgb(.95, .97, .95)});
+        drawLines(card.names, x + padding, top - padding - 10, boldFont, 10, green, nameLeading);
+        let cursor = top - card.headerHeight;
+        for (const line of card.body) {
+            cursor -= line.before;
+            if (line.label === 'Багшийн тэмдэглэл') page.drawRectangle({x: x + 4, y: cursor - leading, width: cardWidth - 8, height: leading, color: rgb(.96, .98, .96)});
+            if (line.continuation) page.drawText(line.continuation, {x: x + padding, y: cursor - bodySize, font: boldFont, size: labelSize, color: green});
+            else {
+                if (line.prefix) page.drawText(line.prefix, {x: x + padding, y: cursor - bodySize, font: boldFont, size: labelSize, color: green});
+                page.drawText(line.value, {x: x + padding + (line.prefixWidth || 0), y: cursor - bodySize, font: regularFont, size: bodySize, color: ink});
+            }
+            cursor -= leading;
         }
     }
     for (day of days) {
         startPage();
-        if (!day.rows.length) page.drawText('Энэ өдрийн тайланд гишүүн байхгүй.', {x: left, y, font: regularFont, size: 11});
-        for (const [i, row] of day.rows.entries()) {
-            activeName = `${i + 1}. ${name(row)}`;
-            const headingHeight = wrapPdfText(safe(activeName, boldFont), boldFont, 12, width).length * 17 + 70;
-            if (y - bottom < headingHeight) startPage();
-            drawName();
-            for (const [label, value] of reportFields(row)) drawField(label, value);
-            y -= 18;
+        if (!day.rows.length) page.drawText('Энэ өдрийн тайланд гишүүн байхгүй.', {x: margin, y, font: regularFont, size: 10});
+        const maxHeight = y - bottom;
+        const cards = day.rows.flatMap((row, index) => splitCard(row, index, maxHeight));
+        let columns = [y, y, y];
+        for (const card of cards) {
+            // Short cards can fill the space below another card without waiting
+            // for the longest column. Student numbers preserve the reading order.
+            let column = -1;
+            for (let i = 0; i < 3; i++) {
+                if (columns[i] - card.height >= bottom - .01 && (column < 0 || columns[i] > columns[column])) column = i;
+            }
+            if (column < 0) {startPage(); columns = [y, y, y]; column = 0;}
+            drawCard(card, margin + column * (cardWidth + gap), columns[column], card.height);
+            columns[column] -= card.height + gap;
         }
     }
     const pages = pdf.getPages();
-    pages.forEach((page, index) => page.drawText(`${index + 1} / ${pages.length}`, {x: PageSizes.A4[0] / 2 - 18, y: 23, font: regularFont, size: 8, color: muted}));
+    pages.forEach((page, index) => page.drawText(`${index + 1} / ${pages.length}`, {x: pageSize[0] / 2 - 18, y: 14, font: regularFont, size: 8, color: muted}));
     pdf.setTitle(text(data.group.name) + ' - Өдрийн тайлан');
     pdf.setCreator('Erdene Club');
     return pdf.save();
