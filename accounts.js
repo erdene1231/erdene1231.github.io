@@ -1,9 +1,11 @@
 import {normalizeUsername} from './community.js?v=6';
 export const AVATAR_BUCKET='think-cp-avatars';
 export function cleanProfile(values) {
- const full_name=String(values.full_name||'').trim(),school=String(values.school||'').trim();
+ const first_name=String(values.first_name||'').trim(),last_name=String(values.last_name||'').trim();
+ if(first_name.length>100||last_name.length>100)throw new Error('Овог болон нэр тус бүр 100 тэмдэгтээс урт байж болохгүй.');
+ const full_name=[last_name,first_name].filter(Boolean).join(' ')||String(values.full_name||'').trim(),school=String(values.school||'').trim();
  if(full_name.length>100||school.length>160)throw new Error('Овог нэр 100, сургууль 160 тэмдэгтээс урт байж болохгүй.');
- return {username:normalizeUsername(values.username),full_name,school,avatar_path:values.avatar_path||null};
+ return {username:normalizeUsername(values.username),full_name,first_name,last_name,school,avatar_path:values.avatar_path||null};
 }
 export function avatarUrl(client,profile) {
  const path=profile?.avatar_path;
@@ -11,8 +13,8 @@ export function avatarUrl(client,profile) {
  return client.storage.from(AVATAR_BUCKET).getPublicUrl(path).data.publicUrl;
 }
 export async function ownProfile(client,id) {
- const {data,error}=await client.from('profiles').select('user_id,username,full_name,school,avatar_path').eq('user_id',id).maybeSingle();
- if(error)throw error;return data||{user_id:id,username:null,full_name:'',school:'',avatar_path:null};
+ const {data,error}=await client.from('profiles').select('user_id,username,full_name,first_name,last_name,school,avatar_path').eq('user_id',id).maybeSingle();
+ if(error)throw error;return data||{user_id:id,username:null,full_name:'',first_name:'',last_name:'',school:'',avatar_path:null};
 }
 export function validateAvatar(file) {
  if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw new Error('JPG, PNG эсвэл WebP зураг сонгоно уу.');
