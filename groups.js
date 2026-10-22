@@ -1,5 +1,6 @@
+import {createReportLatex, createReportPdf} from './group-document.js?v=18';
 import {rpc} from './accounts.js?v=17';
-import {createReportWorkbook, todayInMongolia, validDate, weekday, shiftDate, dateRange} from './group-export.js?v=17';
+import {createReportWorkbook, todayInMongolia, validDate, weekday, shiftDate, dateRange, filterWeekdays} from './group-export.js?v=18';
 
 const MARKUP = `
 <div class="section-head"><div><p class="eyebrow">ХАМТДАА СУРЪЯ</p><h2>Групп ба өдрийн тэмдэглэл</h2></div><button id="group-create" class="primary" type="button" hidden>+ Групп үүсгэх</button></div>
@@ -8,16 +9,17 @@ const MARKUP = `
 <div id="group-list-view" hidden><div class="group-toolbar"><label>Харуулах<select id="group-filter"><option value="all">Хандах боломжтой бүх групп</option><option value="mine">Миний группүүд</option></select></label><button id="group-reload" type="button">Шинэчлэх</button></div><div id="group-list" class="group-grid"></div></div>
 <div id="group-detail-view" hidden>
  <a href="#groups">← Группүүд</a>
- <div class="section-head"><div><span id="group-privacy" class="badge"></span><h3 id="group-title"></h3></div><div class="group-actions"><button id="group-members-open" type="button">Гишүүд</button><button id="group-settings" type="button" hidden>Групп засах</button><button id="group-export-open" type="button">Excel тайлан</button></div></div>
+ <div class="section-head"><div><span id="group-privacy" class="badge"></span><h3 id="group-title"></h3></div><div class="group-actions"><button id="group-members-open" type="button">Гишүүд</button><button id="group-settings" type="button" hidden>Групп засах</button><button id="group-export-open" type="button">Тайлан export</button></div></div>
  <p id="group-description" class="group-text"></p><p id="group-access-note" class="muted"></p>
  <div class="group-day-bar"><button id="group-prev-day" type="button" aria-label="Өмнөх өдөр">←</button><label>Тэмдэглэлийн огноо<input id="group-day" type="date" required></label><button id="group-next-day" type="button" aria-label="Дараах өдөр">→</button><span id="group-weekday"></span><button id="group-today" type="button">Өнөөдөр</button><button id="group-own-report" class="primary" type="button" hidden>Миний тэмдэглэл</button></div>
- <div class="group-toolbar"><p id="group-day-summary" class="muted" role="status" aria-live="polite"></p><label>Тэмдэглэл<select id="group-report-filter"><option value="all">Бүгд</option><option value="filled">Бөглөсөн</option><option value="missing">Бөглөөгүй</option></select></label></div>
+ <div class="group-toolbar"><p id="group-day-summary" class="muted" role="status" aria-live="polite"></p><label>Сурагчийн тэмдэглэл<select id="group-report-filter"><option value="all">Бүгд</option><option value="filled">Бөглөсөн</option><option value="missing">Бөглөөгүй</option></select></label></div>
  <div id="group-reports" class="group-reports"></div>
 </div>
 <dialog id="group-editor" aria-labelledby="group-editor-title"><div class="dialog-head"><h2 id="group-editor-title">Групп үүсгэх</h2><button data-group-close="group-editor" type="button" aria-label="Хаах">✕</button></div><form id="group-editor-form"><label>Группын нэр<input id="group-name" maxlength="100" required></label><label>Тайлбар<textarea id="group-description-input" maxlength="2000" rows="3"></textarea></label><label>Харагдах хүрээ<select id="group-visibility"><option value="private">Private — гишүүд болон сайтын админ</option><option value="public">Public — нэвтэрсэн хүн бүр уншина</option></select></label><p class="muted">Гишүүд бусдыг username-аар нэмж чадна. Public сонговол тэмдэглэлүүд нэвтэрсэн бүх хэрэглэгчид харагдана.</p><button id="group-editor-save" class="primary" type="submit">Хадгалах</button><p id="group-editor-message" role="status" aria-live="polite"></p></form></dialog>
 <dialog id="group-members-dialog" aria-labelledby="group-members-title"><div class="dialog-head"><h2 id="group-members-title">Группын гишүүд</h2><button data-group-close="group-members-dialog" type="button" aria-label="Хаах">✕</button></div><form id="group-add-form"><label>Нэмэх хэрэглэгчийн username<input id="group-add-username" minlength="3" maxlength="24" pattern="[a-zA-Z0-9_]{3,24}" placeholder="username" required></label><button id="group-add-submit" class="primary" type="submit">Гишүүн нэмэх</button></form><p id="group-members-message" class="muted" role="status" aria-live="polite"></p><ul id="group-members-list" class="group-member-list"></ul></dialog>
 <dialog id="group-report-editor" aria-labelledby="group-report-title"><div class="dialog-head"><h2 id="group-report-title">Өдрийн тэмдэглэл</h2><button data-group-close="group-report-editor" type="button" aria-label="Хаах">✕</button></div><p id="group-report-person"></p><p id="group-report-date" class="muted"></p><p class="muted">Бүх талбар сонголттой. Бодлогын нэр, ID эсвэл холбоосыг мөр бүрт нэгээр бичээрэй. Энэ тэмдэглэл бодлогын сан дахь progress-ийг автоматаар өөрчлөхгүй.</p><form id="group-report-form"><label>Бодсон бодлогууд<textarea id="group-report-problems" maxlength="12000" rows="5" placeholder="CSES — Counting Rooms\nCF 1661B — Getting Zero"></textarea></label><div class="group-count-field"><label>Нийт бодлогын тоо<input id="group-report-count" type="number" min="0" max="100000" step="1" placeholder="Бөглөөгүй"></label><button id="group-count-lines" type="button">Жагсаалтын мөрөөр тоолох</button></div><label>Хэр хэцүү бодлогууд бодсон бэ?<textarea id="group-report-difficulty" maxlength="1200" rows="2" placeholder="Жишээ: CF 1400–1700; хоёр нь бие даан, нэг нь hint-тэй"></textarea></label><label>Судалсан сэдвүүд<textarea id="group-report-topics" maxlength="2000" rows="2" placeholder="BFS, grid, path сэргээх"></textarea></label><label>Нэмэлт тэмдэглэл<textarea id="group-report-notes" maxlength="8000" rows="3" placeholder="Хаана гацсан, юу ойлгосон, дараа юу үргэлжлүүлэх вэ?"></textarea></label><button id="group-report-save" class="primary" type="submit">Тэмдэглэл хадгалах</button><p id="group-report-message" role="status" aria-live="polite"></p></form></dialog>
-<dialog id="group-export-dialog" aria-labelledby="group-export-title"><div class="dialog-head"><h2 id="group-export-title">Excel тайлан татах</h2><button data-group-close="group-export-dialog" type="button" aria-label="Хаах">✕</button></div><p>Сонгосон өдөр бүр тусдаа sheet болно. Бүх гишүүн, тэмдэглэл бөглөөгүй сурагчид мөн орно. Өмнөх гишүүний тухайн өдрийн хадгалсан тэмдэглэл ч орно.</p><div class="group-export-range"><label>Эхлэх өдөр<input id="group-export-start" type="date"></label><label>Дуусах өдөр<input id="group-export-end" type="date"></label><button id="group-export-range-add" type="button">Эдгээр өдрийг нэмэх</button></div><div class="group-toolbar"><label>Тусдаа өдөр нэмэх<input id="group-export-date" type="date"></label><button id="group-export-date-add" type="button">Өдөр нэмэх</button><button id="group-export-clear" type="button">Сонголт цэвэрлэх</button></div><div id="group-export-dates" class="group-date-chips"></div><p id="group-export-count" class="muted"></p><p class="muted">Нэг файлд 1–62 өдөр. Username, овог, нэр, бодлогууд, тоо, хүндрэл, сэдэв, нэмэлт тэмдэглэл багтана. Овог, нэрээ Account хэсэгт тусад нь бөглөнө. Хуучин нэрийг тааж салгахгүй; тусдаа баганад хадгална.</p><button id="group-export-download" class="primary" type="button">Excel (.xlsx) татах</button><p id="group-export-message" role="status" aria-live="polite"></p></dialog>`;
+<dialog id="group-teacher-editor" aria-labelledby="group-teacher-title"><div class="dialog-head"><h2 id="group-teacher-title">Багшийн тэмдэглэл</h2><button data-group-close="group-teacher-editor" type="button" aria-label="Хаах">✕</button></div><p id="group-teacher-person"></p><p id="group-teacher-date" class="muted"></p><p class="muted">Группын болон сайтын админ засна. Группийг харах эрхтэй хүмүүс уншина. Сурагчийн өөрийн тэмдэглэл тусдаа хадгалагдана.</p><form id="group-teacher-form"><label>Багшийн тэмдэглэл<textarea id="group-teacher-note" maxlength="8000" rows="7" placeholder="Сурагчийн ахиц, зөвлөгөө, дараагийн ажил…"></textarea></label><button id="group-teacher-save" class="primary" type="submit">Багшийн тэмдэглэл хадгалах</button><p id="group-teacher-message" role="status" aria-live="polite"></p></form></dialog>
+<dialog id="group-export-dialog" aria-labelledby="group-export-title"><div class="dialog-head"><h2 id="group-export-title">Тайлан export хийх</h2><button data-group-close="group-export-dialog" type="button" aria-label="Хаах">✕</button></div><p>Excel-д өдөр бүр тусдаа sheet, A4 LaTeX/PDF-д өдөр бүр шинэ хуудаснаас эхэлнэ. Бүх гишүүн, тэмдэглэл бөглөөгүй сурагчид мөн орно. Өмнөх гишүүний тухайн өдрийн хадгалсан тэмдэглэл ч орно.</p><div class="group-export-range"><label>Эхлэх өдөр<input id="group-export-start" type="date"></label><label>Дуусах өдөр<input id="group-export-end" type="date"></label><button id="group-export-range-add" type="button">Эдгээр өдрийг нэмэх</button></div><div class="group-toolbar"><label>Тусдаа өдөр нэмэх<input id="group-export-date" type="date"></label><button id="group-export-date-add" type="button">Өдөр нэмэх</button><button id="group-export-clear" type="button">Сонголт цэвэрлэх</button></div><fieldset class="group-export-weekdays"><legend>Export хийх гаргууд</legend><label><input type="checkbox" data-export-weekday value="1" checked>Даваа</label><label><input type="checkbox" data-export-weekday value="2" checked>Мягмар</label><label><input type="checkbox" data-export-weekday value="3" checked>Лхагва</label><label><input type="checkbox" data-export-weekday value="4" checked>Пүрэв</label><label><input type="checkbox" data-export-weekday value="5" checked>Баасан</label><label><input type="checkbox" data-export-weekday value="6" checked>Бямба</label><label><input type="checkbox" data-export-weekday value="0" checked>Ням</label></fieldset><label>Файлын төрөл<select id="group-export-format"><option value="xlsx">Excel (.xlsx)</option><option value="latex">A4 LaTeX (.tex)</option><option value="pdf">A4 PDF (.pdf)</option></select></label><div id="group-export-dates" class="group-date-chips"></div><p id="group-export-count" class="muted"></p><p class="muted">Нэг export-д гаргийн шүүлтүүрт таарсан 1–62 өдөр. Овог, нэр, бодлогууд, тоо, хүндрэл, сэдэв, сурагчийн болон багшийн тэмдэглэл багтана. Овог, нэрээ Account хэсэгт тусад нь бөглөнө. Хуучин нэрийг тааж салгахгүй; тусдаа баганад хадгална.</p><button id="group-export-download" class="primary" type="button">Excel (.xlsx) татах</button><p id="group-export-message" role="status" aria-live="polite"></p></dialog>`;
 
 function node(tag, className = '', text) {
     const element = document.createElement(tag);
@@ -35,10 +37,10 @@ export function setupGroups(ctx) {
     root.innerHTML = MARKUP; // Static template only. User content always uses textContent.
     const $ = id => root.querySelector('#' + id);
     let accountId, version = 0, detailToken = 0, dayToken = 0, listToken = 0;
-    let currentId = null, detail = null, rows = [], groups = [], editing = null, editingGroup = false;
+    let currentId = null, detail = null, rows = [], groups = [], editing = null, teacherEditing = null, editingGroup = false;
     let mutating = false, exporting = false, loadedDay = null, downloadUrl = null;
     const selectedDates = new Set();
-    const downloadLink = node('a', 'primary', 'Бэлэн Excel файлыг татах');
+    const downloadLink = node('a', 'primary', 'Бэлэн файлыг татах');
     downloadLink.hidden = true; downloadLink.style.marginTop = '12px';
     $('group-export-message').after(downloadLink);
     function clearDownload() {
@@ -137,6 +139,15 @@ export function setupGroups(ctx) {
                 if (fields.every(([, value]) => value === '' || value === null)) card.append(node('p', 'muted', 'Энэ өдрийн тэмдэглэл үүсгэсэн; талбаруудыг хараахан бөглөөгүй.'));
                 if (row.updated_at) card.append(node('p', 'muted', 'Шинэчилсэн: ' + new Intl.DateTimeFormat('mn-MN', {timeZone: 'Asia/Ulaanbaatar', dateStyle: 'short', timeStyle: 'short'}).format(new Date(row.updated_at))));
             }
+            const teacherBlock = node('div', 'group-teacher-block');
+            const teacherHead = node('div', 'group-report-head');
+            teacherHead.append(node('strong', '', 'Багшийн тэмдэглэл'));
+            if (row.can_edit_teacher) {
+                const button = node('button', '', row.teacher_note ? 'Багшийн тэмдэглэл засах' : 'Багшийн тэмдэглэл нэмэх');
+                button.type = 'button'; button.onclick = () => editTeacher(row); teacherHead.append(button);
+            }
+            teacherBlock.append(teacherHead, node('p', 'group-text', row.teacher_note || 'Багшийн тэмдэглэл оруулаагүй.'));
+            card.append(teacherBlock);
             $('group-reports').append(card);
         }
         if (!visible.length) $('group-reports').append(node('p', 'muted', 'Энэ шүүлтүүрт тохирох тэмдэглэл байхгүй.'));
@@ -166,6 +177,15 @@ export function setupGroups(ctx) {
         $('group-report-topics').value = row.topics; $('group-report-notes').value = row.notes;
         $('group-report-message').textContent = ''; $('group-report-editor').showModal();
     }
+    function editTeacher(row) {
+        if (mutating || !row.can_edit_teacher || loadedDay !== $('group-day').value) return;
+        teacherEditing = {...row, group_id: currentId};
+        $('group-teacher-person').textContent = personName(row);
+        $('group-teacher-date').textContent = row.report_date + ' · ' + weekday(row.report_date);
+        $('group-teacher-note').value = row.teacher_note || '';
+        $('group-teacher-message').textContent = '';
+        $('group-teacher-editor').showModal();
+    }
     async function memberRole(member, role) {
         if (mutating || !detail?.can_manage) return;
         if (!confirm(`${personName(member)}: ${role === 'remove' ? 'группээс хасах уу? Өмнөх тэмдэглэл хадгалагдана.' : role === 'admin' ? 'группын админ болгох уу?' : 'гишүүн болгох уу?'}`)) return;
@@ -186,21 +206,27 @@ export function setupGroups(ctx) {
         $('group-visibility').value = update ? detail.group.visibility : 'private';
         $('group-editor-message').textContent = ''; $('group-editor').showModal();
     }
+    const effectiveDates = () => filterWeekdays([...selectedDates], [...root.querySelectorAll('[data-export-weekday]:checked')].map(input => Number(input.value)));
     function renderDates() {
+        const dates = effectiveDates();
         $('group-export-dates').replaceChildren();
-        for (const date of [...selectedDates].sort()) {
+        for (const date of dates) {
             const button = node('button', '', `${date} · ${weekday(date)} ×`); button.type = 'button';
             button.setAttribute('aria-label', date + ' өдрийг хасах');
             button.onclick = () => {if (!exporting) {selectedDates.delete(date); clearDownload(); $('group-export-message').textContent = ''; renderDates();}};
             $('group-export-dates').append(button);
         }
-        $('group-export-count').textContent = selectedDates.size + ' өдөр сонгосон';
-        $('group-export-download').disabled = exporting || !selectedDates.size;
+        $('group-export-count').textContent = `${selectedDates.size} өдөр нэмсэн · Гаргийн шүүлтүүрээр ${dates.length} өдөр export хийнэ.` + (dates.length > 62 ? ' Нэг удаад 62 хүртэл өдөр: гаргаа шүүх эсвэл өдрүүдээ хасна уу.' : '');
+        $('group-export-download').disabled = exporting || !dates.length || dates.length > 62;
+        $('group-export-format').disabled = exporting;
+        for (const input of root.querySelectorAll('[data-export-weekday]')) input.disabled = exporting;
+        const titles = {xlsx: 'Excel (.xlsx) татах', latex: 'A4 LaTeX (.tex) татах', pdf: 'A4 PDF (.pdf) татах'};
+        $('group-export-download').textContent = titles[$('group-export-format').value];
     }
     function addDates(dates) {
         if (exporting) return;
         const next = new Set([...selectedDates, ...dates]);
-        if (next.size > 62) throw new Error('Нэг файлд 62 хүртэл өдөр сонгоно уу.');
+        if (next.size > 3660) throw new Error('Хугацаа хэт урт байна. Богино хугацаа сонгоно уу.');
         dates.forEach(date => selectedDates.add(date)); clearDownload(); renderDates(); $('group-export-message').textContent = '';
     }
     function dateAction(action) {try {action();} catch (error) {$('group-export-message').textContent = errorText(error);}}
@@ -213,6 +239,19 @@ export function setupGroups(ctx) {
         closeDialogs(); $('group-list-view').hidden = false; $('group-detail-view').hidden = true; void loadList();
     }
     // Async mutation handlers are below; all writes go through authorized server RPCs.
+    $('group-teacher-form').onsubmit = async event => {
+        event.preventDefault();
+        if (mutating || !teacherEditing || !$('group-teacher-form').reportValidity()) return;
+        const target = teacherEditing, token = version;
+        mutating = true; $('group-teacher-save').disabled = true; $('group-teacher-message').textContent = 'Хадгалж байна…';
+        try {
+            await rpc(ctx.client(), 'study_save_teacher_note', {p_group_id: target.group_id, p_user_id: target.user_id,
+                p_date: target.report_date, p_note: $('group-teacher-note').value, p_expected_revision: target.teacher_revision ?? null});
+            if (!current(token) || currentId !== target.group_id) return;
+            $('group-teacher-editor').close(); await loadDay();
+        } catch (error) {if (current(token)) $('group-teacher-message').textContent = errorText(error);}
+        finally {mutating = false; $('group-teacher-save').disabled = false;}
+    };
     $('group-report-form').onsubmit = async event => {
         event.preventDefault(); if (mutating || !editing || !$('group-report-form').reportValidity()) return;
         const target = editing, token = version; mutating = true; $('group-report-save').disabled = true;
@@ -254,18 +293,24 @@ export function setupGroups(ctx) {
         finally {mutating = false; $('group-editor-save').disabled = false;}
     };
     $('group-export-download').onclick = async () => {
-        if (exporting || !selectedDates.size || !detail) return;
-        const dates = [...selectedDates].sort(), group = {...detail.group}, token = version;
+        const dates = effectiveDates();
+        if (exporting || !dates.length || dates.length > 62 || !detail) return;
+        const group = {...detail.group}, token = version, format = $('group-export-format').value;
         exporting = true; renderDates(); $('group-export-message').textContent = 'Тайлан бэлтгэж байна…';
         try {
             const result = await rpc(ctx.client(), 'study_report_data', {p_group_id: group.id, p_dates: dates});
             if (!current(token) || currentId !== group.id) return;
-            const bytes = createReportWorkbook({group, dates, rows: result});
-            const blob = new Blob([bytes], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+            const data = {group, dates, rows: result};
+            let bytes, extension, mime;
+            if (format === 'pdf') {bytes = await createReportPdf(data); extension = 'pdf'; mime = 'application/pdf';}
+            else if (format === 'latex') {bytes = createReportLatex(data); extension = 'tex'; mime = 'application/x-tex;charset=utf-8';}
+            else {bytes = createReportWorkbook(data); extension = 'xlsx'; mime = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';}
+            if (!current(token) || currentId !== group.id) return;
+            const blob = new Blob([bytes], {type: mime});
             clearDownload(); downloadUrl = URL.createObjectURL(blob);
-            downloadLink.href = downloadUrl; downloadLink.download = `${group.name.replace(/[<>:"/\\|?*\u0000-\u001f]/g, '_').slice(0, 60)}_${dates[0]}_${dates.at(-1)}.xlsx`;
+            downloadLink.href = downloadUrl; downloadLink.download = `${group.name.replace(/[<>:"/\\|?*\u0000-\u001f]/g, '_').slice(0, 60)}_${dates[0]}_${dates.at(-1)}.${extension}`;
             downloadLink.hidden = false; downloadLink.click();
-            $('group-export-message').textContent = `${dates.length} sheet-тэй Excel файл бэлэн боллоо. Таталт эхлээгүй бол доорх холбоосыг дарна уу.`;
+            $('group-export-message').textContent = `${dates.length} өдрийн ${format === 'xlsx' ? 'Excel' : format === 'pdf' ? 'A4 PDF' : 'A4 LaTeX'} файл бэлэн боллоо. Таталт эхлээгүй бол доорх холбоосыг дарна уу.`;
         } catch (error) {if (current(token) && currentId === group.id) $('group-export-message').textContent = errorText(error);}
         finally {exporting = false; renderDates();}
     };
@@ -282,11 +327,14 @@ export function setupGroups(ctx) {
     $('group-members-open').onclick = () => {if (detail) {$('group-members-message').textContent = ''; $('group-members-dialog').showModal();}};
     $('group-export-open').onclick = () => {
         clearDownload();
+        for (const input of root.querySelectorAll('[data-export-weekday]')) input.checked = true;
         selectedDates.clear(); const date = $('group-day').value || todayInMongolia(); selectedDates.add(date);
         for (const id of ['group-export-start', 'group-export-end', 'group-export-date']) $(id).value = date;
         $('group-export-message').textContent = ''; renderDates(); $('group-export-dialog').showModal();
     };
-    $('group-export-range-add').onclick = () => dateAction(() => addDates(dateRange($('group-export-start').value, $('group-export-end').value)));
+    $('group-export-range-add').onclick = () => dateAction(() => addDates(dateRange($('group-export-start').value, $('group-export-end').value, 3660)));
+    for (const input of root.querySelectorAll('[data-export-weekday]')) input.onchange = () => {clearDownload(); $('group-export-message').textContent = ''; renderDates();};
+    $('group-export-format').onchange = () => {clearDownload(); $('group-export-message').textContent = ''; renderDates();};
     $('group-export-date-add').onclick = () => dateAction(() => {const date = $('group-export-date').value; if (!validDate(date)) throw new Error('Өдөр сонгоно уу.'); addDates([date]);});
     $('group-export-clear').onclick = () => {if (!exporting) {selectedDates.clear(); clearDownload(); $('group-export-message').textContent = ''; renderDates();}};
     window.addEventListener('hashchange', route);
@@ -296,9 +344,9 @@ export function setupGroups(ctx) {
             $('group-create').hidden = !online(); $('group-login').hidden = online();
             if (id === accountId) return;
             accountId = id; version++; detailToken++; dayToken++; listToken++;
-            closeDialogs(); clearDownload(); detail = null; rows = []; groups = []; currentId = null; editing = null; loadedDay = null; selectedDates.clear();
+            closeDialogs(); clearDownload(); detail = null; rows = []; groups = []; currentId = null; editing = null; teacherEditing = null; loadedDay = null; selectedDates.clear();
             for (const form of root.querySelectorAll('form')) form.reset();
-            for (const id of ['group-title','group-description','group-access-note','group-report-person','group-report-date','group-day-summary','group-privacy']) $(id).textContent = '';
+            for (const id of ['group-title','group-description','group-access-note','group-report-person','group-report-date','group-day-summary','group-privacy','group-teacher-person','group-teacher-date']) $(id).textContent = '';
             $('group-list').replaceChildren(); $('group-members-list').replaceChildren(); $('group-reports').replaceChildren();
             $('group-list-view').hidden = true; $('group-detail-view').hidden = true;
             $('group-message').textContent = online() ? 'Группүүд ачаалж байна…' : 'Групп болон өдрийн тэмдэглэлээ харахын тулд нэвтэрнэ үү.';

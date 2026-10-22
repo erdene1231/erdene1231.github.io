@@ -14,17 +14,21 @@ export function todayInMongolia() {
 export function weekday(date) {
     return validDate(date) ? DAYS[new Date(date + 'T12:00:00Z').getUTCDay()] : '';
 }
+export function filterWeekdays(dates, allowedDays) {
+    const allowed = new Set(allowedDays);
+    return [...new Set(dates)].sort().filter(date => validDate(date) && allowed.has(new Date(date + 'T12:00:00Z').getUTCDay()));
+}
 export function shiftDate(date, delta) {
     if (!validDate(date)) throw new Error('Зөв огноо сонгоно уу.');
     const next = new Date(date + 'T12:00:00Z');
     next.setUTCDate(next.getUTCDate() + delta);
     return next.toISOString().slice(0, 10);
 }
-export function dateRange(start, end) {
+export function dateRange(start, end, limit = 62) {
     if (!validDate(start) || !validDate(end) || start > end) throw new Error('Эхлэх болон дуусах огноогоо шалгана уу.');
     const dates = [];
     for (let current = start; current <= end; current = shiftDate(current, 1)) {
-        if (dates.length === 62) throw new Error('Нэг export-д 62 хүртэл өдөр сонгоно уу.');
+        if (dates.length === limit) throw new Error('Хугацаа хэт урт байна. Богино хугацаа сонгоно уу.');
         dates.push(current);
     }
     return dates;
@@ -46,7 +50,9 @@ function cell(value, address, style = 0) {
     }
     return `<c r="${address}" s="${style}" t="inlineStr"><is><t xml:space="preserve">${xml(value)}</t></is></c>`;
 }
-const HEADERS = ['Username', 'Овог', 'Нэр', 'Бодсон бодлогууд', 'Нийт бодлогын тоо', 'Бодлогын хүндрэл', 'Судалсан сэдвүүд', 'Нэмэлт тэмдэглэл', 'Сургууль', 'Тэмдэглэлийн төлөв', 'Өмнөх овог нэр', 'Шинэчилсэн огноо', 'Гишүүнчлэл'];
+export const REPORT_HEADERS = ['Овог', 'Нэр', 'Бодсон бодлогууд', 'Нийт бодлогын тоо', 'Бодлогын хүндрэл', 'Судалсан сэдвүүд', 'Нэмэлт тэмдэглэл', 'Багшийн тэмдэглэл', 'Өмнөх овог нэр'];
+const HEADERS = REPORT_HEADERS;
+const LAST_COLUMN = col(HEADERS.length - 1);
 function worksheet(group, date, rows) {
     const count = rows.filter(row => row.has_report).length;
     const totals = rows.filter(row => Number.isInteger(row.problem_count));
@@ -59,22 +65,20 @@ function worksheet(group, date, rows) {
         `<row r="3" ht="42" customHeight="1">${HEADERS.map((h, i) => cell(h, col(i) + '3', 2)).join('')}</row>`
     ];
     rows.forEach((row, index) => {
-        const values = [row.username ?? '', row.last_name ?? '', row.first_name ?? '', row.solved_problems ?? '',
-            row.problem_count ?? null, row.difficulty ?? '', row.topics ?? '', row.notes ?? '', row.school ?? '',
-            row.has_report ? 'Бөглөсөн' : 'Бөглөөгүй', (!row.last_name && !row.first_name) ? row.full_name ?? '' : '',
-            row.updated_at ? new Intl.DateTimeFormat('sv-SE', {timeZone: 'Asia/Ulaanbaatar', dateStyle: 'short', timeStyle: 'short'}).format(new Date(row.updated_at)) : '',
-            row.is_member ? 'Одоогийн гишүүн' : 'Өмнөх гишүүн'];
-        const lineCount = Math.max(...[3, 5, 6, 7].map(i => Math.ceil(String(values[i]).length / 45) + String(values[i]).split('\n').length - 1));
+        const values = [row.last_name ?? '', row.first_name ?? '', row.solved_problems ?? '',
+            row.problem_count ?? null, row.difficulty ?? '', row.topics ?? '', row.notes ?? '', row.teacher_note ?? '',
+            (!row.last_name && !row.first_name) ? row.full_name ?? '' : ''];
+        const lineCount = Math.max(...[2, 4, 5, 6, 7].map(i => Math.ceil(String(values[i]).length / 45) + String(values[i]).split('\n').length - 1));
         const height = Math.min(240, Math.max(36, lineCount * 16));
         const number = index + 4;
-        lines.push(`<row r="${number}" ht="${height}" customHeight="1">${values.map((v, i) => cell(v, col(i) + number, i === 4 ? 3 : 0)).join('')}</row>`);
+        lines.push(`<row r="${number}" ht="${height}" customHeight="1">${values.map((v, i) => cell(v, col(i) + number, i === 3 ? 3 : 0)).join('')}</row>`);
     });
-    const widths = [23, 23, 23, 58, 16, 30, 36, 48, 30, 20, 30, 25, 22];
+    const widths = [23, 23, 58, 16, 30, 36, 48, 48, 30];
     return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
-<dimension ref="A1:M${Math.max(3, rows.length + 3)}"/><sheetViews><sheetView workbookViewId="0"><pane ySplit="3" topLeftCell="A4" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>
+<dimension ref="A1:${LAST_COLUMN}${Math.max(3, rows.length + 3)}"/><sheetViews><sheetView workbookViewId="0"><pane ySplit="3" topLeftCell="A4" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>
 <sheetFormatPr defaultRowHeight="18"/><cols>${widths.map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`).join('')}</cols>
-<sheetData>${lines.join('')}</sheetData><autoFilter ref="A3:M${Math.max(3, rows.length + 3)}"/><mergeCells count="2"><mergeCell ref="A1:M1"/><mergeCell ref="A2:M2"/></mergeCells>
+<sheetData>${lines.join('')}</sheetData><autoFilter ref="A3:${LAST_COLUMN}${Math.max(3, rows.length + 3)}"/><mergeCells count="2"><mergeCell ref="A1:${LAST_COLUMN}1"/><mergeCell ref="A2:${LAST_COLUMN}2"/></mergeCells>
 <pageMargins left="0.25" right="0.25" top="0.4" bottom="0.4" header="0.2" footer="0.2"/><pageSetup orientation="landscape" paperSize="9" fitToWidth="1" fitToHeight="0"/>
 </worksheet>`;
 }
