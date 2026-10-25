@@ -4,7 +4,7 @@ export function setupSocial(ctx) {
  let tab='leaderboard',page=0,friendPage=0,followPage=0,leaderToken=0,friendToken=0,followToken=0,profileToken=0,viewedId=null,relation='guest',accountId=null,searchTimer;
  let recoveryEmail='',verifiedId=null,sentAt=0,recoveryBusy=false;
  function avatar(profile){const n=node('span','avatar',((profile.full_name||profile.username||'?').trim()[0]||'?').toUpperCase()),url=avatarUrl(ctx.client(),profile);if(url){const img=node('img');img.src=url;img.alt='';img.loading='lazy';img.onerror=()=>img.remove();n.append(img);}return n;}
- function person(profile,rank){const b=node('button','person');b.type='button';b.append(avatar(profile));const info=node('span','person-info');info.append(node('strong','',profile.full_name||profile.username||'Нэрээ тохируулаагүй'),node('small','',profile.username?'@'+profile.username:'Username тохируулаагүй'),node('small','',profile.school||'Сургууль оруулаагүй'));b.append(info);if(rank)b.append(node('span','community-rank','#'+rank));b.append(node('span','person-score',profile.solved_count+' бодсон'));b.onclick=()=>void openProfile(profile.user_id);return b;}
+ function person(profile,rank){const b=node('button','person');b.type='button';b.append(avatar(profile));const info=node('span','person-info');info.append(node('strong','',profile.full_name||profile.username||'Нэрээ тохируулаагүй'),node('small','',profile.username?'@'+profile.username:'Username тохируулаагүй'),node('small','',profile.school||'Сургууль оруулаагүй'));b.append(info);if(rank)b.append(node('span','community-rank','#'+rank));b.append(node('span','person-score',profile.solved_count+' бодсон'));b.onclick=()=>ctx.viewProfile?ctx.viewProfile(profile.user_id):void openProfile(profile.user_id);return b;}
  function online(){if(ctx.client())return true;$('community-message').textContent='Онлайн account холболт шаардлагатай.';return false;}
  async function loadLeaderboard(){
   if(tab!=='leaderboard'||!online())return;const token=++leaderToken;$('community-message').textContent='Хэрэглэгчдийг ачаалж байна…';$('leaderboard-list').replaceChildren();$('leader-next').disabled=true;$('leader-prev').disabled=true;
@@ -56,7 +56,7 @@ export function setupSocial(ctx) {
    $('public-profile-message').textContent='Онлайнаар хадгалсан progress. “Бодсон” төлөвийг хэрэглэгч өөрөө тэмдэглэдэг.';
   }catch(e){if(token===profileToken&&uid===ctx.user()?.id)$('public-profile-message').textContent=accountError(e);}
  }
- async function byUsername(name){if(!online())return;const token=++profileToken;try{const id=await rpc(ctx.client(),'get_profile_id',{p_username:name});if(token!==profileToken)return;if(id)await openProfile(id);else ctx.notice('Profile олдсонгүй.');}catch(e){ctx.notice(accountError(e));}}
+ async function byUsername(name){if(!online())return;const token=++profileToken;try{const id=await rpc(ctx.client(),'get_profile_id',{p_username:name});if(token!==profileToken)return;if(id){$('auth').close();if(ctx.viewProfile)ctx.viewProfile(id);else await openProfile(id);}else ctx.notice('Profile олдсонгүй.');}catch(e){ctx.notice(accountError(e));}}
  function chooseTab(next){leaderToken++;friendToken++;followToken++;tab=next;$('leaderboard-panel').hidden=tab!=='leaderboard';$('friends-panel').hidden=tab!=='friends';$('following-panel').hidden=tab!=='following';$('leaderboard-tab').setAttribute('aria-selected',String(tab==='leaderboard'));$('friends-tab').setAttribute('aria-selected',String(tab==='friends'));$('following-tab').setAttribute('aria-selected',String(tab==='following'));if(tab==='leaderboard')void loadLeaderboard();else if(tab==='friends')void loadFriends();else void loadFollowing();}
  const communityRoute=()=>{const h=location.hash;if(['#community','#friends','#following'].includes(h))chooseTab(h==='#friends'?'friends':h==='#following'?'following':'leaderboard');};
  window.addEventListener('hashchange',communityRoute);communityRoute();
@@ -65,7 +65,7 @@ export function setupSocial(ctx) {
  $('leader-prev').onclick=()=>{if(page>0){page--;void loadLeaderboard();}};$('leader-next').onclick=()=>{page++;void loadLeaderboard();};
  $('friend-kind').onchange=()=>{friendPage=0;void loadFriends();};$('friend-prev').onclick=()=>{if(friendPage>0){friendPage--;void loadFriends();}};$('friend-next').onclick=()=>{friendPage++;void loadFriends();};
  $('follow-prev').onclick=()=>{if(followPage>0){followPage--;void loadFollowing();}};$('follow-next').onclick=()=>{followPage++;void loadFollowing();};
- $('my-profile').onclick=()=>{if(ctx.user())void openProfile(ctx.user().id);};$('refresh-public-profile').onclick=()=>{if(viewedId)void openProfile(viewedId);};$('public-profile').addEventListener('close',()=>{profileToken++;});
+ $('my-profile').onclick=()=>{if(ctx.user()){$('auth').close();if(ctx.viewProfile)ctx.viewProfile(ctx.user().id);else void openProfile(ctx.user().id);}};$('refresh-public-profile').onclick=()=>{if(viewedId)void openProfile(viewedId);};$('public-profile').addEventListener('close',()=>{profileToken++;});
  // Password reset uses Supabase's recovery OTP, never a login/signup OTP.
  function recoveryStage(stage){for(const id of ['recovery-email-form','recovery-code-form','recovery-password-form'])$(id).hidden=id!==stage;}
  function resetRecovery(){verifiedId=null;recoveryEmail='';$('recovery-code').value='';$('recovery-password').value='';$('recovery-confirm').value='';recoveryStage('recovery-email-form');}
@@ -90,6 +90,6 @@ export function setupSocial(ctx) {
   connected(){if(tab==='leaderboard')void loadLeaderboard();else if(tab==='friends')void loadFriends();else void loadFollowing();},
   accountChanged(){const id=ctx.user()?.id||null;$('my-profile').hidden=!id;$('forgot-password').hidden=!ctx.client();if(id===accountId)return;accountId=id;friendToken++;followToken++;profileToken++;$('friends-list').replaceChildren();$('following-list').replaceChildren();if($('public-profile').open)void openProfile(viewedId);if(tab==='friends')void loadFriends();else if(tab==='following')void loadFollowing();},
   authEvent(event,session){if(event==='PASSWORD_RECOVERY'&&session?.user){verifiedId=session.user.id;recoveryStage('recovery-password-form');$('recovery-message').textContent='Email баталгаажлаа. Шинэ нууц үгээ оруулна уу.';$('auth').close();if(!$('recovery').open)$('recovery').showModal();}},
-  byUsername,
+  byUsername,openProfile,
  };
 }

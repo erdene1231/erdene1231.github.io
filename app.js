@@ -1,19 +1,20 @@
-import {setupTutorials} from './tutorials.js?v=16';
+import {setupLearning} from './learning.js?v=23';
+import {setupTutorials} from './tutorials.js?v=23';
 import {setupGroups} from './groups.js?v=20';
-let tutorialUI;
+let tutorialUI, learningUI=null;
 import {EMPTY, cleanEntry, parseBackup} from './progress.js';
 import {getSolvers} from './community.js?v=6';
-import {setupAdmin} from './admin.js?v=16';
-import {parseCatalog,hintTexts,getSources} from './problem-store.js?v=16';
+import {setupAdmin} from './admin.js?v=23';
+import {parseCatalog,hintTexts,getSources} from './problem-store.js?v=23';
 import {rpc} from './accounts.js?v=17';
 import {ownProfile,saveOwnProfile,avatarUrl,accountError} from './accounts.js?v=17';
-import {setupSocial} from './social.js?v=16';
-import {filterProblems, getTags, ratingLabel} from './catalog.js?v=16';
+import {setupSocial} from './social.js?v=23';
+import {filterProblems, getTags, ratingLabel,difficultyLabel} from './catalog.js?v=23';
 const $ = id => document.getElementById(id);
 const STATUS = {new:'Эхлээгүй',trying:'Оролдож байгаа',solved:'Бодсон'};
 let data, selectedPack='', selectedProblem, state={}, dirty={}, user=null, client=null, loading=false, syncing=false, syncAgain=false, epoch=0;
 let username=null, profileLoading=false, profileSaving=false, solverRequest=0, solverNames=[], solverTotal=0;
-let detailTagsShown=false,problemPage=0,lastFilterKey='';
+let detailTagsShown=false,problemPage=0,lastFilterKey='',activityPending={};
 const PROBLEMS_PER_PAGE=100;
 const hiddenHints=new Set();
 let social=null, adminUI=null, groupUI=null, myProfile=null, avatarPreviewUrl=null, catalogLoading=false;
@@ -24,15 +25,15 @@ const key=()=> 'think-cp:v1:'+(user?.id || 'guest');
 function notice(message) { $('notice').textContent=message; }
 const validProgressId=id=>typeof id==='string'&&/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,99}$/.test(id)&&!['constructor','prototype'].includes(id);
 function readLocal() {
-  try { const saved=JSON.parse(localStorage.getItem(key()) || '{}'); state={}; dirty={}; for(const [id,entry] of Object.entries(saved.progress || {})) if(validProgressId(id)) state[id]=cleanEntry(entry); for(const id of saved.dirty || []) if(state[id]) dirty[id]=state[id]; }
-  catch {state={};dirty={};notice('Өмнөх хадгалалтыг уншиж чадсангүй. Progress татах боломжийг ашиглаарай.');}
+  try { const saved=JSON.parse(localStorage.getItem(key()) || '{}'); state={}; dirty={}; activityPending={}; for(const [id,entry] of Object.entries(saved.progress || {})) if(validProgressId(id)) state[id]=cleanEntry(entry); for(const id of saved.dirty || []) if(state[id]) dirty[id]=state[id];for(const id of Array.isArray(saved.activityPending)?saved.activityPending:[])if(validProgressId(id)&&dirty[id])activityPending[id]={}; }
+  catch {state={};dirty={};activityPending={};notice('Өмнөх хадгалалтыг уншиж чадсангүй. Progress татах боломжийг ашиглаарай.');}
 }
 function persist() {
-  try {localStorage.setItem(key(),JSON.stringify({progress:state,dirty:Object.keys(dirty)}));return true;}
+  try {localStorage.setItem(key(),JSON.stringify({progress:state,dirty:Object.keys(dirty),activityPending:Object.keys(activityPending)}));return true;}
   catch {notice('Browser хадгалалт боломжгүй байна. Хуудсаа хаахаас өмнө progress-оо татаж аваарай.');return false;}
 }
 function entry(id) {return state[id] || {...EMPTY};}
-function setEntry(id, patch) {if(loading)return; state[id]=cleanEntry({...entry(id),...patch});dirty[id]=state[id];const saved=persist();render();if(user)void sync();else if(saved)notice('Progress энэ browser-т хадгалагдлаа.');}
+function setEntry(id, patch) {if(loading)return; const before=entry(id).status;state[id]=cleanEntry({...entry(id),...patch});learningUI?.progressChanged(id,before,state[id].status);if(before!==state[id].status){if(['trying','solved'].includes(state[id].status))activityPending[id]={};else delete activityPending[id];}dirty[id]=state[id];const saved=persist();render();if(user)void sync();else if(saved)notice('Progress энэ browser-т хадгалагдлаа.');}
 function el(tag, cls, text) {const node=document.createElement(tag); if(cls)node.className=cls;if(text!==undefined)node.textContent=text;return node;}
 function renderHome() {
   const active=data.problems.filter(problem=>entry(problem.id).status==='trying');
@@ -56,7 +57,7 @@ function render() {
   const trying=data.problems.filter(p=>entry(p.id).status==='trying').length;
   const percent=(data.problems.length?Math.round(solved/data.problems.length*100):0);
   $('total').textContent=data.problems.length;$('solved').textContent=solved;$('trying').textContent=trying;$('percent').textContent=percent+'%';$('progress').value=percent;
-  renderHome();
+  renderHome();learningUI?.render();
   const filters={query:$('search').value,source:$('source').value,status:$('status-filter').value,pack:selectedPack,tag:$('tag-filter').value,ratingBand:$('rating-filter').value,minRating:$('min-rating').value,maxRating:$('max-rating').value,priorityOnly:$('priority-only').checked,sort:$('sort').value};
   const filterKey=JSON.stringify(filters);if(filterKey!==lastFilterKey){problemPage=0;lastFilterKey=filterKey;}
   $('packs').replaceChildren();
@@ -64,7 +65,7 @@ function render() {
     const b=el('button',pack.id===selectedPack?'active':'',pack.title);b.setAttribute('aria-pressed',String(pack.id===selectedPack));b.onclick=()=>{selectedPack=pack.id;render();};$('packs').append(b);
   }
   $('pack-note').textContent=data.packs.find(p=>p.id===selectedPack)?.description || '★ Priority бодлогууд нь observation болон creative reasoning-д онцгой анхаарсан сонголт. Rating бол чиг баримжаа; өөрийн түвшинд тохируулж сонго.';
-  $('problems').replaceChildren();
+  $('problems').classList.toggle('compact',$('problem-density').value==='compact');$('problems').replaceChildren();
   const invalidRange=!$('min-rating').checkValidity()||!$('max-rating').checkValidity()||($('min-rating').value!==''&&$('max-rating').value!==''&&Number($('min-rating').value)>Number($('max-rating').value));
   const filtered=invalidRange?[]:filterProblems(data.problems,state,filters);
   $('results-count').textContent=filtered.length+' / '+data.problems.length+' бодлого';
@@ -77,20 +78,20 @@ function render() {
     const row=el('article','problem'+(p.priority?' is-priority':'')), n=el('span','number','#'+String(p.number).padStart(3,'0')), b=el('button','open');b.disabled=loading||catalogLoading;
     const heading=el('h3','',p.title);
     if(p.priority){const star=el('span','priority-star','★');star.title='Priority бодлого';star.setAttribute('aria-label','Priority');heading.prepend(star);}
-    const meta=el('div','problem-meta');const rating=el('span','rating rating-'+Math.floor(p.rating/100),ratingLabel(p));rating.title=p.ratingKind==='official'?'Codeforces-ийн албан rating':'CF difficulty-ийн баримжаа; албан rating биш';
-    meta.append(rating,el('small','',p.source+' · '+p.ref+(p.level==='Interactive'?' · Interactive':'')));
+    const meta=el('div','problem-meta');const rating=el('span','rating rating-'+Math.floor(p.rating/100),ratingLabel(p));rating.title=p.ratingKind==='official'?'Codeforces-ийн албан rating':(p.ratingBasis||'Зохиогчийн CF difficulty-ийн estimate; official биш');
+    meta.append(rating,el('small','',p.source+' · '+p.ref+' · '+difficultyLabel(p)+(p.level==='Interactive'?' · Interactive':'')));
     b.append(heading,meta);b.onclick=()=>openProblem(p);
     if($('show-tags').checked||entry(p.id).status==='solved'){const tags=el('div','tag-chips');for(const tag of p.tags)tags.append(el('span','tag-chip',tag));b.append(tags);}
     const badge=el('span','badge '+entry(p.id).status,STATUS[entry(p.id).status]);
     const arrow=el('button','arrow','↗');arrow.setAttribute('aria-label',p.title+' нээх');arrow.disabled=loading||catalogLoading;arrow.onclick=()=>openProblem(p);
     if(entry(p.id).hints&&p.hints?.length) b.append(el('span','hint-used','Hint '+Math.min(entry(p.id).hints,p.hints.length)+'/'+p.hints.length));
-    row.append(n,b,badge,arrow);$('problems').append(row);
+    row.append(n,b,badge,arrow);const learningLinks=el('div','problem-learning-links');for(const t of learningUI?.linksForProblem(p)||[]){const a=el('a','',(t.primary?'Үндсэн · ':'')+t.title);a.href='#tutorial/'+t.id;learningLinks.append(a);}const days=learningUI?.planDaysFor(p)||[];if(days.length){const a=el('a','','Өдөр '+days.slice(0,3).join(', ')+(days.length>3?'…':''));a.href='#plan/'+days[0];learningLinks.append(a);}if(learningLinks.children.length)row.append(learningLinks);$('problems').append(row);
   }
   if(!filtered.length)$('problems').append(el('p','muted','Тохирох бодлого олдсонгүй. Шүүлтүүрээ өөрчлөөрэй.'));
 }
-function openProblem(p) {selectedProblem=p;detailTagsShown=false;$('detail-title').textContent=(p.priority?'★ ':'')+p.title;$('detail-source').textContent='#'+p.number+' · '+p.source+' · '+p.ref;$('detail-note').textContent=ratingLabel(p)+(p.ratingKind==='official'?' · CF албан rating':' · CF difficulty-ийн баримжаа')+(p.level==='Interactive'?' · Interactive':'')+(p.source==='EGOI'?' · Full task; subtask-аас эхэл':'')+(p.priority?' · Priority':'');$('problem-link').href=p.url;$('notes').value=entry(p.id).notes;$('detail-feedback').textContent='';renderDetail();$('detail').showModal();void loadSolvers();}
+function openProblem(p) {selectedProblem=p;detailTagsShown=false;$('detail-title').textContent=(p.priority?'★ ':'')+p.title;$('detail-source').textContent='#'+p.number+' · '+p.source+' · '+p.ref;$('detail-note').textContent=ratingLabel(p)+(p.ratingKind==='official'?' · CF албан rating':' · CF difficulty-ийн баримжаа'+(p.ratingConfidence==='rough'?' · Урьдчилсан үнэлгээ':''))+(p.level==='Interactive'?' · Interactive':'')+(p.source==='EGOI'?' · Full task; subtask-аас эхэл':'')+(p.priority?' · Priority':'');$('problem-link').href=p.url;$('notes').value=entry(p.id).notes;$('detail-feedback').textContent='';renderDetail();$('detail').showModal();void loadSolvers();}
 function renderDetail() {
-  if(!selectedProblem)return;const p=selectedProblem,e=entry(p.id),hintCount=p.hints?.length||0;$('hint-language').closest('label').hidden=!hintCount;$('problem-status').value=e.status;$('hint-list').replaceChildren();
+  if(!selectedProblem)return;const learningLinks=$('detail-learning-links');learningLinks.replaceChildren();for(const t of learningUI?.linksForProblem(selectedProblem)||[]){const a=el('a','',(t.primary?'Үндсэн · ':'')+t.title);a.href='#tutorial/'+t.id;a.onclick=()=>$('detail').close();learningLinks.append(a);}learningUI?.renderProblemLinks(selectedProblem,learningLinks);const p=selectedProblem,e=entry(p.id),hintCount=p.hints?.length||0;$('hint-language').closest('label').hidden=!hintCount;$('problem-status').value=e.status;$('hint-list').replaceChildren();
   hintTexts(p,hintLanguage).slice(0,e.hints).forEach((hint,i)=>{const h=el('div','hint');h.append(el('b','','HINT '+(i+1)),el('span','',hint));$('hint-list').append(h);});
   const hintsVisible=!hiddenHints.has(p.id);
   $('hint-list').hidden=!hintsVisible;
@@ -119,12 +120,13 @@ async function switchUser(next) {
 async function sync() {
   if(!user || !client || loading)return;
   if(syncing){syncAgain=true;return;}if(!Object.keys(dirty).length)return;
-  syncing=true;const turn=epoch,uid=user.id, batch={...dirty};notice('Онлайнаар хадгалж байна…');
+  syncing=true;const turn=epoch,uid=user.id, batch={...dirty},activityBatch={...activityPending};notice('Онлайнаар хадгалж байна…');
   try {
-    const {error}=await client.from('progress').upsert(Object.entries(batch).map(([problem_id,e])=>({user_id:uid,problem_id,...e})),{onConflict:'user_id,problem_id'});
-    if(error)throw error;if(turn!==epoch)return;
-    for(const id of Object.keys(batch))if(dirty[id]===batch[id])delete dirty[id];persist();notice(Object.keys(dirty).length?'Өөрчлөлтийг хадгалж байна…':'Онлайн progress хадгалагдлаа.');
-    if($('detail').open && batch[selectedProblem?.id])void loadSolvers();
+    let result=await client.from('progress').upsert(Object.entries(batch).map(([problem_id,e])=>({user_id:uid,problem_id,...e,record_activity:Boolean(activityBatch[problem_id])})),{onConflict:'user_id,problem_id'});
+    if(result.error&&String(result.error.message).includes('record_activity')&&['PGRST204','42703'].includes(result.error.code))result=await client.from('progress').upsert(Object.entries(batch).map(([problem_id,e])=>({user_id:uid,problem_id,...e})),{onConflict:'user_id,problem_id'});
+    if(result.error)throw result.error;if(turn!==epoch)return;
+    for(const id of Object.keys(batch)){if(dirty[id]===batch[id])delete dirty[id];if(activityPending[id]===activityBatch[id])delete activityPending[id];}persist();notice(Object.keys(dirty).length?'Өөрчлөлтийг хадгалж байна…':'Онлайн progress хадгалагдлаа.');
+    if($('detail').open && batch[selectedProblem?.id])void loadSolvers();learningUI?.profileUpdated();
   } catch(error) {if(turn===epoch)notice('Онлайн хадгалалт амжилтгүй. Browser-т хадгалсан; дахин оролдох боломжтой. '+error.message);}
   finally {syncing=false;updateAccount();if(syncAgain){syncAgain=false;void sync();}}
 }
@@ -132,7 +134,7 @@ function renderOwnAvatar() {
   const url=avatarPreviewUrl||avatarUrl(client,myProfile);$('own-avatar').hidden=!url;if(url)$('own-avatar').src=url;else $('own-avatar').removeAttribute('src');$('own-avatar-fallback').hidden=!!url;$('own-avatar-fallback').textContent=((myProfile?.full_name||myProfile?.username||'?')[0]||'?').toUpperCase();
 }
 function updateAccount() {
-  social?.accountChanged();adminUI?.accountChanged();tutorialUI?.accountChanged();groupUI?.accountChanged();
+  social?.accountChanged();adminUI?.accountChanged();tutorialUI?.accountChanged();groupUI?.accountChanged();learningUI?.accountChanged();
   for(const id of ['full-name','first-name','last-name','school','avatar-file','remove-avatar'])$(id).disabled=profileLoading||profileSaving||!myProfile;
   $('reload-profile').hidden=!user||!!myProfile;$('reload-profile').disabled=profileLoading;
   $('account').textContent=user?(username?'@'+username:'Миний account'):'Нэвтрэх';$('storage-label').textContent=user?'Account-д хадгална':'Энэ төхөөрөмжид хадгална';
@@ -151,7 +153,7 @@ async function loadProfile() {
 async function saveProfile(event) {
   event.preventDefault();if(!user||!client||!myProfile||profileLoading||profileSaving||!$('profile-form').reportValidity())return;
   const turn=epoch, uid=user.id;profileSaving=true;updateAccount();$('profile-feedback').textContent='Profile хадгалж байна…';
-  try {const saved=await saveOwnProfile(client,uid,{username:$('username').value,full_name:(myProfile.first_name||myProfile.last_name)?'':$('full-name').value,first_name:$('first-name').value,last_name:$('last-name').value,school:$('school').value,avatar_path:$('remove-avatar').checked?null:myProfile?.avatar_path},$('remove-avatar').checked?null:$('avatar-file').files?.[0],myProfile?.avatar_path);if(turn!==epoch)return;myProfile=saved;username=saved.username;$('username').value=username;$('full-name').value=saved.full_name;$('legacy-name-note').textContent='';$('avatar-file').value='';$('remove-avatar').checked=false;if(avatarPreviewUrl){URL.revokeObjectURL(avatarPreviewUrl);avatarPreviewUrl=null;}renderOwnAvatar();$('profile-feedback').textContent='Profile хадгалагдлаа.';social?.connected();groupUI?.connected();}
+  try {const saved=await saveOwnProfile(client,uid,{username:$('username').value,full_name:(myProfile.first_name||myProfile.last_name)?'':$('full-name').value,first_name:$('first-name').value,last_name:$('last-name').value,school:$('school').value,avatar_path:$('remove-avatar').checked?null:myProfile?.avatar_path},$('remove-avatar').checked?null:$('avatar-file').files?.[0],myProfile?.avatar_path);if(turn!==epoch)return;myProfile=saved;username=saved.username;$('username').value=username;$('full-name').value=saved.full_name;$('legacy-name-note').textContent='';$('avatar-file').value='';$('remove-avatar').checked=false;if(avatarPreviewUrl){URL.revokeObjectURL(avatarPreviewUrl);avatarPreviewUrl=null;}renderOwnAvatar();$('profile-feedback').textContent='Profile хадгалагдлаа.';social?.connected();groupUI?.connected();learningUI?.profileUpdated();}
   catch(error){if(turn===epoch)$('profile-feedback').textContent=accountError(error);}
   finally {if(turn===epoch){profileSaving=false;updateAccount();}}
 }
@@ -207,10 +209,12 @@ async function init() {
   render();
   document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
   $('account').onclick=()=>{updateAccount();$('auth').showModal();};
-  tutorialUI=setupTutorials({client:()=>client,user:()=>user});
+  tutorialUI=setupTutorials({client:()=>client,user:()=>user,learning:()=>learningUI});
   groupUI=setupGroups({client:()=>client,user:()=>user,openAccount:()=>{$('account').onclick();}});
-  social=setupSocial({client:()=>client,user:()=>user,problems:()=>data.problems,openProblem,openAccount:()=>{$('account').onclick();},notice});
+  social=setupSocial({client:()=>client,user:()=>user,problems:()=>data.problems,openProblem,viewProfile:id=>{if(learningUI)location.hash='#profile/'+id;else void social?.openProfile(id);},openAccount:()=>{$('account').onclick();},notice});
   adminUI=setupAdmin({client:()=>client,user:()=>user,refreshCatalog,sources:()=>getSources(data.problems,data.sources||[])});
+  try{learningUI=await setupLearning({client:()=>client,user:()=>user,profile:()=>myProfile,problems:()=>data.problems,progress:()=>state,openProblem,refreshCatalog,redraw:render,refreshDetail:renderDetail,refreshTutorialLibrary:()=>tutorialUI?.refreshStatus(),openAccount:()=>{$('account').onclick();},socialProfile:id=>social.openProfile(id)});tutorialUI.refreshLearning();render();}catch{for(const id of ['learning-profile-body','study-plan-body','learning-admin-body'])$(id).textContent='Сургалтын хэсэг түр ачаалсангүй. Хуудсаа дахин ачаална уу.';}
+  try{const density=localStorage.getItem('erdene:problem-density');$('problem-density').value=density==='compact'?'compact':'comfortable';}catch{}$('problem-density').onchange=()=>{try{localStorage.setItem('erdene:problem-density',$('problem-density').value);}catch{}render();};render();
   $('avatar-file').onchange=()=>{if(avatarPreviewUrl)URL.revokeObjectURL(avatarPreviewUrl);avatarPreviewUrl=null;const file=$('avatar-file').files?.[0];if(file){avatarPreviewUrl=URL.createObjectURL(file);$('remove-avatar').checked=false;}renderOwnAvatar();};
   $('remove-avatar').onchange=()=>{if($('remove-avatar').checked){$('avatar-file').value='';if(avatarPreviewUrl)URL.revokeObjectURL(avatarPreviewUrl);avatarPreviewUrl=null;$('own-avatar').hidden=true;$('own-avatar-fallback').hidden=false;}else renderOwnAvatar();};
   $('profile-form').onsubmit=event=>void saveProfile(event);
@@ -224,7 +228,7 @@ async function init() {
   $('export').onclick=()=>{const blob=new Blob([JSON.stringify({version:1,progress:state},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=el('a');a.href=url;a.download='erdene-club-progress.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
   $('import').onchange=async event=>{
     const file=event.target.files[0],turn=epoch;if(!file)return;
-    try {if(loading)throw new Error('Account ачаалагдаж байна. Түр хүлээгээд дахин сонгоно уу.');if(file.size>2_000_000)throw new Error('Файл хэт том байна.');const imported=parseBackup(JSON.parse(await file.text()),catalogIds);if(turn!==epoch)throw new Error('Account солигдлоо. Файлаа дахин сонгоно уу.');if(!confirm('Файлд байгаа бодлогуудын progress-ийг сэргээх үү? Одоогийн ижил бодлогын төлөв солигдоно.'))return;for(const [id,e] of Object.entries(imported)){state[id]=e;dirty[id]=e;}const saved=persist();render();if(saved)notice('Progress сэргээгдлээ.');void sync();}
+    try {if(loading)throw new Error('Account ачаалагдаж байна. Түр хүлээгээд дахин сонгоно уу.');if(file.size>2_000_000)throw new Error('Файл хэт том байна.');const imported=parseBackup(JSON.parse(await file.text()),catalogIds);if(turn!==epoch)throw new Error('Account солигдлоо. Файлаа дахин сонгоно уу.');if(!confirm('Файлд байгаа бодлогуудын progress-ийг сэргээх үү? Одоогийн ижил бодлогын төлөв солигдоно.'))return;for(const [id,e] of Object.entries(imported)){state[id]=e;dirty[id]=e;delete activityPending[id];}const saved=persist();render();if(saved)notice('Progress сэргээгдлээ.');void sync();}
     catch(error){notice(error.message);}finally{event.target.value='';}
   };
   $('auth-form').onsubmit=event=>{event.preventDefault();void authAction(false);};$('signup').onclick=()=>void authAction(true);

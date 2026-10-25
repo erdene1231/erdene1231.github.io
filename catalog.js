@@ -1,5 +1,11 @@
 export function ratingLabel(problem) {
-  return (problem.ratingKind==='estimated'?'≈ ':'')+problem.rating;
+  return problem.ratingKind==='unrated'||!Number.isFinite(problem.rating)?'Unrated':(problem.ratingKind==='estimated'?'≈ ':'')+problem.rating;
+}
+export function difficultyLabel(problem,lang='mn') {
+  if(!Number.isFinite(problem.rating))return lang==='en'?'Unrated':'Түвшин тогтоогоогүй';
+  const key=problem.difficultyCategory|| (problem.rating<=1100?'foundation':problem.rating<=1500?'standard':problem.rating<=1800?'observation':problem.rating<=2200?'challenge':'olympiad');
+  const names={foundation:['Суурь','Foundation'],standard:['Стандарт','Standard'],observation:['Дунд шат','Intermediate'],challenge:['Ахисан шат','Advanced'],olympiad:['Олимпиадын түвшин','Olympiad']};
+  return (names[key]||[key,key])[lang==='en'?1:0];
 }
 export function getTags(problems) {
   return [...new Set(problems.flatMap(p=>p.tags))].sort((a,b)=>a.localeCompare(b));
@@ -16,8 +22,8 @@ export function filterProblems(problems, progress, filters) {
       &&(!filters.source||p.source.toLowerCase()===filters.source.toLowerCase())
       &&(!filters.tag||p.tags.includes(filters.tag))
       &&(!filters.priorityOnly||p.priority)
-      &&(!band||(p.rating>=band[0]&&p.rating<=band[1]))
-      &&(min===null||p.rating>=min)&&(max===null||p.rating<=max)
+      &&(!band||(Number.isFinite(p.rating)&&p.rating>=band[0]&&p.rating<=band[1]))
+      &&(min===null||(Number.isFinite(p.rating)&&p.rating>=min))&&(max===null||(Number.isFinite(p.rating)&&p.rating<=max))
       &&(!filters.status||(filters.status==='hinted'?e.hints>0:e.status===filters.status))
       &&words.every(word=>haystack.includes(word));
   });
@@ -25,6 +31,6 @@ export function filterProblems(problems, progress, filters) {
     if(filters.sort==='number-asc')return a.number-b.number;
     if(filters.sort==='title')return a.title.localeCompare(b.title)||a.id.localeCompare(b.id);
     if(filters.sort==='priority'&&a.priority!==b.priority)return Number(b.priority)-Number(a.priority);
-    return (filters.sort==='rating-desc'?b.rating-a.rating:a.rating-b.rating)||a.title.localeCompare(b.title)||a.id.localeCompare(b.id);
+    return (filters.sort==='rating-desc'?(b.rating??-1)-(a.rating??-1):(a.rating??Infinity)-(b.rating??Infinity))||a.title.localeCompare(b.title)||a.id.localeCompare(b.id);
   });
 }

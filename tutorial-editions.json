@@ -1,0 +1,2642 @@
+{
+  "version": 1,
+  "editions": {
+    "binary-search": {
+      "baseHashes": [
+        "636aaa2d2f10ec0d8becd697ebaf584424e206fb62c4e44ff0b1febce409020c"
+      ],
+      "body": {
+        "id": "binary-search",
+        "level": "Анхан шат",
+        "order": 10,
+        "title": "Binary search — sorted array дотор хайх",
+        "aliases": "binary-search Binary search — sorted array дотор хайх Binary search — searching a sorted array хоёртын хайлт binary search lower bound upper bound answer monotonic",
+        "related": [
+          "sorting",
+          "two-pointers"
+        ],
+        "summary": "Хайлтын хүрээг хоёр хувааж, хэрэггүй хагасыг аюулгүй хаях аргыг суръя.",
+        "category": "Array ба search",
+        "levelKey": "beginner",
+        "sections": [
+          {
+            "title": "1. Эхлээд жижиг бодлого бодъё",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Нэг сая элементтэй sorted array дотроос $x$-ээс бага биш эхний элементийг олон удаа хайх хэрэгтэй боллоо. Query бүрд эхнээс нь алхвал нэг query $10^6$, $10^5$ query нийлээд $10^{11}$ орчим харьцуулалт хийнэ. Бидэнд хэрэгтэй зүйл бол хурдан loop бичихээс өмнө огт шалгах шаардлагагүй хэсгийг олох явдал."
+              },
+              {
+                "type": "p",
+                "text": "Sorted гэдэг нь зөвхөн харагдах дараалал биш, хайхад ашиглах баталгаа юм. Голын утга $x$-ээс бага байвал түүнээс зүүн талын бүх утга ч бага. Нэг харьцуулалтаар зөвхөн нэг элементийг бус, бүхэл хэсгийг хасаж болно. Энэ хичээлээр яг байгаа эсэхээс арай ерөнхий, эхний $a_i\\ge x$ заагийг олно."
+              },
+              {
+                "text": "$a=[2,4,4,7,9]$ дотор $x=4$-өөс бага биш хамгийн эхний утгын index-ийг олъё. Хариу $1$. Ижил утгууд байвал хамгийн эхнийхийг олох шаардлагатай.",
+                "type": "p",
+                "detailKey": "base-0-0"
+              }
+            ]
+          },
+          {
+            "title": "2. Энгийн аргаас шинэ санаа руу",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Эхлээд linear scan зөв шийдэл мөн гэдгийг тогтоо: $a_i\\ge x$ болсон эхний index дээр зогсоно, байхгүй бол $n$ буцаана. Ингээд predicate-ээ $P(i)=[a_i\\ge x]$ гэж бичье. Sorted array дээр энэ нь false-уудын дараа true-ууд залгасан хэлбэртэй; false руу буцаж шилжихгүй."
+              },
+              {
+                "type": "p",
+                "text": "Мужийн эхний index-ийг $l$, баруун заагийг $r$ гэж авна. $a[l..r)$ доторх элементүүдийг шалгах үлдсэн бөгөөд хариу зааг $r$ дээр ч байж болно. Голын $mid$ дээр true байвал $mid$-ийг хариунаас хасаж болохгүй: $r=mid$. False байвал $mid$ болон өмнөх бүгдийг хасаж $l=mid+1$ болгоно."
+              },
+              {
+                "type": "p",
+                "text": "$l=0$, $r=n$ гэж эхэлбэл хоосон array ч тусгай if шаарддаггүй. $mid=l+(r-l)/2$ тул $l<r$ үед $l\\le mid<r\\le n$: код $a_n$ рүү хэзээ ч хандахгүй. Буцаасан index $n$ байвал тохирох элемент байхгүй гэсэн sentinel; түүнийг array руу шууд index болгож болохгүй."
+              },
+              {
+                "text": "Зүүнээс scan хийж олж болно. Харин sorted учраас дундах утга $x$-ээс бага байвал түүний зүүн талд хариу байхгүй. Нэг comparison-оор олон элементийг хасаж чадна.",
+                "type": "p",
+                "detailKey": "base-1-0"
+              },
+              {
+                "text": "Энэ ганц хичээл half-open зааг хэрэглэнэ: эхлээд $l=0,r=n$. $a[\\mathrm{mid}]<x$ бол $l=\\mathrm{mid}+1$. Үгүй бол mid хариу байж болох тул $r=\\mathrm{mid}$. Зааг тэнцэхэд хайлт дуусна.",
+                "type": "p",
+                "detailKey": "base-1-1"
+              },
+              {
+                "text": "Эхний $a[i]\\ge x$ index-ийг олохдоо array-ийн утгууд биш, “$a[i]\\ge x$ үнэн үү?” гэсэн Boolean дарааллыг хар. Sorted array-д false-уудын дараа true-ууд орно. Binary search энэ шилжилтийн заагийг олно; true элемент огт байхгүй бол зааг $n$.",
+                "type": "p",
+                "detailKey": "depth-model-0"
+              },
+              {
+                "text": "Loop-ийн invariant: $l$-ээс өмнөх бүх index false, $r$-ээс эхэлсэн хүчинтэй index-үүд true. $[l,r)$ доторх хэсэг хараахан шийдэгдээгүй. $a[mid]<x$ бол mid болон зүүн хэсэг false тул $l=mid+1$. Үгүй бол mid true тул $r=mid$; mid өөрөө хариу байж болохыг хадгална.",
+                "type": "p",
+                "detailKey": "depth-model-1"
+              },
+              {
+                "text": "$l<r$ үед mid үргэлж хүчинтэй index бөгөөд аль branch-д ч хүрээ багасна. $l=r$ үед шийдээгүй хэсэг хоосон: энэ байрлал false ба true-ийн яг зааг. Lower bound-ийн хариу заавал $x$-тэй тэнцүү утга байх албагүй.",
+                "type": "p",
+                "detailKey": "depth-model-2"
+              }
+            ]
+          },
+          {
+            "title": "3. Нэр томъёо ба тэмдэглэгээ",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "$[l,r)$ нь боломжит хүрээ: $l$ багтана, $r$ багтахгүй.",
+                  "$\\mathrm{mid}$ нь дундах index. Хариу олдохгүй бол $n$ буцаана."
+                ],
+                "detailKey": "base-2-0"
+              }
+            ]
+          },
+          {
+            "title": "4. Жишээг гараар ажиллуулъя",
+            "blocks": [
+              {
+                "text": "Энэ жишээг алхам бүрээр нь удаан дагаарай. Алхам бүрт ямар хадгалсан утга, яагаад өөрчлөгдөж байгааг ажигла.",
+                "type": "note",
+                "detailKey": "depth-trace-intro"
+              },
+              {
+                "rows": [
+                  [
+                    "1",
+                    "$a=[2,4,4,7,9]$, $x=5$. Boolean $[F,F,F,T,T]$."
+                  ],
+                  [
+                    "2",
+                    "$l=0,r=5$, mid $2$: $4<5$, тиймээс $l=3$."
+                  ],
+                  [
+                    "3",
+                    "$l=3,r=5$, mid $4$: $9\\ge5$, $r=4$."
+                  ],
+                  [
+                    "4",
+                    "$l=3,r=4$, mid $3$: $7\\ge5$, $r=3$."
+                  ],
+                  [
+                    "5",
+                    "$l=r=3$, хариу index $3$, утга $7$. $5$ байхгүй байсан ч lower bound байна."
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Алхам",
+                  "Төлөв ба тайлбар"
+                ],
+                "detailKey": "depth-trace"
+              }
+            ]
+          },
+          {
+            "title": "5. Алгоритмаа алхам болгон бичье",
+            "blocks": [
+              {
+                "type": "ordered",
+                "items": [
+                  "Sorted эсэхийг шалгаж, $l=0,r=n$ тавь.",
+                  "Mid-ийг тооцоод нөхцөлөөр нэг талыг хас.",
+                  "$l=r$ болоход $l$-ийг буцаа."
+                ],
+                "detailKey": "base-4-0"
+              }
+            ]
+          },
+          {
+            "title": "6. Implementation-ийг хэсэг бүрээр унших",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "1. Өгөгдөл: array-г const reference-аар авснаар query бүрд хуулбарлахгүй. $l,r$ нь шалгах мужийн зааг; $x$ нь query-ийн зорилтот утга."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int l = 0;\nint r = a.size();"
+              },
+              {
+                "type": "p",
+                "text": "2. Initialization: баруун заагийг сүүлийн index $n-1$ биш, $n$ гэж авна. Ингэснээр “байхгүй” гэдэг хариунд тусдаа төлөв бий болно."
+              },
+              {
+                "type": "p",
+                "text": "3. Гол loop: true үед $mid$ боломжтой хариу хэвээр; false үед $mid$-ийг дахин шалгах шаардлагагүй. Энэ ялгаа нь хоёр update-ийн +1-ийг тайлбарлана."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int mid = l + (r - l) / 2;\n\nif (a[mid] >= x) {\n    r = mid;\n} else {\n    l = mid + 1;\n}"
+              },
+              {
+                "type": "p",
+                "text": "4. Output: loop-ээс гарсан $l$-ийг буцаана. Утгыг хэвлэх эсвэл байгаа эсэхийг шалгахдаа эхлээд $l<n$ нөхцөлийг шалга."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "return l;"
+              }
+            ]
+          },
+          {
+            "title": "7. C++17 код ба түүнийг унших нь",
+            "blocks": [
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_at_least(const vector<long long>& a, long long x) {\n    int n = a.size();\n    int l = 0;\n    int r = n;\n\n    while (l < r) {\n        int mid = l + (r - l) / 2;\n\n        if (a[mid] >= x) {\n            r = mid;\n        } else {\n            l = mid + 1;\n        }\n    }\n\n    return l;\n}\n",
+                "type": "code",
+                "language": "C++17",
+                "detailKey": "base-5-0"
+              },
+              {
+                "text": "First_at_least нь lower_bound-тай адил. $\\mathrm{mid}=l+(r-l)/2$ нь заагийн нийлбэрийн overflow-оос зайлсхийдэг. Return $n$ бол $a[n]$-ийг уншиж болохгүй.",
+                "type": "p",
+                "detailKey": "base-5-1"
+              },
+              {
+                "type": "ordered",
+                "items": [
+                  "First_at_least-ийн $r=n$ нь sentinel зааг, $a[n]$ унших index биш.",
+                  "Mid-ийг $l+(r-l)/2$ бодвол $l+r$ overflow хийхээс зайлсхийнэ.",
+                  "Энэ half-open хувилбарт $r=mid-1$ тавибал боломжит boundary-г алдаж болно."
+                ],
+                "detailKey": "depth-code-walk"
+              },
+              {
+                "text": "Хичээлийн төгсгөлийн бүтэн program-ийн хэсэгт энэ хэрэгжүүлэлтийг ашигласан, input уншдаг бүтэн program болон шалгасан жишээ output бий.",
+                "type": "note",
+                "detailKey": "depth-code-program"
+              }
+            ]
+          },
+          {
+            "title": "8. Зөв байдлын баталгаа",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Loop invariant-аа хоёр талаас нь бичье: $i<l$ бүх index дээр $a_i<x$; $i\\ge r$ бүх хүчинтэй index дээр $a_i\\ge x$. Иймээс хайж буй эхний зааг $[l,r]$ дотор байна. Эхэнд хоёр талын мэдэгдэл хоосон муж дээр үнэн тул invariant биелнэ."
+              },
+              {
+                "type": "p",
+                "text": "$a_{mid}\\ge x$ бол sorted учраас түүнээс хойших бүх утга мөн нөхцөлийг хангана; $r=mid$ invariant-ийг хадгална. Харин $a_{mid}<x$ бол түүнээс өмнөх бүх утга ч бага тул $l=mid+1$ зөв. Аль ч үед $r-l$ бүхэл эерэг урт багасна, тиймээс loop заавал дуусна."
+              },
+              {
+                "type": "p",
+                "text": "Дуусахад $l=r$. $l$-ээс өмнө true байхгүй, $l<n$ бол $l$ дээр true байна. Иймээс $l$ нь яг эхний шаардлагатай index. Бүх утга бага байсан тохиолдолд $l=n$ гарч, sentinel-ийн утга мөн зөв байна."
+              }
+            ]
+          },
+          {
+            "title": "9. Алдаанаас сэргийлье",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "Sorted биш array дээр хэрэглэж болохгүй.",
+                  "$r=\\mathrm{mid}-1$ гэж энэ half-open кодтой өөр хувилбарын дүрмийг холихгүй."
+                ],
+                "detailKey": "base-7-0"
+              }
+            ]
+          },
+          {
+            "title": "10. Өөрөө бодоод хариугаа шалга",
+            "blocks": [
+              {
+                "text": "Жишээний $x=5$ үед?",
+                "type": "p",
+                "detailKey": "base-8-0"
+              },
+              {
+                "text": "Хариугаа шалгах: Index $3$, утга $7$.",
+                "type": "note",
+                "label": "Хариу харах",
+                "detailKey": "base-8-1",
+                "collapsible": true
+              },
+              {
+                "text": "$x=10$ үед?",
+                "type": "p",
+                "detailKey": "base-8-2"
+              },
+              {
+                "text": "Хариугаа шалгах: $5=n$: qualifying утга байхгүй.",
+                "type": "note",
+                "label": "Хариу харах",
+                "detailKey": "base-8-3",
+                "collapsible": true
+              }
+            ]
+          },
+          {
+            "title": "11. Дараа нь юу сурах вэ?",
+            "blocks": [
+              {
+                "text": "Жишээг код харалгүй гараар хийж чадсан бол reference code-ийг өөрөө дахин бич. Шинэ input дээр хариуг loop-оор тооцсон хувилбартай тулга. Дараах холбоосууд нь өөр тайлбар уншихад зориулсан; эндэх текст, жишээ, кодыг Erdene Club-д зориулан шинээр бичсэн.",
+                "type": "note",
+                "detailKey": "base-9-0"
+              },
+              {
+                "type": "links",
+                "items": [
+                  {
+                    "url": "https://cses.fi/book/book.pdf",
+                    "label": "Competitive Programmer’s Handbook — Antti Laaksonen"
+                  }
+                ],
+                "detailKey": "base-9-1"
+              }
+            ]
+          },
+          {
+            "title": "12. Яагаад хурдан ажилладаг вэ?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Өргөн нь $n$ байсан муж нэг алхмын дараа хамгийн ихдээ $\\lfloor n/2\\rfloor$ орчим болно. $k$ алхмын дараа үлдсэн өргөн $n/2^k$-оос ихгүй. Эерэг бүхэл өргөн $1$-ээс бага болмогц loop дуусах тул $n>0$ үед хамгийн ихдээ $\\lfloor\\log_2 n\\rfloor+1$ iteration хийнэ. Нэг сая элемент дээр ойролцоогоор $20$ алхам."
+              },
+              {
+                "type": "p",
+                "text": "Iteration бүр нэг array access, нэг харьцуулалт, цөөн бүхэл тоон үйлдэлтэй тул query-ийн worst-case хугацаа $O(\\log n)$. Нэмэлт зай $O(1)$; input array-ийн өөрийн зай $O(n)$. Array-г анх sort хийх хэрэгтэй бол $O(n\\log n)$ preprocessing-ийг бас тооц. $q$ query-ийн нийт хугацаа $O(n\\log n+q\\log n)$."
+              },
+              {
+                "type": "p",
+                "text": "Binary search нь check өөрөө үнэгүй гэсэн үг биш. Хариун дээр binary search хийж, нэг check $O(n)$ байвал нийт нь $O(n\\log R)$ болно. Monotonicity байхгүй бол хурдан ажилласан ч буруу хариу гаргана. Original index хэрэгтэй бодлогод sort хийхэд index-ийн утга өөрчлөгдөхийг мөн анхаар."
+              }
+            ]
+          },
+          {
+            "key": "deep-usage",
+            "title": "13. Хэзээ хэрэглэх, яаж шалгах вэ?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Бодлогын өгүүлбэрээс “эрэмбэлсэн”, “хамгийн бага боломжит”, “хамгийн их хүрч болох” гэсэн мэдээлэл хай. Гэхдээ үг хараад алгоритм сонгохгүй: check-ээ тодорхойлоод false/true дараалал руу буцаж шилжихгүйг батал. Жижиг array дээр бүх хариуг brute force-аар гаргаж, binary search-ийн үр дүнтэй харьцуул."
+              },
+              {
+                "text": "Sorted lookup болон monotonic predicate-д тохирно. Equal элементүүд олон байвал энэ код эхнийхийг өгнө. Exact search хийхэд буцсан index $n$ биш, мөн тэр утга $x$-тэй тэнцүү эсэхийг нэмж шалгана.",
+                "type": "p",
+                "detailKey": "depth-usage"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Бүх утга $x$-ээс бага: $n$; бүх утга бага биш: $0$.",
+                  "Хоосон array: loop ажиллахгүй, $0=n$ буцна."
+                ],
+                "detailKey": "depth-boundaries"
+              },
+              {
+                "text": "Эхлээд эдгээр жижиг тохиолдлын хариуг гараар таамагла. Дараа нь program-аа ажиллуулж тулга. Зөрвөл output-ийг хүчээр засахын оронд state-ийн утга, зааг, transition-оо дахин шалга.",
+                "type": "note",
+                "detailKey": "depth-test-method"
+              }
+            ]
+          },
+          {
+            "key": "deep-program",
+            "title": "14. Бүтэн program ба жишээ input, output",
+            "blocks": [
+              {
+                "text": "Input: $n$, өсөхөөр эрэмбэлсэн array, дараа $q$ ба $q$ утга $x$. Query бүрт $x$-ээс бага биш эхний index, байхгүй бол $n$ гарна.",
+                "type": "p",
+                "detailKey": "depth-input-contract"
+              },
+              {
+                "text": "5\n2 4 4 7 9\n4\n4 5 10 1",
+                "type": "code",
+                "language": "Input",
+                "detailKey": "depth-sample-input"
+              },
+              {
+                "text": "1\n3\n5\n0",
+                "type": "code",
+                "language": "Output",
+                "detailKey": "depth-sample-output"
+              },
+              {
+                "text": "Доорх program-ийг бүтнээр нь нэг файлд хуулж C++17-оор жишээ input-тай ажиллуул. Function нь алгоритмыг хэрэгжүүлнэ; main нь input уншиж, function дуудаад хариу хэвлэнэ. Index-ийн дүрмийг дээрх input тайлбараас шалга.",
+                "type": "note",
+                "detailKey": "depth-program-guide"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_at_least(const vector<long long>& a, long long x) {\n    int n = a.size();\n    int l = 0;\n    int r = n;\n\n    while (l < r) {\n        int mid = l + (r - l) / 2;\n\n        if (a[mid] >= x) {\n            r = mid;\n        } else {\n            l = mid + 1;\n        }\n    }\n\n    return l;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<long long> a(n);\n    for (int i = 0; i < n; i++) {\n        cin >> a[i];\n    }\n    int q;\n    cin >> q;\n    for (int i = 0; i < q; i++) {\n        long long x;\n        cin >> x;\n        cout << first_at_least(a, x) << '\\n';\n    }\n\n    return 0;\n}\n",
+                "type": "code",
+                "language": "C++17",
+                "detailKey": "depth-full-program"
+              }
+            ]
+          },
+          {
+            "key": "deep-exercises",
+            "title": "15. Гурван алхамтай дадлага",
+            "blocks": [
+              {
+                "text": "Hint-ээ нээхээс өмнө өөрөө оролдоорой. Эхний дасгал ойлголт, дараагийнх хэрэглээ, сүүлийнх тайлбар эсвэл өргөтгөл дээр төвлөрнө.",
+                "type": "p",
+                "detailKey": "depth-practice-intro"
+              },
+              {
+                "text": "1. $[1,3,3,3,8]$ дээр $x=3$?",
+                "type": "p",
+                "detailKey": "depth-question-0"
+              },
+              {
+                "text": "Mid таарсан ч зүүн талыг үргэлжлүүл.",
+                "type": "note",
+                "label": "Hint харах",
+                "detailKey": "depth-hint-0",
+                "collapsible": true
+              },
+              {
+                "text": "Index $1$, эхний $3$.",
+                "type": "note",
+                "label": "Хариу ба тайлбар харах",
+                "detailKey": "depth-answer-0",
+                "collapsible": true
+              },
+              {
+                "text": "2. Хариу $n$ үед $a[ans]$ уншвал?",
+                "type": "p",
+                "detailKey": "depth-question-1"
+              },
+              {
+                "text": "Хүчинтэй index-ийн хүрээг сана.",
+                "type": "note",
+                "label": "Hint харах",
+                "detailKey": "depth-hint-1",
+                "collapsible": true
+              },
+              {
+                "text": "Array-ийн гадна уншина. Эхлээд ans $<n$ шалгах ёстой.",
+                "type": "note",
+                "label": "Хариу ба тайлбар харах",
+                "detailKey": "depth-answer-1",
+                "collapsible": true
+              },
+              {
+                "text": "3. Эхний $a[i]>x$ олохын тулд нөхцөлийг яаж өөрчлөх вэ?",
+                "type": "p",
+                "detailKey": "depth-question-2"
+              },
+              {
+                "text": "False талд тэнцүү утгуудыг оруул.",
+                "type": "note",
+                "label": "Hint харах",
+                "detailKey": "depth-hint-2",
+                "collapsible": true
+              },
+              {
+                "text": "If $a[mid]\\le x$ бол $l=mid+1$, үгүй бол $r=mid$. Энэ нь upper bound.",
+                "type": "note",
+                "label": "Хариу ба тайлбар харах",
+                "detailKey": "depth-answer-2",
+                "collapsible": true
+              }
+            ]
+          }
+        ],
+        "translations": {
+          "en": {
+            "title": "Binary search — searching a sorted array",
+            "summary": "Halve the search range by safely discarding an irrelevant half.",
+            "sections": [
+              {
+                "title": "1. Start with a small problem",
+                "blocks": [
+                  {
+                    "type": "p",
+                    "text": "We repeatedly need the first element at least $x$ in a sorted array of one million values. Scanning from the start may take $10^6$ comparisons per query and about $10^{11}$ across $10^5$ queries. Before making the loop faster, ask which comparisons can be avoided entirely."
+                  },
+                  {
+                    "type": "p",
+                    "text": "Sorted order is a guarantee we can exploit. If the middle value is below $x$, every earlier value is also below $x$. One comparison can rule out a whole region. We will find the first boundary satisfying $a_i\\ge x$, which is more general than testing membership."
+                  },
+                  {
+                    "text": "In $a=[2,4,4,7,9]$, find the first index whose value is at least $x=4$. The answer is $1$, even though $4$ appears twice.",
+                    "type": "p",
+                    "detailKey": "base-0-0"
+                  }
+                ]
+              },
+              {
+                "title": "2. From the simple approach to the new idea",
+                "blocks": [
+                  {
+                    "type": "p",
+                    "text": "First establish a correct baseline: scan until the first index with $a_i\\ge x$, or return $n$ if there is none. Write the predicate as $P(i)=[a_i\\ge x]$. On sorted input it consists of false values followed by true values, with no transition back to false."
+                  },
+                  {
+                    "type": "p",
+                    "text": "Let $l$ be the left boundary and $r$ the right boundary. The remaining array elements lie in $a[l..r)$; the answer boundary itself may equal $r$. If the middle predicate is true, keep that index as a possible answer by setting $r=mid$. If false, discard it and everything before it by setting $l=mid+1$."
+                  },
+                  {
+                    "type": "p",
+                    "text": "Initialize $l=0$ and $r=n$; even an empty array needs no special case. With $mid=l+(r-l)/2$, the loop condition ensures $l\\le mid<r\\le n$, so $a_n$ is never accessed. A returned index of $n$ is a sentinel for no qualifying element and must not be dereferenced."
+                  },
+                  {
+                    "text": "A left-to-right scan works, but sorted order lets us eliminate many candidates at once: if the middle value is too small, everything to its left is too small too.",
+                    "type": "p",
+                    "detailKey": "base-1-0"
+                  },
+                  {
+                    "text": "This search uses half-open bounds: start with $l=0,r=n$. If $a[\\mathrm{mid}]<x$, set $l=\\mathrm{mid}+1$. Otherwise mid may still be the answer, so set $r=\\mathrm{mid}$. Stop when the boundaries meet.",
+                    "type": "p",
+                    "detailKey": "base-1-1"
+                  },
+                  {
+                    "text": "To find the first $a[i]\\ge x$, view the Boolean sequence “is $a[i]\\ge x$?”. In a sorted array, false positions precede true positions. Binary search locates this boundary, which is $n$ if no true position exists.",
+                    "type": "p",
+                    "detailKey": "depth-model-0"
+                  },
+                  {
+                    "text": "The invariant is that every index before $l$ is false and every valid index from $r$ onward is true. The undecided region is $[l,r)$. If $a[mid]<x$, move $l$ to $mid+1$; otherwise set $r=mid$, preserving mid as a possible boundary.",
+                    "type": "p",
+                    "detailKey": "depth-model-1"
+                  },
+                  {
+                    "text": "When $l<r$, mid is a valid index and either branch shrinks the range. At $l=r$, nothing remains undecided, so this is the exact boundary. A lower-bound result need not contain a value equal to $x$.",
+                    "type": "p",
+                    "detailKey": "depth-model-2"
+                  }
+                ]
+              },
+              {
+                "title": "3. Vocabulary and notation",
+                "blocks": [
+                  {
+                    "type": "list",
+                    "items": [
+                      "$[l,r)$ is the remaining range: $l$ is included and $r$ is excluded.",
+                      "$\\mathrm{mid}$ is the middle index. Return $n$ if no qualifying value exists."
+                    ],
+                    "detailKey": "base-2-0"
+                  }
+                ]
+              },
+              {
+                "title": "4. Walk through the example",
+                "blocks": [
+                  {
+                    "text": "Follow this detailed trace slowly. At each step, identify which stored value changes and why.",
+                    "type": "note",
+                    "detailKey": "depth-trace-intro"
+                  },
+                  {
+                    "rows": [
+                      [
+                        "1",
+                        "For $a=[2,4,4,7,9]$ and $x=5$, the predicate is $[F,F,F,T,T]$."
+                      ],
+                      [
+                        "2",
+                        "$l=0,r=5$, mid $2$: $4<5$, so set $l=3$."
+                      ],
+                      [
+                        "3",
+                        "$l=3,r=5$, mid $4$: $9\\ge5$, so set $r=4$."
+                      ],
+                      [
+                        "4",
+                        "$l=3,r=4$, mid $3$: $7\\ge5$, so set $r=3$."
+                      ],
+                      [
+                        "5",
+                        "$l=r=3$: return index $3$, value $7$. Lower bound exists even though value $5$ does not."
+                      ]
+                    ],
+                    "type": "table",
+                    "headers": [
+                      "Step",
+                      "State and reasoning"
+                    ],
+                    "detailKey": "depth-trace"
+                  }
+                ]
+              },
+              {
+                "title": "5. Write the algorithm as steps",
+                "blocks": [
+                  {
+                    "type": "ordered",
+                    "items": [
+                      "Ensure sorted order and set $l=0,r=n$.",
+                      "Compute mid and discard one side based on the comparison.",
+                      "Return $l$ when $l=r$."
+                    ],
+                    "detailKey": "base-4-0"
+                  }
+                ]
+              },
+              {
+                "title": "6. Reading the implementation in parts",
+                "blocks": [
+                  {
+                    "type": "p",
+                    "text": "1. Data: take the array by const reference to avoid copying it per query. Boundaries $l,r$ describe the remaining region, while $x$ is the query value."
+                  },
+                  {
+                    "type": "code",
+                    "language": "C++17",
+                    "text": "int l = 0;\nint r = a.size();"
+                  },
+                  {
+                    "type": "p",
+                    "text": "2. Initialization: use $n$, not the last index $n-1$, as the right boundary. This leaves a valid boundary representing no matching element."
+                  },
+                  {
+                    "type": "p",
+                    "text": "3. Main loop: a true middle can still be the answer; a false middle never can. That distinction explains why only the left-boundary update uses +1."
+                  },
+                  {
+                    "type": "code",
+                    "language": "C++17",
+                    "text": "int mid = l + (r - l) / 2;\n\nif (a[mid] >= x) {\n    r = mid;\n} else {\n    l = mid + 1;\n}"
+                  },
+                  {
+                    "type": "p",
+                    "text": "4. Output: return $l$ after termination. Before reading that array value or checking equality, verify that $l<n$."
+                  },
+                  {
+                    "type": "code",
+                    "language": "C++17",
+                    "text": "return l;"
+                  }
+                ]
+              },
+              {
+                "title": "7. C++17 code and how to read it",
+                "blocks": [
+                  {
+                    "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_at_least(const vector<long long>& a, long long x) {\n    int n = a.size();\n    int l = 0;\n    int r = n;\n\n    while (l < r) {\n        int mid = l + (r - l) / 2;\n\n        if (a[mid] >= x) {\n            r = mid;\n        } else {\n            l = mid + 1;\n        }\n    }\n\n    return l;\n}\n",
+                    "type": "code",
+                    "language": "C++17",
+                    "detailKey": "base-5-0"
+                  },
+                  {
+                    "text": "First_at_least behaves like lower_bound. Computing $\\mathrm{mid}=l+(r-l)/2$ avoids adding large bounds. If the result is $n$, do not access $a[n]$.",
+                    "type": "p",
+                    "detailKey": "base-5-1"
+                  },
+                  {
+                    "type": "ordered",
+                    "items": [
+                      "In first_at_least, $r=n$ is a sentinel boundary, not an index to read.",
+                      "Computing mid as $l+(r-l)/2$ avoids overflowing $l+r$.",
+                      "Using $r=mid-1$ in this half-open version can discard a valid boundary."
+                    ],
+                    "detailKey": "depth-code-walk"
+                  },
+                  {
+                    "text": "Section 13 contains a complete runnable program with the same implementation, input format and checked sample output.",
+                    "type": "note",
+                    "detailKey": "depth-code-program"
+                  }
+                ]
+              },
+              {
+                "title": "8. Proof of correctness",
+                "blocks": [
+                  {
+                    "type": "p",
+                    "text": "Use a two-sided invariant: every index $i<l$ has $a_i<x$, and every valid index $i\\ge r$ has $a_i\\ge x$. Therefore the first qualifying boundary lies in $[l,r]$. Initially both assertions concern empty outside regions, so they hold."
+                  },
+                  {
+                    "type": "p",
+                    "text": "If $a_{mid}\\ge x$, sorted order makes every later value qualify, so setting $r=mid$ preserves the invariant. Otherwise every earlier value also fails, making $l=mid+1$ safe. In either case the nonnegative integer width $r-l$ strictly decreases, so the loop terminates."
+                  },
+                  {
+                    "type": "p",
+                    "text": "At termination $l=r$. No earlier index qualifies, and if $l<n$, index $l$ does qualify. Thus $l$ is exactly the first required index. If all values were too small, the returned boundary is $n$, correctly representing failure."
+                  }
+                ]
+              },
+              {
+                "title": "9. Avoid these mistakes",
+                "blocks": [
+                  {
+                    "type": "list",
+                    "items": [
+                      "Do not apply this search to an unsorted array.",
+                      "Do not mix this half-open version with another version’s $r=\\mathrm{mid}-1$ rule."
+                    ],
+                    "detailKey": "base-7-0"
+                  }
+                ]
+              },
+              {
+                "title": "10. Try it and check your answer",
+                "blocks": [
+                  {
+                    "text": "What is the result for $x=5$?",
+                    "type": "p",
+                    "detailKey": "base-8-0"
+                  },
+                  {
+                    "text": "Check your answer: Index $3$, value $7$.",
+                    "type": "note",
+                    "label": "Show answer",
+                    "detailKey": "base-8-1",
+                    "collapsible": true
+                  },
+                  {
+                    "text": "What is the result for $x=10$?",
+                    "type": "p",
+                    "detailKey": "base-8-2"
+                  },
+                  {
+                    "text": "Check your answer: $5=n$: no value qualifies.",
+                    "type": "note",
+                    "label": "Show answer",
+                    "detailKey": "base-8-3",
+                    "collapsible": true
+                  }
+                ]
+              },
+              {
+                "title": "11. What should you learn next?",
+                "blocks": [
+                  {
+                    "text": "Once you can trace the example without looking at the code, write the implementation yourself. Compare it with a simple loop on new inputs. The links offer another explanation; this lesson’s prose, examples and code were written for Erdene Club.",
+                    "type": "note",
+                    "detailKey": "base-9-0"
+                  },
+                  {
+                    "type": "links",
+                    "items": [
+                      {
+                        "url": "https://cses.fi/book/book.pdf",
+                        "label": "Competitive Programmer’s Handbook — Antti Laaksonen"
+                      }
+                    ],
+                    "detailKey": "base-9-1"
+                  }
+                ]
+              },
+              {
+                "title": "12. Why does it run quickly?",
+                "blocks": [
+                  {
+                    "type": "p",
+                    "text": "The width drops to at most roughly half its previous value. After $k$ steps it is bounded by $n/2^k$. Once a nonnegative integer width is below one, it is zero. For $n>0$ there are at most $\\lfloor\\log_2 n\\rfloor+1$ iterations: about $20$ for one million elements."
+                  },
+                  {
+                    "type": "p",
+                    "text": "Each iteration performs one array access, one comparison and constant-size integer work, giving $O(\\log n)$ worst-case query time and $O(1)$ extra space. The input array occupies $O(n)$. If sorting is needed first, include $O(n\\log n)$ preprocessing; $q$ queries then cost $O(n\\log n+q\\log n)$ overall."
+                  },
+                  {
+                    "type": "p",
+                    "text": "Binary search does not make the check free. Searching an answer range of width $R$ with an $O(n)$ check costs $O(n\\log R)$. Without monotonicity it can be fast and still wrong. Also, sorting changes positions, so preserve original indices when the task needs them."
+                  }
+                ]
+              },
+              {
+                "key": "deep-usage",
+                "title": "13. When to use it and how to test it",
+                "blocks": [
+                  {
+                    "type": "p",
+                    "text": "Look for sorted input or a smallest feasible/largest achievable quantity, but do not choose the algorithm from keywords alone. Define the check and prove it cannot switch back. On small inputs, enumerate the answers by brute force and compare against binary search."
+                  },
+                  {
+                    "text": "Use it for sorted lookup and monotone predicates. Duplicates return their first qualifying position. For exact lookup, additionally check that the result is not $n$ and that the returned value equals $x$.",
+                    "type": "p",
+                    "detailKey": "depth-usage"
+                  },
+                  {
+                    "type": "list",
+                    "items": [
+                      "All values below $x$ returns $n$; all qualifying returns $0$.",
+                      "An empty array skips the loop and returns $0=n$."
+                    ],
+                    "detailKey": "depth-boundaries"
+                  },
+                  {
+                    "text": "First predict these small cases by hand. Then run the program and compare. A mismatch is a reason to inspect the state definition, boundaries and transition, rather than patching the output.",
+                    "type": "note",
+                    "detailKey": "depth-test-method"
+                  }
+                ]
+              },
+              {
+                "key": "deep-program",
+                "title": "14. Complete program and sample I/O",
+                "blocks": [
+                  {
+                    "text": "Input: $n$, a sorted array, then $q$ and $q$ query values $x$. Output the first index with value at least $x$, or $n$ if none exists.",
+                    "type": "p",
+                    "detailKey": "depth-input-contract"
+                  },
+                  {
+                    "text": "5\n2 4 4 7 9\n4\n4 5 10 1",
+                    "type": "code",
+                    "language": "Input",
+                    "detailKey": "depth-sample-input"
+                  },
+                  {
+                    "text": "1\n3\n5\n0",
+                    "type": "code",
+                    "language": "Output",
+                    "detailKey": "depth-sample-output"
+                  },
+                  {
+                    "text": "Copy the entire program below into one file. Run it as C++17 using the sample input. The function handles the algorithm; main reads the input, calls it and prints the answer. Indices follow the input contract above.",
+                    "type": "note",
+                    "detailKey": "depth-program-guide"
+                  },
+                  {
+                    "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_at_least(const vector<long long>& a, long long x) {\n    int n = a.size();\n    int l = 0;\n    int r = n;\n\n    while (l < r) {\n        int mid = l + (r - l) / 2;\n\n        if (a[mid] >= x) {\n            r = mid;\n        } else {\n            l = mid + 1;\n        }\n    }\n\n    return l;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<long long> a(n);\n    for (int i = 0; i < n; i++) {\n        cin >> a[i];\n    }\n    int q;\n    cin >> q;\n    for (int i = 0; i < q; i++) {\n        long long x;\n        cin >> x;\n        cout << first_at_least(a, x) << '\\n';\n    }\n\n    return 0;\n}\n",
+                    "type": "code",
+                    "language": "C++17",
+                    "detailKey": "depth-full-program"
+                  }
+                ]
+              },
+              {
+                "key": "deep-exercises",
+                "title": "15. Three practice steps",
+                "blocks": [
+                  {
+                    "text": "Try each question before opening its hint. The first checks the definition, the second applies the method, and the third asks you to explain or extend it.",
+                    "type": "p",
+                    "detailKey": "depth-practice-intro"
+                  },
+                  {
+                    "text": "1. For $[1,3,3,3,8]$, what does $x=3$ return?",
+                    "type": "p",
+                    "detailKey": "depth-question-0"
+                  },
+                  {
+                    "text": "Continue left even after finding an equal mid.",
+                    "type": "note",
+                    "label": "Show hint",
+                    "detailKey": "depth-hint-0",
+                    "collapsible": true
+                  },
+                  {
+                    "text": "Index $1$, the first $3$.",
+                    "type": "note",
+                    "label": "Show answer and explanation",
+                    "detailKey": "depth-answer-0",
+                    "collapsible": true
+                  },
+                  {
+                    "text": "2. What if you read $a[ans]$ when ans is $n$?",
+                    "type": "p",
+                    "detailKey": "depth-question-1"
+                  },
+                  {
+                    "text": "Recall the valid index range.",
+                    "type": "note",
+                    "label": "Show hint",
+                    "detailKey": "depth-hint-1",
+                    "collapsible": true
+                  },
+                  {
+                    "text": "It is out of bounds. Check ans $<n$ before reading.",
+                    "type": "note",
+                    "label": "Show answer and explanation",
+                    "detailKey": "depth-answer-1",
+                    "collapsible": true
+                  },
+                  {
+                    "text": "3. How do you find the first $a[i]>x$ instead?",
+                    "type": "p",
+                    "detailKey": "depth-question-2"
+                  },
+                  {
+                    "text": "Place equal values on the false side.",
+                    "type": "note",
+                    "label": "Show hint",
+                    "detailKey": "depth-hint-2",
+                    "collapsible": true
+                  },
+                  {
+                    "text": "If $a[mid]\\le x$, move $l=mid+1$; otherwise $r=mid$. This is upper bound.",
+                    "type": "note",
+                    "label": "Show answer and explanation",
+                    "detailKey": "depth-answer-2",
+                    "collapsible": true
+                  }
+                ]
+              }
+            ],
+            "prerequisites": "Sorted arrays, comparisons and loops."
+          }
+        },
+        "prerequisites": "Sorted array, comparison болон loop.",
+        "prerequisiteIds": [
+          "sorting"
+        ],
+        "contentEdition": "learning-2026-10-25-v1"
+      }
+    },
+    "greedy": {
+      "baseHashes": [
+        "75c2542622fa80bed355c75def88e04f0ab413581c3e880f9de400b15590b163"
+      ],
+      "body": {
+        "id": "greedy",
+        "level": "Дунд шат",
+        "order": 20,
+        "title": "Greedy — зөв сонголтыг алхам бүрт хийх",
+        "aliases": "greedy Greedy — зөв сонголтыг алхам бүрт хийх Greedy — making a safe choice at each step greedy шуналтай эрэмбэлэлт sorting interval exchange argument",
+        "related": [
+          "sorting",
+          "brute-force",
+          "binary-search-answer"
+        ],
+        "summary": "Greedy-г таамгаар бус, нэг тодорхой бодлого дээр сонголтын шалтгаантай нь суръя.",
+        "category": "Problem solving",
+        "levelKey": "intermediate",
+        "sections": [
+          {
+            "title": "1. Эхлээд жижиг бодлого бодъё",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Нэг танхимд олон арга хэмжээ давхцаж байна. Аль болох олон арга хэмжээг бүтнээр нь үзэхийн тулд алийг нь сонгох вэ? Боломжит бүх subset-ийг шалгах нь зөв боловч $2^n$ сонголттой. Бид нэг сонголт хийсний дараа өмнөх бүх шийдвэрээ буцааж шалгах шаардлагагүй дүрэм хайна."
+              },
+              {
+                "type": "p",
+                "text": "Энд арга хэмжээ бүр ижил үнэ цэнтэй, зорилго нь зөвхөн тоог ихэсгэх. “Хамгийн эрт эхэлснийг авъя” гэсэн санаа $[0,10),[1,2),[2,3)$ дээр буруу: эхнийхийг авбал нэг, сүүлийн хоёрыг авбал хоёр арга хэмжээ үзнэ. Greedy дүрмийг эхлээд эсрэг жишээгээр сорьж суръя."
+              },
+              {
+                "text": "Кинонуудын цаг $[1,4),[2,3),[3,5),[5,7)$ байна. Давхцахгүй хамгийн олон кино үзье. $[2,3),[3,5),[5,7)$-г сонговол $3$ кино. Нэг кино дуусах мөчид дараагийнх эхэлж болно.",
+                "type": "p",
+                "detailKey": "base-0-0"
+              }
+            ]
+          },
+          {
+            "title": "2. Энгийн аргаас шинэ санаа руу",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Одоо боломжтой арга хэмжээнүүдээс хамгийн эрт дуусахыг сонговол дараагийн сонголтод хамгийн их зай үлдээнэ гэсэн ажиглалт хийе. Энэ бол одоохондоо intuition; дараах exchange argument л global optimum-ийг батална. Дуусах цагаар sort хийгээд одоогийн боломжит заагаас хойш эхэлж буй арга хэмжээг авна."
+              },
+              {
+                "type": "p",
+                "text": "Бид $[l,r)$ half-open завсар ашиглана. Тиймээс нэг нь дуусах мөчид дараагийнх эхэлж болно: шалгалт нь $l\\ge lastEnd$. Өгүүлбэр хаалттай завсар эсвэл завсарлага шаардсан бол энэ нөхцөл өөрчлөгдөнө. Comparator-оо зүгээр цээжлэх бус бодлогын утгатай холбож унш."
+              },
+              {
+                "text": "Бүх subset-ийг шалгаж болно, гэхдээ боломж $2^n$. Хамгийн эрт дуусах киног эхэлж сонговол дараагийн кинонуудад хамгийн их цаг үлдэнэ.",
+                "type": "p",
+                "detailKey": "base-1-0"
+              },
+              {
+                "text": "Хугацаа хамгийн богино эсвэл хамгийн эрт эхэлдэг кино гэж сонгохгүй. Энд хамгийн эрт дуусдаг киног сонгох нь чухал. Өөр greedy бодлогод энэ дүрмийг автоматаар хэрэглэж болохгүй.",
+                "type": "p",
+                "detailKey": "base-1-1"
+              },
+              {
+                "text": "Greedy нь одоогийн сонголтыг батлаад буцаж өөрчлөхгүй. Энд “хамгийн олон кино” гэсэн зорилго, нийт duration эсвэл value биш. Нэг киноны duration богино байх нь эрт дуусахтай ижил шалгуур биш.",
+                "type": "p",
+                "detailKey": "depth-model-0"
+              },
+              {
+                "text": "Хамгийн эрт дуусах кино сонгоход үлдсэн кинонд хамгийн их боломжит хугацаа үлдэнэ. Оптимал шийдлийн эхний киног энэ киногоор соливол түүний finish time өсөхгүй тул дараагийн кинонууд хэвээр багтана. Ийм exchange нь greedy сонголт хийсэн оптимал шийдэл заавал байдаг гэдгийг харуулна.",
+                "type": "p",
+                "detailKey": "depth-model-1"
+              },
+              {
+                "text": "Сонгосон киноны finish time-ийг last_end хадгална. Дараагийн киноны start түүнээс бага биш бол авч болно. Half-open $[l,r)$ интервалд яг ижил цаг дээр залгахыг зөвшөөрдөг тул $l\\ge last\\_end$ хэрэглэнэ.",
+                "type": "p",
+                "detailKey": "depth-model-2"
+              }
+            ]
+          },
+          {
+            "title": "3. Нэр томъёо ба тэмдэглэгээ",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "Greedy нь одоогийн нэг сонголтыг буцааж өөрчлөхгүй хийдэг арга.",
+                  "Interval $[l,r)$: эхлэх, дуусах цаг. $\\mathrm{last}$ нь өмнөх кино дууссан цаг."
+                ],
+                "detailKey": "base-2-0"
+              }
+            ]
+          },
+          {
+            "title": "4. Жишээг гараар ажиллуулъя",
+            "blocks": [
+              {
+                "text": "Энэ жишээг алхам бүрээр нь удаан дагаарай. Алхам бүрт ямар хадгалсан утга, яагаад өөрчлөгдөж байгааг ажигла.",
+                "type": "note",
+                "detailKey": "depth-trace-intro"
+              },
+              {
+                "rows": [
+                  [
+                    "1",
+                    "Кинонууд $(1,4),(2,3),(3,5),(5,7)$. Finish-аар $(2,3),(1,4),(3,5),(5,7)$."
+                  ],
+                  [
+                    "2",
+                    "$(2,3)$-ыг авна, last_end $3$, ans $1$."
+                  ],
+                  [
+                    "3",
+                    "$(1,4)$ start $1<3$, давхцана, skip."
+                  ],
+                  [
+                    "4",
+                    "$(3,5)$ start $3=3$, авч last_end $5$."
+                  ],
+                  [
+                    "5",
+                    "$(5,7)$ мөн авна, нийт $3$. Эхний input кино $(1,4)$-ийг авсан бол энэ optimum-г алдаж болох байв."
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Алхам",
+                  "Төлөв ба тайлбар"
+                ],
+                "detailKey": "depth-trace"
+              }
+            ]
+          },
+          {
+            "title": "5. Алгоритмаа алхам болгон бичье",
+            "blocks": [
+              {
+                "type": "ordered",
+                "items": [
+                  "Дуусах цагаар sort хий.",
+                  "Давхцахгүй бол сонгоод last-ийг шинэчил.",
+                  "Сонгосон тоог буцаа."
+                ],
+                "detailKey": "base-4-0"
+              }
+            ]
+          },
+          {
+            "title": "6. Implementation-ийг хэсэг бүрээр унших",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "1. Өгөгдөл: pair-ийн first нь эхлэх, second нь дуусах цаг. Comparator нь second-оор, тэнцвэл first-ээр эрэмбэлнэ; strict comparator-д <= ашиглаж болохгүй."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "return a.second < b.second;"
+              },
+              {
+                "type": "p",
+                "text": "2. Initialization: одоогоор нэг ч арга хэмжээ аваагүй тул $ans=0$, $lastEnd$ хамгийн бага утга байна. Ингэснээр сөрөг эхлэх цагтай input ч зөв боловсруулагдана."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "long long last_end = LLONG_MIN;\nint ans = 0;"
+              },
+              {
+                "type": "p",
+                "text": "3. Гол loop: нийцэхгүй арга хэмжээг алгасахад $lastEnd$-ийг өөрчлөхгүй. Авсан үед л тоог нэмж, дараагийн боломжит эхлэх заагийг шинэчилнэ."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "if (l >= last_end) {\n    ans++;\n    last_end = r;\n}"
+              },
+              {
+                "type": "p",
+                "text": "4. Output: $ans$ нь сонгосон нийцтэй арга хэмжээнүүдийн тоо. Яг аль index-уудыг сонгосныг шаардах бол original index-ээ хадгалсан тусдаа vector нэмнэ."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "return ans;"
+              }
+            ]
+          },
+          {
+            "title": "7. C++17 код ба түүнийг унших нь",
+            "blocks": [
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nbool compare_intervals(const pair<long long, long long>& a,\n                       const pair<long long, long long>& b) {\n    if (a.second != b.second) {\n        return a.second < b.second;\n    }\n\n    return a.first < b.first;\n}\n\nint max_intervals(vector<pair<long long, long long>> intervals) {\n    sort(intervals.begin(), intervals.end(), compare_intervals);\n\n    long long last_end = LLONG_MIN;\n    int ans = 0;\n\n    for (const auto& interval : intervals) {\n        long long l = interval.first;\n        long long r = interval.second;\n\n        if (l >= last_end) {\n            ans++;\n            last_end = r;\n        }\n    }\n\n    return ans;\n}\n",
+                "type": "code",
+                "language": "C++17",
+                "detailKey": "base-5-0"
+              },
+              {
+                "text": "Pair-ийн first нь эхлэх, second нь дуусах цаг. $l<r$ хүчинтэй interval-ууд өгнө. Comparator дуусах цагаар өсөх дараалалтай.",
+                "type": "p",
+                "detailKey": "base-5-1"
+              },
+              {
+                "type": "ordered",
+                "items": [
+                  "Compare_intervals эхлээд finish, тэнцвэл start харьцуулж strict comparator болгоно.",
+                  "Last_end эхэнд маш бага тул эхний кино үргэлж авч болно.",
+                  "Зөвхөн авсан кинонд last_end шинэчилнэ; skip хийсэн finish-ээр шинэчилж болохгүй."
+                ],
+                "detailKey": "depth-code-walk"
+              },
+              {
+                "text": "Хичээлийн төгсгөлийн бүтэн program-ийн хэсэгт энэ хэрэгжүүлэлтийг ашигласан, input уншдаг бүтэн program болон шалгасан жишээ output бий.",
+                "type": "note",
+                "detailKey": "depth-code-program"
+              }
+            ]
+          },
+          {
+            "title": "8. Зөв байдлын баталгаа",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Үлдсэн асуудлын greedy сонголтыг $g$, ямар нэг optimal хуваарийн эхний арга хэмжээг $o$ гэе. $g$ хамгийн эрт дуусдаг тул $end(g)\\le end(o)$. Optimal хуваарь дахь $o$-г $g$-ээр солиход тоо хэвээр, дараагийн арга хэмжээнүүдийн аль нь ч давхцахгүй: тэд $end(o)$-оос хойш эхэлж байсан."
+              },
+              {
+                "type": "p",
+                "text": "Ингээд $g$-ээр эхэлдэг optimal шийдэл заавал оршино гэдгийг баталлаа. $g$ дууссаны дараах арга хэмжээнүүд дээр яг ижил асуудал үлдэнэ. Үлдсэн арга хэмжээний тоогоор induction хийвэл greedy-ийн бүх сонголт optimal хуваарьтай нийцнэ. “Хамгийн эрт дуусах нь сайн” гэдэг өгүүлбэрээс ийм солилт хийж болох нь илүү хүчтэй баталгаа юм."
+              }
+            ]
+          },
+          {
+            "title": "9. Алдаанаас сэргийлье",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "Greedy бүр зөв биш: сонголтын шалтгаан эсвэл counterexample шалга.",
+                  "Зэрэг эхлэх, дуусахад энэ бодлого зөвшөөрдөг тул $l\\ge\\mathrm{last}$ хэрэглэнэ."
+                ],
+                "detailKey": "base-7-0"
+              }
+            ]
+          },
+          {
+            "title": "10. Өөрөө бодоод хариугаа шалга",
+            "blocks": [
+              {
+                "text": "$[1,10),[2,3),[3,4)$ дээр хамгийн эрт эхлэх киног авбал?",
+                "type": "p",
+                "detailKey": "base-8-0"
+              },
+              {
+                "text": "Хариугаа шалгах: $1$ кино л үзнэ, харин зөв хариу $2$.",
+                "type": "note",
+                "label": "Хариу харах",
+                "detailKey": "base-8-1",
+                "collapsible": true
+              },
+              {
+                "text": "$[0,2),[2,4)$ давхцах уу?",
+                "type": "p",
+                "detailKey": "base-8-2"
+              },
+              {
+                "text": "Хариугаа шалгах: Үгүй.",
+                "type": "note",
+                "label": "Хариу харах",
+                "detailKey": "base-8-3",
+                "collapsible": true
+              }
+            ]
+          },
+          {
+            "title": "11. Дараа нь юу сурах вэ?",
+            "blocks": [
+              {
+                "text": "Жишээг код харалгүй гараар хийж чадсан бол reference code-ийг өөрөө дахин бич. Шинэ input дээр хариуг loop-оор тооцсон хувилбартай тулга. Дараах холбоосууд нь өөр тайлбар уншихад зориулсан; эндэх текст, жишээ, кодыг Erdene Club-д зориулан шинээр бичсэн.",
+                "type": "note",
+                "detailKey": "base-9-0"
+              },
+              {
+                "type": "links",
+                "items": [
+                  {
+                    "url": "https://cses.fi/book/book.pdf",
+                    "label": "Competitive Programmer’s Handbook — Antti Laaksonen"
+                  }
+                ],
+                "detailKey": "base-9-1"
+              }
+            ]
+          },
+          {
+            "title": "12. Яагаад хурдан ажилладаг вэ?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Sort хийх нь $O(n\\log n)$. Дараах for loop арга хэмжээ бүрийг нэг удаа авч, хэдхэн харьцуулалт, update хийнэ: нийт $O(n)$. Хоёрыг нэмэхэд $O(n\\log n)$ болно; sort-ийг орхиод $O(n)$ гэж дүгнэж болохгүй. Аль хэдийн дуусах цагаар эрэмбэлсэн input дээр scan л үлдэнэ."
+              },
+              {
+                "type": "p",
+                "text": "Энэ implementation vector-ийг value-аар авч хуулдаг тул caller-ийн input дээр нэмээд $O(n)$ зай шаардана; sort-ийн recursion stack ч бий. In-place sort хийвэл input-ээс гадна ердийн introsort-ийн stack $O(\\log n)$ орчим. Функцийн мөр хэдхэн байснаар space complexity тогтохгүй, хуулбарыг тооцох хэрэгтэй."
+              },
+              {
+                "type": "p",
+                "text": "Арга хэмжээ бүр жинтэй, нийт жинг ихэсгэх болсон үед энэ proof үйлчлэхгүй. $[0,3),[3,6)$ тус бүр $2$ жинтэй, $[0,6)$ нь $100$ жинтэй байвал тоог ихэсгэх greedy $4$ жин л авна. Солих үед зорилтот хэмжигдэхүүн хадгалагдахгүй тул DP зэрэг өөр арга хэрэгтэй."
+              }
+            ]
+          },
+          {
+            "key": "deep-usage",
+            "title": "13. Хэзээ хэрэглэх, яаж шалгах вэ?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Шинэ greedy бодлогод “би optimal шийдлийн нэг сонголтыг өөрийнхөөр сольбол юу эвдрэх вэ?” гэж асуу. Дараагийн сонголтын боломж багасахгүй, зорилтот утга муудахгүй хоёрыг тусад нь шалга. Хоёроос зургаан жижиг элемент дээр бүх subset-ийг тоочдог oracle бичээд таамагласан дүрмээ шалгах нь counterexample олоход тустай."
+              },
+              {
+                "text": "Ижил жинтэй maximum interval count-д хэрэглэ. Кино бүр value-тай бол earliest finish нь maximum value-г батлахгүй; weighted interval DP хэрэгтэй. Greedy дүрмийн correctness зорилгоос хамаардаг.",
+                "type": "p",
+                "detailKey": "depth-usage"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Нэг цаг дээр залгасан интервалууд.",
+                  "Бүх кино давхцсан, мөн input эрэмбэлэгдээгүй."
+                ],
+                "detailKey": "depth-boundaries"
+              },
+              {
+                "text": "Эхлээд эдгээр жижиг тохиолдлын хариуг гараар таамагла. Дараа нь program-аа ажиллуулж тулга. Зөрвөл output-ийг хүчээр засахын оронд state-ийн утга, зааг, transition-оо дахин шалга.",
+                "type": "note",
+                "detailKey": "depth-test-method"
+              }
+            ]
+          },
+          {
+            "key": "deep-program",
+            "title": "14. Бүтэн program ба жишээ input, output",
+            "blocks": [
+              {
+                "text": "Input: $n$ ба $n$ киноны эхлэх, дуусах цаг. Интервал $[l,r)$ тул нэг нь дууссан цагт дараагийнх эхэлж болно. Хамгийн олон киноны тоо гарна.",
+                "type": "p",
+                "detailKey": "depth-input-contract"
+              },
+              {
+                "text": "4\n1 4\n2 3\n3 5\n5 7",
+                "type": "code",
+                "language": "Input",
+                "detailKey": "depth-sample-input"
+              },
+              {
+                "text": "3",
+                "type": "code",
+                "language": "Output",
+                "detailKey": "depth-sample-output"
+              },
+              {
+                "text": "Доорх program-ийг бүтнээр нь нэг файлд хуулж C++17-оор жишээ input-тай ажиллуул. Function нь алгоритмыг хэрэгжүүлнэ; main нь input уншиж, function дуудаад хариу хэвлэнэ. Index-ийн дүрмийг дээрх input тайлбараас шалга.",
+                "type": "note",
+                "detailKey": "depth-program-guide"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nbool compare_intervals(const pair<long long, long long>& a,\n                       const pair<long long, long long>& b) {\n    if (a.second != b.second) {\n        return a.second < b.second;\n    }\n\n    return a.first < b.first;\n}\n\nint max_intervals(vector<pair<long long, long long>> intervals) {\n    sort(intervals.begin(), intervals.end(), compare_intervals);\n\n    long long last_end = LLONG_MIN;\n    int ans = 0;\n\n    for (const auto& interval : intervals) {\n        long long l = interval.first;\n        long long r = interval.second;\n\n        if (l >= last_end) {\n            ans++;\n            last_end = r;\n        }\n    }\n\n    return ans;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<pair<long long, long long>> intervals(n);\n    for (int i = 0; i < n; i++) {\n        cin >> intervals[i].first >> intervals[i].second;\n    }\n    cout << max_intervals(intervals) << '\\n';\n\n    return 0;\n}\n",
+                "type": "code",
+                "language": "C++17",
+                "detailKey": "depth-full-program"
+              }
+            ]
+          },
+          {
+            "key": "deep-exercises",
+            "title": "15. Гурван алхамтай дадлага",
+            "blocks": [
+              {
+                "text": "Hint-ээ нээхээс өмнө өөрөө оролдоорой. Эхний дасгал ойлголт, дараагийнх хэрэглээ, сүүлийнх тайлбар эсвэл өргөтгөл дээр төвлөрнө.",
+                "type": "p",
+                "detailKey": "depth-practice-intro"
+              },
+              {
+                "text": "1. $(1,2),(2,3),(3,4)$-өөс хэдийг авч болох вэ?",
+                "type": "p",
+                "detailKey": "depth-question-0"
+              },
+              {
+                "text": "Half-open definition хэрэглэ.",
+                "type": "note",
+                "label": "Hint харах",
+                "detailKey": "depth-hint-0",
+                "collapsible": true
+              },
+              {
+                "text": "Гурвууланг нь; finish ба start тэнцүү байж болно.",
+                "type": "note",
+                "label": "Хариу ба тайлбар харах",
+                "detailKey": "depth-answer-0",
+                "collapsible": true
+              },
+              {
+                "text": "2. Хамгийн эрт эхэлснийг сонгох нь зөв үү?",
+                "type": "p",
+                "detailKey": "depth-question-1"
+              },
+              {
+                "text": "Нэг урт кино олон богино кинотой давхцуулах counterexample байгуул.",
+                "type": "note",
+                "label": "Hint харах",
+                "detailKey": "depth-hint-1",
+                "collapsible": true
+              },
+              {
+                "text": "Үгүй: $(0,100)$ сонговол $(1,2),(2,3),(3,4)$-ийг алддаг.",
+                "type": "note",
+                "label": "Хариу ба тайлбар харах",
+                "detailKey": "depth-answer-1",
+                "collapsible": true
+              },
+              {
+                "text": "3. Киноны value өөр бол энэ proof-ийн аль хэсэг ажиллахгүй вэ?",
+                "type": "p",
+                "detailKey": "depth-question-2"
+              },
+              {
+                "text": "Exchange хийхэд хариуны value хадгалагдах уу?",
+                "type": "note",
+                "label": "Hint харах",
+                "detailKey": "depth-hint-2",
+                "collapsible": true
+              },
+              {
+                "text": "Earlier finish киноны value бага байж болно, солиход objective буурна. Count-д нэг кино нэг киноор солигдсон нь хангалттай байсан.",
+                "type": "note",
+                "label": "Хариу ба тайлбар харах",
+                "detailKey": "depth-answer-2",
+                "collapsible": true
+              }
+            ]
+          }
+        ],
+        "translations": {
+          "en": {
+            "title": "Greedy — making a safe choice at each step",
+            "summary": "Learn greedy through one concrete problem and the reason its choice is safe.",
+            "sections": [
+              {
+                "title": "1. Start with a small problem",
+                "blocks": [
+                  {
+                    "type": "p",
+                    "text": "Many events compete for one room. Which should we attend to maximize the number of complete events? Checking every subset is correct but gives $2^n$ choices. We want a rule that lets us commit to a choice without reconsidering all earlier decisions."
+                  },
+                  {
+                    "type": "p",
+                    "text": "Every event has equal value and only the count matters. Taking the earliest start fails on $[0,10),[1,2),[2,3)$: it takes one event instead of two. A proposed greedy rule must first survive attempts to construct counterexamples."
+                  },
+                  {
+                    "text": "Movies run during $[1,4),[2,3),[3,5),[5,7)$. Choose the most nonoverlapping movies. Taking $[2,3),[3,5),[5,7)$ gives $3$. A movie may start exactly when the previous one ends.",
+                    "type": "p",
+                    "detailKey": "base-0-0"
+                  }
+                ]
+              },
+              {
+                "title": "2. From the simple approach to the new idea",
+                "blocks": [
+                  {
+                    "type": "p",
+                    "text": "Choosing the earliest finishing available event seems to leave the most room for later choices. This is intuition, not yet a proof. The exchange argument below establishes optimality. Sort by finish time and accept events whose start is at or beyond the current availability boundary."
+                  },
+                  {
+                    "type": "p",
+                    "text": "We use half-open intervals $[l,r)$. One event may start exactly when the previous one ends, so the condition is $l\\ge lastEnd$. Closed intervals or a required break change this condition. Connect the comparator and compatibility rule to the statement rather than memorizing them."
+                  },
+                  {
+                    "text": "Trying every subset gives $2^n$ possibilities. Choosing the earliest finishing available movie leaves as much room as possible for later choices.",
+                    "type": "p",
+                    "detailKey": "base-1-0"
+                  },
+                  {
+                    "text": "Do not confuse earliest finish with shortest duration or earliest start. This problem specifically needs earliest finish; another greedy problem may need a different rule.",
+                    "type": "p",
+                    "detailKey": "base-1-1"
+                  },
+                  {
+                    "text": "Greedy commits to a local choice without revisiting it. The objective here is the number of films, not total duration or value. Short duration is not the same selection criterion as early finishing.",
+                    "type": "p",
+                    "detailKey": "depth-model-0"
+                  },
+                  {
+                    "text": "Choosing the earliest finish leaves the most room for later films. Replace the first film of an optimal schedule with the earliest-finishing one: its finish cannot increase, so later films remain feasible. This exchange proves that an optimum can include the greedy choice.",
+                    "type": "p",
+                    "detailKey": "depth-model-1"
+                  },
+                  {
+                    "text": "Last_end stores the finish of the last accepted film. A later film is compatible when its start is no smaller. Half-open intervals $[l,r)$ permit touching endpoints, explaining the non-strict comparison.",
+                    "type": "p",
+                    "detailKey": "depth-model-2"
+                  }
+                ]
+              },
+              {
+                "title": "3. Vocabulary and notation",
+                "blocks": [
+                  {
+                    "type": "list",
+                    "items": [
+                      "Greedy makes a choice now without later reconsidering it.",
+                      "Interval $[l,r)$ stores start and finish times. Last records the previous finish."
+                    ],
+                    "detailKey": "base-2-0"
+                  }
+                ]
+              },
+              {
+                "title": "4. Walk through the example",
+                "blocks": [
+                  {
+                    "text": "Follow this detailed trace slowly. At each step, identify which stored value changes and why.",
+                    "type": "note",
+                    "detailKey": "depth-trace-intro"
+                  },
+                  {
+                    "rows": [
+                      [
+                        "1",
+                        "Films $(1,4),(2,3),(3,5),(5,7)$ sort by finish as $(2,3),(1,4),(3,5),(5,7)$."
+                      ],
+                      [
+                        "2",
+                        "Take $(2,3)$: last_end $3$, ans $1$."
+                      ],
+                      [
+                        "3",
+                        "Skip $(1,4)$ because start $1<3$ overlaps."
+                      ],
+                      [
+                        "4",
+                        "Take $(3,5)$ because it starts exactly at $3$; last_end becomes $5$."
+                      ],
+                      [
+                        "5",
+                        "Take $(5,7)$ too, giving $3$. Taking the first input film $(1,4)$ could miss this optimum."
+                      ]
+                    ],
+                    "type": "table",
+                    "headers": [
+                      "Step",
+                      "State and reasoning"
+                    ],
+                    "detailKey": "depth-trace"
+                  }
+                ]
+              },
+              {
+                "title": "5. Write the algorithm as steps",
+                "blocks": [
+                  {
+                    "type": "ordered",
+                    "items": [
+                      "Sort by finish time.",
+                      "Choose each compatible interval and update last.",
+                      "Return the number chosen."
+                    ],
+                    "detailKey": "base-4-0"
+                  }
+                ]
+              },
+              {
+                "title": "6. Reading the implementation in parts",
+                "blocks": [
+                  {
+                    "type": "p",
+                    "text": "1. Data: each pair stores the start in first and finish in second. Compare finishes first, then starts to break ties; a strict comparator must not use <=."
+                  },
+                  {
+                    "type": "code",
+                    "language": "C++17",
+                    "text": "return a.second < b.second;"
+                  },
+                  {
+                    "type": "p",
+                    "text": "2. Initialization: no event has been accepted, so set $ans=0$ and $lastEnd$ to the minimum value. This also handles negative start times."
+                  },
+                  {
+                    "type": "code",
+                    "language": "C++17",
+                    "text": "long long last_end = LLONG_MIN;\nint ans = 0;"
+                  },
+                  {
+                    "type": "p",
+                    "text": "3. Main loop: skipping an incompatible event leaves $lastEnd$ unchanged. Only an accepted event increments the count and updates the next availability boundary."
+                  },
+                  {
+                    "type": "code",
+                    "language": "C++17",
+                    "text": "if (l >= last_end) {\n    ans++;\n    last_end = r;\n}"
+                  },
+                  {
+                    "type": "p",
+                    "text": "4. Output: $ans$ counts compatible accepted events. If the task asks which original events were selected, retain their original indices in another vector."
+                  },
+                  {
+                    "type": "code",
+                    "language": "C++17",
+                    "text": "return ans;"
+                  }
+                ]
+              },
+              {
+                "title": "7. C++17 code and how to read it",
+                "blocks": [
+                  {
+                    "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nbool compare_intervals(const pair<long long, long long>& a,\n                       const pair<long long, long long>& b) {\n    if (a.second != b.second) {\n        return a.second < b.second;\n    }\n\n    return a.first < b.first;\n}\n\nint max_intervals(vector<pair<long long, long long>> intervals) {\n    sort(intervals.begin(), intervals.end(), compare_intervals);\n\n    long long last_end = LLONG_MIN;\n    int ans = 0;\n\n    for (const auto& interval : intervals) {\n        long long l = interval.first;\n        long long r = interval.second;\n\n        if (l >= last_end) {\n            ans++;\n            last_end = r;\n        }\n    }\n\n    return ans;\n}\n",
+                    "type": "code",
+                    "language": "C++17",
+                    "detailKey": "base-5-0"
+                  },
+                  {
+                    "text": "Pair.first is the start and pair.second is the finish. Require valid intervals with $l<r$. The comparator sorts by ascending finish time.",
+                    "type": "p",
+                    "detailKey": "base-5-1"
+                  },
+                  {
+                    "type": "ordered",
+                    "items": [
+                      "Compare_intervals orders by finish, then start, using a strict comparator.",
+                      "Last_end starts very small so the first film can be accepted.",
+                      "Update last_end only for accepted films, never from a skipped film."
+                    ],
+                    "detailKey": "depth-code-walk"
+                  },
+                  {
+                    "text": "Section 13 contains a complete runnable program with the same implementation, input format and checked sample output.",
+                    "type": "note",
+                    "detailKey": "depth-code-program"
+                  }
+                ]
+              },
+              {
+                "title": "8. Proof of correctness",
+                "blocks": [
+                  {
+                    "type": "p",
+                    "text": "Let $g$ be the greedy choice in the remaining problem and $o$ the first event of an optimal schedule. Since $g$ finishes earliest, $end(g)\\le end(o)$. Replacing $o$ with $g$ preserves the count and cannot conflict with later events, which already started after $end(o)$."
+                  },
+                  {
+                    "type": "p",
+                    "text": "Therefore an optimal schedule exists that starts with $g$. What remains after $g$ is the same scheduling problem on fewer events. Induction on that remaining set proves every greedy choice can be part of an optimal schedule. The safe replacement is the proof, beyond merely saying that an early finish looks good."
+                  }
+                ]
+              },
+              {
+                "title": "9. Avoid these mistakes",
+                "blocks": [
+                  {
+                    "type": "list",
+                    "items": [
+                      "Not every greedy rule works: justify the choice or search for counterexamples.",
+                      "Use $l\\ge\\mathrm{last}$ because touching endpoints are allowed."
+                    ],
+                    "detailKey": "base-7-0"
+                  }
+                ]
+              },
+              {
+                "title": "10. Try it and check your answer",
+                "blocks": [
+                  {
+                    "text": "What happens if we choose the earliest start among $[1,10),[2,3),[3,4)$?",
+                    "type": "p",
+                    "detailKey": "base-8-0"
+                  },
+                  {
+                    "text": "Check your answer: Only $1$ movie, while the optimum is $2$.",
+                    "type": "note",
+                    "label": "Show answer",
+                    "detailKey": "base-8-1",
+                    "collapsible": true
+                  },
+                  {
+                    "text": "Do $[0,2)$ and $[2,4)$ overlap?",
+                    "type": "p",
+                    "detailKey": "base-8-2"
+                  },
+                  {
+                    "text": "Check your answer: No.",
+                    "type": "note",
+                    "label": "Show answer",
+                    "detailKey": "base-8-3",
+                    "collapsible": true
+                  }
+                ]
+              },
+              {
+                "title": "11. What should you learn next?",
+                "blocks": [
+                  {
+                    "text": "Once you can trace the example without looking at the code, write the implementation yourself. Compare it with a simple loop on new inputs. The links offer another explanation; this lesson’s prose, examples and code were written for Erdene Club.",
+                    "type": "note",
+                    "detailKey": "base-9-0"
+                  },
+                  {
+                    "type": "links",
+                    "items": [
+                      {
+                        "url": "https://cses.fi/book/book.pdf",
+                        "label": "Competitive Programmer’s Handbook — Antti Laaksonen"
+                      }
+                    ],
+                    "detailKey": "base-9-1"
+                  }
+                ]
+              },
+              {
+                "title": "12. Why does it run quickly?",
+                "blocks": [
+                  {
+                    "type": "p",
+                    "text": "Sorting costs $O(n\\log n)$. The following scan visits each event once and performs constant work, costing $O(n)$. Together they are $O(n\\log n)$; do not omit sorting and claim linear time. Only already finish-sorted input permits a linear scan alone."
+                  },
+                  {
+                    "type": "p",
+                    "text": "This implementation takes the vector by value, so it uses an additional $O(n)$ copy besides the caller's input, plus sorting stack space. Sorting in place avoids the copy, with typical introsort using about $O(\\log n)$ stack. A short function can still allocate a large copy."
+                  },
+                  {
+                    "type": "p",
+                    "text": "The proof no longer applies when events carry weights and total weight is the objective. Events $[0,3),[3,6)$ of weight $2$ each beat a weight-$100$ event $[0,6)$ by count but not by weight. The exchange does not preserve the objective, so another method such as DP is needed."
+                  }
+                ]
+              },
+              {
+                "key": "deep-usage",
+                "title": "13. When to use it and how to test it",
+                "blocks": [
+                  {
+                    "type": "p",
+                    "text": "For a new greedy problem ask: what breaks if I replace a choice in an optimal solution with mine? Separately check that future feasibility does not shrink and that the objective does not worsen. A small oracle enumerating subsets of two to six elements helps find counterexamples to a proposed rule."
+                  },
+                  {
+                    "text": "Use it for maximum unweighted interval count. With different values, earliest finishing does not ensure maximum total value; weighted interval DP is needed. Correctness depends on the objective.",
+                    "type": "p",
+                    "detailKey": "depth-usage"
+                  },
+                  {
+                    "type": "list",
+                    "items": [
+                      "Test intervals touching at endpoints.",
+                      "Test all-overlapping and unsorted inputs."
+                    ],
+                    "detailKey": "depth-boundaries"
+                  },
+                  {
+                    "text": "First predict these small cases by hand. Then run the program and compare. A mismatch is a reason to inspect the state definition, boundaries and transition, rather than patching the output.",
+                    "type": "note",
+                    "detailKey": "depth-test-method"
+                  }
+                ]
+              },
+              {
+                "key": "deep-program",
+                "title": "14. Complete program and sample I/O",
+                "blocks": [
+                  {
+                    "text": "Input: $n$ and $n$ start/finish pairs. Intervals are $[l,r)$, so a film may start when another ends. Print the maximum number of nonoverlapping films.",
+                    "type": "p",
+                    "detailKey": "depth-input-contract"
+                  },
+                  {
+                    "text": "4\n1 4\n2 3\n3 5\n5 7",
+                    "type": "code",
+                    "language": "Input",
+                    "detailKey": "depth-sample-input"
+                  },
+                  {
+                    "text": "3",
+                    "type": "code",
+                    "language": "Output",
+                    "detailKey": "depth-sample-output"
+                  },
+                  {
+                    "text": "Copy the entire program below into one file. Run it as C++17 using the sample input. The function handles the algorithm; main reads the input, calls it and prints the answer. Indices follow the input contract above.",
+                    "type": "note",
+                    "detailKey": "depth-program-guide"
+                  },
+                  {
+                    "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nbool compare_intervals(const pair<long long, long long>& a,\n                       const pair<long long, long long>& b) {\n    if (a.second != b.second) {\n        return a.second < b.second;\n    }\n\n    return a.first < b.first;\n}\n\nint max_intervals(vector<pair<long long, long long>> intervals) {\n    sort(intervals.begin(), intervals.end(), compare_intervals);\n\n    long long last_end = LLONG_MIN;\n    int ans = 0;\n\n    for (const auto& interval : intervals) {\n        long long l = interval.first;\n        long long r = interval.second;\n\n        if (l >= last_end) {\n            ans++;\n            last_end = r;\n        }\n    }\n\n    return ans;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<pair<long long, long long>> intervals(n);\n    for (int i = 0; i < n; i++) {\n        cin >> intervals[i].first >> intervals[i].second;\n    }\n    cout << max_intervals(intervals) << '\\n';\n\n    return 0;\n}\n",
+                    "type": "code",
+                    "language": "C++17",
+                    "detailKey": "depth-full-program"
+                  }
+                ]
+              },
+              {
+                "key": "deep-exercises",
+                "title": "15. Three practice steps",
+                "blocks": [
+                  {
+                    "text": "Try each question before opening its hint. The first checks the definition, the second applies the method, and the third asks you to explain or extend it.",
+                    "type": "p",
+                    "detailKey": "depth-practice-intro"
+                  },
+                  {
+                    "text": "1. How many of $(1,2),(2,3),(3,4)$ can be accepted?",
+                    "type": "p",
+                    "detailKey": "depth-question-0"
+                  },
+                  {
+                    "text": "Use the half-open definition.",
+                    "type": "note",
+                    "label": "Show hint",
+                    "detailKey": "depth-hint-0",
+                    "collapsible": true
+                  },
+                  {
+                    "text": "All three; finish and next start may be equal.",
+                    "type": "note",
+                    "label": "Show answer and explanation",
+                    "detailKey": "depth-answer-0",
+                    "collapsible": true
+                  },
+                  {
+                    "text": "2. Is choosing the earliest start always correct?",
+                    "type": "p",
+                    "detailKey": "depth-question-1"
+                  },
+                  {
+                    "text": "Let one long film overlap many short ones.",
+                    "type": "note",
+                    "label": "Show hint",
+                    "detailKey": "depth-hint-1",
+                    "collapsible": true
+                  },
+                  {
+                    "text": "No: choosing $(0,100)$ loses $(1,2),(2,3),(3,4)$.",
+                    "type": "note",
+                    "label": "Show answer and explanation",
+                    "detailKey": "depth-answer-1",
+                    "collapsible": true
+                  },
+                  {
+                    "text": "3. Which part of the proof fails with different film values?",
+                    "type": "p",
+                    "detailKey": "depth-question-2"
+                  },
+                  {
+                    "text": "Does exchanging preserve total value?",
+                    "type": "note",
+                    "label": "Show hint",
+                    "detailKey": "depth-hint-2",
+                    "collapsible": true
+                  },
+                  {
+                    "text": "The earlier-finishing film may have lower value, so exchanging can reduce the objective. For count, replacing one film by one film was sufficient.",
+                    "type": "note",
+                    "label": "Show answer and explanation",
+                    "detailKey": "depth-answer-2",
+                    "collapsible": true
+                  }
+                ]
+              }
+            ],
+            "prerequisites": "Sorting and looking for small counterexamples."
+          }
+        },
+        "prerequisites": "Sorting ба жижиг counterexample хайх.",
+        "prerequisiteIds": [
+          "sorting",
+          "brute-force"
+        ],
+        "contentEdition": "learning-2026-10-25-v1"
+      }
+    },
+    "dynamic-programming": {
+      "baseHashes": [
+        "cf0095c53ffe596586cfacbed2f08f54a41c703617c4ac6f23587522fda1d132"
+      ],
+      "body": {
+        "id": "dynamic-programming",
+        "level": "Дунд шат",
+        "order": 24,
+        "title": "DP-ийн эхлэл — хариунуудаа хадгалах",
+        "aliases": "dynamic-programming DP-ийн эхлэл — хариунуудаа хадгалах Introduction to DP — saving smaller answers dp dynamic programming memoization tabulation төлөв transition recurrence",
+        "related": [
+          "recursion",
+          "brute-force",
+          "grid-dp"
+        ],
+        "summary": "State, base case, transition-ийг шатны жижиг бодлого дээр нэг нэгээр нь ойлгоё.",
+        "category": "Dynamic programming",
+        "levelKey": "intermediate",
+        "sections": [
+          {
+            "title": "1. Эхлээд жижиг бодлого бодъё",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "$n$ гишгүүртэй шатаар нэг удаад $1$ эсвэл $2$ гишгүүр ахиж гарна. Ялгаатай хэдэн дарааллаар оройд хүрэх вэ? $n=4$ үед $1+1+1+1$, $1+1+2$, $1+2+1$, $2+1+1$, $2+2$ гэсэн таван арга байна. Энд $1+2$ ба $2+1$ нь өөр дараалал гэдгийг эхлээд тогтооё."
+              },
+              {
+                "type": "p",
+                "text": "Бүх алхмын дарааллыг recursion-аар үүсгэвэл зөв. Гэхдээ $5$ гишгүүр үлдсэн ижил асуудлыг өөр өөр замаар ирэх бүрд дахин бодно. DP хэрэгтэй болсон шалтгаан нь recursion өөрөө бус, ижил үлдсэн асуудал олон дахин гарч байгаад оршино."
+              },
+              {
+                "text": "$n$ шатанд нэг эсвэл хоёр алхмаар өгсөнө. $n=3$ үед $1+1+1$, $1+2$, $2+1$ гэсэн $3$ арга байна. $n$ том бол хэдэн арга вэ?",
+                "type": "p",
+                "detailKey": "base-0-0"
+              }
+            ]
+          },
+          {
+            "title": "2. Энгийн аргаас шинэ санаа руу",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "State-аа бүтэн өгүүлбэрээр тодорхойл: $dp_i$ нь яг $i$ гишгүүрийг туулах алхмын дарааллын тоо. Ирээдүйн боломжийг шийдэхэд өмнөх алхмуудын бүх түүх биш, үлдсэн зай л хэрэгтэй. Энэ нь ижил state-уудыг нэгтгэж болох шалтгаан."
+              },
+              {
+                "type": "p",
+                "text": "Сүүлийн алхмаар нь ангилъя. Сүүлийн алхам $1$ байсан бүх дараалал нь $i-1$ гишгүүрт хүрсэн нэг дарааллын ард $1$ залгасантай адил. Сүүлийн алхам $2$ байсан нь $i-2$-ын араас $2$ залгасан. Иймээс $dp_i=dp_{i-1}+dp_{i-2}$; зөвхөн $i\\ge2$ үед хоёр дахь гишүүн орно."
+              },
+              {
+                "type": "p",
+                "text": "$dp_0=1$: огт алхахгүй хоосон дараалал нэг бий. Үүнийг $0$ гэвэл $dp_1$, $dp_2$ цаашлаад бүх тоо буруу болно. $i$-г өсөхөөр боловсруулахад хамаарах жижиг state-ууд аль хэдийн бэлэн. Энэ dependency order нь bottom-up DP-ийн үндэс."
+              },
+              {
+                "text": "Сүүлийн алхмыг $1$ эсвэл $2$ гэж салгасан recursion бичиж болно. Гэхдээ жижиг $n$-ийн хариуг дахин дахин асууна. Нэгэнт бодсон жижиг хариуг array-д хадгалъя.",
+                "type": "p",
+                "detailKey": "base-1-0"
+              },
+              {
+                "text": "Сүүлийн алхам $1$ бол өмнө нь $i-1$, $2$ бол $i-2$ дээр байсан. Энэ хоёр бүлэг давхцахгүй тул тоонуудыг нэмнэ. $\\mathrm{dp}[i]=\\mathrm{dp}[i-1]+\\mathrm{dp}[i-2]$.",
+                "type": "p",
+                "detailKey": "base-1-1"
+              },
+              {
+                "text": "DP-г formula цээжлэхээс биш state-ийн утга бичихээс эхэл. Энд $dp[i]$ нь яг $i$ гишгүүр хүрэх ordered алхмын дарааллын тоо. $1,2$ ба $2,1$ өөр зам. Зөвхөн сүүлийн хэдэн алхмыг мэдэхэд цаашдын боломж бүрэн тодорхой болох state сонгоно.",
+                "type": "p",
+                "detailKey": "depth-model-0"
+              },
+              {
+                "text": "Сүүлийн алхам $1$ эсвэл $2$. Эхний бүлэг өмнөх $i-1$-д хүрсэн зам бүрт $1$ нэмснээс, хоёр дахь нь $i-2$-д хүрсэн зам бүрт $2$ нэмснээс үүснэ. Бүлгүүд сүүлийн алхмаараа ялгаатай тул давхцахгүй: $dp[i]=dp[i-1]+dp[i-2]$.",
+                "type": "p",
+                "detailKey": "depth-model-1"
+              },
+              {
+                "text": "Base case $dp[0]$=$1$ нь “юу ч хийхгүй” ганц зам. Энэ base байснаар эхний алхмууд ч ижил recurrence-ээр гарна. Өсөх $i$ дарааллаар бодвол унших өмнөх state-үүд бэлэн байна. Memoization ижил state-ийг хэрэгтэй үед recursion-аар, tabulation энэ шиг дарааллаар боддог.",
+                "type": "p",
+                "detailKey": "depth-model-2"
+              }
+            ]
+          },
+          {
+            "title": "3. Нэр томъёо ба тэмдэглэгээ",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "State $\\mathrm{dp}[i]$: яг $i$ шатанд хүрэх аргын тоо.",
+                  "Base case $\\mathrm{dp}[0]=1$: ямар ч алхам хийхгүй байх нэг арга.",
+                  "Transition нь жижиг state-уудаас шинэ state бодох дүрэм."
+                ],
+                "detailKey": "base-2-0"
+              }
+            ]
+          },
+          {
+            "title": "4. Жишээг гараар ажиллуулъя",
+            "blocks": [
+              {
+                "text": "Энэ жишээг алхам бүрээр нь удаан дагаарай. Алхам бүрт ямар хадгалсан утга, яагаад өөрчлөгдөж байгааг ажигла.",
+                "type": "note",
+                "detailKey": "depth-trace-intro"
+              },
+              {
+                "rows": [
+                  [
+                    "1",
+                    "$dp[0]=1$. $i=1$: өмнөх нэг замыг нэг алхмаар сунгаж $dp[1]=1$."
+                  ],
+                  [
+                    "2",
+                    "$i=2$: $1+1=2$, замууд $(1,1)$ ба $(2)$."
+                  ],
+                  [
+                    "3",
+                    "$i=3$: $2+1=3$, $(1,1,1),(1,2),(2,1)$."
+                  ],
+                  [
+                    "4",
+                    "$i=4$: $3+2=5$; шинэ зам бүрийн сүүлийн алхмаар хоёр бүлэг үүсгэнэ."
+                  ],
+                  [
+                    "5",
+                    "$i=5$: $5+3=8$. DP table $[1,1,2,3,5,8]$."
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Алхам",
+                  "Төлөв ба тайлбар"
+                ],
+                "detailKey": "depth-trace"
+              }
+            ]
+          },
+          {
+            "title": "5. Алгоритмаа алхам болгон бичье",
+            "blocks": [
+              {
+                "type": "ordered",
+                "items": [
+                  "Нэг өгүүлбэрээр state-ийн утгыг бич.",
+                  "Base case-ээ тавь.",
+                  "Жижигээс том руу transition хий; эцсийн state-ийг буцаа."
+                ],
+                "detailKey": "base-4-0"
+              }
+            ]
+          },
+          {
+            "title": "6. Implementation-ийг хэсэг бүрээр унших",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "1. Өгөгдөл: $dp_i$-ийн утга нь хамгийн бага алхам биш, дарааллын тоо. Энэ өгүүлбэр өөрчлөгдвөл transition ч өөрчлөгдөнө."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "vector<long long> dp(n + 1, 0);"
+              },
+              {
+                "type": "p",
+                "text": "2. Initialization: хоосон дарааллыг нэг гэж тооцох нь цаашдын бүх хариуг эхлүүлэх суурь болно."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "dp[0] = 1;"
+              },
+              {
+                "type": "p",
+                "text": "3. Гол loop: $i$-г өсгөхөд өмнөх хоёр state бэлэн. $i=1$ дээр $i-2$ сөрөг болох тул guard зайлшгүй хэрэгтэй."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "dp[i] = dp[i - 1];\n\nif (i >= 2) {\n    dp[i] = (dp[i] + dp[i - 2]) % MOD;\n}"
+              },
+              {
+                "type": "p",
+                "text": "4. Output: $dp_n$ нь яг input-ийн хэмжээтэй асуудлын хариу; array-ийн бүх state-ийг нэмж болохгүй, тэд өөр өөр өндөрт хүрсэн дарааллыг тоолсон."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "return dp[n];"
+              }
+            ]
+          },
+          {
+            "title": "7. C++17 код ба түүнийг унших нь",
+            "blocks": [
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nlong long stair_ways(int n) {\n    const long long MOD = 1000000007;\n    vector<long long> dp(n + 1, 0);\n    dp[0] = 1;\n\n    for (int i = 1; i <= n; i++) {\n        dp[i] = dp[i - 1];\n\n        if (i >= 2) {\n            dp[i] = (dp[i] + dp[i - 2]) % MOD;\n        }\n    }\n\n    return dp[n];\n}\n",
+                "type": "code",
+                "language": "C++17",
+                "detailKey": "base-5-0"
+              },
+              {
+                "text": "Код санаатайгаар бүтэн dp array хэрэглэнэ. Хоёр variable болгон багасгах нь одоо гол зорилго биш. Том аргын тоог $10^9+7$ modulo хадгална. $n\\ge0$ байна.",
+                "type": "p",
+                "detailKey": "base-5-1"
+              },
+              {
+                "type": "ordered",
+                "items": [
+                  "Zero initialization нь count-ийн default $0$; unreachable state-д зам байхгүй.",
+                  "$i\\ge2$ шалгалт нь $dp[i-2]$-ийн negative index-ээс хамгаална.",
+                  "MOD нь их count-ийг fixed-width хэмжээнд хадгална; бодит тоог биш remainder буцаана."
+                ],
+                "detailKey": "depth-code-walk"
+              },
+              {
+                "text": "Хичээлийн төгсгөлийн бүтэн program-ийн хэсэгт энэ хэрэгжүүлэлтийг ашигласан, input уншдаг бүтэн program болон шалгасан жишээ output бий.",
+                "type": "note",
+                "detailKey": "depth-code-program"
+              }
+            ]
+          },
+          {
+            "title": "8. Зөв байдлын баталгаа",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Induction-ийн суурь $i=0$ дээр үнэн. $i$-ээс өмнөх бүх state зөв гэж үзье. Ямар ч valid дарааллын сүүлийн алхам нь $1$ эсвэл $2$ тул хоёр бүлэг бүх аргыг хамарна. Сүүлийн алхам өөр учраас хоёр бүлэг давхцахгүй."
+              },
+              {
+                "type": "p",
+                "text": "Бүлэг тус бүрээс сүүлийн алхмыг авахад харгалзах жижиг state-ийн яг нэг дараалал үлдэнэ. Эсрэгээрээ жижиг state-ийн дараалал бүрд сүүлийн алхмыг залгахад valid нэг арга үүснэ. Энэ one-to-one хамаарал нь transition-ийн тооллыг батална. Induction-оор $dp_n$ зөв."
+              },
+              {
+                "type": "p",
+                "text": "Modulo авах нь яг тоог хадгалахгүй ч хариуны үлдэгдлийг хадгална: $(a+b)\\bmod M=((a\\bmod M)+(b\\bmod M))\\bmod M$. Хариу маш хурдан өсдөг тул modulo-г төгсгөлд ганц удаа авахад өмнө нь overflow болсон байж болно."
+              }
+            ]
+          },
+          {
+            "title": "9. Алдаанаас сэргийлье",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "State-ийн утгаа бичихгүйгээр томъёо таахгүй.",
+                  "$\\mathrm{dp}[0]=0$ бол бүх хариу тэг болно."
+                ],
+                "detailKey": "base-7-0"
+              }
+            ]
+          },
+          {
+            "title": "10. Өөрөө бодоод хариугаа шалга",
+            "blocks": [
+              {
+                "text": "$n=5$ хэдэн арга вэ?",
+                "type": "p",
+                "detailKey": "base-8-0"
+              },
+              {
+                "text": "Хариугаа шалгах: $8$.",
+                "type": "note",
+                "label": "Хариу харах",
+                "detailKey": "base-8-1",
+                "collapsible": true
+              },
+              {
+                "text": "$n=0$ яагаад $1$ вэ?",
+                "type": "p",
+                "detailKey": "base-8-2"
+              },
+              {
+                "text": "Хариугаа шалгах: Алхам хийхгүй байх нэг сонголт бий.",
+                "type": "note",
+                "label": "Хариу харах",
+                "detailKey": "base-8-3",
+                "collapsible": true
+              }
+            ]
+          },
+          {
+            "title": "11. Дараа нь юу сурах вэ?",
+            "blocks": [
+              {
+                "text": "Жишээг код харалгүй гараар хийж чадсан бол reference code-ийг өөрөө дахин бич. Шинэ input дээр хариуг loop-оор тооцсон хувилбартай тулга. Дараах холбоосууд нь өөр тайлбар уншихад зориулсан; эндэх текст, жишээ, кодыг Erdene Club-д зориулан шинээр бичсэн.",
+                "type": "note",
+                "detailKey": "base-9-0"
+              },
+              {
+                "type": "links",
+                "items": [
+                  {
+                    "url": "https://usaco.guide/gold/intro-dp",
+                    "label": "USACO Guide — Introduction to DP"
+                  }
+                ],
+                "detailKey": "base-9-1"
+              }
+            ]
+          },
+          {
+            "title": "12. Яагаад хурдан ажилладаг вэ?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Naive recursion ижил state-уудыг олон удаа бодож, exponential тооны дуудлага үүсгэнэ; $O(2^n)$ гэсэн дээд bound авч болно. DP-д $n+1$ state байна. $i=1$ дээр нэг, түүнээс хойш хоёрхон өмнөх state унших тул нийт ажлын хэмжээ $O(n)$. “DP учраас хурдан” биш, state бүрийг нэг удаа боддог учраас хурдан."
+              },
+              {
+                "type": "p",
+                "text": "Энэ program $n+1$ ширхэг long long хадгалдаг тул $O(n)$ space, ойролцоогоор $8(n+1)$ byte ашиглана. Зөвхөн эцсийн тоо хэрэгтэй бол хамгийн сүүлийн хоёр state хангалттай, $O(1)$ нэмэлт зайд шахаж болно. Харин зам сэргээх эсвэл олон state-ийн хариу шаардах үед array-г шууд хаяж болохгүй."
+              },
+              {
+                "type": "p",
+                "text": "$n$ нь $10^{18}$ зэрэг асар том байвал $O(n)$ ч хангалтгүй. Энэ recurrence-д matrix exponentiation зэрэг хурдан арга бий; өнөөдрийн DP-ийг бүх constraint-д тохирно гэж үзэхгүй. Ерөнхий DP-д state-ийн тоо, нэг state-ийн transition-ийн өртөг, preprocessing болон space-ийг тус тус тооц."
+              }
+            ]
+          },
+          {
+            "key": "deep-usage",
+            "title": "13. Хэзээ хэрэглэх, яаж шалгах вэ?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Шинэ бодлогод нэгэнт сонгосон prefix-ийн ямар мэдээлэл ирээдүйд нөлөөлж байгааг асуу. Хэрэв жишээ нь өмнөх сонгосон өнгө чухал бол зөвхөн index state хангалтгүй. State-ийг ихэсгэхээс өмнө ижил state гэж нэгтгэсэн хоёр түүхийн үргэлжлэх боломж үнэхээр ижил эсэхийг шалга."
+              },
+              {
+                "type": "p",
+                "text": "Minimum, maximum, counting гэсэн зорилго бүрийн base case, unreachable утга ялгаатай. Тоолох бодлогод $0$, minimum бодлогод ихэвчлэн $INF$ хэрэгтэй. State-ийн өгүүлбэр ба transition-ийн proof-оо кодоос өмнө бичвэл буруу initialization болон давхар тооллыг эрт илрүүлнэ."
+              },
+              {
+                "text": "Count, minimum cost, maximum score бодлогод state, transition, base, order гэсэн дөрвөн асуултыг эхэлж хариул. Minimum DP-д default $0$ тавих нь ихэвчлэн буруу: unreachable-г INF болгоно. State ижил ч ирээдүйн боломж өөр байвал мэдээлэл дутуу байна.",
+                "type": "p",
+                "detailKey": "depth-usage"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "$n=0$, $n=1$, $n=2$ base case-үүд.",
+                  "Жижиг $n$ дээр замуудыг brute force-аар жагсааж DP count-тай тулга."
+                ],
+                "detailKey": "depth-boundaries"
+              },
+              {
+                "text": "Эхлээд эдгээр жижиг тохиолдлын хариуг гараар таамагла. Дараа нь program-аа ажиллуулж тулга. Зөрвөл output-ийг хүчээр засахын оронд state-ийн утга, зааг, transition-оо дахин шалга.",
+                "type": "note",
+                "detailKey": "depth-test-method"
+              }
+            ]
+          },
+          {
+            "key": "deep-program",
+            "title": "14. Бүтэн program ба жишээ input, output",
+            "blocks": [
+              {
+                "text": "Input: $n\\ge0$. $1$ эсвэл $2$ гишгүүрээр өгсөх замын тоог $10^9+7$-оор хэвлэнэ. $n=0$ үед хоосон замыг нэг гэж тоолно.",
+                "type": "p",
+                "detailKey": "depth-input-contract"
+              },
+              {
+                "text": "5",
+                "type": "code",
+                "language": "Input",
+                "detailKey": "depth-sample-input"
+              },
+              {
+                "text": "8",
+                "type": "code",
+                "language": "Output",
+                "detailKey": "depth-sample-output"
+              },
+              {
+                "text": "Доорх program-ийг бүтнээр нь нэг файлд хуулж C++17-оор жишээ input-тай ажиллуул. Function нь алгоритмыг хэрэгжүүлнэ; main нь input уншиж, function дуудаад хариу хэвлэнэ. Index-ийн дүрмийг дээрх input тайлбараас шалга.",
+                "type": "note",
+                "detailKey": "depth-program-guide"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nlong long stair_ways(int n) {\n    const long long MOD = 1000000007;\n    vector<long long> dp(n + 1, 0);\n    dp[0] = 1;\n\n    for (int i = 1; i <= n; i++) {\n        dp[i] = dp[i - 1];\n\n        if (i >= 2) {\n            dp[i] = (dp[i] + dp[i - 2]) % MOD;\n        }\n    }\n\n    return dp[n];\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    cout << stair_ways(n) << '\\n';\n\n    return 0;\n}\n",
+                "type": "code",
+                "language": "C++17",
+                "detailKey": "depth-full-program"
+              }
+            ]
+          },
+          {
+            "key": "deep-exercises",
+            "title": "15. Гурван алхамтай дадлага",
+            "blocks": [
+              {
+                "text": "Hint-ээ нээхээс өмнө өөрөө оролдоорой. Эхний дасгал ойлголт, дараагийнх хэрэглээ, сүүлийнх тайлбар эсвэл өргөтгөл дээр төвлөрнө.",
+                "type": "p",
+                "detailKey": "depth-practice-intro"
+              },
+              {
+                "text": "1. $n=4$ дээр яагаад $5$ зам вэ?",
+                "type": "p",
+                "detailKey": "depth-question-0"
+              },
+              {
+                "text": "Сүүлийн $1$ ба $2$-оор бүлэглэ.",
+                "type": "note",
+                "label": "Hint харах",
+                "detailKey": "depth-hint-0",
+                "collapsible": true
+              },
+              {
+                "text": "$dp[3]+dp[2]=3+2=5$. Бүлгүүд сүүлийн алхмаараа ялгаатай.",
+                "type": "note",
+                "label": "Хариу ба тайлбар харах",
+                "detailKey": "depth-answer-0",
+                "collapsible": true
+              },
+              {
+                "text": "2. $dp[0]$-ийг $0$ тавибал?",
+                "type": "p",
+                "detailKey": "depth-question-1"
+              },
+              {
+                "text": "Эхний хоёр state-ийг бод.",
+                "type": "note",
+                "label": "Hint харах",
+                "detailKey": "depth-hint-1",
+                "collapsible": true
+              },
+              {
+                "text": "Бүх count $0$ болж эхний зам ч үүсэхгүй. Empty path нэг байх ёстой.",
+                "type": "note",
+                "label": "Хариу ба тайлбар харах",
+                "detailKey": "depth-answer-1",
+                "collapsible": true
+              },
+              {
+                "text": "3. Алхам $1,3$ бол recurrence ямар вэ?",
+                "type": "p",
+                "detailKey": "depth-question-2"
+              },
+              {
+                "text": "Сүүлийн алхмын хоёр бүлгийг солино.",
+                "type": "note",
+                "label": "Hint харах",
+                "detailKey": "depth-hint-2",
+                "collapsible": true
+              },
+              {
+                "text": "$dp[i]=dp[i-1]+dp[i-3]$, хоёр дахь term зөвхөн $i\\ge3$ үед. Base $dp[0]$=$1$ хэвээр.",
+                "type": "note",
+                "label": "Хариу ба тайлбар харах",
+                "detailKey": "depth-answer-2",
+                "collapsible": true
+              }
+            ]
+          }
+        ],
+        "translations": {
+          "en": {
+            "title": "Introduction to DP — saving smaller answers",
+            "summary": "Learn states, base cases and transitions one at a time through a stair problem.",
+            "sections": [
+              {
+                "title": "1. Start with a small problem",
+                "blocks": [
+                  {
+                    "type": "p",
+                    "text": "You climb a staircase of $n$ steps, moving up by $1$ or $2$ each time. How many sequences reach the top? For $n=4$ they are $1+1+1+1$, $1+1+2$, $1+2+1$, $2+1+1$, and $2+2$. First establish that order matters: $1+2$ and $2+1$ are different sequences."
+                  },
+                  {
+                    "type": "p",
+                    "text": "Generating every sequence recursively is correct. However, the same problem with five steps remaining is solved again whenever a different prefix reaches it. DP is useful because those residual problems repeat, not simply because recursion is present."
+                  },
+                  {
+                    "text": "Climb $n$ stairs using steps of size one or two. For $n=3$, the routes are $1+1+1$, $1+2$, and $2+1$: three ways. What about larger $n$?",
+                    "type": "p",
+                    "detailKey": "base-0-0"
+                  }
+                ]
+              },
+              {
+                "title": "2. From the simple approach to the new idea",
+                "blocks": [
+                  {
+                    "type": "p",
+                    "text": "Define the state in a full sentence: $dp_i$ counts sequences that climb exactly $i$ steps. Future possibilities depend on the remaining distance, not the entire earlier history. That is why different paths reaching the same state can share one computed answer."
+                  },
+                  {
+                    "type": "p",
+                    "text": "Classify sequences by their final move. Those ending in $1$ correspond to a sequence reaching $i-1$ followed by $1$; those ending in $2$ correspond to one reaching $i-2$ followed by $2$. Hence $dp_i=dp_{i-1}+dp_{i-2}$, with the second term included only for $i\\ge2$."
+                  },
+                  {
+                    "type": "p",
+                    "text": "Set $dp_0=1$: the empty sequence is one way to climb zero steps. Setting it to zero corrupts every later answer. Processing increasing $i$ ensures all smaller dependencies are ready; that dependency order is the basis of bottom-up DP."
+                  },
+                  {
+                    "text": "A recursion can split by the final step, but repeatedly recomputes the same smaller answers. Save those answers in an array.",
+                    "type": "p",
+                    "detailKey": "base-1-0"
+                  },
+                  {
+                    "text": "A final step of one comes from $i-1$; a final step of two comes from $i-2$. These groups do not overlap, so add their counts: $\\mathrm{dp}[i]=\\mathrm{dp}[i-1]+\\mathrm{dp}[i-2]$.",
+                    "type": "p",
+                    "detailKey": "base-1-1"
+                  },
+                  {
+                    "text": "Start DP by defining a state rather than memorizing a formula. Here $dp[i]$ counts ordered step sequences reaching exactly stair $i$. Sequences $1,2$ and $2,1$ are different. A state must contain all information needed for future choices.",
+                    "type": "p",
+                    "detailKey": "depth-model-0"
+                  },
+                  {
+                    "text": "The last step is $1$ or $2$. The first group extends paths to $i-1$ by $1$; the second extends paths to $i-2$ by $2$. Their last steps differ, so the groups are disjoint: $dp[i]=dp[i-1]+dp[i-2]$.",
+                    "type": "p",
+                    "detailKey": "depth-model-1"
+                  },
+                  {
+                    "text": "Base case $dp[0]$=$1$ represents the single empty path. It lets early answers follow the same recurrence. Increasing $i$ ensures dependencies are ready. Memoization computes states on demand through recursion; tabulation fills them in a chosen order.",
+                    "type": "p",
+                    "detailKey": "depth-model-2"
+                  }
+                ]
+              },
+              {
+                "title": "3. Vocabulary and notation",
+                "blocks": [
+                  {
+                    "type": "list",
+                    "items": [
+                      "State $\\mathrm{dp}[i]$: the number of ways to reach exactly stair $i$.",
+                      "Base case $\\mathrm{dp}[0]=1$: one way to take no steps.",
+                      "A transition computes a state from smaller states."
+                    ],
+                    "detailKey": "base-2-0"
+                  }
+                ]
+              },
+              {
+                "title": "4. Walk through the example",
+                "blocks": [
+                  {
+                    "text": "Follow this detailed trace slowly. At each step, identify which stored value changes and why.",
+                    "type": "note",
+                    "detailKey": "depth-trace-intro"
+                  },
+                  {
+                    "rows": [
+                      [
+                        "1",
+                        "$dp[0]=1$. At $i=1$, extend the empty path to get $dp[1]=1$."
+                      ],
+                      [
+                        "2",
+                        "At $i=2$, $1+1=2$, representing $(1,1)$ and $(2)$."
+                      ],
+                      [
+                        "3",
+                        "At $i=3$, $2+1=3$: $(1,1,1),(1,2),(2,1)$."
+                      ],
+                      [
+                        "4",
+                        "At $i=4$, $3+2=5$, grouping new paths by their last step."
+                      ],
+                      [
+                        "5",
+                        "At $i=5$, $5+3=8$. The table is $[1,1,2,3,5,8]$."
+                      ]
+                    ],
+                    "type": "table",
+                    "headers": [
+                      "Step",
+                      "State and reasoning"
+                    ],
+                    "detailKey": "depth-trace"
+                  }
+                ]
+              },
+              {
+                "title": "5. Write the algorithm as steps",
+                "blocks": [
+                  {
+                    "type": "ordered",
+                    "items": [
+                      "Define the state in one sentence.",
+                      "Initialize the base case.",
+                      "Fill states from small to large and return the requested state."
+                    ],
+                    "detailKey": "base-4-0"
+                  }
+                ]
+              },
+              {
+                "title": "6. Reading the implementation in parts",
+                "blocks": [
+                  {
+                    "type": "p",
+                    "text": "1. Data: $dp_i$ stores the number of sequences, not the minimum number of moves. Changing that sentence changes the transition."
+                  },
+                  {
+                    "type": "code",
+                    "language": "C++17",
+                    "text": "vector<long long> dp(n + 1, 0);"
+                  },
+                  {
+                    "type": "p",
+                    "text": "2. Initialization: counting the empty sequence once provides the base from which all later answers grow."
+                  },
+                  {
+                    "type": "code",
+                    "language": "C++17",
+                    "text": "dp[0] = 1;"
+                  },
+                  {
+                    "type": "p",
+                    "text": "3. Main loop: increasing $i$ makes the previous two states available. The guard is necessary because $i-2$ is negative when $i=1$."
+                  },
+                  {
+                    "type": "code",
+                    "language": "C++17",
+                    "text": "dp[i] = dp[i - 1];\n\nif (i >= 2) {\n    dp[i] = (dp[i] + dp[i - 2]) % MOD;\n}"
+                  },
+                  {
+                    "type": "p",
+                    "text": "4. Output: $dp_n$ answers the exact input size. Summing all states would count sequences reaching different heights."
+                  },
+                  {
+                    "type": "code",
+                    "language": "C++17",
+                    "text": "return dp[n];"
+                  }
+                ]
+              },
+              {
+                "title": "7. C++17 code and how to read it",
+                "blocks": [
+                  {
+                    "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nlong long stair_ways(int n) {\n    const long long MOD = 1000000007;\n    vector<long long> dp(n + 1, 0);\n    dp[0] = 1;\n\n    for (int i = 1; i <= n; i++) {\n        dp[i] = dp[i - 1];\n\n        if (i >= 2) {\n            dp[i] = (dp[i] + dp[i - 2]) % MOD;\n        }\n    }\n\n    return dp[n];\n}\n",
+                    "type": "code",
+                    "language": "C++17",
+                    "detailKey": "base-5-0"
+                  },
+                  {
+                    "text": "The code intentionally keeps the full dp array. Reducing it to two variables is not the initial goal. Counts are stored modulo $10^9+7$, and $n\\ge0$ is required.",
+                    "type": "p",
+                    "detailKey": "base-5-1"
+                  },
+                  {
+                    "type": "ordered",
+                    "items": [
+                      "Zero initialization means no paths to a state by default.",
+                      "The $i\\ge2$ guard avoids a negative $dp[i-2]$ index.",
+                      "MOD keeps large counts within fixed-width storage; the function returns a remainder rather than the exact count."
+                    ],
+                    "detailKey": "depth-code-walk"
+                  },
+                  {
+                    "text": "Section 13 contains a complete runnable program with the same implementation, input format and checked sample output.",
+                    "type": "note",
+                    "detailKey": "depth-code-program"
+                  }
+                ]
+              },
+              {
+                "title": "8. Proof of correctness",
+                "blocks": [
+                  {
+                    "type": "p",
+                    "text": "The base case at $i=0$ is correct. Assume every smaller state is correct. Every valid sequence ends with either $1$ or $2$, so those two groups cover all possibilities. Different final moves make the groups disjoint."
+                  },
+                  {
+                    "type": "p",
+                    "text": "Removing the final move leaves exactly one sequence in the corresponding smaller state. Conversely, appending that move to any smaller-state sequence creates one valid sequence. This bijection proves the transition counts, and induction establishes $dp_n$."
+                  },
+                  {
+                    "type": "p",
+                    "text": "Modulo does not preserve the exact count, but it preserves the requested residue: $(a+b)\\bmod M=((a\\bmod M)+(b\\bmod M))\\bmod M$. Counts grow quickly, so taking the modulus only at the end may be too late to prevent overflow."
+                  }
+                ]
+              },
+              {
+                "title": "9. Avoid these mistakes",
+                "blocks": [
+                  {
+                    "type": "list",
+                    "items": [
+                      "Define the state before guessing a recurrence.",
+                      "Setting $\\mathrm{dp}[0]=0$ makes every count zero."
+                    ],
+                    "detailKey": "base-7-0"
+                  }
+                ]
+              },
+              {
+                "title": "10. Try it and check your answer",
+                "blocks": [
+                  {
+                    "text": "How many ways are there for $n=5$?",
+                    "type": "p",
+                    "detailKey": "base-8-0"
+                  },
+                  {
+                    "text": "Check your answer: $8$.",
+                    "type": "note",
+                    "label": "Show answer",
+                    "detailKey": "base-8-1",
+                    "collapsible": true
+                  },
+                  {
+                    "text": "Why is the answer for $n=0$ equal to $1$?",
+                    "type": "p",
+                    "detailKey": "base-8-2"
+                  },
+                  {
+                    "text": "Check your answer: Taking no steps is one valid choice.",
+                    "type": "note",
+                    "label": "Show answer",
+                    "detailKey": "base-8-3",
+                    "collapsible": true
+                  }
+                ]
+              },
+              {
+                "title": "11. What should you learn next?",
+                "blocks": [
+                  {
+                    "text": "Once you can trace the example without looking at the code, write the implementation yourself. Compare it with a simple loop on new inputs. The links offer another explanation; this lesson’s prose, examples and code were written for Erdene Club.",
+                    "type": "note",
+                    "detailKey": "base-9-0"
+                  },
+                  {
+                    "type": "links",
+                    "items": [
+                      {
+                        "url": "https://usaco.guide/gold/intro-dp",
+                        "label": "USACO Guide — Introduction to DP"
+                      }
+                    ],
+                    "detailKey": "base-9-1"
+                  }
+                ]
+              },
+              {
+                "title": "12. Why does it run quickly?",
+                "blocks": [
+                  {
+                    "type": "p",
+                    "text": "Naive recursion recomputes states and creates exponentially many calls, bounded above by $O(2^n)$. DP has $n+1$ states. It reads one dependency for $i=1$ and only two thereafter, giving $O(n)$ work. The speedup comes from evaluating each state once, not from the label DP."
+                  },
+                  {
+                    "type": "p",
+                    "text": "The program stores $n+1$ long long values, taking $O(n)$ space or roughly $8(n+1)$ bytes. For the final count alone, only the last two states are needed, allowing $O(1)$ extra space. Do not discard the array blindly when reconstruction or multiple-state answers are required."
+                  },
+                  {
+                    "type": "p",
+                    "text": "If $n$ is as large as $10^{18}$, linear time is still too slow. This recurrence admits faster methods such as matrix exponentiation. Always count states, transition cost per state, preprocessing and memory instead of assuming every DP fits every constraint."
+                  }
+                ]
+              },
+              {
+                "key": "deep-usage",
+                "title": "13. When to use it and how to test it",
+                "blocks": [
+                  {
+                    "type": "p",
+                    "text": "Ask which facts about a chosen prefix can affect the future. If the previous chosen colour matters, an index alone is insufficient. Before merging histories into one state, check that they really have the same possible continuations."
+                  },
+                  {
+                    "type": "p",
+                    "text": "Minimization, maximization and counting require different bases and unreachable values. Counting often uses zero where minimization needs $INF$. Writing the state sentence and transition proof before code reveals incorrect initialization and double counting early."
+                  },
+                  {
+                    "text": "For counting, minimum-cost and maximum-score DP, first define state, transition, base and evaluation order. Minimum DP often needs INF for unreachable states rather than zero. If identical states have different future options, the state definition is incomplete.",
+                    "type": "p",
+                    "detailKey": "depth-usage"
+                  },
+                  {
+                    "type": "list",
+                    "items": [
+                      "Test base cases $n=0,1,2$.",
+                      "Enumerate paths for small n and compare with DP counts."
+                    ],
+                    "detailKey": "depth-boundaries"
+                  },
+                  {
+                    "text": "First predict these small cases by hand. Then run the program and compare. A mismatch is a reason to inspect the state definition, boundaries and transition, rather than patching the output.",
+                    "type": "note",
+                    "detailKey": "depth-test-method"
+                  }
+                ]
+              },
+              {
+                "key": "deep-program",
+                "title": "14. Complete program and sample I/O",
+                "blocks": [
+                  {
+                    "text": "Input: $n\\ge0$. Print the number of ways to climb using steps of size $1$ or $2$, modulo $10^9+7$. At $n=0$, the empty path counts as one.",
+                    "type": "p",
+                    "detailKey": "depth-input-contract"
+                  },
+                  {
+                    "text": "5",
+                    "type": "code",
+                    "language": "Input",
+                    "detailKey": "depth-sample-input"
+                  },
+                  {
+                    "text": "8",
+                    "type": "code",
+                    "language": "Output",
+                    "detailKey": "depth-sample-output"
+                  },
+                  {
+                    "text": "Copy the entire program below into one file. Run it as C++17 using the sample input. The function handles the algorithm; main reads the input, calls it and prints the answer. Indices follow the input contract above.",
+                    "type": "note",
+                    "detailKey": "depth-program-guide"
+                  },
+                  {
+                    "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nlong long stair_ways(int n) {\n    const long long MOD = 1000000007;\n    vector<long long> dp(n + 1, 0);\n    dp[0] = 1;\n\n    for (int i = 1; i <= n; i++) {\n        dp[i] = dp[i - 1];\n\n        if (i >= 2) {\n            dp[i] = (dp[i] + dp[i - 2]) % MOD;\n        }\n    }\n\n    return dp[n];\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    cout << stair_ways(n) << '\\n';\n\n    return 0;\n}\n",
+                    "type": "code",
+                    "language": "C++17",
+                    "detailKey": "depth-full-program"
+                  }
+                ]
+              },
+              {
+                "key": "deep-exercises",
+                "title": "15. Three practice steps",
+                "blocks": [
+                  {
+                    "text": "Try each question before opening its hint. The first checks the definition, the second applies the method, and the third asks you to explain or extend it.",
+                    "type": "p",
+                    "detailKey": "depth-practice-intro"
+                  },
+                  {
+                    "text": "1. Why are there $5$ ways for $n=4$?",
+                    "type": "p",
+                    "detailKey": "depth-question-0"
+                  },
+                  {
+                    "text": "Group by the last step, $1$ or $2$.",
+                    "type": "note",
+                    "label": "Show hint",
+                    "detailKey": "depth-hint-0",
+                    "collapsible": true
+                  },
+                  {
+                    "text": "$dp[3]+dp[2]=3+2=5$, with disjoint last-step groups.",
+                    "type": "note",
+                    "label": "Show answer and explanation",
+                    "detailKey": "depth-answer-0",
+                    "collapsible": true
+                  },
+                  {
+                    "text": "2. What if $dp[0]$ is initialized to $0$?",
+                    "type": "p",
+                    "detailKey": "depth-question-1"
+                  },
+                  {
+                    "text": "Compute the first two states.",
+                    "type": "note",
+                    "label": "Show hint",
+                    "detailKey": "depth-hint-1",
+                    "collapsible": true
+                  },
+                  {
+                    "text": "All counts remain zero; even the first path is never created. The empty path must count once.",
+                    "type": "note",
+                    "label": "Show answer and explanation",
+                    "detailKey": "depth-answer-1",
+                    "collapsible": true
+                  },
+                  {
+                    "text": "3. What is the recurrence for steps of size $1,3$?",
+                    "type": "p",
+                    "detailKey": "depth-question-2"
+                  },
+                  {
+                    "text": "Change the last-step groups.",
+                    "type": "note",
+                    "label": "Show hint",
+                    "detailKey": "depth-hint-2",
+                    "collapsible": true
+                  },
+                  {
+                    "text": "$dp[i]=dp[i-1]+dp[i-3]$, with the second term only for $i\\ge3$. Keep $dp[0]$=$1$.",
+                    "type": "note",
+                    "label": "Show answer and explanation",
+                    "detailKey": "depth-answer-2",
+                    "collapsible": true
+                  }
+                ]
+              }
+            ],
+            "prerequisites": "Recursion, arrays and hand-traced examples."
+          }
+        },
+        "prerequisites": "Recursion, array ба жижиг жишээ гараар бодох.",
+        "prerequisiteIds": [
+          "recursion",
+          "brute-force"
+        ],
+        "contentEdition": "learning-2026-10-25-v1"
+      }
+    }
+  }
+}
