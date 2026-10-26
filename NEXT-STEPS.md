@@ -1,3 +1,15 @@
+# Үргэлжлүүлэх — editor repair after 009
+
+Current branch: `codex/fix-tutorial-editor`; parent main/PR 9 merge:
+`908ab18bf0bcb59d8de64bfcdd4460267d11984f`.
+Read `audit/EDITOR-FIX.md` and Start skill. Formatting/new tutorial/draft recovery
+repairs are locally verified; deploy the complete v31 graph. No new migration or
+production content write in this repair. ZIP remote verification records exact SHA.
+Browser repair: `python3 tests/browser/editor-regressions.py`.
+Next planned step remains 010, schema audit then 026 reference integrity.
+
+The following 009 handoff remains valid historical context:
+
 # Үргэлжлүүлэх — алхам 009
 
 Branch: `codex/recovery-step-009-tutorial-images`.

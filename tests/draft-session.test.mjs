@@ -30,3 +30,21 @@ test('comparison pause prevents autosave until resumed and retains a separate ba
  s.open({actor:'a',id:'lesson',body:{id:'lesson',title:'chosen'},baseRevision:8,draftRevision:3});s.checkpoint();
  assert.equal(s.local('a','lesson').draftRevision,3);assert.equal(s.local('a','lesson').unsynced,false);s.invalidate();
 });
+
+test('flush waits for edits queued during an in-flight save before navigation/publication',async()=>{
+ let finish,calls=[];const {s}=fixture((name,args)=>{calls.push(args);return calls.length===1?new Promise(r=>finish=r):Promise.resolve({data:{revision:2}});});
+ s.changed({id:'lesson',title:'first'});const old=s.flush();await Promise.resolve();
+ s.changed({id:'lesson',title:'latest'});const navigation=s.flush();finish({data:{revision:1}});
+ await navigation;assert.equal(s.dirty(),false);assert.equal(calls.at(-1).p_body.title,'latest');await old;s.invalidate();
+});
+test('closing comparison resumes pending autosave without requiring another keystroke',async()=>{
+ let calls=0;const {s}=fixture(async()=>{calls++;return {data:{revision:1}};});
+ s.changed({id:'lesson',title:'unsaved'});await s.pause();s.resume();await tick();
+ assert.equal(calls,1);assert.equal(s.dirty(),false);s.invalidate();
+});
+
+test('invalid or stale save responses preserve the draft and allow a valid retry',async()=>{
+ let value={revision:0};const {s}=fixture(async()=>({data:value}));s.changed({id:'lesson',title:'preserve'});
+ await s.flush();assert.equal(s.dirty(),true);assert.equal(s.snapshot().draftRevision,0);
+ value={revision:1};await s.flush();assert.equal(s.dirty(),false);s.invalidate();
+});
