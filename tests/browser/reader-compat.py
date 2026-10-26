@@ -28,7 +28,7 @@ try:
   page.goto(base+'/index.html',wait_until='networkidle')
   page.evaluate('''async()=>{
    window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-   const {renderBlock,drawArticle}=await import('/tutorials.js?v=27');
+   const {renderBlock,drawArticle}=await import('/tutorials.js?v=28');
    window.renderBlock=renderBlock;window.drawArticle=drawArticle;
    const lessons=(await (await fetch('/tutorials.json')).json()).tutorials;
    window.original=structuredClone(lessons[0]);window.fixture=structuredClone(original);
@@ -77,10 +77,10 @@ try:
     return Math.abs(point.x-(box.x+box.width/2))<1&&Math.abs(point.y-(box.y+box.height/2))<1;
    }''')
    out=ROOT/'audit/browser';out.mkdir(parents=True,exist_ok=True)
-   page.screenshot(path=str(out/f'step-006-{width}-{theme}.png'),full_page=True)
+   page.screenshot(path=str(out/f'step-007-{width}-{theme}.png'),full_page=True)
   report['desktop_mobile_light_dark_overflow']='PASS'
   page.evaluate('''async()=>{
-   const {setupLearning}=await import('/learning.js?v=27');
+   const {setupLearning}=await import('/learning.js?v=28');
    const catalog=(await (await fetch('/problems.json')).json()).problems;
    window.learningProgress={};window.openedProblem=null;
    window.learning=await setupLearning({client:()=>null,user:()=>null,profile:()=>null,
@@ -107,7 +107,7 @@ try:
    document.querySelector('#compat-reader').hidden=true;
    // Reuse the real form; mount it directly to remove routing dependencies.
    const form=document.getElementById('tutorial-admin-form');document.body.append(form);
-   const {setupTutorialEditor}=await import('/tutorial-editor.js?v=27');
+   const {setupTutorialEditor}=await import('/tutorial-editor.js?v=28');
    const topics=lessons.map(t=>({...structuredClone(t),revision:9}));topics[0]={...structuredClone(fixture),revision:9};
    window.fixtureActor='fixture-admin';window.savedPayload=null;window.draftCalls=[];window.draftOffline=false;
    const client={rpc:async(name,args)=>{
@@ -123,7 +123,8 @@ try:
   page.locator('#tutorial-admin-language').select_option('en')
   assert page.locator('#tutorial-admin-language').input_value()=='mn'
   assert 'Англи хувилбар' in page.locator('#tutorial-admin-message').inner_text()
-  assert page.locator('#tutorial-admin-sections textarea[data-block]').count()==2
+  assert page.locator('#tutorial-admin-sections .block-rich-input').count()==2
+  assert page.locator('#tutorial-admin-sections .block-code-input').count()==1
   page.locator('#tutorial-admin-title').fill('Preserved MN title edit')
   # Input autosaves without pressing the save button.
   page.wait_for_function('window.savedPayload !== null')
@@ -132,6 +133,10 @@ try:
   assert page.evaluate('savedPayload.title')=='Preserved MN title edit'
   assert page.evaluate('savedPayload.id===fixture.id')
   report['legacy_editor_preserves_rich_and_mn_only']='PASS'
+  page.locator('#tutorial-admin-sections .block-rich-input').last.fill('Rich edit through the real draft form')
+  page.wait_for_function("savedPayload.sections[0].blocks.at(-1).content?.[0].text==='Rich edit through the real draft form'")
+  assert page.evaluate("savedPayload.sections[0].blocks.at(-1).type")=='rich'
+  report['rich_form_autosave']='PASS'
   page.evaluate('window.draftOffline=true')
   page.locator('#tutorial-admin-title').fill('Offline recoverable title')
   page.wait_for_function("document.querySelector('#tutorial-admin-message').textContent.includes('Онлайн хадгалалт амжилтгүй')")
@@ -151,7 +156,7 @@ try:
    page.set_viewport_size({'width':width,'height':1000})
    page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
    assert page.locator('#tutorial-draft-comparison').evaluate('(e)=>e.scrollWidth<=e.clientWidth')
-   page.locator('#tutorial-draft-comparison').screenshot(path=str(ROOT/f'audit/browser/step-006-comparison-{width}.png'))
+   page.locator('#tutorial-draft-comparison').screenshot(path=str(ROOT/f'audit/browser/step-007-comparison-{width}.png'))
   page.locator('[data-rebase-choice="local"]').click()
   page.evaluate('window.rejectRebase=true')
   page.locator('[data-rebase-save]').click()
@@ -184,13 +189,49 @@ try:
   report['late_rebase_response_after_logout']='PASS'
 
 
+
+  page.evaluate("""async()=>{
+   const {mountBlockEditor}=await import('/tutorial-block-editor.js?v=28');
+   const root=document.createElement('section');root.id='authoring-test';root.style.cssText='max-width:900px;margin:auto;padding:16px';document.body.append(root);
+   window.authored=[{title:'Authoring fixture',blocks:[{type:'rich',key:'stable-key',metadata:{keep:true},content:[{text:'Select me',marks:[]}]}]}];
+   window.authoring=mountBlockEditor(root,authored,{changed:()=>{window.authoringChanges=(window.authoringChanges||0)+1;}});
+  }""")
+  editable=page.locator('#authoring-test .block-rich-input').first
+  editable.evaluate("e=>{const r=document.createRange();r.selectNodeContents(e);const s=getSelection();s.removeAllRanges();s.addRange(r);e.dispatchEvent(new MouseEvent('mouseup'));}")
+  page.locator('#authoring-test').get_by_role('button',name='Bold',exact=True).click()
+  assert page.evaluate("authored[0].blocks[0].content[0].marks.includes('bold')")
+  assert page.evaluate('authored[0].blocks[0].metadata.keep')
+  editable.evaluate("e=>{const d=new DataTransfer();d.setData('text/html','<img src=x onerror=window.pasteInjected=1>');d.setData('text/plain','<img src=x> plain text');e.dispatchEvent(new ClipboardEvent('paste',{clipboardData:d,bubbles:true,cancelable:true}));}")
+  assert editable.locator('img').count()==0
+  assert page.evaluate('window.pasteInjected') is None
+  page.locator('#authoring-test').get_by_label('Нэмэх block төрөл').select_option('code')
+  page.locator('#authoring-test').get_by_role('button',name='+ Block нэмэх',exact=True).click()
+  assert page.evaluate('authored[0].blocks.length')==2
+  page.locator('#authoring-test').get_by_role('button',name='↶ Undo',exact=True).click()
+  assert page.evaluate('authored[0].blocks.length')==1
+  page.locator('#authoring-test').get_by_role('button',name='↷ Redo',exact=True).click()
+  assert page.evaluate('authored[0].blocks.length')==2
+  page.locator('#authoring-test').get_by_role('button',name='Хэсэг хувилах',exact=True).click()
+  assert page.evaluate('authored.length')==2
+  page.locator('#authoring-test').get_by_role('button',name='↓ Хэсэг',exact=True).first.click()
+  assert page.evaluate('authored.length')==2
+  page.evaluate("async()=>{const {validateTutorial}=await import('/tutorial-model.js?v=28');validateTutorial({...original,sections:authored});}")
+  assert page.locator('#authoring-test option[value=image]').count()==0
+  page.locator('#authoring-test > details').first.evaluate('(e)=>e.open=true')
+  page.wait_for_selector('#authoring-test .block-rich-input',state='visible')
+  for width,theme in [(375,'light'),(1440,'dark')]:
+   page.set_viewport_size({'width':width,'height':1000})
+   page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
+   assert page.locator('#authoring-test').evaluate('(e)=>e.scrollWidth<=e.clientWidth')
+   page.locator('#authoring-test').screenshot(path=str(ROOT/f'audit/browser/step-007-authoring-{width}.png'))
+  report['rich_authoring_paste_sections_undo_redo']='PASS'
   # Fresh real tutorial setup checks routine same-account notifications do not
   # rebuild the article or reset the reader's position.
   page.reload(wait_until='networkidle')
   page.evaluate('''async()=>{
    window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
    location.hash='#tutorial/complexity';
-   const {setupTutorials}=await import('/tutorials.js?v=27');
+   const {setupTutorials}=await import('/tutorials.js?v=28');
    window.tutorialUI=setupTutorials({client:()=>null,user:()=>null,learning:()=>null});
   }''')
   page.wait_for_function("document.querySelector('#tutorial-content > section')!==null && document.querySelector('#tutorial-content').getAttribute('aria-busy')==='false'")
@@ -207,5 +248,5 @@ try:
   report['page_errors']=[]
   browser.close()
 finally:server.shutdown()
-(ROOT/'audit/STEP-006-BROWSER.json').write_text(json.dumps(report,indent=2)+'\n')
+(ROOT/'audit/STEP-007-BROWSER.json').write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps(report))
