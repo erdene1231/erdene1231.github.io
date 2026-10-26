@@ -1,16 +1,16 @@
-import {openProblemSelection} from './problem-selection-dialog.js?v=34';
-import {tutorialSlug} from './tutorial-slug.js?v=34';
-import {mountTutorialLifecycle} from './tutorial-lifecycle.js?v=34';
-import {createBlock} from './tutorial-blocks.js?v=34';
-import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=34';
-import {mountPublication} from './tutorial-publication.js?v=34';
-import {mountBlockEditor} from './tutorial-block-editor.js?v=34';
-import {mountDraftRecovery} from './tutorial-draft-recovery.js?v=34';
-import {createDraftSession} from './tutorial-drafts.js?v=34';
-import {editableVersion} from './tutorial-editor-compat.js?v=34';
+import {openProblemSelection} from './problem-selection-dialog.js?v=35';
+import {tutorialSlug} from './tutorial-slug.js?v=35';
+import {mountTutorialLifecycle} from './tutorial-lifecycle.js?v=35';
+import {createBlock} from './tutorial-blocks.js?v=35';
+import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=35';
+import {mountPublication} from './tutorial-publication.js?v=35';
+import {mountBlockEditor} from './tutorial-block-editor.js?v=35';
+import {mountDraftRecovery} from './tutorial-draft-recovery.js?v=35';
+import {createDraftSession} from './tutorial-drafts.js?v=35';
+import {editableVersion} from './tutorial-editor-compat.js?v=35';
 import {validateRelations} from './learning-model.js?v=23';
-import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=34';
-import {node,drawArticle,typeset} from './tutorials.js?v=34';
+import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=35';
+import {node,drawArticle,typeset} from './tutorials.js?v=35';
 const $=id=>document.getElementById(id);
 export function setupTutorialEditor(ctx){
  let allowed=false,token=0,draft=null,revision=0,lang='mn',busy=false,accountId,blockEditor,workspace=[],catalogCurrent=null;

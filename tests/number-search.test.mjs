@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {filterProblems} from '../catalog.js';
+test('hash numbers match exact catalog numbers, including leading zeros',()=>{const ps=[1,10,100].map(number=>({number,id:'p'+number,title:'Problem '+number,source:'Judge',ref:String(number),tags:[],rating:1000}));for(const query of ['#1','#001'])assert.deepEqual(filterProblems(ps,{}, {query}).map(p=>p.number),[1]);assert.equal(filterProblems(ps,{}, {query:'#999'}).length,0);});
