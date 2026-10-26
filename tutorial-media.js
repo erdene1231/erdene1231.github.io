@@ -1,5 +1,5 @@
 // Private Storage upload and short-lived signed delivery; never cache account URLs.
-import {validMediaPath} from './tutorial-blocks.js?v=30';
+import {validMediaPath} from './tutorial-blocks.js?v=31';
 let generation=0;
 export const clearMediaCache=()=>{generation++;};
 export async function tutorialImageUrl(client,path,viewer='public',preview=false){

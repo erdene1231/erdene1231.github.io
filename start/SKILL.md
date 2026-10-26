@@ -75,6 +75,12 @@ byte upload and deployed frontend smoke remain unverified. Never delete Storage
 objects through SQL. No cleanup job was run. Counts/hashes unchanged, 748/55.
 Use `supabase/audit/production-after-025.json` as the latest verified metadata.
 
+Editor repair after 009 uses v31 of the complete frontend import graph. It adds
+new tutorial/private workspace/translation UI and fixes formatting, draft draining,
+comparison resume, failed-load recovery and catalog refresh. 40 Node cases and
+30 Chromium groups passed locally with mocked Auth/Storage/RPC. No new migration
+or production writes. See audit/EDITOR-FIX.md; next numbered step stays 010/026.
+
 ## Persistence boundary
 
 The repository tracks this skill, client, metadata query, comparison tool and audit

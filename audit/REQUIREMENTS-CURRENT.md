@@ -71,3 +71,11 @@ Storage API/Auth mocked in browser: real authenticated upload and deployed Pages
 smoke remain open. SVG rejected; cleanup strategy is age/reference-protected
 manual Storage API, no automatic deletion. Evidence: `STEP-009.md`.
 Дараагийн 010: 026 embedded reference integrity; 027 batch/history дараа нь.
+
+## Editor repair after 009
+
+User-reported Bold/Italic and new tutorial gaps repaired; explicit ID/metadata and
+English creation, private draft choices, new publication library insertion added.
+Autosave, failed-load, stale-local recovery and refresh regressions fixed.
+40 Node cases + 30 Chromium groups PASS; authenticated live behavior/deploy still
+unverified. See `EDITOR-FIX.md`. Planned 010/026 and remaining checklist unchanged.

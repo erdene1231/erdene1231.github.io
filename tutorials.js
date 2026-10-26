@@ -1,10 +1,10 @@
-import {renderExtendedBlock} from './tutorial-block-renderer.js?v=30';
-import {clearMediaCache} from './tutorial-media.js?v=30';
+import {renderExtendedBlock} from './tutorial-block-renderer.js?v=31';
+import {clearMediaCache} from './tutorial-media.js?v=31';
 import {loadLearningContent,bodyHash} from './learning-model.js?v=23';
 import {algorithmDemo} from './algorithm-demos.js?v=23';
 import {segmentTreeDemo} from './segment-tree-demo.js?v=16';
-import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=30';
-import {setupTutorialEditor} from './tutorial-editor.js?v=30';
+import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=31';
+import {setupTutorialEditor} from './tutorial-editor.js?v=31';
 const $=id=>document.getElementById(id);
 export const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
 let mathPromise=null,mathQueue=Promise.resolve();
@@ -104,7 +104,7 @@ export function setupTutorials(ctx){
  $('tutorial-language').onchange=()=>{lang=$('tutorial-language').value;try{localStorage.setItem('erdene:tutorial-language',lang);}catch{}current=null;results();route();};$('tutorial-search').addEventListener('input',results);$('tutorial-category').onchange=results;$('tutorial-level').onchange=results;
  $('tutorial-reading-mode').onchange=()=>{readingMode=$('tutorial-reading-mode').value;try{localStorage.setItem('erdene:tutorial-reading-mode',readingMode);}catch{}requestedPart=activePart;reading(activePart,true);};$('tutorial-section-prev').onclick=()=>goPart(activePart-1);$('tutorial-section-next').onclick=()=>goPart(activePart+1);
  $('tutorial-copy-link').onclick=()=>void copy(location.href,$('tutorial-copy-link'),tr('Хуулагдлаа','Copied'));$('tutorial-math-retry').onclick=()=>{if(current)renderTopic(current,activePart);};window.addEventListener('hashchange',route);
- editor=setupTutorialEditor({...ctx,topics:()=>topics,ready:()=>onlineReady,reload:connected,saved(row){accept(topics.map(t=>t.id===row.body.id?row:{body:t,revision:t.revision}),true);}});
+ editor=setupTutorialEditor({...ctx,topics:()=>topics,ready:()=>onlineReady,reload:connected,saved(row){accept([...topics.filter(t=>t.id!==row.body.id).map(t=>({body:t,revision:t.revision})),row],true);}});
  void lessonSeed.then(list=>{if(!hasLive)return accept(list);}).catch(()=>{$('tutorial-grid').textContent='Tutorials ачаалсангүй / Could not load tutorials.';});
  return {connected,refreshStatus(){if(!current)results();},refreshLearning(){ctx.learning()?.setTopics(topics);if(current)renderTopic(current,activePart);else results();},accountChanged(){editor.accountChanged();const id=ctx.user()?.id||null;if(id!==mediaAccountId){mediaAccountId=id;clearMediaCache();if(current)renderTopic(current,activePart);}}};
 }
