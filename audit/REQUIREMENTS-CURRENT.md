@@ -1,4 +1,4 @@
-# Одоогийн шаардлагын checklist — алхам 006
+# Одоогийн шаардлагын checklist — алхам 007
 
 Хавсралтуудыг бүтнээр уншсан. Хэрэглэгчийн шинэ baseline нь ZIP-ийн хуучин мэдээллийг орлоно.
 `f7c5f2e820f01652e3a839f2db69c05b16c91adb`; 748 problems / 55 tutorials;
@@ -56,3 +56,5 @@ browser review; үлдсэн content/topic/practice, plan/profile/UI regressions
 Алхам 005: private draft UI/autosave/offline local recovery verified; revision comparison/rebase UI pending. `STEP-005.md`.
 
 Алхам 006: revision comparison/explicit rebase + before-rebase backup local verified. Full rich authoring/media/publication/history UI pending. `STEP-006.md`.
+
+Алхам 007: rich block authoring/section controls/Undo/Redo local verified. Image upload/publication/history pending. `STEP-007.md`.
