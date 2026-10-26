@@ -1,5 +1,5 @@
-import {BLOCK_TYPES,TONES,createBlock,safeLink} from './tutorial-blocks.js?v=29';
-import {appendInline} from './tutorial-block-renderer.js?v=29';
+import {BLOCK_TYPES,TONES,createBlock,safeLink} from './tutorial-blocks.js?v=30';
+import {appendInline} from './tutorial-block-renderer.js?v=30';
 const make=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const names={p:'Текст',rich:'Formatting бүхий текст',heading:'Гарчиг H1–H4',code:'Код',math:'Томъёо',list:'Жагсаалт',ordered:'Дугаартай жагсаалт',checklist:'Checklist',table:'Хүснэгт',links:'Эх сурвалжийн холбоос',quote:'Эшлэл',callout:'Тайлбарын хайрцаг',note:'Нээж унших тайлбар',divider:'Тусгаарлагч',image:'Зураг upload',diagram:'Diagram',problem:'Бодлого',tutorial:'Хичээлийн холбоос'};
 function inlineFromDOM(root){
@@ -8,7 +8,7 @@ function inlineFromDOM(root){
  for(const n of root.childNodes)visit(n);return result.length?result:[{text:'',marks:[]}];
 }
 export function mountBlockEditor(root,sections,options={}){
- let destroyed=false,lastUndo=0,lastField=null;const undo=[],redo=[],opened=new Set(sections.slice(0,1).map((s,i)=>s.key||String(i)));let selectedRange=null;
+ let destroyed=false,lastUndo=0,lastField=null;const undo=[],redo=[],opened=new Set(sections.slice(0,1).map((s,i)=>s.key||String(i)));let selectedRange=null;const uploads=new WeakMap();
  const note=text=>options.message?.(text),changed=()=>{if(!destroyed)options.changed?.();};
  function remember(field,force=false){if(force||field!==lastField||Date.now()-lastUndo>1200){undo.push(structuredClone(sections));if(undo.length>25)undo.shift();redo.length=0;lastUndo=Date.now();lastField=field;}}
  function change(fn,field,paint=false){if(destroyed||options.locked?.())return;remember(field,paint);fn();changed();if(paint)render();else{root.querySelector('[data-undo]').disabled=!undo.length;root.querySelector('[data-redo]').disabled=!redo.length;}}
@@ -26,8 +26,16 @@ export function mountBlockEditor(root,sections,options={}){
   editable.onpaste=e=>{e.preventDefault();const file=[...e.clipboardData.files].find(f=>f.type.startsWith('image/'));if(file){void addImage(si,bi+1,file);return;}insertAtSelection(editable,e.clipboardData.getData('text/plain'));};editable.ondragover=e=>e.preventDefault();editable.ondrop=e=>{e.preventDefault();const file=e.dataTransfer.files[0];if(file)void addImage(si,bi+1,file);else insertAtSelection(editable,e.dataTransfer.getData('text/plain'));};
   container.append(toolbar,editable,make('small','Текстээ сонгоод formatting хийнэ. $…$ — inline math, $$…$$ — block math. Paste нь гаднын HTML-ийг оруулахгүй.','muted'));
  }
- async function addImage(si,index,file){if(!options.uploadImage){note('Image upload холболт шаардлагатай.');return;}const block=createBlock('image');change(()=>sections[si].blocks.splice(index,0,block),'insert-image',true);await upload(block,file);}
- async function upload(b,file){try{note('Зургийг шалгаж upload хийж байна…');const result=await options.uploadImage(file);if(destroyed)return;change(()=>Object.assign(b,result),b,true);note('Зураг upload хийгдлээ. Alt text болон caption-аа бөглөөрэй.');}catch(e){if(!destroyed)note(e.message||'Зургийг upload хийж чадсангүй.');}}
+ async function addImage(si,index,file){if(destroyed||options.locked?.())return;if(!options.uploadImage){note('Image upload холболт шаардлагатай.');return;}const block=createBlock('image');change(()=>sections[si].blocks.splice(index,0,block),'insert-image',true);await upload(block,file);}
+ async function upload(b,file){
+  if(destroyed||options.locked?.()||!options.uploadImage)return;
+  const turn=(uploads.get(b)||0)+1;uploads.set(b,turn);
+  const current=()=>!destroyed&&uploads.get(b)===turn&&sections.some(s=>s.blocks.includes(b));
+  try{note('Зургийг шалгаж upload хийж байна…');const result=await options.uploadImage(file,current);if(!current())return;
+   if(options.locked?.()){note('Засвар түгжигдсэн тул зураг ноорогт нэмэгдсэнгүй. Дахин сонгоно уу.');return;}
+   change(()=>Object.assign(b,result),b,true);note('Зураг upload хийгдлээ. Alt text болон caption-аа бөглөөрэй.');
+  }catch(e){if(current())note(e.message||'Зургийг upload хийж чадсангүй.');}
+ }
  function blockFields(container,b,si,bi){
   if(['p','rich'].includes(b.type)){richEditor(container,b,si,bi);return;}
   if(b.type==='heading'){select(container,'Гарчгийн түвшин',[['1','H1'],['2','H2'],['3','H3'],['4','H4']],String(b.level),v=>b.level=Number(v));field(container,'Гарчиг',b.text,v=>b.text=v,{rows:0});}
@@ -42,8 +50,11 @@ export function mountBlockEditor(root,sections,options={}){
   else if(b.type==='table'){
    const wrap=make('div',undefined,'editor-table-wrap'),table=make('table');[b.headers,...b.rows].forEach((row,i)=>{const tr=make('tr');row.forEach((cell,j)=>{const td=make(i===0?'th':'td'),input=make('input');input.value=cell;input.setAttribute('aria-label',(i===0?'Багана ':'Мөр '+i+' нүд ')+(j+1));input.oninput=()=>change(()=>row[j]=input.value,input);td.append(input);tr.append(td);});table.append(tr);});wrap.append(table);container.append(wrap,button('+ Мөр',()=>change(()=>b.rows.push(b.headers.map(()=>'')),b,true)),button('+ Багана',()=>{if(b.headers.length>=8)return;change(()=>{b.headers.push('Гарчиг');b.rows.forEach(r=>r.push(''));},b,true);}),button('Сүүлийн мөр хасах',()=>{if(b.rows.length>1)change(()=>b.rows.pop(),b,true);}),button('Сүүлийн багана хасах',()=>{if(b.headers.length>1)change(()=>{b.headers.pop();b.rows.forEach(r=>r.pop());},b,true);}));
   }
-  else if(b.type==='image'){container.append(make('p','Зураг upload дараагийн алхамд идэвхжинэ. Одоогийн зураг хэвээр хадгалагдана.'));return;
-
+  else if(b.type==='image'){
+   if(!options.uploadImage){container.append(make('p','Зураг upload холболт шаардлагатай. Одоогийн зураг хадгалагдана.'));return;}
+   const input=make('input');input.type='file';input.accept='image/png,image/jpeg,image/webp';input.setAttribute('aria-label','Tutorial зураг upload');input.onchange=()=>{if(input.files?.[0])void upload(b,input.files[0]);input.value='';};const drop=make('div','PNG / JPEG / WebP · 5 MB хүртэл. Энд зураг чирж оруулж болно.','editor-image-drop');drop.ondragover=e=>{e.preventDefault();drop.classList.add('dragging');};drop.ondragleave=()=>drop.classList.remove('dragging');drop.ondrop=e=>{e.preventDefault();drop.classList.remove('dragging');if(e.dataTransfer.files[0])void upload(b,e.dataTransfer.files[0]);};drop.append(input);container.append(drop);if(b.path)container.append(make('small','Upload хийгдсэн · '+(b.pixelWidth||'')+' × '+(b.pixelHeight||''),'muted'));field(container,'Alt text — зураг юу харуулж байгааг тайлбарла',b.alt,v=>b.alt=v,{rows:2});field(container,'Caption',b.caption,v=>b.caption=v,{rows:2});select(container,'Байрлал',[['left','Зүүн'],['center','Төв'],['right','Баруун']],b.align,v=>b.align=v);const width=field(container,'Өргөн (%)',b.width,v=>b.width=Number(v),{rows:0,type:'number'});width.min=20;width.max=100;
+   if(b.path&&options.imageUrl){const img=make('img');img.alt=b.alt||'';img.className='editor-image-preview';const path=b.path;
+    options.imageUrl(path).then(url=>{if(!destroyed&&img.isConnected&&b.path===path)img.src=url;}).catch(()=>{if(!destroyed&&img.isConnected)img.replaceWith(make('small','Зургийн preview ачаалсангүй. Нооргийг дахин ачаалж оролдоно уу.'));});container.append(img);}
   }
   else if(b.type==='diagram'){
    select(container,'Diagram төрөл',['array','dp','graph','tree'],b.kind,v=>{b.kind=v;if(['graph','tree'].includes(v)){b.nodes??=[{id:'1',label:'$1$'},{id:'2',label:'$2$'}];b.edges??=[['1','2']];}else b.rows??=[['$1$','$2$']];});
@@ -61,7 +72,7 @@ export function mountBlockEditor(root,sections,options={}){
  function render(){selectedRange=null;root.replaceChildren();const actions=make('div',undefined,'block-editor-actions');const back=button('↶ Undo',()=>{if(!undo.length)return;redo.push(structuredClone(sections));sections.splice(0,sections.length,...undo.pop());render();changed();}),forward=button('↷ Redo',()=>{if(!redo.length)return;undo.push(structuredClone(sections));sections.splice(0,sections.length,...redo.pop());render();changed();});back.dataset.undo='true';forward.dataset.redo='true';back.disabled=!undo.length;forward.disabled=!redo.length;actions.append(back,forward,button('+ Шинэ хэсэг',()=>change(()=>sections.push({key:crypto.randomUUID(),title:'Шинэ хэсэг',blocks:[createBlock('rich')]}),sections,true)));root.append(actions);
   sections.forEach((s,si)=>{const detail=make('details',undefined,'editor-section'),sectionKey=s.key||String(si);detail.open=opened.has(sectionKey);const summary=make('summary',(si+1)+'. '+s.title),body=make('div',undefined,'editor-section-body');detail.append(summary,body);let mounted=false;function mount(){if(mounted)return;mounted=true;const bar=make('div',undefined,'block-actions');bar.append(button('↑ Хэсэг',()=>{if(si>0)change(()=>[sections[si-1],sections[si]]=[sections[si],sections[si-1]],s,true);}),button('↓ Хэсэг',()=>{if(si<sections.length-1)change(()=>[sections[si+1],sections[si]]=[sections[si],sections[si+1]],s,true);}),button('Хэсэг хувилах',()=>change(()=>sections.splice(si+1,0,{...structuredClone(s),key:crypto.randomUUID()}),s,true)),button('Хэсэг хасах',()=>{if(sections.length>1)change(()=>sections.splice(si,1),s,true);}));body.append(bar);field(body,'Хэсгийн гарчиг',s.title,v=>{s.title=v;summary.textContent=(si+1)+'. '+v;},{rows:0});
    s.blocks.forEach((b,bi)=>{const card=make('article',undefined,'editor-block'),bar=make('div',undefined,'block-actions');bar.append(make('strong',(bi+1)+'. '+(names[b.type]||b.type)),button('↑',()=>{if(bi>0)change(()=>[s.blocks[bi-1],s.blocks[bi]]=[s.blocks[bi],s.blocks[bi-1]],b,true);}),button('↓',()=>{if(bi<s.blocks.length-1)change(()=>[s.blocks[bi+1],s.blocks[bi]]=[s.blocks[bi],s.blocks[bi+1]],b,true);}),button('Хувилах',()=>change(()=>s.blocks.splice(bi+1,0,{...structuredClone(b),key:crypto.randomUUID()}),b,true)),button('Хасах',()=>{if(s.blocks.length>1)change(()=>s.blocks.splice(bi,1),b,true);}));card.append(bar);blockFields(card,b,si,bi);body.append(card);});
-   const insert=make('div',undefined,'editor-insert'),type=make('select');type.setAttribute('aria-label','Нэмэх block төрөл');for(const kind of BLOCK_TYPES.filter(t=>!['p','image'].includes(t))){const o=make('option',names[kind]);o.value=kind;type.append(o);}insert.append(type,button('+ Block нэмэх',()=>change(()=>s.blocks.push(createBlock(type.value)),s,true)));
+   const insert=make('div',undefined,'editor-insert'),type=make('select');type.setAttribute('aria-label','Нэмэх block төрөл');for(const kind of BLOCK_TYPES.filter(t=>t!=='p'&&(t!=='image'||options.uploadImage))){const o=make('option',names[kind]);o.value=kind;type.append(o);}insert.append(type,button('+ Block нэмэх',()=>change(()=>s.blocks.push(createBlock(type.value)),s,true)));
    const reusable=make('select');reusable.setAttribute('aria-label','Сургалтын block');for(const [value,label]of [['observation','Ажиглалт'],['proof','Баталгаа'],['complexity','Complexity'],['example','Жишээ'],['mistake','Түгээмэл алдаа'],['important','Implementation тайлбар']]){const o=make('option',label);o.value=value;reusable.append(o);}insert.append(reusable,button('+ Сургалтын хайрцаг',()=>change(()=>s.blocks.push({...createBlock('callout'),tone:reusable.value,title:reusable.selectedOptions[0].textContent}),s,true)));body.append(insert);}
    detail.ontoggle=()=>{if(detail.open){opened.add(sectionKey);mount();}else opened.delete(sectionKey);};if(detail.open)mount();root.append(detail);
   });

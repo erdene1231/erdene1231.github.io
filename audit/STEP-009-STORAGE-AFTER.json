@@ -1,0 +1,89 @@
+{
+  "query": "SELECT jsonb_build_object('bucket',(SELECT to_jsonb(b) FROM (SELECT id,public,file_size_limit,allowed_mime_types FROM storage.buckets WHERE id='tutorial-media') b),'policies',(SELECT jsonb_agg(to_jsonb(p)) FROM pg_policies p WHERE schemaname='storage' AND tablename='objects'),'rls',(SELECT relrowsecurity FROM pg_class WHERE oid='storage.objects'::regclass)) AS storage_audit;",
+  "result": {
+    "rls": true,
+    "bucket": {
+      "id": "tutorial-media",
+      "public": false,
+      "file_size_limit": 5242880,
+      "allowed_mime_types": [
+        "image/webp"
+      ]
+    },
+    "policies": [
+      {
+        "cmd": "DELETE",
+        "qual": "((bucket_id = 'think-cp-avatars'::text) AND ((storage.foldername(name))[1] = (( SELECT auth.uid() AS uid))::text))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "Think CP avatar delete",
+        "schemaname": "storage",
+        "with_check": null
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "Think CP avatar upload",
+        "schemaname": "storage",
+        "with_check": "((bucket_id = 'think-cp-avatars'::text) AND ((storage.foldername(name))[1] = (( SELECT auth.uid() AS uid))::text))"
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((bucket_id = 'think-cp-avatars'::text) AND ((storage.foldername(name))[1] = (( SELECT auth.uid() AS uid))::text))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "Think CP own avatar read",
+        "schemaname": "storage",
+        "with_check": null
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((bucket_id = 'tutorial-media'::text) AND can_read_tutorial_media(name))",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "Tutorial image published read",
+        "schemaname": "storage",
+        "with_check": null
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "Tutorial images admin insert",
+        "schemaname": "storage",
+        "with_check": "((bucket_id = 'tutorial-media'::text) AND ( SELECT is_admin() AS is_admin) AND (name ~ '^[a-z0-9-]{1,80}/[0-9a-f-]{36}/[0-9a-f-]{36}\\.webp$'::text) AND (split_part(name, '/'::text, 2) = (( SELECT auth.uid() AS uid))::text))"
+      },
+      {
+        "cmd": "DELETE",
+        "qual": "((bucket_id = 'tutorial-media'::text) AND can_cleanup_tutorial_media(name))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "objects",
+        "permissive": "PERMISSIVE",
+        "policyname": "Unused tutorial image cleanup",
+        "schemaname": "storage",
+        "with_check": null
+      }
+    ]
+  }
+}

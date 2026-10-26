@@ -10,7 +10,7 @@ create schema auth; create schema storage;
 create table auth.users(id uuid primary key,email text,created_at timestamptz default now());
 create function auth.uid() returns uuid language sql stable as $$select null::uuid$$;
 create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
-create table storage.objects(id uuid,bucket_id text,name text);
+create table storage.objects(id uuid,bucket_id text,name text,created_at timestamptz,metadata jsonb);
 create function storage.foldername(text) returns text[] language sql immutable as $$select string_to_array($1,'/')$$;
 -- Supabase default grants, before the repository's explicit revocations.
 alter default privileges in schema public grant all on tables to anon,authenticated,service_role;
@@ -40,7 +40,7 @@ for(const file of files){
  }
 }
 const expected=(await db.query(read('supabase/audit/catalog.sql'))).rows[0].catalog;
-const actual=JSON.parse(read(process.argv[2] || 'supabase/audit/production-after-024.json'));
+const actual=JSON.parse(read(process.argv[2] || 'supabase/audit/production-after-025.json'));
 const differences={};
 // ACL ordering is irrelevant; PGlite bootstrap and production owners differ.
 function normalize(v){

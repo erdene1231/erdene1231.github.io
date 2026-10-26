@@ -1,11 +1,12 @@
-import {mountPublication} from './tutorial-publication.js?v=29';
-import {mountBlockEditor} from './tutorial-block-editor.js?v=29';
-import {mountDraftRecovery} from './tutorial-draft-recovery.js?v=29';
-import {createDraftSession} from './tutorial-drafts.js?v=29';
-import {editableVersion,isLegacyEditableBlock} from './tutorial-editor-compat.js?v=29';
+import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=30';
+import {mountPublication} from './tutorial-publication.js?v=30';
+import {mountBlockEditor} from './tutorial-block-editor.js?v=30';
+import {mountDraftRecovery} from './tutorial-draft-recovery.js?v=30';
+import {createDraftSession} from './tutorial-drafts.js?v=30';
+import {editableVersion,isLegacyEditableBlock} from './tutorial-editor-compat.js?v=30';
 import {validateRelations} from './learning-model.js?v=23';
-import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=29';
-import {node,drawArticle,typeset} from './tutorials.js?v=29';
+import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=30';
+import {node,drawArticle,typeset} from './tutorials.js?v=30';
 const $=id=>document.getElementById(id);
 export function setupTutorialEditor(ctx){
  let allowed=false,token=0,draft=null,revision=0,lang='mn',busy=false,accountId,blockEditor;
@@ -57,7 +58,9 @@ export function setupTutorialEditor(ctx){
   }catch(e){if(turn===token){draft=null;message(e.message);}}finally{if(turn===token)setBusy(false);}
  }
  function paint(){if(!draft)return;const v=editableVersion(draft,lang);$('tutorial-admin-title').value=v.title;$('tutorial-admin-summary').value=v.summary;$('tutorial-admin-prerequisites').value=v.prerequisites;$('tutorial-admin-prerequisite-ids').value=(draft.prerequisiteIds||[]).join(', ');const rel=draft.learningRelations||ctx.learning()?.relationsFor(draft.id);relationsInput.disabled=!ctx.learning();relationsInput.value=draft._draftRelationsText??JSON.stringify(rel?{variants:rel.variants,next:rel.next,practice:rel.practice}:{variants:[],next:null,practice:[]},null,2);$('tutorial-admin-sections').replaceChildren();
-  blockEditor?.destroy();blockEditor=mountBlockEditor($('tutorial-admin-sections'),v.sections,{changed,message,locked:()=>busy||!allowed,topics:ctx.topics,problems:()=>ctx.learning()?.problemsForRelations()||[]});
+  blockEditor?.destroy();blockEditor=mountBlockEditor($('tutorial-admin-sections'),v.sections,{changed,message,locked:()=>busy||!allowed,
+   uploadImage:(file,blockCurrent)=>{const actor=ctx.user()?.id,turn=token,id=draft.id;return uploadTutorialImage(ctx.client(),id,file,actor,()=>turn===token&&actor===ctx.user()?.id&&draft?.id===id&&allowed&&!busy&&blockCurrent());},
+   imageUrl:path=>tutorialImageUrl(ctx.client(),path,ctx.user()?.id,true),topics:ctx.topics,problems:()=>ctx.learning()?.problemsForRelations()||[]});
  }
  function collect(validate=true){if(!draft)return;editableVersion(draft,lang);draft.levelKey=$('tutorial-admin-level').value;draft.level=levelNames.mn[levels.indexOf(draft.levelKey)];draft.order=Number($('tutorial-admin-order').value);draft.category=$('tutorial-admin-category').value.trim();draft.prerequisiteIds=$('tutorial-admin-prerequisite-ids').value.split(',').map(x=>x.trim()).filter(Boolean);const v=editableVersion(draft,lang);v.title=$('tutorial-admin-title').value.trim();v.summary=$('tutorial-admin-summary').value.trim();v.prerequisites=$('tutorial-admin-prerequisites').value.trim();
   if(!validate){draft._draftRelationsText=relationsInput.value;return draft;}
