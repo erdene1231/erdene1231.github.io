@@ -1,33 +1,49 @@
-# Үргэлжлүүлэх — алхам 002
+# Үргэлжлүүлэх — алхам 003
 
-Branch: `codex/recovery-step-002-editor-blocks` (baseline ancestor `f7c5f2e`).
-Checkpoint commit SHA-г archive `MANIFEST.json` болон Git log-оос авна.
-Эхлээд `start/SKILL.md`, `audit/STEP-002.md`, `audit/REQUIREMENTS-CURRENT.md` унш.
+Branch: `codex/recovery-step-003-reader-compat`.
+Parent: `0438ac6ee0b01388474041a42f9c0e87316fd668`, GitHub дээр батлагдсан.
+Checkpoint SHA болон remote verification-ийг ZIP-ийн `MANIFEST.json`-оос авна.
+Эхлээд `start/SKILL.md`, `audit/STEP-003.md`, `audit/REQUIREMENTS-CURRENT.md` унш.
 
 1. Production history: 021 prerequisite (`20261026045125`), 022 blocks
-   (`20261026052253`). 748/55, content hashes unchanged. **Алийг нь ч replay хийхгүй.**
-2. Current frontend нь legacy хэвээр. Recovery renderer/editor-ийг diff-ээр нэгтгэж,
-   old content/new editor round-trip, XSS, MN-only, lazy reader болон mobile/browser
-   compatibility-г шалга. New block body-г reader бэлэн болтол production-д нийтлэхгүй.
-3. Дараа нь `supabase/pending-editor/023-tutorial-drafts.sql`-ийг current schema-тай
-   дахин тулгаж owner A/B/admin/revoked/stale-CAS тестээр баталгаажуул.
-   024 publication, 025 Storage, 026 references, 027 batch тусдаа apply gate-тэй.
-4. Existing admin-edited content-ийг current ID/revision/hash-аар дахин уншиж,
-   explicit merge/CAS without content overwrite. `problems.json` болон
-   `tutorials.json`-ийг recovery хувилбараар бүхлээр нь солихгүй.
-5. Recovery frontend source энэ алхамд merge хийгдээгүй. Original handoff ZIP-ийг
-   хадгал: recovery SHA256 нь `f615dc21b6c0ca40e78ebf4b745b7244a88757062f36bae2610e941257583914`.
-   Full recovery archive энэ checkpoint-д давхар оруулаагүй; user-ийн эх хавсралтаас
-   сэргээнэ. Pending SQL, эх requirements, inventory нь GitHub-д хадгалагдана.
-6. Editor compatibility дуусмагц Binary Search/Greedy semantic + browser review;
-   3 historical reviewed tutorial-ийг шинэ hash-аар дахин нягтал. 41/55 гэх
-   баталгаагүй тоо ашиглахгүй. Pending BOI17 Toll ID-г server-аас reconcile хийхгүйгээр
-   импорт/нийтлэл complete гэж тэмдэглэхгүй.
+   (`20261026052253`). Сүүлийн live шалгалт 748/55, content hashes unchanged.
+   **021/022-ийг replay хийхгүй.** Алхам 003 database-д хүсэлт явуулаагүй.
+2. Typed reader local/browser тесттэй. Legacy editor шинэ блокуудыг read-only
+   хадгалж, English байхгүй үед Монгол агуулгыг English болгон overwrite хийхгүй.
+   Frontend deploy хийгдээгүй. `audit/STEP-003.md` дахь 11 файлыг хамтад нь deploy
+   хийж live reader-ийг шалгасны дараа л шинэ төрлийн body нийтэлж болно.
+3. Дараагийн эхний дутуу ажил: `supabase/pending-editor/023-tutorial-drafts.sql`.
+   Current live schema-г дахин уншиж owner A/B/admin/revoked/stale-CAS тесттэй
+   тулга; зөвхөн дутуу өөрчлөлтийг apply хий. Дараа нь recovery draft editor-ийг
+   diff-ээр нэгтгэ. 024 publication/lazy reader, 025 Storage, 026 references,
+   027 batch тус бүр тусдаа compatibility/security gate-тэй.
+4. Current eager reader RPC, edition hash gates, live content IDs/revisions,
+   progress хэвээр. `problems.json`, `tutorials.json`, curriculum болон editions-ийг
+   recovery хувилбараар бүхлээр нь солихгүй. Admin content merge нь current
+   body/revision/hash болон CAS-д тулгуурлана.
+5. Image reader signed URL хүсэж чадна; Storage policy/upload ажиллаж байгаа
+   гэсэн баталгаа биш. Account солигдох үеийн late URL-г хаяна. 025-ын бодит
+   authorization/upload smoke дуусахаас өмнө media complete гэж тэмдэглэхгүй.
+6. Recovery-ийн үлдсэн frontend/content нь энэ checkpoint-д ороогүй. Original
+   handoff ZIP-ийг хадгал: recovery SHA256
+   `f615dc21b6c0ca40e78ebf4b745b7244a88757062f36bae2610e941257583914`.
+   Full recovery archive-ийг GitHub-д давхар оруулаагүй; user-ийн эх хавсралтаас
+   сэргээнэ. Pending SQL, requirements эх, inventory GitHub-д бий.
+7. Editor work дуусмагц Binary Search/Greedy semantic + browser review;
+   historical 3 tutorial review-г current hash-аар дахин нягтал. 41/55 гэсэн
+   баталгаагүй тоо ашиглахгүй. Pending BOI17 Toll ID-г server-аас reconcile
+   хийхгүйгээр импорт/нийтлэл complete гэж тэмдэглэхгүй.
 
-Local smoke: `npm test`; `node tools/compare_supabase_schema.mjs`.
-Runtime bindings: network secret SUPABASE_WRITE_TOKEN, env SUPABASE_PROJECT_REF,
-allowed mcp.supabase.com. Token/session-ийг файл, Git, ZIP, тайланд гаргахгүй.
+Local: `npm ci`, `npm test`, `node tools/compare_supabase_schema.mjs`.
+Browser: Python `playwright`, `/usr/bin/chromium` болон loopback socket access
+байхад `python3 tests/browser/reader-compat.py`. Энэ нь external network-ийг
+хааж, auth/storage RPC-г mock хийдэг; live E2E/MathJax/CDN тест биш.
 
-Алхам бүр: scoped changes → tests → audit/checklist update → commit → feature
-branch push + remote SHA verify → downloadable ZIP + CRC/checksums + next steps.
-Main merge/frontend deploy нь тусдаа; environment publish-ийг website deploy гэж бүү нэрлэ.
+Runtime: SUPABASE_WRITE_TOKEN network secret, SUPABASE_PROJECT_REF env,
+allowed `mcp.supabase.com`. Token/session-ийг файл, Git, ZIP, тайланд гаргахгүй.
+Client/Start skill Git-д байгаа; reusable environment image registration нь
+тусдаа тохиргоо бөгөөд одоогийн workspace mirror үүнийг батлахгүй.
+
+Алхам бүр: scoped diff → tests → audit/checklist → commit → feature branch push
++ remote SHA verify → downloadable ZIP + CRC/checksums + next steps.
+Main merge/frontend deploy нь тусдаа.

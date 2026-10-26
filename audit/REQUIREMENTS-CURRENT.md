@@ -1,4 +1,4 @@
-# Одоогийн шаардлагын checklist — алхам 002
+# Одоогийн шаардлагын checklist — алхам 003
 
 Хавсралтуудыг бүтнээр уншсан. Хэрэглэгчийн шинэ baseline нь ZIP-ийн хуучин мэдээллийг орлоно.
 `f7c5f2e820f01652e3a839f2db69c05b16c91adb`; 748 problems / 55 tutorials;
@@ -13,6 +13,7 @@ production prerequisite migration `20261026045125` нь recovery editor 021-ээ
 | EDITOR-01 | Typed content blocks SQL contract | VERIFIED_COMPLETE | 022 + regression PASS | applied + rich block SELECT PASS | Frontend нэвтрүүлээгүй |
 | SAFE-01 | Prerequisite validation хадгалах | VERIFIED_COMPLETE | invalid/null/31-ID тест PASS | live invalid ID → 22023 | 021 хамгаалалт хадгалагдсан |
 | SAFE-02 | Энэ алхамд admin content, ID, progress хадгалах | VERIFIED_COMPLETE | no content DML; fixture preservation PASS | before/after content hashes/revisions identical | Content import байхгүй |
+| READER-01 | Typed reader + legacy editor round-trip | LOCAL_VERIFIED | Node + Chromium, MN-only, XSS, media race PASS | frontend live шалгаагүй | үгүй |
 | EDITOR-02 | Private drafts/CAS | MISSING | recovery reviewed; pending 023 | байхгүй | үгүй |
 | EDITOR-03 | Explicit publish/lazy reader | MISSING | recovery reviewed; pending 024 | байхгүй | үгүй |
 | EDITOR-04 | Storage/media authorization | MISSING | recovery reviewed; pending 025 | real upload smoke pending | үгүй |
@@ -22,6 +23,11 @@ production prerequisite migration `20261026045125` нь recovery editor 021-ээ
 | CONTENT-02 | Existing 55 individual quality reviews | PARTIAL | recovery claims 3; current hashes/review recheck pending | 55 row ≠ quality | үгүй |
 | CATALOG-01 | BOI17 Toll stable ID reconciliation | BLOCKED | pending ID recovery only | импортлоогүй | үгүй |
 | EXTRA-01 | Rating palette, extra quotas, 4-level importance | MISSING | өмнөх ажлуудын дараа | үгүй | үгүй |
+
+Алхам 003: typed reader болон хуучин editor-ийн агуулга хадгалалтыг нэгтгэв.
+Шинэ блок authoring, drafts/autosave/upload/publish нь бүрэн хэрэгжээгүй.
+Production database өөрчлөгдөөгүй, frontend deploy хийгдээгүй.
+Баримт: `STEP-003.md`, `STEP-003-BROWSER.json`, `tests/reader-compat.test.mjs`.
 
 ## Бүх эх шаардлагын бүртгэл
 
@@ -38,7 +44,7 @@ Recovery-ийн 41/55 гэсэн баталгаагүй тоог ашиглаа�
 
 ## Дараагийн ажил
 
-022 live verified (`20261026052253`) → reader/editor compatibility → 023 draft/CAS тест,
+022 live verified (`20261026052253`) → reader/editor compatibility local verified → 023 draft/CAS тест,
 current metadata re-audit → 024–027 тус бүрийн rollout. Storage тестгүйгээр editor
 бүрэн live болсон гэж тэмдэглэхгүй. Үүний дараа Binary Search/Greedy semantic болон
 browser review; үлдсэн content/topic/practice, plan/profile/UI regressions.
