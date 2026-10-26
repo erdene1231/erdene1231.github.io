@@ -1,6 +1,6 @@
-import {openProblemSelection} from './problem-selection-dialog.js?v=36';
-import {BLOCK_TYPES,TONES,createBlock,safeLink} from './tutorial-blocks.js?v=36';
-import {appendInline} from './tutorial-block-renderer.js?v=36';
+import {openProblemSelection} from './problem-selection-dialog.js?v=37';
+import {BLOCK_TYPES,TONES,createBlock,safeLink} from './tutorial-blocks.js?v=37';
+import {appendInline} from './tutorial-block-renderer.js?v=37';
 const make=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const names={p:'Текст',rich:'Formatting бүхий текст',heading:'Гарчиг H1–H4',code:'Код',math:'Томъёо',list:'Жагсаалт',ordered:'Дугаартай жагсаалт',checklist:'Checklist',table:'Хүснэгт',links:'Эх сурвалжийн холбоос',quote:'Эшлэл',callout:'Тайлбарын хайрцаг',note:'Нээж унших тайлбар',divider:'Тусгаарлагч',image:'Зураг upload',diagram:'Diagram',problem:'Бодлого',tutorial:'Хичээлийн холбоос'};
 function inlineFromDOM(root){
@@ -73,7 +73,7 @@ export function mountBlockEditor(root,sections,options={}){
    field(container,'Тодруулах ID-ууд — таслалаар (array: 0:1)',(b.highlights||[]).join(', '),v=>b.highlights=v.split(',').map(x=>x.trim()).filter(Boolean),{rows:0});field(container,'Diagram caption',b.caption,v=>b.caption=v,{rows:2});
   }
   else if(b.type==='problem'){
-   const summary=make('p',b.problemKey||'Бодлого сонгоогүй');container.append(summary,button('Бодлого сонгох…',()=>{openProblemSelection({problems:()=>options.problems?.()||[],progress:()=>options.progress?.()||{},maxSelected:Math.max(1,(81-sections.length)*100-sections[si].blocks.length+1),selected:b.problemKey?[b.problemKey]:[],valid:()=>!destroyed&&!options.locked?.()&&sections[si]?.blocks.includes(b),onSelect:(rows,keys)=>change(()=>{b.problemKey=keys[0];sections[si].blocks.splice(bi+1,0,...keys.slice(1).map(problemKey=>({...createBlock('problem'),problemKey})));const overflow=sections[si].blocks.splice(100);const extra=[];while(overflow.length)extra.push({key:crypto.randomUUID(),title:sections[si].title+' — үргэлжлэл',blocks:overflow.splice(0,100)});sections.splice(si+1,0,...extra);},Symbol('problem-selection'),true)});}));
+   const summary=make('p',b.problemKey||'Бодлого сонгоогүй');container.append(summary,button('Бодлого сонгох…',()=>{openProblemSelection({problems:()=>options.problems?.()||[],progress:()=>options.progress?.()||{},maxSelected:Math.max(1,(81-sections.length)*100-sections[si].blocks.length+1),selected:b.problemKey?[b.problemKey]:[],valid:()=>!destroyed&&!options.locked?.()&&sections[si]?.blocks.includes(b),onSelect:(rows,keys)=>change(()=>{b.problemKey=keys[0]||'';sections[si].blocks.splice(bi+1,0,...keys.slice(1).map(problemKey=>({...createBlock('problem'),problemKey})));const overflow=sections[si].blocks.splice(100);const extra=[];while(overflow.length)extra.push({key:crypto.randomUUID(),title:sections[si].title+' — үргэлжлэл',blocks:overflow.splice(0,100)});sections.splice(si+1,0,...extra);},Symbol('problem-selection'),true)});}));
   }
   else if(b.type==='tutorial')select(container,'Холбогдох tutorial',(options.topics?.()||[]).map(t=>[t.id,t.title]),b.tutorialId,v=>b.tutorialId=v);
   else if(b.type==='links')field(container,'Мөр бүр: нэр | https://…',b.items.map(x=>x.label+' | '+x.url).join('\n'),v=>b.items=v.split('\n').filter(Boolean).map(line=>{const at=line.lastIndexOf('|');return {label:line.slice(0,at).trim(),url:line.slice(at+1).trim()};}),{rows:4});

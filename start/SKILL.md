@@ -118,6 +118,14 @@ remain readable and progress IDs unchanged. Review audit/NUMERIC-REFERENCES.md.
 Pending026 must be adapted to numeric references after a fresh audit; do not
 apply its legacy-key assumptions blindly. Deploy completev36 after PR14 review.
 
+## Catalog / selection UI checkpoint
+
+Frontendv37 fixes global tag hiding for solved tasks, removes pack tabs, adds
+colored hint badges and two-pane selection/reset/removal. See
+ audit/CATALOG-SELECTION-UI.md and NEXT-STEPS.md. No production calls or migrations
+in this checkpoint;029 remains applied. Local synthetic browser checks do not
+establish deployed authenticated UI verification. Deploy after review/merge.
+
 ## Persistence boundary
 
 The repository tracks this skill, client, metadata query, comparison tool and audit

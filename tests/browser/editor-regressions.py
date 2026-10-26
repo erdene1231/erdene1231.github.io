@@ -20,7 +20,7 @@ try:
    page.route('**/*',route);page.goto(base+'/index.html',wait_until='networkidle')
    page.evaluate('''async()=>{
     window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-    const {setupTutorialEditor}=await import('/tutorial-editor.js?v=36');
+    const {setupTutorialEditor}=await import('/tutorial-editor.js?v=37');
     window.actor='00000000-0000-0000-0000-000000000001';window.docCalls=0;window.failLoad=false;window.saveCalls=[];window.rev=0;window.drafts=new Map();window.published=null;
     window.lesson=structuredClone((await (await fetch('/tutorials.json')).json()).tutorials[0]);
     lesson.sections=[{title:'First',blocks:[{type:'rich',content:[{text:'Editable text',marks:[]}]}]},{title:'Second',blocks:[{type:'code',language:'C++17',text:'int x = 1;'}]}];
@@ -88,14 +88,16 @@ try:
    page.locator('[data-undo]').click();assert page.evaluate("document.querySelectorAll('#tutorial-admin-sections > details').length")==1
    page.locator('[data-redo]').click();assert page.evaluate("document.querySelectorAll('#tutorial-admin-sections > details').length")==2
    for width in [375,1200]:
-    page.set_viewport_size({'width':width,'height':950});assert page.locator('#admin-tutorials').evaluate('e=>e.scrollWidth<=e.clientWidth');page.locator('#admin-tutorials').screenshot(path=str(ROOT/f'audit/browser/numeric-editor-workspace-{width}.png'))
+    page.set_viewport_size({'width':width,'height':950});assert page.locator('#admin-tutorials').evaluate('e=>e.scrollWidth<=e.clientWidth');page.locator('#admin-tutorials').screenshot(path=str(ROOT/f'audit/browser/catalog-editor-workspace-{width}.png'))
   case('name_slug_unfinished_preview_and_section_buttons',unfinished_preview)
   def practice_picker(page):
    page.evaluate("document.querySelector('#tutorial-admin-relations').value=JSON.stringify({practice:[{key:'judge|one',stage:'Standard',priority:true,reason:'Keep this reason'}],variants:[],next:null})")
    page.get_by_role('button',name='Practice бодлого сонгох…').click()
    page.locator('dialog[open] [data-filter=status]').select_option('solved')
    assert page.locator('dialog[open] input[type=checkbox]').count()==1
-   page.locator('dialog[open] [data-select-filtered]').click();page.locator('dialog[open] [data-selection-apply]').click()
+
+   if page.locator('dialog[open] [data-select-filtered]').is_enabled():page.locator('dialog[open] [data-select-filtered]').click()
+   page.locator('dialog[open] [data-selection-apply]').click()
    assert page.evaluate("JSON.parse(document.querySelector('#tutorial-admin-relations').value).practice[0].key")=='1'
    assert page.evaluate("JSON.parse(document.querySelector('#tutorial-admin-relations').value).practice[0].reason")=='Keep this reason'
    page.locator('#tutorial-admin-save').click();page.wait_for_function('saveCalls.length>0')
@@ -129,7 +131,7 @@ try:
    for width in [375,1200]:
     page.set_viewport_size({'width':width,'height':900})
     assert form.evaluate('e=>e.scrollWidth<=e.clientWidth')
-    page.locator('#admin-tutorials').screenshot(path=str(ROOT/f'audit/browser/numeric-editor-formatting-{width}.png'))
+    page.locator('#admin-tutorials').screenshot(path=str(ROOT/f'audit/browser/catalog-editor-formatting-{width}.png'))
   case('bold_toggle_italic_before_typing_keyboard_and_autosave',formatting)
   def new_document(page):
    page.locator('#tutorial-admin-new').click();page.locator('#tutorial-new-id').fill('new-recovery-regressionture')
@@ -202,7 +204,7 @@ try:
    page.reload(wait_until='networkidle')
    page.evaluate('''async()=>{
     window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-    const {setupTutorials}=await import('/tutorials.js?v=36');
+    const {setupTutorials}=await import('/tutorials.js?v=37');
     window.lesson=structuredClone((await (await fetch('/tutorials.json')).json()).tutorials[0]);window.saveCalls=[];window.published=null;window.drafts=new Map();window.rev=0;
     const client={rpc:async(name,args)=>{
      if(name==='get_tutorials')return {data:[{body:lesson,revision:7}]};
@@ -221,6 +223,6 @@ try:
   case('new_publication_appears_in_actual_tutorial_library',new_reader)
   browser.close()
 finally:server.shutdown()
-(ROOT/'audit/NUMERIC-EDITOR-REGRESSIONS.json').write_text(json.dumps({'checks':report,'failures':failures},indent=2)+'\n')
+(ROOT/'audit/CATALOG-EDITOR-REGRESSIONS.json').write_text(json.dumps({'checks':report,'failures':failures},indent=2)+'\n')
 print(json.dumps({'checks':report,'failures':failures}))
 assert not failures,failures
