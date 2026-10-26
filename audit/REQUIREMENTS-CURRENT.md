@@ -79,3 +79,7 @@ English creation, private draft choices, new publication library insertion added
 Autosave, failed-load, stale-local recovery and refresh regressions fixed.
 40 Node cases + 30 Chromium groups PASS; authenticated live behavior/deploy still
 unverified. See `EDITOR-FIX.md`. Planned 010/026 and remaining checklist unchanged.
+
+Recovery UX after PR 10: visible conflict version selection/backup and actual
+editor continuation verified locally (41 Node / 39 browser groups). No live
+admin E2E/deploy claim. See RECOVERY-UX.md. Next step still 010/026.

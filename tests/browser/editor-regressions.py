@@ -20,7 +20,7 @@ try:
    page.route('**/*',route);page.goto(base+'/index.html',wait_until='networkidle')
    page.evaluate('''async()=>{
     window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-    const {setupTutorialEditor}=await import('/tutorial-editor.js?v=31');
+    const {setupTutorialEditor}=await import('/tutorial-editor.js?v=32');
     window.actor='00000000-0000-0000-0000-000000000001';window.docCalls=0;window.failLoad=false;window.saveCalls=[];window.rev=0;window.drafts=new Map();window.published=null;
     window.lesson=structuredClone((await (await fetch('/tutorials.json')).json()).tutorials[0]);
     lesson.sections=[{title:'First',blocks:[{type:'rich',content:[{text:'Editable text',marks:[]}]}]},{title:'Second',blocks:[{type:'code',language:'C++17',text:'int x = 1;'}]}];
@@ -90,12 +90,12 @@ try:
    for width in [375,1200]:
     page.set_viewport_size({'width':width,'height':900})
     assert form.evaluate('e=>e.scrollWidth<=e.clientWidth')
-    page.locator('#admin-tutorials').screenshot(path=str(ROOT/f'audit/browser/editor-fix-formatting-{width}.png'))
+    page.locator('#admin-tutorials').screenshot(path=str(ROOT/f'audit/browser/recovery-regression-formatting-{width}.png'))
   case('bold_toggle_italic_before_typing_keyboard_and_autosave',formatting)
   def new_document(page):
-   page.locator('#tutorial-admin-new').click();page.locator('#tutorial-new-id').fill('new-editor-fixture')
+   page.locator('#tutorial-admin-new').click();page.locator('#tutorial-new-id').fill('new-recovery-regressionture')
    page.locator('#tutorial-new-form').get_by_role('button',name='Ноорог үүсгэх',exact=True).click()
-   page.wait_for_function("document.querySelector('#tutorial-admin-id').value==='new-editor-fixture'")
+   page.wait_for_function("document.querySelector('#tutorial-admin-id').value==='new-recovery-regressionture'")
    assert page.locator('#tutorial-admin-title').is_enabled()
    page.locator('#tutorial-admin-title').fill('A new tutorial');page.locator('#tutorial-admin-summary').fill('A complete new summary')
    page.locator('#tutorial-admin-category').fill('Basics');page.locator('#tutorial-admin-aliases').fill('new tutorial fixture')
@@ -106,7 +106,7 @@ try:
    page.locator('#tutorial-admin-preview').click();page.wait_for_function("document.querySelector('#tutorial-preview').open")
    page.evaluate("document.querySelector('#tutorial-preview').close()")
    page.locator('#tutorial-publish-review').click();page.wait_for_selector('[data-publish-confirm]');assert page.evaluate('published') is None
-   page.locator('[data-publish-confirm]').click();page.wait_for_function("published?.p_id==='new-editor-fixture'")
+   page.locator('[data-publish-confirm]').click();page.wait_for_function("published?.p_id==='new-recovery-regressionture'")
    assert page.evaluate('published.p_body._draftRelationsText') is None
   case('new_tutorial_fields_private_save_preview_and_explicit_publication',new_document)
   def translation(page):
@@ -163,7 +163,7 @@ try:
    page.reload(wait_until='networkidle')
    page.evaluate('''async()=>{
     window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-    const {setupTutorials}=await import('/tutorials.js?v=31');
+    const {setupTutorials}=await import('/tutorials.js?v=32');
     window.lesson=structuredClone((await (await fetch('/tutorials.json')).json()).tutorials[0]);window.saveCalls=[];window.published=null;window.drafts=new Map();window.rev=0;
     const client={rpc:async(name,args)=>{
      if(name==='get_tutorials')return {data:[{body:lesson,revision:7}]};
@@ -176,12 +176,12 @@ try:
    }''')
    page.wait_for_function("document.querySelector('#tutorial-admin-id').value==='complexity'")
    new_document(page)
-   page.wait_for_function("document.querySelector('#tutorial-admin-choose option[value=\"new-editor-fixture\"]')!==null")
-   page.evaluate("location.hash='#tutorial/new-editor-fixture'")
+   page.wait_for_function("document.querySelector('#tutorial-admin-choose option[value=\"new-recovery-regressionture\"]')!==null")
+   page.evaluate("location.hash='#tutorial/new-recovery-regressionture'")
    page.wait_for_function("document.querySelector('#tutorial-title').textContent==='A new tutorial'")
   case('new_publication_appears_in_actual_tutorial_library',new_reader)
   browser.close()
 finally:server.shutdown()
-(ROOT/'audit/EDITOR-FIX-BROWSER.json').write_text(json.dumps({'checks':report,'failures':failures},indent=2)+'\n')
+(ROOT/'audit/RECOVERY-REGRESSION-BROWSER.json').write_text(json.dumps({'checks':report,'failures':failures},indent=2)+'\n')
 print(json.dumps({'checks':report,'failures':failures}))
 assert not failures,failures

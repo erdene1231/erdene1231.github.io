@@ -23,7 +23,7 @@ try:
    r.continue_()
   page.route('**/*',route);page.goto(base+'/index.html',wait_until='networkidle')
   report.update(page.evaluate('''async()=>{
-   const m=await import('/tutorial-media.js?v=31');window.media=m;
+   const m=await import('/tutorial-media.js?v=32');window.media=m;
    const check=(v,s)=>{if(!v)throw Error(s);};const rejects=async(fn)=>{try{await fn();}catch{return;}throw Error('Expected rejection');};
    window.check=check;window.rejects=rejects;
    const canvas=document.createElement('canvas');canvas.width=3000;canvas.height=1500;canvas.getContext('2d').fillRect(0,0,3000,1500);
@@ -54,7 +54,7 @@ try:
   preview_bytes=bytes(page.evaluate('async()=>Array.from(new Uint8Array(await file.arrayBuffer()))'))
   page.evaluate('''async()=>{
    for(const e of document.body.children)e.hidden=true;
-   const {mountBlockEditor}=await import('/tutorial-block-editor.js?v=31');const root=document.createElement('section');root.id='media-editor';root.style.cssText='max-width:850px;margin:auto;padding:12px';document.body.append(root);
+   const {mountBlockEditor}=await import('/tutorial-block-editor.js?v=32');const root=document.createElement('section');root.id='media-editor';root.style.cssText='max-width:850px;margin:auto;padding:12px';document.body.append(root);
    window.sections=[{title:'Image authoring',blocks:[{type:'rich',content:[{text:'Paste image here',marks:[]}]}]}];window.pending=[];window.messages=[];
    window.blockEditor=mountBlockEditor(root,sections,{changed:()=>window.changes=(window.changes||0)+1,message:t=>messages.push(t),uploadImage:(file,current)=>{check(current(),'current block');return new Promise(r=>pending.push(r));},imageUrl:async()=> 'https://example.invalid/preview.webp'});
   }''')
@@ -87,13 +87,13 @@ try:
   for width,theme in [(375,'light'),(1200,'dark')]:
    page.set_viewport_size({'width':width,'height':900});page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
    assert root.evaluate('e=>e.scrollWidth<=e.clientWidth')
-   root.screenshot(path=str(ROOT/f'audit/browser/editor-fix-media-{width}.png'))
+   root.screenshot(path=str(ROOT/f'audit/browser/recovery-regression-media-{width}.png'))
   report['picker_paste_drop_metadata_preview_and_stale_block_responses']='PASS'
   # Use the actual editor adapter and draft autosave with real image conversion.
   page.reload(wait_until='networkidle')
   page.evaluate('''async()=>{
    window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-   const {setupTutorialEditor}=await import('/tutorial-editor.js?v=31');window.actor='00000000-0000-0000-0000-000000000001';
+   const {setupTutorialEditor}=await import('/tutorial-editor.js?v=32');window.actor='00000000-0000-0000-0000-000000000001';
    window.lesson=structuredClone((await (await fetch('/tutorials.json')).json()).tutorials[0]);delete lesson.translations;lesson.sections=[{title:'Upload fixture',blocks:[{type:'p',text:'Example'}]}];window.savedBody=null;window.didUpload=false;
    const client={storage:{from:()=>({upload:async(path,blob,options)=>{if(blob.type!=='image/webp'||options.upsert!==false)throw Error('bad upload');window.didUpload=true;return {error:null};},createSignedUrl:async()=>({data:{signedUrl:'https://example.invalid/test.webp'}})})},rpc:async(name,args)=>{
     if(name==='is_admin')return {data:true};if(name==='admin_tutorial_document')return {data:{current:{body:lesson,revision:7},draft:null}};
@@ -118,5 +118,5 @@ try:
   assert not errors,errors
   report['page_errors']=[];browser.close()
 finally:server.shutdown()
-(ROOT/'audit/EDITOR-FIX-REGRESSION-MEDIA-BROWSER.json').write_text(json.dumps(report,indent=2)+'\n')
+(ROOT/'audit/RECOVERY-REGRESSION-REGRESSION-MEDIA-BROWSER.json').write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps(report))

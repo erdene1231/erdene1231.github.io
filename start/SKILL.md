@@ -81,6 +81,10 @@ comparison resume, failed-load recovery and catalog refresh. 40 Node cases and
 30 Chromium groups passed locally with mocked Auth/Storage/RPC. No new migration
 or production writes. See audit/EDITOR-FIX.md; next numbered step stays 010/026.
 
+Recovery choice repair after PR 10 uses v32. Empty editor hidden during conflict;
+visible version/backup actions, explicit selection and resume/retry flow. See
+audit/RECOVERY-UX.md and tests/browser/recovery-flow.py. No production changes.
+
 ## Persistence boundary
 
 The repository tracks this skill, client, metadata query, comparison tool and audit

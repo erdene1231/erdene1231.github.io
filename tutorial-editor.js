@@ -1,13 +1,13 @@
-import {createBlock} from './tutorial-blocks.js?v=31';
-import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=31';
-import {mountPublication} from './tutorial-publication.js?v=31';
-import {mountBlockEditor} from './tutorial-block-editor.js?v=31';
-import {mountDraftRecovery} from './tutorial-draft-recovery.js?v=31';
-import {createDraftSession} from './tutorial-drafts.js?v=31';
-import {editableVersion} from './tutorial-editor-compat.js?v=31';
+import {createBlock} from './tutorial-blocks.js?v=32';
+import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=32';
+import {mountPublication} from './tutorial-publication.js?v=32';
+import {mountBlockEditor} from './tutorial-block-editor.js?v=32';
+import {mountDraftRecovery} from './tutorial-draft-recovery.js?v=32';
+import {createDraftSession} from './tutorial-drafts.js?v=32';
+import {editableVersion} from './tutorial-editor-compat.js?v=32';
 import {validateRelations} from './learning-model.js?v=23';
-import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=31';
-import {node,drawArticle,typeset} from './tutorials.js?v=31';
+import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=32';
+import {node,drawArticle,typeset} from './tutorials.js?v=32';
 const $=id=>document.getElementById(id);
 export function setupTutorialEditor(ctx){
  let allowed=false,token=0,draft=null,revision=0,lang='mn',busy=false,accountId,blockEditor,workspace=[];
@@ -26,13 +26,18 @@ export function setupTutorialEditor(ctx){
  backup.onclick=()=>downloadBody(recovery?.body||session.snapshot()?.body);
  const previousBackup=node('button','Харьцуулахаас өмнөх backup татах');previousBackup.type='button';previousBackup.onclick=()=>downloadBody(session.local(ctx.user()?.id,($('tutorial-admin-choose').value)+':before-rebase')?.body);
  form.prepend(node('p','Ноорог зөвхөн танд харагдана. Нийтлэгдсэн хичээлийг өөрчлөхгүй.'),backup,previousBackup);
- const comparisonRoot=node('section');comparisonRoot.id='tutorial-draft-comparison';form.after(comparisonRoot);
- const comparison=mountDraftRecovery(comparisonRoot,{client:ctx.client,user:ctx.user,allowed:()=>allowed,session,lock:setBusy,message,
+ const recoveryNotice=node('section');recoveryNotice.className='recovery-notice';recoveryNotice.hidden=true;
+ const resumeRecovery=node('button','Хувилбараа сонгоод засвараа үргэлжлүүлэх');resumeRecovery.type='button';resumeRecovery.dataset.recoveryResume='true';
+ const recoveryBackup=node('button','Төхөөрөмжийн засварыг JSON backup татах');recoveryBackup.type='button';recoveryBackup.dataset.recoveryBackup='true';recoveryBackup.onclick=()=>downloadBody(recovery?.body);
+ recoveryNotice.append(node('p','Төхөөрөмжийн засвар хадгалагдсан. Үргэлжлүүлэх хувилбараа сонгох эсвэл өөр хичээл нээж болно.'),resumeRecovery,recoveryBackup);form.before(recoveryNotice);
+ const comparisonRoot=node('section');comparisonRoot.id='tutorial-draft-comparison';form.before(comparisonRoot);
+ const comparison=mountDraftRecovery(comparisonRoot,{client:ctx.client,user:ctx.user,allowed:()=>allowed,session,lock:setBusy,message,backup:downloadBody,
   capture(){if(draft)session.changed(collect(false));},candidate:()=>recovery||session.snapshot(),
   accept(result,actor,id){draft=structuredClone(result.body);recovery=null;revision=result.base_revision;
    session.open({actor,id,body:draft,baseRevision:result.base_revision,draftRevision:result.revision});session.checkpoint();
    lang='mn';$('tutorial-admin-language').value=lang;$('tutorial-admin-choose').value=id;$('tutorial-admin-level').value=draft.levelKey;$('tutorial-admin-order').value=draft.order;$('tutorial-admin-category').value=draft.category;paint();}
  });
+ resumeRecovery.onclick=()=>void comparison.open();
  const compare=node('button','Хувилбаруудыг харьцуулах');compare.type='button';compare.id='tutorial-compare-drafts';compare.onclick=()=>void comparison.open();backup.after(compare);
  const publicationRoot=node('section');publicationRoot.id='tutorial-publication';form.after(publicationRoot);
  const publication=mountPublication(publicationRoot,{client:ctx.client,user:ctx.user,allowed:()=>allowed,session,lock:setBusy,message,topics:ctx.topics,problems:()=>ctx.learning()?.problemsForRelations()||[],
@@ -55,7 +60,7 @@ export function setupTutorialEditor(ctx){
   try{const {data,error}=await ctx.client().rpc('admin_tutorial_document',{p_id:row.id});if(error)throw error;if(turn!==token||uid!==ctx.user()?.id)return;
    const server=data.draft,base=server?.base_revision??data.current?.revision??row.revision??0,rev=server?.revision||0;
    const local=session.local(uid,row.id);recovery=local?.unsynced?local:null;
-   if(recovery&&(local.baseRevision!==base||local.draftRevision!==rev)){session.invalidate();message('Local ба онлайн ноорог зөрсөн. Хувилбаруудаа харьцуулж засвараа сэргээнэ үү.');queueMicrotask(()=>{if(turn===token&&recovery)void comparison.open();});return;}
+   if(recovery&&(local.baseRevision!==base||local.draftRevision!==rev)){session.invalidate({saveLocal:false});message('Local ба онлайн ноорог зөрсөн. Хувилбаруудаа харьцуулж засвараа сэргээнэ үү.');queueMicrotask(()=>{if(turn===token&&recovery)void comparison.open();});return;}
    if(!server?.body&&!data.current?.body)throw Error('Хичээлийн онлайн агуулга олдсонгүй. Дахин ачаалж оролдоно уу.');
    draft=structuredClone(recovery?.body||server?.body||data.current?.body);delete draft.searchText;delete draft.revision;revision=base;
    session.open({actor:uid,id:row.id,body:draft,baseRevision:base,draftRevision:rev,unsynced:!!recovery});
@@ -78,7 +83,7 @@ export function setupTutorialEditor(ctx){
  function clearDocument(){blockEditor?.destroy();blockEditor=null;draft=null;
   for(const id of ['id','title','summary','prerequisites','prerequisite-ids','aliases','related','category','order'])$('tutorial-admin-'+id).value='';
  }
- function setBusy(value){busy=value;const editable=allowed&&!!draft&&!busy;
+ function setBusy(value){busy=value;form.hidden=!allowed||!draft;recoveryNotice.hidden=!allowed||!recovery||!comparisonRoot.hidden||busy;const editable=allowed&&!!draft&&!busy;
   for(const el of form.querySelectorAll('input,textarea,select,button,[contenteditable]')){
    if(el.hasAttribute('contenteditable'))el.contentEditable=String(editable);
    else el.disabled=!editable;
@@ -123,7 +128,7 @@ export function setupTutorialEditor(ctx){
   draft.translations??={};draft.translations.en={title:'',summary:'',prerequisites:'',sections:[{key:crypto.randomUUID(),title:'New section',blocks:[createBlock('rich')]}]};
   lang='en';$('tutorial-admin-language').value=lang;paint();changed();setBusy(false);
  };
- async function accountChanged(force=false){const id=ctx.user()?.id||null;if(!force&&id===accountId)return;blockEditor?.destroy();publication.invalidate();comparison.invalidate();session.invalidate();recovery=null;workspace=[];$('tutorial-new-form').hidden=true;accountId=id;const turn=++token;allowed=false;draft=null;$('tutorial-admin-form').hidden=true;$('tutorial-admin-save').disabled=true;if($('tutorial-preview').open)$('tutorial-preview').close();if(!ctx.client()||!ctx.user())return;
+ async function accountChanged(force=false){const id=ctx.user()?.id||null;if(!force&&id===accountId)return;blockEditor?.destroy();publication.invalidate();comparison.invalidate();session.invalidate();recovery=null;recoveryNotice.hidden=true;workspace=[];$('tutorial-new-form').hidden=true;accountId=id;const turn=++token;allowed=false;draft=null;$('tutorial-admin-form').hidden=true;$('tutorial-admin-save').disabled=true;if($('tutorial-preview').open)$('tutorial-preview').close();if(!ctx.client()||!ctx.user())return;
   try{const {data,error}=await ctx.client().rpc('is_admin');if(error)throw error;if(turn!==token)return;allowed=data===true;$('tutorial-admin-form').hidden=!allowed;if(allowed){setBusy(false);await loadWorkspace();if(turn!==token)return;await refresh();}}catch{if(turn===token)message('Админ эрхийг шалгаж чадсангүй. Дахин нэвтэрч оролдоорой.');}
  }
  $('tutorial-admin-language').onchange=()=>{try{changed();collect(false);const nextLang=$('tutorial-admin-language').value;editableVersion(draft,nextLang);lang=nextLang;paint();message('');}catch(e){$('tutorial-admin-language').value=lang;message(e.message);}};
