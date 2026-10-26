@@ -1,5 +1,7 @@
 # Erdene Club — дэлгэрэнгүй ажлын бүрэн жагсаалт
 
+Гүйцэтгэх үндсэн төлөвлөгөө: [яг8 дэд хэсэг](EIGHT-PART-PLAN.md).180 ажлын задаргаа; багц бүрийг дуусгаад дараагийн хэрэглэгчийн зааврыг хүлээнэ.
+
 2026-10-26. Энэ шинэчлэлт нь шаардлага задлах, төлөвлөх ажил. Код болон production database өөрчлөөгүй.
 
 ## Эх сурвалж, уншсан хүрээ, төлөвийн утга
@@ -262,15 +264,15 @@ START-HERE.md (220 мөр), requirements-01.txt (1197 мөр), requirements-02.t
 
 Хүлээн авах: existing agreed behavior-ийн PASS/FAIL report; засах bug байвал тусдаа regression test, unrelated replacementгүй.
 
-## 11. Өмнөх үндсэн ажлын дараах нэмэлтүүд
+## 11. Бодлогын нэмэлт quota, rating өнгө, importance
 
-Эх: START §11. Эдгээрийг өмнөх ажлаас урьтаж хийж үндсэн curriculum-г орхихгүй. **A/P.**
+Эх: START §11. Сүүлийн хэрэглэгчийн шийдвэрээр эдгээрийг шинэ8 багцын4 дэх багцад хамтад нь дуусгана. Үндсэн curriculum шаардлагыг хасахгүй. **A/P.**
 
 - [ ] X01 — Rating palette800–1100 gray/newbie;1200–1300 green/pupil;1400–1500 cyan/specialist;1600–1800 blue/expert.
 - [ ] X02 —1900–2000 magenta/CM;2100–2300 orange/master;2400–2900 red/GM;3000+ black/LGM. Default CF palette руу өөрчлөхгүй.
 - [ ] X03 —100-step boundary tests; arbitrary intermediate value mapping-г баримтжуулах, rating-ийг өнгөнд тааруулж өөрчлөхгүй; official/estimate/unrated independent label, dark black contrast, color-blind readable.
 - [ ] X04 — Нэмэлт quota эхлэх baseline ID set/provenance freeze; existing edit/duplicate-г шинэ task гэж тооцохгүй. Өмнө баттай оруулсан бол evidence reuse.
-- [ ] X05 — **IOI +30**, **EGOI +30**, **JOI +20**, **APIO +15**, **Codeforces +100** буюу доод нийлбэр195 verified unique new tasks. Тоонууд нь existing source totals биш.
+- [ ] X05 — **IOI +30**, **EGOI +30**, **JOI +20**, **APIO +15**, **Codeforces +100**, **AtCoder +50** буюу доод нийлбэр245 verified unique new tasks. CF/AtCoder сонголт нь чанартай, сургалтын өгөөж/priority өндөр байна. Тоонууд нь existing source totals биш.
 - [ ] X06 — Tutorial/problem **Low/Medium/High/Extreme importance**4 түвшин: DB validation/default/backfill, admin selector, import/export, badge/filter/sort.
 - [ ] X07 — Importance нь difficulty болон ⭐ Priority mastery-selection-ээс өөр; boolean-г сохроор4түвшинд хөрвүүлэхгүй. Editorial rubric/rationale; бүгд Extreme болохгүй.
 
@@ -305,31 +307,32 @@ START-HERE.md (220 мөр), requirements-01.txt (1197 мөр), requirements-02.t
 - [ ] R11 — Session тасрахын өмнө exact requirement/topic/file/SHA/next command; unfinished work preserved; chat memory цорын ганц эх сурвалж биш.
 - [ ] R12 — Final report: tutorials total/existing/new/rewritten/reviewed/pending/canonical/MN-EN/practice/prerequisites; problem baseline/new/source quotas/dedup/rating; editor live;100day/profile/theme/auth/group/export; migrations/Git/PR/deploy/known gaps.
 
-## 14. Гүйцэтгэх бодит дараалал, зогсох шалгуур
+## Blog — шинээр нэмсэн үндсэн хүрээ
 
-Энэ нь шинэ feature эхлүүлэх заавар биш: хэрэглэгч одоогоор жагсаалтаа бүрэн болгохыг хүссэн. Доорх нь дараагийн хэрэгжилтийн дараалал.
+Эх: хэрэглэгчийн энэ удаагийн нэмэлт; анхны ZIP-ийн шаардлага биш. **P, хэрэгжилт эхлээгүй.** Blog/comment нь хэрэглэгчийн контент; tutorial admin эрхийг нийт хэрэглэгчдэд нээхгүй.
 
-| Багц | Хүрээ | Хамаарал | Гарах үр дүн / дараагийн багц руу орох нөхцөл |
-|---|---|---|---|
-| A0 | Энэ эх шаардлагын задлал, зөрчил/төлөв | Гурван эх бүтэн унших | Бүх source lines/topic mentions хадгалагдсан; latest overrides тусдаа |
-| A1 | U01–17, E01–19-ийн үлдсэн validation | Current commit/deploy audit | Existing fixes reuse; actual authorized UI/Storage эсвэл тодорхой blocker; дахин redesignгүй |
-| A2 | B01–10, pending026 reference delta | Fresh schema + current contracts | Missing refs бүх хэлбэрээр audit: prerequisite/variants/related/next/practice/embedded/private drafts; шинэ migration шаардлагатай бол isolated PASS |
-| A3 | M01–08, pending027/bulk/history | A2, auth/CAS/media guards | Dry-run/atomic/restore/stale tests, dashboard known-gap fixtures |
-| A4 | C01 inventory, C02 Binary Search | A1–A3-ийн шаардлагатай contracts | Нэг жишиг lesson semantic/code/browser/practice PASS, admin diff preserved |
-| A5 | C03 Greedy, C04 DP | A4 quality rubric | Нэмэлт2 жишиг; түүнээс хойш л үлдсэн existing tutorials чанарын batch |
-| A6 | C05–12 бүх existing lesson | Жишиг review | Lesson бүр тусдаа review card; заавал бүгдийг rewrite биш, хүрсэн чанарыг reuse |
-| A7 | T01–14 дутуу coverage | Canonical map/prerequisite DAG | Суурь→structures/graphs/trees/DP→strings/math/geometry/olympiad; нэг lesson+practice бүрэн unit |
-| A8 | P01–16 remaining curated bank | A4–A7 practice импорт шаардлагатай үед хамт | CSES/international/hints/rating/dedup audit, source gaps тодорхой |
-| A9 | D01–12 | Reviewed canonical content/problem IDs |100 өдөр тус бүр validated, workload/progress PASS; advanced roadmap тусдаа |
-| A10 | S01–10 | Stable shared progress/history | Known counts/timezone/charts/public-owner auth PASS |
-| A11 | F01–14, G01–12 | Хамаарах data/UI contracts | Main pages/theme/auth/groups/exports regression, performance evidence |
-| A12 | X01–07 | Өмнөх үндсэн ажил дууссан/блокер нь баримттай | Exact palette, +195 minimum source quota,4importance; originals орхихгүй |
-| A13 | O01–05 | Үндсэн ажил; өгөөжийн үнэлгээ | Optional decision/evidence; хойшлуулж болно |
-| A14 | R01–12 final acceptance | Багц бүрд тасралтгүй; эцэст consolidation | Verified remote/archive, deploy/live status; unfinished requirement нуухгүй |
+- [ ] H01 — Navigation-д Blog цэс, тусдаа list/detail/new/edit routes; public нийтлэл унших, өөрийн блог үүсгэж удирдах.
+- [ ] H02 — Нэвтэрсэн дурын хэрэглэгч блог бичиж болно; title/body/author/status/timestamps/stable ID; private draft ба public published lifecycle. Owner edit/delete, site-admin moderation, бусдын draft харахгүй.
+- [ ] H03 — Blog editor tutorial editor-той бараг адил shared block/formatting бүтэц: headings, bold/italic/lists, tables, links, quote/callout, code, math, images, block add/reorder/delete; tutorial-only practice/curriculum metadata-г заавал шаардахгүй.
+- [ ] H04 — Preview/save indicator/unsaved warning/private draft/publish/update; revision conflict хамгаалалт. Existing tutorial save/reset үйлдлийг эвдэхгүй shared components-ийг reuse.
+- [ ] H05 — Blog зураг upload тусдаа owner-scoped Storage policy/size/MIME/decode validation; public published asset delivery, draft privacy, reference-safe cleanup. Tutorial admin bucket-д бүх user-д upload эрх өгөхгүй.
+- [ ] H06 — Blog list/detail: title, author public identity, date, content; code/math/images responsive rendering, loading/empty/error state. Title/content search ба newest sort-ийг эхний UX шийдэл болгон төлөвлөх.
+- [ ] H07 — Upvote/downvote: нэвтэрсэн нэг хэрэглэгч нэг блогт нэг санал; change/undo, unique constraint, server atomic tally, double-click/concurrency зөв; anonymous read-only. Өөрийн блогт санал өгөх эсэхийг хэрэгжүүлэх үеийн тодорхой дүрэм болгон баримтжуулах.
+- [ ] H08 — Comment list/create/edit/delete: author ownership, public published блогт comment; draft/hidden блогийн private мэдээлэл leakгүй; admin moderation. Reply threading болон comment voting энэ хүсэлтэд заавал биш.
+- [ ] H09 — Comment editor tutorial-тай төстэй shared rich blocks/formatting/code/math/link/image дэмжлэгтэй; plain textarea-аар хязгаарлахгүй. Compact toolbar, preview, draft text recovery, submit errors; blog editor-оос permissions/limits-ийг тусдаа тохируулах.
+- [ ] H10 — Blog/comment XSS/unsafe HTML/URL/image protection, body/upload limits, spam/rate-limit хамгаалалт, owner/admin RLS/RPC; tutorial/progress permissions өөрчлөгдөхгүй.
+- [ ] H11 — Small additive migrations, indexes, constraints, policy/role tests; userA/userB/admin/anonymous, draft/public/edit/delete/vote/concurrent/comment/upload fixtures. Production бодит контентоор destructive smoke хийхгүй.
+- [ ] H12 — Desktop/mobile/light/dark/keyboard, publish/reload/comment/vote error/retry end-to-end; commit/verified push/PR/ZIP/continuation. Бодит live authorization шалгалтгүй бол COMPLETE гэж тэмдэглэхгүй.
 
-Нэгж ажлын хэмжээ: **нэг migration purpose**, **нэг tutorial + practice**, **нэг UI behavior**, эсвэл **нэг статистикийн тооцоо**. Тухайн нэгжийн тест/баримт/commit/ZIP дуусахаас өмнө дараагийн том feature рүү үсрэхгүй. Blocked хэсгийг evidence-тай тусад нь үлдээгээд dependencyгүй хуучин ажлыг үргэлжлүүлж болно. Тодорхойгүй хугацаа амлахгүй; шалгалтын гарцаар ахина.
+Хүлээн авах: хэрэглэгчA блог бичиж нийтэлнэ;B уншиж санал/comment өгнө; санал солих/буцаахад count зөв; зөвхөн owner/admin засна; draft хувийн; tutorial editor болон progress regressionгүй. Vote/comment-ийг хэрэглэгч боломжтой гэж санал болгосныг энэ төлөвлөгөөнд хэрэгжүүлэх хүрээнд оруулсан, одоогоор ажилладаг гэж тайлагнаагүй.
 
-Дараагийн бодит алхам: одоогийн frontend fixes-ийн deployment/live status-г read-only шалгах; current schema/contracts-тай pending026-ын дутуу reference validation-г бүрэн аудитлах. Энэ turn-д migration apply эсвэл feature implementation хийхгүй.
+## 14. Яг8 дэд хэсгээр гүйцэтгэх дараалал
+
+Гүйцэтгэх үндсэн8 багц, item mapping, acceptance нь [EIGHT-PART-PLAN.md](EIGHT-PART-PLAN.md), machine-readable нь [EIGHT-PART-PLAN.json](EIGHT-PART-PLAN.json). Эндхийн00–13 болон Blog бүлэг нь дэлгэрэнгүй requirement reference болохоос нэмэлт execution үе шат биш. Өмнөх A0–A14/P0–P8 ангиллыг шинэ8 багц орлоно.
+
+**Нэг удаад нэг багц:** тухайн багцын бүх дэд ажил/тест/баримт/commit/remote verification/ZIP-г дуусгаад тайлагнаж зогсоно. Дараагийн багцыг хэрэглэгч “дараагийн хэсгийг үргэлжлүүл” гэж хэлсний дараа эхлүүлнэ. Багц дотроо олон жижиг migration/content batch/commit хийж болно; энэ нь нэг багцыг орхиж нөгөө рүү үсрэх зөвшөөрөл биш. Runtime тасарвал ижил багцын checkpoint-оос үргэлжлүүлнэ; бүрэн дуусаагүйг дууссан гэж нэрлэхгүй. Blocker байвал тодорхой тайлагнаж, дараагийн багц руу автоматаар шилжихгүй.
+
+Одоогийн task нь зөвхөн төлөвлөгөө шинэчлэх. Багц1-ийн feature implementation эсвэл production migration эхлээгүй.
 
 ## 15. Бүх сэдвийн эх жагсаалт — нэг ч нэрийг чимээгүй хасахгүй
 

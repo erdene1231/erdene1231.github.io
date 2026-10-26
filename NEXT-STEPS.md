@@ -1,3 +1,13 @@
+# Latest — eight delivery packages; wait for user to start01
+
+Read audit/EIGHT-PART-PLAN.md/JSON and MASTER-WORK-CHECKLIST.md.
+User requires exactly8 execution packages, finish one fully and stop until explicit
+request for the next. Planning-only checkpoint; do not start implementation yet.
+New: AtCoder50+ quality/high-priority tasks, total source quota minimum245 new unique;
+Blog menu/user rich editor, upvote/downvote, rich comments. Original quotas reaffirmed,
+not duplicated. Keep all existing work, applied migrations and original source rows.
+R01-R12 are cross-cutting for every package; live/deploy status stays unverified.
+
 # Latest — full source reading and expanded checklist (planning only)
 
 Read audit/MASTER-WORK-CHECKLIST.md and its VERIFICATION.json first. This expands
