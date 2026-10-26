@@ -54,8 +54,11 @@ remain unchanged. Recovery editor migrations 021–026 were remapped by content
 as 022–027. Only 022 is applied; 023–027 are quarantined in
 `supabase/pending-editor/`, not an automatic apply queue. Read `NEXT-STEPS.md`
 and `audit/EDITOR-MIGRATION-MAP.json` before continuing. Do not replay 021/022.
-The rich editor frontend is not deployed; do not publish new block formats until
-reader/editor compatibility is verified. Database writes require task authorization.
+Step 003 integrates the typed reader and protects the legacy editor's round trip.
+It is locally tested, not deployed. New blocks remain read-only in the legacy
+editor; draft/publication/upload features are still pending. Do not publish new
+block formats until the matching reader has been deployed and checked live.
+Database writes require task authorization.
 
 ## Persistence boundary
 
