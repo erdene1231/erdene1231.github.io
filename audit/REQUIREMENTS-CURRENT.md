@@ -1,3 +1,9 @@
+# Latest — catalog and two-pane selection UI
+
+Tags/pack tabs/hint badges and two-pane popup locally verified. See
+CATALOG-SELECTION-UI.md and CATALOG-SELECTION-VERIFICATION.json. No production
+changes; frontendv37 awaits merge/deploy verification. Source requirements retained.
+
 # Latest — exact number search / numeric problem keys
 
 Exact #number lookup and numeric authoring keys are local tested;029 backend is

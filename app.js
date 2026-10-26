@@ -1,18 +1,18 @@
-import {setupLearning} from './learning.js?v=36';
-import {setupTutorials} from './tutorials.js?v=36';
+import {setupLearning} from './learning.js?v=37';
+import {setupTutorials} from './tutorials.js?v=37';
 import {setupGroups} from './groups.js?v=20';
 let tutorialUI, learningUI=null;
 import {EMPTY, cleanEntry, parseBackup} from './progress.js';
 import {getSolvers} from './community.js?v=6';
-import {setupAdmin} from './admin.js?v=36';
+import {setupAdmin} from './admin.js?v=37';
 import {parseCatalog,hintTexts,getSources} from './problem-store.js?v=23';
 import {rpc} from './accounts.js?v=17';
 import {ownProfile,saveOwnProfile,avatarUrl,accountError} from './accounts.js?v=17';
 import {setupSocial} from './social.js?v=23';
-import {filterProblems, getTags, ratingLabel,difficultyLabel} from './catalog.js?v=36';
+import {filterProblems, getTags, ratingLabel,difficultyLabel} from './catalog.js?v=37';
 const $ = id => document.getElementById(id);
 const STATUS = {new:'Эхлээгүй',trying:'Оролдож байгаа',solved:'Бодсон'};
-let data, selectedPack='', selectedProblem, state={}, dirty={}, user=null, client=null, loading=false, syncing=false, syncAgain=false, epoch=0;
+let data, selectedProblem, state={}, dirty={}, user=null, client=null, loading=false, syncing=false, syncAgain=false, epoch=0;
 let username=null, profileLoading=false, profileSaving=false, solverRequest=0, solverNames=[], solverTotal=0;
 let detailTagsShown=false,problemPage=0,lastFilterKey='',activityPending={};
 const PROBLEMS_PER_PAGE=100;
@@ -58,13 +58,8 @@ function render() {
   const percent=(data.problems.length?Math.round(solved/data.problems.length*100):0);
   $('total').textContent=data.problems.length;$('solved').textContent=solved;$('trying').textContent=trying;$('percent').textContent=percent+'%';$('progress').value=percent;
   renderHome();learningUI?.render();
-  const filters={query:$('search').value,source:$('source').value,status:$('status-filter').value,pack:selectedPack,tag:$('tag-filter').value,minRating:$('min-rating').value,maxRating:$('max-rating').value,priorityOnly:$('priority-only').checked,sort:$('sort').value};
+  const filters={query:$('search').value,source:$('source').value,status:$('status-filter').value,tag:$('tag-filter').value,minRating:$('min-rating').value,maxRating:$('max-rating').value,priorityOnly:$('priority-only').checked,sort:$('sort').value};
   const filterKey=JSON.stringify(filters);if(filterKey!==lastFilterKey){problemPage=0;lastFilterKey=filterKey;}
-  $('packs').replaceChildren();
-  for(const pack of [{id:'',title:'Бүгд'},...data.packs]) {
-    const b=el('button',pack.id===selectedPack?'active':'',pack.title);b.setAttribute('aria-pressed',String(pack.id===selectedPack));b.onclick=()=>{selectedPack=pack.id;render();};$('packs').append(b);
-  }
-  $('pack-note').textContent=data.packs.find(p=>p.id===selectedPack)?.description || '★ Priority бодлогууд нь observation болон creative reasoning-д онцгой анхаарсан сонголт. Rating бол чиг баримжаа; өөрийн түвшинд тохируулж сонго.';
   $('problems').classList.toggle('compact',$('problem-density').value==='compact');$('problems').replaceChildren();
   const invalidRange=!$('min-rating').checkValidity()||!$('max-rating').checkValidity()||($('min-rating').value!==''&&$('max-rating').value!==''&&Number($('min-rating').value)>Number($('max-rating').value));
   const filtered=invalidRange?[]:filterProblems(data.problems,state,filters);
@@ -81,11 +76,11 @@ function render() {
     const meta=el('div','problem-meta');const rating=el('span','rating rating-'+Math.floor(p.rating/100),ratingLabel(p));rating.title=p.ratingKind==='official'?'Codeforces-ийн албан rating':(p.ratingBasis||'Зохиогчийн CF difficulty-ийн estimate; official биш');
     meta.append(rating,el('small','',p.source+' · '+p.ref+' · '+difficultyLabel(p)+(p.level==='Interactive'?' · Interactive':'')));
     b.append(heading,meta);b.onclick=()=>openProblem(p);
-    if($('show-tags').checked||entry(p.id).status==='solved'){const tags=el('div','tag-chips');for(const tag of p.tags)tags.append(el('span','tag-chip',tag));b.append(tags);}
+    if($('show-tags').checked){const tags=el('div','tag-chips');for(const tag of p.tags)tags.append(el('span','tag-chip',tag));b.append(tags);}
     const badge=el('span','badge '+entry(p.id).status,STATUS[entry(p.id).status]);
     const arrow=el('button','arrow','↗');arrow.setAttribute('aria-label',p.title+' нээх');arrow.disabled=loading||catalogLoading;arrow.onclick=()=>openProblem(p);
-    if(entry(p.id).hints&&p.hints?.length) b.append(el('span','hint-used','Hint '+Math.min(entry(p.id).hints,p.hints.length)+'/'+p.hints.length));
-    row.append(n,b,badge,arrow);const learningLinks=el('div','problem-learning-links');for(const t of learningUI?.linksForProblem(p)||[]){const a=el('a','',(t.primary?'Үндсэн · ':'')+t.title);a.href='#tutorial/'+t.id;learningLinks.append(a);}const days=learningUI?.planDaysFor(p)||[];if(days.length){const a=el('a','','Өдөр '+days.slice(0,3).join(', ')+(days.length>3?'…':''));a.href='#plan/'+days[0];learningLinks.append(a);}if(learningLinks.children.length)row.append(learningLinks);$('problems').append(row);
+    const signals=el('div','problem-signals'),used=Math.min(3,Math.max(0,Number(entry(p.id).hints)||0)),hint=el('span','hint-meter hint-level-'+used,'Hint '+used+'/3');hint.title=used?used+' hint ашигласан':'Hint ашиглаагүй';hint.setAttribute('aria-label',hint.title);signals.append(hint,badge);
+    row.append(n,b,signals,arrow);const learningLinks=el('div','problem-learning-links');for(const t of learningUI?.linksForProblem(p)||[]){const a=el('a','',(t.primary?'Үндсэн · ':'')+t.title);a.href='#tutorial/'+t.id;learningLinks.append(a);}const days=learningUI?.planDaysFor(p)||[];if(days.length){const a=el('a','','Өдөр '+days.slice(0,3).join(', ')+(days.length>3?'…':''));a.href='#plan/'+days[0];learningLinks.append(a);}if(learningLinks.children.length)row.append(learningLinks);$('problems').append(row);
   }
   if(!filtered.length)$('problems').append(el('p','muted','Тохирох бодлого олдсонгүй. Шүүлтүүрээ өөрчлөөрэй.'));
 }
@@ -99,8 +94,8 @@ function renderDetail() {
   $('toggle-hints').textContent=hintsVisible?'Hint-үүдийг нуух':'Нээсэн hint-үүдийг харуулах';
   $('toggle-hints').setAttribute('aria-expanded',String(hintsVisible&&e.hints>0));
   $('next-hint').hidden=e.hints>=hintCount;$('next-hint').textContent='Hint '+(e.hints+1)+' нээх';$('reflection').hidden=e.status!=='solved';$('tags').textContent='Сэдэв: '+p.tags.join(' · ');$('lesson').textContent=p.lesson||'';$('lesson').hidden=!p.lesson;
-  const tagsVisible=$('show-tags').checked||detailTagsShown||e.status==='solved';$('detail-tags').hidden=!tagsVisible;$('detail-tags').replaceChildren();for(const tag of p.tags)$('detail-tags').append(el('span','tag-chip',tag));
-  $('reveal-detail-tags').hidden=$('show-tags').checked||e.status==='solved';$('reveal-detail-tags').textContent=detailTagsShown?'Tags нуух':'Tags харуулах';
+  const tagsVisible=$('show-tags').checked||detailTagsShown;$('tags').hidden=!tagsVisible;$('detail-tags').hidden=!tagsVisible;$('detail-tags').replaceChildren();for(const tag of p.tags)$('detail-tags').append(el('span','tag-chip',tag));
+  $('reveal-detail-tags').hidden=$('show-tags').checked;$('reveal-detail-tags').textContent=detailTagsShown?'Tags нуух':'Tags харуулах';
   $('editorial-link').hidden=!p.editorialUrl;if(p.editorialUrl)$('editorial-link').href=p.editorialUrl;
 }
 async function switchUser(next) {
@@ -201,11 +196,11 @@ async function init() {
   try {const prefs=JSON.parse(localStorage.getItem('think-cp:catalog-preferences')||'{}');$('show-tags').checked=prefs.showTags===true;if(['rating-asc','rating-desc','priority','title','number-asc'].includes(prefs.sort))$('sort').value=prefs.sort;}catch{}
   const savePreferences=()=>{try{localStorage.setItem('think-cp:catalog-preferences',JSON.stringify({showTags:$('show-tags').checked,sort:$('sort').value}));}catch{}};
   for(const id of ['search','source','status-filter','tag-filter','min-rating','max-rating','priority-only'])$(id).addEventListener('input',render);
-  for(const [id,delta] of [['problem-prev',-1],['problem-next',1]])$(id).onclick=()=>{problemPage+=delta;render();$('packs').scrollIntoView({block:'start'});};
+  for(const [id,delta] of [['problem-prev',-1],['problem-next',1]])$(id).onclick=()=>{problemPage+=delta;render();$('library').scrollIntoView({block:'start'});};
   $('sort').addEventListener('change',()=>{savePreferences();render();});
-  $('show-tags').addEventListener('change',()=>{savePreferences();render();if(selectedProblem)renderDetail();});
+  $('show-tags').addEventListener('change',()=>{detailTagsShown=false;savePreferences();render();if(selectedProblem)renderDetail();});
   $('reveal-detail-tags').onclick=()=>{detailTagsShown=!detailTagsShown;renderDetail();};
-  $('reset-filters').onclick=()=>{selectedPack='';for(const id of ['search','source','status-filter','tag-filter','min-rating','max-rating'])$(id).value='';$('priority-only').checked=false;$('sort').value='rating-asc';savePreferences();render();};
+  $('reset-filters').onclick=()=>{for(const id of ['search','source','status-filter','tag-filter','min-rating','max-rating'])$(id).value='';$('priority-only').checked=false;$('sort').value='rating-asc';savePreferences();render();};
   render();
   document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
   $('account').onclick=()=>{updateAccount();$('auth').showModal();};

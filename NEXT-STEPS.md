@@ -1,3 +1,15 @@
+# Latest — catalog visibility and two-pane selection / v37
+
+Branch codex/catalog-selection-panels. Read audit/CATALOG-SELECTION-UI.md.
+Tags off now includes solved rows/detail reflection. Pack tabs/filter state removed;
+hint0..3 badges appear before status. Two-pane popup keeps all chosen rows on the
+right, supports filter reset and right-side mark-all/remove/clear. Empty multi-
+selection applies; single admin editing requires a row. Numeric key guards remain.
+No production calls/migrations or real data writes.029 already applied, do not
+replay021-025/028/029. Review/merge/deploy completev37; live UI remains unverified.
+Tests: npm test; tests/browser/catalog-ui.py, problem-dialog.py, editor-regressions.py.
+Exact SHA/PR and checksums are in the latest downloadable ZIP verification.
+
 # Latest — numeric problem references / PR14 / v36
 
 Read audit/NUMERIC-REFERENCES.md. Exact #1 search works in main/modal. Rating-band
