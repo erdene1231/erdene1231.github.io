@@ -21,6 +21,32 @@
 
 800–1100 саарал;1200–1300 ногоон;1400–1500 cyan;1600–1800 blue;1900–2000 magenta;2100–2300 orange;2400–2900 red;3000+ black. Official/estimated/unrated label тусдаа; dark contrast болон boundary tests.
 
+## Priority-ийн шинэ үндсэн дүрэм
+
+Эх: хэрэглэгчийн сүүлийн2 нэмэлт. Хуучин boolean Priority болон4түвшинтэй importance төлөвлөгөөг орлоно. **Problem, tutorial тус бүр зөвхөн Low / Medium / High**; difficulty-гаас тусдаа. Код/DB энэ checkpoint-д өөрчлөгдөөгүй.
+
+| Түвшин | Problem | Tutorial |
+|---|---|---|
+| High | Сэдэв эзэмшихэд зайлшгүй хэрэгтэй, эсвэл маш бүтээлч бөгөөд чанартай логик/observation шаарддаг | Өргөн хэрэглээтэй, олон чухал сэдвийн суурь, суралцах өгөөж өндөр |
+| Medium | Сайн бататгал/шинэ хэрэглээ боловч зайлшгүй цөм биш | Ашигтай боловч илүү тусгай хэрэглээтэй, тодорхой шатанд хэрэгтэй |
+| Low | Хязгаарлагдмал нэмэлт өгөөжтэй эсвэл тусгай practice; чанаргүй гэсэн үг биш | Ховор хэрэглээтэй, нарийн advanced extension; **Li Chao Tree = Low** |
+
+Hard rating = High priority гэсэн дүрэм үгүй. Бүх practice task-ийг High болгохгүй. Tutorial Low байсан ч түүнд зориулагдсан problem mastery-д зайлшгүй бол High байж болно; хоёр entity-ийн үнэлгээг шууд хуулж болохгүй. Багц4-т contracts/UI/legacy conversion, багц2-т existing lesson practice+problem priority review, багц3-т бүх canonical/new lesson priority+practice review-г дуусгана.
+
+**Багц4-ийн ажил:**
+
+- Problem болон tutorial-д validated3-tier field, safe migration/backfill, revision/auth guards; бодит schema-г эхэлж уншина, applied migration replayгүй.
+- Admin editor selector, JSON export/import, list/detail/cards/shared picker badges; all/Low/Medium/High filters, priority sort. Хуучин “⭐ Priority л харах” нь High-тэй нийцэх display/filter болно; legacy data/rationale-г transition audit-гүй арилгахгүй.
+- Existing boolean утгаас audited mapping хийнэ, хуучин true бүгд бодитоор High гэж нотолгоогүй зарлахгүй. Үндэслэлгүй default/rank таамаглахгүй; missing values-ийг backfill review ledger-т шийднэ.
+- Existing tutorial inventory-г baseline priority review хийх, Li Chao Tree Low-г хадгалах. Багц3 дараа нь бүх сэдвийн бүрэн editorial үнэлгээг хийнэ.
+- Migration dry-run, import/export round-trip, all filters/sort/popup labels, concurrency/stale updates, IDs/progress before-after checks.245+ verified task quota болон rating palette хэвээр.
+
+**Багц2-ийн ажил:** tutorial бүрийн intended solution/observations/prerequisites-т тохирох mastery practice сонгох,6-stage progression/objective/rationale. Essential task-ийг High болгох, бусад хэрэгтэй task-ийн priority-г өгөөжөөр өсгөх; mere attach нь automatic promotion биш. Global problem priority нь нэг эх сурвалжтай; тухайн lesson-ийн stage/objective/selection rationale тусдаа. Нэг lesson-оос салгахад бусад lesson-д хэрэгтэй task-ийг автоматаар downgrade хийхгүй.
+
+**Багц3-ийн ажил:** хичээл бүрийн priority-г usefulness/necessity/frequency rubric+rationale-тай баталгаажуулах. Low topic-ийг хөтөлбөрөөс хасахгүй; шинэ хичээлийн practice priority-д багц2-ын дүрэм үйлчилнэ.
+
+**Өмнөх багц1 backlog:** frontend ажил local verified, PR18 merged нь GitHub-оор батлагдсан; deploy/authenticated live check тусдаа. Багц4 эхлэхдээ түүнд үнэхээр шаардлагатай schema/auth/reference dependencies-г шалгаж хаана. Хамааралгүй pending026/027-ыг сохроор prerequisite болгохгүй, шаардлагатай safety-г алгасахгүй. Энэ өөрчлөлт бүгдийг complete болгосон гэсэн үг биш.
+
 ## Багцууд
 
 ### 01. Tutorial editor, өгөгдлийн аюулгүй суурь ба admin удирдлагыг дуусгах
@@ -33,11 +59,21 @@
 
 **Хаахдаа:** тохирох тест, requirement evidence, migration/content ledger, commit, verified push/PR, downloadable ZIP/checksum, NEXT-STEPS; дараагийн багцыг эхлүүлэхгүй.
 
+### 04. Бодлогын сан, нэмэлт245+, rating өнгө ба Problems UI
+
+**Хийх ажил:** Existing catalog/CSES/international provenance/dedup/hints audit; IOI30+, EGOI30+, APIO15+, JOI20+, CF100+ high-priority, AtCoder50+ high-priority; rating palette, problem/tutorial Low/Medium/High priority; shared numeric progress, popup/search/tags/hints/performance.
+
+**Checklist IDs:** P01, P02, P03, P04, P05, P06, P07, P08, P09, P10, P11, P12, P13, P14, P15, P16, X01, X02, X03, X04, X05, X06, X07, X08, X09, F01, F02, F03, F04, F05.
+
+**Дууссан гэж үзэх нөхцөл:** Source-specific NEW unique ID ledger quota бүр хүрсэн; repeated request-г давхар тоолоогүй; official/estimated/unrated зөв; palette boundary/contrast, hints/relations/picker/filter/performance/progress tests.
+
+**Хаахдаа:** тохирох тест, requirement evidence, migration/content ledger, commit, verified push/PR, downloadable ZIP/checksum, NEXT-STEPS; дараагийн багцыг эхлүүлэхгүй.
+
 ### 02. Одоо байгаа бүх tutorial-ийг чанарын стандартад хүргэх
 
-**Хийх ажил:** Current inventory; Binary Search → Greedy → DP жишиг; дараа нь бусад бүх existing lessons-ийн review/rewrite.15 агуулгын хэсэг,20 чанарын шалгуур, MN/EN, C++17 proof/tests, per-lesson practice.
+**Хийх ажил:** Current inventory; Binary Search → Greedy → DP жишиг; дараа нь бусад бүх existing lessons-ийн review/rewrite.15 агуулгын хэсэг,20 чанарын шалгуур, MN/EN, C++17 proof/tests; багц4-ийн сангаас tutorial бүрд mastery practice нэмэх, essential/creative task priority-г rationale-тай өсгөх.
 
-**Checklist IDs:** C01, C02, C03, C04, C05, C06, C07, C08, C09, C10, C11, C12.
+**Checklist IDs:** C01, C02, C03, C04, C05, C06, C07, C08, C09, C10, C11, C12, C13, C14.
 
 **Дууссан гэж үзэх нөхцөл:** Lesson бүр body/relationship hash-тай semantic review, C++ tests, source/practice links, browser review; existing IDs/admin засвар/progress хадгалагдсан. Нэг хичээл дууссан нь энэ багц дууссан гэсэн үг биш.
 
@@ -45,21 +81,11 @@
 
 ### 03. Дутуу бүх алгоритм, сэдвийн tutorial санг бүрэн нөхөх
 
-**Хийх ажил:** 319 эх topic mention → canonical lesson/anchor mapping; prerequisite DAG; foundations/greedy/structures/graphs/trees/DP/strings/math/geometry/olympiad skills, variations, practice.
+**Хийх ажил:** 319 эх topic mention → canonical lesson/anchor mapping; prerequisite DAG; foundations/greedy/structures/graphs/trees/DP/strings/math/geometry/olympiad skills, variations, practice; tutorial бүрийн3-tier priority/usefulness/frequency review, Li Chao Tree Low.
 
-**Checklist IDs:** T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14.
+**Checklist IDs:** T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15.
 
 **Дууссан гэж үзэх нөхцөл:** Эх сэдэв бүр reviewed teaching coverage эсвэл justified alias/anchor-тай; missing topic үлдээгүй; lesson бүр quality/code/practice tests.319 нь319 шинэ tutorial гэсэн үг биш.
-
-**Хаахдаа:** тохирох тест, requirement evidence, migration/content ledger, commit, verified push/PR, downloadable ZIP/checksum, NEXT-STEPS; дараагийн багцыг эхлүүлэхгүй.
-
-### 04. Бодлогын сан, нэмэлт245+, rating өнгө ба Problems UI
-
-**Хийх ажил:** Existing catalog/CSES/international provenance/dedup/hints audit; IOI30+, EGOI30+, APIO15+, JOI20+, CF100+ high-priority, AtCoder50+ high-priority; rating palette,4importance; shared numeric progress, popup/search/tags/hints/performance.
-
-**Checklist IDs:** P01, P02, P03, P04, P05, P06, P07, P08, P09, P10, P11, P12, P13, P14, P15, P16, X01, X02, X03, X04, X05, X06, X07, F01, F02, F03, F04, F05.
-
-**Дууссан гэж үзэх нөхцөл:** Source-specific NEW unique ID ledger quota бүр хүрсэн; repeated request-г давхар тоолоогүй; official/estimated/unrated зөв; palette boundary/contrast, hints/relations/picker/filter/performance/progress tests.
 
 **Хаахдаа:** тохирох тест, requirement evidence, migration/content ledger, commit, verified push/PR, downloadable ZIP/checksum, NEXT-STEPS; дараагийн багцыг эхлүүлэхгүй.
 
@@ -105,10 +131,10 @@
 
 ## Хамаарал ба ажиллах дүрэм
 
-1 →2 →3 →4 →5 →6 →7 →8. Гэхдээ schema/security/revision хамгаалалт болон тест/commit/ZIP нь зөвхөн1/8-д биш **багц бүрд** үйлчилнэ.2/3 дахь хичээлд practice task үнэхээр дутагдвал баталгаажуулж импортлох нь тухайн багцын dependency; нэмэлт quota-г4-д нэгтгэж тоолно.
+**1 →4 →2 →3 →5 →6 →7 →8.** Багцын ID-г өөрчлөхгүй; багц4 нь багц2/3-ын өмнө хийгдэнэ. Гэхдээ schema/security/revision хамгаалалт болон тест/commit/ZIP нь зөвхөн1/8-д биш **багц бүрд** үйлчилнэ.2/3 дахь хичээлд practice task үнэхээр дутагдвал баталгаажуулж импортлох нь тухайн багцын dependency; нэмэлт quota-г4-д нэгтгэж тоолно.
 
 Шинэ blog/comment feature нь tutorial shared editor-г reuse хийх боловч admin-only tutorial grants-ийг бүх хэрэглэгчид өгөхгүй. Blog comment/vote-ийг энэ төлөвлөгөөнд оруулсан; хэрэгжсэн гэж тэмдэглээгүй. Reply threading/comment voting заавал биш.
 
 Optional O01–05 нь үнэлэх хүрээ; үндсэн шаардлагыг орлохгүй, documented deferral боломжтой.
 
-Энэ checkpoint зөвхөн төлөвлөгөө шинэчилсэн. Аль ч багцын шинэ хэрэгжилтийг энэ turn-д эхлүүлээгүй. Эхний багцыг эхлүүлэх заавар ирэхэд01-ээс, existing work/evidence-г хадгалж үргэлжлүүлнэ.
+Энэ checkpoint зөвхөн төлөвлөгөө шинэчилсэн. Дараагийн implementation багц **04**; хэрэглэгч эхлүүлэхийг заасны дараа хэрэгжүүлнэ. Багц2/3 эхлээгүй. Өмнөх completion evidence-г хадгална.
