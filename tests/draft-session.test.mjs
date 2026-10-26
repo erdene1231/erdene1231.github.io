@@ -48,3 +48,9 @@ test('invalid or stale save responses preserve the draft and allow a valid retry
  await s.flush();assert.equal(s.dirty(),true);assert.equal(s.snapshot().draftRevision,0);
  value={revision:1};await s.flush();assert.equal(s.dirty(),false);s.invalidate();
 });
+
+test('detaching a conflicted session preserves another tab newer local record',()=>{
+ const {s,values}=fixture(async()=>({data:{revision:1}}));s.changed({id:'lesson',title:'older tab'});
+ values.set('erdene:tutorial-draft:v3:a:lesson',JSON.stringify({actor:'a',id:'lesson',body:{id:'lesson',title:'newer tab'},unsynced:true}));
+ s.invalidate({saveLocal:false});assert.equal(s.local('a','lesson').body.title,'newer tab');assert.equal(s.snapshot(),null);
+});

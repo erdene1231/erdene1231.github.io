@@ -1,3 +1,12 @@
+# Latest: recovery choice repair after PR 10
+
+Branch codex/fix-recovery-choice, parent main fa44b9880b86a83619981735f8a49ec3ca570bdc.
+Read audit/RECOVERY-UX.md. Deploy complete v32 graph. Browser recovery test:
+python3 tests/browser/recovery-flow.py. 41 Node / 39 browser groups checked locally;
+no production calls/migrations in this repair. Do not replay 021-025.
+Exact remote commit/PR recorded in downloadable ZIP verification.
+Next planned feature stays 010 / fresh schema audit then 026.
+
 # Үргэлжлүүлэх — editor repair after 009
 
 Current branch: `codex/fix-tutorial-editor`; parent main/PR 9 merge:
