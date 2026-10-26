@@ -28,7 +28,7 @@ try:
   page.goto(base+'/index.html',wait_until='networkidle')
   page.evaluate('''async()=>{
    window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-   const {renderBlock,drawArticle}=await import('/tutorials.js?v=28');
+   const {renderBlock,drawArticle}=await import('/tutorials.js?v=29');
    window.renderBlock=renderBlock;window.drawArticle=drawArticle;
    const lessons=(await (await fetch('/tutorials.json')).json()).tutorials;
    window.original=structuredClone(lessons[0]);window.fixture=structuredClone(original);
@@ -77,10 +77,10 @@ try:
     return Math.abs(point.x-(box.x+box.width/2))<1&&Math.abs(point.y-(box.y+box.height/2))<1;
    }''')
    out=ROOT/'audit/browser';out.mkdir(parents=True,exist_ok=True)
-   page.screenshot(path=str(out/f'step-007-{width}-{theme}.png'),full_page=True)
+   page.screenshot(path=str(out/f'step-008-{width}-{theme}.png'),full_page=True)
   report['desktop_mobile_light_dark_overflow']='PASS'
   page.evaluate('''async()=>{
-   const {setupLearning}=await import('/learning.js?v=28');
+   const {setupLearning}=await import('/learning.js?v=29');
    const catalog=(await (await fetch('/problems.json')).json()).problems;
    window.learningProgress={};window.openedProblem=null;
    window.learning=await setupLearning({client:()=>null,user:()=>null,profile:()=>null,
@@ -107,12 +107,13 @@ try:
    document.querySelector('#compat-reader').hidden=true;
    // Reuse the real form; mount it directly to remove routing dependencies.
    const form=document.getElementById('tutorial-admin-form');document.body.append(form);
-   const {setupTutorialEditor}=await import('/tutorial-editor.js?v=28');
+   const {setupTutorialEditor}=await import('/tutorial-editor.js?v=29');
    const topics=lessons.map(t=>({...structuredClone(t),revision:9}));topics[0]={...structuredClone(fixture),revision:9};
    window.fixtureActor='fixture-admin';window.savedPayload=null;window.draftCalls=[];window.draftOffline=false;
    const client={rpc:async(name,args)=>{
     if(name==='is_admin')return {data:true,error:null};
     if(name==='admin_tutorial_document')return {data:window.comparisonDocument||{current:{body:fixture,revision:9},draft:null},error:null};
+    if(name==='admin_publish_tutorial_draft'){window.publishArgs=structuredClone(args);if(window.rejectPublish)return {error:Error('REVISION_CONFLICT')};return {data:{body:args.p_body,revision:13,draft:null}};}
     if(name==='admin_rebase_tutorial_draft'){window.rebaseArgs=structuredClone(args);if(window.deferRebase)return new Promise(resolve=>window.finishRebase=()=>resolve({data:{body:args.p_body,revision:9,base_revision:12}}));if(window.rejectRebase)return {error:Error('REVISION_CONFLICT')};return {data:{body:args.p_body,revision:8,base_revision:args.p_current_revision}};}
     if(name==='admin_save_tutorial_draft'){draftCalls.push(name);if(draftOffline)return {error:Error('offline')};window.savedPayload=structuredClone(args.p_body);return {data:{body:args.p_body,revision:1},error:null};}
     throw new Error('Unexpected RPC '+name);
@@ -156,7 +157,7 @@ try:
    page.set_viewport_size({'width':width,'height':1000})
    page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
    assert page.locator('#tutorial-draft-comparison').evaluate('(e)=>e.scrollWidth<=e.clientWidth')
-   page.locator('#tutorial-draft-comparison').screenshot(path=str(ROOT/f'audit/browser/step-007-comparison-{width}.png'))
+   page.locator('#tutorial-draft-comparison').screenshot(path=str(ROOT/f'audit/browser/step-008-comparison-{width}.png'))
   page.locator('[data-rebase-choice="local"]').click()
   page.evaluate('window.rejectRebase=true')
   page.locator('[data-rebase-save]').click()
@@ -176,6 +177,28 @@ try:
   assert page.evaluate("JSON.parse(localStorage.getItem('erdene:tutorial-draft:v3:fixture-admin:'+fixture.id)).draftRevision")==8
   assert page.locator('#tutorial-admin-title').is_enabled()
   report['explicit_rebase_stale_conflict_and_backup']='PASS'
+  page.locator('#tutorial-publish-review').click()
+  page.wait_for_selector('[data-publish-confirm]')
+  assert page.evaluate('window.publishArgs') is None
+  for width in [375,1440]:
+   page.set_viewport_size({'width':width,'height':1000})
+   assert page.locator('#tutorial-publication').evaluate('(e)=>e.scrollWidth<=e.clientWidth')
+   page.locator('#tutorial-publication').screenshot(path=str(ROOT/f'audit/browser/step-008-publication-{width}.png'))
+
+  page.evaluate('window.rejectPublish=true')
+  page.locator('[data-publish-confirm]').click()
+  page.wait_for_function("document.querySelector('#tutorial-publication [role=status]').textContent.includes('Хувилбар өөрчлөгджээ')")
+  assert page.locator('[data-publish-confirm]').is_disabled()
+  page.locator('#tutorial-publication').get_by_role('button',name='Буцах',exact=True).click()
+  page.evaluate('window.rejectPublish=false')
+  page.locator('#tutorial-publish-review').click()
+  page.locator('[data-publish-confirm]').click()
+  page.wait_for_function("document.querySelector('#tutorial-admin-message').textContent==='Хичээл нийтлэгдлээ.'")
+  assert page.evaluate('publishArgs.p_body._draftRelationsText') is None
+  assert page.evaluate('publishArgs.p_actor')=='fixture-admin'
+  assert page.evaluate("JSON.parse(localStorage.getItem('erdene:tutorial-draft:v3:fixture-admin:'+fixture.id)).baseRevision")==13
+  report['explicit_publish_confirmation_private_metadata_and_conflict']='PASS'
+
   page.evaluate('window.deferRebase=true')
   page.locator('#tutorial-compare-drafts').click()
   page.locator('[data-version="published"] summary').click()
@@ -191,7 +214,7 @@ try:
 
 
   page.evaluate("""async()=>{
-   const {mountBlockEditor}=await import('/tutorial-block-editor.js?v=28');
+   const {mountBlockEditor}=await import('/tutorial-block-editor.js?v=29');
    const root=document.createElement('section');root.id='authoring-test';root.style.cssText='max-width:900px;margin:auto;padding:16px';document.body.append(root);
    window.authored=[{title:'Authoring fixture',blocks:[{type:'rich',key:'stable-key',metadata:{keep:true},content:[{text:'Select me',marks:[]}]}]}];
    window.authoring=mountBlockEditor(root,authored,{changed:()=>{window.authoringChanges=(window.authoringChanges||0)+1;}});
@@ -215,7 +238,7 @@ try:
   assert page.evaluate('authored.length')==2
   page.locator('#authoring-test').get_by_role('button',name='↓ Хэсэг',exact=True).first.click()
   assert page.evaluate('authored.length')==2
-  page.evaluate("async()=>{const {validateTutorial}=await import('/tutorial-model.js?v=28');validateTutorial({...original,sections:authored});}")
+  page.evaluate("async()=>{const {validateTutorial}=await import('/tutorial-model.js?v=29');validateTutorial({...original,sections:authored});}")
   assert page.locator('#authoring-test option[value=image]').count()==0
   page.locator('#authoring-test > details').first.evaluate('(e)=>e.open=true')
   page.wait_for_selector('#authoring-test .block-rich-input',state='visible')
@@ -223,7 +246,7 @@ try:
    page.set_viewport_size({'width':width,'height':1000})
    page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
    assert page.locator('#authoring-test').evaluate('(e)=>e.scrollWidth<=e.clientWidth')
-   page.locator('#authoring-test').screenshot(path=str(ROOT/f'audit/browser/step-007-authoring-{width}.png'))
+   page.locator('#authoring-test').screenshot(path=str(ROOT/f'audit/browser/step-008-authoring-{width}.png'))
   report['rich_authoring_paste_sections_undo_redo']='PASS'
   # Fresh real tutorial setup checks routine same-account notifications do not
   # rebuild the article or reset the reader's position.
@@ -231,7 +254,7 @@ try:
   page.evaluate('''async()=>{
    window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
    location.hash='#tutorial/complexity';
-   const {setupTutorials}=await import('/tutorials.js?v=28');
+   const {setupTutorials}=await import('/tutorials.js?v=29');
    window.tutorialUI=setupTutorials({client:()=>null,user:()=>null,learning:()=>null});
   }''')
   page.wait_for_function("document.querySelector('#tutorial-content > section')!==null && document.querySelector('#tutorial-content').getAttribute('aria-busy')==='false'")
@@ -244,9 +267,20 @@ try:
   assert page.evaluate("beforeArticle===document.querySelector('#tutorial-content > section')")
   assert page.evaluate('window.scrollY===beforeScroll')
   report['same_account_preserves_reader_dom_and_scroll']='PASS'
+  page.reload(wait_until='networkidle')
+  page.evaluate("""async()=>{
+   window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
+   const {setupTutorials}=await import('/tutorials.js?v=29');
+   window.serverReader=setupTutorials({client:()=>({rpc:async()=>({data:[],error:null})}),user:()=>null,learning:()=>null});
+   await serverReader.connected();
+  }""")
+  page.wait_for_function("document.querySelector('#tutorial-count').textContent.startsWith('0 / 0')")
+  assert page.locator('#tutorial-grid .tutorial-card').count()==0
+  report['empty_online_catalog_does_not_restore_seed']='PASS'
+
   assert not errors,errors
   report['page_errors']=[]
   browser.close()
 finally:server.shutdown()
-(ROOT/'audit/STEP-007-BROWSER.json').write_text(json.dumps(report,indent=2)+'\n')
+(ROOT/'audit/STEP-008-BROWSER.json').write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps(report))

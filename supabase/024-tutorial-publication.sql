@@ -2,23 +2,32 @@
 -- Purpose: explicit publish/unpublish, references and lazy public reader APIs.
 -- Dependencies: 022, 023, 004/007 catalog. Existing rows stay published.
 begin;
-create or replace function public.check_tutorial_publication() returns trigger
+DO $baseline$
+BEGIN
+ IF md5(replace(pg_get_functiondef('public.validate_tutorial_body(text,jsonb)'::regprocedure), E'\r\n', E'\n'))<>'d17381308438362f364065137f8ad1a2'
+ OR md5(replace(pg_get_functiondef('public.get_tutorials()'::regprocedure), E'\r\n', E'\n'))<>'67e9dc6143d0688a5a9bef1377c0b666'
+ OR EXISTS(SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.proname IN ('validate_tutorial_publication','check_tutorial_publication','admin_publish_tutorial_draft','admin_set_tutorial_publication','get_tutorial_index','get_published_tutorial')) THEN
+  RAISE EXCEPTION '024 baseline changed or already applied; re-audit instead of replaying';
+ END IF;
+END;
+$baseline$;
+create or replace function public.validate_tutorial_publication(p_id text,p_body jsonb) returns void
 language plpgsql security definer set search_path='' as $$
 declare item jsonb;rel jsonb;row_value jsonb;k text;cycle_found boolean;
 begin
  perform pg_catalog.pg_advisory_xact_lock(72483161);
- if not new.published then return new;end if;
- perform public.validate_tutorial_body(new.id,new.body);
- for item in select value from jsonb_array_elements(coalesce(new.body->'prerequisiteIds','[]'::jsonb)) loop
-  if item#>>'{}'=new.id or not exists(select 1 from public.tutorial_catalog where id=item#>>'{}' and published) then raise exception 'Missing published prerequisite: %',item#>>'{}' using errcode='22023';end if;
+ if p_body ? '_draftRelationsText' then raise exception 'Private draft metadata cannot be published.' using errcode='22023';end if;
+ perform public.validate_tutorial_body(p_id,p_body);
+ for item in select value from jsonb_array_elements(coalesce(p_body->'prerequisiteIds','[]'::jsonb)) loop
+  if item#>>'{}'=p_id or not exists(select 1 from public.tutorial_catalog where id=item#>>'{}' and published) then raise exception 'Missing published prerequisite: %',item#>>'{}' using errcode='22023';end if;
  end loop;
  with recursive paths(id,path,cycle) as (
-  select value#>>'{}',array[new.id,value#>>'{}'],(value#>>'{}')=new.id from jsonb_array_elements(coalesce(new.body->'prerequisiteIds','[]'::jsonb))
+  select value#>>'{}',array[p_id,value#>>'{}'],(value#>>'{}')=p_id from jsonb_array_elements(coalesce(p_body->'prerequisiteIds','[]'::jsonb))
   union all select x.value#>>'{}',p.path||(x.value#>>'{}'),(x.value#>>'{}')=any(p.path)
   from paths p join public.tutorial_catalog t on t.id=p.id cross join lateral jsonb_array_elements(coalesce(t.body->'prerequisiteIds','[]'::jsonb)) x(value) where not p.cycle
  ) select exists(select 1 from paths where cycle) into cycle_found;
  if cycle_found then raise exception 'Prerequisite cycle.' using errcode='22023';end if;
- rel:=new.body->'learningRelations';
+ rel:=p_body->'learningRelations';
  if rel is not null then
   if jsonb_typeof(rel) is distinct from 'object' or jsonb_typeof(rel->'practice') is distinct from 'array' or jsonb_typeof(rel->'variants') is distinct from 'array' then raise exception 'Invalid tutorial relationships.' using errcode='22023';end if;
   if jsonb_array_length(rel->'practice') not between 1 and 30 or jsonb_array_length(rel->'variants')>20 then raise exception 'Expected 1-30 practice tasks, at most 20 variants.' using errcode='22023';end if;
@@ -32,17 +41,24 @@ begin
    if row_value ? 'objective' and (jsonb_typeof(row_value->'objective')<>'string' or length(row_value->>'objective')>1500) then raise exception 'Invalid learning objective.' using errcode='22023';end if;
   end loop;
   for row_value in select value from jsonb_array_elements(rel->'variants') loop
-   if coalesce(row_value->>'tutorialId','') !~ '^[a-z0-9-]{1,80}$' or row_value->>'tutorialId'=new.id then raise exception 'Invalid variant ID.' using errcode='22023';end if;
+   if coalesce(row_value->>'tutorialId','') !~ '^[a-z0-9-]{1,80}$' or row_value->>'tutorialId'=p_id or not exists(select 1 from public.tutorial_catalog where id=row_value->>'tutorialId' and published) then raise exception 'Invalid variant ID.' using errcode='22023';end if;
    perform public.tutorial_require_text(row_value->'description',1000);
    if row_value ? 'descriptionEn' and (jsonb_typeof(row_value->'descriptionEn')<>'string' or length(row_value->>'descriptionEn')>1000) then raise exception 'Invalid variant description.' using errcode='22023';end if;
   end loop;
-  if rel->>'next' is not null and ((rel->>'next') !~ '^[a-z0-9-]{1,80}$' or rel->>'next'=new.id) then raise exception 'Invalid next tutorial.' using errcode='22023';end if;
+  if rel->>'next' is not null and ((rel->>'next') !~ '^[a-z0-9-]{1,80}$' or rel->>'next'=p_id or not exists(select 1 from public.tutorial_catalog where id=rel->>'next' and published)) then raise exception 'Invalid next tutorial.' using errcode='22023';end if;
  end if;
+ return;
+end;
+$$;
+revoke all on function public.validate_tutorial_publication(text,jsonb) from public,anon,authenticated;
+create or replace function public.check_tutorial_publication() returns trigger
+language plpgsql security definer set search_path='' as $$
+begin
+ if new.published then perform public.validate_tutorial_publication(new.id,new.body);end if;
  return new;
 end;
 $$;
 revoke all on function public.check_tutorial_publication() from public,anon,authenticated;
-drop trigger if exists tutorial_publication_check on public.tutorial_catalog;
 create trigger tutorial_publication_check before insert or update on public.tutorial_catalog for each row execute function public.check_tutorial_publication();
 create or replace function public.admin_publish_tutorial_draft(p_id text,p_body jsonb,p_base_revision integer,p_draft_revision integer,p_actor uuid) returns jsonb
 language plpgsql security definer set search_path='' as $$
@@ -98,5 +114,14 @@ revoke all on function public.admin_publish_tutorial_draft(text,jsonb,integer,in
 grant execute on function public.admin_publish_tutorial_draft(text,jsonb,integer,integer,uuid),public.admin_set_tutorial_publication(text,integer,boolean,uuid) to authenticated;
 revoke all on function public.get_tutorial_index(),public.get_published_tutorial(text),public.get_tutorials() from public;
 grant execute on function public.get_tutorial_index(),public.get_published_tutorial(text),public.get_tutorials() to anon,authenticated;
+-- Check current public content transactionally without rewriting any row.
+DO $compatibility$
+DECLARE t record;
+BEGIN
+ FOR t IN SELECT id,body FROM public.tutorial_catalog WHERE published LOOP
+  PERFORM public.validate_tutorial_publication(t.id,t.body);
+ END LOOP;
+END;
+$compatibility$;
 commit;
 -- Verify: select to_regprocedure('public.get_published_tutorial(text)');

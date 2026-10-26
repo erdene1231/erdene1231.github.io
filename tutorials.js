@@ -1,10 +1,10 @@
-import {renderExtendedBlock} from './tutorial-block-renderer.js?v=28';
-import {clearMediaCache} from './tutorial-media.js?v=28';
+import {renderExtendedBlock} from './tutorial-block-renderer.js?v=29';
+import {clearMediaCache} from './tutorial-media.js?v=29';
 import {loadLearningContent,bodyHash} from './learning-model.js?v=23';
 import {algorithmDemo} from './algorithm-demos.js?v=23';
 import {segmentTreeDemo} from './segment-tree-demo.js?v=16';
-import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=28';
-import {setupTutorialEditor} from './tutorial-editor.js?v=28';
+import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=29';
+import {setupTutorialEditor} from './tutorial-editor.js?v=29';
 const $=id=>document.getElementById(id);
 export const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
 let mathPromise=null,mathQueue=Promise.resolve();
@@ -38,7 +38,7 @@ async function copy(text,button,success){try{await navigator.clipboard.writeText
 export function setupTutorials(ctx){
  const lessonSeed=fetch('./tutorials.json?v=23').then(r=>{if(!r.ok)throw new Error('Tutorials ачаалсангүй.');return r.json();}).then(d=>d.tutorials),contentReady=Promise.all([loadLearningContent().catch(()=>({curriculum:{order:[]},editions:{editions:{}}})),lessonSeed]);let acceptTurn=0;
 
- let topics=[],current=null,renderTurn=0,resultTurn=0,loadTurn=0,lang='mn',readingMode='full',activePart=0,requestedPart,onlineReady=false,editor,mediaAccountId=ctx.user()?.id||null;
+ let topics=[],current=null,renderTurn=0,resultTurn=0,loadTurn=0,lang='mn',readingMode='full',activePart=0,requestedPart,onlineReady=false,hasLive=false,editor,mediaAccountId=ctx.user()?.id||null;
  try{lang=localStorage.getItem('erdene:tutorial-language')==='en'?'en':'mn';}catch{}$('tutorial-language').value=lang;
  try{readingMode=localStorage.getItem('erdene:tutorial-reading-mode')==='step'?'step':'full';}catch{}$('tutorial-reading-mode').value=readingMode;
  const tr=(mn,en)=>lang==='en'?en:mn;
@@ -63,11 +63,11 @@ export function setupTutorials(ctx){
   const index=topics.findIndex(x=>x.id===t.id);
   for(const [offset,label] of [[-1,isEn?'← Previous lesson: ':'← Өмнөх хичээл: '],[1,isEn?'Next lesson: ':'Дараагийн хичээл: ']]){const next=offset===1&&ctx.learning()?.relationsFor(t.id)?.next?topics.find(x=>x.id===ctx.learning().relationsFor(t.id).next):topics[index+offset];if(next){const a=node('a',label+view(next,selectedLang).title);a.href='#tutorial/'+next.id;nav.append(a);}}
  }
- async function accept(list){const turn=++acceptTurn,[content,seed]=await contentReady;
-  const rows=list.map(x=>x.body?x:{body:x,revision:0}),ids=new Set(rows.map(x=>x.body.id));for(const body of seed)if(!ids.has(body.id))rows.push({body,revision:0});
+ async function accept(list,authoritative=false){const turn=++acceptTurn,[content,seed]=await contentReady;
+  const rows=list.map(x=>x.body?x:{body:x,revision:0}),ids=new Set(rows.map(x=>x.body.id));for(const body of seed)if(!authoritative&&!ids.has(body.id))rows.push({body,revision:0});
   const valid=await Promise.all(rows.map(async row=>{let body=row.body;const edition=content.editions.editions[body.id];if(edition&&body.contentEdition!==edition.body.contentEdition){try{if(edition.baseHashes.includes(await bodyHash(body)))body=edition.body;}catch{}}
    try{const t=validateTutorial(body);return {...t,revision:row.revision||0,searchText:JSON.stringify(t).toLowerCase()};}catch{return null;}
-  }));if(turn!==acceptTurn)return;const input=valid.filter(Boolean);if(!input.length)throw new Error('Published tutorial олдсонгүй.');
+  }));if(turn!==acceptTurn)return;const input=valid.filter(Boolean);if(!input.length&&!authoritative)throw new Error('Published tutorial олдсонгүй.');
   const defaults=new Map(seed.map(t=>[t.id,t.order])),known=new Set(input.map(t=>t.id)),pending=new Set(known),sorted=[];
   while(pending.size){const ready=input.filter(t=>pending.has(t.id)&&(t.prerequisiteIds||[]).filter(id=>known.has(id)).every(id=>!pending.has(id)));if(!ready.length){sorted.push(...input.filter(t=>pending.has(t.id)));break;}
    const priority=t=>{const recommended=content.curriculum.order.indexOf(t.id);return t.order!==defaults.get(t.id)||recommended<0?t.order:recommended+1;};
@@ -91,20 +91,20 @@ export function setupTutorials(ctx){
   .catch(e=>{if(turn===renderTurn){$('tutorial-math-message').textContent=e.message+tr(' Томъёог түр LaTeX хэлбэрээр харуулж байна.',' Showing raw LaTeX temporarily.');$('tutorial-math-retry').hidden=false;}}).finally(()=>{if(turn===renderTurn)$('tutorial-content').setAttribute('aria-busy','false');});
  }
  function route(){
-  labels();if(!topics.length)return;const m=location.hash.match(/^#tutorial\/([a-z0-9-]+)(?:\/part\/(\d+))?$/);
+  labels();if(!topics.length){++renderTurn;current=null;$('tutorial-reader').hidden=true;$('tutorial-browser').hidden=false;results();return;}const m=location.hash.match(/^#tutorial\/([a-z0-9-]+)(?:\/part\/(\d+))?$/);
   if(m){const t=topics.find(x=>x.id===m[1]);if(t){const part=m[2]===undefined?undefined:Number(m[2]);if(current?.id===t.id&&part!==undefined){requestedPart=part;reading(part,true);}else renderTopic(t,part);return;}$('tutorial-message').textContent=tr('Хичээл олдсонгүй. Жагсаалтаас сонгоно уу.','Tutorial not found. Choose from the list.');}
   ++renderTurn;current=null;if(location.hash==='#tutorials'||m){$('tutorial-browser').hidden=false;$('tutorial-reader').hidden=true;$('tutorial-level').closest('label').hidden=false;results();}
  }
  async function connected(){
   if(!ctx.client())return;const turn=++loadTurn;
-  try{const {data,error}=await ctx.client().rpc('get_tutorials');if(error)throw error;if(turn!==loadTurn)return;if(!Array.isArray(data)||!data.length)throw new Error('Tutorial data missing');onlineReady=true;await accept(data);}
-  catch{if(turn===loadTurn){onlineReady=false;editor?.refresh();if(!topics.length)await accept(await lessonSeed);}}
+  try{const {data,error}=await ctx.client().rpc('get_tutorials');if(error)throw error;if(turn!==loadTurn)return;if(!Array.isArray(data))throw new Error('Tutorial data missing');onlineReady=true;hasLive=true;await accept(data,true);}
+  catch{if(turn===loadTurn){onlineReady=false;editor?.refresh();if(!hasLive&&!topics.length)await accept(await lessonSeed);}}
   editor?.accountChanged(true);
  }
  $('tutorial-language').onchange=()=>{lang=$('tutorial-language').value;try{localStorage.setItem('erdene:tutorial-language',lang);}catch{}current=null;results();route();};$('tutorial-search').addEventListener('input',results);$('tutorial-category').onchange=results;$('tutorial-level').onchange=results;
  $('tutorial-reading-mode').onchange=()=>{readingMode=$('tutorial-reading-mode').value;try{localStorage.setItem('erdene:tutorial-reading-mode',readingMode);}catch{}requestedPart=activePart;reading(activePart,true);};$('tutorial-section-prev').onclick=()=>goPart(activePart-1);$('tutorial-section-next').onclick=()=>goPart(activePart+1);
  $('tutorial-copy-link').onclick=()=>void copy(location.href,$('tutorial-copy-link'),tr('Хуулагдлаа','Copied'));$('tutorial-math-retry').onclick=()=>{if(current)renderTopic(current,activePart);};window.addEventListener('hashchange',route);
- editor=setupTutorialEditor({...ctx,topics:()=>topics,ready:()=>onlineReady,reload:connected,saved(row){accept(topics.map(t=>t.id===row.body.id?row:{body:t,revision:t.revision}));}});
- void lessonSeed.then(list=>{if(!onlineReady)return accept(list);}).catch(()=>{$('tutorial-grid').textContent='Tutorials ачаалсангүй / Could not load tutorials.';});
+ editor=setupTutorialEditor({...ctx,topics:()=>topics,ready:()=>onlineReady,reload:connected,saved(row){accept(topics.map(t=>t.id===row.body.id?row:{body:t,revision:t.revision}),true);}});
+ void lessonSeed.then(list=>{if(!hasLive)return accept(list);}).catch(()=>{$('tutorial-grid').textContent='Tutorials ачаалсангүй / Could not load tutorials.';});
  return {connected,refreshStatus(){if(!current)results();},refreshLearning(){ctx.learning()?.setTopics(topics);if(current)renderTopic(current,activePart);else results();},accountChanged(){editor.accountChanged();const id=ctx.user()?.id||null;if(id!==mediaAccountId){mediaAccountId=id;clearMediaCache();if(current)renderTopic(current,activePart);}}};
 }

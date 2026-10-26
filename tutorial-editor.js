@@ -1,10 +1,11 @@
-import {mountBlockEditor} from './tutorial-block-editor.js?v=28';
-import {mountDraftRecovery} from './tutorial-draft-recovery.js?v=28';
-import {createDraftSession} from './tutorial-drafts.js?v=28';
-import {editableVersion,isLegacyEditableBlock} from './tutorial-editor-compat.js?v=28';
+import {mountPublication} from './tutorial-publication.js?v=29';
+import {mountBlockEditor} from './tutorial-block-editor.js?v=29';
+import {mountDraftRecovery} from './tutorial-draft-recovery.js?v=29';
+import {createDraftSession} from './tutorial-drafts.js?v=29';
+import {editableVersion,isLegacyEditableBlock} from './tutorial-editor-compat.js?v=29';
 import {validateRelations} from './learning-model.js?v=23';
-import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=28';
-import {node,drawArticle,typeset} from './tutorials.js?v=28';
+import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=29';
+import {node,drawArticle,typeset} from './tutorials.js?v=29';
 const $=id=>document.getElementById(id);
 export function setupTutorialEditor(ctx){
  let allowed=false,token=0,draft=null,revision=0,lang='mn',busy=false,accountId,blockEditor;
@@ -30,6 +31,13 @@ export function setupTutorialEditor(ctx){
    lang='mn';$('tutorial-admin-language').value=lang;$('tutorial-admin-choose').value=id;$('tutorial-admin-level').value=draft.levelKey;$('tutorial-admin-order').value=draft.order;$('tutorial-admin-category').value=draft.category;paint();}
  });
  const compare=node('button','Хувилбаруудыг харьцуулах');compare.type='button';compare.id='tutorial-compare-drafts';compare.onclick=()=>void comparison.open();backup.after(compare);
+ const publicationRoot=node('section');publicationRoot.id='tutorial-publication';form.after(publicationRoot);
+ const publication=mountPublication(publicationRoot,{client:ctx.client,user:ctx.user,allowed:()=>allowed,session,lock:setBusy,message,topics:ctx.topics,problems:()=>ctx.learning()?.problemsForRelations()||[],
+  capture(){session.changed(collect(false));},published:ctx.saved,
+  accept(result,actor,id){draft=structuredClone(result.draft?.body||result.body);recovery=null;revision=result.revision;
+   session.open({actor,id,body:draft,baseRevision:result.revision,draftRevision:result.draft?.revision||0});session.checkpoint();paint();}
+ });
+ const publish=node('button','Нийтлэхээр шалгах');publish.type='button';publish.id='tutorial-publish-review';publish.onclick=()=>void publication.open();compare.after(publish);
  function changed(){if(!draft||busy||!allowed)return;try{session.changed(collect(false));recovery=null;}catch(e){message(e.message);}}
  form.addEventListener('input',event=>{if(!event.target.closest('#tutorial-admin-sections'))changed();});
  window.addEventListener('online',()=>void session.flush());
@@ -38,7 +46,7 @@ export function setupTutorialEditor(ctx){
  async function edit(id){
   if(session.dirty()){await session.flush();if(session.dirty()){message('Хадгалаагүй ноорог байна. JSON backup татаад хадгалалтыг дахин оролдоно уу.');$('tutorial-admin-choose').value=draft?.id||'';return;}}
   const row=ctx.topics().find(t=>t.id===id)||ctx.topics()[0];if(!row)return;
-  comparison.invalidate();const turn=++token,uid=ctx.user()?.id;setBusy(true);
+  publication.invalidate();comparison.invalidate();const turn=++token,uid=ctx.user()?.id;setBusy(true);
   try{const {data,error}=await ctx.client().rpc('admin_tutorial_document',{p_id:row.id});if(error)throw error;if(turn!==token||uid!==ctx.user()?.id)return;
    const server=data.draft,base=server?.base_revision??data.current?.revision??row.revision??0,rev=server?.revision||0;
    const local=session.local(uid,row.id);recovery=local?.unsynced?local:null;
@@ -61,7 +69,7 @@ export function setupTutorialEditor(ctx){
  }
  function setBusy(value){busy=value;for(const el of $('tutorial-admin-form').querySelectorAll('input,textarea,select,button,[contenteditable]')){if(el.hasAttribute('contenteditable'))el.contentEditable=String(!value);else el.disabled=value;}$('tutorial-admin-choose').disabled=value;$('tutorial-admin-reload').disabled=value;}
  async function refresh(){const old=$('tutorial-admin-choose').value;$('tutorial-admin-choose').replaceChildren();for(const t of ctx.topics()){const o=node('option',t.title+' · '+levelNames.mn[levels.indexOf(t.levelKey)]);o.value=t.id;$('tutorial-admin-choose').append(o);}if(allowed)await edit(old);$('tutorial-admin-save').disabled=!allowed||!ctx.ready();if(allowed&&!ctx.ready())message('Онлайн засварлахын тулд Supabase дээр 008-tutorials.sql шинэчлэлтийг ажиллуулна уу.');}
- async function accountChanged(force=false){const id=ctx.user()?.id||null;if(!force&&id===accountId)return;blockEditor?.destroy();comparison.invalidate();session.invalidate();recovery=null;accountId=id;const turn=++token;allowed=false;draft=null;$('tutorial-admin-form').hidden=true;$('tutorial-admin-save').disabled=true;if($('tutorial-preview').open)$('tutorial-preview').close();if(!ctx.client()||!ctx.user())return;
+ async function accountChanged(force=false){const id=ctx.user()?.id||null;if(!force&&id===accountId)return;blockEditor?.destroy();publication.invalidate();comparison.invalidate();session.invalidate();recovery=null;accountId=id;const turn=++token;allowed=false;draft=null;$('tutorial-admin-form').hidden=true;$('tutorial-admin-save').disabled=true;if($('tutorial-preview').open)$('tutorial-preview').close();if(!ctx.client()||!ctx.user())return;
   try{const {data,error}=await ctx.client().rpc('is_admin');if(error)throw error;if(turn!==token)return;allowed=data===true;$('tutorial-admin-form').hidden=!allowed;if(allowed){setBusy(false);await refresh();}}catch{if(turn===token)message('Админ эрхийг шалгаж чадсангүй. Дахин нэвтэрч оролдоорой.');}
  }
  $('tutorial-admin-language').onchange=()=>{try{changed();collect(false);const nextLang=$('tutorial-admin-language').value;editableVersion(draft,nextLang);lang=nextLang;paint();message('');}catch(e){$('tutorial-admin-language').value=lang;message(e.message);}};
