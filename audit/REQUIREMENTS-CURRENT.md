@@ -1,4 +1,4 @@
-# Одоогийн шаардлагын checklist — алхам 008
+# Одоогийн шаардлагын checklist — алхам 009
 
 Хавсралтуудыг бүтнээр уншсан. Хэрэглэгчийн шинэ baseline нь ZIP-ийн хуучин мэдээллийг орлоно.
 `f7c5f2e820f01652e3a839f2db69c05b16c91adb`; 748 problems / 55 tutorials;
@@ -16,7 +16,7 @@ production prerequisite migration `20261026045125` нь recovery editor 021-ээ
 | READER-01 | Typed reader + legacy editor round-trip | LOCAL_VERIFIED | Node + Chromium, MN-only, XSS, media race PASS | frontend live шалгаагүй | үгүй |
 | EDITOR-02 | Private drafts/CAS | PARTIAL | backend security/CAS/rebase tests PASS | 023 applied, schema verified | draft UI local tested; not deployed |
 | EDITOR-03 | Explicit publish/lazy reader | PARTIAL | publish UI + SQL tests PASS; lazy frontend pending | 024 applied + public reads 55 | UI feature branch only |
-| EDITOR-04 | Storage/media authorization | MISSING | recovery reviewed; pending 025 | real upload smoke pending | үгүй |
+| EDITOR-04 | Storage/media authorization | PARTIAL | upload/paste/drop/preview + codecs/RLS tests PASS | 025 applied, schema/bucket/policies verified; real admin upload smoke pending | UI branch, deploy unverified |
 | EDITOR-05 | Embedded relation integrity | MISSING | recovery reviewed; pending 026 | байхгүй | үгүй |
 | EDITOR-06 | Atomic batch/private recovery | MISSING | recovery reviewed; pending 027 | байхгүй | үгүй |
 | CONTENT-01 | Binary Search / Greedy semantic + browser review | PARTIAL | recovery historical C++ evidence only | шинэ агуулга нийтлээгүй | үгүй |
@@ -44,8 +44,8 @@ Recovery-ийн 41/55 гэсэн баталгаагүй тоог ашиглаа�
 
 ## Дараагийн ажил
 
-022 live verified (`20261026052253`) → reader/editor compatibility local verified → 023 backend live verified → draft UI integration,
-024 current metadata re-audit → 024–027 тус бүрийн rollout. Storage тестгүйгээр editor
+022–025 backend live verified; draft/rebase/authoring/publication/image UI local verified.
+Дараа нь 026 reference integrity → 027 batch/history. Real Storage upload smoke-гүйгээр editor
 бүрэн live болсон гэж тэмдэглэхгүй. Үүний дараа Binary Search/Greedy semantic болон
 browser review; үлдсэн content/topic/practice, plan/profile/UI regressions.
 
@@ -60,3 +60,14 @@ browser review; үлдсэн content/topic/practice, plan/profile/UI regressions
 Алхам 007: rich block authoring/section controls/Undo/Redo local verified. Image upload/publication/history pending. `STEP-007.md`.
 
 Алхам 008: publication backend live verified, confirmation UI local verified. 748/55 unchanged; image upload дараагийн 009. `STEP-008.md`.
+
+## Алхам 009 — зураг upload
+
+025_tutorial_media (`20261026064758`) applied; existing schema objects and
+748/55 content fingerprints unchanged. File picker/paste/drop, WebP conversion,
+preview/width/alignment/alt/caption/replace/remove, private draft autosave local
+verified. 37 Node cases + 12 reader/editor browser groups + 6 media groups PASS.
+Storage API/Auth mocked in browser: real authenticated upload and deployed Pages
+smoke remain open. SVG rejected; cleanup strategy is age/reference-protected
+manual Storage API, no automatic deletion. Evidence: `STEP-009.md`.
+Дараагийн 010: 026 embedded reference integrity; 027 batch/history дараа нь.

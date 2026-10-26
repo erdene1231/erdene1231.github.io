@@ -51,9 +51,9 @@ numbered migration. Do not replay seed imports or fabricate historical entries.
 Step 002 applied `022_tutorial_content_blocks` as version `20261026052253`.
 It preserves 021 prerequisite validation; content hashes/revisions and counts
 remain unchanged. Recovery editor migrations 021–026 were remapped by content
-as 022–027. 022–024 are applied; 025–027 are quarantined in
+as 022–027. 022–025 are applied; 026–027 are quarantined in
 `supabase/pending-editor/`, not an automatic apply queue. Read `NEXT-STEPS.md`
-and `audit/EDITOR-MIGRATION-MAP.json` before continuing. Do not replay 021/022/023/024.
+and `audit/EDITOR-MIGRATION-MAP.json` before continuing. Do not replay 021/022/023/024/025.
 Step 003 introduced the typed reader and protected legacy editor round trips.
 Steps 005–008 subsequently add draft authoring/recovery and publication UI.
 These were tested locally; deployment/live admin E2E is tracked separately.
@@ -67,9 +67,13 @@ The existing validator is unchanged. Steps 005–006 add locally tested draft au
 Step 007 adds locally tested rich block authoring and section controls.
 Step 008 applied 024_tutorial_publication (20261026062140) and adds locally
 tested explicit publication UI/private metadata adapter. Existing content hashes
-and counts remained unchanged. Media/full history/lazy frontend and live admin
-E2E remain pending.
-Use `supabase/audit/production-after-024.json` as the latest verified metadata.
+and counts remained unchanged. Full history/lazy frontend and live admin E2E remain pending.
+Step 009 applied 025_tutorial_media (20261026064758): private WebP/5 MiB bucket,
+owner-private upload/read + published-image delivery and reference-protected
+cleanup helpers. UI/codecs/RLS verified locally; real authenticated Storage API
+byte upload and deployed frontend smoke remain unverified. Never delete Storage
+objects through SQL. No cleanup job was run. Counts/hashes unchanged, 748/55.
+Use `supabase/audit/production-after-025.json` as the latest verified metadata.
 
 ## Persistence boundary
 
