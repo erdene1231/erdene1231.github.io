@@ -1,4 +1,4 @@
-import {validateTutorial} from './tutorial-model.js?v=38';
+import {validateTutorial} from './tutorial-model.js?v=39';
 export function parseTutorialBackup(text,id){
  if(new TextEncoder().encode(text).length>1500000)throw Error('JSON backup 1.5 MB-аас их байна.');
  let value;try{value=JSON.parse(text);}catch{throw Error('JSON файл буруу байна.');}

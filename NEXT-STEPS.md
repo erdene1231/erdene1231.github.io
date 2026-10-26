@@ -1,3 +1,16 @@
+# Latest — v39 workflow complete locally; original backlog execution
+
+Read audit/PUBLICATION-WORKFLOW.md, DELIVERY-PLAN.md/JSON and DELIVERY-FIRST-GAP-AUDIT.json.
+Current editor scope is local verified; live/deploy remains unverified.031 applied
+20261026121014; latest schema production-after-031.json. Do not replay historical
+migrations. Tags latest override: solved always visible, fixed row height.
+P1 started with actual reference audit:56 published,0 unresolved prerequisites,
+0 embedded references. Next adapt pending026 to numeric keys/empty content/new
+reset, prepare only missing changes as new032 after fresh audit. Do not replay026.
+Then027 batch/history, content review/expansion, practice bank,100-day/profile/UI
+according to phases. All1467 source rows remain tracked; not all are complete.
+Exact remote SHA/PR/ZIP are in the latest downloadable verification.
+
 # Latest — draft actions / backup import / priority / v38
 
 Branch codex/draft-editor-actions; read audit/DRAFT-ACTIONS.md.

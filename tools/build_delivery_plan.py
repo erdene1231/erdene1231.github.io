@@ -1,0 +1,44 @@
+"""Retain every source requirement and assign an execution phase; never infer completion."""
+import json,hashlib
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1]
+ledger=json.loads((ROOT/'audit/REQUIREMENTS-CURRENT.json').read_text())
+phases=[
+('P0','Баталгаажуулалт ба хадгалалт','Editor workflow, exact footer states, blank lessons, optional metadata, saved drafts, Reset, tags. Merge/deploy then authenticated smoke; no real deletion as smoke.','Node + Chromium + SQL CAS/RLS tests; remote SHA, archive manifest.','Local workflow verified; live deployment unverified'),
+('P1','Өгөгдлийн холбоос ба импорт','Re-audit031; adapt pending026 to numeric/legacy keys and empty lessons, preserve reset/delete/media guards. Audit broken references before preparing a new migration. Then review027 batch draft import with atomic backup/rollback and actor checks.','PGlite invalid/missing references; snapshot/fingerprint equality; dry-run batches.','Audit first; no blind replay of026/027'),
+('P2','Одоогийн tutorial-уудын чанар','Review each current lesson by original source criteria: motivating problem, naive approach, observation, proof, complexity, annotated C++17, edge cases, pitfalls, variants, worked example and checklist. Start Binary Search/Greedy. Compare live body hashes; never replace admin edits wholesale.','Per-lesson semantic review, C++ execution with brute-force/random edge tests and bilingual browser review.','Per-lesson review backlog; row counts are not quality proof'),
+('P3','Дутуу сэдвүүд','Map every source topic to canonical lessons by meaning; validate aliases, prerequisites and coverage. Add missing topics in dependency order: foundations, techniques/greedy, structures, graphs/trees, DP, strings, math, geometry, olympiad skills.','Topic-to-lesson evidence matrix; proofs/examples/C++ tests per topic; no invented quota.','319 topic traceability rows retained, not319 new tutorials'),
+('P4','Бодлогын сан ба practice','Verify CSES/olympiad sources, deduplicate stable IDs/URLs, recover BOI17 Toll mapping before import. Curate difficulty progression and genuine priority rationale for each tutorial; check links, hints and variants.','Source verification, dry-run import, duplicate/ref integrity and progress preservation tests.','No seed replay; imports only verified missing rows'),
+('P5','100 хоногийн төлөвлөгөө','Audit all100 days against published tutorial/practice prerequisites and realistic workload. Reconcile reading, solving and self-check rules; maintain old progress IDs/dates.','Day-by-day dependency coverage plus completion/statistics/date boundary tests.','Current plan exists; full pedagogical review pending'),
+('P6','Profile ба statistics','Review profile, activity heatmap, rating/tag distribution, weekly phases, active tasks, review queue/journal/feedback and dashboard source requirements. Implement only missing behavior after auditing current data contracts.','Known synthetic histories, timezone/weekly boundaries, missing/unrated/archived task tests; no user PII export.','Audit pending; local UI existence is not full completion'),
+('P7','UI/UX ба accessibility','Audit Problems/library/detail, light/dark, responsive tables/filters, numeric IDs, priority/importance palette, rating colors, mathematical rendering, navigation and loading/error states. Preserve approved current layout decisions.','Desktop/mobile light/dark screenshots, keyboard/focus/overflow, large catalog performance.','Current catalog fixes local verified; source-wide audit pending'),
+('P8','Release ба үйл ажиллагаа','Consolidate requirement evidence, docs, migration map and handoff. Verify GitHub head, PR checks, merge/deploy as authorized, then real authenticated read/upload/save smoke on approved nonproduction fixtures.','Clean checkout build/tests, secret scan, remote SHA, ZIP CRC/hash/bundle, deployed version/cache verification.','Merge/deploy/live checks remain separate from local tests')]
+def phase(row):
+ s=row['section'].lower();src=row['source']
+ if any(x in s for x in ['supabase','database','migration','аюулгүй','security','өгөгдлийн уялдаа','импорт','bulk','storage','maintainability']):return 'P1'
+ if any(x in s for x in ['profile','statistics','heatmap','distribution','weekly','journal','feedback','review queue']):return 'P6'
+ if any(x in s for x in ['100','өдөр бүр','progress','сургалтын аргачлал']):return 'P5'
+ if any(x in s for x in ['дизайн','theme','layout','filtering','problem list','problem detail','performance','design consistency','ui/ux','library page','detail page']):return 'P7'
+ if any(x in s for x in ['problem bank','cses','олон улсын','practice','priority selection','difficulty progression','admin control','бодлогын чанар','харьъяалагдах','харьалагдах','бодлогууд','бодлого сонгох']):return 'P4'
+ if any(x in s for x in ['editor','editing','upload','code editor','visualization','reusable','draft','freedom']):return 'P0'
+ if any(x in s for x in ['суурь алгоритм','greedy болон','data structures','graph algorithms','tree algorithms','dynamic programming','string algorithms','number theory','geometry','олимпиадын problem','санг өргөтгөх','анхан шат','дунд шат','ахисан шат','problem-solving techniques','бүх алгоритмын']):return 'P3'
+ if any(x in s for x in ['testing','deployment','deployment','тайлан','хэрэгжүүлэх үе','хэрэгжүүлэх дараалал','phase ','үе шат','эцсийн','эхлэх заавар','тасралтгүй','бүтэн ажлыг']):return 'P8'
+ if any(x in s for x in ['tutorial','алгоритм','ажиглалт','implementation','c++','гол санаа','гол ажиглалт','энгийн шийдэл','яагаад','edge cases','common mistakes','checklist','чанар','хоёр хэл','хэзээ','template','бичгийн','хэмжээнээс']):return 'P2'
+ return 'P8'
+entries=[{**r,'phase':phase(r),'execution_status':'REQUIRES_EVIDENCE_REVIEW' if r['status']=='PARTIAL' else r['status']} for r in ledger['requirements']]
+assert len(entries)==len({r['id'] for r in entries})
+source={}
+for name in ['START-HERE.md','requirements-01.txt','requirements-02.txt']:
+ p=ROOT/'audit/requirements-source'/name;data=p.read_bytes();data.decode();source[name]={'sha256':hashlib.sha256(data).hexdigest(),'lines':len(data.splitlines())}
+plan={'sources_read_in_full':source,'override':'Latest user decisions govern editor blank content, publication workflow and solved-tag visibility. Earlier conflicting requirements remain traceable.','phases':[{'id':i,'name':n,'work':w,'validation':v,'state':st,'after':[] if k==0 else [phases[k-1][0]]} for k,(i,n,w,v,st) in enumerate(phases)],'requirements':entries,'topics':ledger['topics'],'supplemental_requests':ledger['supplemental_requests']}
+(ROOT/'audit/DELIVERY-PLAN.json').write_text(json.dumps(plan,ensure_ascii=False,indent=2)+'\n')
+md=['# Бүх эх шаардлагын хэрэгжилтийн төлөвлөгөө','',f'{len(entries)} эх мөр, {len(ledger["topics"])} topic traceability мөрийг хадгалсан. Жишээ/тайлбар нь тусдаа feature quota биш. Шинэ хэрэглэгчийн шийдвэр хуучин зөрчилтэй шаардлагыг орлоно.','', 'Мөр бүрийн дэлгэрэнгүй ажил/баримт/одоогийн төлөв: DELIVERY-PLAN.json. Local тест нь live/deploy баталгаа биш.','']
+for i,n,w,v,st in phases:md += [f'## {i} — {n}','',w,'','Шалгалт: '+v,'','Төлөв: '+st,'']
+md+=['## Гүйцэтгэлийн дүрэм','','Нэг жижиг өөрчлөлт → тохирох тест → source мөрийн evidence шинэчлэх → secret scan → commit → verified remote push + PR → ZIP/manifest/handoff. Production өөрчлөлтийн өмнө бодит schema/content hashes audit; шинэ дугаар, зөвхөн дутуу migration. Сургалтын агуулгыг live admin хувилбартай diff хийж нэгтгэнэ. Бөглөсөн мөрийг дахин ажиллуулахгүй.','', '## Бүх эх мөрийн жагсаалт','','| ID | Үе | Одоогийн төлөв | Шаардлага |','|---|---|---|---|']
+for r in entries:md.append('| '+r['id']+' | '+r['phase']+' | '+r['status']+' | '+r['requirement'].replace('|','\\|').replace('\n',' ')+' |')
+(ROOT/'audit/DELIVERY-PLAN.md').write_text('\n'.join(md)+'\n')
+# Execute P1's first read-only repository/catalog contract audit, without claiming semantic completion.
+actual=json.loads((ROOT/'supabase/audit/production-before-031.json').read_text());pending=(ROOT/'supabase/pending-editor/026-tutorial-reference-integrity.sql').read_text()
+audit={'phase':'P1','action':'Inspect pending026 compatibility with current numbered keys and optional031 body contract','pending026_legacy_source_key_assumption':"lower(btrim(p_body->>'source'))" in pending,'requires_adaptation_before_apply':True,'pending026_applied':False,'pending027_applied':False,'next':'Audit actual published reference counts, adapt pending026 under a new migration after031; preserve numeric references, empty lessons, reset/delete and media guards.','source_rows':len(entries),'topic_rows':len(ledger['topics'])}
+(ROOT/'audit/DELIVERY-FIRST-GAP-AUDIT.json').write_text(json.dumps(audit,indent=2)+'\n')
+print(json.dumps({'requirements':len(entries),'topic_rows':len(ledger['topics']),'phases':len(phases)}))

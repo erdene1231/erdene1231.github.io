@@ -11,9 +11,9 @@ export function safeLink(value){
  try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password?u.href:null;}catch{return null;}
 }
 export function validateInline(content){
- if(!Array.isArray(content)||!content.length||content.length>1000)throw new Error('Inline content 1–1000 хэсэгтэй байна.');
+ if(!Array.isArray(content)||content.length>1000)throw new Error('Inline content 1–1000 хэсэгтэй байна.');
  let size=0;for(const item of content){if(!item||typeof item.text!=='string'||item.text.length>40000)throw new Error('Inline text буруу.');size+=item.text.length;if(item.marks!==undefined&&(!Array.isArray(item.marks)||item.marks.length>20||item.marks.some(m=>!MARKS.includes(m))))throw new Error('Дэмжигдээгүй formatting.');if(item.href!==undefined&&!safeLink(item.href))throw new Error('Аюулгүй HTTPS эсвэл дотоод холбоос оруулна уу.');}
- if(!content.some(x=>x.text.trim())||size>40000)throw new Error('Formatting хийсэн текст хоосон эсвэл хэт урт байна.');return content;
+ if(size>40000)throw new Error('Formatting хийсэн текст хоосон эсвэл хэт урт байна.');return content;
 }
 export function plainInline(content){return (content||[]).map(x=>x.text).join('');}
 export function validateExtendedBlock(b){
@@ -38,7 +38,7 @@ export function validateExtendedBlock(b){
 }
 export function createBlock(type){
  const key=crypto.randomUUID();const common={key,type};
- if(type==='rich')return {...common,content:[{text:'Шинэ тайлбар',marks:[]}]};
+ if(type==='rich')return {...common,content:[{text:'',marks:[]}]};
  if(type==='heading')return {...common,level:3,text:'Шинэ гарчиг'};
  if(type==='math')return {...common,tex:'a_{i+1}=a_i+1'};
  if(type==='code')return {...common,language:'C++17',text:'// C++17\n'};

@@ -136,6 +136,15 @@ Do not replay030/029/028/021-025. Pending026/027 require fresh compatibility aud
 Read audit/DRAFT-ACTIONS.md and NEXT-STEPS.md. Deploy after review/merge; browser
 checks use synthetic services and do not establish authenticated live verification.
 
+## v39 / original delivery plan
+
+031_optional_tutorial_content_and_reset applied20261026121014; no content mutation.
+Latest actual schema:production-after-031.json. Do not replay031/030/029/028/021-025.
+Published edits require explicit temporary save; Reset removes owner private draft.
+New named lessons may be empty. See PUBLICATION-WORKFLOW.md and DELIVERY-PLAN.md.
+Editor current scope locally verified; source-wide backlog remains. Pending026 needs
+numeric-key/031 adaptation before a new migration; continue P1 gates first.
+
 ## Persistence boundary
 
 The repository tracks this skill, client, metadata query, comparison tool and audit

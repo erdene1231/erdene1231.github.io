@@ -1,9 +1,9 @@
-import {CHECKS,canonicalKey,problemIndex,resolvePractice,tutorialMastery,dayCompletion,buildStatistics,weekStatistics,dateKey,addDays,monday,loadLearningContent,validateRelations,withArchivedProblems} from './learning-model.js?v=38';
+import {CHECKS,canonicalKey,problemIndex,resolvePractice,tutorialMastery,dayCompletion,buildStatistics,weekStatistics,dateKey,addDays,monday,loadLearningContent,validateRelations,withArchivedProblems} from './learning-model.js?v=39';
 import {createLearningStore} from './learning-store.js?v=23';
-import {ratingLabel,difficultyLabel} from './catalog.js?v=38';
+import {ratingLabel,difficultyLabel} from './catalog.js?v=39';
 import {avatarUrl} from './accounts.js?v=17';
-import {typeset} from './tutorials.js?v=38';
-import {view} from './tutorial-model.js?v=38';
+import {typeset} from './tutorials.js?v=39';
+import {view} from './tutorial-model.js?v=39';
 const $=id=>document.getElementById(id);
 const el=(tag,text,cls)=>{const x=document.createElement(tag);if(text!==undefined)x.textContent=text;if(cls)x.className=cls;return x;};
 const button=(text,action,cls)=>{const x=el('button',text,cls);x.type='button';x.onclick=action;return x;};
