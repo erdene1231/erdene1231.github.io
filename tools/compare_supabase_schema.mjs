@@ -40,7 +40,7 @@ for(const file of files){
  }
 }
 const expected=(await db.query(read('supabase/audit/catalog.sql'))).rows[0].catalog;
-const actual=JSON.parse(read(process.argv[2] || 'supabase/audit/production-after-021.json'));
+const actual=JSON.parse(read(process.argv[2] || 'supabase/audit/production-after-022.json'));
 const differences={};
 // ACL ordering is irrelevant; PGlite bootstrap and production owners differ.
 function normalize(v){
