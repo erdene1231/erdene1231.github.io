@@ -1,9 +1,22 @@
 -- Recovery 022-tutorial-drafts.sql -> 023-tutorial-drafts.sql; production 021 prerequisite validation is distinct.
--- Purpose: private per-editor drafts + optimistic revisions. Dependency: 021.
+-- Purpose: private per-editor drafts + optimistic revisions. Dependency: verified production 021 prerequisite + 022 typed blocks.
 begin;
-alter table public.tutorial_catalog add column if not exists published boolean not null default true;
-alter table public.tutorial_catalog add column if not exists published_at timestamptz;
-create table if not exists public.tutorial_drafts (
+-- Fail closed on a replay, partial rollout or changed prerequisite validator.
+DO $baseline$
+BEGIN
+ IF md5(replace(pg_get_functiondef('public.validate_tutorial_body(text,jsonb)'::regprocedure), E'\r\n', E'\n')) <> 'd17381308438362f364065137f8ad1a2' THEN
+  RAISE EXCEPTION '023 requires verified 022 validator; re-audit before applying';
+ END IF;
+ IF to_regclass('public.tutorial_drafts') IS NOT NULL
+ OR EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid='public.tutorial_catalog'::regclass AND attname IN ('published','published_at') AND NOT attisdropped)
+ OR EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.proname IN ('admin_tutorial_workspace','admin_tutorial_document','admin_save_tutorial_draft','admin_rebase_tutorial_draft','admin_tutorial_history','admin_tutorial_history_body')) THEN
+  RAISE EXCEPTION '023 objects already exist; inspect before replaying';
+ END IF;
+END;
+$baseline$;
+alter table public.tutorial_catalog add column published boolean not null default true;
+alter table public.tutorial_catalog add column published_at timestamptz;
+create table public.tutorial_drafts (
  tutorial_id text not null check(tutorial_id ~ '^[a-z0-9-]{1,80}$'),
  editor_id uuid not null references auth.users(id) on delete cascade,
  body jsonb not null check(jsonb_typeof(body)='object' and pg_column_size(body)<=1500000),
