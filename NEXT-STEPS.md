@@ -1,3 +1,33 @@
+# Latest — package01 frontend v40, local verified; do not start02
+
+Read audit/PART01-EDITOR-FRONTEND.md. User narrowed current work to existing
+editor frontend polish/bugs. Empty last-section removal, capacity guards, link
+Enter accidental-submit, lazy-mounted locked inputs fixed; mobile/focus/feedback
+polish. No production calls or migrations. Applied migrations must not replay.
+19 Node files and targeted Chromium suites pass; live authenticated/deploy still
+unverified. Full original package01 backend/bulk/dashboard backlog remains open;
+frontend evidence does not close it. Complete v40 graph deploy after review/merge.
+Stop here; package02 requires user continuation. Commit/remote/ZIP in manifest.
+
+# Latest — eight delivery packages; wait for user to start01
+
+Read audit/EIGHT-PART-PLAN.md/JSON and MASTER-WORK-CHECKLIST.md.
+User requires exactly8 execution packages, finish one fully and stop until explicit
+request for the next. Planning-only checkpoint; do not start implementation yet.
+New: AtCoder50+ quality/high-priority tasks, total source quota minimum245 new unique;
+Blog menu/user rich editor, upvote/downvote, rich comments. Original quotas reaffirmed,
+not duplicated. Keep all existing work, applied migrations and original source rows.
+R01-R12 are cross-cutting for every package; live/deploy status stays unverified.
+
+# Latest — full source reading and expanded checklist (planning only)
+
+Read audit/MASTER-WORK-CHECKLIST.md and its VERIFICATION.json first. This expands
+the broad phase plan into concrete work items, acceptance criteria, dependencies,
+latest user overrides and all319 original topic mentions. No feature or production
+change in this checkpoint. Keep current editor fixes; no migration replay. Next
+implementation starts only after this planning request, with actual deployment
+status/reference contract audit. Original1467 source rows/status evidence retained.
+
 # Latest — v39 workflow complete locally; original backlog execution
 
 Read audit/PUBLICATION-WORKFLOW.md, DELIVERY-PLAN.md/JSON and DELIVERY-FIRST-GAP-AUDIT.json.

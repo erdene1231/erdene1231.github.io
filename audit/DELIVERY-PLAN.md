@@ -1,3 +1,7 @@
+> **Шинэ үндсэн execution төлөвлөгөө: [EIGHT-PART-PLAN.md](EIGHT-PART-PLAN.md), яг8 багц.** Доорх хуучин фазууд нь түүхэн traceability; тэдгээрээр автоматаар үргэлжлүүлэхгүй.
+
+> Дэлгэрэнгүй үндсэн checklist: [MASTER-WORK-CHECKLIST.md](MASTER-WORK-CHECKLIST.md). Доорх P0–P8 нь хуучин ерөнхий ангилал; шинэ баримтын concrete tasks/acceptance/dependencies-ийг дагана. Эх мөрийн хүснэгт traceability зориулалтаар хэвээр.
+
 # Бүх эх шаардлагын хэрэгжилтийн төлөвлөгөө
 
 1467 эх мөр, 319 topic traceability мөрийг хадгалсан. Жишээ/тайлбар нь тусдаа feature quota биш. Шинэ хэрэглэгчийн шийдвэр хуучин зөрчилтэй шаардлагыг орлоно.

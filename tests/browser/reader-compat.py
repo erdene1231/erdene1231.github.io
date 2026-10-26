@@ -28,7 +28,7 @@ try:
   page.goto(base+'/index.html',wait_until='networkidle')
   page.evaluate('''async()=>{
    window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-   const {renderBlock,drawArticle}=await import('/tutorials.js?v=38');
+   const {renderBlock,drawArticle}=await import('/tutorials.js?v=40');
    window.renderBlock=renderBlock;window.drawArticle=drawArticle;
    const lessons=(await (await fetch('/tutorials.json')).json()).tutorials;
    window.original=structuredClone(lessons[0]);window.fixture=structuredClone(original);
@@ -80,7 +80,7 @@ try:
    page.screenshot(path=str(out/f'draft-actions-reader-{width}-{theme}.png'),full_page=True)
   report['desktop_mobile_light_dark_overflow']='PASS'
   page.evaluate('''async()=>{
-   const {setupLearning}=await import('/learning.js?v=38');
+   const {setupLearning}=await import('/learning.js?v=40');
    const catalog=(await (await fetch('/problems.json')).json()).problems;
    window.learningProgress={};window.openedProblem=null;
    window.learning=await setupLearning({client:()=>null,user:()=>null,profile:()=>null,
@@ -107,7 +107,7 @@ try:
    document.querySelector('#compat-reader').hidden=true;
    // Reuse the real form; mount it directly to remove routing dependencies.
    const form=document.getElementById('tutorial-admin-form');document.body.append(form);
-   const {setupTutorialEditor}=await import('/tutorial-editor.js?v=38');
+   const {setupTutorialEditor}=await import('/tutorial-editor.js?v=40');
    const topics=lessons.map(t=>({...structuredClone(t),revision:9}));topics[0]={...structuredClone(fixture),revision:9};
    window.fixtureActor='fixture-admin';window.savedPayload=null;window.draftCalls=[];window.draftOffline=false;
    const client={rpc:async(name,args)=>{
@@ -122,15 +122,17 @@ try:
    await editor.accountChanged(true);
   }''')
   page.locator('#tutorial-admin-language').select_option('en')
-  assert page.locator('#tutorial-admin-language').input_value()=='mn'
-  assert 'Англи хувилбар' in page.locator('#tutorial-admin-message').inner_text()
+  assert page.locator('#tutorial-admin-language').input_value()=='en'
+  assert page.locator('#tutorial-admin-title').input_value()==''
+  assert page.locator('#tutorial-admin-sections .editor-section').count()==0
+  page.locator('#tutorial-admin-language').select_option('mn')
   assert page.locator('#tutorial-admin-sections .block-rich-input').count()==2
   assert page.locator('#tutorial-admin-sections .block-code-input').count()==1
   page.locator('#tutorial-admin-title').fill('Preserved MN title edit')
   # Input autosaves without pressing the save button.
   page.wait_for_function('window.savedPayload !== null')
   assert page.evaluate('JSON.stringify(savedPayload.sections[0].blocks[0])===richBefore')
-  assert page.evaluate('savedPayload.translations===undefined')
+  assert page.evaluate('savedPayload.translations.en.sections.length===0 && savedPayload.translations.en.title===\"\"')
   assert page.evaluate('savedPayload.title')=='Preserved MN title edit'
   assert page.evaluate('savedPayload.id===fixture.id')
   report['legacy_editor_preserves_rich_and_mn_only']='PASS'
@@ -214,7 +216,7 @@ try:
 
 
   page.evaluate("""async()=>{
-   const {mountBlockEditor}=await import('/tutorial-block-editor.js?v=38');
+   const {mountBlockEditor}=await import('/tutorial-block-editor.js?v=40');
    const root=document.createElement('section');root.id='authoring-test';root.style.cssText='max-width:900px;margin:auto;padding:16px';document.body.append(root);
    window.authored=[{title:'Authoring fixture',blocks:[{type:'rich',key:'stable-key',metadata:{keep:true},content:[{text:'Select me',marks:[]}]}]}];
    window.authoring=mountBlockEditor(root,authored,{changed:()=>{window.authoringChanges=(window.authoringChanges||0)+1;}});
@@ -238,7 +240,7 @@ try:
   assert page.evaluate('authored.length')==2
   page.locator('#authoring-test').get_by_role('button',name='↓ Хэсэг',exact=True).first.click()
   assert page.evaluate('authored.length')==2
-  page.evaluate("async()=>{const {validateTutorial}=await import('/tutorial-model.js?v=38');validateTutorial({...original,sections:authored});}")
+  page.evaluate("async()=>{const {validateTutorial}=await import('/tutorial-model.js?v=40');validateTutorial({...original,sections:authored});}")
   assert page.locator('#authoring-test option[value=image]').count()==0
   page.locator('#authoring-test > details').first.evaluate('(e)=>e.open=true')
   page.wait_for_selector('#authoring-test .block-rich-input',state='visible')
@@ -254,7 +256,7 @@ try:
   page.evaluate('''async()=>{
    window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
    location.hash='#tutorial/complexity';
-   const {setupTutorials}=await import('/tutorials.js?v=38');
+   const {setupTutorials}=await import('/tutorials.js?v=40');
    window.tutorialUI=setupTutorials({client:()=>null,user:()=>null,learning:()=>null});
   }''')
   page.wait_for_function("document.querySelector('#tutorial-content > section')!==null && document.querySelector('#tutorial-content').getAttribute('aria-busy')==='false'")
@@ -270,7 +272,7 @@ try:
   page.reload(wait_until='networkidle')
   page.evaluate("""async()=>{
    window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-   const {setupTutorials}=await import('/tutorials.js?v=38');
+   const {setupTutorials}=await import('/tutorials.js?v=40');
    window.serverReader=setupTutorials({client:()=>({rpc:async()=>({data:[],error:null})}),user:()=>null,learning:()=>null});
    await serverReader.connected();
   }""")

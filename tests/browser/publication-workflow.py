@@ -30,7 +30,7 @@ try:
    page.goto(base+'/index.html', wait_until='networkidle')
    page.evaluate('''async()=>{
     window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-    const {setupTutorials}=await import('/tutorials.js?v=39');
+    const {setupTutorials}=await import('/tutorials.js?v=40');
     window.actor='00000000-0000-0000-0000-000000000001';window.admin=true;
     window.visibilityCalls=[];window.deleteCalls=[];window.saveCalls=[];window.publishCalls=[];window.docCalls=[];
     window.failSave=false;window.visibilityError='';window.deleteError='';window.delayVisibility=false;window.delayDelete=false;window.delayDocument=false;
