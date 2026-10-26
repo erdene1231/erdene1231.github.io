@@ -1,4 +1,4 @@
-import {openProblemSelection} from './problem-selection-dialog.js?v=37';
+import {openProblemSelection} from './problem-selection-dialog.js?v=38';
 import {setAdminRoute} from './navigation.js?v=23';
 import {rpc,accountError} from './accounts.js?v=6';
 import {validateProblem,parseProblemImport,validateSource,getSources} from './problem-store.js?v=23';

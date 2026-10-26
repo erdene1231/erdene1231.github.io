@@ -1,3 +1,10 @@
+# Latest — draft actions and backup restore
+
+v38 toolbar/footer, saved/retry states, JSON confirmation import, draft lifecycle
+and popup Priority labels locally verified.030 applied20261026110831. Production
+content/counts unchanged by installation; live UI/deploy not verified. Read
+DRAFT-ACTIONS.md and verification JSON. Original source requirements remain intact.
+
 # Latest — catalog and two-pane selection UI
 
 Tags/pack tabs/hint badges and two-pane popup locally verified. See

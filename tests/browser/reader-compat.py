@@ -28,7 +28,7 @@ try:
   page.goto(base+'/index.html',wait_until='networkidle')
   page.evaluate('''async()=>{
    window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-   const {renderBlock,drawArticle}=await import('/tutorials.js?v=33');
+   const {renderBlock,drawArticle}=await import('/tutorials.js?v=38');
    window.renderBlock=renderBlock;window.drawArticle=drawArticle;
    const lessons=(await (await fetch('/tutorials.json')).json()).tutorials;
    window.original=structuredClone(lessons[0]);window.fixture=structuredClone(original);
@@ -77,10 +77,10 @@ try:
     return Math.abs(point.x-(box.x+box.width/2))<1&&Math.abs(point.y-(box.y+box.height/2))<1;
    }''')
    out=ROOT/'audit/browser';out.mkdir(parents=True,exist_ok=True)
-   page.screenshot(path=str(out/f'lifecycle-regression-reader-{width}-{theme}.png'),full_page=True)
+   page.screenshot(path=str(out/f'draft-actions-reader-{width}-{theme}.png'),full_page=True)
   report['desktop_mobile_light_dark_overflow']='PASS'
   page.evaluate('''async()=>{
-   const {setupLearning}=await import('/learning.js?v=33');
+   const {setupLearning}=await import('/learning.js?v=38');
    const catalog=(await (await fetch('/problems.json')).json()).problems;
    window.learningProgress={};window.openedProblem=null;
    window.learning=await setupLearning({client:()=>null,user:()=>null,profile:()=>null,
@@ -107,7 +107,7 @@ try:
    document.querySelector('#compat-reader').hidden=true;
    // Reuse the real form; mount it directly to remove routing dependencies.
    const form=document.getElementById('tutorial-admin-form');document.body.append(form);
-   const {setupTutorialEditor}=await import('/tutorial-editor.js?v=33');
+   const {setupTutorialEditor}=await import('/tutorial-editor.js?v=38');
    const topics=lessons.map(t=>({...structuredClone(t),revision:9}));topics[0]={...structuredClone(fixture),revision:9};
    window.fixtureActor='fixture-admin';window.savedPayload=null;window.draftCalls=[];window.draftOffline=false;
    const client={rpc:async(name,args)=>{
@@ -148,7 +148,7 @@ try:
   assert page.evaluate("draftCalls.every(name=>name==='admin_save_tutorial_draft')")
   report['autosave_offline_retry_private_rpc']='PASS'
   page.evaluate("()=>{window.comparisonDocument={current:{body:{...fixture,title:'Published latest'},revision:12},draft:{body:{...fixture,title:'Other tab draft'},revision:7,base_revision:9}};}")
-  page.locator('#tutorial-compare-drafts').click()
+  page.evaluate("document.querySelector('#tutorial-admin-reload').click()")
   page.wait_for_selector('[data-rebase-choice="local"]',state='attached')
   assert page.locator('[data-rebase-save]').is_disabled()
   assert 'Other tab draft' in page.locator('[data-version="draft"]').text_content()
@@ -157,7 +157,7 @@ try:
    page.set_viewport_size({'width':width,'height':1000})
    page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
    assert page.locator('#tutorial-draft-comparison').evaluate('(e)=>e.scrollWidth<=e.clientWidth')
-   page.locator('#tutorial-draft-comparison').screenshot(path=str(ROOT/f'audit/browser/lifecycle-regression-reader-comparison-{width}.png'))
+   page.locator('#tutorial-draft-comparison').screenshot(path=str(ROOT/f'audit/browser/draft-actions-reader-comparison-{width}.png'))
   page.locator('[data-rebase-choice="local"]').click()
   page.evaluate('window.rejectRebase=true')
   page.locator('[data-rebase-save]').click()
@@ -165,7 +165,7 @@ try:
   assert page.locator('[data-rebase-save]').is_disabled()
   page.locator('#tutorial-draft-comparison').get_by_role('button',name='Буцах',exact=True).click()
   page.evaluate('window.rejectRebase=false')
-  page.locator('#tutorial-compare-drafts').click()
+  page.evaluate("document.querySelector('#tutorial-admin-reload').click()")
   page.locator('[data-version="draft"] summary').click()
   page.locator('[data-rebase-choice="draft"]').click()
   page.locator('[data-rebase-save]').click()
@@ -183,7 +183,7 @@ try:
   for width in [375,1440]:
    page.set_viewport_size({'width':width,'height':1000})
    assert page.locator('#tutorial-publication').evaluate('(e)=>e.scrollWidth<=e.clientWidth')
-   page.locator('#tutorial-publication').screenshot(path=str(ROOT/f'audit/browser/lifecycle-regression-reader-publication-{width}.png'))
+   page.locator('#tutorial-publication').screenshot(path=str(ROOT/f'audit/browser/draft-actions-reader-publication-{width}.png'))
 
   page.evaluate('window.rejectPublish=true')
   page.locator('[data-publish-confirm]').click()
@@ -200,7 +200,7 @@ try:
   report['explicit_publish_confirmation_private_metadata_and_conflict']='PASS'
 
   page.evaluate('window.deferRebase=true')
-  page.locator('#tutorial-compare-drafts').click()
+  page.evaluate("document.querySelector('#tutorial-admin-reload').click()")
   page.locator('[data-version="published"] summary').click()
   page.locator('[data-rebase-choice="published"]').click()
   page.locator('[data-rebase-save]').click()
@@ -208,13 +208,13 @@ try:
   page.evaluate('async()=>{window.fixtureActor=null;await editor.accountChanged();finishRebase();}')
   assert page.locator('#tutorial-admin-form').is_hidden()
   assert page.locator('#tutorial-draft-comparison').is_hidden()
-  assert page.locator('#tutorial-admin-title').input_value()=='Other tab draft'
+  assert page.locator('#tutorial-admin-title').input_value()==''
   report['late_rebase_response_after_logout']='PASS'
 
 
 
   page.evaluate("""async()=>{
-   const {mountBlockEditor}=await import('/tutorial-block-editor.js?v=33');
+   const {mountBlockEditor}=await import('/tutorial-block-editor.js?v=38');
    const root=document.createElement('section');root.id='authoring-test';root.style.cssText='max-width:900px;margin:auto;padding:16px';document.body.append(root);
    window.authored=[{title:'Authoring fixture',blocks:[{type:'rich',key:'stable-key',metadata:{keep:true},content:[{text:'Select me',marks:[]}]}]}];
    window.authoring=mountBlockEditor(root,authored,{changed:()=>{window.authoringChanges=(window.authoringChanges||0)+1;}});
@@ -238,7 +238,7 @@ try:
   assert page.evaluate('authored.length')==2
   page.locator('#authoring-test').get_by_role('button',name='↓ Хэсэг',exact=True).first.click()
   assert page.evaluate('authored.length')==2
-  page.evaluate("async()=>{const {validateTutorial}=await import('/tutorial-model.js?v=33');validateTutorial({...original,sections:authored});}")
+  page.evaluate("async()=>{const {validateTutorial}=await import('/tutorial-model.js?v=38');validateTutorial({...original,sections:authored});}")
   assert page.locator('#authoring-test option[value=image]').count()==0
   page.locator('#authoring-test > details').first.evaluate('(e)=>e.open=true')
   page.wait_for_selector('#authoring-test .block-rich-input',state='visible')
@@ -246,7 +246,7 @@ try:
    page.set_viewport_size({'width':width,'height':1000})
    page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
    assert page.locator('#authoring-test').evaluate('(e)=>e.scrollWidth<=e.clientWidth')
-   page.locator('#authoring-test').screenshot(path=str(ROOT/f'audit/browser/lifecycle-regression-reader-authoring-{width}.png'))
+   page.locator('#authoring-test').screenshot(path=str(ROOT/f'audit/browser/draft-actions-reader-authoring-{width}.png'))
   report['rich_authoring_paste_sections_undo_redo']='PASS'
   # Fresh real tutorial setup checks routine same-account notifications do not
   # rebuild the article or reset the reader's position.
@@ -254,7 +254,7 @@ try:
   page.evaluate('''async()=>{
    window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
    location.hash='#tutorial/complexity';
-   const {setupTutorials}=await import('/tutorials.js?v=33');
+   const {setupTutorials}=await import('/tutorials.js?v=38');
    window.tutorialUI=setupTutorials({client:()=>null,user:()=>null,learning:()=>null});
   }''')
   page.wait_for_function("document.querySelector('#tutorial-content > section')!==null && document.querySelector('#tutorial-content').getAttribute('aria-busy')==='false'")
@@ -270,7 +270,7 @@ try:
   page.reload(wait_until='networkidle')
   page.evaluate("""async()=>{
    window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-   const {setupTutorials}=await import('/tutorials.js?v=33');
+   const {setupTutorials}=await import('/tutorials.js?v=38');
    window.serverReader=setupTutorials({client:()=>({rpc:async()=>({data:[],error:null})}),user:()=>null,learning:()=>null});
    await serverReader.connected();
   }""")
@@ -282,5 +282,5 @@ try:
   report['page_errors']=[]
   browser.close()
 finally:server.shutdown()
-(ROOT/'audit/TUTORIAL-LIFECYCLE-READER-BROWSER.json').write_text(json.dumps(report,indent=2)+'\n')
+(ROOT/'audit/DRAFT-ACTIONS-READER-BROWSER.json').write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps(report))

@@ -126,6 +126,16 @@ colored hint badges and two-pane selection/reset/removal. See
 in this checkpoint;029 remains applied. Local synthetic browser checks do not
 establish deployed authenticated UI verification. Deploy after review/merge.
 
+## Latest draft-actions checkpoint
+
+v38 simplifies toolbar actions, adds confirmed single-draft JSON import, saved/
+retry button states and owner-only draft deletion.030_delete_private_tutorial_draft
+applied20261026110831 after a fresh audit. Latest actual metadata is
+supabase/audit/production-after-030.json;748/56 unchanged, no real test deletion.
+Do not replay030/029/028/021-025. Pending026/027 require fresh compatibility audit.
+Read audit/DRAFT-ACTIONS.md and NEXT-STEPS.md. Deploy after review/merge; browser
+checks use synthetic services and do not establish authenticated live verification.
+
 ## Persistence boundary
 
 The repository tracks this skill, client, metadata query, comparison tool and audit

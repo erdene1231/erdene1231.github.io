@@ -1,6 +1,6 @@
-import {openProblemSelection} from './problem-selection-dialog.js?v=37';
-import {BLOCK_TYPES,TONES,createBlock,safeLink} from './tutorial-blocks.js?v=37';
-import {appendInline} from './tutorial-block-renderer.js?v=37';
+import {openProblemSelection} from './problem-selection-dialog.js?v=38';
+import {BLOCK_TYPES,TONES,createBlock,safeLink} from './tutorial-blocks.js?v=38';
+import {appendInline} from './tutorial-block-renderer.js?v=38';
 const make=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const names={p:'Текст',rich:'Formatting бүхий текст',heading:'Гарчиг H1–H4',code:'Код',math:'Томъёо',list:'Жагсаалт',ordered:'Дугаартай жагсаалт',checklist:'Checklist',table:'Хүснэгт',links:'Эх сурвалжийн холбоос',quote:'Эшлэл',callout:'Тайлбарын хайрцаг',note:'Нээж унших тайлбар',divider:'Тусгаарлагч',image:'Зураг upload',diagram:'Diagram',problem:'Бодлого',tutorial:'Хичээлийн холбоос'};
 function inlineFromDOM(root){

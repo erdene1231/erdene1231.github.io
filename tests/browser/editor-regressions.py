@@ -20,7 +20,7 @@ try:
    page.route('**/*',route);page.goto(base+'/index.html',wait_until='networkidle')
    page.evaluate('''async()=>{
     window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-    const {setupTutorialEditor}=await import('/tutorial-editor.js?v=37');
+    const {setupTutorialEditor}=await import('/tutorial-editor.js?v=38');
     window.actor='00000000-0000-0000-0000-000000000001';window.docCalls=0;window.failLoad=false;window.saveCalls=[];window.rev=0;window.drafts=new Map();window.published=null;
     window.lesson=structuredClone((await (await fetch('/tutorials.json')).json()).tutorials[0]);
     lesson.sections=[{title:'First',blocks:[{type:'rich',content:[{text:'Editable text',marks:[]}]}]},{title:'Second',blocks:[{type:'code',language:'C++17',text:'int x = 1;'}]}];
@@ -28,8 +28,8 @@ try:
     window.client={rpc:async(name,args)=>{
      if(name==='is_admin')return {data:true};
      if(name==='admin_tutorial_workspace')return {data:{catalog:[{id:lesson.id,title:lesson.title}],drafts:[...drafts].map(([tutorial_id,d])=>({tutorial_id,title:d.body.title}))}};
-     if(name==='admin_tutorial_document'){docCalls++;if(failLoad)return {error:Error('Load failed')};return {data:{current:args.p_id===lesson.id?{body:lesson,revision:7}:null,draft:drafts.get(args.p_id)||null}};}
-     if(name==='admin_save_tutorial_draft'){saveCalls.push(structuredClone(args));const row={body:structuredClone(args.p_body),revision:++rev,base_revision:args.p_base_revision};drafts.set(args.p_id,row);return {data:row};}if(name==='admin_publish_tutorial_draft'){window.published=args;drafts.delete(args.p_id);return {data:{body:args.p_body,revision:1,draft:null}};}
+     if(name==='admin_tutorial_document'){docCalls++;if(failLoad)return {error:Error('Load failed')};return {data:{current:args.p_id===lesson.id?{body:lesson,revision:7,published:true}:null,draft:drafts.get(args.p_id)||null}};}
+     if(name==='admin_save_tutorial_draft'){saveCalls.push(structuredClone(args));const result=()=>{if(window.rejectSave)return {error:Error('Offline')};const row={body:structuredClone(args.p_body),revision:++rev,base_revision:args.p_base_revision};drafts.set(args.p_id,row);return {data:row};};if(window.delaySave)return new Promise(resolve=>window.finishSave=()=>resolve(result()));return result();}if(name==='admin_publish_tutorial_draft'){window.published=args;drafts.delete(args.p_id);return {data:{body:args.p_body,revision:1,published:true,draft:null}};}
      throw Error('Unexpected RPC '+name);
     }};
     window.editor=setupTutorialEditor({client:()=>client,user:()=>actor?{id:actor}:null,topics:()=>[lesson],problems:()=>[{number:1,id:'p-one',title:'One task',source:'Judge',ref:'one',tags:['dp'],rating:1200}],progress:()=>({'p-one':{status:'solved'}}),learning:()=>null,ready:()=>true,saved:()=>{}});
@@ -88,7 +88,7 @@ try:
    page.locator('[data-undo]').click();assert page.evaluate("document.querySelectorAll('#tutorial-admin-sections > details').length")==1
    page.locator('[data-redo]').click();assert page.evaluate("document.querySelectorAll('#tutorial-admin-sections > details').length")==2
    for width in [375,1200]:
-    page.set_viewport_size({'width':width,'height':950});assert page.locator('#admin-tutorials').evaluate('e=>e.scrollWidth<=e.clientWidth');page.locator('#admin-tutorials').screenshot(path=str(ROOT/f'audit/browser/catalog-editor-workspace-{width}.png'))
+    page.set_viewport_size({'width':width,'height':950});assert page.locator('#admin-tutorials').evaluate('e=>e.scrollWidth<=e.clientWidth');page.locator('#admin-tutorials').screenshot(path=str(ROOT/f'audit/browser/draft-actions-editor-workspace-{width}.png'))
   case('name_slug_unfinished_preview_and_section_buttons',unfinished_preview)
   def practice_picker(page):
    page.evaluate("document.querySelector('#tutorial-admin-relations').value=JSON.stringify({practice:[{key:'judge|one',stage:'Standard',priority:true,reason:'Keep this reason'}],variants:[],next:null})")
@@ -115,6 +115,52 @@ try:
    assert page.locator('#tutorial-preview').evaluate('e=>!e.open')
    assert page.locator('#tutorial-preview-content').inner_text()==''
   case('logout_closes_preview_and_clears_private_preview_content',preview_logout)
+  def save_state(page):
+   page.locator('#tutorial-admin-title').fill('Manual save state')
+   save=page.locator('#tutorial-admin-save');assert save.is_enabled();save.click()
+   page.wait_for_function("document.querySelector('#tutorial-admin-save').textContent==='Хадгалагдсан'&&document.querySelector('#tutorial-admin-save').disabled")
+   calls=page.evaluate('saveCalls.length');page.locator('#tutorial-admin-title').fill('Changed again')
+   assert save.is_enabled();assert save.inner_text()=='Ноорог хадгалах'
+   assert page.evaluate('saveCalls.length')==calls
+  case('save_button_disables_after_save_and_reenables_on_edit',save_state)
+  def layout_and_export(page):
+   assert page.locator('#tutorial-compare-drafts').count()==0
+   assert page.get_by_role('button',name='Харьцуулахаас өмнөх backup татах',exact=True).count()==0
+   assert page.locator('.tutorial-editor-savebar #tutorial-publish-review').count()==1
+   assert page.locator('.tutorial-editor-savebar #tutorial-visibility-review').is_visible()
+   with page.expect_download() as result:page.locator('#tutorial-backup-export').click()
+   downloaded=json.loads(Path(result.value.path()).read_text());assert downloaded['id']==page.evaluate('lesson.id')
+  case('removed_comparison_buttons_footer_actions_and_json_export',layout_and_export)
+  def import_backup(page):
+   body=page.evaluate('structuredClone(lesson)');body['title']='Imported private title'
+   page.locator('#tutorial-backup-file').set_input_files({'name':'backup.json','mimeType':'application/json','buffer':json.dumps(body).encode()})
+   page.wait_for_selector('[data-import-confirm]')
+   assert page.evaluate('saveCalls.length')==0
+   page.locator('[data-import-confirm]').click()
+   page.wait_for_function("document.querySelector('#tutorial-admin-title').value==='Imported private title'")
+   page.wait_for_function("saveCalls.at(-1)?.p_body.title==='Imported private title'")
+   assert page.evaluate('published') is None
+   assert page.evaluate("JSON.parse(localStorage.getItem('erdene:tutorial-draft:v3:'+actor+':'+lesson.id+':before-rebase')).body.title")!=body['title']
+  case('json_import_requires_confirmation_and_changes_private_draft_only',import_backup)
+  def import_invalid_cancel(page):
+   old=page.locator('#tutorial-admin-title').input_value()
+   for body in [{'id':'wrong-id'},page.evaluate('structuredClone(lesson)')]:
+    page.locator('#tutorial-backup-file').set_input_files({'name':'backup.json','mimeType':'application/json','buffer':json.dumps(body).encode()})
+    page.wait_for_selector('[data-import-cancel]');page.locator('[data-import-cancel]').click()
+    assert page.locator('#tutorial-admin-title').input_value()==old
+   assert page.evaluate('published') is None
+  case('wrong_id_and_cancelled_import_preserve_editor',import_invalid_cancel)
+  def save_retry_and_queue(page):
+   page.evaluate('window.rejectSave=true');page.locator('#tutorial-admin-title').fill('Recover after failed save');page.locator('#tutorial-admin-save').click()
+   page.wait_for_function("document.querySelector('#tutorial-admin-message').textContent.includes('Онлайн хадгалалт амжилтгүй')")
+   assert page.locator('#tutorial-admin-save').is_enabled();assert page.locator('#tutorial-admin-save').inner_text()=='Ноорог хадгалах'
+   assert 'Онлайн хадгалалт амжилтгүй' in page.locator('#tutorial-save-feedback').inner_text()
+   page.evaluate('window.rejectSave=false;window.delaySave=true');page.locator('#tutorial-admin-save').click();page.wait_for_function('typeof finishSave==="function"')
+   assert page.locator('#tutorial-admin-save').is_disabled();assert page.locator('#tutorial-admin-save').inner_text()=='Хадгалж байна…'
+   page.locator('#tutorial-admin-title').fill('Newest queued edit');page.evaluate('window.delaySave=false;finishSave()')
+   page.wait_for_function("document.querySelector('#tutorial-admin-save').textContent==='Хадгалагдсан'&&document.querySelector('#tutorial-admin-save').disabled")
+   assert page.evaluate('saveCalls.at(-1).p_body.title')=='Newest queued edit'
+  case('failed_save_retries_and_pending_save_drains_new_edits_before_saved_state',save_retry_and_queue)
   def formatting(page):
    text=page.locator('.block-rich-input').first;text.click();text.press('Control+a')
    form=page.locator('#tutorial-admin-form');form.get_by_role('button',name='Bold',exact=True).click()
@@ -131,7 +177,7 @@ try:
    for width in [375,1200]:
     page.set_viewport_size({'width':width,'height':900})
     assert form.evaluate('e=>e.scrollWidth<=e.clientWidth')
-    page.locator('#admin-tutorials').screenshot(path=str(ROOT/f'audit/browser/catalog-editor-formatting-{width}.png'))
+    page.locator('#admin-tutorials').screenshot(path=str(ROOT/f'audit/browser/draft-actions-editor-formatting-{width}.png'))
   case('bold_toggle_italic_before_typing_keyboard_and_autosave',formatting)
   def new_document(page):
    page.locator('#tutorial-admin-new').click();page.locator('#tutorial-new-id').fill('new-recovery-regressionture')
@@ -204,14 +250,14 @@ try:
    page.reload(wait_until='networkidle')
    page.evaluate('''async()=>{
     window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-    const {setupTutorials}=await import('/tutorials.js?v=37');
+    const {setupTutorials}=await import('/tutorials.js?v=38');
     window.lesson=structuredClone((await (await fetch('/tutorials.json')).json()).tutorials[0]);window.saveCalls=[];window.published=null;window.drafts=new Map();window.rev=0;
     const client={rpc:async(name,args)=>{
-     if(name==='get_tutorials')return {data:[{body:lesson,revision:7}]};
+     if(name==='get_tutorials')return {data:[{body:lesson,revision:7,published:true}]};
      if(name==='is_admin')return {data:true};if(name==='admin_tutorial_workspace')return {data:{catalog:[{id:lesson.id,title:lesson.title}],drafts:[]}};
-     if(name==='admin_tutorial_document')return {data:{current:args.p_id===lesson.id?{body:lesson,revision:7}:null,draft:null}};
+     if(name==='admin_tutorial_document')return {data:{current:args.p_id===lesson.id?{body:lesson,revision:7,published:true}:null,draft:null}};
      if(name==='admin_save_tutorial_draft'){saveCalls.push(args);return {data:{revision:args.p_draft_revision+1}};}
-     if(name==='admin_publish_tutorial_draft'){window.published=args;return {data:{body:args.p_body,revision:1,draft:null}};}throw Error(name);
+     if(name==='admin_publish_tutorial_draft'){window.published=args;return {data:{body:args.p_body,revision:1,published:true,draft:null}};}throw Error(name);
     }};
     window.tutorialUI=setupTutorials({client:()=>client,user:()=>({id:'00000000-0000-0000-0000-000000000001'}),learning:()=>null});await tutorialUI.connected();document.querySelector('#admin-tutorials').hidden=false;
    }''')
@@ -223,6 +269,6 @@ try:
   case('new_publication_appears_in_actual_tutorial_library',new_reader)
   browser.close()
 finally:server.shutdown()
-(ROOT/'audit/CATALOG-EDITOR-REGRESSIONS.json').write_text(json.dumps({'checks':report,'failures':failures},indent=2)+'\n')
+(ROOT/'audit/DRAFT-ACTIONS-EDITOR-BROWSER.json').write_text(json.dumps({'checks':report,'failures':failures},indent=2)+'\n')
 print(json.dumps({'checks':report,'failures':failures}))
 assert not failures,failures

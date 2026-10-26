@@ -1,10 +1,10 @@
-import {renderExtendedBlock} from './tutorial-block-renderer.js?v=37';
-import {clearMediaCache} from './tutorial-media.js?v=37';
-import {loadLearningContent,bodyHash} from './learning-model.js?v=37';
+import {renderExtendedBlock} from './tutorial-block-renderer.js?v=38';
+import {clearMediaCache} from './tutorial-media.js?v=38';
+import {loadLearningContent,bodyHash} from './learning-model.js?v=38';
 import {algorithmDemo} from './algorithm-demos.js?v=23';
 import {segmentTreeDemo} from './segment-tree-demo.js?v=16';
-import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=37';
-import {setupTutorialEditor} from './tutorial-editor.js?v=37';
+import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=38';
+import {setupTutorialEditor} from './tutorial-editor.js?v=38';
 const $=id=>document.getElementById(id);
 export const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
 let mathPromise=null,mathQueue=Promise.resolve();
