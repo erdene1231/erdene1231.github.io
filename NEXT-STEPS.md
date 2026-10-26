@@ -1,3 +1,14 @@
+# Latest — package01 frontend v40, local verified; do not start02
+
+Read audit/PART01-EDITOR-FRONTEND.md. User narrowed current work to existing
+editor frontend polish/bugs. Empty last-section removal, capacity guards, link
+Enter accidental-submit, lazy-mounted locked inputs fixed; mobile/focus/feedback
+polish. No production calls or migrations. Applied migrations must not replay.
+19 Node files and targeted Chromium suites pass; live authenticated/deploy still
+unverified. Full original package01 backend/bulk/dashboard backlog remains open;
+frontend evidence does not close it. Complete v40 graph deploy after review/merge.
+Stop here; package02 requires user continuation. Commit/remote/ZIP in manifest.
+
 # Latest — eight delivery packages; wait for user to start01
 
 Read audit/EIGHT-PART-PLAN.md/JSON and MASTER-WORK-CHECKLIST.md.

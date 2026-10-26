@@ -1,20 +1,20 @@
-import {mountTutorialReset} from './tutorial-reset.js?v=39';
-import {sameEditorBody} from './tutorial-workflow.js?v=39';
-import {mountBackupImport} from './tutorial-backup.js?v=39';
-import {normalizeProblemReferences} from './learning-model.js?v=39';
-import {openProblemSelection} from './problem-selection-dialog.js?v=39';
-import {tutorialSlug} from './tutorial-slug.js?v=39';
-import {mountTutorialLifecycle} from './tutorial-lifecycle.js?v=39';
-import {createBlock} from './tutorial-blocks.js?v=39';
-import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=39';
-import {mountPublication} from './tutorial-publication.js?v=39';
-import {mountBlockEditor} from './tutorial-block-editor.js?v=39';
-import {mountDraftRecovery} from './tutorial-draft-recovery.js?v=39';
-import {createDraftSession} from './tutorial-drafts.js?v=39';
-import {editableVersion} from './tutorial-editor-compat.js?v=39';
-import {validateRelations} from './learning-model.js?v=39';
-import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=39';
-import {node,drawArticle,typeset} from './tutorials.js?v=39';
+import {mountTutorialReset} from './tutorial-reset.js?v=40';
+import {sameEditorBody} from './tutorial-workflow.js?v=40';
+import {mountBackupImport} from './tutorial-backup.js?v=40';
+import {normalizeProblemReferences} from './learning-model.js?v=40';
+import {openProblemSelection} from './problem-selection-dialog.js?v=40';
+import {tutorialSlug} from './tutorial-slug.js?v=40';
+import {mountTutorialLifecycle} from './tutorial-lifecycle.js?v=40';
+import {createBlock} from './tutorial-blocks.js?v=40';
+import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=40';
+import {mountPublication} from './tutorial-publication.js?v=40';
+import {mountBlockEditor} from './tutorial-block-editor.js?v=40';
+import {mountDraftRecovery} from './tutorial-draft-recovery.js?v=40';
+import {createDraftSession} from './tutorial-drafts.js?v=40';
+import {editableVersion} from './tutorial-editor-compat.js?v=40';
+import {validateRelations} from './learning-model.js?v=40';
+import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=40';
+import {node,drawArticle,typeset} from './tutorials.js?v=40';
 const $=id=>document.getElementById(id);
 export function setupTutorialEditor(ctx){
  let allowed=false,token=0,draft=null,revision=0,lang='mn',busy=false,accountId,blockEditor,workspace=[],catalogCurrent=null;
@@ -93,7 +93,7 @@ export function setupTutorialEditor(ctx){
   accept(result,actor,id){draft=normalizeProblemReferences(result.body,availableProblems());recovery=null;revision=result.revision;catalogCurrent=result;session.open({actor,id,body:draft,baseRevision:revision,draftRevision:0});session.checkpoint();try{localStorage.removeItem('erdene:tutorial-draft:v3:'+actor+':'+id+':before-rebase');}catch{}lang='mn';$('tutorial-admin-language').value=lang;$('tutorial-admin-level').value=draft.levelKey;$('tutorial-admin-order').value=draft.order;$('tutorial-admin-category').value=draft.category;paint();rememberCatalog(result);ctx.saved?.(result);}
  });
  const reset=node('button','Reset');reset.type='button';reset.id='tutorial-reset';reset.onclick=()=>void resetter.open();
- const savebar=$('tutorial-admin-preview').parentElement;savebar.classList.add('tutorial-editor-savebar');savebar.append(publish,reset,visibility,permanentDelete);const saveFeedback=node('span');saveFeedback.id='tutorial-save-feedback';savebar.append(saveFeedback);
+ const savebar=$('tutorial-admin-preview').parentElement;savebar.classList.add('tutorial-editor-savebar');savebar.append(publish,reset,visibility,permanentDelete);const saveFeedback=node('span');saveFeedback.id='tutorial-save-feedback';saveFeedback.setAttribute('role','status');saveFeedback.setAttribute('aria-live','polite');savebar.append(saveFeedback);
  function rememberCatalog(row){catalogCurrent=row;workspace=workspace.filter(t=>t.id!==row.body.id);workspace.push({id:row.body.id,title:row.body.title,revision:row.revision,published:row.published});void refresh();}
  function changed(){if(!draft||busy||!allowed)return;try{const body=collect(false);if(!sameEditorBody(body,session.snapshot()?.body,availableProblems()))session.changed(body);recovery=null;updateSave();}catch(e){message(e.message);}}
  form.addEventListener('input',event=>{if(event.target!==importInput&&!event.target.closest('#tutorial-admin-sections'))changed();});
