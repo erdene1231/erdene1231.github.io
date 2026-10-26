@@ -1,4 +1,4 @@
-# Одоогийн шаардлагын checklist — алхам 003
+# Одоогийн шаардлагын checklist — алхам 004
 
 Хавсралтуудыг бүтнээр уншсан. Хэрэглэгчийн шинэ baseline нь ZIP-ийн хуучин мэдээллийг орлоно.
 `f7c5f2e820f01652e3a839f2db69c05b16c91adb`; 748 problems / 55 tutorials;
@@ -14,7 +14,7 @@ production prerequisite migration `20261026045125` нь recovery editor 021-ээ
 | SAFE-01 | Prerequisite validation хадгалах | VERIFIED_COMPLETE | invalid/null/31-ID тест PASS | live invalid ID → 22023 | 021 хамгаалалт хадгалагдсан |
 | SAFE-02 | Энэ алхамд admin content, ID, progress хадгалах | VERIFIED_COMPLETE | no content DML; fixture preservation PASS | before/after content hashes/revisions identical | Content import байхгүй |
 | READER-01 | Typed reader + legacy editor round-trip | LOCAL_VERIFIED | Node + Chromium, MN-only, XSS, media race PASS | frontend live шалгаагүй | үгүй |
-| EDITOR-02 | Private drafts/CAS | MISSING | recovery reviewed; pending 023 | байхгүй | үгүй |
+| EDITOR-02 | Private drafts/CAS | PARTIAL | backend security/CAS/rebase tests PASS | 023 applied, schema verified | UI pending |
 | EDITOR-03 | Explicit publish/lazy reader | MISSING | recovery reviewed; pending 024 | байхгүй | үгүй |
 | EDITOR-04 | Storage/media authorization | MISSING | recovery reviewed; pending 025 | real upload smoke pending | үгүй |
 | EDITOR-05 | Embedded relation integrity | MISSING | recovery reviewed; pending 026 | байхгүй | үгүй |
@@ -44,9 +44,11 @@ Recovery-ийн 41/55 гэсэн баталгаагүй тоог ашиглаа�
 
 ## Дараагийн ажил
 
-022 live verified (`20261026052253`) → reader/editor compatibility local verified → 023 draft/CAS тест,
-current metadata re-audit → 024–027 тус бүрийн rollout. Storage тестгүйгээр editor
+022 live verified (`20261026052253`) → reader/editor compatibility local verified → 023 backend live verified → draft UI integration,
+024 current metadata re-audit → 024–027 тус бүрийн rollout. Storage тестгүйгээр editor
 бүрэн live болсон гэж тэмдэглэхгүй. Үүний дараа Binary Search/Greedy semantic болон
 browser review; үлдсэн content/topic/practice, plan/profile/UI regressions.
 
 Бүртгэл: 1467 source мөр, 319 topic мөр (давхардалтай; тусдаа tutorial-ийн тоо биш).
+
+Алхам 004: `STEP-004.md`; 023 version `20261026054052`, 748/55 ба content hash/revision unchanged.
