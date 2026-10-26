@@ -8,5 +8,5 @@ test('publication strips private editor state without mutating the saved draft o
 test('malformed relationships and invalid body fail before publication',()=>{
  for(const raw of ['{bad','null','{}',42])assert.throws(()=>publicationBody({...topics[0],_draftRelationsText:raw},topics,[]));
  assert.throws(()=>publicationBody({...topics[0],prerequisiteIds:[42]},topics,[]));
- assert.throws(()=>publicationBody({...topics[0],learningRelations:{variants:[],practice:[],next:null}},topics,[]));
+ assert.throws(()=>publicationBody({...topics[0],learningRelations:{variants:[],practice:[{key:'not-real',stage:'Warm-up',priority:false}],next:null}},topics,[]));
 });

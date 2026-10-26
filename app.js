@@ -1,15 +1,15 @@
-import {setupLearning} from './learning.js?v=38';
-import {setupTutorials} from './tutorials.js?v=38';
+import {setupLearning} from './learning.js?v=39';
+import {setupTutorials} from './tutorials.js?v=39';
 import {setupGroups} from './groups.js?v=20';
 let tutorialUI, learningUI=null;
 import {EMPTY, cleanEntry, parseBackup} from './progress.js';
 import {getSolvers} from './community.js?v=6';
-import {setupAdmin} from './admin.js?v=38';
+import {setupAdmin} from './admin.js?v=39';
 import {parseCatalog,hintTexts,getSources} from './problem-store.js?v=23';
 import {rpc} from './accounts.js?v=17';
 import {ownProfile,saveOwnProfile,avatarUrl,accountError} from './accounts.js?v=17';
 import {setupSocial} from './social.js?v=23';
-import {filterProblems, getTags, ratingLabel,difficultyLabel} from './catalog.js?v=38';
+import {filterProblems, getTags, ratingLabel,difficultyLabel} from './catalog.js?v=39';
 const $ = id => document.getElementById(id);
 const STATUS = {new:'Эхлээгүй',trying:'Оролдож байгаа',solved:'Бодсон'};
 let data, selectedProblem, state={}, dirty={}, user=null, client=null, loading=false, syncing=false, syncAgain=false, epoch=0;
@@ -76,7 +76,7 @@ function render() {
     const meta=el('div','problem-meta');const rating=el('span','rating rating-'+Math.floor(p.rating/100),ratingLabel(p));rating.title=p.ratingKind==='official'?'Codeforces-ийн албан rating':(p.ratingBasis||'Зохиогчийн CF difficulty-ийн estimate; official биш');
     meta.append(rating,el('small','',p.source+' · '+p.ref+' · '+difficultyLabel(p)+(p.level==='Interactive'?' · Interactive':'')));
     b.append(heading,meta);b.onclick=()=>openProblem(p);
-    if($('show-tags').checked){const tags=el('div','tag-chips');for(const tag of p.tags)tags.append(el('span','tag-chip',tag));b.append(tags);}
+    {const tags=el('div','tag-chips');for(const tag of p.tags)tags.append(el('span','tag-chip',tag));tags.title=p.tags.join(' · ');tags.classList.toggle('tags-concealed',!$('show-tags').checked&&entry(p.id).status!=='solved');b.append(tags);}
     const badge=el('span','badge '+entry(p.id).status,STATUS[entry(p.id).status]);
     const arrow=el('button','arrow','↗');arrow.setAttribute('aria-label',p.title+' нээх');arrow.disabled=loading||catalogLoading;arrow.onclick=()=>openProblem(p);
     const signals=el('div','problem-signals'),used=Math.min(3,Math.max(0,Number(entry(p.id).hints)||0)),hint=el('span','hint-meter hint-level-'+used,'Hint '+used+'/3');hint.title=used?used+' hint ашигласан':'Hint ашиглаагүй';hint.setAttribute('aria-label',hint.title);signals.append(hint,badge);
@@ -94,8 +94,8 @@ function renderDetail() {
   $('toggle-hints').textContent=hintsVisible?'Hint-үүдийг нуух':'Нээсэн hint-үүдийг харуулах';
   $('toggle-hints').setAttribute('aria-expanded',String(hintsVisible&&e.hints>0));
   $('next-hint').hidden=e.hints>=hintCount;$('next-hint').textContent='Hint '+(e.hints+1)+' нээх';$('reflection').hidden=e.status!=='solved';$('tags').textContent='Сэдэв: '+p.tags.join(' · ');$('lesson').textContent=p.lesson||'';$('lesson').hidden=!p.lesson;
-  const tagsVisible=$('show-tags').checked||detailTagsShown;$('tags').hidden=!tagsVisible;$('detail-tags').hidden=!tagsVisible;$('detail-tags').replaceChildren();for(const tag of p.tags)$('detail-tags').append(el('span','tag-chip',tag));
-  $('reveal-detail-tags').hidden=$('show-tags').checked;$('reveal-detail-tags').textContent=detailTagsShown?'Tags нуух':'Tags харуулах';
+  const tagsVisible=$('show-tags').checked||detailTagsShown||e.status==='solved';$('tags').hidden=!tagsVisible;$('detail-tags').hidden=!tagsVisible;$('detail-tags').replaceChildren();for(const tag of p.tags)$('detail-tags').append(el('span','tag-chip',tag));
+  $('reveal-detail-tags').hidden=$('show-tags').checked||e.status==='solved';$('reveal-detail-tags').textContent=detailTagsShown?'Tags нуух':'Tags харуулах';
   $('editorial-link').hidden=!p.editorialUrl;if(p.editorialUrl)$('editorial-link').href=p.editorialUrl;
 }
 async function switchUser(next) {

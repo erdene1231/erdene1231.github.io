@@ -40,8 +40,8 @@ test('Ulaanbaatar midnight, week boundaries and actual dated attempts are explic
  assert.equal(dateKey('2026-10-24T15:59:59Z'),'2026-10-24');assert.equal(dateKey('2026-10-24T16:00:00Z'),'2026-10-25');assert.equal(monday('2026-10-25'),'2026-10-19');assert.equal(monday('2026-10-26'),'2026-10-26');
  const p=problems[0],q=problems[1],progress={[p.id]:{status:'trying'},[q.id]:{status:'solved'}},dates={[p.id]:{first_attempted_at:'2026-10-20T00:00:00Z'}},s=buildStatistics([p,q],progress,dates,'2026-10-25'),week=weekStatistics(s,dates,'2026-10-19');assert.equal(week.attempted.length,1);assert.equal(week.solved.length,0);assert.equal(week.highest,null);
 });
-test('editable relationships reject unknown topics, duplicates and missing priority reasons',()=>{
- const good=curr.lessons['binary-search'];assert.throws(()=>validateRelations({...good,next:'not-published'},'binary-search',topics,problems));assert.throws(()=>validateRelations({...good,practice:[...good.practice,good.practice[0]]},'binary-search',topics,problems));assert.throws(()=>validateRelations({...good,practice:[{key:'cses|1620',stage:'Standard',priority:true,reason:''}]},'binary-search',topics,problems));
+test('editable relationships reject unknown topics, duplicates and invalid optional reasons',()=>{
+ const good=curr.lessons['binary-search'];assert.throws(()=>validateRelations({...good,next:'not-published'},'binary-search',topics,problems));assert.throws(()=>validateRelations({...good,practice:[...good.practice,good.practice[0]]},'binary-search',topics,problems));assert.throws(()=>validateRelations({...good,practice:[{key:'cses|1620',stage:'Standard',priority:true,reason:'x'.repeat(1001)}]},'binary-search',topics,problems));
 });
 test('fingerprints match exact original editions; custom admin edits do not match',async()=>{
  const baselines=read('tests/edition-baselines.json'),editions=read('tutorial-editions.json').editions;

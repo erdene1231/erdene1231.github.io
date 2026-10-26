@@ -21,9 +21,11 @@ try:
   page.route('**/*',route);page.add_init_script('localStorage.setItem("think-cp:v1:guest",'+json.dumps(json.dumps({'progress':progress,'dirty':[]}))+');localStorage.setItem("think-cp:catalog-preferences",JSON.stringify({showTags:false}));window.MathJax={startup:{promise:Promise.resolve()},typesetClear:()=>{},typesetPromise:async()=>{}};')
   page.goto(base+'/index.html#library',wait_until='networkidle');page.wait_for_selector('#problems .problem');page.wait_for_function("typeof document.querySelector('#show-tags').onchange==='function'||document.querySelector('#problem-density').onchange!==null")
   assert page.locator('#packs').count()==0;checks['pack_tabs_removed']='PASS'
-  assert page.locator('#problems .tag-chip').count()==0;checks['solved_tags_hidden_when_toggle_off']='PASS'
+  assert page.locator('#problems .tag-chip:visible').count()==2;checks['solved_tags_remain_visible_when_toggle_off']='PASS'
+  before=page.locator('#problems .problem').evaluate_all('es=>es.map(e=>e.getBoundingClientRect().height)')
   page.locator('#show-tags').check();assert page.locator('#problems .tag-chip').count()==8
-  page.locator('#show-tags').uncheck();assert page.locator('#problems .tag-chip').count()==0;checks['toggle_hides_all_tags_again']='PASS'
+  page.locator('#show-tags').uncheck();assert page.locator('#problems .tag-chip:visible').count()==2;checks['toggle_only_hides_unsolved_tags']='PASS'
+  assert before==page.locator('#problems .problem').evaluate_all('es=>es.map(e=>e.getBoundingClientRect().height)');checks['tag_toggle_keeps_row_heights']='PASS'
   for i in range(4):
    row=page.locator('#problems .problem').filter(has=page.locator('.number',has_text='#'+str(data['problems'][i]['number']).zfill(3)))
    assert row.locator('.hint-meter').inner_text()==f'Hint {i}/3'
@@ -31,7 +33,8 @@ try:
    assert row.locator('.hint-meter').evaluate('e=>e.nextElementSibling.classList.contains("badge")')
   checks['hint_0_to_3_boxes_before_status']='PASS'
   row=page.locator('#problems .problem').filter(has=page.locator('.number',has_text='#'+str(data['problems'][0]['number']).zfill(3)))
-  row.locator('button.open').click();assert page.locator('#detail-tags').is_hidden();assert page.locator('#tags').is_hidden();checks['solved_detail_tags_hidden']='PASS'
+  row.locator('button.open').click();assert page.locator('#detail-tags').is_visible();assert page.locator('#tags').is_visible();checks['solved_detail_tags_visible']='PASS'
+  page.evaluate("document.querySelector('#detail').close()");row=page.locator('#problems .problem').filter(has=page.locator('.number',has_text='#'+str(data['problems'][1]['number']).zfill(3)));row.locator('button.open').click()
   page.locator('#reveal-detail-tags').click();assert page.locator('#detail-tags').is_visible();page.evaluate("document.querySelector('#detail').close()")
   page.locator('#show-tags').check();page.locator('#show-tags').uncheck();row.locator('button.open').click();assert page.locator('#detail-tags').is_hidden();page.evaluate("document.querySelector('#detail').close()")
   checks['explicit_detail_reveal_and_global_reset']='PASS'
@@ -39,7 +42,7 @@ try:
    for theme in ['light','dark']:
     page.set_viewport_size({'width':width,'height':950});page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
     assert page.locator('#library').evaluate('e=>e.scrollWidth<=e.clientWidth')
-    page.locator('#library').screenshot(path=str(ROOT/f'audit/browser/catalog-ui-{width}-{theme}.png'))
+    page.locator('#library').screenshot(path=str(ROOT/f'audit/browser/workflow-tags-{width}-{theme}.png'))
   checks['desktop_mobile_light_dark']='PASS';assert not errors,errors;browser.close()
 finally:server.shutdown()
-(ROOT/'audit/CATALOG-UI-BROWSER.json').write_text(json.dumps({'checks':checks,'errors':errors},indent=2)+'\n');print(json.dumps(checks))
+(ROOT/'audit/WORKFLOW-TAGS-BROWSER.json').write_text(json.dumps({'checks':checks,'errors':errors},indent=2)+'\n');print(json.dumps(checks))

@@ -72,12 +72,12 @@ export function validateRelations(value, topicId, topics, problems) {
   const ids = new Set(topics.map(t => t.id)), index = problemIndex(problems), stages = ['Warm-up','Standard','Observation','Application','Challenge','Olympiad extension'];
   const checkId = id => { if (id === topicId || !ids.has(id)) throw new Error('Published tutorial ID-гаа шалгана уу: ' + id); };
   if (!Array.isArray(value.variants) || value.variants.length > 20 || !Array.isArray(value.practice) || value.practice.length > 30) throw new Error('Variants 0–20, practice 0–30 байна.');
-  for (const v of value.variants) { checkId(v.tutorialId); for (const field of ['description','descriptionEn']) if (typeof v[field] !== 'string' || !v[field].trim() || v[field].length > 1000) throw new Error('Variant-ийн хоёр хэлний тайлбар шаардлагатай.'); }
+  for (const v of value.variants) { checkId(v.tutorialId); for (const field of ['description','descriptionEn']) if (v[field]!==undefined&&(typeof v[field] !== 'string' || v[field].length > 1000)) throw new Error('Variant-ийн хоёр хэлний тайлбар шаардлагатай.'); }
   if (value.next) checkId(value.next);
   const seen = new Set();
-  for (const row of value.practice) { if (!index.has(row.key) || seen.has(row.key)) throw new Error('Practice key байхгүй эсвэл давхардсан: ' + row.key); seen.add(row.key); if (!stages.includes(row.stage) || typeof row.priority !== 'boolean') throw new Error('Practice stage / priority буруу.'); if (row.priority && (typeof row.reason !== 'string' || !row.reason.trim() || row.reason.length > 1000)) throw new Error('Priority сонголтын үндэслэл шаардлагатай.'); }
-  return {variants:value.variants.map(v => ({tutorialId:v.tutorialId,description:v.description.trim(),descriptionEn:v.descriptionEn.trim()})), next:value.next || null,
-    practice:value.practice.map(row => ({key:row.key,stage:row.stage,priority:row.priority,reason:row.priority ? row.reason.trim() : ''}))};
+  for (const row of value.practice) { if (!index.has(row.key) || seen.has(row.key)) throw new Error('Practice key байхгүй эсвэл давхардсан: ' + row.key); seen.add(row.key); if (!stages.includes(row.stage) || typeof row.priority !== 'boolean') throw new Error('Practice stage / priority буруу.'); if (row.reason!==undefined&&(typeof row.reason !== 'string' || row.reason.length > 1000)) throw new Error('Priority сонголтын үндэслэл шаардлагатай.'); }
+  return {variants:value.variants.map(v => ({tutorialId:v.tutorialId,description:(v.description||'').trim(),descriptionEn:(v.descriptionEn||'').trim()})), next:value.next || null,
+    practice:value.practice.map(row => ({key:row.key,stage:row.stage,priority:row.priority,reason:row.priority ? (row.reason||'').trim() : ''}))};
 }
 export function stableStringify(value) { if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']'; if (value && typeof value === 'object') return '{' + Object.keys(value).sort().map(key => JSON.stringify(key) + ':' + stableStringify(value[key])).join(',') + '}'; return JSON.stringify(value); }
 export async function bodyHash(value) { const result = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(stableStringify(value))); return [...new Uint8Array(result)].map(x => x.toString(16).padStart(2,'0')).join(''); }

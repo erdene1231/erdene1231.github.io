@@ -1,0 +1,12 @@
+{
+  "query": "WITH refs AS (SELECT x.value#>>'{}' AS key FROM public.tutorial_catalog t CROSS JOIN LATERAL jsonb_path_query(t.body,'$.**.problemKey') x(value) WHERE t.published), prereqs AS (SELECT x.value#>>'{}' AS id FROM public.tutorial_catalog t CROSS JOIN LATERAL jsonb_array_elements(coalesce(t.body->'prerequisiteIds','[]'::jsonb)) x(value) WHERE t.published) SELECT (SELECT count(*) FROM public.tutorial_catalog WHERE published) published_tutorials,(SELECT count(*) FROM refs) embedded_references,(SELECT count(*) FROM refs r WHERE NOT EXISTS(SELECT 1 FROM public.problem_catalog p WHERE NOT archived AND (p.number::text=r.key OR coalesce('cses|'||(regexp_match(p.body->>'url','^https://cses[.]fi/problemset/task/([0-9]+)/?([?#].*)?$'))[1],lower(btrim(p.body->>'source'))||'|'||lower(btrim(p.body->>'ref')))=r.key))) unresolved_embedded_references,(SELECT count(*) FROM prereqs r WHERE NOT EXISTS(SELECT 1 FROM public.tutorial_catalog t WHERE t.id=r.id AND published)) unresolved_prerequisites;",
+  "result": [
+    {
+      "published_tutorials": 56,
+      "embedded_references": 0,
+      "unresolved_embedded_references": 0,
+      "unresolved_prerequisites": 0
+    }
+  ],
+  "read_only": true
+}
