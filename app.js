@@ -1,5 +1,5 @@
-import {setupLearning} from './learning.js?v=25';
-import {setupTutorials} from './tutorials.js?v=25';
+import {setupLearning} from './learning.js?v=26';
+import {setupTutorials} from './tutorials.js?v=26';
 import {setupGroups} from './groups.js?v=20';
 let tutorialUI, learningUI=null;
 import {EMPTY, cleanEntry, parseBackup} from './progress.js';

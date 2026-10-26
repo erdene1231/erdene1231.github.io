@@ -1,9 +1,9 @@
-# Үргэлжлүүлэх — алхам 004
+# Үргэлжлүүлэх — алхам 005
 
-Branch: `codex/recovery-step-004-private-drafts`.
-Parent: `42d0261f6e90a2f969e7a886f4ff91def9fc086c`, GitHub дээр батлагдсан.
+Branch: `codex/recovery-step-005-draft-editor`.
+Parent: `55173c0ad6f5c8ac3010d156ae7e59d0c1efde3f`, GitHub дээр батлагдсан.
 Checkpoint SHA болон remote verification-ийг ZIP-ийн `MANIFEST.json`-оос авна.
-Эхлээд `start/SKILL.md`, `audit/STEP-004.md`, `audit/REQUIREMENTS-CURRENT.md` унш.
+Эхлээд `start/SKILL.md`, `audit/STEP-005.md`, `audit/REQUIREMENTS-CURRENT.md` унш.
 
 1. Production history: 021 prerequisite (`20261026045125`), 022 blocks
    (`20261026052253`). Сүүлийн live шалгалт 748/55, content hashes unchanged.
@@ -13,11 +13,11 @@ Checkpoint SHA болон remote verification-ийг ZIP-ийн `MANIFEST.json`-
    хадгалж, English байхгүй үед Монгол агуулгыг English болгон overwrite хийхгүй.
    Frontend deploy хийгдээгүй. `audit/STEP-003.md` дахь 11 файлыг хамтад нь deploy
    хийж live reader-ийг шалгасны дараа л шинэ төрлийн body нийтэлж болно.
-3. Дараагийн эхний дутуу ажил: recovery draft editor UI-г diff-ээр нэгтгэ.
-   023 backend-ийн owner A/B/admin/revoked/CAS/rebase тест PASS, production schema
-   verified. UI autosave/account switching/offline recovery-г browser-т шалга.
-   Publish controls-ийг 024 батлагдахаас өмнө идэвхжүүлэхгүй. 024 publication/lazy
-   reader, 025 Storage, 026 references, 027 batch тусдаа audit/test/apply gate-тэй.
+3. Private draft UI/autosave local/browser verified. Дараагийн ажил: revision
+   comparison + explicit rebase/recovery UI, rich block authoring selective merge.
+   _draftRelationsText raw private field-ийг publication adapter parse/validate
+   хийж public body-оос зайлуулна. 024 publication-аас өмнө publish controls
+   идэвхжүүлэхгүй. Media/history/import UI тусдаа шалгалттай.
 4. Current eager reader RPC, edition hash gates, live content IDs/revisions,
    progress хэвээр. `problems.json`, `tutorials.json`, curriculum болон editions-ийг
    recovery хувилбараар бүхлээр нь солихгүй. Admin content merge нь current
