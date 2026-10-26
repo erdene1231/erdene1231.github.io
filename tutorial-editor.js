@@ -1,8 +1,9 @@
-import {createDraftSession} from './tutorial-drafts.js?v=26';
-import {editableVersion,isLegacyEditableBlock} from './tutorial-editor-compat.js?v=26';
+import {mountDraftRecovery} from './tutorial-draft-recovery.js?v=27';
+import {createDraftSession} from './tutorial-drafts.js?v=27';
+import {editableVersion,isLegacyEditableBlock} from './tutorial-editor-compat.js?v=27';
 import {validateRelations} from './learning-model.js?v=23';
-import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=26';
-import {node,drawArticle,typeset} from './tutorials.js?v=26';
+import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=27';
+import {node,drawArticle,typeset} from './tutorials.js?v=27';
 const $=id=>document.getElementById(id);
 export function setupTutorialEditor(ctx){
  let allowed=false,token=0,draft=null,revision=0,lang='mn',busy=false,accountId;
@@ -16,8 +17,18 @@ export function setupTutorialEditor(ctx){
  $('tutorial-admin-save').textContent='Ноорог хадгалах';
  const backup=node('button','JSON backup татах');backup.type='button';
  let recovery=null;
- backup.onclick=()=>{const body=recovery?.body||session.snapshot()?.body;if(!body)return;const url=URL.createObjectURL(new Blob([JSON.stringify(body,null,2)],{type:'application/json'}));const a=node('a');a.href=url;a.download=body.id+'-draft.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
- form.prepend(node('p','Ноорог зөвхөн танд харагдана. Нийтлэгдсэн хичээлийг өөрчлөхгүй.'),backup);
+ function downloadBody(body){if(!body){message('Backup олдсонгүй.');return;}const url=URL.createObjectURL(new Blob([JSON.stringify(body,null,2)],{type:'application/json'}));const a=node('a');a.href=url;a.download=body.id+'-draft.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+ backup.onclick=()=>downloadBody(recovery?.body||session.snapshot()?.body);
+ const previousBackup=node('button','Харьцуулахаас өмнөх backup татах');previousBackup.type='button';previousBackup.onclick=()=>downloadBody(session.local(ctx.user()?.id,($('tutorial-admin-choose').value)+':before-rebase')?.body);
+ form.prepend(node('p','Ноорог зөвхөн танд харагдана. Нийтлэгдсэн хичээлийг өөрчлөхгүй.'),backup,previousBackup);
+ const comparisonRoot=node('section');comparisonRoot.id='tutorial-draft-comparison';form.after(comparisonRoot);
+ const comparison=mountDraftRecovery(comparisonRoot,{client:ctx.client,user:ctx.user,allowed:()=>allowed,session,lock:setBusy,message,
+  capture(){if(draft)session.changed(collect(false));},candidate:()=>recovery||session.snapshot(),
+  accept(result,actor,id){draft=structuredClone(result.body);recovery=null;revision=result.base_revision;
+   session.open({actor,id,body:draft,baseRevision:result.base_revision,draftRevision:result.revision});session.checkpoint();
+   lang='mn';$('tutorial-admin-language').value=lang;$('tutorial-admin-choose').value=id;$('tutorial-admin-level').value=draft.levelKey;$('tutorial-admin-order').value=draft.order;$('tutorial-admin-category').value=draft.category;paint();}
+ });
+ const compare=node('button','Хувилбаруудыг харьцуулах');compare.type='button';compare.id='tutorial-compare-drafts';compare.onclick=()=>void comparison.open();backup.after(compare);
  function changed(){if(!draft||busy||!allowed)return;try{session.changed(collect(false));recovery=null;}catch(e){message(e.message);}}
  form.addEventListener('input',changed);
  window.addEventListener('online',()=>void session.flush());
@@ -26,7 +37,7 @@ export function setupTutorialEditor(ctx){
  async function edit(id){
   if(session.dirty()){await session.flush();if(session.dirty()){message('Хадгалаагүй ноорог байна. JSON backup татаад хадгалалтыг дахин оролдоно уу.');$('tutorial-admin-choose').value=draft?.id||'';return;}}
   const row=ctx.topics().find(t=>t.id===id)||ctx.topics()[0];if(!row)return;
-  const turn=++token,uid=ctx.user()?.id;setBusy(true);
+  comparison.invalidate();const turn=++token,uid=ctx.user()?.id;setBusy(true);
   try{const {data,error}=await ctx.client().rpc('admin_tutorial_document',{p_id:row.id});if(error)throw error;if(turn!==token||uid!==ctx.user()?.id)return;
    const server=data.draft,base=server?.base_revision??data.current?.revision??row.revision??0,rev=server?.revision||0;
    const local=session.local(uid,row.id);recovery=local?.unsynced?local:null;
@@ -60,7 +71,7 @@ export function setupTutorialEditor(ctx){
  }
  function setBusy(value){busy=value;for(const el of $('tutorial-admin-form').querySelectorAll('input,textarea,select,button'))el.disabled=value;$('tutorial-admin-choose').disabled=value;$('tutorial-admin-reload').disabled=value;}
  async function refresh(){const old=$('tutorial-admin-choose').value;$('tutorial-admin-choose').replaceChildren();for(const t of ctx.topics()){const o=node('option',t.title+' · '+levelNames.mn[levels.indexOf(t.levelKey)]);o.value=t.id;$('tutorial-admin-choose').append(o);}if(allowed)await edit(old);$('tutorial-admin-save').disabled=!allowed||!ctx.ready();if(allowed&&!ctx.ready())message('Онлайн засварлахын тулд Supabase дээр 008-tutorials.sql шинэчлэлтийг ажиллуулна уу.');}
- async function accountChanged(force=false){const id=ctx.user()?.id||null;if(!force&&id===accountId)return;session.invalidate();recovery=null;accountId=id;const turn=++token;allowed=false;draft=null;$('tutorial-admin-form').hidden=true;$('tutorial-admin-save').disabled=true;if($('tutorial-preview').open)$('tutorial-preview').close();if(!ctx.client()||!ctx.user())return;
+ async function accountChanged(force=false){const id=ctx.user()?.id||null;if(!force&&id===accountId)return;comparison.invalidate();session.invalidate();recovery=null;accountId=id;const turn=++token;allowed=false;draft=null;$('tutorial-admin-form').hidden=true;$('tutorial-admin-save').disabled=true;if($('tutorial-preview').open)$('tutorial-preview').close();if(!ctx.client()||!ctx.user())return;
   try{const {data,error}=await ctx.client().rpc('is_admin');if(error)throw error;if(turn!==token)return;allowed=data===true;$('tutorial-admin-form').hidden=!allowed;if(allowed){setBusy(false);await refresh();}}catch{if(turn===token)message('Админ эрхийг шалгаж чадсангүй. Дахин нэвтэрч оролдоорой.');}
  }
  $('tutorial-admin-language').onchange=()=>{try{changed();collect(false);const nextLang=$('tutorial-admin-language').value;editableVersion(draft,nextLang);lang=nextLang;paint();message('');}catch(e){$('tutorial-admin-language').value=lang;message(e.message);}};

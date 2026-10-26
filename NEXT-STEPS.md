@@ -1,9 +1,9 @@
-# Үргэлжлүүлэх — алхам 005
+# Үргэлжлүүлэх — алхам 006
 
-Branch: `codex/recovery-step-005-draft-editor`.
-Parent: `55173c0ad6f5c8ac3010d156ae7e59d0c1efde3f`, GitHub дээр батлагдсан.
+Branch: `codex/recovery-step-006-draft-recovery`.
+Parent: `4ca1e851424e5c4f8c78c5e4c5e299abf19af966`, GitHub дээр батлагдсан.
 Checkpoint SHA болон remote verification-ийг ZIP-ийн `MANIFEST.json`-оос авна.
-Эхлээд `start/SKILL.md`, `audit/STEP-005.md`, `audit/REQUIREMENTS-CURRENT.md` унш.
+Эхлээд `start/SKILL.md`, `audit/STEP-006.md`, `audit/REQUIREMENTS-CURRENT.md` унш.
 
 1. Production history: 021 prerequisite (`20261026045125`), 022 blocks
    (`20261026052253`). Сүүлийн live шалгалт 748/55, content hashes unchanged.
@@ -11,13 +11,13 @@ Checkpoint SHA болон remote verification-ийг ZIP-ийн `MANIFEST.json`-
    **021/022/023-ийг replay хийхгүй.** Алхам 004 content hash/revision unchanged.
 2. Typed reader local/browser тесттэй. Legacy editor шинэ блокуудыг read-only
    хадгалж, English байхгүй үед Монгол агуулгыг English болгон overwrite хийхгүй.
-   Frontend deploy хийгдээгүй. `audit/STEP-003.md` дахь 11 файлыг хамтад нь deploy
+   Өмнөх 005 хүртэл main-д merge болсон; live deploy шалгаагүй. `audit/STEP-003.md` дахь 11 файлыг хамтад нь deploy
    хийж live reader-ийг шалгасны дараа л шинэ төрлийн body нийтэлж болно.
-3. Private draft UI/autosave local/browser verified. Дараагийн ажил: revision
-   comparison + explicit rebase/recovery UI, rich block authoring selective merge.
-   _draftRelationsText raw private field-ийг publication adapter parse/validate
-   хийж public body-оос зайлуулна. 024 publication-аас өмнө publish controls
-   идэвхжүүлэхгүй. Media/history/import UI тусдаа шалгалттай.
+3. Private draft UI/autosave + explicit comparison/rebase local/browser verified.
+   Дараагийн ажил: rich block authoring/section controls selective merge. Дараа нь
+   publication/media/reference gates. _draftRelationsText private field-ийг
+   publication adapter parse/validate хийж public body-оос зайлуулна.
+   Хамгийн сүүлийн before-rebase backup татах боломжтой; full history UI pending.
 4. Current eager reader RPC, edition hash gates, live content IDs/revisions,
    progress хэвээр. `problems.json`, `tutorials.json`, curriculum болон editions-ийг
    recovery хувилбараар бүхлээр нь солихгүй. Admin content merge нь current

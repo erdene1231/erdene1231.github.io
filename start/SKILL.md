@@ -63,7 +63,8 @@ Database writes require task authorization.
 Step 004 applied `023_tutorial_drafts` as version `20261026054052`.
 Private per-editor draft RPCs, optimistic revisions, explicit rebase and history
 are present. Published content hashes/revisions and counts stayed unchanged.
-The existing validator is unchanged. Draft authoring UI is still pending.
+The existing validator is unchanged. Steps 005–006 add locally tested draft autosave and explicit comparison/rebase UI.
+Rich authoring/publication/media and live admin E2E remain pending.
 Use `supabase/audit/production-after-023.json` as the latest verified metadata.
 
 ## Persistence boundary

@@ -1,5 +1,5 @@
 // Reader-only signed delivery. Upload/policies remain gated on migration 025.
-import {validMediaPath} from './tutorial-blocks.js?v=26';
+import {validMediaPath} from './tutorial-blocks.js?v=27';
 let generation=0;
 export const clearMediaCache=()=>{generation++;};
 export async function tutorialImageUrl(client,path,viewer='public',preview=false){
