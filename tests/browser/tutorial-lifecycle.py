@@ -30,7 +30,7 @@ try:
    page.goto(base+'/index.html', wait_until='networkidle')
    page.evaluate('''async()=>{
     window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-    const {setupTutorials}=await import('/tutorials.js?v=33');
+    const {setupTutorials}=await import('/tutorials.js?v=38');
     window.actor='00000000-0000-0000-0000-000000000001';window.admin=true;
     window.visibilityCalls=[];window.deleteCalls=[];window.saveCalls=[];window.publishCalls=[];window.docCalls=[];
     window.failSave=false;window.visibilityError='';window.deleteError='';window.delayVisibility=false;window.delayDelete=false;window.delayDocument=false;
@@ -74,7 +74,8 @@ try:
       };
       if(delayDelete)return new Promise(resolve=>window.finishDelete=()=>resolve(result()));return result();
      }
-     if(name==='admin_publish_tutorial_draft'){publishCalls.push(args);throw Error('Lifecycle must not publish private content');}
+     if(name==='admin_delete_tutorial_draft'){deleteCalls.push(structuredClone(args));const d=drafts.get(args.p_id);if(catalog.has(args.p_id)||(d?.revision||0)!==args.p_draft_revision)return {error:Error('REVISION_CONFLICT: changed')};drafts.delete(args.p_id);return {data:{id:args.p_id,deleted:true}};}
+     if(name==='admin_publish_tutorial_draft'){publishCalls.push(structuredClone(args));const c=catalog.get(args.p_id),d=drafts.get(args.p_id);if(c.revision!==args.p_base_revision||d.revision!==args.p_draft_revision)throw Error('Bad publish CAS');const result={body:structuredClone(args.p_body),revision:c.revision+1,published:true};catalog.set(args.p_id,result);drafts.delete(args.p_id);return {data:{...result,draft:null}};}
      throw Error('Unexpected RPC '+name);
     }};
     window.tutorialUI=setupTutorials({client:()=>client,user:()=>actor?{id:actor}:null,learning:()=>null});await tutorialUI.connected();
@@ -101,7 +102,7 @@ try:
    page.wait_for_selector('[data-lifecycle-confirm="'+mode+'"]')
   def hide(page):
    review(page,'hide');page.locator('[data-lifecycle-confirm="hide"]').click()
-   page.wait_for_function("document.querySelector('#tutorial-visibility-review').textContent==='Сэргээх'&&!document.querySelector('#tutorial-visibility-review').disabled")
+   page.wait_for_function("document.querySelector('#tutorial-visibility-review').hidden&&!document.querySelector('#tutorial-delete-review').hidden&&!document.querySelector('#tutorial-delete-review').disabled")
   def initial_cancel(page):
    assert page.locator('#tutorial-delete-review').is_hidden()
    review(page,'hide')
@@ -111,25 +112,20 @@ try:
    assert page.locator('#tutorial-admin-title').is_enabled()
    assert page.evaluate('catalog.get(lesson.id).published===true&&visibilityCalls.length===0')
   case('review_and_cancel_do_not_change_visibility', initial_cancel)
-  def hide_restore(page):
-   page.locator('#tutorial-admin-title').fill('Private unsent revision')
-   hide(page)
-   assert page.evaluate('visibilityCalls[0].p_revision')==7
+  def hide_publish(page):
+   page.locator('#tutorial-admin-title').fill('Private unsent revision');hide(page)
+   assert page.evaluate('catalog.get(lesson.id).published') is False
    assert page.evaluate('catalog.get(lesson.id).body.title')=='Public lifecycle lesson'
-   assert page.evaluate('drafts.get(lesson.id).body.title')=='Private unsent revision'
    assert page.locator('#tutorial-admin-title').input_value()=='Private unsent revision'
-   page.wait_for_function("document.querySelector('#tutorial-reader').hidden&&document.querySelectorAll('#tutorial-grid a[href=\"#tutorial/complexity\"]').length===0")
-   assert page.locator('#tutorial-admin-choose option[value="complexity"]').count()==1
-   assert 'түр устгасан' in page.locator('#tutorial-admin-choose option[value="complexity"]').text_content()
-   assert page.evaluate('JSON.parse(localStorage.getItem(cacheKey)).baseRevision')==8
-   review(page,'restore');page.locator('[data-lifecycle-confirm="restore"]').click()
-   page.wait_for_function("document.querySelector('#tutorial-visibility-review').textContent==='Түр устгах'")
-   page.wait_for_function("!document.querySelector('#tutorial-reader').hidden&&document.querySelector('#tutorial-title').textContent==='Public lifecycle lesson'")
-   assert page.evaluate('visibilityCalls[1].p_revision')==8
-   assert page.evaluate('catalog.get(lesson.id).revision')==9
-   assert page.locator('#tutorial-admin-title').input_value()=='Private unsent revision'
-   assert page.locator('#tutorial-delete-review').is_hidden()
-  case('temporary_removal_updates_reader_and_restore_preserves_private_draft', hide_restore)
+   assert page.locator('#tutorial-visibility-review').is_hidden()
+   assert page.locator('.tutorial-editor-savebar #tutorial-delete-review').is_visible()
+   assert 'ноорог' in page.locator('#tutorial-admin-choose option[value="complexity"]').text_content()
+   page.locator('#tutorial-publish-review').click();page.wait_for_selector('[data-publish-confirm]');assert page.evaluate('publishCalls.length')==0
+   page.locator('[data-publish-confirm]').click();page.wait_for_function("catalog.get(lesson.id).published&&document.querySelector('#tutorial-visibility-review').hidden===false")
+   assert page.evaluate('catalog.get(lesson.id).body.title')=='Private unsent revision'
+   assert page.evaluate('publishCalls.length')==1
+   assert page.evaluate('localStorage.getItem(progressKey)===originalProgress&&JSON.stringify(catalog.get(other.id))===originalOther')
+  case('temporary_remove_is_draft_then_explicit_publish_uses_current_draft',hide_publish,False)
   def failed_save(page):
    page.evaluate('window.failSave=true');page.locator('#tutorial-admin-title').fill('Keep offline edit')
    page.locator('#tutorial-visibility-review').click()
@@ -198,7 +194,7 @@ try:
    for width in [375,1200]:
     page.set_viewport_size({'width':width,'height':950})
     assert page.locator('#admin-tutorials').evaluate('e=>e.scrollWidth<=e.clientWidth')
-    page.locator('#tutorial-lifecycle').screenshot(path=str(ROOT/f'audit/browser/tutorial-deletion-{width}.png'))
+    page.locator('#tutorial-lifecycle').screenshot(path=str(ROOT/f'audit/browser/draft-actions-deletion-{width}.png'))
    assert page.evaluate('deleteCalls.length===0')
    page.locator('[data-lifecycle-confirm="delete"]').click()
    page.wait_for_function("document.querySelector('#tutorial-admin-id').value==='surviving-lesson'")
@@ -235,9 +231,12 @@ try:
    page.locator('#tutorial-new-form').get_by_role('button',name='Ноорог үүсгэх',exact=True).click()
    page.wait_for_function("document.querySelector('#tutorial-admin-id').value==='never-published'")
    assert page.locator('#tutorial-visibility-review').is_hidden()
-   assert page.locator('#tutorial-delete-review').is_hidden()
-   assert page.evaluate('deleteCalls.length===0&&visibilityCalls.length===0')
-  case('private_only_draft_does_not_offer_catalog_deletion', private_only)
+   assert page.locator('#tutorial-delete-review').is_visible()
+   review(page,'delete');page.locator('[data-delete-id]').fill('never-published');page.locator('[data-lifecycle-confirm="delete"]').click()
+   page.wait_for_function("!document.querySelector('#tutorial-admin-choose option[value=never-published]')")
+   assert page.evaluate('deleteCalls.at(-1).p_draft_revision')==0
+   assert page.evaluate('!drafts.has("never-published")&&visibilityCalls.length===0')
+  case('private_only_draft_is_permanently_removed_with_confirmation', private_only)
   def nonadmin(page):
    page.evaluate('async()=>{admin=false;await tutorialUI.connected();}')
    page.wait_for_function("document.querySelector('#tutorial-admin-form').hidden")
@@ -276,7 +275,7 @@ try:
    page.reload(wait_until='networkidle')
    page.evaluate('''async mode=>{
     window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-    const {setupTutorials}=await import('/tutorials.js?v=33');window.catalogRequests=0;
+    const {setupTutorials}=await import('/tutorials.js?v=38');window.catalogRequests=0;
     window.startClient=mode==='failed'?{rpc:async name=>{if(name==='get_tutorials'){catalogRequests++;return {error:Error('Offline catalog')};}throw Error('Unexpected RPC '+name);}}:null;
     window.startUI=setupTutorials({...(mode==='pending'?{requiresOnline:true}:{}),client:()=>startClient,user:()=>null,learning:()=>null});
     if(mode==='failed')await startUI.connected();
@@ -314,6 +313,6 @@ try:
   case('unconfigured_offline_demo_still_displays_seed_lessons', offline_demo, False)
   browser.close()
 finally:server.shutdown()
-(ROOT/'audit/TUTORIAL-LIFECYCLE-BROWSER.json').write_text(json.dumps({'checks':report,'failures':failures},indent=2)+'\n')
+(ROOT/'audit/DRAFT-ACTIONS-LIFECYCLE-BROWSER.json').write_text(json.dumps({'checks':report,'failures':failures},indent=2)+'\n')
 print(json.dumps({'checks':report,'failures':failures}))
 assert not failures, failures

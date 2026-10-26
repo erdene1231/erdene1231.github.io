@@ -1,17 +1,18 @@
-import {normalizeProblemReferences} from './learning-model.js?v=37';
-import {openProblemSelection} from './problem-selection-dialog.js?v=37';
-import {tutorialSlug} from './tutorial-slug.js?v=37';
-import {mountTutorialLifecycle} from './tutorial-lifecycle.js?v=37';
-import {createBlock} from './tutorial-blocks.js?v=37';
-import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=37';
-import {mountPublication} from './tutorial-publication.js?v=37';
-import {mountBlockEditor} from './tutorial-block-editor.js?v=37';
-import {mountDraftRecovery} from './tutorial-draft-recovery.js?v=37';
-import {createDraftSession} from './tutorial-drafts.js?v=37';
-import {editableVersion} from './tutorial-editor-compat.js?v=37';
-import {validateRelations} from './learning-model.js?v=37';
-import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=37';
-import {node,drawArticle,typeset} from './tutorials.js?v=37';
+import {mountBackupImport} from './tutorial-backup.js?v=38';
+import {normalizeProblemReferences} from './learning-model.js?v=38';
+import {openProblemSelection} from './problem-selection-dialog.js?v=38';
+import {tutorialSlug} from './tutorial-slug.js?v=38';
+import {mountTutorialLifecycle} from './tutorial-lifecycle.js?v=38';
+import {createBlock} from './tutorial-blocks.js?v=38';
+import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=38';
+import {mountPublication} from './tutorial-publication.js?v=38';
+import {mountBlockEditor} from './tutorial-block-editor.js?v=38';
+import {mountDraftRecovery} from './tutorial-draft-recovery.js?v=38';
+import {createDraftSession} from './tutorial-drafts.js?v=38';
+import {editableVersion} from './tutorial-editor-compat.js?v=38';
+import {validateRelations} from './learning-model.js?v=38';
+import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=38';
+import {node,drawArticle,typeset} from './tutorials.js?v=38';
 const $=id=>document.getElementById(id);
 export function setupTutorialEditor(ctx){
  let allowed=false,token=0,draft=null,revision=0,lang='mn',busy=false,accountId,blockEditor,workspace=[],catalogCurrent=null;
@@ -26,16 +27,15 @@ export function setupTutorialEditor(ctx){
  const selectPractice=node('button','Practice бодлого сонгох…');selectPractice.type='button';relationsBox.before(selectPractice);
  selectPractice.onclick=()=>{if(!draft||busy||!allowed)return;const actor=ctx.user()?.id,turn=token;let rel;try{rel=normalizeProblemReferences({learningRelations:JSON.parse(relationsInput.value)},availableProblems()).learningRelations;}catch{message('Сургалтын холбоосын JSON-ийг эхлээд засна уу.');return;}
  openProblemSelection({problems:availableProblems,progress:currentProgress,valid:()=>allowed&&!busy&&turn===token&&actor===ctx.user()?.id,maxSelected:30,selected:(rel.practice||[]).map(p=>p.key),onSelect:(rows,keys)=>{const old=new Map((rel.practice||[]).map(p=>[p.key,p]));rel.practice=keys.map(key=>old.get(key)||{key,stage:'Warm-up',priority:false});relationsInput.value=JSON.stringify(rel,null,2);changed();}});};
- const message=s=>$('tutorial-admin-message').textContent=s;
- const session=createDraftSession({client:ctx.client,user:ctx.user,message});
+ const message=s=>{$('tutorial-admin-message').textContent=s;if($('tutorial-save-feedback'))$('tutorial-save-feedback').textContent=s;queueMicrotask(updateSave);};
+ const session=createDraftSession({client:ctx.client,user:ctx.user,message,stateChanged:()=>queueMicrotask(updateSave)});
  const form=$('tutorial-admin-form');form.noValidate=true;
  $('tutorial-admin-save').textContent='Ноорог хадгалах';
- const backup=node('button','JSON backup татах');backup.type='button';
+ const backup=node('button','JSON export');backup.id='tutorial-backup-export';backup.type='button';
  let recovery=null;
  function downloadBody(body){if(!body){message('Backup олдсонгүй.');return;}const url=URL.createObjectURL(new Blob([JSON.stringify(body,null,2)],{type:'application/json'}));const a=node('a');a.href=url;a.download=body.id+'-draft.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
  backup.onclick=()=>downloadBody(recovery?.body||session.snapshot()?.body);
- const previousBackup=node('button','Харьцуулахаас өмнөх backup татах');previousBackup.type='button';previousBackup.onclick=()=>downloadBody(session.local(ctx.user()?.id,($('tutorial-admin-choose').value)+':before-rebase')?.body);
- form.prepend(node('p','Ноорог зөвхөн танд харагдана. Нийтлэгдсэн хичээлийг өөрчлөхгүй.'),backup,previousBackup);
+ form.prepend(node('p','Ноорог зөвхөн танд харагдана. Нийтлэгдсэн хичээлийг өөрчлөхгүй.'),backup);
  const recoveryNotice=node('section');recoveryNotice.className='recovery-notice';recoveryNotice.hidden=true;
  const resumeRecovery=node('button','Хувилбараа сонгоод засвараа үргэлжлүүлэх');resumeRecovery.type='button';resumeRecovery.dataset.recoveryResume='true';
  const recoveryBackup=node('button','Төхөөрөмжийн засварыг JSON backup татах');recoveryBackup.type='button';recoveryBackup.dataset.recoveryBackup='true';recoveryBackup.onclick=()=>downloadBody(recovery?.body);
@@ -48,14 +48,13 @@ export function setupTutorialEditor(ctx){
    lang='mn';$('tutorial-admin-language').value=lang;$('tutorial-admin-choose').value=id;$('tutorial-admin-level').value=draft.levelKey;$('tutorial-admin-order').value=draft.order;$('tutorial-admin-category').value=draft.category;paint();}
  });
  resumeRecovery.onclick=()=>void comparison.open();
- const compare=node('button','Хувилбаруудыг харьцуулах');compare.type='button';compare.id='tutorial-compare-drafts';compare.onclick=()=>void comparison.open();backup.after(compare);
  const publicationRoot=node('section');publicationRoot.id='tutorial-publication';form.after(publicationRoot);
  const publication=mountPublication(publicationRoot,{client:ctx.client,user:ctx.user,allowed:()=>allowed,session,lock:setBusy,message,topics:ctx.topics,problems:availableProblems,
   capture(){session.changed(collect(false));},published:row=>{rememberCatalog(row);ctx.saved?.(row);},
   accept(result,actor,id){draft=structuredClone(result.draft?.body||result.body);recovery=null;revision=result.revision;catalogCurrent={...result,published:true};
    session.open({actor,id,body:draft,baseRevision:result.revision,draftRevision:result.draft?.revision||0});session.checkpoint();paint();}
  });
- const publish=node('button','Нийтлэхээр шалгах');publish.type='button';publish.id='tutorial-publish-review';publish.onclick=()=>void publication.open();compare.after(publish);
+ const publish=node('button','Нийтлэх');publish.type='button';publish.id='tutorial-publish-review';publish.onclick=()=>void publication.open();backup.after(publish);
  const lifecycleRoot=node('section');lifecycleRoot.id='tutorial-lifecycle';lifecycleRoot.className='tutorial-lifecycle';form.before(lifecycleRoot);
  const lifecycle=mountTutorialLifecycle(lifecycleRoot,{client:ctx.client,user:ctx.user,allowed:()=>allowed,session,lock:setBusy,message,
   capture(){session.changed(collect(false));},updated:ctx.saved,
@@ -73,17 +72,22 @@ export function setupTutorialEditor(ctx){
   }
  });
  const lifecycleActions=node('div');lifecycleActions.className='tutorial-lifecycle-actions';
- const visibility=node('button','Түр устгах'),permanentDelete=node('button','Үүрд устгах');visibility.type=permanentDelete.type='button';
+ const visibility=node('button','Түр устгах'),permanentDelete=node('button','Ноорог устгах');visibility.type=permanentDelete.type='button';
  visibility.id='tutorial-visibility-review';visibility.onclick=()=>void lifecycle.open(catalogCurrent?.published===false?'restore':'hide');
  permanentDelete.id='tutorial-delete-review';permanentDelete.className='tutorial-danger';permanentDelete.onclick=()=>void lifecycle.open('delete');
  const lifecycleState=node('p');lifecycleState.id='tutorial-lifecycle-state';lifecycleActions.append(lifecycleState,visibility,permanentDelete);publish.after(lifecycleActions);
- const toolbar=node('div');toolbar.className='tutorial-editor-toolbar';toolbar.append(backup,previousBackup,compare,publish);form.prepend(toolbar);
+ const toolbar=node('div');toolbar.className='tutorial-editor-toolbar';toolbar.append(backup);form.prepend(toolbar);
+ const importInput=node('input');importInput.type='file';importInput.accept='.json,application/json';importInput.hidden=true;importInput.id='tutorial-backup-file';const importButton=node('button','JSON import');importButton.type='button';importButton.id='tutorial-backup-import';importButton.onclick=()=>importInput.click();toolbar.append(importButton,importInput);
+ const importRoot=node('section');importRoot.id='tutorial-import-review';form.before(importRoot);
+ const importer=mountBackupImport(importRoot,importInput,{client:ctx.client,user:ctx.user,allowed:()=>allowed,session,lock:setBusy,message,
+  accept(body,current){draft=normalizeProblemReferences(body,availableProblems());recovery=null;revision=current.baseRevision;lang='mn';session.open({...current,body:draft,unsynced:true});session.checkpoint();$('tutorial-admin-language').value=lang;$('tutorial-admin-level').value=draft.levelKey;$('tutorial-admin-order').value=draft.order;$('tutorial-admin-category').value=draft.category;paint();}
+ });
  const advanced=node('details');advanced.className='tutorial-editor-settings';advanced.append(node('summary','ID, хайлтын түлхүүр үг ба холбоотой хичээлүүд'));for(const id of ['tutorial-admin-id','tutorial-admin-aliases','tutorial-admin-related'])advanced.append($(id).closest('label'));toolbar.after(advanced);
  $('tutorial-admin-sections').before(node('h3','Хичээлийн агуулга'));$('tutorial-admin-sections').after(lifecycleActions);
- $('tutorial-admin-preview').parentElement.classList.add('tutorial-editor-savebar');
+ const savebar=$('tutorial-admin-preview').parentElement;savebar.classList.add('tutorial-editor-savebar');savebar.append(publish,visibility,permanentDelete);const saveFeedback=node('span');saveFeedback.id='tutorial-save-feedback';savebar.append(saveFeedback);
  function rememberCatalog(row){catalogCurrent=row;workspace=workspace.filter(t=>t.id!==row.body.id);workspace.push({id:row.body.id,title:row.body.title,revision:row.revision,published:row.published});void refresh();}
  function changed(){if(!draft||busy||!allowed)return;try{session.changed(collect(false));recovery=null;}catch(e){message(e.message);}}
- form.addEventListener('input',event=>{if(!event.target.closest('#tutorial-admin-sections'))changed();});
+ form.addEventListener('input',event=>{if(event.target!==importInput&&!event.target.closest('#tutorial-admin-sections'))changed();});
  window.addEventListener('online',()=>void session.flush());
  window.addEventListener('beforeunload',e=>{if(session.dirty()){e.preventDefault();e.returnValue='';}});
 
@@ -92,11 +96,11 @@ export function setupTutorialEditor(ctx){
   if(session.dirty()){await session.flush();if(session.dirty()){message('Хадгалаагүй ноорог байна. JSON backup татаад хадгалалтыг дахин оролдоно уу.');$('tutorial-admin-choose').value=draft?.id||'';return;}}
   if(!allowed||ctx.user()?.id!==actor)return;
   const row=choices().find(t=>t.id===id)||(!id?choices()[0]:null);if(!row){message('Хичээл сонгоно уу.');return;}
-  publication.invalidate();comparison.invalidate();lifecycle.invalidate();const turn=++token,uid=ctx.user()?.id;clearDocument();setBusy(true);
+  publication.invalidate();comparison.invalidate();lifecycle.invalidate();importer.invalidate();const turn=++token,uid=ctx.user()?.id;clearDocument();setBusy(true);
   try{const {data,error}=await ctx.client().rpc('admin_tutorial_document',{p_id:row.id});if(error)throw error;if(turn!==token||uid!==ctx.user()?.id)return;
    if(data.deleted)throw Error('Энэ хичээл үүрд устгагдсан. Өөр хичээл сонгоно уу.');catalogCurrent=data.current;const server=data.draft,base=server?.base_revision??data.current?.revision??row.revision??0,rev=server?.revision||0;
    const local=session.local(uid,row.id);recovery=local?.unsynced?local:null;
-   if(recovery&&(local.baseRevision!==base||local.draftRevision!==rev)){session.invalidate({saveLocal:false});message('Local ба онлайн ноорог зөрсөн. Хувилбаруудаа харьцуулж засвараа сэргээнэ үү.');queueMicrotask(()=>{if(turn===token&&recovery)void comparison.open();});return;}
+   if((recovery&&(local.baseRevision!==base||local.draftRevision!==rev))||(server&&data.current&&base!==data.current.revision)){recovery??=local||{actor:uid,id:row.id,body:server.body,baseRevision:base,draftRevision:rev};session.invalidate({saveLocal:false});message('Local ба онлайн ноорог зөрсөн. Хувилбаруудаа харьцуулж засвараа сэргээнэ үү.');queueMicrotask(()=>{if(turn===token&&recovery)void comparison.open();});return;}
    if(!server?.body&&!data.current?.body)throw Error('Хичээлийн онлайн агуулга олдсонгүй. Дахин ачаалж оролдоно уу.');
    draft=structuredClone(recovery?.body||server?.body||data.current?.body);delete draft.searchText;delete draft.revision;revision=base;
    session.open({actor:uid,id:row.id,body:draft,baseRevision:base,draftRevision:rev,unsynced:!!recovery});
@@ -125,20 +129,20 @@ export function setupTutorialEditor(ctx){
    else el.disabled=!editable;
   }
   relationsInput.disabled=!editable;
-  previousBackup.hidden=!session.local(ctx.user()?.id,($('tutorial-admin-choose').value)+':before-rebase');
-  backup.disabled=previousBackup.disabled=compare.disabled=busy||!allowed||!(recovery||session.snapshot());
+  backup.disabled=busy||!allowed||!(recovery||session.snapshot());
   publish.disabled=!editable;
   const existing=!!draft&&catalogCurrent?.body?.id===draft.id;
-  visibility.hidden=!existing;visibility.disabled=!editable;visibility.textContent=catalogCurrent?.published===false?'Сэргээх':'Түр устгах';
-  permanentDelete.hidden=!existing||catalogCurrent.published!==false;permanentDelete.disabled=!editable;
-  lifecycleState.textContent=!existing?'Шинэ хувийн ноорог — хараахан нийтлэгдээгүй.':catalogCurrent.published===false?'Түр устгасан хичээл. Сэргээх эсвэл үүрд устгах боломжтой.':'Нийтлэгдсэн хичээл. Үүрд устгахын өмнө түр устгана.';
-  $('tutorial-admin-save').disabled=!editable||!ctx.ready();
+  visibility.hidden=!existing||catalogCurrent?.published!==true;visibility.disabled=!editable;visibility.textContent='Түр устгах';
+  permanentDelete.hidden=!draft||catalogCurrent?.published===true;permanentDelete.disabled=!editable;
+  lifecycleState.textContent=!existing?'Шинэ хувийн ноорог — хараахан нийтлэгдээгүй.':catalogCurrent.published===false?'Ноорог төлөв. Нийтлэх эсвэл нооргийг бүрмөсөн устгах боломжтой.':'Нийтлэгдсэн хичээл. Үүрд устгахын өмнө түр устгана.';
+  updateSave();
   $('tutorial-admin-add-en').disabled=!editable||!!draft?.translations?.en;
   blockEditor?.refreshControls();
   $('tutorial-admin-choose').disabled=busy||!allowed;$('tutorial-admin-reload').disabled=busy||!allowed;$('tutorial-admin-new').disabled=busy||!allowed;for(const el of $('tutorial-new-form').querySelectorAll('input,button'))el.disabled=busy||!allowed;
  }
+ function updateSave(){const saved=!!session.snapshot()?.draftRevision&&!session.dirty(),saving=session.saving?.();const button=$('tutorial-admin-save');button.textContent=saving?'Хадгалж байна…':saved?'Хадгалагдсан':'Ноорог хадгалах';button.disabled=busy||!allowed||!draft||!ctx.ready()||saved||saving;}
  function choices(){const rows=new Map(ctx.topics().map(t=>[t.id,t]));for(const t of workspace)rows.set(t.id,{...rows.get(t.id),...t});
-  if(draft)rows.set(draft.id,{...rows.get(draft.id),...draft});if(recovery)rows.set(recovery.id,{...rows.get(recovery.id),...recovery.body});return [...rows.values()].filter(t=>!removedIds.has(t.id));
+  if(draft)rows.set(draft.id,{...rows.get(draft.id),...draft,published:catalogCurrent?.published===true});if(recovery)rows.set(recovery.id,{...rows.get(recovery.id),...recovery.body});return [...rows.values()].filter(t=>!removedIds.has(t.id));
  }
  async function loadWorkspace(){const actor=ctx.user()?.id,turn=token;try{const {data,error}=await ctx.client().rpc('admin_tutorial_workspace');if(error)throw error;
    if(turn!==token||actor!==ctx.user()?.id||!allowed)return;
@@ -146,7 +150,7 @@ export function setupTutorialEditor(ctx){
   }catch{/* Existing public choices remain usable when workspace metadata cannot load. */}
  }
  async function refresh(){const old=draft?.id||recovery?.id||$('tutorial-admin-choose').value;$('tutorial-admin-choose').replaceChildren();
-  for(const t of choices()){const o=node('option',(t.title||t.id)+' · '+t.id+(t.published===false?' · түр устгасан':''));o.value=t.id;$('tutorial-admin-choose').append(o);}
+  for(const t of choices()){const o=node('option',(t.title||t.id)+' · '+t.id+(t.published===false?' · ноорог':''));o.value=t.id;$('tutorial-admin-choose').append(o);}
   if(choices().some(t=>t.id===old))$('tutorial-admin-choose').value=old;
   if(allowed&&!draft&&!recovery)await edit(old);else setBusy(busy);
  }
@@ -161,9 +165,9 @@ export function setupTutorialEditor(ctx){
   try{const {data,error}=await ctx.client().rpc('admin_tutorial_document',{p_id:id});if(error)throw error;if(turn!==token||actor!==ctx.user()?.id)return;
    if(data?.deleted)throw Error('Энэ ID-тай хичээл үүрд устгагдсан. Шинэ ID сонгоно уу.');
    if(data?.current||data?.draft)throw Error('Энэ ID аль хэдийн ашиглагдсан байна. Өөр ID сонгоно уу.');
-   publication.invalidate();comparison.invalidate();lifecycle.invalidate();
+   publication.invalidate();comparison.invalidate();lifecycle.invalidate();importer.invalidate();
    draft={id,title,summary:'',prerequisites:'Байхгүй',aliases:id,category:'',levelKey:'beginner',level:levelNames.mn[0],order:Math.min(1000,Math.max(0,...ctx.topics().map(t=>t.order))+1),related:[],prerequisiteIds:[],sections:[{key:crypto.randomUUID(),title:'Шинэ хэсэг',blocks:[createBlock('rich')]}]};
-   recovery=null;catalogCurrent=null;revision=0;lang='mn';$('tutorial-admin-language').value=lang;session.open({actor,id,body:draft,baseRevision:0,draftRevision:0});
+   recovery=null;removedIds.delete(id);catalogCurrent=null;revision=0;lang='mn';$('tutorial-admin-language').value=lang;session.open({actor,id,body:draft,baseRevision:0,draftRevision:0});
    $('tutorial-admin-level').value=draft.levelKey;$('tutorial-admin-order').value=draft.order;$('tutorial-admin-category').value=draft.category;
    paint();await refresh();if(turn!==token||actor!==ctx.user()?.id)return;session.changed(collect(false));$('tutorial-new-form').hidden=true;$('tutorial-new-id').value='';message('Шинэ хувийн ноорог үүслээ. Гарчиг, тайлбар, бүлэг болон агуулгаа бөглөөрэй.');
   }catch(e){if(turn===token)message(e.message);}finally{if(turn===token){setBusy(false);$('tutorial-admin-title').focus();}}
@@ -172,13 +176,13 @@ export function setupTutorialEditor(ctx){
   draft.translations??={};draft.translations.en={title:'',summary:'',prerequisites:'',sections:[{key:crypto.randomUUID(),title:'New section',blocks:[createBlock('rich')]}]};
   lang='en';$('tutorial-admin-language').value=lang;paint();changed();setBusy(false);
  };
- async function accountChanged(force=false){const id=ctx.user()?.id||null;if(!force&&id===accountId)return;blockEditor?.destroy();publication.invalidate();comparison.invalidate();lifecycle.invalidate();session.invalidate();recovery=null;recoveryNotice.hidden=true;workspace=[];$('tutorial-new-form').hidden=true;accountId=id;const turn=++token;allowed=false;clearDocument();$('tutorial-admin-choose').replaceChildren();setBusy(false);$('tutorial-admin-form').hidden=true;$('tutorial-admin-save').disabled=true;if($('tutorial-preview').open)$('tutorial-preview').close();$('tutorial-preview-content').replaceChildren();if(!ctx.client()||!ctx.user())return;
+ async function accountChanged(force=false){const id=ctx.user()?.id||null;if(!force&&id===accountId)return;blockEditor?.destroy();publication.invalidate();comparison.invalidate();lifecycle.invalidate();importer.invalidate();session.invalidate();recovery=null;recoveryNotice.hidden=true;workspace=[];$('tutorial-new-form').hidden=true;accountId=id;const turn=++token;allowed=false;clearDocument();$('tutorial-admin-choose').replaceChildren();setBusy(false);$('tutorial-admin-form').hidden=true;$('tutorial-admin-save').disabled=true;if($('tutorial-preview').open)$('tutorial-preview').close();$('tutorial-preview-content').replaceChildren();if(!ctx.client()||!ctx.user())return;
   try{const {data,error}=await ctx.client().rpc('is_admin');if(error)throw error;if(turn!==token)return;allowed=data===true;$('tutorial-admin-form').hidden=!allowed;if(allowed){setBusy(false);await loadWorkspace();if(turn!==token)return;await refresh();}}catch{if(turn===token)message('Админ эрхийг шалгаж чадсангүй. Дахин нэвтэрч оролдоорой.');}
  }
  $('tutorial-admin-language').onchange=()=>{try{changed();collect(false);const nextLang=$('tutorial-admin-language').value;editableVersion(draft,nextLang);lang=nextLang;paint();message('');}catch(e){$('tutorial-admin-language').value=lang;message(e.message);}};
  $('tutorial-admin-choose').onchange=()=>{edit($('tutorial-admin-choose').value);};
  $('tutorial-admin-reload').onclick=async()=>{if(!allowed||busy)return;await loadWorkspace();await edit($('tutorial-admin-choose').value);};
  $('tutorial-admin-preview').onclick=()=>{try{if(!allowed||busy||!draft)return;collect(false);const snapshot=structuredClone(draft),selectedLang=lang,turn=token,actor=ctx.user()?.id;$('tutorial-preview-content').replaceChildren();$('tutorial-preview').showModal();void typeset([$ ('tutorial-preview-content')],()=>{if(turn!==token||!allowed||actor!==ctx.user()?.id||!$('tutorial-preview').open)return false;const target=$('tutorial-preview-content'),v=view(snapshot,selectedLang);drawArticle(snapshot,target,selectedLang,{client:ctx.client(),viewerId:ctx.user()?.id||'public',adminPreview:true,draftPreview:true,learning:ctx.learning()});target.prepend(node('p','Хувийн нооргийн урьдчилан харах — дутуу талбаруудыг нийтлэхийн өмнө бөглөнө.'),node('h2',v.title||'Гарчиггүй хичээл'),node('p',v.summary||'Тайлбар хараахан оруулаагүй.'));}).catch(e=>message(e.message));}catch(e){message(e.message);}};
- $('tutorial-admin-form').onsubmit=async event=>{event.preventDefault();if(!allowed||busy||!draft)return;changed();await session.flush();};
+ $('tutorial-admin-form').onsubmit=async event=>{event.preventDefault();if(!allowed||busy||!draft)return;if(!session.dirty()&&!session.snapshot()?.draftRevision)session.changed(collect(false));updateSave();await session.flush();updateSave();};
  refresh();return {refresh,accountChanged};
 }

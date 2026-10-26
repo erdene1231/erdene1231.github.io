@@ -1,5 +1,5 @@
-import {filterProblems,getTags,ratingLabel} from './catalog.js?v=37';
-import {problemReferenceKey as canonicalKey,problemIndex} from './learning-model.js?v=37';
+import {filterProblems,getTags,ratingLabel} from './catalog.js?v=38';
+import {problemReferenceKey as canonicalKey,problemIndex} from './learning-model.js?v=38';
 const el=(tag,text)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;return n;};
 export function openProblemSelection({problems,progress=()=>({}),selected=[],valid=()=>true,multiple=true,includeArchived=false,maxSelected=Infinity,onSelect}){
  const dialog=el('dialog'),heading=el('h2','Бодлого сонгох'),filters=el('div'),status=el('p');
@@ -23,8 +23,8 @@ export function openProblemSelection({problems,progress=()=>({}),selected=[],val
  const apply=button('Сонголтыг хадгалах',()=>{if((!multiple&&!chosen.size)||chosen.size>maxSelected)return;if(!valid()){close();return;}onSelect(pool.filter(p=>chosen.has(canonicalKey(p))),[...chosen]);close();});apply.dataset.selectionApply='true';
  const cancel=button('Болих',close),footer=el('div');footer.className='problem-selection-footer';footer.append(apply,cancel);
  left.append(leftTitle,selectAll,list);right.append(rightTitle,el('p','Буцаах бодлогуудыг тэмдэглээд “Сонгосныг болиулах” дарна уу.'),markAll,remove,clear,picked);columns.append(left,right);
- const description=(p,key)=>p?(p.number!=null?'#'+p.number+' · ':'')+p.title+' · '+p.source+' '+p.ref+' · '+ratingLabel(p):'Одоогоор боломжгүй: '+key;
- function row(p,key,removal){const wrap=el('label'),check=el('input');check.type='checkbox';check.value=key;check.checked=removal?marked.has(key):false;check.setAttribute('aria-label',(removal?'Буцаахаар тэмдэглэх: ':'Сонгох: ')+description(p,key));check.onchange=()=>{if(!valid()){close();return;}if(removal){if(check.checked)marked.add(key);else marked.delete(key);}else{if(!multiple){chosen.clear();marked.clear();}chosen.add(key);}render();};wrap.append(check,el('span',description(p,key)));return wrap;}
+ const description=(p,key)=>p?(p.number!=null?'#'+p.number+' · ':'')+(p.priority?'★ Priority · ':'')+p.title+' · '+p.source+' '+p.ref+' · '+ratingLabel(p):'Одоогоор боломжгүй: '+key;
+ function row(p,key,removal){const wrap=el('label'),check=el('input');wrap.dataset.priority=String(!!p?.priority);check.type='checkbox';check.value=key;check.checked=removal?marked.has(key):false;check.setAttribute('aria-label',(removal?'Буцаахаар тэмдэглэх: ':'Сонгох: ')+description(p,key));check.onchange=()=>{if(!valid()){close();return;}if(removal){if(check.checked)marked.add(key);else marked.delete(key);}else{if(!multiple){chosen.clear();marked.clear();}chosen.add(key);}render();};wrap.append(check,el('span',description(p,key)));return wrap;}
  function render(){if(!valid()){close();return;}rows=filterProblems(pool,progress()||{},Object.fromEntries(Object.entries(fields).map(([k,v])=>[k,v.value])));const available=rows.filter(p=>!chosen.has(canonicalKey(p)));list.replaceChildren();picked.replaceChildren();leftTitle.textContent='Сонгогдоогүй · '+available.length;rightTitle.textContent='Сонгогдсон · '+chosen.size;
   for(const p of available)list.append(row(p,canonicalKey(p),false));if(!available.length)list.append(el('p','Шүүлтүүрт тохирох сонгогдоогүй бодлого алга.'));
   for(const key of chosen)picked.append(row(byKey.get(key),key,true));if(!chosen.size)picked.append(el('p','Зүүн талаас бодлого сонгоорой.'));

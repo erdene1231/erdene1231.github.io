@@ -1,3 +1,20 @@
+# Latest — draft actions / backup import / priority / v38
+
+Branch codex/draft-editor-actions; read audit/DRAFT-ACTIONS.md.
+Toolbar JSON export/import; manual compare/before-backup buttons removed. Bottom
+Save/Publish/Temporary remove/Delete draft actions reflect state. Saved is disabled
+until next edit; failures remain retryable. Temporary removal is a private draft;
+explicit Publish uses current draft. Exact-ID confirmed deletion handles both
+archived catalog lessons(028) and owner-only never-published drafts(new030).
+030_delete_private_tutorial_draft is already applied20261026110831. Latest actual
+metadata: production-after-030.json.748/56 and catalog hashes/counts unchanged by
+installation. No real deletion/publish was run. Do not replay021-025/028/029/030.
+Automatic conflict recovery remains. JSON import only restores the matching current
+ID into a private draft with explicit confirmation; batch import is still pending027.
+Priority labels appear in both picker panes. Review/merge and deploy completev38;
+live authenticated UI remains unverified. Tests/audit/checklist are committed.
+Exact remote SHA, PR, bundle and checksum are in the downloadable ZIP.
+
 # Latest — catalog visibility and two-pane selection / v37
 
 Branch codex/catalog-selection-panels. Read audit/CATALOG-SELECTION-UI.md.
