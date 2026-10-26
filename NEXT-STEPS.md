@@ -1,3 +1,15 @@
+# Latest — numeric problem references / PR14 / v36
+
+Read audit/NUMERIC-REFERENCES.md. Exact #1 search works in main/modal. Rating-band
+selectors removed, min/max retained. Newly authored keys use problem numbers;
+historical source aliases and published bodies remain compatible. IDs/progress
+are not renumbered. 029_numeric_problem_references is already applied as
+20261026100333. Latest metadata: production-after-029.json. No content DML.
+Do not replay021-025/028/029. Pending026 assumes legacy keys: adapt after fresh
+schema audit before applying;027 remains pending. Review/merge PR14 and deployv36.
+Tests: npm test, tests/browser/problem-dialog.py and editor-regressions.py.
+GitHub remote SHA/ZIP checksums and continuation notes are in the latest ZIP.
+
 # Latest — named IDs, selection dialogs, preview and editor UI
 
 Branch `codex/problem-selection-dialog`, complete frontend v34.

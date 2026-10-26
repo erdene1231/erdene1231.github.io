@@ -26,7 +26,7 @@ export function validateExtendedBlock(b){
  if(b.type==='quote'||b.type==='callout'){if('content' in b)validateInline(b.content);else text(b.text);if(b.title!==undefined&&(typeof b.title!=='string'||b.title.length>200))throw new Error('Callout гарчиг хэт урт.');if(b.type==='callout'&&!TONES.includes(b.tone))throw new Error('Callout төрөл буруу.');return true;}
  if(b.type==='checklist'){if(!Array.isArray(b.items)||!b.items.length||b.items.length>100)throw new Error('Checklist 1–100 мөртэй байна.');for(const item of b.items){text(item.text,8000);if(typeof item.checked!=='boolean')throw new Error('Checklist төлөв буруу.');}return true;}
  if(b.type==='image'){if(!validMediaPath(b.path))throw new Error('Tutorial Storage зураг сонгоно уу.');text(b.alt,500);if(b.caption!==undefined&&String(b.caption).length>2000)throw new Error('Caption хэт урт.');if(!['left','center','right'].includes(b.align)||!Number.isInteger(b.width)||b.width<20||b.width>100)throw new Error('Зургийн байрлал/өргөн буруу.');return true;}
- if(b.type==='problem'){text(b.problemKey,200);if(!/^[a-z0-9 ._-]+\|[a-z0-9_\/-]+$/i.test(b.problemKey))throw new Error('Problem key буруу.');return true;}
+ if(b.type==='problem'){text(b.problemKey,200);if(!/^(?:[1-9][0-9]{0,15}|[a-z0-9 ._-]+\|[a-z0-9_\/-]+)$/i.test(b.problemKey))throw new Error('Problem key буруу.');return true;}
  if(b.type==='tutorial'){if(!/^[a-z0-9-]{1,80}$/.test(b.tutorialId))throw new Error('Tutorial ID буруу.');if(b.label!==undefined)text(b.label,300);return true;}
  if(b.type==='diagram'){
   if(!['array','graph','tree','dp'].includes(b.kind))throw new Error('Diagram төрөл буруу.');if(b.caption!==undefined&&String(b.caption).length>2000)throw new Error('Diagram тайлбар хэт урт.');
@@ -50,7 +50,7 @@ export function createBlock(type){
  if(type==='quote')return {...common,text:'Тайлбар эсвэл эшлэл.'};
  if(type==='image')return {...common,path:'',alt:'',caption:'',align:'center',width:100};
  if(type==='diagram')return {...common,kind:'array',rows:[['$2$','$4$','$7$']],highlights:['0:1'],caption:'Array-ийн төлөв'};
- if(type==='problem')return {...common,problemKey:'cses|1620'};
+ if(type==='problem')return {...common,problemKey:''};
  if(type==='tutorial')return {...common,tutorialId:'binary-search',label:'Binary search'};
  if(type==='divider')return common;
  return {...common,text:'Шинэ тайлбар'};

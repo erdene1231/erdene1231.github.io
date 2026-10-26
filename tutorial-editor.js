@@ -1,16 +1,17 @@
-import {openProblemSelection} from './problem-selection-dialog.js?v=35';
-import {tutorialSlug} from './tutorial-slug.js?v=35';
-import {mountTutorialLifecycle} from './tutorial-lifecycle.js?v=35';
-import {createBlock} from './tutorial-blocks.js?v=35';
-import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=35';
-import {mountPublication} from './tutorial-publication.js?v=35';
-import {mountBlockEditor} from './tutorial-block-editor.js?v=35';
-import {mountDraftRecovery} from './tutorial-draft-recovery.js?v=35';
-import {createDraftSession} from './tutorial-drafts.js?v=35';
-import {editableVersion} from './tutorial-editor-compat.js?v=35';
-import {validateRelations} from './learning-model.js?v=23';
-import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=35';
-import {node,drawArticle,typeset} from './tutorials.js?v=35';
+import {normalizeProblemReferences} from './learning-model.js?v=36';
+import {openProblemSelection} from './problem-selection-dialog.js?v=36';
+import {tutorialSlug} from './tutorial-slug.js?v=36';
+import {mountTutorialLifecycle} from './tutorial-lifecycle.js?v=36';
+import {createBlock} from './tutorial-blocks.js?v=36';
+import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=36';
+import {mountPublication} from './tutorial-publication.js?v=36';
+import {mountBlockEditor} from './tutorial-block-editor.js?v=36';
+import {mountDraftRecovery} from './tutorial-draft-recovery.js?v=36';
+import {createDraftSession} from './tutorial-drafts.js?v=36';
+import {editableVersion} from './tutorial-editor-compat.js?v=36';
+import {validateRelations} from './learning-model.js?v=36';
+import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=36';
+import {node,drawArticle,typeset} from './tutorials.js?v=36';
 const $=id=>document.getElementById(id);
 export function setupTutorialEditor(ctx){
  let allowed=false,token=0,draft=null,revision=0,lang='mn',busy=false,accountId,blockEditor,workspace=[],catalogCurrent=null;
@@ -21,9 +22,9 @@ export function setupTutorialEditor(ctx){
  $('tutorial-admin-form').hidden=true;
  const relationsBox=node('details',undefined,'tutorial-edit-section'),relationsLabel=node('label','Сургалтын холбоос ба practice — JSON'),relationsInput=node('textarea');
  relationsInput.id='tutorial-admin-relations';relationsInput.rows=16;relationsInput.maxLength=30000;relationsInput.spellcheck=false;
- relationsLabel.append(relationsInput);relationsBox.append(node('summary','Variants, дараагийн хичээл, priority practice засах'),node('p','tutorialId нь нийтлэгдсэн хичээлийн ID; key нь source|ref (жишээ cses|1620, codeforces|1201/c). Priority бүрд сурагчдад харагдахгүй reason бичнэ. Stage: Warm-up, Standard, Observation, Application, Challenge, Olympiad extension.'),relationsLabel);$('tutorial-admin-sections').before(relationsBox);
+ relationsLabel.append(relationsInput);relationsBox.append(node('summary','Variants, дараагийн хичээл, priority practice засах'),node('p','tutorialId нь нийтлэгдсэн хичээлийн ID; key нь бодлогын дугаар (жишээ 1). Priority бүрд сурагчдад харагдахгүй reason бичнэ. Stage: Warm-up, Standard, Observation, Application, Challenge, Olympiad extension.'),relationsLabel);$('tutorial-admin-sections').before(relationsBox);
  const selectPractice=node('button','Practice бодлого сонгох…');selectPractice.type='button';relationsBox.before(selectPractice);
- selectPractice.onclick=()=>{if(!draft||busy||!allowed)return;const actor=ctx.user()?.id,turn=token;let rel;try{rel=JSON.parse(relationsInput.value);}catch{message('Сургалтын холбоосын JSON-ийг эхлээд засна уу.');return;}
+ selectPractice.onclick=()=>{if(!draft||busy||!allowed)return;const actor=ctx.user()?.id,turn=token;let rel;try{rel=normalizeProblemReferences({learningRelations:JSON.parse(relationsInput.value)},availableProblems()).learningRelations;}catch{message('Сургалтын холбоосын JSON-ийг эхлээд засна уу.');return;}
  openProblemSelection({problems:availableProblems,progress:currentProgress,valid:()=>allowed&&!busy&&turn===token&&actor===ctx.user()?.id,maxSelected:30,selected:(rel.practice||[]).map(p=>p.key),onSelect:(rows,keys)=>{const old=new Map((rel.practice||[]).map(p=>[p.key,p]));rel.practice=keys.map(key=>old.get(key)||{key,stage:'Warm-up',priority:false});relationsInput.value=JSON.stringify(rel,null,2);changed();}});};
  const message=s=>$('tutorial-admin-message').textContent=s;
  const session=createDraftSession({client:ctx.client,user:ctx.user,message});
@@ -102,7 +103,7 @@ export function setupTutorialEditor(ctx){
    lang='mn';$('tutorial-admin-language').value=lang;$('tutorial-admin-choose').value=row.id;$('tutorial-admin-level').value=draft.levelKey;$('tutorial-admin-order').value=draft.order;$('tutorial-admin-category').value=draft.category;paint();message(recovery?'Local ноорог сэргээгдлээ.':server?'Онлайн ноорог ачааллаа.':'Нийтлэгдсэн хувилбараас ноорог үүсгэнэ.');
   }catch(e){if(turn===token){clearDocument();message(e.message);}}finally{if(turn===token)setBusy(false);}
  }
- function paint(){if(!draft)return;$('tutorial-admin-id').value=draft.id;$('tutorial-admin-aliases').value=draft.aliases||'';$('tutorial-admin-related').value=(draft.related||[]).join(', ');const v=editableVersion(draft,lang);$('tutorial-admin-title').value=v.title;$('tutorial-admin-summary').value=v.summary;$('tutorial-admin-prerequisites').value=v.prerequisites;$('tutorial-admin-prerequisite-ids').value=(draft.prerequisiteIds||[]).join(', ');const rel=draft.learningRelations||ctx.learning()?.relationsFor(draft.id);relationsInput.disabled=busy||!allowed;relationsInput.value=draft._draftRelationsText??JSON.stringify(rel?{variants:rel.variants,next:rel.next,practice:rel.practice}:{variants:[],next:null,practice:[]},null,2);$('tutorial-admin-sections').replaceChildren();
+ function paint(){if(!draft)return;draft=normalizeProblemReferences(draft,availableProblems());$('tutorial-admin-id').value=draft.id;$('tutorial-admin-aliases').value=draft.aliases||'';$('tutorial-admin-related').value=(draft.related||[]).join(', ');const v=editableVersion(draft,lang);$('tutorial-admin-title').value=v.title;$('tutorial-admin-summary').value=v.summary;$('tutorial-admin-prerequisites').value=v.prerequisites;$('tutorial-admin-prerequisite-ids').value=(draft.prerequisiteIds||[]).join(', ');const rel=draft.learningRelations||ctx.learning()?.relationsFor(draft.id);relationsInput.disabled=busy||!allowed;relationsInput.value=draft._draftRelationsText??JSON.stringify(rel?{variants:rel.variants,next:rel.next,practice:rel.practice}:{variants:[],next:null,practice:[]},null,2);$('tutorial-admin-sections').replaceChildren();
   blockEditor?.destroy();blockEditor=mountBlockEditor($('tutorial-admin-sections'),v.sections,{changed,message,locked:()=>busy||!allowed,
    uploadImage:(file,blockCurrent)=>{const actor=ctx.user()?.id,turn=token,id=draft.id;return uploadTutorialImage(ctx.client(),id,file,actor,()=>turn===token&&actor===ctx.user()?.id&&draft?.id===id&&allowed&&!busy&&blockCurrent());},
    imageUrl:path=>tutorialImageUrl(ctx.client(),path,ctx.user()?.id,true),topics:ctx.topics,problems:availableProblems,progress:currentProgress});

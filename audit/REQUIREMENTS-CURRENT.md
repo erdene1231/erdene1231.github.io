@@ -1,3 +1,9 @@
+# Latest — exact number search / numeric problem keys
+
+Exact #number lookup and numeric authoring keys are local tested;029 backend is
+applied20261026100333. Min/max remain, Rating-band UI removed. Legacy links resolve;
+IDs/progress stable; no content DML. See NUMERIC-REFERENCES.md. Deployv36 separately.
+
 # Latest — named IDs, shared popup, preview and workspace
 
 Name-derived IDs, full catalog popup filters/bulk selection, unfinished-draft

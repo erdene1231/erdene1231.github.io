@@ -1,9 +1,9 @@
-import {filterProblems,getTags,ratingLabel} from './catalog.js?v=35';
-import {canonicalKey} from './learning-model.js?v=23';
+import {filterProblems,getTags,ratingLabel} from './catalog.js?v=36';
+import {problemReferenceKey as canonicalKey,problemIndex} from './learning-model.js?v=36';
 const el=(tag,text)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;return n;};
 export function openProblemSelection({problems,progress=()=>({}),selected=[],valid=()=>true,multiple=true,includeArchived=false,maxSelected=Infinity,onSelect}){
  const dialog=el('dialog'),heading=el('h2','Бодлого сонгох'),filters=el('div'),list=el('div'),status=el('p');dialog.className='problem-selection-dialog';dialog.setAttribute('aria-label','Бодлого сонгох');filters.className='problem-selection-filters';list.className='problem-selection-list';status.setAttribute('role','status');
- const chosen=new Set(selected),fields={};let rows=[];const pool=[...new Map(problems().filter(p=>includeArchived||!p.archived).map(p=>[canonicalKey(p),p])).values()];
+ const lookup=problemIndex(problems());const chosen=new Set(selected.map(k=>lookup.has(String(k))?canonicalKey(lookup.get(String(k))):String(k))),fields={};let rows=[];const pool=[...new Map(problems().filter(p=>includeArchived||!p.archived).map(p=>[canonicalKey(p),p])).values()];
  function field(key,label,choices){const wrap=el('label',label),input=el(choices?'select':'input');if(choices)for(const [value,text]of choices){const o=el('option',text);o.value=value;input.append(o);}else{input.type=key==='query'?'search':'number';if(input.type==='number'){input.min=0;input.max=4000;input.step=1;}}input.dataset.filter=key;wrap.append(input);filters.append(wrap);fields[key]=input;input.oninput=render;}
  field('query','Хайлт');fields.query.placeholder='Нэр, ID эсвэл tag: binary search, grid, dp…';
  field('source','Эх сурвалж',[['','Бүгд'],...[...new Set(pool.map(p=>p.source))].sort().map(s=>[s,s])]);
