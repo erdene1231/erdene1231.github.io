@@ -1,4 +1,4 @@
-# Одоогийн шаардлагын checklist — алхам 007
+# Одоогийн шаардлагын checklist — алхам 008
 
 Хавсралтуудыг бүтнээр уншсан. Хэрэглэгчийн шинэ baseline нь ZIP-ийн хуучин мэдээллийг орлоно.
 `f7c5f2e820f01652e3a839f2db69c05b16c91adb`; 748 problems / 55 tutorials;
@@ -15,7 +15,7 @@ production prerequisite migration `20261026045125` нь recovery editor 021-ээ
 | SAFE-02 | Энэ алхамд admin content, ID, progress хадгалах | VERIFIED_COMPLETE | no content DML; fixture preservation PASS | before/after content hashes/revisions identical | Content import байхгүй |
 | READER-01 | Typed reader + legacy editor round-trip | LOCAL_VERIFIED | Node + Chromium, MN-only, XSS, media race PASS | frontend live шалгаагүй | үгүй |
 | EDITOR-02 | Private drafts/CAS | PARTIAL | backend security/CAS/rebase tests PASS | 023 applied, schema verified | draft UI local tested; not deployed |
-| EDITOR-03 | Explicit publish/lazy reader | MISSING | recovery reviewed; pending 024 | байхгүй | үгүй |
+| EDITOR-03 | Explicit publish/lazy reader | PARTIAL | publish UI + SQL tests PASS; lazy frontend pending | 024 applied + public reads 55 | UI feature branch only |
 | EDITOR-04 | Storage/media authorization | MISSING | recovery reviewed; pending 025 | real upload smoke pending | үгүй |
 | EDITOR-05 | Embedded relation integrity | MISSING | recovery reviewed; pending 026 | байхгүй | үгүй |
 | EDITOR-06 | Atomic batch/private recovery | MISSING | recovery reviewed; pending 027 | байхгүй | үгүй |
@@ -58,3 +58,5 @@ browser review; үлдсэн content/topic/practice, plan/profile/UI regressions
 Алхам 006: revision comparison/explicit rebase + before-rebase backup local verified. Full rich authoring/media/publication/history UI pending. `STEP-006.md`.
 
 Алхам 007: rich block authoring/section controls/Undo/Redo local verified. Image upload/publication/history pending. `STEP-007.md`.
+
+Алхам 008: publication backend live verified, confirmation UI local verified. 748/55 unchanged; image upload дараагийн 009. `STEP-008.md`.
