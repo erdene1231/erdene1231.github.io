@@ -48,7 +48,14 @@ Never replay historical SQL because migration history is empty or incomplete.
 Read the actual schema, constraints, indexes, RLS, functions and triggers first;
 compare with repository SQL and prepare only confirmed missing changes in a new
 numbered migration. Do not replay seed imports or fabricate historical entries.
-The next numbered migration is 022. Database writes require task authorization.
+Step 002 applied `022_tutorial_content_blocks` as version `20261026052253`.
+It preserves 021 prerequisite validation; content hashes/revisions and counts
+remain unchanged. Recovery editor migrations 021–026 were remapped by content
+as 022–027. Only 022 is applied; 023–027 are quarantined in
+`supabase/pending-editor/`, not an automatic apply queue. Read `NEXT-STEPS.md`
+and `audit/EDITOR-MIGRATION-MAP.json` before continuing. Do not replay 021/022.
+The rich editor frontend is not deployed; do not publish new block formats until
+reader/editor compatibility is verified. Database writes require task authorization.
 
 ## Persistence boundary
 
