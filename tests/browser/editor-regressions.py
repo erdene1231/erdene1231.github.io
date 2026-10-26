@@ -20,7 +20,7 @@ try:
    page.route('**/*',route);page.goto(base+'/index.html',wait_until='networkidle')
    page.evaluate('''async()=>{
     window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-    const {setupTutorialEditor}=await import('/tutorial-editor.js?v=32');
+    const {setupTutorialEditor}=await import('/tutorial-editor.js?v=33');
     window.actor='00000000-0000-0000-0000-000000000001';window.docCalls=0;window.failLoad=false;window.saveCalls=[];window.rev=0;window.drafts=new Map();window.published=null;
     window.lesson=structuredClone((await (await fetch('/tutorials.json')).json()).tutorials[0]);
     lesson.sections=[{title:'First',blocks:[{type:'rich',content:[{text:'Editable text',marks:[]}]}]},{title:'Second',blocks:[{type:'code',language:'C++17',text:'int x = 1;'}]}];
@@ -90,7 +90,7 @@ try:
    for width in [375,1200]:
     page.set_viewport_size({'width':width,'height':900})
     assert form.evaluate('e=>e.scrollWidth<=e.clientWidth')
-    page.locator('#admin-tutorials').screenshot(path=str(ROOT/f'audit/browser/recovery-regression-formatting-{width}.png'))
+    page.locator('#admin-tutorials').screenshot(path=str(ROOT/f'audit/browser/lifecycle-regression-editor-formatting-{width}.png'))
   case('bold_toggle_italic_before_typing_keyboard_and_autosave',formatting)
   def new_document(page):
    page.locator('#tutorial-admin-new').click();page.locator('#tutorial-new-id').fill('new-recovery-regressionture')
@@ -163,7 +163,7 @@ try:
    page.reload(wait_until='networkidle')
    page.evaluate('''async()=>{
     window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-    const {setupTutorials}=await import('/tutorials.js?v=32');
+    const {setupTutorials}=await import('/tutorials.js?v=33');
     window.lesson=structuredClone((await (await fetch('/tutorials.json')).json()).tutorials[0]);window.saveCalls=[];window.published=null;window.drafts=new Map();window.rev=0;
     const client={rpc:async(name,args)=>{
      if(name==='get_tutorials')return {data:[{body:lesson,revision:7}]};
@@ -182,6 +182,6 @@ try:
   case('new_publication_appears_in_actual_tutorial_library',new_reader)
   browser.close()
 finally:server.shutdown()
-(ROOT/'audit/RECOVERY-REGRESSION-BROWSER.json').write_text(json.dumps({'checks':report,'failures':failures},indent=2)+'\n')
+(ROOT/'audit/TUTORIAL-LIFECYCLE-EDITOR-BROWSER.json').write_text(json.dumps({'checks':report,'failures':failures},indent=2)+'\n')
 print(json.dumps({'checks':report,'failures':failures}))
 assert not failures,failures

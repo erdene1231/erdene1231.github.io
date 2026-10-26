@@ -1,3 +1,19 @@
+# Latest checkpoint — tutorial lifecycle, picker and Input/Output
+
+User-added requirements are retained in `REQUIREMENTS-CURRENT.json` supplemental_requests;
+all 1467 original source rows and 319 topic traceability rows remain.
+
+- Temporary removal/restore and exact-ID permanent confirmation: locally verified.
+- 028 backend applied as `20261026091603`; 021-025 unchanged, 026/027 still pending.
+- Current verified production: 748 problems / 56 tutorials. The prior 55 count is
+  historical; no catalog row was added/removed by this migration, hashes unchanged.
+- Problem ID/full catalog picker and responsive Input/Output panels: locally verified.
+- Editor logout cleanup, seed fallback suppression, discrete picker Undo: repaired.
+- Authenticated deployed UI verification remains pending; merge/deploy is separate.
+
+Read `TUTORIAL-LIFECYCLE.md` and `NEXT-STEPS.md`. The older checkpoints below are
+historical context; they do not replace this state.
+
 # Одоогийн шаардлагын checklist — алхам 009
 
 Хавсралтуудыг бүтнээр уншсан. Хэрэглэгчийн шинэ baseline нь ZIP-ийн хуучин мэдээллийг орлоно.

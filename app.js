@@ -1,5 +1,5 @@
-import {setupLearning} from './learning.js?v=32';
-import {setupTutorials} from './tutorials.js?v=32';
+import {setupLearning} from './learning.js?v=33';
+import {setupTutorials} from './tutorials.js?v=33';
 import {setupGroups} from './groups.js?v=20';
 let tutorialUI, learningUI=null;
 import {EMPTY, cleanEntry, parseBackup} from './progress.js';
@@ -209,7 +209,7 @@ async function init() {
   render();
   document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
   $('account').onclick=()=>{updateAccount();$('auth').showModal();};
-  tutorialUI=setupTutorials({client:()=>client,user:()=>user,learning:()=>learningUI});
+  tutorialUI=setupTutorials({requiresOnline:configured,client:()=>client,user:()=>user,learning:()=>learningUI});
   groupUI=setupGroups({client:()=>client,user:()=>user,openAccount:()=>{$('account').onclick();}});
   social=setupSocial({client:()=>client,user:()=>user,problems:()=>data.problems,openProblem,viewProfile:id=>{if(learningUI)location.hash='#profile/'+id;else void social?.openProfile(id);},openAccount:()=>{$('account').onclick();},notice});
   adminUI=setupAdmin({client:()=>client,user:()=>user,refreshCatalog,sources:()=>getSources(data.problems,data.sources||[])});

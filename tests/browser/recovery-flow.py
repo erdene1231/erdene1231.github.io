@@ -29,7 +29,7 @@ try:
    page.goto(base+'/index.html', wait_until='networkidle')
    page.evaluate('''async()=>{
     window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-    const {setupTutorialEditor}=await import('/tutorial-editor.js?v=32');
+    const {setupTutorialEditor}=await import('/tutorial-editor.js?v=33');
     window.actor='00000000-0000-0000-0000-000000000001';window.rebaseCalls=[];window.saveCalls=[];
     window.rejectRebase=false;window.delayRebase=false;window.publishCalls=[];
     const original=structuredClone((await (await fetch('/tutorials.json')).json()).tutorials[0]);
@@ -81,7 +81,7 @@ try:
    for width in [375,1200]:
     page.set_viewport_size({'width':width,'height':950})
     assert page.locator('#admin-tutorials').evaluate('e=>e.scrollWidth<=e.clientWidth'), 'recovery overflows viewport'
-    page.locator('#admin-tutorials').screenshot(path=str(ROOT/f'audit/browser/recovery-ux-{width}.png'))
+    page.locator('#admin-tutorials').screenshot(path=str(ROOT/f'audit/browser/lifecycle-regression-recovery-{width}.png'))
   case('conflict_hides_empty_form_and_shows_immediate_choices', initial)
   def choose(page, key, title, paragraph):
    page.locator('[data-rebase-choice="'+key+'"]').click()
@@ -158,6 +158,6 @@ try:
   case('late_rebase_after_logout_cannot_reopen_or_replace_editor', logout)
   browser.close()
 finally: server.shutdown()
-(ROOT/'audit/RECOVERY-UX-BROWSER.json').write_text(json.dumps({'checks':report,'failures':failures},indent=2)+'\n')
+(ROOT/'audit/TUTORIAL-LIFECYCLE-RECOVERY-BROWSER.json').write_text(json.dumps({'checks':report,'failures':failures},indent=2)+'\n')
 print(json.dumps({'checks':report,'failures':failures}))
 assert not failures, failures

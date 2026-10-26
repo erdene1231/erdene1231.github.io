@@ -1,0 +1,62 @@
+{
+  "views": [],
+  "tables": [
+    {
+      "object": "public.tutorial_deleted_ids",
+      "status": "missing"
+    }
+  ],
+  "columns": [
+    {
+      "object": "public.tutorial_deleted_ids.id",
+      "status": "missing"
+    }
+  ],
+  "indexes": [
+    {
+      "object": "public.tutorial_deleted_ids_pkey",
+      "status": "missing"
+    }
+  ],
+  "policies": [],
+  "triggers": [
+    {
+      "object": "public.tutorial_catalog.tutorial_deleted_catalog_guard",
+      "status": "missing"
+    },
+    {
+      "object": "public.tutorial_drafts.tutorial_deleted_draft_guard",
+      "status": "missing"
+    }
+  ],
+  "functions": [
+    {
+      "object": "public.admin_delete_tutorial(p_id text, p_revision integer, p_confirmation text, p_actor uuid)",
+      "status": "missing"
+    },
+    {
+      "object": "public.admin_tutorial_document(p_id text)",
+      "field": "definition",
+      "expected": "CREATE OR REPLACE FUNCTION public.admin_tutorial_document(p_id text)\n RETURNS jsonb\n LANGUAGE plpgsql\n STABLE SECURITY DEFINER\n SET search_path TO ''\nAS $function$\nbegin\n if not public.is_admin() then raise exception 'Admin required.' using errcode='42501';end if;\n return jsonb_build_object('current',(select jsonb_build_object('body',body,'revision',revision,'published',published,'updated_at',updated_at) from public.tutorial_catalog where id=p_id),\n 'draft',(select to_jsonb(d)-'editor_id' from public.tutorial_drafts d where d.tutorial_id=p_id and d.editor_id=auth.uid()),\n 'deleted',exists(select 1 from public.tutorial_deleted_ids where id=p_id));\nend;\n$function$\n",
+      "actual": "CREATE OR REPLACE FUNCTION public.admin_tutorial_document(p_id text)\n RETURNS jsonb\n LANGUAGE plpgsql\n STABLE SECURITY DEFINER\n SET search_path TO ''\nAS $function$\nbegin\n if not public.is_admin() then raise exception 'Admin required.' using errcode='42501';end if;\n return jsonb_build_object('current',(select jsonb_build_object('body',body,'revision',revision,'published',published,'updated_at',updated_at) from public.tutorial_catalog where id=p_id),\n 'draft',(select to_jsonb(d)-'editor_id' from public.tutorial_drafts d where d.tutorial_id=p_id and d.editor_id=auth.uid()));\nend;\n$function$\n"
+    },
+    {
+      "object": "public.guard_deleted_tutorial()",
+      "status": "missing"
+    },
+    {
+      "object": "public.tutorial_deletion_references(p_body jsonb)",
+      "status": "missing"
+    }
+  ],
+  "constraints": [
+    {
+      "object": "public.tutorial_deleted_ids.tutorial_deleted_ids_id_check",
+      "status": "missing"
+    },
+    {
+      "object": "public.tutorial_deleted_ids.tutorial_deleted_ids_pkey",
+      "status": "missing"
+    }
+  ]
+}
