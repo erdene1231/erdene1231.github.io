@@ -28,7 +28,7 @@ try:
   page.goto(base+'/index.html',wait_until='networkidle')
   page.evaluate('''async()=>{
    window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-   const {renderBlock,drawArticle}=await import('/tutorials.js?v=26');
+   const {renderBlock,drawArticle}=await import('/tutorials.js?v=27');
    window.renderBlock=renderBlock;window.drawArticle=drawArticle;
    const lessons=(await (await fetch('/tutorials.json')).json()).tutorials;
    window.original=structuredClone(lessons[0]);window.fixture=structuredClone(original);
@@ -77,10 +77,10 @@ try:
     return Math.abs(point.x-(box.x+box.width/2))<1&&Math.abs(point.y-(box.y+box.height/2))<1;
    }''')
    out=ROOT/'audit/browser';out.mkdir(parents=True,exist_ok=True)
-   page.screenshot(path=str(out/f'step-005-{width}-{theme}.png'),full_page=True)
+   page.screenshot(path=str(out/f'step-006-{width}-{theme}.png'),full_page=True)
   report['desktop_mobile_light_dark_overflow']='PASS'
   page.evaluate('''async()=>{
-   const {setupLearning}=await import('/learning.js?v=26');
+   const {setupLearning}=await import('/learning.js?v=27');
    const catalog=(await (await fetch('/problems.json')).json()).problems;
    window.learningProgress={};window.openedProblem=null;
    window.learning=await setupLearning({client:()=>null,user:()=>null,profile:()=>null,
@@ -107,16 +107,17 @@ try:
    document.querySelector('#compat-reader').hidden=true;
    // Reuse the real form; mount it directly to remove routing dependencies.
    const form=document.getElementById('tutorial-admin-form');document.body.append(form);
-   const {setupTutorialEditor}=await import('/tutorial-editor.js?v=26');
+   const {setupTutorialEditor}=await import('/tutorial-editor.js?v=27');
    const topics=lessons.map(t=>({...structuredClone(t),revision:9}));topics[0]={...structuredClone(fixture),revision:9};
-   window.savedPayload=null;window.draftCalls=[];window.draftOffline=false;
+   window.fixtureActor='fixture-admin';window.savedPayload=null;window.draftCalls=[];window.draftOffline=false;
    const client={rpc:async(name,args)=>{
     if(name==='is_admin')return {data:true,error:null};
-    if(name==='admin_tutorial_document')return {data:{current:{body:fixture,revision:9},draft:null},error:null};
+    if(name==='admin_tutorial_document')return {data:window.comparisonDocument||{current:{body:fixture,revision:9},draft:null},error:null};
+    if(name==='admin_rebase_tutorial_draft'){window.rebaseArgs=structuredClone(args);if(window.deferRebase)return new Promise(resolve=>window.finishRebase=()=>resolve({data:{body:args.p_body,revision:9,base_revision:12}}));if(window.rejectRebase)return {error:Error('REVISION_CONFLICT')};return {data:{body:args.p_body,revision:8,base_revision:args.p_current_revision}};}
     if(name==='admin_save_tutorial_draft'){draftCalls.push(name);if(draftOffline)return {error:Error('offline')};window.savedPayload=structuredClone(args.p_body);return {data:{body:args.p_body,revision:1},error:null};}
     throw new Error('Unexpected RPC '+name);
    }};
-   window.editor=setupTutorialEditor({topics:()=>topics,learning:()=>null,ready:()=>true,client:()=>client,user:()=>({id:'fixture-admin'}),reload:()=>{},saved:()=>{}});
+   window.editor=setupTutorialEditor({topics:()=>topics,learning:()=>null,ready:()=>true,client:()=>client,user:()=>fixtureActor?({id:fixtureActor}):null,reload:()=>{},saved:()=>{}});
    await editor.accountChanged(true);
   }''')
   page.locator('#tutorial-admin-language').select_option('en')
@@ -140,13 +141,56 @@ try:
   page.wait_for_function("savedPayload.title==='Offline recoverable title'")
   assert page.evaluate("draftCalls.every(name=>name==='admin_save_tutorial_draft')")
   report['autosave_offline_retry_private_rpc']='PASS'
+  page.evaluate("()=>{window.comparisonDocument={current:{body:{...fixture,title:'Published latest'},revision:12},draft:{body:{...fixture,title:'Other tab draft'},revision:7,base_revision:9}};}")
+  page.locator('#tutorial-compare-drafts').click()
+  page.wait_for_selector('[data-rebase-choice="local"]',state='attached')
+  assert page.locator('[data-rebase-save]').is_disabled()
+  assert 'Other tab draft' in page.locator('[data-version="draft"]').text_content()
+  page.locator('[data-version="local"] summary').click()
+  for width,theme in [(375,'dark'),(1440,'light')]:
+   page.set_viewport_size({'width':width,'height':1000})
+   page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
+   assert page.locator('#tutorial-draft-comparison').evaluate('(e)=>e.scrollWidth<=e.clientWidth')
+   page.locator('#tutorial-draft-comparison').screenshot(path=str(ROOT/f'audit/browser/step-006-comparison-{width}.png'))
+  page.locator('[data-rebase-choice="local"]').click()
+  page.evaluate('window.rejectRebase=true')
+  page.locator('[data-rebase-save]').click()
+  page.wait_for_function("document.querySelector('#tutorial-draft-comparison [role=status]').textContent.includes('Харьцуулснаас хойш')")
+  assert page.locator('[data-rebase-save]').is_disabled()
+  page.locator('#tutorial-draft-comparison').get_by_role('button',name='Буцах',exact=True).click()
+  page.evaluate('window.rejectRebase=false')
+  page.locator('#tutorial-compare-drafts').click()
+  page.locator('[data-version="draft"] summary').click()
+  page.locator('[data-rebase-choice="draft"]').click()
+  page.locator('[data-rebase-save]').click()
+  page.wait_for_function("document.querySelector('#tutorial-admin-title').value==='Other tab draft'")
+  assert page.evaluate('rebaseArgs.p_current_revision')==12
+  assert page.evaluate('rebaseArgs.p_draft_revision')==7
+  assert page.evaluate('rebaseArgs.p_actor')=='fixture-admin'
+  assert page.evaluate("JSON.parse(localStorage.getItem('erdene:tutorial-draft:v3:fixture-admin:'+fixture.id+':before-rebase')).body.title")=='Offline recoverable title'
+  assert page.evaluate("JSON.parse(localStorage.getItem('erdene:tutorial-draft:v3:fixture-admin:'+fixture.id)).draftRevision")==8
+  assert page.locator('#tutorial-admin-title').is_enabled()
+  report['explicit_rebase_stale_conflict_and_backup']='PASS'
+  page.evaluate('window.deferRebase=true')
+  page.locator('#tutorial-compare-drafts').click()
+  page.locator('[data-version="published"] summary').click()
+  page.locator('[data-rebase-choice="published"]').click()
+  page.locator('[data-rebase-save]').click()
+  page.wait_for_function('typeof finishRebase === "function"')
+  page.evaluate('async()=>{window.fixtureActor=null;await editor.accountChanged();finishRebase();}')
+  assert page.locator('#tutorial-admin-form').is_hidden()
+  assert page.locator('#tutorial-draft-comparison').is_hidden()
+  assert page.locator('#tutorial-admin-title').input_value()=='Other tab draft'
+  report['late_rebase_response_after_logout']='PASS'
+
+
   # Fresh real tutorial setup checks routine same-account notifications do not
   # rebuild the article or reset the reader's position.
   page.reload(wait_until='networkidle')
   page.evaluate('''async()=>{
    window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
    location.hash='#tutorial/complexity';
-   const {setupTutorials}=await import('/tutorials.js?v=26');
+   const {setupTutorials}=await import('/tutorials.js?v=27');
    window.tutorialUI=setupTutorials({client:()=>null,user:()=>null,learning:()=>null});
   }''')
   page.wait_for_function("document.querySelector('#tutorial-content > section')!==null && document.querySelector('#tutorial-content').getAttribute('aria-busy')==='false'")
@@ -163,5 +207,5 @@ try:
   report['page_errors']=[]
   browser.close()
 finally:server.shutdown()
-(ROOT/'audit/STEP-005-BROWSER.json').write_text(json.dumps(report,indent=2)+'\n')
+(ROOT/'audit/STEP-006-BROWSER.json').write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps(report))

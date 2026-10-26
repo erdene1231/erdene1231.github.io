@@ -21,3 +21,12 @@ test('revision conflict retains local payload without retry loop or revision adv
 test('synchronous client failure allows a later retry',async()=>{
  let fail=true;const {s}=fixture(()=>{if(fail)throw Error('client unavailable');return {data:{revision:1}};});s.changed({id:'lesson'});await s.flush();fail=false;await s.flush();assert.equal(s.dirty(),false);s.invalidate();
 });
+
+test('comparison pause prevents autosave until resumed and retains a separate backup',async()=>{
+ let calls=0;const {s}=fixture(async()=>{calls++;return {data:{revision:1}};});
+ s.changed({id:'lesson',title:'keep me'});await s.pause();await s.flush();assert.equal(calls,0);
+ s.preserve(s.snapshot());s.resume();await s.flush();assert.equal(calls,1);
+ assert.equal(s.local('a','lesson:before-rebase').body.title,'keep me');
+ s.open({actor:'a',id:'lesson',body:{id:'lesson',title:'chosen'},baseRevision:8,draftRevision:3});s.checkpoint();
+ assert.equal(s.local('a','lesson').draftRevision,3);assert.equal(s.local('a','lesson').unsynced,false);s.invalidate();
+});
