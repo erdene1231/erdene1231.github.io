@@ -19,7 +19,7 @@ export function createDraftSession(ctx){
     if(!Number.isInteger(data?.revision)||data.revision<=batch.draftRevision)throw Error('Invalid draft save response.');
     current.draftRevision=data.revision;saved=sent;persist();report(saved===version?'Ноорог хадгалагдлаа.':'Шинэ засварыг хадгалж байна…');
    }
-  }catch(e){if(turn===generation){report(/REVISION_CONFLICT/.test(e.message)?'Ноорог өөр tab-д шинэчлэгдсэн. JSON backup татаад хувилбаруудаа харьцуулна уу.':'Онлайн хадгалалт амжилтгүй. Local ноорог хадгалагдсан; дахин оролдоно уу.');ctx.error?.(e);}}
+  }catch(e){if(turn===generation){report(/REVISION_CONFLICT/.test(e.message)?'Ноорог өөр tab-д шинэчлэгдсэн. JSON backup татаад хувилбаруудаа харьцуулна уу.':/TUTORIAL_DELETED_REFERENCE/.test(e.message)?'Үүрд устгасан хичээл рүү холбоос байна. Холбоосоо засаад хадгална уу.':/TUTORIAL_DELETED/.test(e.message)?'Энэ хичээл үүрд устгагдсан. Засвараа JSON backup татаад шинэ ID-тай хичээл үүсгэнэ үү.':'Онлайн хадгалалт амжилтгүй. Local ноорог хадгалагдсан; дахин оролдоно уу.');ctx.error?.(e);}}
   finally{if(turn===generation)pending=null;}})();
   pending=run;return run;
  }

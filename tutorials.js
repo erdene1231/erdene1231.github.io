@@ -1,10 +1,10 @@
-import {renderExtendedBlock} from './tutorial-block-renderer.js?v=32';
-import {clearMediaCache} from './tutorial-media.js?v=32';
+import {renderExtendedBlock} from './tutorial-block-renderer.js?v=33';
+import {clearMediaCache} from './tutorial-media.js?v=33';
 import {loadLearningContent,bodyHash} from './learning-model.js?v=23';
 import {algorithmDemo} from './algorithm-demos.js?v=23';
 import {segmentTreeDemo} from './segment-tree-demo.js?v=16';
-import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=32';
-import {setupTutorialEditor} from './tutorial-editor.js?v=32';
+import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=33';
+import {setupTutorialEditor} from './tutorial-editor.js?v=33';
 const $=id=>document.getElementById(id);
 export const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
 let mathPromise=null,mathQueue=Promise.resolve();
@@ -26,16 +26,37 @@ export function renderBlock(b,parent,lang='mn',options={}){
  else if(b.type==='math')parent.append(node('div','$$'+b.tex+'$$','tutorial-math'));
  else if(b.type==='list'||b.type==='ordered'){const list=node(b.type==='list'?'ul':'ol');for(const x of b.items)list.append(node('li',x));parent.append(list);}
  else if(b.type==='table'){const wrap=node('div',undefined,'tutorial-table-wrap'),table=node('table'),head=node('thead'),row=node('tr');for(const h of b.headers){const th=node('th',h);th.scope='col';row.append(th);}head.append(row);table.append(head);const body=node('tbody');for(const cells of b.rows){const tr=node('tr');for(const c of cells)tr.append(node('td',c));body.append(tr);}table.append(body);wrap.append(table);parent.append(wrap);}
- else if(b.type==='code'){const cpp=!b.language||['C++17','cpp','C++'].includes(b.language),sample=b.language==='Input'||b.language==='Output',wrap=node('div',undefined,'tutorial-code'+(sample?' tutorial-sample':'')),bar=node('div',undefined,'code-toolbar'),pre=node('pre'),code=node('code',b.text,cpp?'language-cpp':'language-plaintext'),button=node('button',lang==='en'?(cpp?'Copy code':'Copy'):(cpp?'Код хуулах':'Хуулах'));button.type='button';button.onclick=()=>void copy(b.text,button,lang==='en'?'Copied':'Хуулагдлаа');bar.append(node('span',cpp?'C++17':b.language||'Text'),button);pre.append(code);wrap.append(bar,pre);parent.append(wrap);if(cpp)try{window.hljs?.highlightElement(code);}catch{/* Plain code remains readable. */}}
+ else if(b.type==='code'&&['Input','Output'].includes(b.language))renderSample(b,parent,lang);
+ else if(b.type==='code'){const cpp=!b.language||['C++17','cpp','C++'].includes(b.language),wrap=node('div',undefined,'tutorial-code'),bar=node('div',undefined,'code-toolbar'),pre=node('pre'),code=node('code',b.text,cpp?'language-cpp':'language-plaintext'),button=node('button',lang==='en'?(cpp?'Copy code':'Copy'):(cpp?'Код хуулах':'Хуулах'));button.type='button';button.onclick=()=>void copy(b.text,button,lang==='en'?'Copied':'Хуулагдлаа');bar.append(node('span',cpp?'C++17':b.language||'Text'),button);pre.append(code);wrap.append(bar,pre);parent.append(wrap);if(cpp)try{window.hljs?.highlightElement(code);}catch{/* Plain code remains readable. */}}
  else if(b.type==='links'){const list=node('ul',undefined,'tutorial-reading-links');for(const x of b.items){let u;try{u=new URL(x.url);}catch{continue;}if(u.protocol!=='https:'||u.username||u.password)continue;const li=node('li'),a=node('a',x.label);a.href=u.href;a.target='_blank';a.rel='noopener noreferrer';li.append(a);list.append(li);}parent.append(list);}
  else parent.append(node('aside',lang==='en'?'Unsupported block; editor review required.':'Дэмжигдээгүй block: editor дээр шалгана уу.','tutorial-note'));
 }
-export function drawArticle(t,parent,lang,options={}){const v=view(t,lang);parent.replaceChildren();for(const [i,s] of v.sections.entries()){const part=node('section');part.id='tutorial-'+t.id+'-'+i;part.append(node('h3',s.title));for(const b of s.blocks)renderBlock(b,part,lang,options);if(t.id==='segment-tree'&&i===3)part.append(segmentTreeDemo(lang,typeset));if(i===3){const demo=algorithmDemo(t.id,lang,typeset);if(demo)part.append(demo);}parent.append(part);}}
+function renderSample(b,parent,lang){
+ const english=lang==='en',input=b.language==='Input',panel=node('figure',undefined,'tutorial-sample-panel sample-'+(input?'input':'output'));
+ const bar=node('figcaption',undefined,'sample-toolbar'),label=node('span',undefined,'sample-label'),dot=node('span',undefined,'sample-dot');dot.setAttribute('aria-hidden','true');
+ label.append(dot,node('strong',b.language));if(!english)label.append(node('span',input?'Оролт':'Гаралт','sample-label-local'));
+ const button=node('button',english?'Copy':'Хуулах','sample-copy');button.type='button';button.setAttribute('aria-label',english?'Copy '+b.language:b.language+' хуулах');
+ const status=node('span',undefined,'sample-copy-status');status.setAttribute('role','status');
+ let reset;button.onclick=async()=>{clearTimeout(reset);try{await navigator.clipboard.writeText(b.text);button.textContent=english?'Copied':'Хуулагдлаа';status.textContent=english?b.language+' copied.':b.language+' хуулагдлаа.';reset=setTimeout(()=>{button.textContent=english?'Copy':'Хуулах';status.textContent='';},1800);}catch{button.textContent=english?'Copy':'Хуулах';status.textContent=english?'Copy unavailable. Select the sample text to copy it.':'Хуулах боломжгүй байна. Жишээний текстийг сонгон хуулна уу.';}};
+ const pre=node('pre'),code=node('code',b.text,'language-plaintext');pre.tabIndex=0;pre.setAttribute('aria-label',english?b.language+' sample':b.language+' жишээ');pre.append(code);
+ bar.append(label,button);panel.append(bar,pre,status);parent.append(panel);
+}
+export function drawArticle(t,parent,lang,options={}){const v=view(t,lang);parent.replaceChildren();for(const [i,s] of v.sections.entries()){
+ const part=node('section');part.id='tutorial-'+t.id+'-'+i;part.append(node('h3',s.title));
+ for(let j=0;j<s.blocks.length;j++){
+  const b=s.blocks[j],next=s.blocks[j+1];
+  if(b?.type==='code'&&b.language==='Input'&&next?.type==='code'&&next.language==='Output'){
+   const pair=node('div',undefined,'tutorial-samples');pair.setAttribute('role','group');pair.setAttribute('aria-label',lang==='en'?'Sample input and output':'Жишээ оролт ба гаралт');renderBlock(b,pair,lang,options);renderBlock(next,pair,lang,options);part.append(pair);j++;
+  }else renderBlock(b,part,lang,options);
+ }
+ if(t.id==='segment-tree'&&i===3)part.append(segmentTreeDemo(lang,typeset));if(i===3){const demo=algorithmDemo(t.id,lang,typeset);if(demo)part.append(demo);}parent.append(part);
+}}
 export function typeset(elements,build){
  mathQueue=mathQueue.catch(()=>{}).then(async()=>{window.MathJax?.typesetClear?.(elements);if(build&&build()===false)return;const mj=await mathjax();await mj.typesetPromise(elements);});return mathQueue;
 }
 async function copy(text,button,success){try{await navigator.clipboard.writeText(text);const previous=button.textContent;button.textContent=success;setTimeout(()=>button.textContent=previous,1800);}catch{$('tutorial-message').textContent='Хуулах боломжгүй байна / Copy unavailable.';}}
 export function setupTutorials(ctx){
+ const requiresOnline=ctx.requiresOnline??!!ctx.client();
  const lessonSeed=fetch('./tutorials.json?v=23').then(r=>{if(!r.ok)throw new Error('Tutorials ачаалсангүй.');return r.json();}).then(d=>d.tutorials),contentReady=Promise.all([loadLearningContent().catch(()=>({curriculum:{order:[]},editions:{editions:{}}})),lessonSeed]);let acceptTurn=0;
 
  let topics=[],current=null,renderTurn=0,resultTurn=0,loadTurn=0,lang='mn',readingMode='full',activePart=0,requestedPart,onlineReady=false,hasLive=false,editor,mediaAccountId=ctx.user()?.id||null;
@@ -98,13 +119,14 @@ export function setupTutorials(ctx){
  async function connected(){
   if(!ctx.client())return;const turn=++loadTurn;
   try{const {data,error}=await ctx.client().rpc('get_tutorials');if(error)throw error;if(turn!==loadTurn)return;if(!Array.isArray(data))throw new Error('Tutorial data missing');onlineReady=true;hasLive=true;await accept(data,true);}
-  catch{if(turn===loadTurn){onlineReady=false;editor?.refresh();if(!hasLive&&!topics.length)await accept(await lessonSeed);}}
+  catch{if(turn===loadTurn){onlineReady=false;editor?.refresh();if(!hasLive){await accept([],true);$('tutorial-message').textContent=tr('Хичээлийн санг баталгаажуулж чадсангүй. Холболтоо шалгаад хуудсаа дахин ачаална уу.','Could not verify the tutorial library. Check your connection and reload.');}}}
   editor?.accountChanged(true);
  }
  $('tutorial-language').onchange=()=>{lang=$('tutorial-language').value;try{localStorage.setItem('erdene:tutorial-language',lang);}catch{}current=null;results();route();};$('tutorial-search').addEventListener('input',results);$('tutorial-category').onchange=results;$('tutorial-level').onchange=results;
  $('tutorial-reading-mode').onchange=()=>{readingMode=$('tutorial-reading-mode').value;try{localStorage.setItem('erdene:tutorial-reading-mode',readingMode);}catch{}requestedPart=activePart;reading(activePart,true);};$('tutorial-section-prev').onclick=()=>goPart(activePart-1);$('tutorial-section-next').onclick=()=>goPart(activePart+1);
  $('tutorial-copy-link').onclick=()=>void copy(location.href,$('tutorial-copy-link'),tr('Хуулагдлаа','Copied'));$('tutorial-math-retry').onclick=()=>{if(current)renderTopic(current,activePart);};window.addEventListener('hashchange',route);
- editor=setupTutorialEditor({...ctx,topics:()=>topics,ready:()=>onlineReady,reload:connected,saved(row){accept([...topics.filter(t=>t.id!==row.body.id).map(t=>({body:t,revision:t.revision})),row],true);}});
- void lessonSeed.then(list=>{if(!hasLive)return accept(list);}).catch(()=>{$('tutorial-grid').textContent='Tutorials ачаалсангүй / Could not load tutorials.';});
+ editor=setupTutorialEditor({...ctx,topics:()=>topics,ready:()=>onlineReady,reload:connected,saved(row){accept([...topics.filter(t=>t.id!==row.body.id).map(t=>({body:t,revision:t.revision})),...(row.published===false?[]:[row])],true);},deleted(id){accept(topics.filter(t=>t.id!==id).map(t=>({body:t,revision:t.revision})),true);}});
+ if(requiresOnline)$('tutorial-message').textContent=tr('Хичээлийн санг ачаалж байна…','Loading the tutorial library…');
+ void lessonSeed.then(list=>{if(!requiresOnline&&!hasLive&&!ctx.client())return accept(list);}).catch(()=>{$('tutorial-grid').textContent='Tutorials ачаалсангүй / Could not load tutorials.';});
  return {connected,refreshStatus(){if(!current)results();},refreshLearning(){ctx.learning()?.setTopics(topics);if(current)renderTopic(current,activePart);else results();},accountChanged(){editor.accountChanged();const id=ctx.user()?.id||null;if(id!==mediaAccountId){mediaAccountId=id;clearMediaCache();if(current)renderTopic(current,activePart);}}};
 }

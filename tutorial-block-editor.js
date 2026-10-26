@@ -1,5 +1,6 @@
-import {BLOCK_TYPES,TONES,createBlock,safeLink} from './tutorial-blocks.js?v=32';
-import {appendInline} from './tutorial-block-renderer.js?v=32';
+import {BLOCK_TYPES,TONES,createBlock,safeLink} from './tutorial-blocks.js?v=33';
+import {appendInline} from './tutorial-block-renderer.js?v=33';
+import {problemPickerRows} from './tutorial-problem-picker.js?v=33';
 const make=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const names={p:'Текст',rich:'Formatting бүхий текст',heading:'Гарчиг H1–H4',code:'Код',math:'Томъёо',list:'Жагсаалт',ordered:'Дугаартай жагсаалт',checklist:'Checklist',table:'Хүснэгт',links:'Эх сурвалжийн холбоос',quote:'Эшлэл',callout:'Тайлбарын хайрцаг',note:'Нээж унших тайлбар',divider:'Тусгаарлагч',image:'Зураг upload',diagram:'Diagram',problem:'Бодлого',tutorial:'Хичээлийн холбоос'};
 function inlineFromDOM(root){
@@ -72,7 +73,20 @@ export function mountBlockEditor(root,sections,options={}){
    field(container,'Тодруулах ID-ууд — таслалаар (array: 0:1)',(b.highlights||[]).join(', '),v=>b.highlights=v.split(',').map(x=>x.trim()).filter(Boolean),{rows:0});field(container,'Diagram caption',b.caption,v=>b.caption=v,{rows:2});
   }
   else if(b.type==='problem'){
-   const pool=options.problems?.()||[],search=make('input'),choice=make('select');search.type='search';search.placeholder='Бодлогын нэр, source, ID';search.setAttribute('aria-label','Embedded бодлого хайх');choice.setAttribute('aria-label','Embedded бодлого');const key=p=>String(p.source).toLowerCase()+'|'+String(p.ref).toLowerCase();function choices(){choice.replaceChildren();const rows=pool.filter(p=>(p.title+' '+p.source+' '+p.ref).toLowerCase().includes(search.value.toLowerCase())).slice(0,30),current=pool.find(p=>key(p)===b.problemKey);if(current&&!rows.includes(current))rows.unshift(current);for(const p of rows){const o=make('option',p.title+' · '+p.source+' '+p.ref);o.value=key(p);choice.append(o);}choice.value=b.problemKey;}search.oninput=choices;choice.onchange=()=>change(()=>b.problemKey=choice.value,choice);choices();container.append(search,choice);
+   const search=make('input'),choice=make('select'),count=make('small',undefined,'muted');search.type='search';search.placeholder='ID, дугаар, нэр эсвэл source (cf-1691B, 1691/B, cses|1620)';search.setAttribute('aria-label','Embedded бодлого хайх');choice.setAttribute('aria-label','Embedded бодлого');choice.size=6;count.setAttribute('role','status');count.dataset.problemMatches='true';
+   const label=row=>{const p=row.problem;return (p.number!==undefined?'#'+p.number+' · ':'')+p.title+' · '+row.key+(p.id?' · '+p.id:'');};
+   function choices(){
+    const pool=options.problems?.()||[],all=problemPickerRows(pool),rows=problemPickerRows(pool,search.value),current=all.find(row=>row.key===b.problemKey);choice.replaceChildren();
+    const placeholder=make('option','Бодлого сонгоно уу');placeholder.value='';placeholder.disabled=true;choice.append(placeholder);
+    if(b.problemKey&&!rows.some(row=>row.key===b.problemKey)){
+     const selected=make('option',current?'Сонгосон: '+label(current):'Одоогоор боломжгүй: '+b.problemKey);selected.value=b.problemKey;selected.disabled=!current;choice.append(selected);
+    }
+    for(const row of rows){const o=make('option',label(row));o.value=row.key;choice.append(o);}
+    choice.value=b.problemKey||'';count.textContent=rows.length+' / '+all.length+' бодлого'+(!rows.length?' · Тохирох бодлого олдсонгүй.':'');
+   }
+   search.oninput=choices;search.onfocus=choices;choice.onfocus=choices;
+   // Each selection is a distinct undo step, unlike successive keystrokes.
+   choice.onchange=()=>change(()=>b.problemKey=choice.value,Symbol('problem-selection'));choices();container.append(search,choice,count);
   }
   else if(b.type==='tutorial')select(container,'Холбогдох tutorial',(options.topics?.()||[]).map(t=>[t.id,t.title]),b.tutorialId,v=>b.tutorialId=v);
   else if(b.type==='links')field(container,'Мөр бүр: нэр | https://…',b.items.map(x=>x.label+' | '+x.url).join('\n'),v=>b.items=v.split('\n').filter(Boolean).map(line=>{const at=line.lastIndexOf('|');return {label:line.slice(0,at).trim(),url:line.slice(at+1).trim()};}),{rows:4});

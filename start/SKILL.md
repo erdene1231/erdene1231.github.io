@@ -85,6 +85,22 @@ Recovery choice repair after PR 10 uses v32. Empty editor hidden during conflict
 visible version/backup actions, explicit selection and resume/retry flow. See
 audit/RECOVERY-UX.md and tests/browser/recovery-flow.py. No production changes.
 
+## Latest tutorial editor checkpoint
+
+028_tutorial_deletion was applied as `20261026091603` after a fresh schema audit.
+Latest actual metadata is `supabase/audit/production-after-028.json`; current
+counts are 748 problems / 56 tutorials. Installation changed no catalog content,
+draft/history counts or user progress counts. Do not replay 028 or 021-025.
+026/027 are still pending; re-audit against028 before considering them.
+
+The v33 frontend adds temporary remove/restore, exact-ID permanent confirmation,
+full catalog/ID problem picker, improved sample panels, logout cleanup and no seed
+resurrection for configured clients. See `audit/TUTORIAL-LIFECYCLE.md`. Tests are
+local with mocked Auth/RPC; deployed authenticated UI remains unverified. No real
+production tutorial was removed to test this capability. Permanent removal keeps
+an ID-only tombstone; all surviving IDs/progress remain stable. Never delete
+Storage objects through SQL; issued signed URLs can survive their TTL.
+
 ## Persistence boundary
 
 The repository tracks this skill, client, metadata query, comparison tool and audit
