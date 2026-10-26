@@ -109,6 +109,15 @@ progress remain stable. See audit/EDITOR-DIALOG.md and NEXT-STEPS.md. No Supabas
 calls or migrations in this checkpoint. 028 remains applied; do not replay it.
 Frontend tests use mocked Auth/RPC; merge/deploy and live admin checks are separate.
 
+## Latest numeric problem-reference checkpoint
+
+029_numeric_problem_references applied20261026100333. Latest metadata is
+supabase/audit/production-after-029.json;748 problems/56 tutorials unchanged.
+Do not replay029/028/021-025. New editor keys are numeric strings; legacy aliases
+remain readable and progress IDs unchanged. Review audit/NUMERIC-REFERENCES.md.
+Pending026 must be adapted to numeric references after a fresh audit; do not
+apply its legacy-key assumptions blindly. Deploy completev36 after PR14 review.
+
 ## Persistence boundary
 
 The repository tracks this skill, client, metadata query, comparison tool and audit

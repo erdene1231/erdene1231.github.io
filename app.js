@@ -1,15 +1,15 @@
-import {setupLearning} from './learning.js?v=34';
-import {setupTutorials} from './tutorials.js?v=34';
+import {setupLearning} from './learning.js?v=36';
+import {setupTutorials} from './tutorials.js?v=36';
 import {setupGroups} from './groups.js?v=20';
 let tutorialUI, learningUI=null;
 import {EMPTY, cleanEntry, parseBackup} from './progress.js';
 import {getSolvers} from './community.js?v=6';
-import {setupAdmin} from './admin.js?v=34';
+import {setupAdmin} from './admin.js?v=36';
 import {parseCatalog,hintTexts,getSources} from './problem-store.js?v=23';
 import {rpc} from './accounts.js?v=17';
 import {ownProfile,saveOwnProfile,avatarUrl,accountError} from './accounts.js?v=17';
 import {setupSocial} from './social.js?v=23';
-import {filterProblems, getTags, ratingLabel,difficultyLabel} from './catalog.js?v=23';
+import {filterProblems, getTags, ratingLabel,difficultyLabel} from './catalog.js?v=36';
 const $ = id => document.getElementById(id);
 const STATUS = {new:'Эхлээгүй',trying:'Оролдож байгаа',solved:'Бодсон'};
 let data, selectedPack='', selectedProblem, state={}, dirty={}, user=null, client=null, loading=false, syncing=false, syncAgain=false, epoch=0;
@@ -58,7 +58,7 @@ function render() {
   const percent=(data.problems.length?Math.round(solved/data.problems.length*100):0);
   $('total').textContent=data.problems.length;$('solved').textContent=solved;$('trying').textContent=trying;$('percent').textContent=percent+'%';$('progress').value=percent;
   renderHome();learningUI?.render();
-  const filters={query:$('search').value,source:$('source').value,status:$('status-filter').value,pack:selectedPack,tag:$('tag-filter').value,ratingBand:$('rating-filter').value,minRating:$('min-rating').value,maxRating:$('max-rating').value,priorityOnly:$('priority-only').checked,sort:$('sort').value};
+  const filters={query:$('search').value,source:$('source').value,status:$('status-filter').value,pack:selectedPack,tag:$('tag-filter').value,minRating:$('min-rating').value,maxRating:$('max-rating').value,priorityOnly:$('priority-only').checked,sort:$('sort').value};
   const filterKey=JSON.stringify(filters);if(filterKey!==lastFilterKey){problemPage=0;lastFilterKey=filterKey;}
   $('packs').replaceChildren();
   for(const pack of [{id:'',title:'Бүгд'},...data.packs]) {
@@ -200,12 +200,12 @@ async function init() {
   $('refresh-catalog').onclick=()=>void refreshCatalog();
   try {const prefs=JSON.parse(localStorage.getItem('think-cp:catalog-preferences')||'{}');$('show-tags').checked=prefs.showTags===true;if(['rating-asc','rating-desc','priority','title','number-asc'].includes(prefs.sort))$('sort').value=prefs.sort;}catch{}
   const savePreferences=()=>{try{localStorage.setItem('think-cp:catalog-preferences',JSON.stringify({showTags:$('show-tags').checked,sort:$('sort').value}));}catch{}};
-  for(const id of ['search','source','status-filter','tag-filter','rating-filter','min-rating','max-rating','priority-only'])$(id).addEventListener('input',render);
+  for(const id of ['search','source','status-filter','tag-filter','min-rating','max-rating','priority-only'])$(id).addEventListener('input',render);
   for(const [id,delta] of [['problem-prev',-1],['problem-next',1]])$(id).onclick=()=>{problemPage+=delta;render();$('packs').scrollIntoView({block:'start'});};
   $('sort').addEventListener('change',()=>{savePreferences();render();});
   $('show-tags').addEventListener('change',()=>{savePreferences();render();if(selectedProblem)renderDetail();});
   $('reveal-detail-tags').onclick=()=>{detailTagsShown=!detailTagsShown;renderDetail();};
-  $('reset-filters').onclick=()=>{selectedPack='';for(const id of ['search','source','status-filter','tag-filter','rating-filter','min-rating','max-rating'])$(id).value='';$('priority-only').checked=false;$('sort').value='rating-asc';savePreferences();render();};
+  $('reset-filters').onclick=()=>{selectedPack='';for(const id of ['search','source','status-filter','tag-filter','min-rating','max-rating'])$(id).value='';$('priority-only').checked=false;$('sort').value='rating-asc';savePreferences();render();};
   render();
   document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
   $('account').onclick=()=>{updateAccount();$('auth').showModal();};

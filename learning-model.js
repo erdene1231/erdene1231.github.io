@@ -8,9 +8,11 @@ export function canonicalKey(problem) {
   } catch {}
   return String(problem.source).trim().toLowerCase() + '|' + String(problem.ref).trim().toLowerCase();
 }
+export function problemReferenceKey(problem){return Number.isSafeInteger(problem.number)&&problem.number>0?String(problem.number):canonicalKey(problem);}
+export function normalizeProblemReferences(value,problems){const idx=problemIndex(problems),copy=structuredClone(value);const key=k=>idx.has(String(k))?problemReferenceKey(idx.get(String(k))):k;function walk(v){if(!v||typeof v!=='object')return;if(v.type==='problem')v.problemKey=key(v.problemKey);if(v.learningRelations?.practice)for(const p of v.learningRelations.practice)p.key=key(p.key);if(typeof v._draftRelationsText==='string')try{const r=JSON.parse(v._draftRelationsText);for(const p of r.practice||[])p.key=key(p.key);v._draftRelationsText=JSON.stringify(r,null,2);}catch{}for(const x of Object.values(v))if(x&&typeof x==='object')walk(x);}walk(copy);return copy;}
 export function problemIndex(problems) {
   const index = new Map();
-  for (const p of problems) { index.set(p.id, p); if (!index.has(canonicalKey(p))) index.set(canonicalKey(p), p); }
+  for (const p of problems) { index.set(p.id, p);if(Number.isSafeInteger(p.number)&&p.number>0)index.set(String(p.number),p); if (!index.has(canonicalKey(p))) index.set(canonicalKey(p), p); }
   return index;
 }
 export function resolvePractice(list, problems) {

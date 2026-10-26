@@ -25,7 +25,7 @@ export function filterProblems(problems, progress, filters) {
       &&(!band||(Number.isFinite(p.rating)&&p.rating>=band[0]&&p.rating<=band[1]))
       &&(min===null||(Number.isFinite(p.rating)&&p.rating>=min))&&(max===null||(Number.isFinite(p.rating)&&p.rating<=max))
       &&(!filters.status||(filters.status==='hinted'?e.hints>0:e.status===filters.status))
-      &&words.every(word=>haystack.includes(word));
+      &&words.every(word=>/^#[0-9]+$/.test(word)?Number(p.number)===Number(word.slice(1)):haystack.includes(word));
   });
   return result.sort((a,b)=>{
     if(filters.sort==='number-asc')return a.number-b.number;
