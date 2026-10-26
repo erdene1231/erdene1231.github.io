@@ -28,7 +28,7 @@ try:
   page.goto(base+'/index.html',wait_until='networkidle')
   page.evaluate('''async()=>{
    window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
-   const {renderBlock,drawArticle}=await import('/tutorials.js?v=25');
+   const {renderBlock,drawArticle}=await import('/tutorials.js?v=26');
    window.renderBlock=renderBlock;window.drawArticle=drawArticle;
    const lessons=(await (await fetch('/tutorials.json')).json()).tutorials;
    window.original=structuredClone(lessons[0]);window.fixture=structuredClone(original);
@@ -77,10 +77,10 @@ try:
     return Math.abs(point.x-(box.x+box.width/2))<1&&Math.abs(point.y-(box.y+box.height/2))<1;
    }''')
    out=ROOT/'audit/browser';out.mkdir(parents=True,exist_ok=True)
-   page.screenshot(path=str(out/f'step-003-{width}-{theme}.png'),full_page=True)
+   page.screenshot(path=str(out/f'step-005-{width}-{theme}.png'),full_page=True)
   report['desktop_mobile_light_dark_overflow']='PASS'
   page.evaluate('''async()=>{
-   const {setupLearning}=await import('/learning.js?v=25');
+   const {setupLearning}=await import('/learning.js?v=26');
    const catalog=(await (await fetch('/problems.json')).json()).problems;
    window.learningProgress={};window.openedProblem=null;
    window.learning=await setupLearning({client:()=>null,user:()=>null,profile:()=>null,
@@ -107,12 +107,13 @@ try:
    document.querySelector('#compat-reader').hidden=true;
    // Reuse the real form; mount it directly to remove routing dependencies.
    const form=document.getElementById('tutorial-admin-form');document.body.append(form);
-   const {setupTutorialEditor}=await import('/tutorial-editor.js?v=25');
+   const {setupTutorialEditor}=await import('/tutorial-editor.js?v=26');
    const topics=lessons.map(t=>({...structuredClone(t),revision:9}));topics[0]={...structuredClone(fixture),revision:9};
-   window.savedPayload=null;
+   window.savedPayload=null;window.draftCalls=[];window.draftOffline=false;
    const client={rpc:async(name,args)=>{
     if(name==='is_admin')return {data:true,error:null};
-    if(name==='admin_save_tutorial'){window.savedPayload=structuredClone(args.p_body);return {data:{body:args.p_body,revision:10},error:null};}
+    if(name==='admin_tutorial_document')return {data:{current:{body:fixture,revision:9},draft:null},error:null};
+    if(name==='admin_save_tutorial_draft'){draftCalls.push(name);if(draftOffline)return {error:Error('offline')};window.savedPayload=structuredClone(args.p_body);return {data:{body:args.p_body,revision:1},error:null};}
     throw new Error('Unexpected RPC '+name);
    }};
    window.editor=setupTutorialEditor({topics:()=>topics,learning:()=>null,ready:()=>true,client:()=>client,user:()=>({id:'fixture-admin'}),reload:()=>{},saved:()=>{}});
@@ -123,20 +124,29 @@ try:
   assert 'Англи хувилбар' in page.locator('#tutorial-admin-message').inner_text()
   assert page.locator('#tutorial-admin-sections textarea[data-block]').count()==2
   page.locator('#tutorial-admin-title').fill('Preserved MN title edit')
-  page.locator('#tutorial-admin-save').click()
+  # Input autosaves without pressing the save button.
   page.wait_for_function('window.savedPayload !== null')
   assert page.evaluate('JSON.stringify(savedPayload.sections[0].blocks[0])===richBefore')
   assert page.evaluate('savedPayload.translations===undefined')
   assert page.evaluate('savedPayload.title')=='Preserved MN title edit'
   assert page.evaluate('savedPayload.id===fixture.id')
   report['legacy_editor_preserves_rich_and_mn_only']='PASS'
+  page.evaluate('window.draftOffline=true')
+  page.locator('#tutorial-admin-title').fill('Offline recoverable title')
+  page.wait_for_function("document.querySelector('#tutorial-admin-message').textContent.includes('Онлайн хадгалалт амжилтгүй')")
+  assert page.evaluate("JSON.parse(localStorage.getItem('erdene:tutorial-draft:v3:fixture-admin:'+fixture.id)).body.title")=='Offline recoverable title'
+  page.evaluate('window.draftOffline=false')
+  page.locator('#tutorial-admin-save').click()
+  page.wait_for_function("savedPayload.title==='Offline recoverable title'")
+  assert page.evaluate("draftCalls.every(name=>name==='admin_save_tutorial_draft')")
+  report['autosave_offline_retry_private_rpc']='PASS'
   # Fresh real tutorial setup checks routine same-account notifications do not
   # rebuild the article or reset the reader's position.
   page.reload(wait_until='networkidle')
   page.evaluate('''async()=>{
    window.MathJax={startup:{promise:Promise.resolve()},typesetPromise:async()=>{},typesetClear:()=>{}};
    location.hash='#tutorial/complexity';
-   const {setupTutorials}=await import('/tutorials.js?v=25');
+   const {setupTutorials}=await import('/tutorials.js?v=26');
    window.tutorialUI=setupTutorials({client:()=>null,user:()=>null,learning:()=>null});
   }''')
   page.wait_for_function("document.querySelector('#tutorial-content > section')!==null && document.querySelector('#tutorial-content').getAttribute('aria-busy')==='false'")
@@ -153,5 +163,5 @@ try:
   report['page_errors']=[]
   browser.close()
 finally:server.shutdown()
-(ROOT/'audit/STEP-003-BROWSER.json').write_text(json.dumps(report,indent=2)+'\n')
+(ROOT/'audit/STEP-005-BROWSER.json').write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps(report))
