@@ -1,3 +1,4 @@
+import {openProblemSelection} from './problem-selection-dialog.js?v=34';
 import {setAdminRoute} from './navigation.js?v=23';
 import {rpc,accountError} from './accounts.js?v=6';
 import {validateProblem,parseProblemImport,validateSource,getSources} from './problem-store.js?v=23';
@@ -30,6 +31,8 @@ export function setupAdmin(ctx) {
   try{await rpc(ctx.client(),'admin_archive_problem',{p_number:p.number,p_revision:p.revision,p_archived:!wasArchived});if(uid!==ctx.user()?.id)return;await ctx.refreshCatalog();setBusy(false);await load();$('admin-message').textContent=wasArchived?'Бодлого сэргээгдлээ.':'Бодлогыг жагсаалтаас хаслаа. Progress хадгалагдсан.';}
   catch(e){if(uid===ctx.user()?.id)$('admin-message').textContent=accountError(e);}finally{setBusy(false);}
  };
+ const chooseProblem=document.createElement('button');chooseProblem.type='button';chooseProblem.textContent='Засах бодлого сонгох…';$('admin-choose').closest('label').hidden=true;$('admin-search').closest('label').hidden=true;$('admin-choose').closest('.admin-picker').append(chooseProblem);
+ chooseProblem.onclick=()=>{if(!admin||busy)return;const actor=ctx.user()?.id;openProblemSelection({problems:()=>rows,progress:()=>ctx.progress?.()||{},multiple:false,includeArchived:$('admin-show-archived').checked,valid:()=>admin&&!busy&&actor===ctx.user()?.id,onSelect:items=>{if(items[0])edit(items[0]);}});};
  $('admin-choose').onchange=()=>{edit(rows.find(p=>p.number===Number($('admin-choose').value))||null);$('admin-message').textContent='';};$('admin-new').onclick=()=>{edit(null);$('admin-message').textContent='';};$('admin-reload').onclick=()=>void load();$('admin-search').addEventListener('input',renderChoices);$('admin-show-archived').onchange=renderChoices;
  $('admin-source').onchange=()=>{if($('admin-source').value!=='Codeforces')$('admin-rating-kind').value='estimated';};
 

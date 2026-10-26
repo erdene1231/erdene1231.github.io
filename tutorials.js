@@ -1,10 +1,10 @@
-import {renderExtendedBlock} from './tutorial-block-renderer.js?v=33';
-import {clearMediaCache} from './tutorial-media.js?v=33';
+import {renderExtendedBlock} from './tutorial-block-renderer.js?v=34';
+import {clearMediaCache} from './tutorial-media.js?v=34';
 import {loadLearningContent,bodyHash} from './learning-model.js?v=23';
 import {algorithmDemo} from './algorithm-demos.js?v=23';
 import {segmentTreeDemo} from './segment-tree-demo.js?v=16';
-import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=33';
-import {setupTutorialEditor} from './tutorial-editor.js?v=33';
+import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=34';
+import {setupTutorialEditor} from './tutorial-editor.js?v=34';
 const $=id=>document.getElementById(id);
 export const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
 let mathPromise=null,mathQueue=Promise.resolve();
@@ -42,12 +42,13 @@ function renderSample(b,parent,lang){
  bar.append(label,button);panel.append(bar,pre,status);parent.append(panel);
 }
 export function drawArticle(t,parent,lang,options={}){const v=view(t,lang);parent.replaceChildren();for(const [i,s] of v.sections.entries()){
+ const draw=(b,target)=>{if(!options.draftPreview){renderBlock(b,target,lang,options);return;}try{renderBlock(b,target,lang,options);}catch{target.append(node('aside','Дутуу '+(b?.type||'block')+' — editor дээр бөглөнө үү.','tutorial-note'));}};
  const part=node('section');part.id='tutorial-'+t.id+'-'+i;part.append(node('h3',s.title));
  for(let j=0;j<s.blocks.length;j++){
   const b=s.blocks[j],next=s.blocks[j+1];
   if(b?.type==='code'&&b.language==='Input'&&next?.type==='code'&&next.language==='Output'){
-   const pair=node('div',undefined,'tutorial-samples');pair.setAttribute('role','group');pair.setAttribute('aria-label',lang==='en'?'Sample input and output':'Жишээ оролт ба гаралт');renderBlock(b,pair,lang,options);renderBlock(next,pair,lang,options);part.append(pair);j++;
-  }else renderBlock(b,part,lang,options);
+   const pair=node('div',undefined,'tutorial-samples');pair.setAttribute('role','group');pair.setAttribute('aria-label',lang==='en'?'Sample input and output':'Жишээ оролт ба гаралт');draw(b,pair);draw(next,pair);part.append(pair);j++;
+  }else draw(b,part);
  }
  if(t.id==='segment-tree'&&i===3)part.append(segmentTreeDemo(lang,typeset));if(i===3){const demo=algorithmDemo(t.id,lang,typeset);if(demo)part.append(demo);}parent.append(part);
 }}

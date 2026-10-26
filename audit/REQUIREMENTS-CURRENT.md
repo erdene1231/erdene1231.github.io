@@ -1,3 +1,11 @@
+# Latest — named IDs, shared popup, preview and workspace
+
+Name-derived IDs, full catalog popup filters/bulk selection, unfinished-draft
+preview and editor UI locally implemented/tested. Existing IDs stay fixed; no
+production calls. Evidence: EDITOR-DIALOG.md / EDITOR-DIALOG-VERIFICATION.json.
+Original source rows remain intact; supplemental requests are appended in JSON.
+Merge/deploy/live authenticated UI remain separate. Frontend cache graph v34.
+
 # Latest checkpoint — tutorial lifecycle, picker and Input/Output
 
 User-added requirements are retained in `REQUIREMENTS-CURRENT.json` supplemental_requests;

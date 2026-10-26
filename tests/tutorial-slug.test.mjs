@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {tutorialSlug} from '../tutorial-slug.js';
+test('tutorial IDs use names, transliterate Mongolian and never invent numeric IDs',()=>{assert.equal(tutorialSlug('Binary Search on Answer'),'binary-search-on-answer');assert.equal(tutorialSlug('Хугацааны төвөгшил'),'khugatsaany'+'-tovogshil');assert.equal(tutorialSlug('12345'),'');assert.equal(tutorialSlug('!!!'),'');assert(tutorialSlug('A'.repeat(120)).length<=80);});
