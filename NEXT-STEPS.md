@@ -1,3 +1,12 @@
+# Latest — full source reading and expanded checklist (planning only)
+
+Read audit/MASTER-WORK-CHECKLIST.md and its VERIFICATION.json first. This expands
+the broad phase plan into concrete work items, acceptance criteria, dependencies,
+latest user overrides and all319 original topic mentions. No feature or production
+change in this checkpoint. Keep current editor fixes; no migration replay. Next
+implementation starts only after this planning request, with actual deployment
+status/reference contract audit. Original1467 source rows/status evidence retained.
+
 # Latest — v39 workflow complete locally; original backlog execution
 
 Read audit/PUBLICATION-WORKFLOW.md, DELIVERY-PLAN.md/JSON and DELIVERY-FIRST-GAP-AUDIT.json.
