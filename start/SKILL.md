@@ -101,6 +101,14 @@ production tutorial was removed to test this capability. Permanent removal keeps
 an ID-only tombstone; all surviving IDs/progress remain stable. Never delete
 Storage objects through SQL; issued signed URLs can survive their TTL.
 
+## Editor selection and preview checkpoint
+
+v34 adds name-derived tutorial IDs, shared modal problem filters/checkboxes,
+private draft preview repair and a refreshed editor workspace. Existing IDs and
+progress remain stable. See audit/EDITOR-DIALOG.md and NEXT-STEPS.md. No Supabase
+calls or migrations in this checkpoint. 028 remains applied; do not replay it.
+Frontend tests use mocked Auth/RPC; merge/deploy and live admin checks are separate.
+
 ## Persistence boundary
 
 The repository tracks this skill, client, metadata query, comparison tool and audit

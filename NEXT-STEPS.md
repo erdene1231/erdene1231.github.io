@@ -1,3 +1,18 @@
+# Latest — named IDs, selection dialogs, preview and editor UI
+
+Branch `codex/problem-selection-dialog`, complete frontend v34.
+Read audit/EDITOR-DIALOG.md and verification JSON. Actual commit/PR/remote SHA are
+in downloadable ZIP REMOTE-VERIFICATION.json. Review/merge/deploy separately.
+New IDs derive from names; existing IDs stay fixed. Shared popup filters match
+the Problems page and use the current catalog/own progress. Practice max30 remains;
+block bulk selection splits into <=100-block sections with one Undo step.
+Preview supports unfinished private drafts; publication validation stays strict.
+No production calls or DB changes in this task. 028 is already applied; do not
+replay021-025 or028. Next planned010 still requires auditing latest028 metadata
+before evaluating pending026/027. See earlier handoff for storage/live verification.
+Run npm test; python3 tests/browser/editor-regressions.py;
+python3 tests/browser/problem-dialog.py. Browser RPC/Auth are synthetic mocks.
+
 # Latest: tutorial lifecycle, full problem picker, sample design
 
 Branch `codex/tutorial-removal`, parent main `31b66a95cf155cd6ef18c1796fc138865385ba4b`
