@@ -1,3 +1,7 @@
+# Import authority planning only
+
+Noadditionalproductionwritesafter036. Existingapp-adminRPCrequiresreal authenticatedadmin;SQLMCPcontext42501mustnotbebypassed. Noexistingowner-specificmaintenanceimporterfound. See `audit/PART04-IMPORT-AUTHORITY-OPTIONS.md` for preferredsigned-inadminrunner and separatelyauthorizedone-offownerjob specification;245identity/hashallowlist in `PART04-IMPORT-AUTHORITY-ALLOWLIST.json`. Runner/job notimplementedorexecutedunderplanning-onlyscope.035exactaccessapprovalseparate in `PART04-035-ACCESS-APPROVAL.md`. No credentials/tokens/claims/RLSchanges,0imports,no newuser/avatar/Storagewrites,merge/deploy/package2.
+
 # Approved036applied;importauthcontextblocker
 
 036appliedsuccessfully;freshverificationexactlytwofunctionreplacements+oneprivatehelper,grants/RLS/Storage/catalog/revisions/sequenceunchanged.748problems/56tutorials,0newimports. ExistingSupabaseconnectionworks;SQLauth.uidnull/is_adminfalse. Actualsupportedserverdry-runrejected42501beforeprocessing;no retry/impersonation. See `audit/PART04-PRODUCTION-036-RESULT.json`. Need parentresolveapp-adminexecutionorreviewedguardedowner-maintenanceimport,notnewcredentials.032–035notapplied;035avataraccessstillseparate. PR21targetsmainandisready. No package2transition.
