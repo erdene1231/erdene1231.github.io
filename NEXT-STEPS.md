@@ -1,3 +1,9 @@
+# Current checkpoint — medium statement batch03
+
+aa draft reviewed against fresh authoritative source and repaired with output layout, native attribution and provenance. Added original MN/EN statements for a,d,g with exact constraints (notably g N/Q<=300000), samples and operation/objective definitions.16statement documents/64renderer combinations, independent source-sample/fingerprint tests and synthetic SQL pass. aa SQL fixture is synthetic Medium solely to isolate statement publication; actual bank remains High and lacks editorial/hints. No fake full-ready credit.
+
+Counts:full/local-import-ready15,statement-ready16,source92unchanged,editorial explanations47(45new+2baseline),C++15verified/30new explanations unimplemented.77prepared full-content gaps,76statement gaps,47editorial gaps;153source reviews,713baseline reviews,748baseline statements,164existing CPPblocks remain. Production0;032/033/034proposals only; PR20draft, no merge/deploy/permissions. Previous startup fix unchanged. Previous aa draft is marked superseded, not double-counted.
+
 # Low-effort draft checkpoint — typical90_aa
 
 One isolated MN/EN statement draft is in audit/statement-drafts/typical90-aa.json. Official source200, constraints/sample text inspected; native schema, literal sample pairs and actual MN/EN renderer/MathJax passed. Medium semantic/translation/rights review remains REQUIRED, including output layout and adding native attribution/provenance. No review flags or ready credit assigned; not inserted in staged import records or review registry. Full-ready remains12, all previous coverage unchanged. Resume medium review before promotion.

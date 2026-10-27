@@ -8,7 +8,7 @@ class Quiet(http.server.SimpleHTTPRequestHandler):
 server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(Quiet,directory=str(ROOT)));threading.Thread(target=server.serve_forever,daemon=True).start();base=f'http://127.0.0.1:{server.server_port}'
 entries=[p for p in json.loads((ROOT/'audit/PART04-REVIEWED-NEW-TASKS.json').read_text())if p.get('statement')];pool=[];docs={}
 for i,p in enumerate(entries,1):
- pid='statement-'+str(i);docs[pid]={'body':p['statement'],'provenance':p['statementProvenance'],'problemRevision':1,'revision':1};meta={**p,'id':pid,'number':i,'revision':1,'priorityLevel':'low'if i==1 else'high','priority':i!=1,'tags':['secret-tag'],'hasStatement':True,'hasEditorial':False};meta.pop('statement');meta.pop('statementProvenance');meta.pop('editorial');pool.append(meta)
+ pid='statement-'+str(i);docs[pid]={'body':p['statement'],'provenance':p['statementProvenance'],'problemRevision':1,'revision':1};meta={**p,'id':pid,'number':i,'revision':1,'priorityLevel':'low'if i==1 else'high','priority':i!=1,'tags':['secret-tag'],'hasStatement':True,'hasEditorial':False};meta.pop('statement');meta.pop('statementProvenance');meta.pop('editorial',None);pool.append(meta)
 checks=[]
 try:
  with sync_playwright()as pw:
