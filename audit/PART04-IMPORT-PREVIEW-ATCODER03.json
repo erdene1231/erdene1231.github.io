@@ -1435,8 +1435,16 @@
     "priorityReason": "Permutation enumeration-ийн feasibility/objective-г салгаж constraint-оос factorial algorithm сонгох бүрэн search practice.",
     "rating": 1300,
     "ratingKind": "estimated",
-    "hints": [],
-    "hintsEn": [],
+    "hints": [
+      "Тамирчдыг үе шатуудад хуваарилах нь $N$ тамирчны нэг permutation юм.",
+      "Хориотой хосыг хоёр чиглэлд тэмдэглэ. Permutation-ийн хөрш тамирчдын дунд ийм хос байвал орхи.",
+      "Зөв дараалал бүрт үе шат $j$-ийн тамирчны $A_{i,j}$ хугацааг нэм. Бүх зөв дарааллын minimum; нэг ч байхгүй бол `-1`."
+    ],
+    "hintsEn": [
+      "Assigning runners to the relay legs is a permutation of all $N$ runners.",
+      "Mark each forbidden pair in both directions. Reject orders containing such a pair at adjacent positions.",
+      "For every valid order, sum $A_{i,j}$ for the runner assigned to leg $j$. Minimize, or print `-1` if no order works."
+    ],
     "tags": [
       "brute force"
     ],
@@ -1445,7 +1453,484 @@
     "ratingBasis": "Rough CF-scale calibration: N<=10 permutation enumeration with adjacent feasibility checks and runner-position objective; reject impossible permutations. Not official.",
     "ratingConfidence": "rough",
     "ratingEstimatedAt": "2026-10-27",
-    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_af"
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_af",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-af",
+      "title": "AtCoder Ekiden — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Тамирчин бүр яг нэг үе, үе бүр яг нэг тамирчинтай тул зөв хуваарилалт permutation-тэй харилцан нэг утгатай. Permutation бүрийг нэг удаа үзэхэд бүх хуваарилалтыг хамарна. Дараалсан үеийн тамирчид л бие биедээ дамжуулах тул зөв эсэхийг зөвхөн хөршүүдээр шалгах нь шаардлагатай бөгөөд хангалттай. Хорио хоёр чиглэлд үйлчилнэ; эхний ба сүүлийн тамирчныг тойрог мэт шалгахгүй. Зөв permutation-ийн хугацааг матрицын тамирчин мөр, үе баганаас нэмээд minimum авахад optimum гарна. Зөв дараалал байхгүй бол sentinel хэвээр үлдэнэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Бэлтгэл: ",
+                  "marks": []
+                },
+                {
+                  "text": "time",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " матриц, симметрик ",
+                  "marks": []
+                },
+                {
+                  "text": "forbidden",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " хүснэгт, өсөх ",
+                  "marks": []
+                },
+                {
+                  "text": "order",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " permutation. ",
+                  "marks": []
+                },
+                {
+                  "text": "do...while(next_permutation)",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь эхний дарааллыг болон $N=1$-ийг ч шалгана. Гол алхам: хөрш хоригийг шалгаж, зөв бол ",
+                  "marks": []
+                },
+                {
+                  "text": "time[order[leg]][leg]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийг нэмнэ. Гаралт: minimum эсвэл ",
+                  "marks": []
+                },
+                {
+                  "text": "-1",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ". Хугацаа $O(N\\cdot N!)$, санах ой $O(N^2)$; нийт хугацаа хамгийн ихдээ $10000$ тул ",
+                  "marks": []
+                },
+                {
+                  "text": "int",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " хангалттай.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> time(n, vector<int>(n));\n    for (auto &row : time) for (int &value : row) cin >> value;\n    int pairCount;\n    cin >> pairCount;\n    vector<vector<bool>> forbidden(n, vector<bool>(n));\n    for (int i = 0; i < pairCount; ++i) {\n        int first, second;\n        cin >> first >> second;\n        --first;\n        --second;\n        forbidden[first][second] = forbidden[second][first] = true;\n    }\n    vector<int> order(n);\n    iota(order.begin(), order.end(), 0);\n    const int infinity = 1000000000;\n    int bestTime = infinity;\n    do {\n        bool valid = true;\n        for (int leg = 1; leg < n; ++leg) {\n            if (forbidden[order[leg - 1]][order[leg]]) valid = false;\n        }\n        if (!valid) continue;\n        int totalTime = 0;\n        for (int leg = 0; leg < n; ++leg) totalTime += time[order[leg]][leg];\n        bestTime = min(bestTime, totalTime);\n    } while (next_permutation(order.begin(), order.end()));\n    cout << (bestTime == infinity ? -1 : bestTime) << '\\n';\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_af"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/032.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-af",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "AtCoder Ekiden",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$N$ тамирчныг дараалсан $N$ үе шатанд тус бүр яг нэг удаа хуваарилна. Тамирчин $i$ үе $j$-г гүйхэд $A_{i,j}$ хугацаа зарцуулна. Өгөгдсөн хориотой хосын хоёр тамирчин хөрш үе шатанд аль ч дарааллаар гүйж болохгүй. Нийт хугацааны minimum-ийг ол; зөв хуваарилалтгүй бол үүнийг мэдээл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхлээд $N$, дараах $N$ мөрөнд тамирчин бүрийн $N$ хугацаа байна. Дараа нь $M$, түүний дараах $M$ мөрөнд хориотой хос $X_i,Y_i$ өгнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "N\nA_{1,1} ... A_{1,N}\n...\nA_{N,1} ... A_{N,N}\nM\nX_1 Y_1\n...\nX_M Y_M\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Хамгийн бага нийт хугацааг хэвлэ; боломжгүй бол ",
+                  "marks": []
+                },
+                {
+                  "text": "-1",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " хэвлэ. Зөвхөн дараалсан үеүүд хөрш, эхний ба сүүлийн үе хоорондоо хөрш биш.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$1\\le N\\le10$; $1\\le A_{i,j}\\le1000$; $0\\le M\\le N(N-1)/2$; $1\\le X_i<Y_i\\le N$. Хориотой хосууд ялгаатай. Бүх оролт бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "3\n1 10 100\n10 1 100\n100 10 1\n1\n1 2\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "111\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "4\n1 2 3 4\n5 6 7 8\n9 10 11 12\n13 14 15 16\n3\n1 2\n1 3\n2 3\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "-1\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "3\n1 10 100\n10 1 100\n100 10 1\n0\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "3\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_af"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "AtCoder Ekiden",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Assign $N$ runners bijectively to $N$ consecutive relay legs. Runner $i$ takes time $A_{i,j}$ on leg $j$. Neither order of a forbidden runner pair may occur on adjacent legs. Find the minimum total time, or report that no assignment is possible.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The input gives $N$, then an $N$-by-$N$ matrix whose rows are runners and columns are legs. Next come $M$ and $M$ forbidden pairs $X_i,Y_i$.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "N\nA_{1,1} ... A_{1,N}\n...\nA_{N,1} ... A_{N,N}\nM\nX_1 Y_1\n...\nX_M Y_M\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print the minimum total time, or ",
+                      "marks": []
+                    },
+                    {
+                      "text": "-1",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " if impossible. Only consecutive legs are adjacent; the first and last legs are not joined.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$1\\le N\\le10$; $1\\le A_{i,j}\\le1000$; $0\\le M\\le N(N-1)/2$; $1\\le X_i<Y_i\\le N$. Forbidden pairs are distinct. All input values are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "3\n1 10 100\n10 1 100\n100 10 1\n1\n1 2\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "111\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "4\n1 2 3 4\n5 6 7 8\n9 10 11 12\n13 14 15 16\n3\n1 2\n1 3\n2 3\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "-1\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "3\n1 10 100\n10 1 100\n100 10 1\n0\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "3\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_af"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_af",
+      "sourceSha256": "22bdceeaf700a6822747cb6e1e6a083c6bc94ae74d827c37134bee22ede5aa15",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    }
   },
   {
     "source": "AtCoder",
@@ -3316,8 +3801,16 @@
     "priorityReason": "Pair enumeration-оос contribution counting руу шилжих болон subtree size-ийг холбох цөм tree observation.",
     "rating": 1800,
     "ratingKind": "estimated",
-    "hints": [],
-    "hintsEn": [],
+    "hints": [
+      "Оройн хос бүрийг тусад нь тоолохын оронд ирмэг бүр хэдэн замд ордгийг тоол.",
+      "Нэг ирмэгийг хасахад мод $s$ ба $N-s$ оройтой хоёр хэсэгт хуваагдана.",
+      "Энэ ирмэгийг яг $s(N-s)$ хосын зам ашиглана. Subtree хэмжээ бүрээс ийм contribution нэм; гүн модонд recursion шаардлагагүй."
+    ],
+    "hintsEn": [
+      "Count how many paths use each edge instead of computing every pair’s distance.",
+      "Deleting an edge splits the tree into components of sizes $s$ and $N-s$.",
+      "Exactly $s(N-s)$ unordered pairs use that edge. Sum these contributions using subtree sizes; an iterative traversal avoids deep recursion."
+    ],
     "tags": [
       "trees"
     ],
@@ -3326,7 +3819,444 @@
     "ratingBasis": "Rough CF-scale calibration: Reframe all-pairs tree distance as per-edge s*(N-s) contributions; subtree-size proof beyond basic DFS. Not official.",
     "ratingConfidence": "rough",
     "ratingEstimatedAt": "2026-10-27",
-    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_am"
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_am",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-am",
+      "title": "Tree Distance — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Модны хоёр оройн хооронд цорын ганц энгийн зам бий. Зай нь тэр замын ирмэгийн тоо. Хосоор нь замын уртыг нэмэхийн оронд ирмэгээр нь хэдэн зам дайрсныг нэмэхэд ижил нийлбэр гарна. Нэг ирмэгээр зам дайрахын тулд хоёр үзүүр нь уг ирмэгийг хасахад үүсэх өөр хэсгүүдэд байх ёстой бөгөөд хангалттай. Хэсгүүдийн хэмжээ $s$, $N-s$ бол ийм эрэмбэгүй хосын тоо $s(N-s)$; хоёр дахин тоолохгүй. Модыг нэг оройд үндэслэхэд хүүхдийн subtree хэмжээ нь $s$. Хүүхдүүдийг эхэлж нэгтгээд contribution-уудыг нэмэх нь бүх ирмэгийг яг нэг удаа тооцно.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Бэлтгэл: adjacency list, ",
+                  "marks": []
+                },
+                {
+                  "text": "parent",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ", үндсээс гарах ",
+                  "marks": []
+                },
+                {
+                  "text": "order",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " дарааллыг давталтаар байгуулна. Мод тул зөвхөн эцэг рүүгээ буцах ирмэгийг алгасахад хангалттай. Гол алхам: ",
+                  "marks": []
+                },
+                {
+                  "text": "order",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийг урвуугаар үзэж ",
+                  "marks": []
+                },
+                {
+                  "text": "subtreeSize[vertex]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ээс ирмэгийн contribution нэмээд эцэгт нь хэмжээг нэмж өгнө. Үндсэнд эцгийн ирмэг байхгүй тул орхино. Гаралт: бүх хосын зайн нийлбэр. Хугацаа/санах ой $O(N)$; $N=100000$ урт замд stack overflow үүсгэхгүй. Үржвэр ба хариу ",
+                  "marks": []
+                },
+                {
+                  "text": "long long",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ".",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> neighbors(n);\n    for (int i = 0; i < n - 1; ++i) {\n        int first, second;\n        cin >> first >> second;\n        --first;\n        --second;\n        neighbors[first].push_back(second);\n        neighbors[second].push_back(first);\n    }\n    vector<int> parent(n, -1), order{0};\n    for (int index = 0; index < n; ++index) {\n        int vertex = order[index];\n        for (int next : neighbors[vertex]) {\n            if (next == parent[vertex]) continue;\n            parent[next] = vertex;\n            order.push_back(next);\n        }\n    }\n    vector<long long> subtreeSize(n, 1);\n    long long answer = 0;\n    for (int index = n - 1; index > 0; --index) {\n        int vertex = order[index];\n        answer += subtreeSize[vertex] * (n - subtreeSize[vertex]);\n        subtreeSize[parent[vertex]] += subtreeSize[vertex];\n    }\n    cout << answer << '\\n';\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_am"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/039.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-am",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "Tree Distance",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$1$-ээс $N$ хүртэл дугаарласан оройтой модны ирмэг бүр урт $1$. Бүх эрэмбэгүй ялгаатай оройн хосын хоорондох зайн нийлбэр $\\sum_{1\\le u<v\\le N}\\operatorname{dist}(u,v)$-ийг ол. Зай нь хоёр оройн хамгийн богино замын урт.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхлээд $N$, дараах $N-1$ мөрөнд чиглэлгүй ирмэгийн хоёр үзүүр өгөгдөнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "N\na_1 b_1\n...\na_{N-1} b_{N-1}\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Нийлбэрийг нэг бүхэл тоогоор хэвлэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$2\\le N\\le100000$; ирмэгийн үзүүр бүр $1$-ээс $N$ дотор. Өгөгдсөн граф мод. Бүх оролт бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "2\n1 2\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "4\n1 2\n1 3\n1 4\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "9\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "12\n1 2\n3 1\n4 2\n2 5\n3 6\n3 7\n8 4\n4 9\n10 5\n11 7\n7 12\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "211\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_am"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Tree Distance",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Every edge of a tree with vertices labeled $1$ through $N$ has length $1$. Find $\\sum_{1\\le u<v\\le N}\\operatorname{dist}(u,v)$, the sum of shortest-path distances over unordered pairs of distinct vertices.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The input gives $N$, followed by $N-1$ undirected endpoint pairs.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "N\na_1 b_1\n...\na_{N-1} b_{N-1}\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print the distance sum as an integer.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$2\\le N\\le100000$. Every endpoint is between $1$ and $N$. The given graph is a tree, and all input values are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "2\n1 2\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "4\n1 2\n1 3\n1 4\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "9\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "12\n1 2\n3 1\n4 2\n2 5\n3 6\n3 7\n8 4\n4 9\n10 5\n11 7\n7 12\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "211\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_am"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_am",
+      "sourceSha256": "898ff00ac2d87de576df3b9368a2d5e5bb7e7617bfd49b2183d5e02010a804d3",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    }
   },
   {
     "source": "AtCoder",

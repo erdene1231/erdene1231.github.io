@@ -5030,8 +5030,16 @@
     "priorityReason": "Олон loop-оос нэг хувьсагчийг equation-оор арилгах, constraint-based search болон greedy counterexample-ийн суурь practice.",
     "rating": 1400,
     "ratingKind": "estimated",
-    "hints": [],
-    "hintsEn": [],
+    "hints": [
+      "Хамгийн их үнэтэй зоосыг түрүүлж авах greedy нь дурын гурван үнэд баталгаатай юу?",
+      "Хоёр төрлийн зоосны тоог сонгочихвол үлдсэн төлбөрөөс гурав дахь тоо цорын ганцаар тодорхойлогдоно.",
+      "Зөв шийдэл $9999$-өөс олонгүй зоостой гэсэн баталгааг ашигла. Үлдэгдэл сөрөг биш, гурав дахь үнэд хуваагддаг сонголтуудаас нийт тоог багасга."
+    ],
+    "hintsEn": [
+      "Is taking the largest denomination first guaranteed to work for arbitrary coin values?",
+      "After fixing the counts of two coin types, the remaining payment uniquely determines the third count.",
+      "Use the guarantee of a solution with at most $9999$ coins. Among nonnegative remainders divisible by the third value, minimize the total count."
+    ],
     "tags": [
       "brute force"
     ],
@@ -5040,7 +5048,482 @@
     "ratingBasis": "Rough CF-scale calibration: Eliminate one of three coin-count variables using divisibility; choose bounded enumeration despite large target. Not official.",
     "ratingConfidence": "rough",
     "ratingEstimatedAt": "2026-10-27",
-    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_p"
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_p",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-p",
+      "title": "Minimum Coins — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Нэг зөв шийдэл хамгийн ихдээ $9999$ зоостой тул optimum ч энэ хязгаарт байна. Түүний эхний хоёр төрлийн тоо хоёулаа энэ хязгаараас ихгүй. Тэдгээрийг бүрэн тоолж үзэхэд optimum-ийн хос заавал таарна. Хосыг тогтооход үлдсэн мөнгө гурав дахь үнэд хуваагдвал гурав дахь тоо нь цорын ганц, хуваагдахгүй бол ийм хостой шийдэлгүй. Иймээс бүх боломжит хосоос хамгийн бага нийт тоог авах нь зөв. Одоо олдсон хариунаас эхний хоёр тооны нийлбэр нь бага биш хосыг орхиж болно: гурав дахь тоо сөрөг биш учир хариуг сайжруулахгүй. Үнийн эрэмбэ хамаарахгүй; зоосны greedy хэрэглэхгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Бэлтгэл: ",
+                  "marks": []
+                },
+                {
+                  "text": "bestCount = 10000",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь баталгаатай зөв хариунаас их sentinel. Гол алхам: ",
+                  "marks": []
+                },
+                {
+                  "text": "firstCount",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ", ",
+                  "marks": []
+                },
+                {
+                  "text": "secondCount",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийг өсгөхдөө төлбөр ба одоогийн best хязгаарыг барина. ",
+                  "marks": []
+                },
+                {
+                  "text": "remaining",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь гурав дахь үнэд хуваагдвал candidate тоог харьцуулна. Гаралт: хамгийн бага зоосны тоо. Хугацаа хамгийн муудаа $O(10000^2)$, санах ой $O(1)$. Зоосны үнэ ба үржвэр, үлдэгдэл нь ",
+                  "marks": []
+                },
+                {
+                  "text": "long long",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "; бүх төрлийг дор хаяж нэг удаа авах шаардлагагүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    long long target, firstValue, secondValue, thirdValue;\n    cin >> target >> firstValue >> secondValue >> thirdValue;\n    long long bestCount = 10000;\n    for (long long firstCount = 0;\n         firstCount < bestCount && firstCount * firstValue <= target;\n         ++firstCount) {\n        long long remainingAfterFirst = target - firstCount * firstValue;\n        for (long long secondCount = 0;\n             firstCount + secondCount < bestCount && secondCount * secondValue <= remainingAfterFirst;\n             ++secondCount) {\n            long long remaining = remainingAfterFirst - secondCount * secondValue;\n            if (remaining % thirdValue == 0) {\n                long long count = firstCount + secondCount + remaining / thirdValue;\n                bestCount = min(bestCount, count);\n            }\n        }\n    }\n    cout << bestCount << '\\n';\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_p"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/016.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-p",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "Minimum Coins",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Үнэ нь $A,B,C$ байх гурван төрлийн зоосыг төрөл бүрээс нь хязгааргүй авч болно. Яг $N$ төлөхөд шаардагдах зоосны хамгийн бага нийт тоог ол. Аль нэг төрлийг огт ашиглахгүй байж болно.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхний мөрөнд $N$, дараагийн мөрөнд $A,B,C$ өгнө. Үнэ эрэмбэлэгдсэн байх албагүй.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "N\nA B C\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Хамгийн бага зоосны тоог нэг бүхэл тоогоор хэвлэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$1\\le A,B,C,N\\le10^9$. Гурван үнэ хос хосоороо ялгаатай. Хамгийн ихдээ $9999$ зоос ашиглаад яг $N$ төлөх боломжтой нь баталгаатай. Бүх оролт бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "227\n21 47 56\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "5\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "9999\n1 5 10\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1004\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "998244353\n314159 265358 97932\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "3333\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 4",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "100000000\n10001 10002 10003\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "9998\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_p"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Minimum Coins",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Three coin types have values $A,B,C$, with unlimited supply of each. Find the minimum total number of coins needed to pay exactly $N$. Any coin type may be unused.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The first line gives $N$, and the second gives $A,B,C$. The values need not be sorted.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "N\nA B C\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print the minimum number of coins as an integer.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$1\\le A,B,C,N\\le10^9$. The three values are pairwise distinct. It is guaranteed that exactly $N$ can be paid using at most $9999$ coins. All input values are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "227\n21 47 56\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "5\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "9999\n1 5 10\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1004\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "998244353\n314159 265358 97932\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "3333\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 4",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "100000000\n10001 10002 10003\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "9998\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_p"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_p",
+      "sourceSha256": "a3be2904b2c85abb2f80c3bcf8cdaeb0b3a0af03c4300f81a88d2e3b81b5a1b8",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    }
   },
   {
     "source": "AtCoder",
