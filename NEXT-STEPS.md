@@ -1,3 +1,7 @@
+# Latest PR readiness checkpoint
+
+PR20merged by user;main1c3a215contains713f6e0. PR20metadata corrected. PR21exists at /pull/21;finalsame-account-refreshfix passes82Node+actualadminbrowserchecks. Feature remains off;no liveinstallation claimed. CombinedPR21metadata/baseupdate returnederrored;read-onlycheck showsoriginalstackedbase unchanged. No retry/bypass. Older workflowblocker records below are historical. No production/migration/permission/merge/deploy action or package2transition.
+
 # Workflow handoff — code verified,GitHubPRactionsblocked
 
 PR20remote713f6e0ismergeable/default031compatible,80Node+browsercheckspass,butstilldraft:automaticreviewdeniedmarkready. Followupbranchcodex/part04-admin-remainingcode2d08b71ispushed,82Node+admin/browsercheckspass;newdraftPRcreationalsodenied,noactualPRnumberexists. Do not retry via anotherroute. See `audit/PART04-WORKFLOW-BLOCKERS.json` and prepared `audit/PART04-FOLLOWUP-PR-DESCRIPTION.md` for parenthandoff. Exact4fields: surname/first_name/username/profilepicture.035proposalonly,featureoff;no livewrites/permissions/imports/merge/deploy/package2. Latestcommitaftercodecheckpointisdeliverymetadataonly.
