@@ -1,3 +1,7 @@
+# Lightweight selection batch06 —165/245 eligible,80 remaining
+
+EGOI30/30complete after14new selections from official task pages and linked PDFs. Tags,individual educational priority and rough numeric ratings/provenance supplied;specialized communication/encoding tasks appropriately lower priority. Full-score versus partial-score difficulty distinguished where relevant. No statement/editorial/proof/C++authoring or baseline review. Coverage:AtCoder50/50,CF42/100,IOI8/30,EGOI30/30,APIO15/15,JOI20/20. Remaining80=CF58+IOI22. Existing151records/baseline/completed optional content preserved. No new access failures. Production0;all backend/migration/permission/publication/merge/deploy gates remain.
+
 # Lightweight selection batch05 —151/245 eligible,94 remaining
 
 JOI20/20national-final selections prepared from organizer-attributed AtCoder task pages. SourceJOI determines quota,not hosting domain;no AtCoder double credit. Deliberately excluded existing2018DCommuter Pass and2019DCoin Collecting. Each new row has teaching usefulness,tags,individual priority and rough CF-scale rating/provenance. No statement/editorial/proof/C++authoring or baseline review. Coverage:AtCoder50/50,CF42/100,IOI8/30,EGOI16/30,APIO15/15,JOI20/20. Remaining94=CF58+IOI22+EGOI14. Existing131records/baseline/completed optional content preserved. Production0;all backend/migration/permission/publication/merge/deploy gates remain.
