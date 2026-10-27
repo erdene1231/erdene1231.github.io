@@ -1,3 +1,5 @@
+Status: local code complete and pushed;new PR creation denied by automatic review,no actual PR number assigned. See `PART04-WORKFLOW-BLOCKERS.json`.
+
 # Remaining package4 delivery — separate follow-up PR
 
 Base is PR20 branch `codex/part04-recovered` at713f6e0. This stacked PR isolates admin-profile functionality and all still-unexecuted package4 rollout gates. No force push/history rewrite. User merges PR20 first; recheck/retarget follow-up to main after its base is present, preserving commits. Verify the actual new PR number rather than assuming21.

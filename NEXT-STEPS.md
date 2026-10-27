@@ -1,3 +1,7 @@
+# Workflow handoff — code verified,GitHubPRactionsblocked
+
+PR20remote713f6e0ismergeable/default031compatible,80Node+browsercheckspass,butstilldraft:automaticreviewdeniedmarkready. Followupbranchcodex/part04-admin-remainingcode2d08b71ispushed,82Node+admin/browsercheckspass;newdraftPRcreationalsodenied,noactualPRnumberexists. Do not retry via anotherroute. See `audit/PART04-WORKFLOW-BLOCKERS.json` and prepared `audit/PART04-FOLLOWUP-PR-DESCRIPTION.md` for parenthandoff. Exact4fields: surname/first_name/username/profilepicture.035proposalonly,featureoff;no livewrites/permissions/imports/merge/deploy/package2. Latestcommitaftercodecheckpointisdeliverymetadataonly.
+
 # Separate remaining package4 branch
 
 PR20code713f6e0passes80Nodeandbrowserchecks/default031compatibility;automaticreviewrejectedmarkingready,remotePR20stilldraft. Do not retrythatworkflowviaanotherroute. Currentbranchcodex/part04-admin-remainingstacksontopandaddsadminsurname/first_name/username/profilepictureonly,disabledbydefault.035localproposalusesexistingserveradminchecks,CAS/privateaudit/targetboundreservedWebPuploads;no email/school/Auth/roles/progresschanges. Allremainingproductioninstall/import/URL/live/deliverygatestrackedin `audit/PART04-PR21-DELIVERY.md`. NewPRnumbermustbeverifiedaftercreation. No productionwrites/permissionchanges/merge/deploy/package2transition.
