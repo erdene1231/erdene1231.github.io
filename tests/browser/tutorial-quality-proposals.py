@@ -1,9 +1,11 @@
 """Render guarded local tutorial proposals in the actual editor/reader/MathJax."""
-import functools,http.server,json,subprocess,threading
+import functools,http.server,json,os,subprocess,threading
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[2]
 data=json.loads(subprocess.check_output(['node','--input-type=module','-e',"import fs from'node:fs';import{proposedTutorialRows}from'./tools/part04_tutorial_proposals.mjs';const ids=new Set(JSON.parse(fs.readFileSync('audit/PART04-TUTORIAL-QUALITY-PATCH01.json')).patches.map(p=>p.id));process.stdout.write(JSON.stringify(proposedTutorialRows(JSON.parse(fs.readFileSync('audit/PART04-BASELINE.json')).tutorials).filter(p=>ids.has(p.body.id)).map(p=>p.body)));"],cwd=ROOT,text=True))
+if os.environ.get('TUTORIAL_REVIEW_IDS'):
+ selected=set(os.environ['TUTORIAL_REVIEW_IDS'].split(','));data=[d for d in data if d['id']in selected];assert {d['id']for d in data}==selected
 class Quiet(http.server.SimpleHTTPRequestHandler):
  def log_message(self,*a):pass
 s=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(Quiet,directory=str(ROOT)));threading.Thread(target=s.serve_forever,daemon=True).start();base=f'http://127.0.0.1:{s.server_port}';checks=[]
@@ -29,4 +31,4 @@ try:
      checks.append({'id':doc['id'],'lang':lang,'width':width,'theme':theme,'status':'passed','code_preserved':True,'inline_math_nodes':result['inlineMath']})
   assert not errors,errors;browser.close()
 finally:s.shutdown()
-report={'status':'passed','local_proposals_only':True,'tutorials':len(data),'render_combinations':len(checks),'checks':checks,'limits':'No production edit/publication, actual bundled MathJax/editor/renderer with no external services.'};(ROOT/'audit/PART04-TUTORIAL-QUALITY-BROWSER.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({k:v for k,v in report.items()if k!='checks'}))
+report={'status':'passed','local_proposals_only':True,'tutorials':len(data),'render_combinations':len(checks),'checks':checks,'limits':'No production edit/publication, actual bundled MathJax/editor/renderer with no external services.'};(ROOT/'audit'/os.environ.get('TUTORIAL_REVIEW_REPORT','PART04-TUTORIAL-QUALITY-BROWSER.json')).write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({k:v for k,v in report.items()if k!='checks'}))

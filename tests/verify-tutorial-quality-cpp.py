@@ -4,7 +4,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 # Apply only local guarded proposals, never publish them.
 result=subprocess.run(['node','--input-type=module','-e',"import fs from'node:fs';import{proposedTutorialRows}from'./tools/part04_tutorial_proposals.mjs';process.stdout.write(JSON.stringify(proposedTutorialRows(JSON.parse(fs.readFileSync('audit/PART04-BASELINE.json')).tutorials)));"],cwd=ROOT,capture_output=True,text=True,check=True)
-rows=json.loads(result.stdout);ids=[p['id']for p in json.loads((ROOT/'audit/PART04-TUTORIAL-QUALITY-PATCH01.json').read_text())['patches']];rng=random.Random(41027);reports=[]
+rows=json.loads(result.stdout);original_ids={'dynamic-programming','dsu','fenwick-tree','graph-basics','lazy-segment-tree','number-theory','segment-tree','two-pointers'};ids=[p['id']for p in json.loads((ROOT/'audit/PART04-TUTORIAL-QUALITY-PATCH01.json').read_text())['patches']if p['id']in original_ids];assert set(ids)==original_ids;rng=random.Random(41027);reports=[]
 with tempfile.TemporaryDirectory(prefix='part04-tutorial-cpp-')as td:
  def build(id):
   d=next(r['body']for r in rows if r['body']['id']==id);codes=lambda v:[b['text']for s in v['sections']for b in s['blocks']if b['type']=='code'and b.get('language')=='C++17'];mn,en=codes(d),codes(d['translations']['en']);assert mn==en and len(mn)==2,id;snippet,program=mn;assert program[:program.index('int main(')].strip()==snippet.strip(),id
