@@ -1,0 +1,9 @@
+import test from'node:test';import assert from'node:assert/strict';import fs from'node:fs';import {editorialDatabase}from'./problem-editorial-fixture.mjs';
+test('minimal036 preserves all245metadata through actual031 import contract without other migration',async()=>{
+ const db=await editorialDatabase({installPriority:false});try{const actor='00000000-0000-0000-0000-000000000001';await db.query('insert into admin_accounts values($1)',[actor]);await db.query("select set_config('request.jwt.claim.sub',$1,false)",[actor]);const before=(await db.query('select * from progress')).rows;
+ await db.exec(fs.readFileSync('supabase/proposals/036-new-problem-metadata-import.sql','utf8'));const rows=[1,2,3].flatMap(i=>JSON.parse(fs.readFileSync('audit/PART04-IMPORT-METADATA-0'+i+'.json')));let imported=0;
+ for(let i=0;i<rows.length;i+=50){const batch=rows.slice(i,i+50);const dry=(await db.query('select admin_import_learning_problems($1,true)r',[batch])).rows[0].r;assert.ok(dry.every(r=>r.status==='new'));const out=(await db.query('select admin_import_learning_problems($1,false)r',[batch])).rows[0].r;assert.ok(out.every(r=>r.status==='created'));imported+=out.length;}
+ assert.equal(imported,245);const stored=(await db.query('select body from problem_catalog')).rows.map(r=>r.body);for(const r of rows){const p=stored.find(p=>p.source===r.source&&p.ref===r.ref);for(const key of ['tags','priorityLevel','priorityReason','rating','ratingKind','ratingBasis','ratingSource','ratingVerifiedAt','ratingConfidence','ratingEstimatedAt','sourceTags'])if(Object.hasOwn(r,key))assert.deepEqual(p[key],r[key],r.ref+':'+key);}
+ assert.deepEqual((await db.query('select * from progress')).rows,before);assert.equal((await db.query('select count(*)n from tutorial_catalog')).rows[0].n,0);
+ }finally{await db.close();}
+});

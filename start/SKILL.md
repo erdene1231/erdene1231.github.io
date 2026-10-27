@@ -155,3 +155,13 @@ The available Cloud Environment tools expose status, not configuration editing o
 Start skill registration. For a fresh task, use a checkout containing this commit;
 register this Start skill in environment settings if automatic environment-level
 startup is desired. A local commit alone is not a remote push.
+
+## Approved minimal problem metadata compatibility —036
+
+036_new_problem_metadata_import was applied2026-10-27 after fresh031fingerprint audit and explicit approval. Do not replay036 or automatically apply032–035. It replaces only validate_learning_problem/admin_save_problem and adds private validate_priority_metadata;existing grants and all other schema/RLS/Storage/catalog state unchanged. See audit/PART04-PRODUCTION-036-RESULT.json. Before/after private captures are /workspace/part04-before-036-approved and /workspace/part04-after-036-approved.
+
+245metadata imports remain0: existing configured MCP SQL session is connected but auth.uid()is null/is_admin()false; supported admin_import_learning_problems dry-run rejected42501 before processing. Do not forge app-user context,create credentials,relax admin checks or retry unchanged. Parent must resolve an existing app-admin execution route or approve an exact guarded owner-maintenance import.035admin-avatar permissions remain separate and unapplied. Current frontend backend31compatibility/default-disabled flags remain.
+
+## Latest approved production checkpoint —035and245metadata import
+
+Explicit approvals executed2026-10-27:one-off pinned owner245metadata job committed748→993 (actualnumbers749–993),then035_admin_profile_editor version20261027214226.036version20261027211919alreadyinstalled. Do not replay035/036or rerun the245job. Existing748rows/profiles/progress/oldhistory verified unchanged;all245metadata and newhistory receipts verified;035installed no user/avatar mutation. Publiccatalog993. Existinggrants/RLS/Storage unchanged byimport;035onlyapprovedprivatefunctions/tables and3reservedavatarpolicies installed/verified.032–034/271URLwrites/optionalpublication notexecuted. Codeflagsremain31/false;PR21unmerged andactualAuth/Storagefixturegap remains. Read audit/PART04-PRODUCTION-APPROVED-OPERATIONS.json,PART04-PRODUCTION-035-RESULT.json and PART04-CODE-ACTIVATION-PLAN.md before next action. Older42501routeblockers are historical;approvedownermaintenance used no impersonation.

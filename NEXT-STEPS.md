@@ -1,3 +1,31 @@
+# Approvedproductionoperationscompleted;activationpending
+
+245newmetadatarecordscommittedandverified:748→993publiccatalog;actualnumbers749–993. Existing748/profile/progress/oldhistoryunchanged.035installedexactapprovedhash;privateACLs+3scopedStoragepoliciesverified,0actualuser/avatarfixturemutations.035journal20261027214226/036journal20261027211919. No replay/importretry. See `audit/PART04-PRODUCTION-APPROVED-OPERATIONS.json`,`PART04-PRODUCTION-035-RESULT.json`,receipts,and `PART04-CODE-ACTIVATION-PLAN.md`. Defaultcodeflagsremain31/false;PR21unmerged,liveauthenticatedgatewayfixtureunrun;no merge/deploy/package2.032–034/271URLwrites/optionalpublicationnotexecuted. Olderplanning/blockerentriesbelowarehistorical.
+
+# Executable owner245proposal ready for review ONLY
+
+`supabase/maintenance/part04-owner-245-PROPOSED.sql`220577bytes,SHA256faa73bd3d42dbca5bc22c83cedf071252bc9221a2631d0d3b8f39231e386ca23. Full86/86tests pass;3ownerjob cases coverexactmetadata,baseline/history/progress,replay,latefailure/rollbackwithsequencegaps,drift/aliasduplicates/tamper. See `audit/PART04-OWNER-JOB-EXECUTION-REVIEW.md` andverificationJSON. ProductionjobNOTexecuted;newimports0.036installedonly. Freshread-onlyschemaexactafter036;035absent/compatiblebutseparatesecurityapprovalrequired. No impersonation/grants/RLS/productionDML/browserrunner/merge/deploy/package2. Presentexactjobhash+035accesssheetforuseraction-timereviewbeforeanyexecution.
+
+# Import authority planning only
+
+Noadditionalproductionwritesafter036. Existingapp-adminRPCrequiresreal authenticatedadmin;SQLMCPcontext42501mustnotbebypassed. Noexistingowner-specificmaintenanceimporterfound. See `audit/PART04-IMPORT-AUTHORITY-OPTIONS.md` for preferredsigned-inadminrunner and separatelyauthorizedone-offownerjob specification;245identity/hashallowlist in `PART04-IMPORT-AUTHORITY-ALLOWLIST.json`. Runner/job notimplementedorexecutedunderplanning-onlyscope.035exactaccessapprovalseparate in `PART04-035-ACCESS-APPROVAL.md`. No credentials/tokens/claims/RLSchanges,0imports,no newuser/avatar/Storagewrites,merge/deploy/package2.
+
+# Approved036applied;importauthcontextblocker
+
+036appliedsuccessfully;freshverificationexactlytwofunctionreplacements+oneprivatehelper,grants/RLS/Storage/catalog/revisions/sequenceunchanged.748problems/56tutorials,0newimports. ExistingSupabaseconnectionworks;SQLauth.uidnull/is_adminfalse. Actualsupportedserverdry-runrejected42501beforeprocessing;no retry/impersonation. See `audit/PART04-PRODUCTION-036-RESULT.json`. Need parentresolveapp-adminexecutionorreviewedguardedowner-maintenanceimport,notnewcredentials.032–035notapplied;035avataraccessstillseparate. PR21targetsmainandisready. No package2transition.
+
+# Latest PR readiness checkpoint
+
+PR20merged by user;main1c3a215contains713f6e0. PR20metadata corrected. PR21exists at /pull/21;finalsame-account-refreshfix passes82Node+actualadminbrowserchecks. Feature remains off;no liveinstallation claimed. CombinedPR21metadata/baseupdate returnederrored;read-onlycheck showsoriginalstackedbase unchanged. No retry/bypass. Older workflowblocker records below are historical. No production/migration/permission/merge/deploy action or package2transition.
+
+# Workflow handoff — code verified,GitHubPRactionsblocked
+
+PR20remote713f6e0ismergeable/default031compatible,80Node+browsercheckspass,butstilldraft:automaticreviewdeniedmarkready. Followupbranchcodex/part04-admin-remainingcode2d08b71ispushed,82Node+admin/browsercheckspass;newdraftPRcreationalsodenied,noactualPRnumberexists. Do not retry via anotherroute. See `audit/PART04-WORKFLOW-BLOCKERS.json` and prepared `audit/PART04-FOLLOWUP-PR-DESCRIPTION.md` for parenthandoff. Exact4fields: surname/first_name/username/profilepicture.035proposalonly,featureoff;no livewrites/permissions/imports/merge/deploy/package2. Latestcommitaftercodecheckpointisdeliverymetadataonly.
+
+# Separate remaining package4 branch
+
+PR20code713f6e0passes80Nodeandbrowserchecks/default031compatibility;automaticreviewrejectedmarkingready,remotePR20stilldraft. Do not retrythatworkflowviaanotherroute. Currentbranchcodex/part04-admin-remainingstacksontopandaddsadminsurname/first_name/username/profilepictureonly,disabledbydefault.035localproposalusesexistingserveradminchecks,CAS/privateaudit/targetboundreservedWebPuploads;no email/school/Auth/roles/progresschanges. Allremainingproductioninstall/import/URL/live/deliverygatestrackedin `audit/PART04-PR21-DELIVERY.md`. NewPRnumbermustbeverifiedaftercreation. No productionwrites/permissionchanges/merge/deploy/package2transition.
+
 # PR20 compatibility and delivery split
 
 PR20 is being made code-merge-ready against installedafter031:defaultproblemBackendVersion31 retains existing basic edits and gates newer writes,without missingRPCcalls or silentpriority/provenanceloss.245selections complete butnotimported;no SQLexecuted. See `audit/PART04-PR20-READINESS.md`. New separate remaining-workPR carries admin surname/first_name/username/profilepicture plus applicable production/install/live gates. School/email/password/auth/roles/progress excluded. Existing optional documents preserved,no newauthoring. No package2transition.

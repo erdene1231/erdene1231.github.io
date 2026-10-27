@@ -1,0 +1,13 @@
+# Separate035profile/avatar access approval — not executed
+
+Exact proposal: `supabase/proposals/035-admin-profile-editor.sql`,SHA256488b1291c8fddbfe9bb58632588f58528639c60b8526726a78e0873ce95b33c0. Feature defaults disabled. This is independent of036and245imports;no035approval is inferred from them.
+
+Allowed editable fields: surname,last_name;first_name;username;profile picture. Derived full_name follows explicit name edits,with legacy/null values preserved on username/avatar-only changes. Excluded:school,bio,email,password,Auth identity,roles/admin grants,progress,relationships. No auth.users access or privileged browser credentials.
+
+New private RLS-enabled tables:admin_profile_audit and admin_profile_avatar_uploads;history sequence private. No direct PUBLIC/anon/authenticated table access. Authenticated execute grants only on admin_profile_for_edit,admin_prepare_profile_avatar,admin_save_profile,and the two narrow Storage policy predicates. Each rechecks existing server-owned is_admin. Private _admin_profile_view remains ungranted. Full-profile snapshot/CAS and row locks prevent lost owner/admin edits;username format,reserved names,existing uniqueness and targetUUID validation enforced. Exact permitted before/after audit remains private.
+
+Storage access expansion requiring explicit approval:three authenticated policies on existing think-cp-avatars objects—reserved upload,reserved inspection,and unreferenced staged cleanup. Upload requires actor/target-specific15-minute reservation and unique target-folder WebP name;no overwrite. Cleanup requires own reservation and no current-profile/private-audit reference. Existing owner policies/profile RLS,bucket public flag,2MiB limit and MIME allowlist remain unchanged. No broad cross-user bucket access,old-avatar deletion,SQL Storage deletion or background cleanup job.
+
+Browser actually decodes/re-encodes PNG/JPEG/WebP;server checks fixed bucket/reservation/MIME/size metadata but not independent pixel decoding. Synthetic SQL/real browser codec tests passed;live Storage gateway,revocation/concurrency and actual-role checks remain unverified. Before execution,re-audit actual profiles/constraints/is_admin fingerprint/ACL/Storage policies and save private before-state. Install only this exact reviewed proposal after explicit security approval;verify no user rows changed on installation. Activate UI only after authorized live fixture checks. Installation permission is not permission to mutate actual users/avatars as tests.
+
+User decision can independently approve/reject035access changes while choosing an import authority route. No school/email/password/auth/roles/progress expansion is bundled. No merge/deployment authorization is requested here.

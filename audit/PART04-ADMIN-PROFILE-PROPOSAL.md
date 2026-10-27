@@ -1,29 +1,21 @@
-# Admin profile editing — bounded proposal, not implemented
+# Admin profile editor — implemented locally, disabled by default
 
-Status: pending parent/user scope clarification and exact authorization review. No actual user rows have been fetched or changed, and no RPC/RLS/Storage permission has been changed. Independent package4 work may continue.
+Latest confirmed scope: **surname, first name, username and profile picture only**. This supersedes earlier school/avatar ambiguity and the abandoned email request. No email-change feature was implemented. School, bio, email, password, Auth identity, roles/admin grants, progress and relationships are untouched.
 
-## Existing evidence
+`admin-profile.js` supplies an accessible editor inside the Admin hub, with username/UUID lookup, original-field preservation, explicit save, stale conflict/reload behavior, account-switch/revocation cleanup and responsive theme styling. `adminProfileEditorEnabled` defaults false; no profile RPC or private form is enabled until this flag is deliberately enabled after separately approved backend installation. It is not an authorization mechanism.
 
-- `supabase/002-usernames-solvers.sql`: profiles SELECT/INSERT/UPDATE policies are owner-only; changing a UI target ID cannot authorize editing another user.
-- `supabase/003-profiles-friends.sql`: full_name <=100, school <=160; avatar_path must be under the target user's UUID and a permitted image extension. Avatar INSERT/DELETE policies permit only auth.uid()'s folder.
-- `supabase/013-study-groups.sql`: first_name and last_name <=100 each. `accounts.js cleanProfile` derives full_name from last+first and enforces its total <=100.
-- `supabase/004-following-admin.sql`: public.is_admin() uses the server-owned admin_accounts table. Client metadata/email is not an authorization source.
-- `accounts.js saveOwnProfile` writes the current user's profile and uploads/removes files under that user's namespace. It must not be reused by substituting an arbitrary target ID.
+`supabase/proposals/035-admin-profile-editor.sql` is proposal-only and independent of032–034. It creates private RLS-enabled audit/upload-reservation tables. Lookup, prepare-upload and save RPCs are executable only by authenticated clients and check existing server-owned `is_admin()` on every request. Profile row locks and full-row snapshot comparison reject concurrent owner/admin changes, including changes to fields not editable here. Unchanged legacy/null name fields and legacy full_name survive username/avatar-only edits; private audit retains exact nullable before/after fields. Names/combined full name <=100; username lowercases, validates3–24 ASCII characters, uses existing uniqueness and rejects newly assigned reserved names. The UPDATE allowlist is exactly first/last/derived full name, username and optional avatar path. Existing owner profile RLS is unchanged. UUID/progress identity remains stable when username changes.
 
-These are repository/schema-audit evidence, not a fresh production RLS verification.
+## Proposed Storage access change requiring separate approval
 
-## Proposed field scope
+The existing public `think-cp-avatars` bucket remains public, at2MiB, with its existing MIME allowlist; no bucket configuration change. A server-admin prepare RPC allocates a unique target-folder WebP path tied privately to actor/target and a15-minute reservation. Three authenticated Storage policies allow only that admin's reserved upload, narrow reservation inspection, and cleanup of that admin's unreferenced staged object. Cleanup cannot remove a current avatar or an avatar recorded in private audit history. Existing objects are never overwritten (`upsert:false`); prior avatars are not automatically deleted. No broad cross-user bucket grant is proposed.
 
-Default ordinary profile edit: first_name, last_name, derived full_name, school. Keep username stable unless separately confirmed (it participates in links and uniqueness). Preserve bio and unspecified fields. Email/password/auth credentials, admin/role grants, solved/progress, learning records, friendships and follows are excluded.
+The browser actually decodes and re-encodes permitted PNG/JPEG/WebP to WebP <=512px. Server save checks existing object, fixed bucket, reservation actor/target/expiry and actual Storage metadata MIME/size (1–2MiB), but does **not** independently decode pixel bytes. Synthetic SQL Storage fixtures and browser codec tests are not a live Storage-gateway test; that limitation must remain explicit before installation approval. Bucket/owner policies are preserved. Never delete Storage objects through SQL.
 
-Avatar needs an explicit choice: permission to replace another user's image entails a new narrowly scoped Storage path authorization, not merely a text field. Prepare a target-bound upload design for review, with MIME/size/real-image validation, unique object names, failed-save cleanup and referenced-image retention. Do not grant broad bucket access, accept arbitrary URLs/paths, impersonate the target, or silently clear their avatar. Preserve current avatar until reviewed behavior is implemented.
+Private audit records actor/target and before/after permitted fields only; no public history/table grant. No privileged browser key, credential generation, impersonation or Auth-admin API is used.
 
-## Proposed server contract for subsequent review
+## Evidence and remaining gates
 
-A narrow server RPC would require authenticated server-verified admin status on every request, accept an existing target UUID and an exact field allowlist, derive/validate full_name, reject unknown/security fields, and compare an expected existing snapshot/version before saving to prevent lost updates. A revoked admin must fail even if an editor was already open. Pin search_path; revoke default PUBLIC execution; return only permitted profile fields. Keep owner RLS unchanged and don't expose auth.users or private progress through a broad admin SELECT policy.
+Full Node suite82tests plus actual-browser admin image round-trip, default-disabled behavior, stale-save cleanup, account-switch invalidation and both themes/widths. SQL fixtures cover anon/non-admin/revoked denial, unknown fields, reserved/unique usernames, full-snapshot CAS, stable learner records, target-bound reservations, MIME/size/expiry, cleanup reference protection and replay guard. See `PART04-ADMIN-PROFILE-BROWSER.json` and `PART04-PR21-VERIFICATION.json`.
 
-Use private audit history recording actor/target/time/changed field names; do not publish real profile snapshots in Git or downloadable reports. Proposed persistent authorization changes must be shown as an exact reviewed diff before execution. They are not authorized by draft PR permission.
-
-## Required verification after scope is established
-
-Anonymous/non-admin/userA/userB/revoked-admin denial; admin permitted fields only; stale edit conflict; malformed/missing target; length/normalization; field preservation; avatar namespace/MIME/size/references and rollback; mobile/light/dark UI and focus; no direct user-row write from browser. Use synthetic local fixtures before any separately authorized live check.
+No production installation, user update, real avatar upload/deletion, permission change, merge or deployment occurred. Before any write: fresh actual profiles/Storage/ACL audit, scoped private before-state and exact035access-diff approval. Real Auth/Storage role and concurrency checks require an authorized safe fixture. Only after installation/verification may the feature flag be enabled.

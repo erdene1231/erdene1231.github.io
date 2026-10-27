@@ -30,9 +30,9 @@ Approval of infrastructure does not approve publication of optional documents. E
 - New problem metadata: server dry-run and explicit reviewed new-only imports from `PART04-IMPORT-METADATA-01.json` (100), `02.json` (100), `03.json` (45). Recheck live canonical identities first; import no optional bodies/hints, overwrite no baseline row, save real server ID/reference receipts and before/after counts. Sequence is currently 748 but never assign IDs from that assumption. No profile/progress/history cleanup is included.
 - Optional completed content publication requires its own reviewed document/target/revision list and explicit authorization. Preservation in the code archive is not publication permission. No unfinished statements/editorials/C++ drafts are included in metadata import.
 
-## D. Admin profile requirement — decision and local implementation remain
+## D. Admin profile feature — latest local implementation, separate035approval
 
-Parent is already asking for the ordinary field scope; do not send another approval prompt. Proposed fields: first name, surname, derived full name, school; avatar needs explicit target-bound upload authorization design. Email/password/auth/roles/solved/progress are excluded. No executable profile permission diff or working editor exists yet. After scope confirmation, prepare the exact local server-admin allowlist/CAS/private-audit RPC, UI and synthetic role/conflict/avatar tests. Only then can production access changes be reviewed concretely. Do not weaken owner RLS or grant bucket-wide writes.
+Confirmed latest fields are surname, first name, username and profile picture. No school/email/password/Auth/roles/progress changes. `admin-profile.js` and `supabase/proposals/035-admin-profile-editor.sql` now contain the locally tested default-disabled implementation. The separate follow-up PR carries it; see `PART04-ADMIN-PROFILE-PROPOSAL.md` for exact RPC/CAS/audit/reservation/Storage access impacts and codec limitations. No direct table RLS/bucket configuration change or broad Storage grant.035remains proposal-only; fresh before-state and exact installation/access approval are still required. Do not ask the already-resolved field question again.
 
 ## E. Delivery and live verification
 

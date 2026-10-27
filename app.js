@@ -1,3 +1,4 @@
+import {setupAdminProfiles} from './admin-profile.js?v=50';
 import {createLearningStore} from './learning-store.js?v=23';
 import {setupProblemStatement} from './problem-statement.js?v=49';
 import {setupProblemEditorial} from './problem-editorial.js?v=49';
@@ -10,7 +11,7 @@ import {setupGroups} from './groups.js?v=20';
 let tutorialUI, learningUI=null,hintRenderTurn=0,problemEditorialUI,problemStatementUI,learningProgressStore;
 import {CURRENT_EMPTY,cleanProgress,parseCurrentBackup,progressRows} from './progress.js?v=48';
 import {getSolvers} from './community.js?v=6';
-import {setupAdmin} from './admin.js?v=49';
+import {setupAdmin} from './admin.js?v=50';
 import {parseCatalog,hintTexts,getSources} from './problem-store.js?v=48';
 import {rpc} from './accounts.js?v=48';
 import {ownProfile,saveOwnProfile,avatarUrl,accountError} from './accounts.js?v=48';
@@ -23,7 +24,7 @@ let username=null, profileLoading=false, profileSaving=false, solverRequest=0, s
 let detailTagsShown=false,hintPanelOpen=false,revealedHintCount=0,problemPage=0,lastFilterKey='',activityPending={},problemAdminAllowed=false,previousProblemHash=location.hash;
 const PROBLEMS_PER_PAGE=100;
 const hiddenHints=new Set();
-let social=null, adminUI=null, groupUI=null, myProfile=null, avatarPreviewUrl=null, catalogLoading=false;
+let adminProfileUI=null,social=null, adminUI=null, groupUI=null, myProfile=null, avatarPreviewUrl=null, catalogLoading=false;
 let catalogIds=new Set(),hintLanguage='mn';
 const cfg=window.THINK_CP_CONFIG || {};
 const configured=Boolean(cfg.supabaseUrl && cfg.supabaseKey);
@@ -136,7 +137,7 @@ function renderDetail() {
 }
 async function switchUser(next) {
   if(user?.id===next?.id)return;
-  const turn=++epoch;user=next;username=null;myProfile=null;if(avatarPreviewUrl){URL.revokeObjectURL(avatarPreviewUrl);avatarPreviewUrl=null;}for(const id of ['full-name','first-name','last-name','school','avatar-file'])$(id).value='';$('legacy-name-note').textContent='';$('remove-avatar').checked=false;renderOwnAvatar();profileLoading=false;profileSaving=false;$('username').value='';$('profile-feedback').textContent='';loading=!!user;resetHintView();problemStatementUI?.clear();problemEditorialUI?.clear();readLocal();void learningProgressStore?.accountChanged();render();updateAccount();if(selectedProblem){$('notes').value=entry(selectedProblem.id).notes;renderDetail();void loadSolvers();}
+  const turn=++epoch;user=next;adminProfileUI?.accountChanged();username=null;myProfile=null;if(avatarPreviewUrl){URL.revokeObjectURL(avatarPreviewUrl);avatarPreviewUrl=null;}for(const id of ['full-name','first-name','last-name','school','avatar-file'])$(id).value='';$('legacy-name-note').textContent='';$('remove-avatar').checked=false;renderOwnAvatar();profileLoading=false;profileSaving=false;$('username').value='';$('profile-feedback').textContent='';loading=!!user;resetHintView();problemStatementUI?.clear();problemEditorialUI?.clear();readLocal();void learningProgressStore?.accountChanged();render();updateAccount();if(selectedProblem){$('notes').value=entry(selectedProblem.id).notes;renderDetail();void loadSolvers();}
   if(user) {
     void loadProfile();
     try {
@@ -165,7 +166,7 @@ function renderOwnAvatar() {
   const url=avatarPreviewUrl||avatarUrl(client,myProfile);$('own-avatar').hidden=!url;if(url)$('own-avatar').src=url;else $('own-avatar').removeAttribute('src');$('own-avatar-fallback').hidden=!!url;$('own-avatar-fallback').textContent=((myProfile?.full_name||myProfile?.username||'?')[0]||'?').toUpperCase();
 }
 function updateAccount() {
-  social?.accountChanged();adminUI?.accountChanged();tutorialUI?.accountChanged();groupUI?.accountChanged();learningUI?.accountChanged();
+  social?.accountChanged();adminProfileUI?.accountChanged();adminUI?.accountChanged();tutorialUI?.accountChanged();groupUI?.accountChanged();learningUI?.accountChanged();
   for(const id of ['full-name','first-name','last-name','school','avatar-file','remove-avatar'])$(id).disabled=profileLoading||profileSaving||!myProfile;
   $('reload-profile').hidden=!user||!!myProfile;$('reload-profile').disabled=profileLoading;
   $('account').textContent=user?(username?'@'+username:'Миний account'):'Нэвтрэх';$('storage-label').textContent=user?'Account-д хадгална':'Энэ төхөөрөмжид хадгална';
@@ -262,6 +263,7 @@ async function init() {
   problemEditorialUI=setupProblemEditorial($('problem-editorial'),{client:()=>client,user:()=>user,active:id=>selectedProblem?.id===id&&problemPageActive()});
   social=setupSocial({client:()=>client,user:()=>user,problems:()=>data.problems,openProblem,viewProfile:id=>{if(learningUI)location.hash='#profile/'+id;else void social?.openProfile(id);},openAccount:()=>{$('account').onclick();},notice});
   adminUI=setupAdmin({progress:()=>state,client:()=>client,user:()=>user,refreshCatalog,sources:()=>getSources(data.problems,data.sources||[])});
+  adminProfileUI=setupAdminProfiles($('admin-users'),{enabled:cfg.adminProfileEditorEnabled===true,client:()=>client,user:()=>user,navigation:allowed=>{$('admin-users-link').hidden=!allowed;},saved:profile=>{if(profile.user_id===user?.id)void loadProfile();social?.connected();}});
   let studyStarted=false;
   function startStudy(){if(studyStarted)return;studyStarted=true;
   tutorialUI=setupTutorials({requiresOnline:configured,problems:()=>data.problems,progress:()=>state,client:()=>client,user:()=>user,learning:()=>learningUI});

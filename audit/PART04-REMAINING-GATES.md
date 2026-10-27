@@ -24,11 +24,9 @@ Local SQL role/atomicity tests do not establish real parallel PostgreSQL behavio
 2. New problem metadata: use `PART04-IMPORT-METADATA-01.json`, `02.json`, `03.json`. Fresh dedup and server dry-run precede separately approved imports. Save actual server-ID/source/reference receipts before attaching relationships. Never guess ID 749. A total of 993 follows only if the actual baseline remains 748 and all 245 are still new.
 3. Optional content publication is excluded from these metadata-only batches. Full previews preserve completed material, but this plan does not publish optional documents or unfinished drafts. Any subsequent publication needs its own reviewed scope and authorization.
 
-## Unimplemented admin profile requirement
+## Admin profile feature — local implementation in follow-up PR
 
-`PART04-ADMIN-PROFILE-PROPOSAL.md` is a proposal, not a working editor or executable permission diff. Field scope remains pending: proposed first name, last name, derived full name and school; username, bio and unspecified fields preserved. Email, password, auth data, roles/admin grants, solved/progress, friends and follows are excluded.
-
-Avatar replacement requires a separately reviewed target-bound Storage design, real-image/MIME/size validation and reference-safe cleanup. No broad bucket grant is acceptable. After field scope is confirmed, prepare the exact local RPC/UI diff, server-admin checks per request, target validation, stale-edit protection and private audit, then synthetic role/conflict/UI tests. No actual user records have been edited. A production permission approval cannot be requested on the basis of this document alone.
+Latest confirmed fields are surname, first name, username and profile picture only. Local UI, client validation, server-admin/target/CAS/private-audit RPC proposal and reservation-bound Storage policies are implemented and tested with synthetic services. The feature defaults disabled. No school/email/password/Auth/roles/progress edits. See `PART04-ADMIN-PROFILE-PROPOSAL.md` and proposed035for exact access impacts and server-image-metadata limitation. Fresh actual-state audit, private before-state and separately approved permission installation/live Storage tests remain; no actual users/avatars were changed. Field clarification is resolved,not a pending blocker.
 
 ## User merge, live verification and transition
 

@@ -6,7 +6,7 @@ import {setupProblemEditorialEditor} from './problem-editorial.js?v=48';
 import {assertNewProblemRatingReady,assertProblemContentReady} from './problem-content-policy.js?v=48';
 import {priorityLevel} from './priority.js?v=48';
 import {openProblemSelection} from './problem-selection-dialog.js?v=48';
-import {setAdminRoute} from './navigation.js?v=48';
+import {setAdminRoute} from './navigation.js?v=50';
 import {rpc,accountError} from './accounts.js?v=48';
 import {validateProblem,parseProblemImport,validateSource,getSources} from './problem-store.js?v=48';
 export function setupAdmin(ctx) {
