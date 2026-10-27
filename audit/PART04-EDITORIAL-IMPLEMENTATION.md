@@ -1,3 +1,7 @@
+# Latest scope override
+
+New editorials/hints/C++are optional;further authoring deferred until a fresh explicit user request. Completed material preserved,unfinished drafts isolated.245new selections satisfy metadata/source quotas;see PART04-READINESS.json. Earlier coverage/backlog counts below are historical and are not current completion gates. No tutorial lesson or blanket baseline review belongs to this package.
+
 # Package4 problem editorials and routable detail — local implementation
 
 Production status: neither032nor033applied; imports0; no merge/deploy/security change performed.033is a review proposal in `supabase/proposals/`, not an approved migration. Fresh actual-schema/ACL/Storage audit and private recovery are required before proposing its execution.

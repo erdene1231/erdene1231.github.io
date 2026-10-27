@@ -1,6 +1,6 @@
 # Current hint policy (v47)
 
-The latest user instructions supersede the earlier minimalist-only counter removal and preserve-tracking requirements. No problem mode/page/picker/practice shows a hint-used/total counter. Hints themselves remain staged; Low hides hints, High requires authored hints/editorial.
+The latest user instructions supersede the earlier minimalist-only counter removal and preserve-tracking requirements. No problem mode/page/picker/practice shows a hint-used/total counter. Hints themselves remain staged; Low hides hints. High may omit hints/editorial under the latest reduced authoring scope;supplied content remains validated.
 
 Opening hints changes only current-view memory. Leaving the problem, reload or changing account resets the reveal state. Revealing, hiding and changing hint language do not write progress, localStorage, learner activity or analytics. They do not change problem status. Historical hint usage is not selected from the backend or used for filters/profile lists. The obsolete hinted-status option is removed; stale filter inputs are treated as unrestricted.
 

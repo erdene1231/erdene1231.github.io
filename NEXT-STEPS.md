@@ -1,3 +1,11 @@
+# Final selection and local verification checkpoint
+
+245/245 selections complete. All six source quotas pass; zero rejected. `npm test`:78/78. Local Chromium covers 1,000 metadata rows, desktop/mobile, light/dark and all three modes: first usable 100 rows 360–450 ms with synthetic RPC/Auth, one catalog call and no rich-body requests. These are not live latency claims. Metadata-only new-import batches are 100+100+45, no assigned IDs or optional bodies. See `audit/PART04-FINAL-VERIFICATION.json` and `audit/PART04-REMAINING-GATES.md` for evidence and exact remaining local/backend/admin/production/delivery gates. Package incomplete; production0; no package2 transition yet. No further curation, statement/editorial/C++ authoring or baseline reassessment is needed under the latest scope.
+
+# Lightweight selection batch08 —245/245source quotas complete;package4not complete
+
+Final58CF selections use retained hash-verified official API identity/tags/rating and familiar task concepts. No newly read statement/editorial or authored proof/code/content. Official ratings remain official;curated tags and individual educational priority supplied. All quotas:CF100,AtCoder50,IOI30,EGOI30,APIO15,JOI20. No baseline reclassification. Existing187records/completed optional content preserved;production0. Next reconcile reduced-scope functional/admin/backend/delivery requirements and exact approval proposal;do not execute migrations/imports/permissions/publication/merge/deploy. Selection completion alone does not authorize package2transition or imply deploy readiness.
+
 # Lightweight selection batch07 —187/245 eligible,58 remaining
 
 IOI30/30complete after22new selections. Original task definitions read for educational usefulness,tags,individual priority and rough numeric difficulty;no official solution/proof/code audit or optional-content authoring. Art Class,Seats,Counting Mushrooms PDFs were tool-inaccessible,excluded and not retried. Replacements are distinct tasks,not mirror credit. Coverage:AtCoder50/50,CF42/100,IOI30/30,EGOI30/30,APIO15/15,JOI20/20. Remaining58Codeforces. Existing165records/baseline/completed optional content preserved. Production0;all backend/migration/permission/publication/merge/deploy gates remain. After source quotas,reconcile reduced package4functional/delivery gates;do not revive deferred authoring or baseline review.
