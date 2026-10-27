@@ -208,13 +208,113 @@
               ]
             }
           ]
+        },
+        {
+          "title": "C++17 — төлөв,гол алхам ба гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Бэлтгэл: ",
+                  "marks": []
+                },
+                {
+                  "text": "frequency",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь ижил утгын тоо. ",
+                  "marks": []
+                },
+                {
+                  "text": "twoBack",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ", ",
+                  "marks": []
+                },
+                {
+                  "text": "oneBack",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь өмнөх хоёр DP optimum. Утга бүрт авахгүй байх эсвэл бүх хуулбарыг авах хувилбарыг харьцуулна. Эцсийн maximum-ийг хэвлэнэ. $O(n+M)$ хугацаа,$O(M)$ зай;үржвэр ба нийлбэр 64-bit.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Aggregation: ",
+                  "marks": []
+                },
+                {
+                  "text": "frequency",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " counts equal values. State ",
+                  "marks": []
+                },
+                {
+                  "text": "twoBack",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " and ",
+                  "marks": []
+                },
+                {
+                  "text": "oneBack",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " hold the preceding two DP optima. For each value compare skipping with taking all its copies. Output the final maximum. Time $O(n+M)$,space $O(M)$;64-bit products prevent score overflow.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, maximum = 0;\n    cin >> n;\n    vector<long long> frequency(100001);\n    for (int i = 0; i < n; ++i) {\n        int value;\n        cin >> value;\n        ++frequency[value];\n        maximum = max(maximum, value);\n    }\n    long long twoBack = 0, oneBack = 0;\n    for (int value = 1; value <= maximum; ++value) {\n        long long current = max(oneBack, twoBack + value * frequency[value]);\n        twoBack = oneBack;\n        oneBack = current;\n    }\n    cout << oneBack << '\\n';\n}\n"
+            }
+          ]
         }
       ]
     },
     "tags": [
       "dynamic programming"
     ],
-    "level": "Practice"
+    "level": "Practice",
+    "implementationEvidence": {
+      "report": "audit/PART04-PROBLEM-CPP01.json",
+      "source_basis": "Retained reviewed statement/independent proof;no fresh source fetch or official-sample claim. Statement remains separately incomplete.",
+      "status": "passed",
+      "code_sha256": "c76ea82bdcb92fa4f926fbc00baf4f0e43dd218321eb47430874788395315acc"
+    },
+    "editorialAuthorship": "Original project explanation in actual tutorial schema,2026-10-27; historical proof-only checkpoint. Original C++17 now independently tested in PART04-PROBLEM-CPP01;no official-sample or judge-submission claim."
   },
   {
     "source": "Codeforces",
@@ -659,13 +759,73 @@
               ]
             }
           ]
+        },
+        {
+          "title": "C++17 — төлөв,гол алхам ба гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Төлөв: ",
+                  "marks": []
+                },
+                {
+                  "text": "pieces[length]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь яг тэр уртыг бүрдүүлэх хамгийн их хэсгийн тоо;$-1$ бол хүрээгүй. Хоосон урт тэг хэсэгтэй. Зөвхөн хүрч болох predecessor-оос сүүлийн cut-ийг залгана. Баталгаатай хүрэх target-ийн хариуг хэвлэнэ. $O(n)$ хугацаа/зай;давхардсан cut зөвшөөрөгдөнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "State: ",
+                  "marks": []
+                },
+                {
+                  "text": "pieces[length]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " is the maximum exact-fill piece count,with $-1$ for unreachable lengths and zero for the empty ribbon. Try each last cut only from a reachable predecessor. Output the guaranteed-reachable target. Time $O(n)$,space $O(n)$;duplicate cut lengths are harmless.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    array<int, 3> cuts;\n    cin >> n >> cuts[0] >> cuts[1] >> cuts[2];\n    vector<int> pieces(n + 1, -1);\n    pieces[0] = 0;\n    for (int length = 1; length <= n; ++length) {\n        for (int cut : cuts) {\n            if (length >= cut && pieces[length - cut] != -1) {\n                pieces[length] = max(pieces[length], pieces[length - cut] + 1);\n            }\n        }\n    }\n    cout << pieces[n] << '\\n';\n}\n"
+            }
+          ]
         }
       ]
     },
     "tags": [
       "dynamic programming"
     ],
-    "level": "Practice"
+    "level": "Practice",
+    "implementationEvidence": {
+      "report": "audit/PART04-PROBLEM-CPP01.json",
+      "source_basis": "Retained reviewed statement/independent proof;no fresh source fetch or official-sample claim. Statement remains separately incomplete.",
+      "status": "passed",
+      "code_sha256": "d00356335fe58c0eea727da7157d03422060ede2d2e3415952e4fd89cfd29db2"
+    },
+    "editorialAuthorship": "Original project explanation in actual tutorial schema,2026-10-27; historical proof-only checkpoint. Original C++17 now independently tested in PART04-PROBLEM-CPP01;no official-sample or judge-submission claim."
   },
   {
     "source": "Codeforces",
@@ -1047,13 +1207,73 @@
               ]
             }
           ]
+        },
+        {
+          "title": "C++17 — төлөв,гол алхам ба гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Төлөв: ",
+                  "marks": []
+                },
+                {
+                  "text": "ways[sum][seen]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь нийлбэр ба threshold flag-тай замын тоо. Нэг хоосон prefix-ээс эхэлж,дараагийн жин бүрийг залгаад flag-ийг OR-оор шинэчилнэ. Нэмэлт бүрт modulo авна. Target-ийн flag нэг төлөвийг хэвлэнэ. $O(nk)$ хугацаа,$O(n)$ зай.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "State: ",
+                  "marks": []
+                },
+                {
+                  "text": "ways[sum][seen]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " counts ordered paths with the recorded threshold flag. Start with one empty prefix,append each permitted weight and OR its threshold test into the flag. Reduce every addition modulo $10^9+7$. Output the target sum with flag one. Time $O(nk)$,space $O(n)$.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, maximumWeight, threshold;\n    cin >> n >> maximumWeight >> threshold;\n    const long long mod = 1000000007;\n    vector<array<long long, 2>> ways(n + 1);\n    ways[0][0] = 1;\n    for (int sum = 0; sum < n; ++sum) {\n        for (int seen = 0; seen < 2; ++seen) {\n            for (int weight = 1; weight <= maximumWeight && sum + weight <= n; ++weight) {\n                int nextSeen = seen || weight >= threshold;\n                long long &target = ways[sum + weight][nextSeen];\n                target = (target + ways[sum][seen]) % mod;\n            }\n        }\n    }\n    cout << ways[n][1] << '\\n';\n}\n"
+            }
+          ]
         }
       ]
     },
     "tags": [
       "dynamic programming"
     ],
-    "level": "Practice"
+    "level": "Practice",
+    "implementationEvidence": {
+      "report": "audit/PART04-PROBLEM-CPP01.json",
+      "source_basis": "Retained reviewed statement/independent proof;no fresh source fetch or official-sample claim. Statement remains separately incomplete.",
+      "status": "passed",
+      "code_sha256": "47ce7dda01fa810884734b16c8b31bf56d0e898ae15e180262e0ab3783a47f18"
+    },
+    "editorialAuthorship": "Original project explanation in actual tutorial schema,2026-10-27; historical proof-only checkpoint. Original C++17 now independently tested in PART04-PROBLEM-CPP01;no official-sample or judge-submission claim."
   },
   {
     "source": "Codeforces",
@@ -1259,12 +1479,92 @@
               ]
             }
           ]
+        },
+        {
+          "title": "C++17 — төлөв,гол алхам ба гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Төлөв: ",
+                  "marks": []
+                },
+                {
+                  "text": "cost",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь амралт,contest,gym-ээр төгссөн minimum амралтын тоо. Өдөр бүр availability mask уншаад шинэ ",
+                  "marks": []
+                },
+                {
+                  "text": "next",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " массив байгуулна. Амралт нэг нэмнэ;боломжтой бусад үйл ажиллагаа өмнөхтэй ижил биш байх ёстой. Гурван эцсийн төлөвийн minimum-ийг хэвлэнэ. $O(n)$ хугацаа,тогтмол DP зай.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "State: ",
+                  "marks": []
+                },
+                {
+                  "text": "cost",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " records minimum rest days ending in rest,contest or gym. Read each availability mask and construct a fresh ",
+                  "marks": []
+                },
+                {
+                  "text": "next",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " array;rest always adds one,while available non-rest activities require a different previous activity. Output the minimum final state. Time $O(n)$,constant DP space.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    const int infinity = 1000000;\n    array<int, 3> cost{0, infinity, infinity};\n    for (int day = 0; day < n; ++day) {\n        int mask;\n        cin >> mask;\n        array<int, 3> next{1 + min({cost[0], cost[1], cost[2]}), infinity, infinity};\n        if (mask & 1) next[1] = min(cost[0], cost[2]);\n        if (mask & 2) next[2] = min(cost[0], cost[1]);\n        cost = next;\n    }\n    cout << min({cost[0], cost[1], cost[2]}) << '\\n';\n}\n"
+            }
+          ]
         }
       ]
     },
     "tags": [
       "dynamic programming"
     ],
-    "level": "Practice"
+    "level": "Practice",
+    "implementationEvidence": {
+      "report": "audit/PART04-PROBLEM-CPP01.json",
+      "source_basis": "Retained reviewed statement/independent proof;no fresh source fetch or official-sample claim. Statement remains separately incomplete.",
+      "status": "passed",
+      "code_sha256": "3455050bb3fa56d79c4aba71d54a87ecac44a4c251425a5d05f20b23aab1ec57"
+    },
+    "editorialAuthorship": "Original project explanation in actual tutorial schema,2026-10-27; historical proof-only checkpoint. Original C++17 now independently tested in PART04-PROBLEM-CPP01;no official-sample or judge-submission claim."
   }
 ]
