@@ -3,6 +3,8 @@
 begin;
 do $$begin
  if to_regclass('public.admin_profile_audit')is not null or to_regprocedure('public.admin_save_profile(uuid,text,jsonb)')is not null then raise exception '035 exists: re-audit, never replay';end if;
+ if md5(replace(pg_get_functiondef('public.is_admin()'::regprocedure),E'\r\n',E'\n'))<>'5e9198d378eb116e17553d1b2b861b26'then raise exception '035 admin authorization baseline drift: re-audit';end if;
+ if not exists(select 1 from pg_constraint where conrelid='public.profiles'::regclass and contype='u'and conkey=array[(select attnum from pg_attribute where attrelid='public.profiles'::regclass and attname='username')])then raise exception '035 requires audited username uniqueness';end if;
  if not(select relrowsecurity from pg_class where oid='public.profiles'::regclass)or not(select relrowsecurity from pg_class where oid='storage.objects'::regclass)then raise exception '035 requires audited profiles/Storage RLS';end if;
 end$$;
 create table public.admin_profile_audit(
@@ -73,8 +75,8 @@ declare old public.profiles%rowtype;updated public.profiles%rowtype;v_first_name
    if (meta->>'size')::bigint not between 1 and 2097152 then raise exception 'Image must be at most2MiB'using errcode='22023';end if;
   end if;
  end if;
- update public.profiles p set first_name=v_first_name,last_name=v_last_name,full_name=btrim(v_last_name||' '||v_first_name),username=v_username,avatar_path=avatar where p.user_id=p_target returning * into updated;
- insert into public.admin_profile_audit(actor_id,target_id,previous_fields,next_fields)values(auth.uid(),p_target,public._admin_profile_view(old)-'snapshot',public._admin_profile_view(updated)-'snapshot');
+ update public.profiles p set first_name=case when v_first_name=coalesce(old.first_name,'')then old.first_name else v_first_name end,last_name=case when v_last_name=coalesce(old.last_name,'')then old.last_name else v_last_name end,full_name=case when v_first_name=coalesce(old.first_name,'')and v_last_name=coalesce(old.last_name,'')then old.full_name else btrim(v_last_name||' '||v_first_name)end,username=v_username,avatar_path=avatar where p.user_id=p_target returning * into updated;
+ insert into public.admin_profile_audit(actor_id,target_id,previous_fields,next_fields)values(auth.uid(),p_target,jsonb_build_object('user_id',old.user_id,'first_name',old.first_name,'last_name',old.last_name,'full_name',old.full_name,'username',old.username,'avatar_path',old.avatar_path),jsonb_build_object('user_id',updated.user_id,'first_name',updated.first_name,'last_name',updated.last_name,'full_name',updated.full_name,'username',updated.username,'avatar_path',updated.avatar_path));
  return public._admin_profile_view(updated);
 end$$;
 revoke all on function public._admin_profile_view(public.profiles),public.admin_profile_for_edit(text,uuid),public.admin_prepare_profile_avatar(uuid,text),public.can_upload_admin_profile_avatar(text),public.can_cleanup_admin_profile_avatar(text),public.admin_save_profile(uuid,text,jsonb)from public,anon,authenticated;
