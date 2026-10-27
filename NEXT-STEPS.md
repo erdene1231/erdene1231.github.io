@@ -1,3 +1,7 @@
+# Transition authorization update
+
+User authorizes automatic package4→package2 ONLY after package4 is fully complete and verified,with truthful completion evidence reported before transition. Package4 exclusively active now;no missing/blocked/unverified required work may be waived to advance. Existing production/migration/permissions/import/publication/merge/deploy gates remain and user merges. Parent notifies user when transition occurs. No automatic package3or later authorization. This supersedes earlier no-auto-package2 wording below.
+
 # Scope correction —package4only
 
 Execution order:user explicitly set4,2,3,5,6,7,8. Finish package4first;do not automatically begin later packages. Existing tutorial lesson rewriting/math/C++belongs to package2,not package4. All such proposals/tests retained on local branch codex/package02-deferred-tutorial-reviews;see audit/PACKAGE02-DEFERRED-INVENTORY.json. Removed from active package4delivery/gates without rewriting history. Batch04stopped with incomplete/failed C++verification;no credit. Earlier tutorial checkpoints below are historical,out of scope and superseded.
