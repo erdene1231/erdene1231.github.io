@@ -1,3 +1,7 @@
+# Approved036applied;importauthcontextblocker
+
+036appliedsuccessfully;freshverificationexactlytwofunctionreplacements+oneprivatehelper,grants/RLS/Storage/catalog/revisions/sequenceunchanged.748problems/56tutorials,0newimports. ExistingSupabaseconnectionworks;SQLauth.uidnull/is_adminfalse. Actualsupportedserverdry-runrejected42501beforeprocessing;no retry/impersonation. See `audit/PART04-PRODUCTION-036-RESULT.json`. Need parentresolveapp-adminexecutionorreviewedguardedowner-maintenanceimport,notnewcredentials.032–035notapplied;035avataraccessstillseparate. PR21targetsmainandisready. No package2transition.
+
 # Latest PR readiness checkpoint
 
 PR20merged by user;main1c3a215contains713f6e0. PR20metadata corrected. PR21exists at /pull/21;finalsame-account-refreshfix passes82Node+actualadminbrowserchecks. Feature remains off;no liveinstallation claimed. CombinedPR21metadata/baseupdate returnederrored;read-onlycheck showsoriginalstackedbase unchanged. No retry/bypass. Older workflowblocker records below are historical. No production/migration/permission/merge/deploy action or package2transition.
