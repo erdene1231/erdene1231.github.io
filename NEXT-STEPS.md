@@ -1,3 +1,7 @@
+# Low-effort draft checkpoint — typical90_aa
+
+One isolated MN/EN statement draft is in audit/statement-drafts/typical90-aa.json. Official source200, constraints/sample text inspected; native schema, literal sample pairs and actual MN/EN renderer/MathJax passed. Medium semantic/translation/rights review remains REQUIRED, including output layout and adding native attribution/provenance. No review flags or ready credit assigned; not inserted in staged import records or review registry. Full-ready remains12, all previous coverage unchanged. Resume medium review before promotion.
+
 # Current package04 checkpoint —12MN/EN statements locally checked
 
 Latest data-only batch completes10original functional restatements:typical90_c,f,h,l,m,n,u,v,x,z. Combined with b,j,12unique problems/24language versions passed native policy, independently frozen37source samples and actual renderer/MathJax48language/theme/width combinations. Updated034synthetic publication validates all12; representative admin/stale/logout/rights/CAS/media/bulk guards pass. Exact source nuances recorded in CONTENT02-REVIEW:parallel added road allowed,red-only active connectivity/no repeated paint,walk vs simple path,within-array distinct coordinates,fixed-position cuts,exact-K and any valid tree subset. No source narrative/prose copied or closely translated; official task attribution and exact constraints/samples retained.
