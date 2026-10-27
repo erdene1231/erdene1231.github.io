@@ -1,3 +1,7 @@
+# Activation code ready after PR21usermerge
+
+Currentbase maine9540da includesPR21usermerge. Newbranchcodex/part04-activation enables verified035/036 problemmetadata32andfour-fieldadminUI;no newrights. Metadata saves use existing dry-run negative probe to fail closed on031/missing/unauthorizedbackend;rich/bulk remains gated.88Node+activation/config/legacy/admin/richbrowserchecks pass. No prodwrites/merge/deploy inthisphase. See `audit/PART04-FRONTEND-ACTIVATION.json` andactivationplan. Userread-onlyownusername lookup+signedoutdenial is smallest livecheck afterrelease;no user/avatarfixturemutations.271rawCFURLsremainlegacywithallguardsmatching;UIalreadycanonical. No unapproveddatarewrite/newcontent/package2.
+
 # Approvedproductionoperationscompleted;activationpending
 
 245newmetadatarecordscommittedandverified:748→993publiccatalog;actualnumbers749–993. Existing748/profile/progress/oldhistoryunchanged.035installedexactapprovedhash;privateACLs+3scopedStoragepoliciesverified,0actualuser/avatarfixturemutations.035journal20261027214226/036journal20261027211919. No replay/importretry. See `audit/PART04-PRODUCTION-APPROVED-OPERATIONS.json`,`PART04-PRODUCTION-035-RESULT.json`,receipts,and `PART04-CODE-ACTIVATION-PLAN.md`. Defaultcodeflagsremain31/false;PR21unmerged,liveauthenticatedgatewayfixtureunrun;no merge/deploy/package2.032–034/271URLwrites/optionalpublicationnotexecuted. Olderplanning/blockerentriesbelowarehistorical.

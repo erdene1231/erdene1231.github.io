@@ -1,4 +1,4 @@
-import {setupAdminProfiles} from './admin-profile.js?v=50';
+import {setupAdminProfiles} from './admin-profile.js?v=51';
 import {createLearningStore} from './learning-store.js?v=23';
 import {setupProblemStatement} from './problem-statement.js?v=49';
 import {setupProblemEditorial} from './problem-editorial.js?v=49';
@@ -11,7 +11,7 @@ import {setupGroups} from './groups.js?v=20';
 let tutorialUI, learningUI=null,hintRenderTurn=0,problemEditorialUI,problemStatementUI,learningProgressStore;
 import {CURRENT_EMPTY,cleanProgress,parseCurrentBackup,progressRows} from './progress.js?v=48';
 import {getSolvers} from './community.js?v=6';
-import {setupAdmin} from './admin.js?v=50';
+import {setupAdmin} from './admin.js?v=51';
 import {parseCatalog,hintTexts,getSources} from './problem-store.js?v=48';
 import {rpc} from './accounts.js?v=48';
 import {ownProfile,saveOwnProfile,avatarUrl,accountError} from './accounts.js?v=48';
