@@ -1887,8 +1887,16 @@
     "priorityReason": "Хязгаарлагдмал state space-оос cycle үүсэх баталгаа, prefix/cycle заагийг зөв тооцох functional-graph суурь practice.",
     "rating": 1700,
     "ratingKind": "estimated",
-    "hints": [],
-    "hintsEn": [],
+    "hints": [
+      "Дэлгэцийн төлөв ердөө $100000$ боломжтой. Нэг төлөв давтагдсаны дараа юу болох вэ?",
+      "Төлөв бүр анх хэд дэх алхамд үзэгдсэнийг, мөн үзэгдсэн төлөвүүдийн дарааллыг хадгал.",
+      "Давталтын өмнөх хэсгийг тусад нь үлдээ. Хэрэв шаардсан алхам тэнд биш бол cycle-ийн эхлэлээс цаашхыг cycle-ийн уртаар modulo ав."
+    ],
+    "hintsEn": [
+      "There are only $100000$ possible display states. What happens after a state repeats?",
+      "Record the first step at which each state appears and the ordered trajectory.",
+      "Keep the prefix before the cycle separate. If the requested step lies beyond it, reduce only the offset from the cycle start modulo the cycle length."
+    ],
     "tags": [
       "functional graphs"
     ],
@@ -1897,7 +1905,444 @@
     "ratingBasis": "Rough CF-scale calibration: Finite functional trajectory with preperiod/cycle and K<=1e18; correct time-index reduction is the key implementation risk. Not official.",
     "ratingConfidence": "rough",
     "ratingEstimatedAt": "2026-10-27",
-    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bf"
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bf",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-bf",
+      "title": "Original Calculator — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Дараагийн төлөв нь зөвхөн одоогийн утгаас хамаардаг. Иймээс төлөв давтагдвал түүнээс хойших дараалал өмнөхтэй яг ижил байна. Төлөв $M=100000$ тул хамгийн ихдээ $M$ ялгаатай төлөвийн дараа давталт гарна. Анх давтагдсан төлөвийн өмнөх байрлалыг $s$, давталтын уртыг $c$ гэе. Хадгалсан дараалал доторх $K$-г шууд авна; цааших төлөв нь $s+(K-s)\\bmod c$ байрлалд байна. Нийт $K$-г шууд cycle-ийн уртаар modulo авах нь давталтын өмнөх prefix-ийг алдах тул буруу.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Төлөв: ",
+                  "marks": []
+                },
+                {
+                  "text": "firstVisit",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь үзээгүй үед $-1$, бусад үед анхны алхмын дугаар; ",
+                  "marks": []
+                },
+                {
+                  "text": "trajectory[0]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь эхний дэлгэц. Гол алхам: үзээгүй төлөвийг хадгалаад аравтын цифрийн нийлбэрийг нэмэн $100000$-д modulo авна. Цифрийн нийлбэрийг туслах ",
+                  "marks": []
+                },
+                {
+                  "text": "nextState",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " функц бодно. Давталт олдмогц индексийг дээрх дүрмээр сонгоод дэлгэцийн утгыг хэвлэнэ. $K$ нь ",
+                  "marks": []
+                },
+                {
+                  "text": "long long",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "; төлөвийн индекс ",
+                  "marks": []
+                },
+                {
+                  "text": "int",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-д багтана. Хамгийн ихдээ $100000$ төлөв, төлөв бүрт тав хүртэл цифр: энэ тогтмол мужид хугацаа/санах ой $O(100000)$. Тэг төлөв өөртөө шилжинэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint nextState(int value) {\n    int digitSum = 0;\n    for (int digits = value; digits > 0; digits /= 10) {\n        digitSum += digits % 10;\n    }\n    return (value + digitSum) % 100000;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int initial;\n    long long steps;\n    cin >> initial >> steps;\n    vector<int> firstVisit(100000, -1), trajectory;\n    int current = initial;\n    while (firstVisit[current] == -1) {\n        firstVisit[current] = static_cast<int>(trajectory.size());\n        trajectory.push_back(current);\n        current = nextState(current);\n    }\n    long long index = steps;\n    if (steps >= static_cast<long long>(trajectory.size())) {\n        int cycleStart = firstVisit[current];\n        int cycleLength = static_cast<int>(trajectory.size()) - cycleStart;\n        index = cycleStart + (steps - cycleStart) % cycleLength;\n    }\n    cout << trajectory[index] << '\\n';\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bf"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/058.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-bf",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "Original Calculator",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Төлөв $x$ нь $0$-ээс $99999$ хүртэлх бүхэл тоо байна. Нэг үйлдлээр $x$-ийн аравтын цифрүүдийн нийлбэрийг $y$ гэж олоод төлөвийг $(x+y)\\bmod100000$ болгоно. Эхний төлөв $N$ бол яг $K$ үйлдлийн дараах утгыг ол.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Нэг мөрөнд $N,K$ өгөгдөнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "N K\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эцсийн төлөвийг нэг бүхэл тоогоор хэвлэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$0\\le N\\le99999$; $1\\le K\\le10^{18}$. Хоёр утга бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "5 3\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "13\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "0 100\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "0\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "99999 1000000000000000000\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "84563\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bf"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Original Calculator",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "A state $x$ is an integer from $0$ through $99999$. One operation computes the sum $y$ of the decimal digits of $x$, then replaces the state with $(x+y)\\bmod100000$. Starting from $N$, find the state after exactly $K$ operations.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The input contains $N,K$ on one line.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "N K\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print the final state as an integer.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$0\\le N\\le99999$ and $1\\le K\\le10^{18}$. Both inputs are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "5 3\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "13\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "0 100\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "0\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "99999 1000000000000000000\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "84563\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bf"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_bf",
+      "sourceSha256": "16145b9352eb24b9d66f09684f5b9d4cfceb214052ffe8d9e0f78c43a7cd37b9",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    }
   },
   {
     "source": "AtCoder",
@@ -2381,8 +2826,16 @@
     "priorityReason": "Range update-ийн доторх ялгавар хэвээр үлдэх invariant-аар global objective-г O(1) update болгох бүтээлч practice.",
     "rating": 1700,
     "ratingKind": "estimated",
-    "hints": [],
-    "hintsEn": [],
+    "hints": [
+      "Завсрын бүх өндрийг өөрчлөхийн оронд хөрш өндрийн зөрүүг хадгал.",
+      "$d_i=A_{i+1}-A_i$ гэвэл $[L,R]$-д нэмэхэд доторх зөрүүнүүд өөрчлөгдөхгүй.",
+      "$L>1$ үед $d_{L-1}$ дээр $V$ нэм; $R<N$ үед $d_R$-ээс $V$ хас. Өөрчлөх бүрт хуучин абсолютыг хасаад шинэ абсолютыг нийлбэрт нэм."
+    ],
+    "hintsEn": [
+      "Store differences between adjacent heights instead of updating every height.",
+      "For $d_i=A_{i+1}-A_i$, adding to $[L,R]$ leaves every interior difference unchanged.",
+      "If $L>1$, add $V$ to $d_{L-1}$; if $R<N$, subtract $V$ from $d_R$. Replace the old absolute contribution with the new one."
+    ],
     "tags": [
       "difference arrays"
     ],
@@ -2391,7 +2844,406 @@
     "ratingBasis": "Rough CF-scale calibration: Range addition changes only two boundary differences of a global absolute-sum objective;64-bit updates and edge cases. Not official.",
     "ratingConfidence": "rough",
     "ratingEstimatedAt": "2026-10-27",
-    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bl"
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bl",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-bl",
+      "title": "Uplift — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Хариу нь $\\sum_{i=1}^{N-1}|d_i|$. Хоёр хөрш хоёулаа завсарт байвал тэдэнд ижил тоо нэмэгдэх тул зөрүү хэвээр. Хоёулаа гадна байвал мөн хэвээр. Зөвхөн зүүн хилд баруун хөрш өөрчлөгдөх учир зөрүү $V$-ээр өснө; баруун хилд зүүн хөрш өөрчлөгдөх учир $V$-ээр буурна. Эдгээр бодит хил тус бүрийн хуучин contribution-ийг шинэ contribution-оор солих нь хариуг яг хадгална. Бүхэл массивын шинэчлэлт хилгүй; $N=1$ үед нийлбэр үргэлж тэг.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Бэлтгэл: ",
+                  "marks": []
+                },
+                {
+                  "text": "height",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ээс ",
+                  "marks": []
+                },
+                {
+                  "text": "difference",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " ба ",
+                  "marks": []
+                },
+                {
+                  "text": "totalVariation",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийг тооцно. ",
+                  "marks": []
+                },
+                {
+                  "text": "changeBoundary",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь хуучин абсолютыг хасах, зөрүүг засах, шинэ абсолютыг нэмэх гурван алхмыг хамтад нь хийнэ. Асуулт бүрт зөвхөн оршин байгаа хоёр хилийг шинэчилнэ. Гаралт: шинэчлэлт бүрийн дараах нийлбэр, эхний утгыг урьдчилан хэвлэхгүй. $O(N+Q)$ хугацаа, $O(N)$ санах ой. Давтан шинэчлэлтээр өндрийн зөрүү input-ийн анхны хязгаараас давна; бүх тооцоолол ",
+                  "marks": []
+                },
+                {
+                  "text": "long long",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " байна.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, queryCount;\n    cin >> n >> queryCount;\n    vector<long long> height(n + 1), difference(n + 1);\n    for (int i = 1; i <= n; ++i) cin >> height[i];\n    long long totalVariation = 0;\n    for (int i = 1; i < n; ++i) {\n        difference[i] = height[i + 1] - height[i];\n        totalVariation += llabs(difference[i]);\n    }\n    auto changeBoundary = [&](int position, long long delta) {\n        totalVariation -= llabs(difference[position]);\n        difference[position] += delta;\n        totalVariation += llabs(difference[position]);\n    };\n    while (queryCount--) {\n        int left, right;\n        long long delta;\n        cin >> left >> right >> delta;\n        if (left > 1) changeBoundary(left - 1, delta);\n        if (right < n) changeBoundary(right, -delta);\n        cout << totalVariation << '\\n';\n    }\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bl"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/064.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-bl",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "Uplift",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$N$ өндрөөс тогтсон $A$ массив өгөгдөнө. Шинэчлэлт $(L,R,V)$ бүр $L$-ээс $R$ хүртэлх бүх элементэд $V$ нэмнэ. Шинэчлэлт бүрийн дараа хөрш элементүүдийн абсолют зөрүүний нийлбэр $\\sum_{i=1}^{N-1}|A_i-A_{i+1}|$-ийг ол. Шинэчлэлтүүд дараалан хуримтлагдана.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхлээд $N,Q$, дараагийн мөрөнд анхны $N$ өндөр, дараах $Q$ мөрөнд тус бүр $L_i,R_i,V_i$ өгнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "N Q\nA_1 ... A_N\nL_1 R_1 V_1\n...\nL_Q R_Q V_Q\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Шинэчлэлт бүрийн дараах нийлбэрийг тус бүр нэг мөрөнд хэвлэ. $N=1$ үед нийлбэр тэг.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$1\\le N,Q\\le10^5$; $-10^9\\le A_i,V_i\\le10^9$; $1\\le L_i\\le R_i\\le N$. Бүх оролт бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "3 3\n1 2 3\n2 3 1\n1 2 -1\n1 3 2\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "3\n4\n4\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "20 10\n61 51 92 -100 -89 -65 -89 -64 -74 7 87 -2 51 -39 -50 63 -23 36 74 37\n2 2 -45\n6 19 82\n2 9 36\n7 13 71\n16 20 90\n18 20 -24\n14 17 -78\n10 11 -55\n7 19 -26\n20 20 -7\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1164\n1328\n1256\n1350\n1440\n1416\n1572\n1482\n1430\n1437\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bl"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Uplift",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Given an array $A$ of $N$ heights, process updates $(L,R,V)$ that add $V$ to every entry from $L$ through $R$, inclusive. After each update, find $\\sum_{i=1}^{N-1}|A_i-A_{i+1}|$, the sum of absolute differences between adjacent entries. Updates accumulate in order.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The input gives $N,Q$, then the initial $N$ heights, followed by $Q$ lines containing $L_i,R_i,V_i$.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "N Q\nA_1 ... A_N\nL_1 R_1 V_1\n...\nL_Q R_Q V_Q\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print the sum after each update, one per line. When $N=1$, the sum is zero.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$1\\le N,Q\\le10^5$; $-10^9\\le A_i,V_i\\le10^9$; $1\\le L_i\\le R_i\\le N$. All input values are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "3 3\n1 2 3\n2 3 1\n1 2 -1\n1 3 2\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "3\n4\n4\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "20 10\n61 51 92 -100 -89 -65 -89 -64 -74 7 87 -2 51 -39 -50 63 -23 36 74 37\n2 2 -45\n6 19 82\n2 9 36\n7 13 71\n16 20 90\n18 20 -24\n14 17 -78\n10 11 -55\n7 19 -26\n20 20 -7\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1164\n1328\n1256\n1350\n1440\n1416\n1572\n1482\n1430\n1437\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bl"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_bl",
+      "sourceSha256": "c0b11c7ca3b756510451d290b5c243a380faa6023dd45a524acec6e986ed8243",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    }
   },
   {
     "source": "AtCoder",

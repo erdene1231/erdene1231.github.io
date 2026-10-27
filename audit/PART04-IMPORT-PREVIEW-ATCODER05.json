@@ -8,8 +8,16 @@
     "priorityReason": "Local restriction-аас product rule гаргах, huge exponent-д fast power сонгох болон small-case boundary-г зөв салгах суурь practice.",
     "rating": 1400,
     "ratingKind": "estimated",
-    "hints": [],
-    "hintsEn": [],
+    "hints": [
+      "Эхний хоёр байрлал болон түүнээс хойших байрлалуудыг тусад нь авч үз.",
+      "Өмнөх хоёр өнгө заавал ялгаатай тул дараагийн байрлалд яг $K-2$ сонголт байна.",
+      "$N=1$ үед $K$; бусад үед $K(K-1)(K-2)^{N-2}$. Цөөн өнгөний боломжгүй тохиолдлыг ялгаад зэргийг хурдан бод."
+    ],
+    "hintsEn": [
+      "Separate the first two positions from the remaining positions.",
+      "The previous two colors are necessarily distinct, leaving exactly $K-2$ choices for the next position.",
+      "For $N=1$, return $K$; otherwise use $K(K-1)(K-2)^{N-2}$. Handle too few colors before modular exponentiation."
+    ],
     "tags": [
       "combinatorics"
     ],
@@ -18,7 +26,414 @@
     "ratingBasis": "Rough CF-scale calibration: Local coloring product formula plus fast exponentiation for N<=1e18 and small-N/K edge cases. Not official.",
     "ratingConfidence": "rough",
     "ratingEstimatedAt": "2026-10-27",
-    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bq"
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bq",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-bq",
+      "title": "Colorful Blocks — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхний байрлалд $K$, хоёр дахьд эхнийхээс өөр $K-1$ сонголт бий. Гурав дахь болон дараагийн байрлал бүрд өмнөх хоёр нь хоорондоо ялгаатай тул яг хоёр өнгө хориотой, өөр нэмэлт хязгаарлалт байхгүй. Иймээс сонголтуудын тоог үржүүлнэ. $N=1$-ийг тусад нь бодно; $N\\ge2,K=1$ эсвэл $N\\ge3,K=2$ үед боломжгүй. Түргэн зэрэгт тооцоолол нь зэргийн хоёртын бичлэгээр үржүүлэх тул $N$ асар их байсан ч цөөн алхамтай.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Бэлтгэл: эхний байрлал, өнгө хүрэлцэхгүй тохиолдлуудыг шийднэ. ",
+                  "marks": []
+                },
+                {
+                  "text": "modPower",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь үр дүнг $1$-ээс эхлүүлж, сондгой битэд одоогийн суурийг үржүүлээд суурийг квадратлаж зэргийг хоёр хуваана. Гол тооцоо: эхний хоёр байрлалын сонголт ба үлдсэн зэргийн үржвэр. Гаралт: $10^9+7$ дахь үлдэгдэл. $N=2$ үед зэрэг тэг тул хоосон үржвэр $1$. Хугацаа $O(\\log N)$, санах ой $O(1)$; үржвэрүүд ",
+                  "marks": []
+                },
+                {
+                  "text": "long long",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-д багтана.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconst long long mod = 1000000007;\n\nlong long modPower(long long base, long long exponent) {\n    long long result = 1;\n    while (exponent > 0) {\n        if (exponent % 2 == 1) result = result * base % mod;\n        base = base * base % mod;\n        exponent /= 2;\n    }\n    return result;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    long long n, colors;\n    cin >> n >> colors;\n    if (n == 1) {\n        cout << colors << '\\n';\n        return 0;\n    }\n    if (colors == 1 || (n >= 3 && colors == 2)) {\n        cout << 0 << '\\n';\n        return 0;\n    }\n    long long answer = colors * (colors - 1) % mod;\n    answer = answer * modPower(colors - 2, n - 2) % mod;\n    cout << answer << '\\n';\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bq"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/069.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-bq",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "Colorful Blocks",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$1$-ээс $N$ хүртэл дугаарласан дараалсан байрлал бүрийг $K$ өнгөний аль нэгээр будна. Индексийн зөрүү нь $1$ эсвэл $2$ байх ямар ч хоёр байрлал өөр өнгөтэй байх ёстой. Будах аргуудын тоог ол; бүх өнгийг ашиглах албагүй. Аль нэг байрлалын өнгө ялгаатай бол хоёр будалтыг ялгаатайд тооцно.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Нэг мөрөнд $N,K$ өгөгдөнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "N K\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Зөв будалтын тоог $10^9+7$-д хуваасан үлдэгдлийг хэвлэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$1\\le N\\le10^{18}$; $1\\le K\\le10^9$. Оролт бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "2 3\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "6\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "10 2\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "0\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "2021 617\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "53731843\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bq"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Colorful Blocks",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Color each of $N$ ordered positions, numbered $1$ through $N$, with one of $K$ colors. Any two positions whose indices differ by $1$ or $2$ must have different colors. Count valid colorings; some colors may be unused. Two colorings differ if at least one position has a different color.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The input contains $N,K$ on one line.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "N K\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print the number of valid colorings modulo $10^9+7$.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$1\\le N\\le10^{18}$ and $1\\le K\\le10^9$. Both inputs are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "2 3\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "6\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "10 2\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "0\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "2021 617\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "53731843\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bq"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_bq",
+      "sourceSha256": "f1cd13b774da86db7fb2fe32a4b2ce782f67ee3373ab6a25288ab1151464c84b",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    }
   },
   {
     "source": "AtCoder",
@@ -571,8 +986,16 @@
     "priorityReason": "Circular-to-linear reduction, positive-value monotonicity ба integer divisibility-г хослуулах standard window practice.",
     "rating": 1500,
     "ratingKind": "estimated",
-    "hints": [],
-    "hintsEn": [],
+    "hints": [
+      "Нийт хэмжээ $10$-д хуваагдахгүй бол бүхэл хэсгүүдээр яг аравны нэгийг сонгож болох уу?",
+      "Массивыг хоёр удаа залгаж тойргийн завсрыг шугаман болго. Зөвхөн эхний $N$ эхлэл, хамгийн ихдээ $N$ урттай завсрууд хэрэгтэй.",
+      "Бүх хэмжээ эерэг тул баруун хязгаарыг урагшлуулахад нийлбэр өснө. Хоёр заагчтай завсраар зорилтот нийлбэрийг хай."
+    ],
+    "hintsEn": [
+      "If the total is not divisible by $10$, can whole pieces sum to exactly one tenth?",
+      "Duplicate the array to linearize circular slices. Consider only the first $N$ starting positions and at most $N$ pieces per slice.",
+      "All sizes are positive, so extending the right endpoint increases the sum. Search for the target using a two-pointer window."
+    ],
     "tags": [
       "two pointers"
     ],
@@ -581,7 +1004,552 @@
     "ratingBasis": "Rough CF-scale calibration: Positive circular target-sum window with array doubling and total-divisibility check; similar core window skills to CF580B1500. Not official.",
     "ratingConfidence": "rough",
     "ratingEstimatedAt": "2026-10-27",
-    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bx"
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bx",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-bx",
+      "title": "Cake Cut — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Бүх хэсэг бүхэл тул нийт хэмжээ $10$-д хуваагдахгүй бол хариу ",
+                  "marks": []
+                },
+                {
+                  "text": "No",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ". Бусад үед зорилт нь нийт хэмжээний аравны нэг, эерэг бүхэл. Тойргийн дурын зөв завсар давхарласан массив дахь эхний $N$ эхлэлийн нэгтэй, хамгийн ихдээ $N$ урттай завсарт таарна. Тогтсон зүүн эхлэлд нийлбэр зорилтоос бага байхад баруун төгсгөлийг урагшлуулна. Зорилтод хүрсэн эхний завсар тэнцүү биш, их бол түүнээс урт нь мөн их байна. Дараагийн эхлэл рүү шилжихдээ эхний элементийг хасахад өмнө нь алгассан богино төгсгөлүүд зөв болохгүй: эерэг утга хассанаар тэд улам багасна. Иймээс баруун заагч ухрахгүй, бүх боломжийг алдалгүй шалгана.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Бэлтгэл: ",
+                  "marks": []
+                },
+                {
+                  "text": "pieces",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-д давхарласан массив, ",
+                  "marks": []
+                },
+                {
+                  "text": "totalSize",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-д нийлбэрийг хадгална. Хуваагдахгүй бол шууд ",
+                  "marks": []
+                },
+                {
+                  "text": "No",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ". Төлөв: ",
+                  "marks": []
+                },
+                {
+                  "text": "windowSum",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь $[left,right)$ завсрын нийлбэр. Гол алхам: нийлбэр бага, уртын хязгаар хүрээгүй үед баруун элемент нэмж, тэнцүү эсэхийг шалгаад зүүн элементийг хасна. Эерэг зорилт ба эерэг элементүүдийн улмаас хасах элемент завсарт орсон байдаг. Гаралт: олдвол ",
+                  "marks": []
+                },
+                {
+                  "text": "Yes",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ", үгүй бол ",
+                  "marks": []
+                },
+                {
+                  "text": "No",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ". Заагч бүр $2N$-ээс илүүгүй алхах тул $O(N)$ хугацаа, давхарласан массивын $O(N)$ санах ой. Нийлбэр $10^{14}$ хүрч болох тул ",
+                  "marks": []
+                },
+                {
+                  "text": "long long",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ".",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<long long> pieces(2 * n);\n    long long totalSize = 0;\n    for (int i = 0; i < n; ++i) {\n        cin >> pieces[i];\n        pieces[i + n] = pieces[i];\n        totalSize += pieces[i];\n    }\n    if (totalSize % 10 != 0) {\n        cout << \"No\\n\";\n        return 0;\n    }\n    long long target = totalSize / 10, windowSum = 0;\n    int right = 0;\n    for (int left = 0; left < n; ++left) {\n        while (right < left + n && windowSum < target) {\n            windowSum += pieces[right];\n            ++right;\n        }\n        if (windowSum == target) {\n            cout << \"Yes\\n\";\n            return 0;\n        }\n        windowSum -= pieces[left];\n    }\n    cout << \"No\\n\";\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bx"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/076.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-bx",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "Cake Cut",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Тойрог дагуу дараалсан $N$ хэсгийн хэмжээ $A_1,\\ldots,A_N$ өгөгдөнө. Бүтэн хэсгүүдээс бүрдэх нэг тасралтгүй, хоосон биш завсар сонгоод түүний нийлбэрийг нийт хэмжээний яг аравны нэгтэй тэнцүүлж болох эсэхийг ол. Эхний ба сүүлийн хэсэг хөрш; хэсгийг хуваах эсвэл нэгээс олон удаа сонгохгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхний мөрөнд $N$, дараагийн мөрөнд $N$ ширхэг хэмжээ өгнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "N\nA_1 ... A_N\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Боломжтой бол ",
+                  "marks": []
+                },
+                {
+                  "text": "Yes",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ", үгүй бол ",
+                  "marks": []
+                },
+                {
+                  "text": "No",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " хэвлэ. Том, жижиг үсгийг яг баримтал.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$1\\le N\\le10^5$; $1\\le A_i\\le10^9$. Оролт бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "10\n1 1 1 1 1 1 1 1 1 1\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "Yes\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "3\n1 1 1\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "No\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "3\n1 18 1\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "Yes\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 4",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "4\n1 9 1 9\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "No\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bx"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Cake Cut",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Given positive sizes $A_1,\\ldots,A_N$ in circular order, determine whether one nonempty contiguous group of whole pieces has total size exactly one tenth of the overall sum. The first and last pieces are adjacent. Do not split a piece or select one more than once.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The first line gives $N$, and the next gives the $N$ sizes.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "N\nA_1 ... A_N\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print ",
+                      "marks": []
+                    },
+                    {
+                      "text": "Yes",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " if such a group exists, or ",
+                      "marks": []
+                    },
+                    {
+                      "text": "No",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " otherwise, with this capitalization.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$1\\le N\\le10^5$ and $1\\le A_i\\le10^9$. All input values are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "10\n1 1 1 1 1 1 1 1 1 1\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "Yes\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "3\n1 1 1\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "No\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "3\n1 18 1\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "Yes\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 4",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "4\n1 9 1 9\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "No\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bx"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_bx",
+      "sourceSha256": "00108f55c9ab46a8e74b5ab713527fb7d42a9cc4a79725d653d50ef1ab5e86c6",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    }
   },
   {
     "source": "AtCoder",
@@ -655,8 +1623,16 @@
     "priorityReason": "Endpoint contribution counting болон latest-occurrence bound-ийг холбох, quadratic interval enumeration-г шугаман болгох reusable pattern.",
     "rating": 1400,
     "ratingKind": "estimated",
-    "hints": [],
-    "hintsEn": [],
+    "hints": [
+      "Баруун төгсгөлийг тогтоогоод зөв зүүн төгсгөлүүдийг тоол.",
+      "Одоог хүртэлх хамгийн сүүлийн `o` ба `x`-ийн байрлалыг хадгал.",
+      "Баруун төгсгөл $r$-д зөв зүүн төгсгөлүүд $1$-ээс $\\min(last_o,last_x)$ хүртэл байна. Байрлалуудыг $1$-ээс тоол; хараахан гараагүй тэмдэгтийн байрлалыг $0$ гэ."
+    ],
+    "hintsEn": [
+      "Fix a right endpoint and count its valid left endpoints.",
+      "Keep the most recent positions of `o` and `x`.",
+      "For right endpoint $r$, valid left endpoints are $1$ through $\\min(last_o,last_x)$. Use one-based positions and initialize unseen symbols to $0$."
+    ],
     "tags": [
       "counting"
     ],
@@ -665,7 +1641,592 @@
     "ratingBasis": "Rough CF-scale calibration: Count valid interval starts using latest positions of both symbols, or complement constant runs;64-bit endpoint contributions. Not official.",
     "ratingConfidence": "rough",
     "ratingEstimatedAt": "2026-10-27",
-    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_cf"
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_cf",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-cf",
+      "title": "There are two types of characters — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$r$ дээр төгсөх $[l,r]$ завсар ",
+                  "marks": []
+                },
+                {
+                  "text": "o",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " агуулна гэдэг нь $l$ тухайн тэмдэгтийн хамгийн сүүлийн байрлалаас хойш биш гэсэн үг. ",
+                  "marks": []
+                },
+                {
+                  "text": "x",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-д мөн адил. Хоёуланг агуулахын тулд, бас хангалттай нөхцөл нь $l\\le\\min(last_o,last_x)$. Ийм зүүн төгсгөл яг тэр minimum-ийн тоотой; нэг тэмдэг хараахан гараагүй бол тэг байна. Баруун төгсгөлүүд өөр тул тоолсон завсрууд давхцахгүй. Нийлбэр нь бүх зөв завсрын тоо.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Төлөв: ",
+                  "marks": []
+                },
+                {
+                  "text": "lastO",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ", ",
+                  "marks": []
+                },
+                {
+                  "text": "lastX",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь хамгийн сүүлийн $1$-ээс эхэлсэн байрлал; ",
+                  "marks": []
+                },
+                {
+                  "text": "answer",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь нийт тоо. Тэмдэг бүрт тохирох байрлалыг шинэчлээд хоёр байрлалын minimum-ийг нэмнэ. Гаралт: эцсийн тоо. $O(N)$ хугацаа; уншсан мөрийг тооцохгүй бол $O(1)$ нэмэлт санах ой, нийт $O(N)$. Хариу $N(N+1)/2$ хүртэл өсөх тул ",
+                  "marks": []
+                },
+                {
+                  "text": "long long",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "; нэг төрлийн мөрийн хариу тэг.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    string text;\n    cin >> n >> text;\n    int lastO = 0, lastX = 0;\n    long long answer = 0;\n    for (int position = 1; position <= n; ++position) {\n        if (text[position - 1] == 'o') lastO = position;\n        else lastX = position;\n        answer += min(lastO, lastX);\n    }\n    cout << answer << '\\n';\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_cf"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/084-02.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-cf",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "There are two types of characters",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Зөвхөн ",
+                  "marks": []
+                },
+                {
+                  "text": "o",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ", ",
+                  "marks": []
+                },
+                {
+                  "text": "x",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " тэмдэгтээс бүрдэх $N$ урттай $S$ мөр өгөгдөнө. Хоёр төрлийн тэмдэгтийг хоёуланг агуулдаг тасралтгүй завсар $(l,r)$-ийн тоог ол; $1\\le l\\le r\\le N$.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхний мөрөнд $N$, дараагийн мөрөнд $S$ байна. ",
+                  "marks": []
+                },
+                {
+                  "text": "o",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь жижиг латин үсэг, тэг цифр биш.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "N\nS\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Шаардлага хангасан завсруудын тоог нэг бүхэл тоогоор хэвлэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$1\\le N\\le10^6$. $S$ нь яг $N$ ширхэг ",
+                  "marks": []
+                },
+                {
+                  "text": "o",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " эсвэл ",
+                  "marks": []
+                },
+                {
+                  "text": "x",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " тэмдэгтээс тогтоно.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "4\nooxo\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "5\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "5\noxoxo\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "10\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "5\nooooo\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "0\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 4",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "7\nxxoooxx\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "16\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_cf"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "There are two types of characters",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Given a string $S$ of length $N$ containing only ",
+                      "marks": []
+                    },
+                    {
+                      "text": "o",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " and ",
+                      "marks": []
+                    },
+                    {
+                      "text": "x",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ", count contiguous intervals $(l,r)$ containing both characters, where $1\\le l\\le r\\le N$.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The first line contains $N$, and the second contains $S$. The character ",
+                      "marks": []
+                    },
+                    {
+                      "text": "o",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " is a lowercase letter, not the digit zero.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "N\nS\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print the number of qualifying intervals as an integer.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$1\\le N\\le10^6$. The string contains exactly $N$ characters, each ",
+                      "marks": []
+                    },
+                    {
+                      "text": "o",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " or ",
+                      "marks": []
+                    },
+                    {
+                      "text": "x",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ".",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "4\nooxo\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "5\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "5\noxoxo\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "10\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "5\nooooo\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "0\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 4",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "7\nxxoooxx\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "16\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_cf"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_cf",
+      "sourceSha256": "989d59858ca5f58c3fa06ea6450b20a7c1417d225cb599e1fdbf63735017f148",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    }
   },
   {
     "source": "AtCoder",
