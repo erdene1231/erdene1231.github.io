@@ -2,7 +2,8 @@ import test from'node:test';import assert from'node:assert/strict';import fs fro
 test('tutorial proposals are revision/hash guarded, non-mutating, math clean and preserve identities/relations/samples',()=>{
  const rows=JSON.parse(fs.readFileSync('audit/PART04-BASELINE.json')).tutorials,before=JSON.stringify(rows),proposal=JSON.parse(fs.readFileSync('audit/PART04-TUTORIAL-QUALITY-PATCH01.json')),out=proposedTutorialRows(rows);assert.equal(JSON.stringify(rows),before);assert.equal(out.length,56);
  for(const p of proposal.patches){const old=rows.find(r=>r.body.id===p.id),row=out.find(r=>r.body.id===p.id);validateTutorial(row.body);assert.equal(mathProseWarnings(row.body).length,0,p.id);assert.equal(row.revision,old.revision);
-  if(p.cpp_review?.batch==='02')for(const op of p.operations)if(op.expected.type==='code'){
+  for(const op of p.operations)if(op.expected?.detailKey)assert.equal(op.value.detailKey,op.expected.detailKey,p.id+' block identity must survive content conversion');
+  if(p.cpp_review)for(const op of p.operations)if(op.expected.type==='code'){
    const literals=code=>code.match(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g)||[];
    assert.deepEqual(literals(op.value.text),literals(op.expected.text),p.id+' identifier changes must preserve C++ string/character literals');
   }
