@@ -1,3 +1,9 @@
+# Current batch05 checkpoint —23full-ready
+
+Completed typical90_ax,at,az,br with original MN/EN functional statements,staged bilingual hints,proofs,explained original C++17.14official samples+120independent seeded oracles+4boundary cases pass,0warnings. Oracles:binomial long-jump-position count,direct index triples,all small dice outcomes,exhaustive small-plane placement. Boundaries include N=100000,1e15triple count,N=100dice modulo and4e9Manhattan sum. Source constraints inspected fresh:ax N/L>=2,at zero/duplicates,az strictly increasing six faces<=100,N<=100,br negative coordinates/real-plane choice.23statement/92renderer combinations and55editorial editor/MathJax roundtrips pass;affected033/034SQL+unit/reference/fingerprint checks pass. New C++hashes in CONTENT05-CPP;unchanged earlier code tests reused.
+
+Counts:source92unchanged;full/local-import/statement-ready23;neweditorial53+2baseline=55;verifiednewC++23,30other new explanations still lack code.69prepared full/statement gaps,39editorial gaps;153source reviews,713baseline priority reviews,748baseline statements,164existing CPPblocks remain.817known statement gaps plus153future tasks. Production0;032/033/034proposals only;PR20draft,user merges. v48startup fix untouched,no live remeasurement/certificate bypass.
+
 # Current batch04 checkpoint —19full-ready
 
 Closed aa High content gap and completed bi/al/ar:original bilingual staged hints,original proof/implementation explanations and4C++17programs.12official samples+5focused edges pass,0warnings. New bi/al/ar bilingual statements verified exact constraints (deck Q>=2/query guarantees,LCM strict threshold,rotation dummy coordinates/x!=y).19native statements/76renderer combinations;51editorial editor/MathJax roundtrips;affected033/034SQL+statement unit pass. Unchanged prior code checks reused. No production actions.

@@ -29,8 +29,16 @@
     "priorityReason": "L1 optimum median болох баталгаа, coordinate separability ба even-count ambiguity-г эзэмшүүлэх reusable optimization pattern.",
     "rating": 1400,
     "ratingKind": "estimated",
-    "hints": [],
-    "hintsEn": [],
+    "hints": [
+      "Manhattan нийлбэрийн хоёр координатыг тусад нь оновчло.",
+      "Нэг хэмжээсийн absolute deviation-ийн нийлбэрийг median багасгадаг.",
+      "Координат бүрийг sort хийж дундах утгыг ав. Тэгш тоонд хоёр median-ийн аль нэгийг авбал болно; хариуг 64-bit тоол."
+    ],
+    "hintsEn": [
+      "Optimize the two coordinates of the Manhattan sum independently.",
+      "A median minimizes a one-dimensional sum of absolute deviations.",
+      "Sort each coordinate list and choose a middle value. Either median works for even size; accumulate in64-bit arithmetic."
+    ],
     "tags": [
       "greedy"
     ],
@@ -39,7 +47,478 @@
     "ratingBasis": "Rough CF-scale calibration: Separate Manhattan coordinates and prove median minimizes absolute deviations; sorting and64-bit sum. Not official.",
     "ratingConfidence": "rough",
     "ratingEstimatedAt": "2026-10-27",
-    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_br"
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_br",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-br",
+      "title": "Plant Planning — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Objective нь $\\sum_i|X_i-x|+\\sum_i|Y_i-y|$ тул координатууд бие даасан. Эрэмбэлсэн нэг хэмжээст утгуудын хамгийн бага ба хамгийн ихийг хослоё. Хосын хоёр утгын хооронд сонгосон цэг бүр тэдгээрийн зайн нийлбэрийг minimum болгоно; гадна нь байвал өсгөнө. Бүх ийм хосын interval-уудын огтлол нь median interval. Сондгой тоонд үлдсэн дунд утгыг сонгох ёстой. Иймээс хоёр координатын median-ууд optimum; input зөвхөн бүхэл ч станцын байршлыг бодит хавтгайд сонгох эрхийг хязгаарлаагүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "x",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ", ",
+                  "marks": []
+                },
+                {
+                  "text": "y",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " массивуудыг тус тус sort хийнэ. ",
+                  "marks": []
+                },
+                {
+                  "text": "n / 2",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " индекс нь сондгой тоонд median, тэгш тоонд upper median. Бүх цэг хүртэлх absolute зөрүүг ",
+                  "marks": []
+                },
+                {
+                  "text": "totalDistance",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-т нэмээд хэвлэнэ. Сонгосон цэгийг хэвлэхгүй. $O(N\\log N)$ хугацаа,$O(N)$ санах ой; сөрөг координат болон $4\\cdot10^{14}$ хүртэлх нийлбэрт ",
+                  "marks": []
+                },
+                {
+                  "text": "long long",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " хэрэглэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<long long> x(n), y(n);\n    for (int i = 0; i < n; ++i) cin >> x[i] >> y[i];\n    sort(x.begin(), x.end());\n    sort(y.begin(), y.end());\n    long long medianX = x[n / 2], medianY = y[n / 2];\n    long long totalDistance = 0;\n    for (int i = 0; i < n; ++i) {\n        totalDistance += llabs(x[i] - medianX) + llabs(y[i] - medianY);\n    }\n    cout << totalDistance << '\\n';\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_br"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/070.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-br",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "Plant Planning",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Хавтгайд $N$ цэг $(X_i,Y_i)$ байна. Дурын нэг байршил $(x,y)$ сонгоод бүх цэг хүртэлх Manhattan зайн нийлбэр $\\sum_i(|X_i-x|+|Y_i-y|)$-ийг хамгийн бага болго. Байршил нь input цэг байх албагүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхлээд $N$, дараагийн $N$ мөр бүрд $X_i,Y_i$ өгөгдөнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "N\nX_1 Y_1\n...\nX_N Y_N\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Хамгийн бага нийлбэрийг бүхэл тоогоор хэвлэ. Сонгосон координатыг хэвлэхгүй; энэ input-д optimum утга бүхэл байна.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$1\\le N\\le10^5$, $-10^9\\le X_i,Y_i\\le10^9$. Input бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "2\n-1 2\n1 1\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "3\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "2\n1 0\n0 1\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "2\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "5\n2 5\n2 5\n-3 4\n-4 -8\n6 -2\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "35\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 4",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "4\n1000000000 1000000000\n-1000000000 1000000000\n-1000000000 -1000000000\n1000000000 -1000000000\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "8000000000\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_br"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Plant Planning",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Given $N$ points $(X_i,Y_i)$, choose any location $(x,y)$ in the plane to minimize $\\sum_i(|X_i-x|+|Y_i-y|)$, the sum of Manhattan distances. The location need not be an input point.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The input gives $N$, followed by $N$ coordinate pairs $X_i,Y_i$.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "N\nX_1 Y_1\n...\nX_N Y_N\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print the minimum total as an integer, not the chosen coordinates. Under these constraints the optimal value is integral.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$1\\le N\\le10^5$ and $-10^9\\le X_i,Y_i\\le10^9$. All input coordinates are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "2\n-1 2\n1 1\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "3\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "2\n1 0\n0 1\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "2\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "5\n2 5\n2 5\n-3 4\n-4 -8\n6 -2\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "35\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 4",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "4\n1000000000 1000000000\n-1000000000 1000000000\n-1000000000 -1000000000\n1000000000 -1000000000\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "8000000000\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_br"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_br",
+      "sourceSha256": "c73708229cd8b699e219853cc5a73ff63b89f549ddc8938a3401f91f6938e6ac",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    }
   },
   {
     "source": "AtCoder",
