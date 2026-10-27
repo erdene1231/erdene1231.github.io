@@ -1,3 +1,7 @@
+# Lightweight selection batch04 —131/245 eligible,114 remaining
+
+APIO15/15new unique selections prepared with tags,individual priority rationale and rough CF-scale rating. Read original task definitions only;no official solution/proof/code audit or optional-content authorship. Coverage:AtCoder50/50,CF42/100,IOI8/30,EGOI16/30,APIO15/15,JOI0/20. Remaining114=CF58+IOI22+EGOI14+JOI20. TwoAPIO2018PDFs had empty web text and ordinary HTTPS403;neither retried,bypassed nor selected. Five older tool-inaccessible task URLs likewise excluded. Details:audit/PART04-SELECTION04.json. Existing116records/baseline/completed optional content preserved. Production0;backend/migration/permission/publication/merge/deploy gates remain.
+
 # Lightweight selection batch03 —116/245 eligible,129 remaining
 
 Added16EGOI problems across2021/2022/2023/2024/2026 with individual teaching usefulness,curated tags,Low/Medium/High and rough CF-scale estimates. Official task definitions read;brief official overviews consulted for Bouquet,Bikeparking,Luna and Railway. No statement/editorial/C++ or proof authoring. Full-score versus partial-score estimate distinction recorded for Find the Box. Counts:AtCoder50/50,CF42/100,IOI8/30,EGOI16/30,APIO0/15,JOI0/20. Remaining129. Data Centers solution ZIP unsupported by web tool,not retried or counted as read;task PDF read. Existing baseline and completed optional content preserved;production0. Continue lightweight curation only.
