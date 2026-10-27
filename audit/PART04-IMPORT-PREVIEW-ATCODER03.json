@@ -1,0 +1,4681 @@
+[
+  {
+    "source": "AtCoder",
+    "ref": "typical90_z",
+    "title": "Independent Set on a Tree",
+    "url": "https://atcoder.jp/contests/typical90/tasks/typical90_z",
+    "priorityLevel": "high",
+    "priorityReason": "Tree-ийн bipartite шинж ба pigeonhole argument-аар хүнд мэт optimization-ийг constructive сонголт болгох чухал ажиглалт.",
+    "rating": 1500,
+    "ratingKind": "estimated",
+    "hints": [
+      "Модыг depth parity-аар хоёр өнгөөр будахад нэг өнгийн хоёр орой залгаа байж болох уу?",
+      "Хоёр color class-ийн ядаж нэг нь $N/2$-оос багагүй оройтой.",
+      "BFS/DFS-аар bipartition хийгээд том class-аас дурын $N/2$ орой хэвлэ. Maximum independent set бодох шаардлагагүй."
+    ],
+    "hintsEn": [
+      "Color the tree by depth parity. Can two vertices of the same color be adjacent?",
+      "At least one of the two color classes has size at least $N/2$.",
+      "Use BFS/DFS to bipartition the tree, then output any $N/2$ vertices from a large enough class; no maximum independent-set DP is needed."
+    ],
+    "tags": [
+      "bipartite graphs"
+    ],
+    "level": "Practice",
+    "editorialUrl": "https://atcoder.jp/contests/typical90/editorial/2572",
+    "ratingBasis": "Rough CF-scale calibration: Tree bipartition plus pigeonhole construction of N/2 independent vertices; basic traversal with an extremal argument. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_z",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-z",
+      "title": "Independent Set on a Tree — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Bipartition",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Модонд root сонгож depth parity-аар өнгө өг. Ирмэг бүр parent-child тул endpoint-уудын parity ялгаатай. Иймээс нэг color class дотор ирмэг огт байхгүй, тэр class бүхэлдээ independent set.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Яагаад хүрэлцэх вэ?",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Хоёр class-ийн хэмжээ нийлээд тэгш $N$ болно. Pigeonhole principle-аар нэг нь ядаж $N/2$ хэмжээтэй. Түүнээс ямар ч $N/2$ орой авахад adjacency үүсэхгүй. Энэ нь яг шаардсан хэмжээний witness өгнө; хамгийн их independent set-ийн хэмжээ олох шаардлагагүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Өртөг ба сонголт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Нэг BFS нь $O(N)$ хугацаа, adjacency list ба queue нь $O(N)$ санах ой. Class-ийн хэмжээ тэнцүү бол аль нь ч зөв. Output олон зөв хувилбартай тул sample-ийн яг тексттэй тэнцүүлэхийн оронд хэмжээ, ялгаатай байдал, adjacency predicate-ийг шалгана.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, preprocessing ба гол алхам",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "color",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийн $-1$ нь үзээгүй орой, $0/1$ нь parity. Queue-оос орой гаргах бүрт ",
+                  "marks": []
+                },
+                {
+                  "text": "classes[color]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-д цуглуулж, үзээгүй хөршид эсрэг өнгө өгнө.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — үр дүн ба output",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Том class-ийг сонгож эхний $N/2$ оройг $1$-based дугаараар хэвлэнэ. Бүх оройг хэвлэхгүй; яг шаардсан тоог хязгаарлана.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 implementation",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> graph(n);\n    for (int i = 0; i < n - 1; ++i) {\n        int first, second;\n        cin >> first >> second;\n        --first;\n        --second;\n        graph[first].push_back(second);\n        graph[second].push_back(first);\n    }\n    vector<int> color(n, -1);\n    array<vector<int>, 2> classes;\n    queue<int> pending;\n    pending.push(0);\n    color[0] = 0;\n    while (!pending.empty()) {\n        int vertex = pending.front();\n        pending.pop();\n        classes[color[vertex]].push_back(vertex);\n        for (int next : graph[vertex]) {\n            if (color[next] != -1) continue;\n            color[next] = color[vertex] ^ 1;\n            pending.push(next);\n        }\n    }\n    const auto& chosen = classes[0].size() >= static_cast<size_t>(n / 2) ? classes[0] : classes[1];\n    for (int i = 0; i < n / 2; ++i) cout << chosen[i] + 1 << (i + 1 == n / 2 ? '\\n' : ' ');\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Албан statement болон author solution-ийн алгоритмыг тулгаж, тайлбар ба implementation-ийг шинээр бичсэн. Албан code-ийг хуулсан хувилбар биш.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_z"
+                },
+                {
+                  "label": "Official author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/026.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-z",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem statement",
+      "title": "Independent Set on a Tree",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$1$-ээс $N$ дугаартай орой бүхий мод өгөгдөнө. Яг $N/2$ ялгаатай орой сонгохдоо сонгосон ямар ч хоёр оройг шууд холбосон ирмэг байхгүй байлга. Ийм сонголтын нэгийг гарга.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхний мөрөнд $N$. Дараагийн $N-1$ мөр бүрд нэг чиглэлгүй ирмэгийн төгсгөлүүд $A_i,B_i$ байна.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "N\nA_1 B_1\n...\nA_{N-1} B_{N-1}\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Яг $N/2$ ялгаатай оройн дугаарыг нэг мөрөнд зайгаар тусгаарлан хэвлэ. Олон зөв сонголт байвал аль нэгийг, дурын дарааллаар гаргаж болно.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$2\\le N\\le100000$; $N$ тэгш; ирмэг бүрд $1\\le A_i<B_i\\le N$. Input нь мод. Бүх input утга бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Жишээ",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Жишээ 1 — Оролт",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "4\n1 2\n2 3\n2 4\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Гаралт",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "3 4\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Жишээ 2 — Оролт",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "6\n1 3\n2 4\n3 5\n2 5\n3 6\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Гаралт",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1 2 6\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Сонгосон хоёр орой шууд ирмэгтэй байж болохгүй; тэдгээрийн хооронд урт зам байх нь хориг биш. Output нь оройн дугаарууд болохоос битийн mask эсвэл хамгийн их хэмжээг асуусан тоо биш.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Үйлдлийн нөхцөлийг шинээр найруулсан; албан орчуулга биш.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_z"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Independent Set on a Tree",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "An undirected tree has vertices numbered from $1$ to $N$. Select exactly $N/2$ distinct vertices such that no edge directly joins two selected vertices. Output one such selection.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The first line contains $N$. Each of the next $N-1$ lines contains the endpoints $A_i,B_i$ of an undirected edge.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "N\nA_1 B_1\n...\nA_{N-1} B_{N-1}\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print exactly $N/2$ distinct vertex numbers on one space-separated line. Any valid selection is accepted, and its numbers may be printed in any order.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$2\\le N\\le100000$; $N$ is even; $1\\le A_i<B_i\\le N$ for each edge. The input graph is a tree. All input values are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1 — Input",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "4\n1 2\n2 3\n2 4\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Output",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "3 4\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2 — Input",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "6\n1 3\n2 4\n3 5\n2 5\n3 6\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Output",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1 2 6\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Only direct adjacency is forbidden; a longer path between selected vertices is allowed. Output the selected vertex numbers, not a bitmask or a maximum-set size.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Attribution",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Independently written functional specification; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_z"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_z",
+      "sourceSha256": "c72bc298f339704f332f460732fffc8c8558bdf061694a72d466c8c5e1134dd6",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "AtCoder",
+    "ref": "typical90_aa",
+    "title": "Sign Up Requests",
+    "url": "https://atcoder.jp/contests/typical90/tasks/typical90_aa",
+    "priorityLevel": "high",
+    "priorityReason": "Set/map membership-ийн үндсэн хэрэглээ, input order-ийг хадгалсан dedup ба first-occurrence semantics-ийг эзэмшүүлэх цөм practice.",
+    "rating": 800,
+    "ratingKind": "estimated",
+    "hints": [
+      "Өмнө хүлээн авсан нэрсийг санахад хангалттай.",
+      "Нэр бүрийг input дарааллаар set-д оруулж үз.",
+      "Шинэ нэр амжилттай нэмэгдсэн үед өдрийн $1$-based дугаарыг гарга."
+    ],
+    "hintsEn": [
+      "Remember the names already accepted.",
+      "Process requests in order and insert each name into a set.",
+      "Output the one-based day only when insertion reports a new name."
+    ],
+    "tags": [
+      "set and map"
+    ],
+    "level": "Practice",
+    "editorialUrl": "https://atcoder.jp/contests/typical90/editorial/2572",
+    "ratingBasis": "Rough CF-scale calibration: First occurrence tracking with set/map and input-order preservation; direct container application. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_aa",
+    "statement": {
+      "id": "statement-atcoder-typical90-aa",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem statement",
+      "title": "Sign Up Requests",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эхэндээ бүртгэлтэй хэрэглэгч байхгүй. $i$-р өдөр $S_i$ нэрээр нэг хүсэлт ирнэ. Тухайн нэр өмнө нь бүртгэгдсэн бол хүсэлтийг үл хэрэгсэнэ; бүртгэгдээгүй бол хүлээн авч нэрийг бүртгэнэ. Хүсэлт хүлээн авсан өдрүүдийг ол."
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эхний мөрөнд $N$, дараагийн $N$ мөрөнд дарааллаар $S_1,\\ldots,S_N$ өгөгдөнө."
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "N\nS_1\n...\nS_N\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хүлээн авсан хүсэлтүүдийн өдрийн дугаарыг өсөх дарааллаар хэвлэ. Өдрийн дугаар $1$-ээс эхэлнэ. Өдөр бүрийн дугаарыг тусдаа мөрөнд гарга."
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$1\\le N\\le10^5$. $S_i$ бүр $1$-ээс $15$ тэмдэгттэй бөгөөд зөвхөн англи жижиг үсэг болон цифрээс тогтоно."
+            }
+          ]
+        },
+        {
+          "title": "Жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Жишээ 1"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "5\ne869120\natcoder\ne869120\nsquare1001\nsquare1001\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1\n2\n4\n"
+            },
+            {
+              "type": "p",
+              "text": "Жишээ 2"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "4\ntaro\nhanako\nyuka\ntakashi\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1\n2\n3\n4\n"
+            },
+            {
+              "type": "p",
+              "text": "Жишээ 3"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "10\nsquare869120\nsquare869120\nsquare869120\nsquare869120\nsquare869120\nsquare869120\nsquare869120\nsquare869120\nsquare869120\nsquare869120\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Original functional restatement; not an official translation."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_aa"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Sign Up Requests",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Initially no usernames are registered. On day $i$, one request arrives for username $S_i$. Ignore it if that name is already registered; otherwise accept the request and register the name. Determine the days on which requests are accepted."
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "The first line contains $N$. The next $N$ lines contain $S_1,\\ldots,S_N$ in request order."
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "N\nS_1\n...\nS_N\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Print the accepted day numbers in increasing order. Day numbering starts at $1$. Put each accepted day on its own line."
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "$1\\le N\\le10^5$. Each $S_i$ contains between $1$ and $15$ characters, using only lowercase English letters and digits."
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Sample 1"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "5\ne869120\natcoder\ne869120\nsquare1001\nsquare1001\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1\n2\n4\n"
+                },
+                {
+                  "type": "p",
+                  "text": "Sample 2"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "4\ntaro\nhanako\nyuka\ntakashi\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1\n2\n3\n4\n"
+                },
+                {
+                  "type": "p",
+                  "text": "Sample 3"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "10\nsquare869120\nsquare869120\nsquare869120\nsquare869120\nsquare869120\nsquare869120\nsquare869120\nsquare869120\nsquare869120\nsquare869120\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original functional restatement; not an official translation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_aa"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_aa",
+      "sourceSha256": "bdd371e51cd498419a1ff340943e81d9bbebe3be3c4d5d447d167d68edbb4f4f",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    },
+    "editorial": {
+      "id": "editorial-atcoder-typical90-aa",
+      "title": "Sign Up Requests — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "seen",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь өмнөх өдрүүдэд бүртгэсэн нэрсийн олонлог. Өнөөдрийн нэр олонлогт байвал өмнө хүлээн авсан тул давтан хүсэлтийг үл хэрэгсэнэ; байхгүй бол бүртгээд дугаарыг хэвлэнэ. Өдөр бүрийн дараа энэ invariant хадгалагддаг учраас хүлээн авсан өдрүүд яг зөв, input дарааллаар өсөхөөр гарна. Нэрийг тоо болгож хувиргахгүй: эхний тэг болон цифртэй нэрс нь string хэвээр.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$O(N\\log N)$ хугацаа, $O(N)$ хадгалалт. ",
+                  "marks": []
+                },
+                {
+                  "text": "set<string>::insert",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийн boolean үр дүн нь шинэ нэр эсэхийг өгнө. Давталтын индекс өөрөө өдөр; тусдаа output sort хэрэггүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    set<string> seen;\n    for (int day = 1; day <= n; ++day) {\n        string name;\n        cin >> name;\n        if (seen.insert(name).second) cout << day << '\\n';\n    }\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_aa"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/027.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "AtCoder",
+    "ref": "typical90_ab",
+    "title": "Cluttered Paper",
+    "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ab",
+    "priorityLevel": "high",
+    "priorityReason": "2D difference array, half-open boundary болон coverage histogram-ийг холбосон reusable range-update practice.",
+    "rating": 1600,
+    "ratingKind": "estimated",
+    "hints": [],
+    "hintsEn": [],
+    "tags": [
+      "difference arrays"
+    ],
+    "level": "Practice",
+    "editorialUrl": "https://atcoder.jp/contests/typical90/editorial/2572",
+    "ratingBasis": "Rough CF-scale calibration: Four-corner2D differences, two-axis prefix reconstruction and coverage histogram; boundary discipline beyond basic sums. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_ab",
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "AtCoder",
+    "ref": "typical90_ac",
+    "title": "Long Bricks",
+    "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ac",
+    "priorityLevel": "high",
+    "priorityReason": "Lazy propagation-ийн query+update invariant, assignment/chmax-ийн энэ бодлогод л эквивалент болох шалтгааныг ялгаж сургана.",
+    "rating": 1900,
+    "ratingKind": "estimated",
+    "hints": [],
+    "hintsEn": [],
+    "tags": [
+      "segment trees"
+    ],
+    "level": "Practice",
+    "editorialUrl": "https://atcoder.jp/contests/typical90/editorial/2572",
+    "ratingBasis": "Rough CF-scale calibration: Lazy segment-tree range maximum and range assignment/chmax with inclusive-bound conversion; above CF339D1700 point updates. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_ac",
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "AtCoder",
+    "ref": "typical90_ad",
+    "title": "K Factors",
+    "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ad",
+    "priorityLevel": "high",
+    "priorityReason": "Sieve-ийг primality-аас distinct factor count руу өргөтгөх, multiplicity-г андуурахгүй байх цөм тооны онолын practice.",
+    "rating": 1500,
+    "ratingKind": "estimated",
+    "hints": [
+      "Тоо бүрийг тусад нь задлахын оронд анхны тоо бүрийн бүх үржвэрт мэдээлэл тараа.",
+      "Анхны $p$ тооны үржвэр бүрийн тоолуурыг нэгээр нэм. Зэрэг нь хэд байсан ч зөвхөн нэг нэмнэ.",
+      "Өсөх дарааллаар яв: тоолуур нь тэг үлдсэн тоо анхны байна. Шигшүүр дуусмагц тоолуур нь $K$-аас багагүй тоонуудыг тоол."
+    ],
+    "hintsEn": [
+      "Instead of factoring every integer separately, distribute information from each prime to its multiples.",
+      "Increment the counter of each multiple of a prime $p$ once, regardless of the exponent of $p$.",
+      "Scan upward: a number whose counter is still zero is prime. After the sieve, count entries with at least $K$ distinct prime factors."
+    ],
+    "tags": [
+      "sieve"
+    ],
+    "level": "Practice",
+    "editorialUrl": "https://atcoder.jp/contests/typical90/editorial/2572",
+    "ratingBasis": "Rough CF-scale calibration: Sieve-style count of distinct prime divisors through multiples, prime-power distinction and bounded1e7 memory. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_ad",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-ad",
+      "title": "K Factors — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Өсөх дарааллаар $p$-г шалгах үед нийлмэл тоо бол түүнээс бага анхны хуваагчтай тул өмнө нь тэмдэглэгдсэн байна. Харин анхны тоо өмнөх анхны тоонд хуваагдахгүй учир тоолуур нь тэг. Иймээс зөвхөн анхны тоонууд мэдээлэл тараана. Анхны хуваагч бүр тухайн тооны тоолуурт яг нэг нэмэр оруулдаг тул эцсийн тоолуур нь ялгаатай анхны хуваагчдын тоо. Энэ нь зэрэг давхар тоолохгүй: жишээлбэл $2^3$ нэг л төрөлтэй. $2$-оос $N$ хүртэл нөхцөлтэй тоолуурыг тоолох нь хариу.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Төлөв: ",
+                  "marks": []
+                },
+                {
+                  "text": "factorCount[value]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь одоог хүртэл олдсон ялгаатай анхны хуваагчдын тоо, эхэндээ тэг. Гол алхам: тэг тоолууртай ",
+                  "marks": []
+                },
+                {
+                  "text": "prime",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " бүрээс ",
+                  "marks": []
+                },
+                {
+                  "text": "multiple += prime",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " алхмаар явж нэгээр нэмнэ. Гаралт: эцсийн тоолуур нь ",
+                  "marks": []
+                },
+                {
+                  "text": "requiredFactors",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-аас багагүй хэдэн тоо байгааг хэвлэнэ. Шигшүүрийн хугацаа $O(N\\log\\log N)$, нэмэлт санах ой $O(N)$. Тоолуур нь үржигдэхүүний зэрэг биш; $1$-ийг тоолохгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, requiredFactors;\n    cin >> n >> requiredFactors;\n    vector<int> factorCount(n + 1);\n    for (int prime = 2; prime <= n; ++prime) {\n        if (factorCount[prime] != 0) continue;\n        for (int multiple = prime; multiple <= n; multiple += prime) {\n            ++factorCount[multiple];\n        }\n    }\n    int answer = 0;\n    for (int value = 2; value <= n; ++value) {\n        if (factorCount[value] >= requiredFactors) ++answer;\n    }\n    cout << answer << '\\n';\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ad"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/030.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-ad",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "K Factors",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$2$-оос $N$ хүртэлх бүхэл тоонуудаас хамгийн багадаа $K$ ялгаатай анхны хуваагчтай хэдэн тоо байгааг ол. Нэг анхны хуваагч олон зэрэгтэй байсан ч нэг төрөлд тооцно.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Нэг мөрөнд $N,K$ өгөгдөнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "N K\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Нөхцөл хангасан тоонуудын тоог нэг бүхэл тоогоор хэвлэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$2\\le N\\le10^7$; $1\\le K\\le8$. Оролт бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "15 2\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "5\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "30 2\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "13\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "200 4\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "0\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 4",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "869120 1\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "869119\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 5",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "10000000 3\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "6798027\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ad"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "K Factors",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Count the integers from $2$ through $N$ that have at least $K$ distinct prime divisors. Repeated powers of one prime count as a single type.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The input contains $N,K$ on one line.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "N K\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print the count as an integer.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$2\\le N\\le10^7$ and $1\\le K\\le8$. Both inputs are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "15 2\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "5\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "30 2\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "13\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "200 4\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "0\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 4",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "869120 1\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "869119\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 5",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "10000000 3\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "6798027\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ad"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_ad",
+      "sourceSha256": "898ab9c5394eb24ddda01d132ac27c91f4cd3c107d003273ae059d4a1161de19",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "AtCoder",
+    "ref": "typical90_af",
+    "title": "AtCoder Ekiden",
+    "url": "https://atcoder.jp/contests/typical90/tasks/typical90_af",
+    "priorityLevel": "high",
+    "priorityReason": "Permutation enumeration-ийн feasibility/objective-г салгаж constraint-оос factorial algorithm сонгох бүрэн search practice.",
+    "rating": 1300,
+    "ratingKind": "estimated",
+    "hints": [
+      "Тамирчдыг үе шатуудад хуваарилах нь $N$ тамирчны нэг permutation юм.",
+      "Хориотой хосыг хоёр чиглэлд тэмдэглэ. Permutation-ийн хөрш тамирчдын дунд ийм хос байвал орхи.",
+      "Зөв дараалал бүрт үе шат $j$-ийн тамирчны $A_{i,j}$ хугацааг нэм. Бүх зөв дарааллын minimum; нэг ч байхгүй бол `-1`."
+    ],
+    "hintsEn": [
+      "Assigning runners to the relay legs is a permutation of all $N$ runners.",
+      "Mark each forbidden pair in both directions. Reject orders containing such a pair at adjacent positions.",
+      "For every valid order, sum $A_{i,j}$ for the runner assigned to leg $j$. Minimize, or print `-1` if no order works."
+    ],
+    "tags": [
+      "brute force"
+    ],
+    "level": "Practice",
+    "editorialUrl": "https://atcoder.jp/contests/typical90/editorial/2572",
+    "ratingBasis": "Rough CF-scale calibration: N<=10 permutation enumeration with adjacent feasibility checks and runner-position objective; reject impossible permutations. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_af",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-af",
+      "title": "AtCoder Ekiden — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Тамирчин бүр яг нэг үе, үе бүр яг нэг тамирчинтай тул зөв хуваарилалт permutation-тэй харилцан нэг утгатай. Permutation бүрийг нэг удаа үзэхэд бүх хуваарилалтыг хамарна. Дараалсан үеийн тамирчид л бие биедээ дамжуулах тул зөв эсэхийг зөвхөн хөршүүдээр шалгах нь шаардлагатай бөгөөд хангалттай. Хорио хоёр чиглэлд үйлчилнэ; эхний ба сүүлийн тамирчныг тойрог мэт шалгахгүй. Зөв permutation-ийн хугацааг матрицын тамирчин мөр, үе баганаас нэмээд minimum авахад optimum гарна. Зөв дараалал байхгүй бол sentinel хэвээр үлдэнэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Бэлтгэл: ",
+                  "marks": []
+                },
+                {
+                  "text": "time",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " матриц, симметрик ",
+                  "marks": []
+                },
+                {
+                  "text": "forbidden",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " хүснэгт, өсөх ",
+                  "marks": []
+                },
+                {
+                  "text": "order",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " permutation. ",
+                  "marks": []
+                },
+                {
+                  "text": "do...while(next_permutation)",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь эхний дарааллыг болон $N=1$-ийг ч шалгана. Гол алхам: хөрш хоригийг шалгаж, зөв бол ",
+                  "marks": []
+                },
+                {
+                  "text": "time[order[leg]][leg]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийг нэмнэ. Гаралт: minimum эсвэл ",
+                  "marks": []
+                },
+                {
+                  "text": "-1",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ". Хугацаа $O(N\\cdot N!)$, санах ой $O(N^2)$; нийт хугацаа хамгийн ихдээ $10000$ тул ",
+                  "marks": []
+                },
+                {
+                  "text": "int",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " хангалттай.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> time(n, vector<int>(n));\n    for (auto &row : time) for (int &value : row) cin >> value;\n    int pairCount;\n    cin >> pairCount;\n    vector<vector<bool>> forbidden(n, vector<bool>(n));\n    for (int i = 0; i < pairCount; ++i) {\n        int first, second;\n        cin >> first >> second;\n        --first;\n        --second;\n        forbidden[first][second] = forbidden[second][first] = true;\n    }\n    vector<int> order(n);\n    iota(order.begin(), order.end(), 0);\n    const int infinity = 1000000000;\n    int bestTime = infinity;\n    do {\n        bool valid = true;\n        for (int leg = 1; leg < n; ++leg) {\n            if (forbidden[order[leg - 1]][order[leg]]) valid = false;\n        }\n        if (!valid) continue;\n        int totalTime = 0;\n        for (int leg = 0; leg < n; ++leg) totalTime += time[order[leg]][leg];\n        bestTime = min(bestTime, totalTime);\n    } while (next_permutation(order.begin(), order.end()));\n    cout << (bestTime == infinity ? -1 : bestTime) << '\\n';\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_af"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/032.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-af",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "AtCoder Ekiden",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$N$ тамирчныг дараалсан $N$ үе шатанд тус бүр яг нэг удаа хуваарилна. Тамирчин $i$ үе $j$-г гүйхэд $A_{i,j}$ хугацаа зарцуулна. Өгөгдсөн хориотой хосын хоёр тамирчин хөрш үе шатанд аль ч дарааллаар гүйж болохгүй. Нийт хугацааны minimum-ийг ол; зөв хуваарилалтгүй бол үүнийг мэдээл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхлээд $N$, дараах $N$ мөрөнд тамирчин бүрийн $N$ хугацаа байна. Дараа нь $M$, түүний дараах $M$ мөрөнд хориотой хос $X_i,Y_i$ өгнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "N\nA_{1,1} ... A_{1,N}\n...\nA_{N,1} ... A_{N,N}\nM\nX_1 Y_1\n...\nX_M Y_M\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Хамгийн бага нийт хугацааг хэвлэ; боломжгүй бол ",
+                  "marks": []
+                },
+                {
+                  "text": "-1",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " хэвлэ. Зөвхөн дараалсан үеүүд хөрш, эхний ба сүүлийн үе хоорондоо хөрш биш.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$1\\le N\\le10$; $1\\le A_{i,j}\\le1000$; $0\\le M\\le N(N-1)/2$; $1\\le X_i<Y_i\\le N$. Хориотой хосууд ялгаатай. Бүх оролт бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "3\n1 10 100\n10 1 100\n100 10 1\n1\n1 2\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "111\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "4\n1 2 3 4\n5 6 7 8\n9 10 11 12\n13 14 15 16\n3\n1 2\n1 3\n2 3\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "-1\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "3\n1 10 100\n10 1 100\n100 10 1\n0\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "3\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_af"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "AtCoder Ekiden",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Assign $N$ runners bijectively to $N$ consecutive relay legs. Runner $i$ takes time $A_{i,j}$ on leg $j$. Neither order of a forbidden runner pair may occur on adjacent legs. Find the minimum total time, or report that no assignment is possible.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The input gives $N$, then an $N$-by-$N$ matrix whose rows are runners and columns are legs. Next come $M$ and $M$ forbidden pairs $X_i,Y_i$.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "N\nA_{1,1} ... A_{1,N}\n...\nA_{N,1} ... A_{N,N}\nM\nX_1 Y_1\n...\nX_M Y_M\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print the minimum total time, or ",
+                      "marks": []
+                    },
+                    {
+                      "text": "-1",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " if impossible. Only consecutive legs are adjacent; the first and last legs are not joined.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$1\\le N\\le10$; $1\\le A_{i,j}\\le1000$; $0\\le M\\le N(N-1)/2$; $1\\le X_i<Y_i\\le N$. Forbidden pairs are distinct. All input values are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "3\n1 10 100\n10 1 100\n100 10 1\n1\n1 2\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "111\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "4\n1 2 3 4\n5 6 7 8\n9 10 11 12\n13 14 15 16\n3\n1 2\n1 3\n2 3\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "-1\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "3\n1 10 100\n10 1 100\n100 10 1\n0\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "3\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_af"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_af",
+      "sourceSha256": "22bdceeaf700a6822747cb6e1e6a083c6bc94ae74d827c37134bee22ede5aa15",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "AtCoder",
+    "ref": "typical90_ag",
+    "title": "Not Too Bright",
+    "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ag",
+    "priorityLevel": "high",
+    "priorityReason": "Upper-bound + construction баталгаа болон degenerate case-ийг томъёонд сохроор орлуулахгүй байх чухал practice.",
+    "rating": 1300,
+    "ratingKind": "estimated",
+    "hints": [
+      "Нэг мөртэй эсвэл нэг баганатай үед шалгах $2\\times2$ хэсэг ер нь бий юу?",
+      "Хоёр хэмжээ хоёулаа дор хаяж $2$ бол сондгой мөр, сондгой баганын огтлолцлуудыг асааж үз.",
+      "Мөр, баганыг дараалсан хосууд болон үлдсэн ганц хэсэгт хувааж дээд хязгаар батал. Захын нарийн хэсгийг ч ойролцоох $2\\times2$ хэсэгт багтааж болно."
+    ],
+    "hintsEn": [
+      "If there is only one row or one column, does any fully contained $2\\times2$ square exist?",
+      "When both dimensions are at least $2$, try lighting the intersections of odd rows and odd columns.",
+      "Partition rows and columns into consecutive pairs and a final singleton if needed. Bound each resulting group by one lit cell, including thin edge groups extendable to a $2\\times2$ square."
+    ],
+    "tags": [
+      "constructive algorithms"
+    ],
+    "level": "Practice",
+    "editorialUrl": "https://atcoder.jp/contests/typical90/editorial/2572",
+    "ratingBasis": "Rough CF-scale calibration: Grid packing upper bound and matching construction with special one-dimensional cases. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_ag",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-ag",
+      "title": "Not Too Bright — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Хэрэв нэг хэмжээ $1$ бол бүтнээр багтах $2\\times2$ хэсэг байхгүй; бүх $HW$ нүдийг асааж болно. Одоо хоёр хэмжээ дор хаяж $2$ гэе. Сондгой мөр, баганын огтлолцлыг асаавал дурын дараалсан хоёр мөрөнд нэг л сондгой мөр, хоёр баганад нэг л сондгой багана орно. Тиймээс нөхцөл хангана, тоо нь $\\lceil H/2\\rceil\\lceil W/2\\rceil$. Дээд хязгаарт мөрүүдийг дараалсан хосууд болон үлдвэл ганц мөр, багануудыг мөн адил бүлэглэ. Бүлэг бүрийн огтлолцол $2\\times2$, $1\\times2$, $2\\times1$ эсвэл ганц нүд. Бүх бүлэг хамгийн ихдээ нэг асаалттай: нарийн бүлгийг ойролцоох мөр/баганаар $2\\times2$ болгон өргөжүүлж болно, харин ганц нүдэнд нэгээс олон багтахгүй. Бүлгийн тоо байгууламжийн тоотой тэнцүү тул хариу optimum.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Бэлтгэл: ",
+                  "marks": []
+                },
+                {
+                  "text": "height",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ", ",
+                  "marks": []
+                },
+                {
+                  "text": "width",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийг уншина. Салаалал: нэг хэмжээ $1$ бол бүх нүдний тоо; бусад үед бүхэл хуваалтын ",
+                  "marks": []
+                },
+                {
+                  "text": "(height + 1) / 2",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ", ",
+                  "marks": []
+                },
+                {
+                  "text": "(width + 1) / 2",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийг үржүүлнэ. Гаралт нь хамгийн их тоо болохоос нүдний зураг биш. Хугацаа, нэмэлт санах ой $O(1)$. Нэг хэмжээтэй тохиолдолд ерөнхий үржвэрийн томьёог ашиглаж болохгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int height, width;\n    cin >> height >> width;\n    int answer;\n    if (height == 1 || width == 1) answer = height * width;\n    else answer = ((height + 1) / 2) * ((width + 1) / 2);\n    cout << answer << '\\n';\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ag"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/033.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-ag",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "Not Too Bright",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$H$ мөр, $W$ баганатай нүднүүдийн заримыг асаана. Хүснэгтэд бүтнээр багтах дурын дараалсан $2\\times2$ дөрвөн нүдэнд хамгийн ихдээ нэг асаалттай нүд байх ёстой. Асааж болох нүдний хамгийн их тоог ол.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Нэг мөрөнд $H,W$ өгнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "H W\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Хамгийн их тоог нэг бүхэл тоогоор хэвлэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$1\\le H,W\\le100$. Хоёр утга бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "2 3\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "2\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "3 4\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "4\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "3 6\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "6\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ag"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Not Too Bright",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Choose cells to light in a grid with $H$ rows and $W$ columns. Every fully contained square formed by two consecutive rows and two consecutive columns must contain at most one lit cell. Find the maximum possible number of lit cells.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The input gives $H,W$ on one line.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "H W\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print the maximum count as an integer.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$1\\le H,W\\le100$. Both inputs are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "2 3\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "2\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "3 4\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "4\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "3 6\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "6\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ag"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_ag",
+      "sourceSha256": "23dfbfd6d72aa436bb02ed2238d11e564c95e0ff226547e7f19670be39072074",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "AtCoder",
+    "ref": "typical90_ah",
+    "title": "There are few types of elements",
+    "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ah",
+    "priorityLevel": "high",
+    "priorityReason": "Sliding-window invariant болон frequency multiplicity-г ялгах, хоёр заагийг ухраахгүй явуулах standard mastery practice.",
+    "rating": 1600,
+    "ratingKind": "estimated",
+    "hints": [
+      "Тасралтгүй завсрын зүүн, баруун хязгаарыг зөвхөн урагшлуулж болох уу?",
+      "Одоогийн завсар дахь утга бүрийн давтамжийг хадгал. Давтамж нь тэг болох үед л ялгаатай утгын тоо буурна.",
+      "Баруун талаас нэг утга нэмсний дараа $K$-аас олон төрөлтэй байвал зүүн талаас хассаар нөхцөлийг сэргээ. Тэр баруун төгсгөлтэй хамгийн урт зөв завсрыг хариунд харьцуул."
+    ],
+    "hintsEn": [
+      "Can both endpoints of a contiguous window move only forward?",
+      "Track each value’s frequency in the current window. A value disappears only when its frequency becomes zero.",
+      "After adding the next right endpoint, remove leftmost values until at most $K$ types remain. Use the resulting longest valid window ending there."
+    ],
+    "tags": [
+      "two pointers"
+    ],
+    "level": "Practice",
+    "editorialUrl": "https://atcoder.jp/contests/typical90/editorial/2572",
+    "ratingBasis": "Rough CF-scale calibration: At-most-K distinct sliding window with frequency bookkeeping; slightly above money-range window CF580B1500. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_ah",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-ah",
+      "title": "There are few types of elements — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Баруун төгсгөлийг $r$ гэе. Өмнөх алхамд хэт олон төрөлтэй байсан эхлэл нь шинэ элемент нэмэхэд зөв болж хувирахгүй. Иймээс зүүн төгсгөл $l$ ухрах шаардлагагүй. Шинэ элементийг нэмээд нөхцөл зөрчигдөж байвал $l$-ийг нэг нэгээр урагшлуулна. Зогсох үед $[l,r]$ зөв, харин түүнээс эрт эхэлсэн бүх завсар буруу. Тиймээс энэ нь $r$ дээр төгсөх хамгийн урт зөв завсар. Бүх баруун төгсгөлийг шалгахад нийт optimum олдоно.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Төлөв: ",
+                  "marks": []
+                },
+                {
+                  "text": "frequency",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь одоогийн завсарт байгаа утгуудын эерэг давтамж; ",
+                  "marks": []
+                },
+                {
+                  "text": "left",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь зүүн индекс, ",
+                  "marks": []
+                },
+                {
+                  "text": "bestLength",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь хариу. Бэлтгэл: бүх утгыг ",
+                  "marks": []
+                },
+                {
+                  "text": "values",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-д уншина. Гол алхам: баруун утгыг нэмж, төрлийн тоо хэтэрвэл зүүн утгыг хасна; тэг болсон түлхүүрийг арилгана. Гаралт: хамгийн их уртыг хэвлэнэ. Элемент бүр нэг удаа орж, нэг удаа гарна. Эрэмбэтэй ",
+                  "marks": []
+                },
+                {
+                  "text": "map",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " хэрэглэсэн тул хугацаа $O(N\\log N)$, санах ой $O(N)$. $K\\ge1$ тул зөв завсар хоосон үлдэхгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, typeLimit;\n    cin >> n >> typeLimit;\n    vector<long long> values(n);\n    for (long long &value : values) cin >> value;\n    map<long long, int> frequency;\n    int left = 0, bestLength = 0;\n    for (int right = 0; right < n; ++right) {\n        ++frequency[values[right]];\n        while (static_cast<int>(frequency.size()) > typeLimit) {\n            auto entry = frequency.find(values[left]);\n            if (--entry->second == 0) frequency.erase(entry);\n            ++left;\n        }\n        bestLength = max(bestLength, right - left + 1);\n    }\n    cout << bestLength << '\\n';\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ah"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/034.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-ah",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "There are few types of elements",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$N$ бүхэл тоотой $a$ дараалал ба $K$ өгөгдөнө. Хамгийн ихдээ $K$ ялгаатай утга агуулдаг тасралтгүй завсрын хамгийн их уртыг ол.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхний мөрөнд $N,K$, хоёр дахь мөрөнд $a_1,\\ldots,a_N$ өгнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "N K\na_1 ... a_N\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Хамгийн их уртыг нэг бүхэл тоогоор хэвлэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$1\\le K\\le N\\le100000$; $1\\le a_i\\le10^9$. Бүх оролт бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "5 1\n1 2 3 4 5\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "5 4\n1 1 2 4 2\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "5\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "10 2\n1 2 3 4 4 3 2 1 2 3\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "4\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ah"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "There are few types of elements",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Given an integer sequence $a$ of length $N$ and an integer $K$, find the maximum length of a contiguous segment containing at most $K$ distinct values.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The first line gives $N,K$; the next gives $a_1,\\ldots,a_N$.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "N K\na_1 ... a_N\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print the maximum segment length as an integer.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$1\\le K\\le N\\le100000$ and $1\\le a_i\\le10^9$. All input values are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "5 1\n1 2 3 4 5\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "5 4\n1 1 2 4 2\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "5\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "10 2\n1 2 3 4 4 3 2 1 2 3\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "4\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ah"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_ah",
+      "sourceSha256": "9c11251b5ff376ffb8041e522c7f8e697b450915d993df4980e31c0cc0d36517",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "AtCoder",
+    "ref": "typical90_aj",
+    "title": "Max Manhattan Distance",
+    "url": "https://atcoder.jp/contests/typical90/tasks/typical90_aj",
+    "priorityLevel": "high",
+    "priorityReason": "Manhattan transform-ийг four-extrema query болгон хувиргах бүтээлч бөгөөд дахин хэрэглэгддэг geometry observation.",
+    "rating": 1800,
+    "ratingKind": "estimated",
+    "hints": [
+      "$|a|+|b|$-ийг нийлбэр ба ялгаврын тусламжтай илэрхийл.",
+      "$u=x+y$, $v=x-y$ гэж хувиргавал Manhattan зай нь $\\max(|\\Delta u|,|\\Delta v|)$.",
+      "Хоёр хувиргасан координатын minimum ба maximum-ыг хадгал. Асуусан цэгээс тэр дөрвөн хязгаар хүртэлх зөрүүний хамгийн ихийг ав."
+    ],
+    "hintsEn": [
+      "Express $|a|+|b|$ using the sum and difference of the coordinates.",
+      "With $u=x+y$ and $v=x-y$, Manhattan distance is $\\max(|\\Delta u|,|\\Delta v|)$.",
+      "Precompute the minimum and maximum of both transformed coordinates. The answer is the largest difference to these four extremes."
+    ],
+    "tags": [
+      "geometry"
+    ],
+    "level": "Practice",
+    "editorialUrl": "https://atcoder.jp/contests/typical90/editorial/2572",
+    "ratingBasis": "Rough CF-scale calibration: Manhattan-to-transformed-coordinate observation and four extrema with64-bit queries; main difficulty is geometric reduction. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_aj",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-aj",
+      "title": "Max Manhattan Distance — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Дурын $a,b$-д $|a|+|b|=\\max(|a+b|,|a-b|)$: ижил тэмдэгтэй үед нийлбэр, эсрэг тэмдэгтэй үед ялгаврын абсолют нь зүүн талтай тэнцэнэ. Иймээс хувиргасан координат дахь хамгийн их зайг хоёр координат тус бүрийн хамгийн их абсолют зөрүүгээс олж болно. Нэг координатын хувьд дурын утга minimum ба maximum-ийн хооронд байдаг учир асуусан утгаас хамгийн хол нь заавал нэг хязгаар дээр байна. Дөрвөн хязгаарыг шалгахад бүх цэгээс авах maximum яг гарна; асуулт бүр бусдаас хамааралгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Төлөв: ",
+                  "marks": []
+                },
+                {
+                  "text": "sumCoordinate",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ", ",
+                  "marks": []
+                },
+                {
+                  "text": "differenceCoordinate",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь $x+y$, $x-y$; дөрвөн хязгаарыг ",
+                  "marks": []
+                },
+                {
+                  "text": "minmax_element",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ээр нэг удаа олно. Асуултын $1$-ээс эхэлсэн индексийг тэгээс эхэлсэн индекс болгоно. Гол алхам: тухайн цэг ба дөрвөн хязгаарын зөрүүний maximum. Гаралт: асуулт бүрт нэг мөр. Хугацаа $O(N+Q)$, санах ой $O(N)$. Координатын зөрүү $4\\cdot10^9$ хүрэх тул хувиргалт, хариу бүгд ",
+                  "marks": []
+                },
+                {
+                  "text": "long long",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ".",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, queryCount;\n    cin >> n >> queryCount;\n    vector<long long> sumCoordinate(n), differenceCoordinate(n);\n    for (int i = 0; i < n; ++i) {\n        long long x, y;\n        cin >> x >> y;\n        sumCoordinate[i] = x + y;\n        differenceCoordinate[i] = x - y;\n    }\n    auto sumBounds = minmax_element(sumCoordinate.begin(), sumCoordinate.end());\n    auto differenceBounds = minmax_element(differenceCoordinate.begin(), differenceCoordinate.end());\n    while (queryCount--) {\n        int point;\n        cin >> point;\n        --point;\n        long long answer = max({\n            sumCoordinate[point] - *sumBounds.first,\n            *sumBounds.second - sumCoordinate[point],\n            differenceCoordinate[point] - *differenceBounds.first,\n            *differenceBounds.second - differenceCoordinate[point]\n        });\n        cout << answer << '\\n';\n    }\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_aj"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/036.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-aj",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "Max Manhattan Distance",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Хавтгайд $N$ ялгаатай цэг $P_i=(x_i,y_i)$ өгөгдөнө. Асуулт бүрийн $q$ индекстэй цэгээс эдгээр $N$ цэг хүртэлх Manhattan зайн хамгийн ихийг ол. Хоёр цэгийн зай нь $|x_s-x_t|+|y_s-y_t|$.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхлээд $N,Q$, дараа нь $N$ мөрөнд цэгүүдийн координат, дараах $Q$ мөрөнд тус бүр нэг асуух индекс өгнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "N Q\nx_1 y_1\n...\nx_N y_N\nq_1\n...\nq_Q\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Асуултын дарааллаар хамгийн их зайг тус бүр нэг мөрөнд хэвлэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$2\\le N\\le100000$; $1\\le Q\\le N$; $-10^9\\le x_i,y_i\\le10^9$; $1\\le q_i\\le N$. Цэгүүд хос хосоороо ялгаатай; асуултын индексууд мөн хос хосоороо ялгаатай. Бүх оролт бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "3 3\n-1 2\n1 1\n-2 -3\n1\n2\n3\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "6\n7\n7\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "5 3\n-2 -2\n-1 -1\n0 0\n1 1\n2 2\n5\n3\n1\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "8\n4\n8\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "2 1\n-1000000000 -1000000000\n1000000000 1000000000\n1\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "4000000000\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_aj"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Max Manhattan Distance",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "There are $N$ distinct planar points $P_i=(x_i,y_i)$. For each queried index $q$, find the maximum Manhattan distance from $P_q$ to any of the $N$ points. The distance between two points is $|x_s-x_t|+|y_s-y_t|$.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The input gives $N,Q$, then $N$ coordinate pairs, followed by $Q$ lines each containing a queried index.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "N Q\nx_1 y_1\n...\nx_N y_N\nq_1\n...\nq_Q\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print one maximum distance per query, in query order.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$2\\le N\\le100000$; $1\\le Q\\le N$; $-10^9\\le x_i,y_i\\le10^9$; $1\\le q_i\\le N$. Points are pairwise distinct; queried indices are pairwise distinct. All input values are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "3 3\n-1 2\n1 1\n-2 -3\n1\n2\n3\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "6\n7\n7\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "5 3\n-2 -2\n-1 -1\n0 0\n1 1\n2 2\n5\n3\n1\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "8\n4\n8\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "2 1\n-1000000000 -1000000000\n1000000000 1000000000\n1\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "4000000000\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_aj"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_aj",
+      "sourceSha256": "9057042d8fbbb8e41e8ef5187ae4224736d5bc5e5fd0f5edcbc63f51d7010611",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "AtCoder",
+    "ref": "typical90_al",
+    "title": "Large LCM",
+    "url": "https://atcoder.jp/contests/typical90/tasks/typical90_al",
+    "priorityLevel": "high",
+    "priorityReason": "GCD/LCM-ийн суурь identity болон overflow-оос өмнөх division guard-г эзэмшүүлэх бодит integer-safety practice.",
+    "rating": 1100,
+    "ratingKind": "estimated",
+    "hints": [
+      "LCM ба GCD-ийн холбоог ашигла.",
+      "Эхлээд GCD-д хуваасан ч үлдсэн үржвэр overflow болж болно.",
+      "Үржүүлэхээс өмнө $b>10^{18}/(a/\\gcd(a,b))$ эсэхийг шалга."
+    ],
+    "hintsEn": [
+      "Use the relation between LCM and GCD.",
+      "Dividing by GCD first does not by itself prevent overflow.",
+      "Before multiplication test $b>10^{18}/(a/\\gcd(a,b))$."
+    ],
+    "tags": [
+      "number theory"
+    ],
+    "level": "Practice",
+    "editorialUrl": "https://atcoder.jp/contests/typical90/editorial/2572",
+    "ratingBasis": "Rough CF-scale calibration: LCM via GCD and overflow-safe division comparison before multiplication; small arithmetic implementation. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_al",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-al",
+      "title": "Large LCM — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$c=A/\\gcd(A,B)$ гэвэл LCM нь $cB$. Хоёр input эерэг тул $c>0$. Хариу хязгаараас хэтэрнэ гэдэг нь $B>\\lfloor10^{18}/c\\rfloor$-тэй яг ижил. Энэ харьцуулалтыг үржүүлэхээс өмнө хийвэл overflow огт үүсгэхгүй. Хязгаартай яг тэнцүү үед тоог хэвлэх ёстой, ",
+                  "marks": []
+                },
+                {
+                  "text": "Large",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " биш.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "reduced",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь GCD-д хуваасан эхний утга, ",
+                  "marks": []
+                },
+                {
+                  "text": "limit",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь зөвшөөрсөн дээд хязгаар. Guard давсан салбарт л үржүүлнэ. Хугацаа Euclid-ийн $O(\\log\\min(A,B))$, нэмэлт санах ой $O(1)$.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    long long a, b;\n    cin >> a >> b;\n    const long long limit = 1000000000000000000LL;\n    long long reduced = a / gcd(a, b);\n    if (b > limit / reduced) cout << \"Large\\n\";\n    else cout << reduced * b << '\\n';\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_al"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/038.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-al",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "Large LCM",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эерэг бүхэл $A,B$-ийн хамгийн бага ерөнхий кратныг ол. Хариу $10^{18}$-аас их бол тооны оронд ",
+                  "marks": []
+                },
+                {
+                  "text": "Large",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " гарга.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Нэг мөрөнд $A,B$ өгнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "A B\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "LCM-ийг, эсвэл хязгаараас давсан бол ",
+                  "marks": []
+                },
+                {
+                  "text": "Large",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " хэвлэ. Яг $10^{18}$ бол тоог хэвлэнэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$1\\le A,B\\le10^{18}$. Хоёул бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "4 6\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "12\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1000000000000000000 3\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "Large\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1000000000000000000 1\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1000000000000000000\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_al"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Large LCM",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Find the least common multiple of positive integers $A,B$. If it exceeds $10^{18}$, print ",
+                      "marks": []
+                    },
+                    {
+                      "text": "Large",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " instead.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The input contains $A,B$ on one line.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "A B\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print the LCM, or ",
+                      "marks": []
+                    },
+                    {
+                      "text": "Large",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " if it is above the limit. Equality with $10^{18}$ requires numeric output.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$1\\le A,B\\le10^{18}$. Both values are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "4 6\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "12\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1000000000000000000 3\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "Large\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1000000000000000000 1\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1000000000000000000\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_al"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_al",
+      "sourceSha256": "43bc6af712bf6bd1e94469d7629d9131f23c24657db7fa6b8be58aeab9f47765",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "AtCoder",
+    "ref": "typical90_am",
+    "title": "Tree Distance",
+    "url": "https://atcoder.jp/contests/typical90/tasks/typical90_am",
+    "priorityLevel": "high",
+    "priorityReason": "Pair enumeration-оос contribution counting руу шилжих болон subtree size-ийг холбох цөм tree observation.",
+    "rating": 1800,
+    "ratingKind": "estimated",
+    "hints": [
+      "Оройн хос бүрийг тусад нь тоолохын оронд ирмэг бүр хэдэн замд ордгийг тоол.",
+      "Нэг ирмэгийг хасахад мод $s$ ба $N-s$ оройтой хоёр хэсэгт хуваагдана.",
+      "Энэ ирмэгийг яг $s(N-s)$ хосын зам ашиглана. Subtree хэмжээ бүрээс ийм contribution нэм; гүн модонд recursion шаардлагагүй."
+    ],
+    "hintsEn": [
+      "Count how many paths use each edge instead of computing every pair’s distance.",
+      "Deleting an edge splits the tree into components of sizes $s$ and $N-s$.",
+      "Exactly $s(N-s)$ unordered pairs use that edge. Sum these contributions using subtree sizes; an iterative traversal avoids deep recursion."
+    ],
+    "tags": [
+      "trees"
+    ],
+    "level": "Practice",
+    "editorialUrl": "https://atcoder.jp/contests/typical90/editorial/2572",
+    "ratingBasis": "Rough CF-scale calibration: Reframe all-pairs tree distance as per-edge s*(N-s) contributions; subtree-size proof beyond basic DFS. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_am",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-am",
+      "title": "Tree Distance — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Модны хоёр оройн хооронд цорын ганц энгийн зам бий. Зай нь тэр замын ирмэгийн тоо. Хосоор нь замын уртыг нэмэхийн оронд ирмэгээр нь хэдэн зам дайрсныг нэмэхэд ижил нийлбэр гарна. Нэг ирмэгээр зам дайрахын тулд хоёр үзүүр нь уг ирмэгийг хасахад үүсэх өөр хэсгүүдэд байх ёстой бөгөөд хангалттай. Хэсгүүдийн хэмжээ $s$, $N-s$ бол ийм эрэмбэгүй хосын тоо $s(N-s)$; хоёр дахин тоолохгүй. Модыг нэг оройд үндэслэхэд хүүхдийн subtree хэмжээ нь $s$. Хүүхдүүдийг эхэлж нэгтгээд contribution-уудыг нэмэх нь бүх ирмэгийг яг нэг удаа тооцно.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Бэлтгэл: adjacency list, ",
+                  "marks": []
+                },
+                {
+                  "text": "parent",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ", үндсээс гарах ",
+                  "marks": []
+                },
+                {
+                  "text": "order",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " дарааллыг давталтаар байгуулна. Мод тул зөвхөн эцэг рүүгээ буцах ирмэгийг алгасахад хангалттай. Гол алхам: ",
+                  "marks": []
+                },
+                {
+                  "text": "order",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийг урвуугаар үзэж ",
+                  "marks": []
+                },
+                {
+                  "text": "subtreeSize[vertex]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ээс ирмэгийн contribution нэмээд эцэгт нь хэмжээг нэмж өгнө. Үндсэнд эцгийн ирмэг байхгүй тул орхино. Гаралт: бүх хосын зайн нийлбэр. Хугацаа/санах ой $O(N)$; $N=100000$ урт замд stack overflow үүсгэхгүй. Үржвэр ба хариу ",
+                  "marks": []
+                },
+                {
+                  "text": "long long",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ".",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> neighbors(n);\n    for (int i = 0; i < n - 1; ++i) {\n        int first, second;\n        cin >> first >> second;\n        --first;\n        --second;\n        neighbors[first].push_back(second);\n        neighbors[second].push_back(first);\n    }\n    vector<int> parent(n, -1), order{0};\n    for (int index = 0; index < n; ++index) {\n        int vertex = order[index];\n        for (int next : neighbors[vertex]) {\n            if (next == parent[vertex]) continue;\n            parent[next] = vertex;\n            order.push_back(next);\n        }\n    }\n    vector<long long> subtreeSize(n, 1);\n    long long answer = 0;\n    for (int index = n - 1; index > 0; --index) {\n        int vertex = order[index];\n        answer += subtreeSize[vertex] * (n - subtreeSize[vertex]);\n        subtreeSize[parent[vertex]] += subtreeSize[vertex];\n    }\n    cout << answer << '\\n';\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_am"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/039.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-am",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "Tree Distance",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$1$-ээс $N$ хүртэл дугаарласан оройтой модны ирмэг бүр урт $1$. Бүх эрэмбэгүй ялгаатай оройн хосын хоорондох зайн нийлбэр $\\sum_{1\\le u<v\\le N}\\operatorname{dist}(u,v)$-ийг ол. Зай нь хоёр оройн хамгийн богино замын урт.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхлээд $N$, дараах $N-1$ мөрөнд чиглэлгүй ирмэгийн хоёр үзүүр өгөгдөнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "N\na_1 b_1\n...\na_{N-1} b_{N-1}\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Нийлбэрийг нэг бүхэл тоогоор хэвлэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$2\\le N\\le100000$; ирмэгийн үзүүр бүр $1$-ээс $N$ дотор. Өгөгдсөн граф мод. Бүх оролт бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "2\n1 2\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "4\n1 2\n1 3\n1 4\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "9\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "12\n1 2\n3 1\n4 2\n2 5\n3 6\n3 7\n8 4\n4 9\n10 5\n11 7\n7 12\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "211\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_am"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Tree Distance",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Every edge of a tree with vertices labeled $1$ through $N$ has length $1$. Find $\\sum_{1\\le u<v\\le N}\\operatorname{dist}(u,v)$, the sum of shortest-path distances over unordered pairs of distinct vertices.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The input gives $N$, followed by $N-1$ undirected endpoint pairs.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "N\na_1 b_1\n...\na_{N-1} b_{N-1}\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print the distance sum as an integer.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$2\\le N\\le100000$. Every endpoint is between $1$ and $N$. The given graph is a tree, and all input values are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "2\n1 2\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "4\n1 2\n1 3\n1 4\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "9\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "12\n1 2\n3 1\n4 2\n2 5\n3 6\n3 7\n8 4\n4 9\n10 5\n11 7\n7 12\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "211\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_am"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_am",
+      "sourceSha256": "898ff00ac2d87de576df3b9368a2d5e5bb7e7617bfd49b2183d5e02010a804d3",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "AtCoder",
+    "ref": "typical90_ap",
+    "title": "Multiple of 9",
+    "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ap",
+    "priorityLevel": "high",
+    "priorityReason": "Number-theory observation-оор constraint арилгаад ordered counting DP байгуулах, composition/order-ийн ялгааг эзэмшүүлэх practice.",
+    "rating": 1500,
+    "ratingKind": "estimated",
+    "hints": [
+      "Аравтын тоо $9$-д хуваагдах эсэхийг цифрийн нийлбэрээр шалгаж болдог.",
+      "$K$ нь $9$-д хуваагдахгүй бол хариу тэг. Бусад үед $1$-ээс $9$ хүртэлх цифрээр нийлбэр $K$ үүсгэх дарааллуудыг тоол.",
+      "$dp[0]=1$, $dp[s]=\\sum_{d=1}^{9}dp[s-d]$; сөрөг индексийг орхи. Сүүлд нэмсэн цифрээр ангилж батал."
+    ],
+    "hintsEn": [
+      "Divisibility by $9$ depends only on the decimal digit sum.",
+      "If $K$ is not divisible by $9$, the answer is zero. Otherwise count ordered sequences of digits $1$ through $9$ with sum $K$.",
+      "Use $dp[0]=1$ and $dp[s]=\\sum_{d=1}^{9}dp[s-d]$, omitting negative indices. Partition by the final digit to prove the recurrence."
+    ],
+    "tags": [
+      "dynamic programming"
+    ],
+    "level": "Practice",
+    "editorialUrl": "https://atcoder.jp/contests/typical90/editorial/2572",
+    "ratingBasis": "Rough CF-scale calibration: Divisibility-by9 observation removes a condition, followed by ordered-composition DP modulo1e9+7. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_ap",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-ap",
+      "title": "Multiple of 9 — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Аравтын байрлалын жин бүр $9$ дахь үлдэгдлээр $1$ тул тооны үлдэгдэл цифрийн нийлбэрийн үлдэгдэлтэй тэнцүү. Иймээс $K$ нь $9$-д хуваагдахгүй бол шийдэлгүй. Хуваагдвал $1$-ээс $9$ хүртэлх цифрийн нийлбэр $K$ байх дараалал бүр нэг зөв эерэг бүхэл тоотой харилцан нэг утгатай: тэг цифр байхгүй тул эхний тэгийн асуудалгүй, урт нь хамгийн ихдээ $K$. $dp[s]$ нь нийлбэр $s$-тэй дарааллын тоо. Сүүлийн цифр $d$-г хасахад нийлбэр $s-d$-тэй дараалал үлдэнэ. Сүүлийн цифрээр ангилсан ангиуд давхцахгүй тул recurrence бүх тоог яг нэг тоолно. $dp[0]=1$ нь хоосон prefix; $K\\ge1$ учир хоосон тоог хариунд оруулахгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Бэлтгэл: ",
+                  "marks": []
+                },
+                {
+                  "text": "digitSum",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь $9$-д хуваагдахгүй бол шууд тэг хэвлэнэ. Төлөв: ",
+                  "marks": []
+                },
+                {
+                  "text": "ways[0] = 1",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ". Гол алхам: нийлбэрийг өсөхөөр үзээд багтах сүүлийн цифр бүрийн тооллыг нэмэн modulo авна. Гаралт: ",
+                  "marks": []
+                },
+                {
+                  "text": "ways[digitSum]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ". Хугацаа $O(9K)$, санах ой $O(K)$; завсрын нэмэлт бүрийг $10^9+7$-д modulo авдаг.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int digitSum;\n    cin >> digitSum;\n    if (digitSum % 9 != 0) {\n        cout << 0 << '\\n';\n        return 0;\n    }\n    const long long mod = 1000000007;\n    vector<long long> ways(digitSum + 1);\n    ways[0] = 1;\n    for (int sum = 1; sum <= digitSum; ++sum) {\n        for (int digit = 1; digit <= 9 && digit <= sum; ++digit) {\n            ways[sum] = (ways[sum] + ways[sum - digit]) % mod;\n        }\n    }\n    cout << ways[digitSum] << '\\n';\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ap"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/042.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-ap",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "Multiple of 9",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Аравтын бичлэгтээ тэг цифргүй, цифрүүдийн нийлбэр нь $K$, мөн $9$-д хуваагддаг эерэг бүхэл тоонуудын тоог ол. Цифрийн дараалал ялгаатай бол өөр тоо.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Нэг мөрөнд бүхэл $K$ өгнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "K\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Тоо хэмжээг $10^9+7$-д хуваасан үлдэгдлийг нэг мөрөнд хэвлэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$1\\le K\\le100000$.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "0\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "234\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "757186539\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ap"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Multiple of 9",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Count positive integers whose decimal representation contains no zero digit, whose digit sum is $K$, and which are divisible by $9$. Different digit orders represent different integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The input contains the integer $K$.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "K\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print the count modulo $10^9+7$ on one line.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$1\\le K\\le100000$.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "0\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "234\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "757186539\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ap"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_ap",
+      "sourceSha256": "0a3b379d28865bd34bc8028859200f9f6ebffeca4b831c73d765d5b6ca20c05f",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  }
+]

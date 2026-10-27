@@ -1,0 +1,16 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {PGlite} from '@electric-sql/pglite';
+import {problemBackend,prepareProblemSave} from '../problem-backend.js';
+test('default deployment permits legacy edits without silently dropping new metadata',()=>{
+ const existing={priority:true,title:'Before'},payload={...existing,title:'After',priority:false,priorityLevel:'low',priorityReason:'new',ratingSource:'https://example.com',ratingVerifiedAt:'2026-10-27'};
+ const saved=prepareProblemSave(payload,existing,problemBackend({}));assert.equal(saved.title,'After');assert.equal(saved.priority,true);assert.equal('priorityLevel'in saved,false);assert.equal('ratingSource'in saved,false);assert.equal(payload.priorityLevel,'low');
+ assert.throws(()=>prepareProblemSave(payload,null),/backend/);assert.throws(()=>prepareProblemSave(payload,{...existing,priorityLevel:'high'}),/metadata/);assert.throws(()=>prepareProblemSave({...payload,editorial:{}},existing),/Editorial/);assert.throws(()=>prepareProblemSave({...payload,statement:{}},existing),/Statement/);
+ for(const v of [undefined,'34',99,null])assert.equal(problemBackend({problemBackendVersion:v}).version,31);
+ assert.deepEqual(prepareProblemSave(payload,existing,problemBackend({problemBackendVersion:34})),payload);
+});
+test('actual after-031 save contract accepts compatible edit, preserves ID/priority/hints and rejects stale revision',async()=>{
+ const db=new PGlite();try{await db.exec(`create schema auth;create function auth.uid()returns uuid language sql as $$select '00000000-0000-0000-0000-000000000001'::uuid$$;create function is_admin()returns boolean language sql as $$select true$$;create table problem_sources(name text primary key);create unique index source_lower on problem_sources(lower(name));create sequence problem_number_seq;create table problem_catalog(problem_id text primary key,number bigint,body jsonb,revision integer default 1,archived boolean default false,updated_at timestamptz default now());create table problem_changes(problem_id text,actor_id uuid,action text,previous_body jsonb,next_body jsonb);`);
+ const snapshot=JSON.parse(fs.readFileSync('supabase/audit/production-after-031.json'));for(const name of ['normalize_problem_source','valid_task_url','admin_add_source','validate_learning_problem','admin_save_problem'])await db.exec(snapshot.functions.find(f=>f.name===name).definition);
+ const old={id:'stable',number:9,title:'Before',source:'Codeforces',ref:'1A',url:'https://codeforces.com/problemset/problem/1/A',rating:800,ratingKind:'official',priority:true,level:'Practice',tags:['math'],hints:['Original hint','Second','Third'],hintsEn:['Original hint','Second','Third'],lesson:''};await db.query('insert into problem_catalog(problem_id,number,body)values($1,$2,$3)',['stable',9,old]);
+ const payload=prepareProblemSave({...old,title:'After',priorityLevel:'high'},old);const saved=(await db.query('select admin_save_problem($1,9,1) as body',[payload])).rows[0].body;assert.equal(saved.id,'stable');assert.equal(saved.priority,true);assert.deepEqual(saved.hints,old.hints);assert.equal(saved.title,'After');assert.equal(saved.revision,2);await assert.rejects(db.query('select admin_save_problem($1,9,1)',[payload]),e=>e.code==='40001');
+ }finally{await db.close();}
+});

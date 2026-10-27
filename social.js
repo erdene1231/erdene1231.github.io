@@ -1,8 +1,8 @@
-import {avatarUrl,rpc,accountError,requestRecovery,verifyRecovery,setRecoveredPassword} from './accounts.js?v=6';
+import {avatarUrl,rpc,accountError,requestRecovery,setRecoveredPassword} from './accounts.js?v=48';
 export function setupSocial(ctx) {
  const $=id=>document.getElementById(id),node=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
  let tab='leaderboard',page=0,friendPage=0,followPage=0,leaderToken=0,friendToken=0,followToken=0,profileToken=0,viewedId=null,relation='guest',accountId=null,searchTimer;
- let recoveryEmail='',verifiedId=null,sentAt=0,recoveryBusy=false;
+ let recoveryEmail='',verifiedId=null,sentAt=0,recoveryBusy=false,recoveryTurn=0;
  function avatar(profile){const n=node('span','avatar',((profile.full_name||profile.username||'?').trim()[0]||'?').toUpperCase()),url=avatarUrl(ctx.client(),profile);if(url){const img=node('img');img.src=url;img.alt='';img.loading='lazy';img.onerror=()=>img.remove();n.append(img);}return n;}
  function person(profile,rank){const b=node('button','person');b.type='button';b.append(avatar(profile));const info=node('span','person-info');info.append(node('strong','',profile.full_name||profile.username||'Нэрээ тохируулаагүй'),node('small','',profile.username?'@'+profile.username:'Username тохируулаагүй'),node('small','',profile.school||'Сургууль оруулаагүй'));b.append(info);if(rank)b.append(node('span','community-rank','#'+rank));b.append(node('span','person-score',profile.solved_count+' бодсон'));b.onclick=()=>ctx.viewProfile?ctx.viewProfile(profile.user_id):void openProfile(profile.user_id);return b;}
  function online(){if(ctx.client())return true;$('community-message').textContent='Онлайн account холболт шаардлагатай.';return false;}
@@ -66,30 +66,34 @@ export function setupSocial(ctx) {
  $('friend-kind').onchange=()=>{friendPage=0;void loadFriends();};$('friend-prev').onclick=()=>{if(friendPage>0){friendPage--;void loadFriends();}};$('friend-next').onclick=()=>{friendPage++;void loadFriends();};
  $('follow-prev').onclick=()=>{if(followPage>0){followPage--;void loadFollowing();}};$('follow-next').onclick=()=>{followPage++;void loadFollowing();};
  $('my-profile').onclick=()=>{if(ctx.user()){$('auth').close();if(ctx.viewProfile)ctx.viewProfile(ctx.user().id);else void openProfile(ctx.user().id);}};$('refresh-public-profile').onclick=()=>{if(viewedId)void openProfile(viewedId);};$('public-profile').addEventListener('close',()=>{profileToken++;});
- // Password reset uses Supabase's recovery OTP, never a login/signup OTP.
- function recoveryStage(stage){for(const id of ['recovery-email-form','recovery-code-form','recovery-password-form'])$(id).hidden=id!==stage;}
- function resetRecovery(){verifiedId=null;recoveryEmail='';$('recovery-code').value='';$('recovery-password').value='';$('recovery-confirm').value='';recoveryStage('recovery-email-form');}
- function startRecovery(){resetRecovery();$('recovery-email').value=$('email').value.trim()||ctx.user()?.email||'';$('recovery-message').textContent='Email-даа ирсэн кодоор нууц үгээ шинэчилнэ.';$('auth').close();$('recovery').showModal();}
- async function sendCode(event,resend=false){event?.preventDefault();if(recoveryBusy||!ctx.client())return;if(!resend&&!$('recovery-email-form').reportValidity())return;
-  const email=resend?recoveryEmail:$('recovery-email').value.trim();if(email===recoveryEmail&&Date.now()-sentAt<60000){$('recovery-message').textContent='Дахин код авахын өмнө нэг минут хүлээнэ үү.';return;}
-  recoveryBusy=true;$('send-recovery-code').disabled=true;$('resend-recovery-code').disabled=true;$('recovery-message').textContent='Код илгээж байна…';
-  try{await requestRecovery(ctx.client(),email,location.origin+location.pathname);recoveryEmail=email;sentAt=Date.now();verifiedId=null;recoveryStage('recovery-code-form');$('recovery-destination').textContent=email;$('recovery-message').textContent='Энэ email-д бүртгэл байгаа бол код илгээгдэнэ. Inbox болон spam хавтсаа шалгаарай.';}
-  catch(e){$('recovery-message').textContent=accountError(e);}finally{recoveryBusy=false;$('send-recovery-code').disabled=false;$('resend-recovery-code').disabled=false;}
+ // The email link authenticates recovery; only PASSWORD_RECOVERY opens the new-password form.
+ function recoveryStage(stage){for(const id of ['recovery-email-form','recovery-link-panel','recovery-password-form'])$(id).hidden=id!==stage;}
+ function resetRecovery(){recoveryTurn++;verifiedId=null;recoveryEmail='';$('recovery-password').value='';$('recovery-confirm').value='';recoveryStage('recovery-email-form');}
+ function startRecovery(){resetRecovery();$('recovery-email').value=$('email').value.trim()||ctx.user()?.email||'';$('recovery-message').textContent='Email дээрх баталгаажуулах холбоосоор нууц үгээ шинэчилнэ.';$('auth').close();if(!$('recovery').open)$('recovery').showModal();}
+ async function sendLink(event,resend=false){event?.preventDefault();if(recoveryBusy||!ctx.client())return;if(!resend&&!$('recovery-email-form').reportValidity())return;
+  const email=resend?recoveryEmail:$('recovery-email').value.trim();if(email===recoveryEmail&&Date.now()-sentAt<60000){$('recovery-message').textContent='Дахин холбоос авахын өмнө нэг минут хүлээнэ үү.';return;}
+  const turn=recoveryTurn;recoveryBusy=true;$('send-recovery-link').disabled=true;$('resend-recovery-link').disabled=true;$('recovery-message').textContent='Холбоос илгээж байна…';
+  try{await requestRecovery(ctx.client(),email,location.origin+location.pathname);if(turn!==recoveryTurn)return;recoveryEmail=email;sentAt=Date.now();verifiedId=null;recoveryStage('recovery-link-panel');$('recovery-destination').textContent=email;$('recovery-message').textContent='Энэ email-д бүртгэл байгаа бол баталгаажуулах холбоос илгээгдэнэ. Email дээрх холбоос дээр дарна уу. Inbox болон spam хавтсаа шалгаарай.';}
+  catch(e){if(turn===recoveryTurn)$('recovery-message').textContent=accountError(e);}finally{recoveryBusy=false;$('send-recovery-link').disabled=false;$('resend-recovery-link').disabled=false;}
  }
- $('forgot-password').onclick=startRecovery;$('recovery-email-form').onsubmit=e=>void sendCode(e);$('resend-recovery-code').onclick=()=>void sendCode(null,true);$('change-recovery-email').onclick=()=>{if(recoveryBusy)return;resetRecovery();$('recovery-message').textContent='Email хаягаа оруулна уу.';};
- $('recovery-code-form').onsubmit=async e=>{e.preventDefault();if(recoveryBusy||!$('recovery-code-form').reportValidity())return;recoveryBusy=true;$('verify-recovery-code').disabled=true;
-  try{verifiedId=await verifyRecovery(ctx.client(),recoveryEmail,$('recovery-code').value.trim());$('recovery-code').value='';recoveryStage('recovery-password-form');$('recovery-message').textContent='Код баталгаажлаа. Шинэ нууц үгээ оруулна уу.';}
-  catch(error){verifiedId=null;$('recovery-message').textContent=accountError(error);}finally{recoveryBusy=false;$('verify-recovery-code').disabled=false;}
- };
+ $('forgot-password').onclick=startRecovery;$('recovery-email-form').onsubmit=e=>void sendLink(e);$('resend-recovery-link').onclick=()=>void sendLink(null,true);$('change-recovery-email').onclick=()=>{if(recoveryBusy)return;resetRecovery();$('recovery-message').textContent='Email хаягаа оруулна уу.';};
+ // Never display provider error descriptions or tokens from callback URLs.
+ const callbackURL=new URL(location.href),callbackHash=new URLSearchParams(callbackURL.hash.slice(1));
+ if(callbackURL.searchParams.has('error')||callbackURL.searchParams.has('error_code')||callbackHash.has('error')||callbackHash.has('error_code')){
+  $('auth-feedback').textContent='Баталгаажуулах холбоос хүчингүй эсвэл хугацаа нь дууссан байна. Шинэ холбоос аваад дахин оролдоно уу.';
+  for(const key of ['error','error_code','error_description']){callbackURL.searchParams.delete(key);callbackHash.delete(key);}
+  callbackURL.hash=callbackHash.toString();history.replaceState(null,'',callbackURL.pathname+callbackURL.search+callbackURL.hash);
+  if(!$('auth').open)$('auth').showModal();
+ }
  $('recovery-password-form').onsubmit=async e=>{e.preventDefault();if(recoveryBusy||!$('recovery-password-form').reportValidity())return;recoveryBusy=true;$('save-recovery-password').disabled=true;
   try{await setRecoveredPassword(ctx.client(),verifiedId,$('recovery-password').value,$('recovery-confirm').value);resetRecovery();recoveryStage('done');$('recovery-message').textContent='Нууц үг шинэчлэгдлээ. Account руугаа нэвтэрсэн байна.';}
   catch(error){$('recovery-message').textContent=accountError(error);}finally{recoveryBusy=false;$('save-recovery-password').disabled=false;}
  };
- $('recovery').addEventListener('close',()=>{if(!recoveryBusy)resetRecovery();});
+ $('recovery').addEventListener('close',()=>{if(!$('recovery').open)resetRecovery();});
  return {
   connected(){if(tab==='leaderboard')void loadLeaderboard();else if(tab==='friends')void loadFriends();else void loadFollowing();},
   accountChanged(){const id=ctx.user()?.id||null;$('my-profile').hidden=!id;$('forgot-password').hidden=!ctx.client();if(id===accountId)return;accountId=id;friendToken++;followToken++;profileToken++;$('friends-list').replaceChildren();$('following-list').replaceChildren();if($('public-profile').open)void openProfile(viewedId);if(tab==='friends')void loadFriends();else if(tab==='following')void loadFollowing();},
-  authEvent(event,session){if(event==='PASSWORD_RECOVERY'&&session?.user){verifiedId=session.user.id;recoveryStage('recovery-password-form');$('recovery-message').textContent='Email баталгаажлаа. Шинэ нууц үгээ оруулна уу.';$('auth').close();if(!$('recovery').open)$('recovery').showModal();}},
+  authEvent(event,session){if(event==='PASSWORD_RECOVERY'&&session?.user){recoveryTurn++;verifiedId=session.user.id;$('recovery-password').value='';$('recovery-confirm').value='';recoveryStage('recovery-password-form');$('recovery-message').textContent='Email баталгаажлаа. Шинэ нууц үгээ оруулна уу.';$('auth').close();if(!$('recovery').open)$('recovery').showModal();}},
   byUsername,openProfile,
  };
 }

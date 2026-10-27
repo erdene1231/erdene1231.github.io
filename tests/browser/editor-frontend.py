@@ -49,6 +49,35 @@ try:
    root.get_by_role('button',name=label,exact=True).click()
    assert page.evaluate('(mark)=>sections[0].blocks[0].content.every(r=>r.marks.includes(mark))',mark),(mark,page.evaluate('sections[0].blocks[0].content'),editable.inner_html())
   report['italic_underline_strike_inline_code']='PASS'
+  for theme in ['light','dark']:
+   for width in [375,1200]:
+    page.set_viewport_size({'width':width,'height':950});page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
+    page.evaluate("()=>mount([{title:'Icons',blocks:[{type:'rich',content:[{text:'Selected words',marks:[]}]}]}])")
+    page.evaluate('''()=>{const e=document.querySelector('.block-rich-input'),r=document.createRange();r.selectNodeContents(e);getSelection().removeAllRanges();getSelection().addRange(r);document.dispatchEvent(new Event('selectionchange'));}''')
+    bold=root.get_by_role('button',name='Bold',exact=True);italic=root.get_by_role('button',name='Italic',exact=True)
+    assert bold.inner_text()=='B' and italic.inner_text()=='I'
+    assert 'Ctrl' in bold.get_attribute('title') and bold.get_attribute('aria-keyshortcuts')=='Control+B Meta+B'
+    assert bold.evaluate('e=>e.getBoundingClientRect().width>=44&&e.getBoundingClientRect().height>=44')
+    assert bold.evaluate('e=>parseInt(getComputedStyle(e).fontWeight)>=700')
+    assert italic.evaluate('e=>getComputedStyle(e).fontStyle')=='italic'
+    bold.click();assert bold.get_attribute('aria-pressed')=='true'
+    italic.click();assert italic.get_attribute('aria-pressed')=='true'
+    assert page.evaluate("sections[0].blocks[0].content.every(r=>r.marks.includes('bold')&&r.marks.includes('italic'))")
+    root.get_by_role('button',name='↶ Undo',exact=True).click()
+    assert page.evaluate("sections[0].blocks[0].content.every(r=>!r.marks.includes('bold')&&!r.marks.includes('italic'))")
+    root.get_by_role('button',name='↷ Redo',exact=True).click()
+    assert page.evaluate("sections[0].blocks[0].content.every(r=>r.marks.includes('bold')&&r.marks.includes('italic'))")
+    assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+  report['accessible_format_icons_selection_undo_redo_both_themes']='PASS'
+  page.evaluate("()=>mount([{title:'Shortcuts',blocks:[{type:'rich',content:[{text:'Shortcut words',marks:[]}]}]}])")
+  page.evaluate('''()=>{const e=document.querySelector('.block-rich-input');e.focus();const r=document.createRange();r.selectNodeContents(e);getSelection().removeAllRanges();getSelection().addRange(r);document.dispatchEvent(new Event('selectionchange'));}''')
+  root.get_by_role('textbox',name='Formatting бүхий тайлбар').press('Control+b')
+  assert page.evaluate("sections[0].blocks[0].content.every(r=>r.marks.includes('bold'))")
+  root.get_by_role('textbox',name='Formatting бүхий тайлбар').press('Control+i')
+  assert page.evaluate("sections[0].blocks[0].content.every(r=>r.marks.includes('bold')&&r.marks.includes('italic'))")
+  report['formatting_keyboard_shortcuts']='PASS'
+
+
   page.evaluate("()=>{mount([{title:'Open',blocks:[]},{title:'Closed',blocks:[{type:'rich',content:[{text:'Locked',marks:[]}]}]}]);locked=true;editor.refreshControls()}")
   root.locator('.editor-section').nth(1).locator('summary').click()
   assert root.locator('.editor-section').nth(1).get_by_label('Хэсгийн гарчиг',exact=True).is_disabled()

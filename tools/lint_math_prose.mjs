@@ -1,0 +1,8 @@
+import fs from'node:fs';import{mathProseWarnings}from'../math-prose.js';
+const current=JSON.parse(fs.readFileSync('audit/PART04-REVIEWED-NEW-TASKS.json')).filter(p=>p.editorial).map(p=>({source:'new-editorial',document:p.editorial}));
+const baseline=JSON.parse(fs.readFileSync('audit/PART04-BASELINE-REVIEW-PATCH04.json')).patches.filter(p=>p.field_updates.editorial).map(p=>({source:'baseline-editorial-proposal',document:p.field_updates.editorial}));
+const statements=JSON.parse(fs.readFileSync('audit/PART04-REVIEWED-NEW-TASKS.json')).filter(p=>p.statement).map(p=>({source:'new-statement',document:p.statement}));
+const results=[...current,...baseline,...statements].map(({source,document})=>({source,id:document.id,warnings:mathProseWarnings(document)}));
+const report={status:results.every(r=>r.warnings.length===0)?'authored-documents-passed':'authored-review-needed',authored_documents:current.length+baseline.length,authored_statement_documents:statements.length,results,limitations:'Problem-bank-only advisory lint;existing tutorial lessons belong to deferred package2 and are excluded.'};
+const authored=JSON.parse(fs.readFileSync('audit/PART04-REVIEWED-NEW-TASKS.json')).filter(p=>p.editorial);report.authored_hint_strings=authored.reduce((n,p)=>n+p.hints.length+p.hintsEn.length,0);report.authored_hint_warnings=authored.flatMap(p=>['hints','hintsEn'].flatMap(lang=>p[lang].flatMap((text,index)=>mathProseWarnings({sections:[{blocks:[{type:'p',text}]}]}).map(w=>({ref:p.ref,lang,index,...w})))));
+fs.writeFileSync('audit/PART04-MATH-PROSE-LINT.json',JSON.stringify(report,null,2)+'\n');console.log({status:report.status,editorials:report.authored_documents,statements:statements.length,hints:report.authored_hint_strings});

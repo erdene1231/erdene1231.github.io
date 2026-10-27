@@ -1,0 +1,1795 @@
+[
+  {
+    "source": "Codeforces",
+    "ref": "20/C",
+    "title": "Dijkstra?",
+    "url": "https://codeforces.com/contest/20/problem/C",
+    "priorityLevel": "high",
+    "priorityReason": "Dijkstra-ийн correctness invariant, unreachable state болон бодит shortest-path witness сэргээх цөм practice.",
+    "rating": 1900,
+    "ratingKind": "official",
+    "ratingSource": "https://codeforces.com/api/problemset.problems",
+    "ratingVerifiedAt": "2026-10-27",
+    "sourceTags": [
+      "graphs",
+      "shortest paths"
+    ],
+    "hints": [
+      "Ирмэгийн жин бүгд эерэг үед хамгийн богино замыг ямар алгоритмаар олдог вэ?",
+      "Зайг сайжруулах бүрдээ тухайн оройд аль оройгоос ирснийг хадгал.",
+      "Dijkstra дууссаны дараа $n$-ээс parent заалтаар 1 хүртэл ухарч, жагсаалтыг урвуул. Heap-ийн хуучирсан бичлэгийг алгас."
+    ],
+    "hintsEn": [
+      "Which shortest-path algorithm applies when all edge weights are positive?",
+      "Whenever a distance improves, remember the preceding vertex.",
+      "Run Dijkstra, follow parent pointers from $n$ back to 1, then reverse the path. Skip stale heap entries."
+    ],
+    "tags": [
+      "shortest paths"
+    ],
+    "level": "Practice",
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official",
+    "editorial": {
+      "id": "editorial-cf-20-c",
+      "title": "Dijkstra? — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эерэг жинтэй графт BFS-ийн давхарга бус хуримтлагдсан зайг харьцуулна. Dijkstra-ийн min-heap нь дараагийн хамгийн бага зайтай оройг гаргана. Хариу нь зөвхөн урт биш, замын оройн дараалал тул өмнөх оройг бас хадгална."
+            },
+            {
+              "type": "math",
+              "tex": "d(u)>d(v)+w(v,u)"
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "dist[1]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "=0, бусад зайг ",
+                  "marks": []
+                },
+                {
+                  "text": "INF",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " гэж эхлүүлнэ. Heap-ээс ($d$,$v$) авахад $d$ нь ",
+                  "marks": []
+                },
+                {
+                  "text": "dist[v]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ээс өөр бол алгасна. Ирмэг ($v$,$u$,$w$) бүрт ",
+                  "marks": []
+                },
+                {
+                  "text": "dist[v]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "+$w$ бага байвал ",
+                  "marks": []
+                },
+                {
+                  "text": "dist[u]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " болон ",
+                  "marks": []
+                },
+                {
+                  "text": "parent[u]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-г шинэчилнэ. $n$ хүрэх боломжгүй бол -1, бусад үед $n$-ээс parent дагаж үүсгэсэн замыг урвуулж хэвлэнэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Heap-ээс хамгийн бага шинэ бичлэгээр гарсан $v$-ийн зай буруу гэж үзье. Илүү богино замын анхны шийдэгдээгүй оройн өмнөх орой аль хэдийн шийдэгдэж, тэр ирмэгийг relax хийсэн байх ёстой. Эерэг жинтэй тул уг оройн heap зай $v$-ээс их байж болохгүй нь зөрчил болно. Strict relaxation бүр parent ирмэгийг бодит сайжруулсан замд тааруулдаг учир ухрааж сэргээсэн дараалал хамгийн богино зам мөн.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$O((N+M) \\log  N)$ хугацаа, $O(N+M)$ санах ой. Зайг 64-bit бүхэл тоонд хадгал. Олон ирмэг, loop, хүрэхгүй төгсгөл болон heap-ийн давхардсан бичлэгийг зөв боловсруул; зөвхөн ",
+                  "marks": []
+                },
+                {
+                  "text": "dist[n]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийг хэвлэх нь шаардлагыг хангахгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Албан statement болон төслийн бие даасан математик шинжилгээнд тулгуурлан шинээр бичсэн тайлбар. Codeforces-ийн албан editorial-ийг уншсан эсвэл хуулсан гэсэн мэдэгдэл биш."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://codeforces.com/contest/20/problem/C"
+                },
+                {
+                  "label": "Төслийн бие даасан proof review",
+                  "url": "https://github.com/erdene1231/erdene1231.github.io/blob/codex/part04-recovered/audit/PART04-CF-SOLUTION-REVIEWS01.json"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "Codeforces",
+    "ref": "580/C",
+    "title": "Kefa and Park",
+    "url": "https://codeforces.com/contest/580/problem/C",
+    "priorityLevel": "high",
+    "priorityReason": "Tree traversal-ийн path state ба pruning invariant-ийг эзэмшүүлэх, total cat count-оос consecutive run-ийг ялгах чухал practice.",
+    "rating": 1500,
+    "ratingKind": "official",
+    "ratingSource": "https://codeforces.com/api/problemset.problems",
+    "ratingVerifiedAt": "2026-10-27",
+    "sourceTags": [
+      "dfs and similar",
+      "graphs",
+      "trees"
+    ],
+    "hints": [
+      "Модны орой бүр рүү язгуураас очих зам цорын ганц байдаг.",
+      "DFS/BFS төлөвт замын төгсгөл дэх дараалсан мууртай оройн тоог авч яв. Муургүй оройд энэ тоо тэг болно.",
+      "Тоолуур $m$-ээс их болсон мөчид тухайн салааг тасал. Зөв төлөвтэй, хүүхэдгүй орой бүр нэг ресторан."
+    ],
+    "hintsEn": [
+      "Every vertex has a unique path from the root.",
+      "Carry the number of consecutive cat vertices at the end of the path; reset it at a cat-free vertex.",
+      "Prune a branch as soon as the counter exceeds $m$. Count valid vertices with no children as restaurants."
+    ],
+    "tags": [
+      "dfs"
+    ],
+    "level": "Practice",
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official",
+    "editorial": {
+      "id": "editorial-cf-580-c",
+      "title": "Kefa and Park — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Нийт муурын тоо бус, залгаа хэсгийн урт л хязгаарлагдана. Язгуураас орой бүрт нэг зам байх учир оройд хүрэх олон төлөвийг харьцуулах шаардлагагүй."
+            },
+            {
+              "type": "math",
+              "tex": "r_v=\\begin{cases}r_{parent(v)}+1,&a_v=1\\0,&a_v=0\\end{cases}"
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Stack-д (1,parent=0,run=0) оруулна. Оройг боловсруулахдаа мууртай бол run-ийг нэгээр нэм, үгүй бол тэглэ. run>$m$ бол үргэлжлүүлэхгүй. Эсрэг тохиолдолд parent-аас бусад хөршийг хүүхэд гэж stack-д оруул. Хүүхэдгүй бол хариуг нэгээр нэм.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Орой дээрх run нь тэр оройгоор төгссөн хамгийн сүүлийн залгаа мууртай хэсгийн урт гэдэг инвариант шилжилтээр хадгалагдана. Хязгаар хэтэрсэн prefix бүхий ямар ч урт зам зөв болж чадахгүй тул тайралт зөв. Үлдсэн навч бүрийн цорын ганц зам бүх prefix дээрээ хязгаарыг хангана, иймээс яг зөв ресторануудыг нэг удаа тоолно."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$O(N)$ хугацаа, $O(N)$ санах ой. $N=100000$ гүн гинжин модонд рекурсийн stack хүрэлцэхгүй байж болох тул iterative traversal тохиромжтой. Язгуурын parent-ийг хүүхэд гэж тоолохгүй; муургүй оройд өмнөх run-ийг заавал тэглэнэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Албан statement болон төслийн бие даасан математик шинжилгээнд тулгуурлан шинээр бичсэн тайлбар. Codeforces-ийн албан editorial-ийг уншсан эсвэл хуулсан гэсэн мэдэгдэл биш."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://codeforces.com/contest/580/problem/C"
+                },
+                {
+                  "label": "Төслийн бие даасан proof review",
+                  "url": "https://github.com/erdene1231/erdene1231.github.io/blob/codex/part04-recovered/audit/PART04-CF-SOLUTION-REVIEWS01.json"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "Codeforces",
+    "ref": "580/B",
+    "title": "Kefa and Company",
+    "url": "https://codeforces.com/contest/580/problem/B",
+    "priorityLevel": "high",
+    "priorityReason": "Sorting-аас valid window үүсэх proof, strict boundary болон weighted sliding-window sum-ийн reusable practice.",
+    "rating": 1500,
+    "ratingKind": "official",
+    "ratingSource": "https://codeforces.com/api/problemset.problems",
+    "ratingVerifiedAt": "2026-10-27",
+    "sourceTags": [
+      "binary search",
+      "sortings",
+      "two pointers"
+    ],
+    "hints": [
+      "Найзуудыг мөнгөөр нь эрэмбэлбэл сонгосон бүлгийн зөв эсэхийг зөвхөн хоёр захын мөнгөөр шалгана.",
+      "Friendship factor сөрөг биш учир зөв интервал доторх хүнийг нэмэхэд нийлбэр буурахгүй.",
+      "Хоёр заагтай цонхны max-min нь $d$-ээс бага байхаар зүүн заагийг урагшлуулж, нийлбэрийн хамгийн ихийг ав."
+    ],
+    "hintsEn": [
+      "Sort friends by money; validity then depends only on the two endpoints.",
+      "Friendship factors are nonnegative, so adding an interior friend cannot reduce the objective.",
+      "Use a sliding window with maximum money minus minimum money strictly less than $d$, maintaining the sum."
+    ],
+    "tags": [
+      "two pointers"
+    ],
+    "level": "Practice",
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official",
+    "editorial": {
+      "id": "editorial-cf-580-b",
+      "title": "Kefa and Company — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эрэмбэлсэн жагсаалтын ямар ч зөв бүлгийг түүний хамгийн бага ба их мөнгөний хоорондох бүх хүнээр өргөтгөж болно. Сөрөг factor байхгүй тул хариу муудахгүй. Тиймээс тасралтгүй цонхнуудаас хамгийн их нийлбэртэйг хайхад хангалттай."
+            },
+            {
+              "type": "math",
+              "tex": "money_r-money_l<d"
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Money өсөхөөр эрэмбэлээд $l=0$, ",
+                  "marks": []
+                },
+                {
+                  "text": "sum",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "=0 авна. Баруун $r$-ийг нэг нэгээр нэмэх бүрд ",
+                  "marks": []
+                },
+                {
+                  "text": "factor[r]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийг ",
+                  "marks": []
+                },
+                {
+                  "text": "sum",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-д нэм. ",
+                  "marks": []
+                },
+                {
+                  "text": "money[r]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-",
+                  "marks": []
+                },
+                {
+                  "text": "money[l]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ">=$d$ байх хугацаанд ",
+                  "marks": []
+                },
+                {
+                  "text": "factor[l]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийг хасаад $l$-ийг өсгөнө. Үлдсэн зөв цонхны ",
+                  "marks": []
+                },
+                {
+                  "text": "sum",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-аар хариуг шинэчил.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Баруун зах $r$ бүрт алгоритм зөв нөхцөл хангах хамгийн зүүн $l$-ийг олно: түүнээс өмнөх захтай цонх мөнгөний зөрөөгөөр буруу. Сөрөг биш factor-тай тул $r$ дээр төгссөн аль ч богино зөв цонхны нийлбэр үүнээс ихгүй. Баруун бүх захыг шалгаснаар бүх боломжит оновчтой интервал хамрагдана.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эрэмбэлэлт $O(N \\log  N)$, хоёр заагийн нийт хөдөлгөөн $O(N)$, санах ой $O(N)$. ",
+                  "marks": []
+                },
+                {
+                  "text": "sum",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " болон хариуг 64-bit-д хадгал. Зөрөө яг $d$ бол зөв биш: while нөхцөл >=$d$ байна.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Албан statement болон төслийн бие даасан математик шинжилгээнд тулгуурлан шинээр бичсэн тайлбар. Codeforces-ийн албан editorial-ийг уншсан эсвэл хуулсан гэсэн мэдэгдэл биш."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://codeforces.com/contest/580/problem/B"
+                },
+                {
+                  "label": "Төслийн бие даасан proof review",
+                  "url": "https://github.com/erdene1231/erdene1231.github.io/blob/codex/part04-recovered/audit/PART04-CF-SOLUTION-REVIEWS01.json"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв,бэлтгэл,алгоритм ба гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "friends",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийг мөнгөөр sort хийнэ. ",
+                  "marks": []
+                },
+                {
+                  "text": "left",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь зөв цонхны эхлэл, ",
+                  "marks": []
+                },
+                {
+                  "text": "windowSum",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь factor-ийн нийлбэр. Зөрөө хязгаартай тэнцвэл ч хасна. Сөрөг биш factor нь хамгийн урт зөв цонхыг авах баталгааг өгнө. Гаралт maximum нийлбэр; $O(n\\log n)$ хугацаа,$O(n)$ зай. / Sort by money;shrink while the difference is at least the strict limit. Nonnegative factors justify the maximal valid window;accumulate in64-bit.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    long long differenceLimit;\n    cin >> n >> differenceLimit;\n    vector<pair<long long, long long>> friends(n);\n    for (auto &person : friends) cin >> person.first >> person.second;\n    sort(friends.begin(), friends.end());\n    int left = 0;\n    long long windowSum = 0, bestSum = 0;\n    for (int right = 0; right < n; ++right) {\n        windowSum += friends[right].second;\n        while (friends[right].first - friends[left].first >= differenceLimit) {\n            windowSum -= friends[left].second;\n            ++left;\n        }\n        bestSum = max(bestSum, windowSum);\n    }\n    cout << bestSum << '\\n';\n}\n"
+            }
+          ]
+        }
+      ]
+    },
+    "implementationEvidence": {
+      "report": "audit/PART04-PROBLEM-CPP02.json",
+      "source_basis": "Retained reviewed functional contract/independent proof;no fresh fetch,sample or judge-submission claim. Statement readiness separate.",
+      "status": "passed",
+      "code_sha256": "a88751842d544881a2af401988370f5e3e05ea1797452570f3449b5dda3630ac"
+    },
+    "editorialAuthorship": "Original project explanation in tutorial schema, 2026-10-27; independent proof, not an official editorial copy. Original C++17 independently tested in PART04-PROBLEM-CPP02;no fresh-source,official-sample or judge-submission claim.",
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "Codeforces",
+    "ref": "427/C",
+    "title": "Checkposts",
+    "url": "https://codeforces.com/contest/427/problem/C",
+    "priorityLevel": "high",
+    "priorityReason": "SCC semantic modelling болон independent-component optimum/count product-ийг холбох цөм graph practice.",
+    "rating": 1700,
+    "ratingKind": "official",
+    "ratingSource": "https://codeforces.com/api/problemset.problems",
+    "ratingVerifiedAt": "2026-10-27",
+    "sourceTags": [
+      "dfs and similar",
+      "graphs",
+      "two pointers"
+    ],
+    "hints": [
+      "Хоёр орой хоёулаа бие бие рүүгээ хүрдэг байх нь ямар графын бүлэг үүсгэдэг вэ?",
+      "SCC бүрт нэг пост хангалттай. Хамгийн бага зардлыг тухайн компонент дотроос тусад нь сонго.",
+      "Компонентуудын minimum cost-ыг нэм; minimum-д хүрэх оройн тоонуудыг $10^9+7$ модулиар үржүүл."
+    ],
+    "hintsEn": [
+      "Which graph decomposition groups vertices that can reach each other?",
+      "One post per strongly connected component is sufficient; minimize its cost independently.",
+      "Sum each component's minimum cost and multiply the counts of minimum-cost vertices modulo $10^9+7$."
+    ],
+    "tags": [
+      "strongly connected components"
+    ],
+    "level": "Practice",
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official",
+    "editorial": {
+      "id": "editorial-cf-427-c",
+      "title": "Checkposts — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Постын хамгаалалт харилцан хүрэлцэх нөхцөлөөр тодорхойлогдоно. Энэ нь SCC-ийн яг тодорхойлолт тул өөр SCC дэх пост тухайн компонентыг орлож чадахгүй. Компонент бүрийн сонголт бие даасан болно."
+            },
+            {
+              "type": "math",
+              "tex": "cost=\\sum_C\\min_{v\\in C} a_v,\\qquad ways=\\prod_C\\left|\\{v\\in C:a_v=\\min_{u\\in C}a_u\\}\\right|\\pmod{10^9+7}"
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Kosaraju эсвэл Tarjan-аар бүх SCC-ийг ол. Компонент бүрт cost-ийн minimum болон түүнтэй тэнцүү оройн тоог цуглуул. Minimum-уудын нийлбэр нь нийт зардал; тоонуудын үржвэрийг 1000000007 модулиар авбал сонголтын тоо гарна."
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Компонент бүрд дор хаяж нэг пост хэрэгтэй; түүний minimum-cost оройд нэг пост байрлуулахад бүх орой хамгаалагдана. Иймээс нийлбэр minimum нь доод хязгаарт хүрнэ. Зардал тэг байж болох ч дараагийн постын тоог багасгах шаардлага нэг SCC-д яг нэгийг сонгоно. Бие даасан компонентуудын minimum оройн сонголт бүр ялгаатай оптимум учир үржүүлэх зарчим үйлчилнэ."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$O(N+M)$ хугацаа, $O(N+M)$ санах ой. Нийлбэрийг 64-bit ашиглан тооцно. SCC-ийн зөвхөн эх үүсвэр компонентуудыг бус бүх компонентыг тоол. Гүн DFS-д stack-ийн хязгаарыг анхаар.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Албан statement болон төслийн бие даасан математик шинжилгээнд тулгуурлан шинээр бичсэн тайлбар. Codeforces-ийн албан editorial-ийг уншсан эсвэл хуулсан гэсэн мэдэгдэл биш."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://codeforces.com/contest/427/problem/C"
+                },
+                {
+                  "label": "Төслийн бие даасан proof review",
+                  "url": "https://github.com/erdene1231/erdene1231.github.io/blob/codex/part04-recovered/audit/PART04-CF-SOLUTION-REVIEWS01.json"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "Codeforces",
+    "ref": "115/A",
+    "title": "Party",
+    "url": "https://codeforces.com/contest/115/problem/A",
+    "priorityLevel": "high",
+    "priorityReason": "Lower bound ба constructive upper bound-ийг tree depth-аар тааруулан optimum батлах foundational practice.",
+    "rating": 900,
+    "ratingKind": "official",
+    "ratingSource": "https://codeforces.com/api/problemset.problems",
+    "ratingVerifiedAt": "2026-10-27",
+    "sourceTags": [
+      "dfs and similar",
+      "graphs",
+      "trees"
+    ],
+    "hints": [
+      "Нэг manager chain дээрх бүх хүн өөр өөр бүлэгт орох ёстой.",
+      "Хүн бүрийг язгуураас тоолсон гүнээр нь бүлэглэвэл нэг бүлэгт ancestor хос орж чадах уу?",
+      "Ойн бүх язгуураас traversal хийж хамгийн их гүнийг ол; язгуурын гүнийг 1 гэж тоол."
+    ],
+    "hintsEn": [
+      "All employees on a single manager chain must occupy different groups.",
+      "If employees are grouped by depth, can any group contain an ancestor pair?",
+      "Traverse every root of the forest and take the maximum depth, counting a root as depth one."
+    ],
+    "tags": [
+      "trees"
+    ],
+    "level": "Practice",
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official",
+    "editorial": {
+      "id": "editorial-cf-115-a",
+      "title": "Party — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хамгийн урт удирдлагын гинжний хүмүүс хоорондоо бүгд ancestor холбоотой тул дор хаяж тэр гинжний урттай тэнцүү бүлэг шаардлагатай. Гүнээр ангилах нь энэ доод хязгаарт хүрдэг."
+            },
+            {
+              "type": "math",
+              "tex": "answer=\\max_v depth(v)"
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Parent нь -1 бүх хүнийг язгуур болгож children жагсаалт байгуулна. Язгуур бүрээс depth=1-ээр эхлэн хүүхдийн гүнийг нэгээр өсгөж яв. Бүх оройн хамгийн их depth-ийг хэвлэнэ."
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Ancestor оройн гүн descendant-аасаа заавал бага. Иймээс ижил гүнтэй хоёр хүн нэгнийхээ ancestor биш бөгөөд нэг бүлэгт орж болно. Энэ байгуулалт хамгийн их гүнтэй тэнцүү бүлэг ашиглана; хамгийн урт chain-ийн доод хязгаартай тэнцсэн тул оптимум."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Children жагсаалттай traversal $O(N)$ хугацаа, $O(N)$ санах ой. Parent-ийг хүн бүр дээр дахин дахин дагавал $O(N^2)$ болж болно. Олон язгуур болон ганц оройг зөв боловсруул; гүнийг ирмэгээр бус хүний тоогоор тоол.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Албан statement болон төслийн бие даасан математик шинжилгээнд тулгуурлан шинээр бичсэн тайлбар. Codeforces-ийн албан editorial-ийг уншсан эсвэл хуулсан гэсэн мэдэгдэл биш."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://codeforces.com/contest/115/problem/A"
+                },
+                {
+                  "label": "Төслийн бие даасан proof review",
+                  "url": "https://github.com/erdene1231/erdene1231.github.io/blob/codex/part04-recovered/audit/PART04-CF-SOLUTION-REVIEWS01.json"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв,бэлтгэл,алгоритм ба гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "children",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь удирдлагын forest. Язгуур бүрийг depth нэгтэй ",
+                  "marks": []
+                },
+                {
+                  "text": "pending",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-д нэмнэ. Parent-ээс child руу гүнийг нэг өсгөж maximum-ийг хэвлэнэ; ирмэг биш хүний тоогоор depth авна. $O(n)$ хугацаа/зай. / Build child lists and initialize all roots at depth one. Iterative traversal maximizes chain vertex count;multiple roots are independent.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> children(n);\n    queue<pair<int, int>> pending;\n    for (int employee = 0; employee < n; ++employee) {\n        int manager;\n        cin >> manager;\n        if (manager == -1) pending.push({employee, 1});\n        else children[manager - 1].push_back(employee);\n    }\n    int groups = 0;\n    while (!pending.empty()) {\n        auto [employee, depth] = pending.front();\n        pending.pop();\n        groups = max(groups, depth);\n        for (int child : children[employee]) pending.push({child, depth + 1});\n    }\n    cout << groups << '\\n';\n}\n"
+            }
+          ]
+        }
+      ]
+    },
+    "implementationEvidence": {
+      "report": "audit/PART04-PROBLEM-CPP02.json",
+      "source_basis": "Retained reviewed functional contract/independent proof;no fresh fetch,sample or judge-submission claim. Statement readiness separate.",
+      "status": "passed",
+      "code_sha256": "dd7ef04f97e3e70fdfe6876fc4ad13c74cdda2fc4e419084443df4d9f5d1ff88"
+    },
+    "editorialAuthorship": "Original project explanation in tutorial schema, 2026-10-27; independent proof, not an official editorial copy. Original C++17 independently tested in PART04-PROBLEM-CPP02;no fresh-source,official-sample or judge-submission claim.",
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "Codeforces",
+    "ref": "1037/D",
+    "title": "Valid BFS?",
+    "url": "https://codeforces.com/contest/1037/problem/D",
+    "priorityLevel": "high",
+    "priorityReason": "BFS queue-ийн child-batch invariant ба traversal-order verification-ийг ялгаж сургах чухал practice.",
+    "rating": 1700,
+    "ratingKind": "official",
+    "ratingSource": "https://codeforces.com/api/problemset.problems",
+    "ratingVerifiedAt": "2026-10-27",
+    "sourceTags": [
+      "dfs and similar",
+      "graphs",
+      "shortest paths",
+      "trees"
+    ],
+    "hints": [
+      "Зөвхөн оройнуудын гүн өсөх дараалал хангалттай юу? Нэг эцгийн хүүхдүүд queue-д хамт ордог.",
+      "Өгсөн permutation-д орой бүрийн байрлалыг хадгал. Хөршүүдийг тэр байрлалаар эрэмбэлбэл ямар BFS гардаг вэ?",
+      "1-ээс BFS хийж гарсан дарааллыг бүхэлд нь өгсөн permutation-тай харьцуул. Эхний орой заавал 1 байна."
+    ],
+    "hintsEn": [
+      "Depth order alone is insufficient: each parent's undiscovered children enter the queue together.",
+      "Store every vertex's proposed position and sort adjacency lists by those positions.",
+      "Run BFS from 1 and compare its entire output with the permutation; the first vertex must be 1."
+    ],
+    "tags": [
+      "bfs"
+    ],
+    "level": "Practice",
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official",
+    "editorial": {
+      "id": "editorial-cf-1037-d",
+      "title": "Valid BFS? — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "BFS-ийн чөлөөтэй сонгож болох зүйл нь тухайн оройн хөршүүдийг үзэх дараалал юм. Хүссэн гаралтад орой бүр хаана байгааг мэдэж байгаа тул хөршүүдийг тэр дарааллаар үзэх canonical оролдлого байгуулж болно."
+            },
+            {
+              "type": "math",
+              "tex": "pos(v)=\\text{position of }v\\text{ in the proposed order}"
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Permutation-ийн ",
+                  "marks": []
+                },
+                {
+                  "text": "pos[v]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-г тооцож, эхний утга 1 биш бол татгалз. Орой бүрийн adjacency жагсаалтыг pos өсөхөөр эрэмбэл. Энгийн visited+queue BFS-ийг 1-ээс ажиллуулаад dequeue дараалал өгсөн жагсаалттай яг тэнцүү эсэхийг шалга.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Зөв BFS байвал нэг эцгийн шинээр олдох хүүхдүүд permutation-д яг enqueue болсон харьцангуй дарааллаар орно. Манай эрэмбэлэлт тэднийг тэр л дарааллаар queue-д нэмдэг; аль хэдийн visited эцэг зэрэг хөрш дараалалд нөлөөлөхгүй. Queue-ийн инвариантаар бүх алхам хүссэн BFS-тэй таарна. Харин харьцуулалт тэнцвэл ажиллуулсан бодит BFS өөрөө боломжтойг нотолно."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$O(N \\log  N)$ дээд хугацаа, $O(N)$ санах ой. Зөвхөн depth эсвэл parent-ийн гүнийг харьцуулах нь хангалтгүй. $N=1$ үед [1] зөв; permutation-ийн эхний оройг шалга.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Албан statement болон төслийн бие даасан математик шинжилгээнд тулгуурлан шинээр бичсэн тайлбар. Codeforces-ийн албан editorial-ийг уншсан эсвэл хуулсан гэсэн мэдэгдэл биш."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://codeforces.com/contest/1037/problem/D"
+                },
+                {
+                  "label": "Төслийн бие даасан proof review",
+                  "url": "https://github.com/erdene1231/erdene1231.github.io/blob/codex/part04-recovered/audit/PART04-CF-SOLUTION-REVIEWS01.json"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "Codeforces",
+    "ref": "520/B",
+    "title": "Two Buttons",
+    "url": "https://codeforces.com/contest/520/problem/B",
+    "priorityLevel": "high",
+    "priorityReason": "Implicit state graph байгуулах, finite safe bounds ба uniform-cost BFS-ийн correctness-ийг эзэмшүүлэх цөм practice.",
+    "rating": 1400,
+    "ratingKind": "official",
+    "ratingSource": "https://codeforces.com/api/problemset.problems",
+    "ratingVerifiedAt": "2026-10-27",
+    "sourceTags": [
+      "dfs and similar",
+      "graphs",
+      "greedy",
+      "implementation",
+      "math",
+      "shortest paths"
+    ],
+    "hints": [
+      "Ижил үнэтэй үйлдлүүдийг бүхэл төлөвийн графын ирмэг гэж үз.",
+      "$n\\ge m$ бол шууд хасахад хангалттай. $n<m$ үед $[1,2m]$ мужийн төлөвүүд дээр BFS хийж болно.",
+      "$x$-ээс $2x$ болон $x-1$ рүү зөвшөөрөгдсөн шилжилтүүдийг хий. BFS анх $m$-д хүрсэн алхмын тоо хамгийн бага."
+    ],
+    "hintsEn": [
+      "View each unit-cost operation as an edge between integer states.",
+      "For $n\\ge m$, decrement directly. For $n<m$, BFS over positive states up to $2m$ suffices.",
+      "Explore $x\\to 2x$ and $x\\to x-1$ within the bounds; the first BFS distance to $m$ is optimal."
+    ],
+    "tags": [
+      "bfs"
+    ],
+    "level": "Practice",
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official",
+    "editorial": {
+      "id": "editorial-cf-520-b",
+      "title": "Two Buttons — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Үйлдэл бүр нэг товч даралттай тэнцүү тул хамгийн цөөн үйлдэл нь жингүй графын хамгийн богино зам юм. Оройг одоогийн дэлгэцийн тоо, ирмэгийг зөвшөөрсөн хоёр үйлдэл гэж авна."
+            },
+            {
+              "type": "math",
+              "tex": "1\\le x\\le 2m"
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$n\\ge m$ үед $n-m$-ийг хэвлэ. Бусад тохиолдолд ",
+                  "marks": []
+                },
+                {
+                  "text": "dist[1..2m]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийг -1 болгож ",
+                  "marks": []
+                },
+                {
+                  "text": "dist[n]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "=0, queue-д $n$-ийг нэм. $x$ бүрээс $2x$<=$2m$ бол $2x$, $x$>1 бол $x-1$-ийг өмнө нь очоогүй үед queue-д оруул. $m$-ийн BFS зайг ав.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$x\\ge m$ төлөвөөс дахин хоёр дахин өсгөх нь ашиггүй: эцэст $m$-д хүрэхийн тулд тэр өсөлтийг буцааж олон удаа хасах хэрэгтэй, харин шууд $x-m$ удаа хасах нь богино. Иймээс оновчтой зам дээр өсгөх үйлдлийн өмнөх төлөв $m$-ээс бага; өсгөсний дараах утга $2m$-ээс бага байна. Хязгаарласан граф оптимумыг хадгална. BFS оройг зай өсөх дарааллаар анх олдог тул хариу хамгийн бага.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$O(m)$ хугацаа, $O(m)$ санах ой; $n\\ge m$ салбар $O(1)$. Төлөв 0 руу орохыг зөвшөөрөхгүй. $n=m$ бол хариу 0. Өсгөх үйлдлийн өртөг нь үр дүнгийн тоо бус нэг товч даралт.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Албан statement болон төслийн бие даасан шинжилгээнд тулгуурласан шинээр бичсэн тайлбар. Албан editorial-ийг уншсан, хуулсан гэсэн мэдэгдэл биш."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://codeforces.com/contest/520/problem/B"
+                },
+                {
+                  "label": "Бие даасан proof review",
+                  "url": "https://github.com/erdene1231/erdene1231.github.io/blob/codex/part04-recovered/audit/PART04-CF-SOLUTION-REVIEWS01.json"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв,бэлтгэл,алгоритм ба гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхлэл target-аас их буюу тэнцүү бол шууд хасалт optimum. Бусад үед ",
+                  "marks": []
+                },
+                {
+                  "text": "distance",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " ба ",
+                  "marks": []
+                },
+                {
+                  "text": "pending",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь эерэг төлөвийн BFS. Тэг төлөв рүү орохгүй,хоёр дахин өсгөхийг $2m$ хүрээнд хязгаарлана. Гаралт minimum үйлдэл;$O(m)$ хугацаа/зай. / Handle downward-only case,then BFS valid positive states. Mark on enqueue and stop at the target.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int start, target;\n    cin >> start >> target;\n    if (start >= target) {\n        cout << start - target << '\\n';\n        return 0;\n    }\n    vector<int> distance(2 * target + 1, -1);\n    queue<int> pending;\n    distance[start] = 0;\n    pending.push(start);\n    while (!pending.empty()) {\n        int value = pending.front();\n        pending.pop();\n        if (value == target) break;\n        for (int next : {value - 1, value * 2}) {\n            if (next < 1 || next > 2 * target || distance[next] != -1) continue;\n            distance[next] = distance[value] + 1;\n            pending.push(next);\n        }\n    }\n    cout << distance[target] << '\\n';\n}\n"
+            }
+          ]
+        }
+      ]
+    },
+    "implementationEvidence": {
+      "report": "audit/PART04-PROBLEM-CPP02.json",
+      "source_basis": "Retained reviewed functional contract/independent proof;no fresh fetch,sample or judge-submission claim. Statement readiness separate.",
+      "status": "passed",
+      "code_sha256": "7c70d64e015e8ba63125c92890caa1f975993aba2c42ee1bc16cea72d1a1665a"
+    },
+    "editorialAuthorship": "Original project explanation in tutorial schema,2026-10-27; independent proof, not an official editorial copy. Original C++17 independently tested in PART04-PROBLEM-CPP02;no fresh-source,official-sample or judge-submission claim.",
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "Codeforces",
+    "ref": "510/C",
+    "title": "Fox And Names",
+    "url": "https://codeforces.com/contest/510/problem/C",
+    "priorityLevel": "high",
+    "priorityReason": "Lexicographic first-difference-оос precedence DAG байгуулах, prefix impossibility ба cycle detection-ийн reusable modelling practice.",
+    "rating": 1600,
+    "ratingKind": "official",
+    "ratingSource": "https://codeforces.com/api/problemset.problems",
+    "ratingVerifiedAt": "2026-10-27",
+    "sourceTags": [
+      "dfs and similar",
+      "graphs",
+      "sortings"
+    ],
+    "hints": [
+      "Зэрэгцээ хоёр нэрийн lexicographic харьцуулалтыг зөвхөн хамгийн эхний ялгаатай үсэг шийднэ.",
+      "Тэр хоёр үсгийн хооронд precedence ирмэг байгуул. Өмнөх нэр нь дараагийн нэрийн урт prefix байвал боломжгүй.",
+      "Бүх 26 үсэг дээр topological sort хий. Cycle байвал Impossible; холбоогүй үсгүүдийг ч гаралтад оруул."
+    ],
+    "hintsEn": [
+      "Only the first differing letters determine the lexicographic order of adjacent names.",
+      "Add a precedence edge for that pair. Reject an earlier name that strictly extends the later name as a prefix.",
+      "Topologically sort all 26 letters. A cycle means Impossible; include unconstrained letters too."
+    ],
+    "tags": [
+      "topological sort"
+    ],
+    "level": "Practice",
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official",
+    "editorial": {
+      "id": "editorial-cf-510-c",
+      "title": "Fox And Names — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эрэмбэлсэн нэрсээс үсгүүдийн бүх хосын дарааллыг мэдэхгүй. Харин нэр бүрийн хөрштэйгөө эхний ялгаа нь заавал биелэх нэг шаардлага өгнө. Эдгээр шаардлагаас чиглэлт граф байгуулна."
+            },
+            {
+              "type": "math",
+              "tex": "a\\to b\\;\\Longrightarrow\\;a\\text{ precedes }b"
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Зэрэгцээ нэрсийг зүүнээс нь зэрэг унш. Ялгаа олдвол өмнөх нэрийн үсгээс дараагийн нэрийн үсэг рүү ирмэг нэмээд харьцуулалтыг зогсоо. Ялгаа олдохгүй, эхний нэр урт бол Impossible. Бусад үед indegree=0 бүх үсгээс Kahn topological sort ажиллуул. Гаралт 26 үсэг биш бол Impossible."
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Ялгааны өмнөх prefix ижил тул эхний ялгаатай үсгийн дараалал нэрсийн шаардлагыг яг илэрхийлнэ; түүнээс хойших үсэг ямар ч нөлөөгүй. Prefix-ийн урт нэр эхэлсэн алдааг үсгийн дарааллаар засах боломжгүй. Графын topological order бүх шаардлагыг биелүүлнэ, тэгэхээр зэрэгцээ нэрс бүр зөв дараалалтай; үүгээр нийт жагсаалт зөв эрэмбэлэгдэнэ. Cycle бол биелэх боломжгүй хатуу тойрог шаардлага."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Нэрсийн уншсан нийт урт $L$ гэвэл $O(L+26^2)$ хугацаа, 26×26 adjacency matrix ашиглавал $O(26^2)$ санах ой. Давхардсан ирмэг дээр indegree-г хоёр дахин нэмэхгүй. Хоорондоо ижил нэрсээс ирмэг нэмэхгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Албан statement болон төслийн бие даасан шинжилгээнд тулгуурласан шинээр бичсэн тайлбар. Албан editorial-ийг уншсан, хуулсан гэсэн мэдэгдэл биш."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://codeforces.com/contest/510/problem/C"
+                },
+                {
+                  "label": "Бие даасан proof review",
+                  "url": "https://github.com/erdene1231/erdene1231.github.io/blob/codex/part04-recovered/audit/PART04-CF-SOLUTION-REVIEWS01.json"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "Codeforces",
+    "ref": "601/A",
+    "title": "The Two Routes",
+    "url": "https://codeforces.com/contest/601/problem/A",
+    "priorityLevel": "high",
+    "priorityReason": "Хос-process safety condition-ийг complement-edge observation-оор ганц BFS болгон багасгах бүтээлч graph practice.",
+    "rating": 1600,
+    "ratingKind": "official",
+    "ratingSource": "https://codeforces.com/api/problemset.problems",
+    "ratingVerifiedAt": "2026-10-27",
+    "sourceTags": [
+      "graphs",
+      "shortest paths"
+    ],
+    "hints": [
+      "Төмөр замын граф болон авто замын граф нь бие биеийн complement юм.",
+      "1 ба $n$-ийн хооронд яг нэг тээврийн сүлжээ шууд ирмэгтэй. Тэр тээврийг шууд төгсгөлд хүргэ.",
+      "Нөгөө сүлжээнд BFS хий. Шууд очсон тээвэр завсрын оройд очихгүй тул мөргөлдөөний нөхцөл автоматаар хангагдана."
+    ],
+    "hintsEn": [
+      "The road graph is the complement of the railway graph.",
+      "Exactly one network contains the direct edge from 1 to $n$. Send that vehicle directly to the destination.",
+      "BFS in the other network. The direct vehicle never visits an intermediate vertex, so simultaneous intermediate meetings are avoided."
+    ],
+    "tags": [
+      "bfs"
+    ],
+    "level": "Practice",
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official",
+    "editorial": {
+      "id": "editorial-cf-601-a",
+      "title": "The Two Routes — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Хоёр тээврийн бүх хос төлөвийг зэрэг хайх шаардлагагүй. $(1,n)$ хос нэг сүлжээнд заавал шууд холбогдсон байна. Тэр тээврийг нэг цагт хүргэвэл зөвхөн нөгөө тээврийн очих хугацаа үлдэнэ.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "math",
+              "tex": "answer=\\max(d_{rail},d_{road})"
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Adjacency matrix байгуул. Хэрэв ",
+                  "marks": []
+                },
+                {
+                  "text": "railway[1][n]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " үнэн бол road complement дээр, үгүй бол railway дээр BFS хийнэ. Сонгосон сүлжээнд хөрш эсэхийг matrix-ийн утгаар шалгаж, өөртэйгөө ирмэг байгуулахгүй. $n$ хүрэхгүй бол -1, хүрвэл BFS зайг хэвлэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Аль ч шийдлийн дуусах хугацаа сүлжээ тус бүрийн shortest distance-ээс бага байж чадахгүй. Нэг нь 1 тул нөгөө сүлжээний зай доод хязгаар болно. Шууд яваа тээвэр завсрын оройд байхгүй, төгсгөл дээр хүлээж болдог учир нөгөө shortest path-тай хамт энэ доод хязгаарт хүрнэ. Нөгөө сүлжээ холбогдоогүй бол очих боломжгүй."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$N\\le 400$ тул $O(N^2)$ хугацаа, $O(N^2)$ санах ой хангалттай. Complement-д self-loop нэмэхгүй. Шууд ирмэгтэй сүлжээний BFS зай 1-ийг хариу гэж буруу хэвлэхгүй; шууд ирмэггүй нөгөө сүлжээг шалгана.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Албан statement болон төслийн бие даасан шинжилгээнд тулгуурласан шинээр бичсэн тайлбар. Албан editorial-ийг уншсан, хуулсан гэсэн мэдэгдэл биш."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://codeforces.com/contest/601/problem/A"
+                },
+                {
+                  "label": "Бие даасан proof review",
+                  "url": "https://github.com/erdene1231/erdene1231.github.io/blob/codex/part04-recovered/audit/PART04-CF-SOLUTION-REVIEWS01.json"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "Codeforces",
+    "ref": "449/B",
+    "title": "Jzzhu and Cities",
+    "url": "https://codeforces.com/contest/449/problem/B",
+    "priorityLevel": "high",
+    "priorityReason": "Shortest-path equality alternatives ба global dependency-ийн positive-weight баталгааг ашигласан чухал optimization practice.",
+    "rating": 2000,
+    "ratingKind": "official",
+    "ratingSource": "https://codeforces.com/api/problemset.problems",
+    "ratingVerifiedAt": "2026-10-27",
+    "sourceTags": [
+      "graphs",
+      "greedy",
+      "shortest paths"
+    ],
+    "hints": [
+      "Бүх train route-ыг оролцуулан эхлээд хот бүрийн хамгийн богино зайг ол.",
+      "Хот руу shortest distance-ийг хангах road ирмэг байвал тэр хотын train-ийг хадгалах шаардлагатай юу?",
+      "Зайг яг хадгалах road predecessor-гүй non-capital хот бүрт нэг shortest train л үлдээ. Бусад бүх train-ийг устгаж болно."
+    ],
+    "hintsEn": [
+      "First compute shortest distances with every train route available.",
+      "If a city has an incoming road that realizes its shortest distance, does it need a retained train?",
+      "Keep exactly one shortest train for each non-capital city with no shortest road predecessor; remove all other trains."
+    ],
+    "tags": [
+      "shortest paths"
+    ],
+    "level": "Practice",
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official",
+    "editorial": {
+      "id": "editorial-cf-449-b",
+      "title": "Jzzhu and Cities — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Train нь нийслэлээс хот руу шууд очдог. Бүх shortest distance-ийг мэдсэний дараа хотын зай train-аас зайлшгүй хамаарах уу, эсвэл road-аар өөр хотоос өвлөгдөх үү гэдгийг ялгана."
+            },
+            {
+              "type": "math",
+              "tex": "d(u)+w(u,v)=d(v),\\quad w(u,v)>0\\Rightarrow d(u)<d(v)"
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Road граф байгуулж ",
+                  "marks": []
+                },
+                {
+                  "text": "dist[1]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "=0 ав. Train бүрийн очих хотын dist-д түүний уртаар min хийж heap-д эхлэл болгон нэмээд Dijkstra ажиллуул. Road ($u$,$v$,$w$) бүрт ",
+                  "marks": []
+                },
+                {
+                  "text": "dist[u]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "+$w$=",
+                  "marks": []
+                },
+                {
+                  "text": "dist[v]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " бол $v$-д shortest road predecessor бий гэж тэмдэглэ; урвуу чиглэлийг бас шалга. 1-ээс бусад, dist нь finite бөгөөд тийм predecessor-гүй хот бүрт нэг shortest train үлдээнэ. Нийт $K$-оос үлдээсэн тоог хас.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Train-гүй шинэ зам сүүлийн алхамдаа road ашиглах ёстой. Ийм shortest road байхгүй хотод дор хаяж нэг dist-тэй тэнцүү train шаардлагатай. Харин shortest predecessor-тэй хот road-ын жин эерэг учир өөрөөсөө бага зайтай орой руу ухарна. Ийм хамаарал cycle үүсгэхгүй, нийслэл эсвэл хадгалсан train-тай хотод төгсөнө. Тэгэхээр сонгосон train-ууд бүх зайг сэргээнэ; зайлшгүй тооны доод хязгаарт хүрдэг."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$O((N+M+K) \\log  N)$ хугацаа, $O(N+M+K)$ санах ой, 64-bit зай. Ижил хот руу олон ижил shortest train байвал зөвхөн нэгийг үлдээнэ. Road-тай тэнцүү train мөн устгаж болно. Хүрэхгүй ",
+                  "marks": []
+                },
+                {
+                  "text": "INF",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " утгууд дээр арифметик тэнцэтгэл шалгаж overflow үүсгэхгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Албан statement болон төслийн бие даасан шинжилгээнд тулгуурласан шинээр бичсэн тайлбар. Албан editorial-ийг уншсан, хуулсан гэсэн мэдэгдэл биш."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://codeforces.com/contest/449/problem/B"
+                },
+                {
+                  "label": "Бие даасан proof review",
+                  "url": "https://github.com/erdene1231/erdene1231.github.io/blob/codex/part04-recovered/audit/PART04-CF-SOLUTION-REVIEWS01.json"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "Codeforces",
+    "ref": "1133/F1",
+    "title": "Spanning Tree with Maximum Degree",
+    "url": "https://codeforces.com/contest/1133/problem/F1",
+    "priorityLevel": "high",
+    "priorityReason": "Extremal upper bound-ийг star-preserving spanning-tree construction-аар биелүүлэх цөм constructive graph practice.",
+    "rating": 1600,
+    "ratingKind": "official",
+    "ratingSource": "https://codeforces.com/api/problemset.problems",
+    "ratingVerifiedAt": "2026-10-27",
+    "sourceTags": [
+      "graphs"
+    ],
+    "hints": [
+      "Spanning tree-ийн аль нэг оройн degree нь эх графын maximum degree-ээс их байж чадахгүй.",
+      "Maximum-degree орой сонгож түүнтэй incident бүх ирмэгийг эхэлж ав.",
+      "Тэр star-ийн бүх оройг visited болгож queue-д хийгээд BFS-ээр шинэ орой нэмэн модыг гүйцээ."
+    ],
+    "hintsEn": [
+      "The maximum tree degree cannot exceed the graph's maximum degree.",
+      "Choose a maximum-degree vertex and include every incident edge first.",
+      "Mark the entire star visited and enqueue its vertices, then extend it by BFS discovery edges."
+    ],
+    "tags": [
+      "spanning trees"
+    ],
+    "level": "Practice",
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official",
+    "editorial": {
+      "id": "editorial-cf-1133-f1",
+      "title": "Spanning Tree with Maximum Degree — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эх графын maximum degree $\\Delta$ нь ямар ч spanning tree-ийн maximum degree-ийн дээд хязгаар. Degree нь $\\Delta$ нэг оройн бүх incident ирмэгийг авбал шууд star мод үүсэж энэ дээд хязгаарт хүрнэ."
+            },
+            {
+              "type": "math",
+              "tex": "\\max_v deg_T(v)\\le\\max_v deg_G(v)=\\Delta"
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Maximum-degree орой $r$-ийг ол. $r$ болон түүний бүх хөршийг visited болгож, $r$-хөрш ирмэгүүдийг хариунд нэм. Хөршүүдийг queue-д оруулж BFS ажиллуул. Шинэ $u$-г анх олох болгонд $v-u$ ирмэгийг хариунд нэмж ",
+                  "marks": []
+                },
+                {
+                  "text": "visited[u]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "=true болго. Эцэст $N-1$ ирмэгийг хэвлэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхний star циклгүй. Дараагийн алхам бүр зөвхөн шинэ оройг одоо байгаа модонд нэг ирмэгээр холбодог учир цикл үүсгэхгүй. Эх граф холбоост тул бүх орой эцэстээ хүрэгдэнэ. $r$-ийн бүх $\\Delta$ ирмэг хадгалагдсан учир үүссэн spanning tree maximum degree-ийн боломжит дээд хязгаарт хүрсэн.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$O(N+M)$ хугацаа, $O(N+M)$ санах ой. Star-ийн бүх хөршийг BFS эхлэхээс өмнө visited болгох хэрэгтэй; үгүй бол хооронд нь нэмэлт ирмэг авч cycle үүсгэнэ. Эх графын оройн дугаарыг солихгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Албан statement болон төслийн бие даасан шинжилгээнд тулгуурласан шинээр бичсэн тайлбар. Албан editorial-ийг уншсан, хуулсан гэсэн мэдэгдэл биш."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://codeforces.com/contest/1133/problem/F1"
+                },
+                {
+                  "label": "Бие даасан proof review",
+                  "url": "https://github.com/erdene1231/erdene1231.github.io/blob/codex/part04-recovered/audit/PART04-CF-SOLUTION-REVIEWS01.json"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  },
+  {
+    "source": "Codeforces",
+    "ref": "1133/F2",
+    "title": "Spanning Tree with One Fixed Degree",
+    "url": "https://codeforces.com/contest/1133/problem/F2",
+    "priorityLevel": "high",
+    "priorityReason": "Necessary/sufficient connectivity conditions, component representatives ба multi-source forest construction-ийг хослуулах чухал graph practice.",
+    "rating": 1900,
+    "ratingKind": "official",
+    "ratingSource": "https://codeforces.com/api/problemset.problems",
+    "ratingVerifiedAt": "2026-10-27",
+    "sourceTags": [
+      "constructive algorithms",
+      "dfs and similar",
+      "dsu",
+      "graphs",
+      "greedy"
+    ],
+    "hints": [
+      "1-р оройг түр хасахад үлдсэн граф хэдэн connected component болохыг ол.",
+      "Компонент бүрт 1-ээс дор хаяж нэг ирмэг сонгох ёстой. Мөн 1-ийн degree-ээс олон ирмэг сонгож чадахгүй.",
+      "Компонент бүрээс нэг хөрш төлөөлөгч сонгоод, нийт $D$ болтол бусад ялгаатай хөрш нэм. Бүх seed-ээс multi-source BFS хийж, 1-ийг traversal-аас хас."
+    ],
+    "hintsEn": [
+      "Remove vertex 1 temporarily and count the remaining connected components.",
+      "At least one edge from 1 is necessary per component, and no more than deg(1) distinct edges are available.",
+      "Choose one neighbor per component, add distinct neighbors until $D$ seeds, then multi-source BFS without vertex 1."
+    ],
+    "tags": [
+      "dsu"
+    ],
+    "level": "Practice",
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official",
+    "editorial": {
+      "id": "editorial-cf-1133-f2",
+      "title": "Spanning Tree with One Fixed Degree — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "1-ийн degree-г яг $D$ болгохын тулд түүний хөршүүдээс $D$ өөр seed сонгоно. 1-ийг хассан компонентыг өөр компонентоос нь холбох боломжгүй тул компонент бүрт дор хаяж нэг seed заавал байх ёстой.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "math",
+              "tex": "components(G-\\{1\\})\\le D\\le deg_G(1)"
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "1-ийг үл тооцон DFS/BFS-ээр component ID өг. 1-ийн хөршүүдээс компонент бүрийн нэг төлөөлөгчийг сонго. Компонентын тоо>$D$ эсвэл $D$>deg(1) бол NO. Бусад ялгаатай хөршөөс нэмж $D$ хүргээд 1-seed ирмэгүүдийг ав. Бүх seed-ийг visited болгож queue-д зэрэг оруулж, 1 рүү орохгүй BFS-ийн discovery ирмэгүүдийг нэм.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Компонентын тоо болон deg(1)-ийн нөхцөл зайлшгүй. Эдгээр нөхцөл хангагдвал сонгосон seed-үүд компонент бүрийг хамарна. Multi-source BFS-ийн шинэ орой бүр нэг seed-тэй модонд холбогдоно, өмнө нь visited оройнуудын хооронд ирмэг нэмэхгүй учир үүссэн ой циклгүй. Seed бүрийг 1-тэй холбоход бүх орой холбоост, нийт ($N-1-D$)+$D=N-1$ ирмэгтэй мод болно. 1 дээр яг $D$ ирмэг байна.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$O(N+M)$ хугацаа, $O(N+M)$ санах ой. Seed-үүдийг traversal эхлэхээс өмнө бүгдийг visited болго. Нэг хөршийг давхар сонгохгүй. 1-ийн ирмэгийг BFS дотор дахин нэмэхгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Албан statement болон төслийн бие даасан шинжилгээнд тулгуурласан шинээр бичсэн тайлбар. Албан editorial-ийг уншсан, хуулсан гэсэн мэдэгдэл биш."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://codeforces.com/contest/1133/problem/F2"
+                },
+                {
+                  "label": "Бие даасан proof review",
+                  "url": "https://github.com/erdene1231/erdene1231.github.io/blob/codex/part04-recovered/audit/PART04-CF-SOLUTION-REVIEWS01.json"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "tagReviewBasis": "Preserved prepared preview tags and retained reviewed primaryTopic/learningObjective;no new semantic review claimed."
+  }
+]

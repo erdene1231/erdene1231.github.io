@@ -1,20 +1,21 @@
-import {mountTutorialReset} from './tutorial-reset.js?v=40';
-import {sameEditorBody} from './tutorial-workflow.js?v=40';
-import {mountBackupImport} from './tutorial-backup.js?v=40';
-import {normalizeProblemReferences} from './learning-model.js?v=40';
-import {openProblemSelection} from './problem-selection-dialog.js?v=40';
-import {tutorialSlug} from './tutorial-slug.js?v=40';
-import {mountTutorialLifecycle} from './tutorial-lifecycle.js?v=40';
-import {createBlock} from './tutorial-blocks.js?v=40';
-import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=40';
-import {mountPublication} from './tutorial-publication.js?v=40';
-import {mountBlockEditor} from './tutorial-block-editor.js?v=40';
-import {mountDraftRecovery} from './tutorial-draft-recovery.js?v=40';
-import {createDraftSession} from './tutorial-drafts.js?v=40';
-import {editableVersion} from './tutorial-editor-compat.js?v=40';
-import {validateRelations} from './learning-model.js?v=40';
-import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=40';
-import {node,drawArticle,typeset} from './tutorials.js?v=40';
+import {priorityLevel} from './priority.js?v=48';
+import {mountTutorialReset} from './tutorial-reset.js?v=48';
+import {sameEditorBody} from './tutorial-workflow.js?v=48';
+import {mountBackupImport} from './tutorial-backup.js?v=48';
+import {normalizeProblemReferences} from './learning-model.js?v=48';
+import {openProblemSelection} from './problem-selection-dialog.js?v=48';
+import {tutorialSlug} from './tutorial-slug.js?v=48';
+import {mountTutorialLifecycle} from './tutorial-lifecycle.js?v=48';
+import {createBlock} from './tutorial-blocks.js?v=48';
+import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=48';
+import {mountPublication} from './tutorial-publication.js?v=48';
+import {mountBlockEditor} from './tutorial-block-editor.js?v=48';
+import {mountDraftRecovery} from './tutorial-draft-recovery.js?v=48';
+import {createDraftSession} from './tutorial-drafts.js?v=48';
+import {editableVersion} from './tutorial-editor-compat.js?v=48';
+import {validateRelations} from './learning-model.js?v=48';
+import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=48';
+import {node,drawArticle,typeset} from './tutorials.js?v=48';
 const $=id=>document.getElementById(id);
 export function setupTutorialEditor(ctx){
  let allowed=false,token=0,draft=null,revision=0,lang='mn',busy=false,accountId,blockEditor,workspace=[],catalogCurrent=null;
@@ -34,6 +35,7 @@ export function setupTutorialEditor(ctx){
  const message=s=>{$('tutorial-admin-message').textContent=s;if($('tutorial-save-feedback'))$('tutorial-save-feedback').textContent=s;queueMicrotask(updateSave);};
  const session=createDraftSession({client:ctx.client,user:ctx.user,message,stateChanged:()=>queueMicrotask(updateSave),autoSave:()=>!isPublished(),persistUnsaved:()=>!isPublished()});
  const form=$('tutorial-admin-form');form.noValidate=true;
+ const priorityLabel=node('label','Priority'),prioritySelect=node('select'),priorityReasonLabel=node('label','Priority үндэслэл'),priorityReason=node('textarea');prioritySelect.id='tutorial-admin-priority';for(const value of ['low','medium','high']){const o=node('option',value[0].toUpperCase()+value.slice(1)+' priority');o.value=value;prioritySelect.append(o);}priorityReason.id='tutorial-admin-priority-reason';priorityReason.maxLength=1000;priorityReason.rows=2;priorityLabel.append(prioritySelect);priorityReasonLabel.append(priorityReason);form.querySelector('.admin-fields').append(priorityLabel,priorityReasonLabel);prioritySelect.onchange=()=>{if(draft&&!busy&&allowed){draft.priorityLevel=prioritySelect.value;changed();}};
  $('tutorial-admin-save').textContent='Ноорог хадгалах';
  const backup=node('button','JSON export');backup.id='tutorial-backup-export';backup.type='button';
  let recovery=null;
@@ -117,12 +119,12 @@ export function setupTutorialEditor(ctx){
    lang='mn';$('tutorial-admin-language').value=lang;$('tutorial-admin-choose').value=row.id;$('tutorial-admin-level').value=draft.levelKey;$('tutorial-admin-order').value=draft.order;$('tutorial-admin-category').value=draft.category;paint();message(recovery?'Local ноорог сэргээгдлээ.':server?'Онлайн ноорог ачааллаа.':'Нийтлэгдсэн хувилбараас ноорог үүсгэнэ.');
   }catch(e){if(turn===token){clearDocument();message(e.message);}}finally{if(turn===token)setBusy(false);}
  }
- function paint(){if(!draft)return;draft=normalizeProblemReferences(draft,availableProblems());$('tutorial-admin-id').value=draft.id;$('tutorial-admin-aliases').value=draft.aliases||'';$('tutorial-admin-related').value=(draft.related||[]).join(', ');const v=editableVersion(draft,lang);$('tutorial-admin-title').value=v.title;$('tutorial-admin-summary').value=v.summary;$('tutorial-admin-prerequisites').value=v.prerequisites;$('tutorial-admin-prerequisite-ids').value=(draft.prerequisiteIds||[]).join(', ');const rel=draft.learningRelations;relationsInput.disabled=busy||!allowed;relationsInput.value=draft._draftRelationsText??JSON.stringify(rel?{variants:rel.variants,next:rel.next,practice:rel.practice}:{variants:[],next:null,practice:[]},null,2);$('tutorial-admin-sections').replaceChildren();
+ function paint(){if(!draft)return;prioritySelect.value=priorityLevel(draft);priorityReason.value=draft.priorityReason||'';draft=normalizeProblemReferences(draft,availableProblems());$('tutorial-admin-id').value=draft.id;$('tutorial-admin-aliases').value=draft.aliases||'';$('tutorial-admin-related').value=(draft.related||[]).join(', ');const v=editableVersion(draft,lang);$('tutorial-admin-title').value=v.title;$('tutorial-admin-summary').value=v.summary;$('tutorial-admin-prerequisites').value=v.prerequisites;$('tutorial-admin-prerequisite-ids').value=(draft.prerequisiteIds||[]).join(', ');const rel=draft.learningRelations;relationsInput.disabled=busy||!allowed;relationsInput.value=draft._draftRelationsText??JSON.stringify(rel?{variants:rel.variants,next:rel.next,practice:rel.practice}:{variants:[],next:null,practice:[]},null,2);$('tutorial-admin-sections').replaceChildren();
   blockEditor?.destroy();blockEditor=mountBlockEditor($('tutorial-admin-sections'),v.sections,{changed,message,locked:()=>busy||!allowed,
    uploadImage:(file,blockCurrent)=>{const actor=ctx.user()?.id,turn=token,id=draft.id;return uploadTutorialImage(ctx.client(),id,file,actor,()=>turn===token&&actor===ctx.user()?.id&&draft?.id===id&&allowed&&!busy&&blockCurrent());},
    imageUrl:path=>tutorialImageUrl(ctx.client(),path,ctx.user()?.id,true),topics:ctx.topics,problems:availableProblems,progress:currentProgress});
  }
- function collect(validate=true){if(!draft)return;draft.aliases=$('tutorial-admin-aliases').value.trim();draft.related=$('tutorial-admin-related').value.split(',').map(x=>x.trim()).filter(Boolean);editableVersion(draft,lang);draft.levelKey=$('tutorial-admin-level').value;draft.level=levelNames.mn[levels.indexOf(draft.levelKey)];draft.order=Number($('tutorial-admin-order').value||1);draft.category=$('tutorial-admin-category').value.trim();draft.prerequisiteIds=$('tutorial-admin-prerequisite-ids').value.split(',').map(x=>x.trim()).filter(Boolean);const v=editableVersion(draft,lang);v.title=$('tutorial-admin-title').value.trim();v.summary=$('tutorial-admin-summary').value.trim();v.prerequisites=$('tutorial-admin-prerequisites').value.trim();
+ function collect(validate=true){if(!draft)return;if(draft.priorityLevel!==undefined||prioritySelect.value!==priorityLevel(draft))draft.priorityLevel=prioritySelect.value;if(draft.priorityReason!==undefined||priorityReason.value.trim())draft.priorityReason=priorityReason.value.trim();draft.aliases=$('tutorial-admin-aliases').value.trim();draft.related=$('tutorial-admin-related').value.split(',').map(x=>x.trim()).filter(Boolean);editableVersion(draft,lang);draft.levelKey=$('tutorial-admin-level').value;draft.level=levelNames.mn[levels.indexOf(draft.levelKey)];draft.order=Number($('tutorial-admin-order').value||1);draft.category=$('tutorial-admin-category').value.trim();draft.prerequisiteIds=$('tutorial-admin-prerequisite-ids').value.split(',').map(x=>x.trim()).filter(Boolean);const v=editableVersion(draft,lang);v.title=$('tutorial-admin-title').value.trim();v.summary=$('tutorial-admin-summary').value.trim();v.prerequisites=$('tutorial-admin-prerequisites').value.trim();
   if(!validate){draft._draftRelationsText=relationsInput.value;return draft;}
   const published=ctx.topics(),ids=new Set(published.map(t=>t.id));for(const id of draft.prerequisiteIds)if(!ids.has(id)||id===draft.id)throw new Error('Урьдчилсан хичээлийн ID байхгүй эсвэл өөрийгөө заасан: '+id);
   const graph=new Map(published.map(t=>[t.id,t.id===draft.id?draft.prerequisiteIds:t.prerequisiteIds||[]])),visiting=new Set(),done=new Set();

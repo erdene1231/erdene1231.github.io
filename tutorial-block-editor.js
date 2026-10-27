@@ -1,6 +1,6 @@
-import {openProblemSelection} from './problem-selection-dialog.js?v=40';
-import {BLOCK_TYPES,TONES,createBlock,safeLink} from './tutorial-blocks.js?v=40';
-import {appendInline} from './tutorial-block-renderer.js?v=40';
+import {openProblemSelection} from './problem-selection-dialog.js?v=48';
+import {BLOCK_TYPES,TONES,createBlock,safeLink} from './tutorial-blocks.js?v=48';
+import {appendInline} from './tutorial-block-renderer.js?v=48';
 const make=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const names={p:'Текст',rich:'Formatting бүхий текст',heading:'Гарчиг H1–H4',code:'Код',math:'Томъёо',list:'Жагсаалт',ordered:'Дугаартай жагсаалт',checklist:'Checklist',table:'Хүснэгт',links:'Эх сурвалжийн холбоос',quote:'Эшлэл',callout:'Тайлбарын хайрцаг',note:'Нээж унших тайлбар',divider:'Тусгаарлагч',image:'Зураг upload',diagram:'Diagram',problem:'Бодлого',tutorial:'Хичээлийн холбоос'};
 function inlineFromDOM(root){
@@ -29,12 +29,12 @@ export function mountBlockEditor(root,sections,options={}){
    const selection=window.getSelection();if(selectedRange&&editable.contains(selectedRange.commonAncestorContainer)){selection.removeAllRanges();selection.addRange(selectedRange.cloneRange());}
    document.execCommand('styleWithCSS',false,false);document.execCommand(command,false);capture();
   }
-  for(const[label,command]of[['Bold','bold'],['Italic','italic'],['Underline','underline'],['Strike','strikeThrough']]){const b=button(label,()=>format(command));b.onmousedown=e=>e.preventDefault();b.setAttribute('aria-pressed','false');marksButtons.push([b,command]);toolbar.append(b);}
-  const code=button('Inline code',()=>wrap('code'));code.onmousedown=e=>e.preventDefault();toolbar.append(code);
+  for(const[label,command,icon,key]of[['Bold','bold','B','B'],['Italic','italic','I','I'],['Underline','underline','U','U'],['Strike','strikeThrough','S','']]){const b=button(icon,()=>format(command));b.className='format-icon format-'+command;b.setAttribute('aria-label',label);b.title=label+(key?' (Ctrl/⌘+'+key+')':'');if(key)b.setAttribute('aria-keyshortcuts','Control+'+key+' Meta+'+key);b.onmousedown=e=>e.preventDefault();b.setAttribute('aria-pressed','false');marksButtons.push([b,command]);toolbar.append(b);}
+  toolbar.setAttribute('role','group');toolbar.setAttribute('aria-label','Текст форматлах');const code=button('</>',()=>wrap('code'));code.className='format-icon format-code';code.setAttribute('aria-label','Inline code');code.title='Inline code';code.onmousedown=e=>e.preventDefault();toolbar.append(code);
   editable.onkeydown=e=>{if((e.ctrlKey||e.metaKey)&&!e.altKey&&['b','i','u'].includes(e.key.toLowerCase())){e.preventDefault();format({b:'bold',i:'italic',u:'underline'}[e.key.toLowerCase()]);}};
   const link=make('input');link.type='url';link.placeholder='https://… эсвэл #tutorial/id';link.setAttribute('aria-label','Текстийн холбоос');const applyLink=()=>{const url=safeLink(link.value.trim());if(!url){note('HTTPS эсвэл дотоод хичээлийн холбоос оруулна уу.');return;}wrap('a',url);};link.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();applyLink();}};toolbar.append(link,button('Link',applyLink));
   editable.onpaste=e=>{e.preventDefault();const file=[...e.clipboardData.files].find(f=>f.type.startsWith('image/'));if(file){void addImage(si,bi+1,file);return;}insertAtSelection(editable,e.clipboardData.getData('text/plain'));};editable.ondragover=e=>e.preventDefault();editable.ondrop=e=>{e.preventDefault();const file=e.dataTransfer.files[0];if(file)void addImage(si,bi+1,file);else insertAtSelection(editable,e.dataTransfer.getData('text/plain'));};
-  container.append(toolbar,editable,make('small','Текстээ сонгоод formatting хийнэ. $…$ — inline math, $$…$$ — block math. Paste нь гаднын HTML-ийг оруулахгүй.','muted'));
+  container.append(toolbar,editable,make('small','Текстээ сонгоод formatting хийнэ. $…$ — inline math, $$…$$ — block math. Хувьсагч: $L$, $R$, $n$, $m$. Code/URL-г томьёонд оруулахгүй. Paste нь гаднын HTML-ийг оруулахгүй.','muted'));
  }
  async function addImage(si,index,file){if(destroyed||options.locked?.())return;if(sections[si].blocks.length>=100){note('Нэг хэсэгт 100 хүртэл block нэмнэ. Шинэ хэсэг үүсгэнэ үү.');return;}if(!options.uploadImage){note('Image upload холболт шаардлагатай.');return;}const block=createBlock('image');change(()=>sections[si].blocks.splice(index,0,block),'insert-image',true);await upload(block,file);}
  async function upload(b,file){
