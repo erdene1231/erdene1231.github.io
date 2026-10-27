@@ -18,7 +18,7 @@ try:
     elif '/index.html' in r.request.url:r.fulfill(status=200,content_type='text/html',body=html)
     else:r.continue_()
    page.route('**/*',route);page.goto(base+'/index.html#home')
-   page.evaluate('''async(theme)=>{document.documentElement.dataset.theme=theme;window.calls=[];window.actor='user-a';window.clock=Date.now();Date.now=()=>clock;window.client={auth:{resetPasswordForEmail:async(email,options)=>{calls.push({email,options});return {};},getUser:async()=>({data:{user:{id:actor}}}),updateUser:async()=>{calls.push({updated:true});return {};}}};const {setupSocial}=await import('./social.js?v=46');window.social=setupSocial({client:()=>client,user:()=>null,problems:()=>[],notice:()=>{}});}''',theme)
+   page.evaluate('''async(theme)=>{document.documentElement.dataset.theme=theme;window.calls=[];window.actor='user-a';window.clock=Date.now();Date.now=()=>clock;window.client={auth:{resetPasswordForEmail:async(email,options)=>{calls.push({email,options});return {};},getUser:async()=>({data:{user:{id:actor}}}),updateUser:async()=>{calls.push({updated:true});return {};}}};const {setupSocial}=await import('./social.js?v=47');window.social=setupSocial({client:()=>client,user:()=>null,problems:()=>[],notice:()=>{}});}''',theme)
    page.evaluate("document.querySelector('#forgot-password').hidden=false;document.querySelector('#auth').showModal()")
    page.locator('#forgot-password').click();page.locator('#recovery-email').fill('local-test@example.invalid');page.locator('#send-recovery-link').click()
    assert page.locator('#recovery-link-panel').is_visible();assert page.locator('#recovery-code').count()==0;assert page.locator('#recovery-password-form').is_hidden()
@@ -37,7 +37,7 @@ try:
    page.evaluate("document.querySelector('#forgot-password').click()");page.evaluate("social.authEvent('PASSWORD_RECOVERY',{user:{id:'user-a'}})");page.locator('#recovery-password').fill('test-only-password');page.evaluate("document.querySelector('#recovery').close()");page.wait_for_timeout(50);assert page.locator('#recovery-password').input_value()==''
    assert not errors,errors;checks.append(f'{width}/{theme}: request/resend/wait/back/callback/mismatch/account-switch/save/close');page.close()
   page=browser.new_page();page.route('**/*',route);page.goto(base+'/index.html#error=access_denied&error_code=otp_expired&error_description=untrusted-text')
-  page.evaluate("async()=>{const {setupSocial}=await import('./social.js?v=46');setupSocial({client:()=>null,user:()=>null,notice:()=>{}})}")
+  page.evaluate("async()=>{const {setupSocial}=await import('./social.js?v=47');setupSocial({client:()=>null,user:()=>null,notice:()=>{}})}")
   assert page.locator('#auth').is_visible();assert 'хугацаа' in page.locator('#auth-feedback').inner_text();assert 'untrusted-text' not in page.locator('#auth-feedback').inner_text();assert 'error' not in page.url
   checks.append('invalid/expired callback shows generic instruction and removes provider error parameters')
   page=browser.new_page();page.add_init_script("""window.signupCalls=[];window.testClient={auth:{onAuthStateChange:(cb)=>window.authCallback=cb,getSession:async()=>({data:{session:null}}),signUp:async(body)=>{signupCalls.push({email:body.email,redirect:body.options.emailRedirectTo});return {data:{user:{id:'signup-fixture'},session:null}};}},rpc:async(name)=>({data:name==='get_catalog'?{problems:[],knownIds:[]}:name==='is_admin'?false:[]}),from:()=>({select:()=>({eq:async()=>({data:[]})})})};""")

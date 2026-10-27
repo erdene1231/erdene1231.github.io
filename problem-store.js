@@ -1,6 +1,6 @@
-import {validateTutorial} from './tutorial-model.js?v=46';
-import {canonicalProblemUrl,problemUrlIdentity} from './problem-url.js?v=46';
-import {validatePriority,priorityLevel,isHighPriority} from './priority.js?v=46';
+import {validateTutorial} from './tutorial-model.js?v=47';
+import {canonicalProblemUrl,problemUrlIdentity} from './problem-url.js?v=47';
+import {validatePriority,priorityLevel,isHighPriority} from './priority.js?v=47';
 export function validateSource(value) {
  if(typeof value!=='string')throw new Error('Source нэр оруулна уу.');
  const name=value.trim().replace(/\s+/g,' ');

@@ -33,8 +33,7 @@ try:
      assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),(width,theme,mode)
      assert page.locator('#library').evaluate('e=>e.scrollWidth<=e.clientWidth'),(width,theme,mode)
      row=page.locator('#problems .problem').first;heights[mode]=row.evaluate('e=>e.getBoundingClientRect().height')
-     assert row.locator('.hint-meter').is_hidden()if mode=='minimalist'else row.locator('.hint-meter').is_visible()
-     assert row.locator('.hint-meter').inner_text()=='Hint 2/3'
+     assert row.locator('.hint-meter').count()==0
      assert row.locator('.badge.solved').is_visible()
      if mode=='minimalist':
       assert row.locator('h3').evaluate('e=>parseFloat(getComputedStyle(e).fontSize)')>row.locator('.rating').evaluate('e=>parseFloat(getComputedStyle(e).fontSize)')
@@ -74,15 +73,15 @@ try:
    page.set_viewport_size({'width':width,'height':950})
    for theme in ['light','dark']:
     page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
-    page.evaluate("async()=>{const nav=await import('/navigation.js?v=46');nav.setAdminRoute(false);location.hash='#admin';}")
+    page.evaluate("async()=>{const nav=await import('/navigation.js?v=47');nav.setAdminRoute(false);location.hash='#admin';}")
     page.locator('#route-message').wait_for(state='visible');assert page.locator('#admin').is_hidden();assert page.locator('#admin-nav').is_hidden()
-    page.evaluate("async()=>{const nav=await import('/navigation.js?v=46');nav.setAdminRoute(true);location.hash='#admin';}")
+    page.evaluate("async()=>{const nav=await import('/navigation.js?v=47');nav.setAdminRoute(true);location.hash='#admin';}")
     page.locator('#admin').wait_for(state='visible');assert page.locator('.site-nav [data-route=admin]').count()==1
     for target in ['admin-section','admin-tutorials','learning-admin']:
      page.locator('#admin a[href="#'+target+'"]').click();page.locator('#'+target).wait_for(state='visible')
      assert page.locator('#admin-nav').get_attribute('aria-current')=='page'
      page.locator('#'+target+' .admin-back').click();page.locator('#admin').wait_for(state='visible')
-    page.evaluate("async()=>{const nav=await import('/navigation.js?v=46');nav.setAdminRoute(false);location.hash='#admin-tutorials';}")
+    page.evaluate("async()=>{const nav=await import('/navigation.js?v=47');nav.setAdminRoute(false);location.hash='#admin-tutorials';}")
     page.locator('#route-message').wait_for(state='visible');assert page.locator('#admin-tutorials').is_hidden()
   checks['single_admin_hub_three_routes_and_role_visibility']={'status':'passed','scope':'UI role state only; backend auth unchanged'}
 

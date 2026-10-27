@@ -26,12 +26,8 @@ try:
   page.locator('#show-tags').check();assert page.locator('#problems .tag-chip').count()==8
   page.locator('#show-tags').uncheck();assert page.locator('#problems .tag-chip:visible').count()==2;checks['toggle_only_hides_unsolved_tags']='PASS'
   assert before==page.locator('#problems .problem').evaluate_all('es=>es.map(e=>e.getBoundingClientRect().height)');checks['tag_toggle_keeps_row_heights']='PASS'
-  for i in range(4):
-   row=page.locator('#problems .problem').filter(has=page.locator('.number',has_text='#'+str(data['problems'][i]['number']).zfill(3)))
-   assert row.locator('.hint-meter').inner_text()==f'Hint {i}/3'
-   assert row.locator('.hint-meter').get_attribute('class').endswith('hint-level-'+str(i))
-   assert row.locator('.hint-meter').evaluate('e=>e.nextElementSibling.classList.contains("badge")')
-  checks['hint_0_to_3_boxes_before_status']='PASS'
+  assert page.locator('#problems .hint-meter').count()==0
+  checks['hint_usage_counter_removed_everywhere']='PASS'
   row=page.locator('#problems .problem').filter(has=page.locator('.number',has_text='#'+str(data['problems'][0]['number']).zfill(3)))
   row.locator('button.open').click();assert page.locator('#detail-tags').is_visible();assert page.locator('#tags').is_visible();checks['solved_detail_tags_visible']='PASS'
   page.evaluate("document.querySelector('#problem-back').click()");row=page.locator('#problems .problem').filter(has=page.locator('.number',has_text='#'+str(data['problems'][1]['number']).zfill(3)));row.locator('button.open').click()

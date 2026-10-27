@@ -1,4 +1,20 @@
-# Current package04 checkpoint — next6CF content completed after fc9afdb
+# Current package04 checkpoint — v47 ephemeral hints, counters removed everywhere
+
+Latest user policy supersedes previous tracking requirements: hint reveal is current-view memory only, resets on leave/reload/account switch, no hint-use backend/localStorage/activity/analytics writes, no historical usage reads for UX. No visible used/total counters in any mode/page/picker/practice. Low suppression and High content rules remain. Existing history stays untouched; status/notes continue via whitelisted v2 progress, legacy v1 recovery read-only. See audit/PART04-HINT-POLICY.md. No destructive cleanup or production action.
+
+74Node tests pass, actual hint MathJax/no-persistence browser checks pass,24mode/theme/width combinations and catalog8groups pass. New guest/account browser test proves zero reveal Storage/upserts, legacy history ignored/preserved, remote SELECT omits hints, explicit note updates omit hint columns. Representative SQL retains existing historical values and other users. Browser Auth/RPC is synthetic; live verification separate.
+
+Bank counts unchanged:92source-reviewed,27content/local-import-ready,65prepared-content pending,153additional source reviews,35/748baseline reviewed/713pending,production imported0.8tutorial math proposals and32existing CPPblocks reviewed locally;164CPPblocks remain. No032/033execution, permission expansion, production import, merge/deploy or later package. Continue unfinished package04 work; PR20 remains draft, package incomplete.
+
+# Previous package04 checkpoint —8tutorial math/CPP proposals prepared locally
+
+8flagged tutorial math reviews completed contextually:dsu,DP,Fenwick,graph-basics,lazy-segment-tree,number-theory,segment-tree,two-pointers. Input grammars and real C++identifiers use typed inline code; mathematical prose uses MathJax. Found/fixed F/f API-name mismatch and clarified factorize pass-by-value semantics. Source frozen baseline unchanged; audit/PART04-TUTORIAL-QUALITY-PATCH01.json holds exact revision/body/block guards and preserves IDs/relations/prerequisites/literal samples/joke tutorial.
+
+32existing CPP blocks (MN/EN helper+full programs for8topics) reviewed for roles/state/preprocessing/algorithm/driver/output,4space style and clear names. Scoped lexical renames preserve command literals; helper prefixes and language source identical.8unique programs compile warning-free;8samples+175seeded independent oracle cases+1boundary pass. Actual editor/renderer/bundled MathJax32topic/language/theme/width combinations pass, exact code text preserved.164of196existing CPP blocks remain. Local projected tutorial lint warnings0; production stillunchanged. Proposals not published or applied.
+
+Bank counts unchanged:source-reviewed92,content/local-import-ready27,prepared-content pending65,additional source reviews153,baseline35/748reviewed/713pending,production imported0. Next continue prepared bank content/source/baseline work and remaining164CPPblocks; no later packages, production/schema/Storage changes/migrations/imports/publication/merge/deploy.032/033and admin-profile scope remain separate pending approvals. See readiness/checklist for exact stage counts.
+
+# Previous checkpoint — next6CF content completed after fc9afdb
 
 New original MN explanations/proofs and staged MN/EN hints completed for1006E,977C,977E,1352C,1352E,1399C using already reviewed source/proof records. Current counts:source-reviewed92unchanged;content/local-import-ready27(AtCoder3,CF24),prepared-content pending65,additional source reviews153,baseline35/748reviewed/713pending. Production-ready/imported0.29authored/proposed documents(27new+2baseline),162hint strings lint clean; actual schema/editor/MathJax roundtrip29and affected synthetic SQL saves/publication27new+2baseline pass. Prior71Node suite and unchanged3C++/180oracles retained; no unnecessary full rerun for data-only batch.
 

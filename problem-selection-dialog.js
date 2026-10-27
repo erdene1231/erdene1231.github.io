@@ -1,6 +1,6 @@
-import {priorityLevel,priorityLabel,isHighPriority,ratingClass} from './priority.js?v=46';
-import {filterProblems,getTags,ratingLabel} from './catalog.js?v=46';
-import {problemReferenceKey as canonicalKey,problemIndex} from './learning-model.js?v=46';
+import {priorityLevel,priorityLabel,isHighPriority,ratingClass} from './priority.js?v=47';
+import {filterProblems,getTags,ratingLabel} from './catalog.js?v=47';
+import {problemReferenceKey as canonicalKey,problemIndex} from './learning-model.js?v=47';
 const el=(tag,text)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;return n;};
 export function openProblemSelection({problems,progress=()=>({}),selected=[],valid=()=>true,multiple=true,includeArchived=false,maxSelected=Infinity,onSelect}){
  const dialog=el('dialog'),heading=el('h2','Бодлого сонгох'),filters=el('div'),status=el('p');
@@ -10,7 +10,7 @@ export function openProblemSelection({problems,progress=()=>({}),selected=[],val
  function field(key,label,choices){const wrap=el('label',label),input=el(choices?'select':'input');if(choices)for(const [value,text]of choices){const o=el('option',text);o.value=value;input.append(o);}else{input.type=key==='query'?'search':'number';if(input.type==='number'){input.min=0;input.max=4000;input.step=1;}}input.dataset.filter=key;wrap.append(input);filters.append(wrap);fields[key]=input;input.oninput=render;}
  field('query','Хайлт');fields.query.placeholder='Нэр, #дугаар эсвэл tag: binary search, grid, dp…';
  field('source','Эх сурвалж',[['','Бүгд'],...[...new Set(pool.map(p=>p.source))].sort().map(s=>[s,s])]);
- field('status','Миний төлөв',[['','Бүгд'],['new','Эхлээгүй'],['trying','Оролдож байгаа'],['solved','Бодсон'],['hinted','Hint ашигласан']]);
+ field('status','Миний төлөв',[['','Бүгд'],['new','Эхлээгүй'],['trying','Оролдож байгаа'],['solved','Бодсон']]);
  field('priorityLevel','Priority',[['','Бүгд'],['high','High'],['medium','Medium'],['low','Low']]);
  field('tag','Tag',[['','Бүх tags'],...getTags(pool).map(t=>[t,t])]);field('minRating','Min rating');field('maxRating','Max rating');
  field('sort','Эрэмбэ',[['rating-asc','Rating ↑'],['rating-desc','Rating ↓'],['priority','Priority эхэнд'],['title','Нэрээр'],['number-asc','Нэмсэн дарааллаар']]);
