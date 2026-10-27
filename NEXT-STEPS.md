@@ -1,3 +1,7 @@
+# Lightweight selection batch03 —116/245 eligible,129 remaining
+
+Added16EGOI problems across2021/2022/2023/2024/2026 with individual teaching usefulness,curated tags,Low/Medium/High and rough CF-scale estimates. Official task definitions read;brief official overviews consulted for Bouquet,Bikeparking,Luna and Railway. No statement/editorial/C++ or proof authoring. Full-score versus partial-score estimate distinction recorded for Find the Box. Counts:AtCoder50/50,CF42/100,IOI8/30,EGOI16/30,APIO0/15,JOI0/20. Remaining129. Data Centers solution ZIP unsupported by web tool,not retried or counted as read;task PDF read. Existing baseline and completed optional content preserved;production0. Continue lightweight curation only.
+
 # Lightweight selection batch02 —100/245 eligible,145 remaining
 
 Added5 IOI selections:Cluedo Medium/≈1200,Friend Medium/≈2500,Parachute rings Medium/≈2700,Tropical Garden High/≈2600,Paint By Numbers High/≈2600. Original task documents read for educational selection only;no new proof/code/statement/editorial authored. IOI8/30,AtCoder50/50,CF42/100;EGOI/APIO/JOI unchanged. Minimal metadata/identity/dedup checks apply. No baseline reassessment. Completed optional material preserved;unfinished drafts deferred until fresh explicit request. No production actions.
