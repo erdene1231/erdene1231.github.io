@@ -508,8 +508,16 @@
     "priorityReason": "Set/map membership-ийн үндсэн хэрэглээ, input order-ийг хадгалсан dedup ба first-occurrence semantics-ийг эзэмшүүлэх цөм practice.",
     "rating": 800,
     "ratingKind": "estimated",
-    "hints": [],
-    "hintsEn": [],
+    "hints": [
+      "Өмнө хүлээн авсан нэрсийг санахад хангалттай.",
+      "Нэр бүрийг input дарааллаар set-д оруулж үз.",
+      "Шинэ нэр амжилттай нэмэгдсэн үед өдрийн $1$-based дугаарыг гарга."
+    ],
+    "hintsEn": [
+      "Remember the names already accepted.",
+      "Process requests in order and insert each name into a set.",
+      "Output the one-based day only when insertion reports a new name."
+    ],
     "tags": [
       "set and map"
     ],
@@ -761,6 +769,87 @@
         "translation": true,
         "rights": true
       }
+    },
+    "editorial": {
+      "id": "editorial-atcoder-typical90-aa",
+      "title": "Sign Up Requests — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "seen",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь өмнөх өдрүүдэд бүртгэсэн нэрсийн олонлог. Өнөөдрийн нэр олонлогт байвал өмнө хүлээн авсан тул давтан хүсэлтийг үл хэрэгсэнэ; байхгүй бол бүртгээд дугаарыг хэвлэнэ. Өдөр бүрийн дараа энэ invariant хадгалагддаг учраас хүлээн авсан өдрүүд яг зөв, input дарааллаар өсөхөөр гарна. Нэрийг тоо болгож хувиргахгүй: эхний тэг болон цифртэй нэрс нь string хэвээр.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$O(N\\log N)$ хугацаа, $O(N)$ хадгалалт. ",
+                  "marks": []
+                },
+                {
+                  "text": "set<string>::insert",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийн boolean үр дүн нь шинэ нэр эсэхийг өгнө. Давталтын индекс өөрөө өдөр; тусдаа output sort хэрэггүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    set<string> seen;\n    for (int day = 1; day <= n; ++day) {\n        string name;\n        cin >> name;\n        if (seen.insert(name).second) cout << day << '\\n';\n    }\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_aa"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/027.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   },
   {
@@ -919,8 +1008,16 @@
     "priorityReason": "GCD/LCM-ийн суурь identity болон overflow-оос өмнөх division guard-г эзэмшүүлэх бодит integer-safety practice.",
     "rating": 1100,
     "ratingKind": "estimated",
-    "hints": [],
-    "hintsEn": [],
+    "hints": [
+      "LCM ба GCD-ийн холбоог ашигла.",
+      "Эхлээд GCD-д хуваасан ч үлдсэн үржвэр overflow болж болно.",
+      "Үржүүлэхээс өмнө $b>10^{18}/(a/\\gcd(a,b))$ эсэхийг шалга."
+    ],
+    "hintsEn": [
+      "Use the relation between LCM and GCD.",
+      "Dividing by GCD first does not by itself prevent overflow.",
+      "Before multiplication test $b>10^{18}/(a/\\gcd(a,b))$."
+    ],
     "tags": [
       "number theory"
     ],
@@ -929,7 +1026,460 @@
     "ratingBasis": "Rough CF-scale calibration: LCM via GCD and overflow-safe division comparison before multiplication; small arithmetic implementation. Not official.",
     "ratingConfidence": "rough",
     "ratingEstimatedAt": "2026-10-27",
-    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_al"
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_al",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-al",
+      "title": "Large LCM — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$c=A/\\gcd(A,B)$ гэвэл LCM нь $cB$. Хоёр input эерэг тул $c>0$. Хариу хязгаараас хэтэрнэ гэдэг нь $B>\\lfloor10^{18}/c\\rfloor$-тэй яг ижил. Энэ харьцуулалтыг үржүүлэхээс өмнө хийвэл overflow огт үүсгэхгүй. Хязгаартай яг тэнцүү үед тоог хэвлэх ёстой, ",
+                  "marks": []
+                },
+                {
+                  "text": "Large",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " биш.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "reduced",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь GCD-д хуваасан эхний утга, ",
+                  "marks": []
+                },
+                {
+                  "text": "limit",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь зөвшөөрсөн дээд хязгаар. Guard давсан салбарт л үржүүлнэ. Хугацаа Euclid-ийн $O(\\log\\min(A,B))$, нэмэлт санах ой $O(1)$.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    long long a, b;\n    cin >> a >> b;\n    const long long limit = 1000000000000000000LL;\n    long long reduced = a / gcd(a, b);\n    if (b > limit / reduced) cout << \"Large\\n\";\n    else cout << reduced * b << '\\n';\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_al"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/038.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-al",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "Large LCM",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эерэг бүхэл $A,B$-ийн хамгийн бага ерөнхий кратныг ол. Хариу $10^{18}$-аас их бол тооны оронд ",
+                  "marks": []
+                },
+                {
+                  "text": "Large",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " гарга.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Нэг мөрөнд $A,B$ өгнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "A B\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "LCM-ийг, эсвэл хязгаараас давсан бол ",
+                  "marks": []
+                },
+                {
+                  "text": "Large",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " хэвлэ. Яг $10^{18}$ бол тоог хэвлэнэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$1\\le A,B\\le10^{18}$. Хоёул бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "4 6\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "12\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1000000000000000000 3\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "Large\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1000000000000000000 1\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1000000000000000000\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_al"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Large LCM",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Find the least common multiple of positive integers $A,B$. If it exceeds $10^{18}$, print ",
+                      "marks": []
+                    },
+                    {
+                      "text": "Large",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " instead.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The input contains $A,B$ on one line.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "A B\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print the LCM, or ",
+                      "marks": []
+                    },
+                    {
+                      "text": "Large",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " if it is above the limit. Equality with $10^{18}$ requires numeric output.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$1\\le A,B\\le10^{18}$. Both values are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "4 6\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "12\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1000000000000000000 3\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "Large\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1000000000000000000 1\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1000000000000000000\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_al"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_al",
+      "sourceSha256": "43bc6af712bf6bd1e94469d7629d9131f23c24657db7fa6b8be58aeab9f47765",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    }
   },
   {
     "source": "AtCoder",

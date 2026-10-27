@@ -8,8 +8,16 @@
     "priorityReason": "Массивийг физикээр шилжүүлэхийн оронд logical offset хадгалах invariant; modulo boundary болон swap/query mapping-ийг нэг мөр зөв хэрэглэх суурь practice.",
     "rating": 1300,
     "ratingKind": "estimated",
-    "hints": [],
-    "hintsEn": [],
+    "hints": [
+      "Массивыг бүрэн шилжүүлэхийн оронд logical эхлэлийг хадгал.",
+      "Swap болон read хоёрт ижил индексийн хувиргалтыг хэрэглэх ёстой.",
+      "Logical эхлэлийн physical индексийг $s$ гэвэл logical $i$-ийн индекс $(s+i-1)\\bmod N$. Баруун shift үед $s$-ийг нэгээр бууруулж normalize хий."
+    ],
+    "hintsEn": [
+      "Store the logical start instead of moving every element.",
+      "Use the same index translation for swaps and reads.",
+      "Let $s$ be the physical index of the logical start. Map logical $i$ to $(s+i-1)\\bmod N$; a right rotation decrements $s$ modulo $N$."
+    ],
     "tags": [
       "arrays"
     ],
@@ -18,7 +26,430 @@
     "ratingBasis": "Rough CF-scale calibration: Represent repeated rotation by a modular offset shared by swaps and queries; boundary/index consistency. Not official.",
     "ratingConfidence": "rough",
     "ratingEstimatedAt": "2026-10-27",
-    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_ar"
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_ar",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-ar",
+      "title": "Shift and Swapping — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "start",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь logical эхний элементийн physical индекс. Logical $i$-р байрлал ",
+                  "marks": []
+                },
+                {
+                  "text": "values[(start + i - 1) % n]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-д байна. Баруун shift нь хуучин сүүлийн элементийг эхэнд авчирдаг тул ",
+                  "marks": []
+                },
+                {
+                  "text": "start",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийг нэгээр бууруулна. Swap нь хөрвүүлсэн хоёр байрлалын утгыг солино; read нь яг тэр хөрвүүлэлтээр уншина. Индукцээр бүх query-ийн өмнө logical дараалал statement-ийн массивтай ижил.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Input query бүр гурван утгатай; хэрэглэхгүй координатыг ч уншина. ",
+                  "marks": []
+                },
+                {
+                  "text": "start = (start + n - 1) % n",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь negative modulo-оос хамгаална. Preprocessing $O(N)$, query бүр $O(1)$; нийт $O(N+Q)$ хугацаа, $O(N)$ санах ой.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, queries;\n    cin >> n >> queries;\n    vector<long long> values(n);\n    for (auto& value : values) cin >> value;\n    int start = 0;\n    while (queries--) {\n        int type, x, y;\n        cin >> type >> x >> y;\n        if (type == 1) swap(values[(start + x - 1) % n], values[(start + y - 1) % n]);\n        else if (type == 2) start = (start + n - 1) % n;\n        else cout << values[(start + x - 1) % n] << '\\n';\n    }\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ar"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/044.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-ar",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "Shift and Swapping",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Урт $N$ массив дээр $Q$ query-г дарааллаар хий. Төрөл $1$ нь $x,y$ байрлалын утгыг солино. $2$ нь бүх массивыг баруун тийш нэг байрлал эргүүлж, сүүлийн утгыг эхэнд авчирна. $3$ нь $x$ байрлалын утгыг асууна.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхлээд $N,Q$, дараа нь $N$ утга, дараах $Q$ мөр бүрд $T_i,x_i,y_i$.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "N Q\nA_1 ... A_N\nT_1 x_1 y_1\n...\nT_Q x_Q y_Q\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Төрөл $3$ бүрийн хариуг input дарааллаар нэг нэг мөрөнд хэвлэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$2\\le N\\le2\\cdot10^5$, $1\\le Q\\le2\\cdot10^5$, $1\\le A_i\\le10^9$, $1\\le T_i\\le3$. Төрөл $1$: $1\\le x_i,y_i\\le N$, $x_i\\ne y_i$. Төрөл $2$: $x_i=y_i=0$. Төрөл $3$: $1\\le x_i\\le N$, $y_i=0$. Бүх input бүхэл; байрлал $1$-ээс эхэлнэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "8 5\n6 17 2 4 17 19 1 7\n2 0 0\n1 7 2\n1 2 6\n1 4 5\n3 4 0\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "4\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "9 6\n16 7 10 2 9 18 15 20 5\n2 0 0\n1 1 4\n2 0 0\n1 8 5\n2 0 0\n3 6 0\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "18\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "11 18\n23 92 85 34 21 63 12 9 81 44 96\n3 10 0\n3 5 0\n1 3 4\n2 0 0\n1 4 11\n3 11 0\n1 3 5\n2 0 0\n2 0 0\n3 9 0\n2 0 0\n3 6 0\n3 10 0\n1 6 11\n2 0 0\n3 10 0\n3 4 0\n3 5 0\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "44\n21\n34\n63\n85\n63\n21\n34\n96\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ar"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Shift and Swapping",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Process $Q$ queries on an array of length $N$. Type $1$ swaps positions $x,y$. Type $2$ rotates the array one position right, moving its last value to the front. Type $3$ asks for the value at position $x$.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The input gives $N,Q$, the $N$ initial values, then $Q$ lines containing $T_i,x_i,y_i$.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "N Q\nA_1 ... A_N\nT_1 x_1 y_1\n...\nT_Q x_Q y_Q\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print each type-$3$ answer on a separate line in input order.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$2\\le N\\le2\\cdot10^5$, $1\\le Q\\le2\\cdot10^5$, $1\\le A_i\\le10^9$, $1\\le T_i\\le3$. Type $1$: $1\\le x_i,y_i\\le N$, $x_i\\ne y_i$. Type $2$: $x_i=y_i=0$. Type $3$: $1\\le x_i\\le N$, $y_i=0$. All input values are integers; positions are one-based.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "8 5\n6 17 2 4 17 19 1 7\n2 0 0\n1 7 2\n1 2 6\n1 4 5\n3 4 0\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "4\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "9 6\n16 7 10 2 9 18 15 20 5\n2 0 0\n1 1 4\n2 0 0\n1 8 5\n2 0 0\n3 6 0\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "18\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "11 18\n23 92 85 34 21 63 12 9 81 44 96\n3 10 0\n3 5 0\n1 3 4\n2 0 0\n1 4 11\n3 11 0\n1 3 5\n2 0 0\n2 0 0\n3 9 0\n2 0 0\n3 6 0\n3 10 0\n1 6 11\n2 0 0\n3 10 0\n3 4 0\n3 5 0\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "44\n21\n34\n63\n85\n63\n21\n34\n96\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ar"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_ar",
+      "sourceSha256": "3f3772fcb80f2c6aef8351890622059c24c72c8c1c7428367c50b06c1d6a803a",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    }
   },
   {
     "source": "AtCoder",
@@ -197,8 +628,16 @@
     "priorityReason": "Operation contract-аас зөв container сонгох, endpoint insertion ба random access-ийн шаардлагыг хамтад нь харах суурь practice.",
     "rating": 800,
     "ratingKind": "estimated",
-    "hints": [],
-    "hintsEn": [],
+    "hints": [
+      "Дээд ба доод хоёр үзүүрт нэмэх үйлдлийг ямар container дэмжих вэ?",
+      "Унших query нь дээрээс тоолсон индекс; карт хасахгүй.",
+      "Deque-ийн push_front/push_back ба $x-1$ индексийг хэрэглэ."
+    ],
+    "hintsEn": [
+      "Which container supports insertion at both ends?",
+      "A read query indexes from the top without removing a card.",
+      "Use deque push_front/push_back and index $x-1$."
+    ],
     "tags": [
       "data structures"
     ],
@@ -207,7 +646,430 @@
     "ratingBasis": "Rough CF-scale calibration: Use deque endpoint insertions and indexed reads; direct data-structure selection. Not official.",
     "ratingConfidence": "rough",
     "ratingEstimatedAt": "2026-10-27",
-    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bi"
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bi",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-bi",
+      "title": "Deck — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "deck",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийн эхний элемент нь хамгийн дээрх карт байна. Төрөл $1$ эхэнд, төрөл $2$ төгсгөлд нэмэхэд invariant хадгалагдана. Төрөл $3$ нь нэгээс эхэлсэн байрлалыг асуудаг тул ",
+                  "marks": []
+                },
+                {
+                  "text": "deck[x - 1]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийг хэвлэж, container-ийг өөрчлөхгүй. Үйлдэл бүр statement-ийн утгыг шууд хэрэгжүүлж байгаа тул дараалсан бүх query зөв.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Standard deque хоёр үзүүрийн insertion болон indexed access-ийг $O(1)$ хийдэг; нийт $O(Q)$ хугацаа/хадгалалт. ",
+                  "marks": []
+                },
+                {
+                  "text": "type",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь үйлдэл, ",
+                  "marks": []
+                },
+                {
+                  "text": "value",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь нэмэх тоо эсвэл унших байрлал. Query index хүчинтэй гэсэн баталгааг ашиглана.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int queries;\n    cin >> queries;\n    deque<long long> deck;\n    while (queries--) {\n        int type;\n        long long value;\n        cin >> type >> value;\n        if (type == 1) deck.push_front(value);\n        else if (type == 2) deck.push_back(value);\n        else cout << deck[static_cast<size_t>(value - 1)] << '\\n';\n    }\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bi"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/061-02.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-bi",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "Deck",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхэндээ хоосон картын багцтай. Үйлдэл $1$ нь $x$ утгатай картыг дээр нь, $2$ нь доор нь нэмнэ. Үйлдэл $3$ нь дээрээс $x$-р картын тоог уншина; карт хасахгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхлээд $Q$, дараа нь $Q$ мөр бүрд $t_i,x_i$ өгнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "Q\nt_1 x_1\n...\nt_Q x_Q\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Төрөл $3$ бүрийн уншсан тоог үйлдлийн дарааллаар тусдаа мөрөнд хэвлэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$2\\le Q\\le10^5$, $1\\le t_i\\le3$. Нэмэх үед $1\\le x_i\\le10^9$; унших үед $1\\le x_i\\le k_i$, энд $k_i$ нь одоог хүртэл нэмсэн картын тоо. Ядаж нэг нэмэх, нэг унших үйлдэл бий. Бүх input бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "6\n1 2\n1 1\n2 3\n3 1\n3 2\n3 3\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1\n2\n3\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "6\n2 1\n3 1\n2 2\n3 1\n2 3\n3 1\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1\n1\n1\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "6\n1 1000000000\n2 200000000\n1 30000000\n2 4000000\n1 500000\n3 3\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1000000000\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bi"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Deck",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Start with an empty deck. Type $1$ inserts a card with value $x$ at the top; type $2$ inserts it at the bottom. Type $3$ reads the value of the $x$-th card from the top without removing it.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The input gives $Q$, followed by $Q$ lines containing $t_i,x_i$.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "Q\nt_1 x_1\n...\nt_Q x_Q\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print each type-$3$ result on its own line in operation order.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$2\\le Q\\le10^5$, $1\\le t_i\\le3$. For insertions $1\\le x_i\\le10^9$; for reads $1\\le x_i\\le k_i$, where $k_i$ counts inserted cards so far. There is at least one insertion and one read. All input values are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "6\n1 2\n1 1\n2 3\n3 1\n3 2\n3 3\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1\n2\n3\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "6\n2 1\n3 1\n2 2\n3 1\n2 3\n3 1\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1\n1\n1\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "6\n1 1000000000\n2 200000000\n1 30000000\n2 4000000\n1 500000\n3 3\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1000000000\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bi"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_bi",
+      "sourceSha256": "0ac99fa79d3f48a55c71e7665b976b0c56bc3bbee1724646a29dff0249df2129",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    }
   },
   {
     "source": "AtCoder",

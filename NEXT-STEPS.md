@@ -1,3 +1,9 @@
+# Current batch04 checkpoint —19full-ready
+
+Closed aa High content gap and completed bi/al/ar:original bilingual staged hints,original proof/implementation explanations and4C++17programs.12official samples+5focused edges pass,0warnings. New bi/al/ar bilingual statements verified exact constraints (deck Q>=2/query guarantees,LCM strict threshold,rotation dummy coordinates/x!=y).19native statements/76renderer combinations;51editorial editor/MathJax roundtrips;affected033/034SQL+statement unit pass. Unchanged prior code checks reused. No production actions.
+
+Counts:source92unchanged;new editorial explanations49+2baseline=51;verifiednewC++19,30other new explanations unimplemented;statement/full/local-import-ready19.73prepared full/statement gaps,43editorial gaps;153source reviews,713baseline reviews,748baseline statements,164existing CPPblocks remain.032/033/034proposals only;PR20draft;user merges. Startup fix preserved.
+
 # Current checkpoint — medium statement batch03
 
 aa draft reviewed against fresh authoritative source and repaired with output layout, native attribution and provenance. Added original MN/EN statements for a,d,g with exact constraints (notably g N/Q<=300000), samples and operation/objective definitions.16statement documents/64renderer combinations, independent source-sample/fingerprint tests and synthetic SQL pass. aa SQL fixture is synthetic Medium solely to isolate statement publication; actual bank remains High and lacks editorial/hints. No fake full-ready credit.
