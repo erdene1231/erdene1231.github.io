@@ -1,3 +1,7 @@
+# PR20 compatibility and delivery split
+
+PR20 is being made code-merge-ready against installedafter031:defaultproblemBackendVersion31 retains existing basic edits and gates newer writes,without missingRPCcalls or silentpriority/provenanceloss.245selections complete butnotimported;no SQLexecuted. See `audit/PART04-PR20-READINESS.md`. New separate remaining-workPR carries admin surname/first_name/username/profilepicture plus applicable production/install/live gates. School/email/password/auth/roles/progress excluded. Existing optional documents preserved,no newauthoring. No package2transition.
+
 # Verified local recovery archives
 
 Code archive captures cbbc6ee,245selected records,completed optional content,all five local branches and retained source evidence.981payload files;42,788,842bytes;SHA256 e56969fd36dc6d9d045b8dc761efecdde14d1a11431a601e7bd63b8642dde763. Manifest/hash/CRC/path checks,credential-pattern scan,bundle verification and offline clone/fsck passed. Separate private live catalog/schema recovery is local/untracked,not part of code ZIP,not fullPITR/media backup. See `audit/PART04-RECOVERY-ARCHIVES.json`. Neither archive uploaded/published. Current receipt commit is metadata-only beyond the archived source commit. Package4stillincomplete;no production writes or package2transition.

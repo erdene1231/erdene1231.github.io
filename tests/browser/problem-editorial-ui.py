@@ -29,15 +29,15 @@ try:
    page.locator('#problem-back').click()
   checks.append('actual app: lazy body RPC only on open; rich code, language fallback, status preserves reader, mobile/light and desktop/dark')
   page.get_by_role('button',name='Slow editorial',exact=False).first.click();page.locator('#problem-editorial summary').click();page.wait_for_function('typeof resolveSlow==="function"')
-  page.locator('#problem-back').click();page.get_by_role('button',name='Missing editorial',exact=False).first.click();page.locator('#problem-editorial summary').click();page.evaluate('resolveSlow()');page.wait_for_timeout(100)
-  assert 'бэлтгэгдэж' in page.locator('#problem-editorial').inner_text();assert page.locator('#problem-editorial article section').count()==0
-  checks.append('stale lazy response cannot populate another problem; missing High editorial stated honestly');page.close()
+  page.locator('#problem-back').click();page.get_by_role('button',name='Missing editorial',exact=False).first.click();page.evaluate('resolveSlow()');page.wait_for_timeout(100)
+  assert page.locator('#problem-editorial').is_hidden();assert page.locator('#problem-editorial article section').count()==0
+  checks.append('stale lazy response cannot populate another problem; absent optional editorial has no placeholder');page.close()
   # Isolate the real admin component; the application itself is blocked to avoid duplicate handlers.
   page=browser.new_page(viewport={'width':1200,'height':950});page.on('pageerror',lambda e:errors.append(str(e)))
   def admin_route(r):
    if not r.request.url.startswith(base):r.abort()
    elif '/app.js?'in r.request.url:r.fulfill(status=200,content_type='text/javascript',body='')
-   elif '/config.js'in r.request.url:r.fulfill(status=200,content_type='text/javascript',body='window.THINK_CP_CONFIG={};')
+   elif '/config.js'in r.request.url:r.fulfill(status=200,content_type='text/javascript',body='window.THINK_CP_CONFIG={problemBackendVersion:34};')
    else:r.continue_()
   page.route('**/*',admin_route);page.goto(base+'/index.html#admin-section',wait_until='networkidle')
   page.evaluate('''async({p,doc})=>{window.actor={id:'00000000-0000-0000-0000-000000000001'};window.rows=[p];window.documentBody=doc;window.saved=[];window.allowed=true;window.backendAvailable=true;window.client={rpc:async(name,args)=>{if(name==='is_admin')return{data:allowed};if(name==='get_admin_catalog')return{data:rows};if(name==='get_problem_editorial')return backendAvailable?{data:{body:documentBody,problemRevision:rows[0].revision}}:{error:{code:'PGRST202',message:'not installed'}};if(name==='admin_save_problem'){saved.push(args);documentBody=args.p_body.editorial;rows=[{...p,...args.p_body,editorial:undefined,hasEditorial:!!documentBody,revision:p.revision+saved.length}];return{data:{...rows[0],editorial:documentBody}};}return{data:[]};}};const{setupAdmin}=await import('./admin.js?v=48');window.adminUI=setupAdmin({client:()=>client,user:()=>actor,sources:()=>['AtCoder'],progress:()=>({}),refreshCatalog:async()=>{}});adminUI.connected();}''',{'p':p,'doc':doc})

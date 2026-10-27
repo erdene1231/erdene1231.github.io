@@ -18,7 +18,7 @@ try:
    url=r.request.url
    if 'cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'in url:r.fulfill(status=200,content_type='text/javascript',body='export function createClient(){return window.testClient;}')
    elif not url.startswith(base):r.abort()
-   elif '/config.js'in url:r.fulfill(status=200,content_type='text/javascript',body='window.THINK_CP_CONFIG={supabaseUrl:"https://fixture.invalid",supabaseKey:"public-test-fixture"};')
+   elif '/config.js'in url:r.fulfill(status=200,content_type='text/javascript',body='window.THINK_CP_CONFIG={supabaseUrl:"https://fixture.invalid",supabaseKey:"public-test-fixture",problemBackendVersion:34};')
    else:r.continue_()
   page.route('**/*',route);page.goto(base+'/index.html#library',wait_until='networkidle');page.wait_for_function("document.querySelector('#problems .open:not(:disabled)')");assert page.evaluate("calls.filter(c=>c.name==='get_problem_statement').length")==0
   for i,entry in enumerate(entries,1):

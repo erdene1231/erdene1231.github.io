@@ -13,7 +13,7 @@ export function setupProblemStatement(root,ctx){
  function clear(){turn++;key=null;clearMath(root);root.replaceChildren();root.hidden=true;}
  function render(problem){
   const next=[problem.id,problem.revision,problem.priorityLevel,!!problem.hasStatement,!!problem.statement].join('|');if(next===key)return;
-  clear();key=next;
+  clear();key=next;if(!problem.hasStatement&&!problem.statement)return;
   root.hidden=false;const generation=turn,details=node('details'),summary=node('summary','Бодлогын нөхцөл / Statement'),message=node('p','Бодлогын нөхцөл, оролт/гаралт, хязгаарлалт, жишээ.','muted'),article=node('article',undefined,'tutorial-content'),language=node('select'),label=node('label','Statement-ийн хэл');
   for(const [value,text]of [['mn','Монгол'],['en','English']]){const o=node('option',text);o.value=value;language.append(o);}label.append(language);label.hidden=true;details.append(summary,label,message,article);root.append(details);
   let doc=null,pending=false;const attribution=node('p',undefined,'muted');details.insertBefore(attribution,article);const valid=()=>turn===generation&&details.isConnected&&ctx.active(problem.id);

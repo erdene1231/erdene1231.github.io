@@ -14,7 +14,7 @@ export function setupProblemEditorial(root,ctx){
  function clear(){turn++;key=null;clearMath(root);root.replaceChildren();root.hidden=true;}
  function render(problem){
   const next=[problem.id,problem.revision,problem.priorityLevel,!!problem.hasEditorial,!!problem.editorial].join('|');if(next===key)return;
-  clear();key=next;if(priorityLevel(problem)!=='high'&&!problem.hasEditorial&&!problem.editorial)return;
+  clear();key=next;if(!problem.hasEditorial&&!problem.editorial)return;
   root.hidden=false;const generation=turn,details=node('details'),summary=node('summary','Editorial'),message=node('p','Тайлбарыг нээж унших боломжтой.','muted'),article=node('article',undefined,'tutorial-content'),language=node('select'),label=node('label','Editorial-ийн хэл');
   for(const [value,text]of [['mn','Монгол'],['en','English']]){const o=node('option',text);o.value=value;language.append(o);}label.append(language);label.hidden=true;details.append(summary,label,message,article);root.append(details);
   let doc=null,pending=false;const valid=()=>turn===generation&&details.isConnected&&ctx.active(problem.id);
