@@ -1,3 +1,15 @@
+# Latest — order01→04→02→03→05→06→07→08; planning only
+
+User prioritizes problem bank04 before tutorial rewriting02/expansion03.
+Read audit/EIGHT-PART-PLAN.md priority contract: problems AND tutorials use
+Low/Medium/High, replacing boolean problem Priority/four-tier importance plan.
+04 supplies safe data/admin/import/filter/sort/badges/popup and tutorial baseline;
+02 adds mastery practice to every lesson with justified global task promotion;
+03 reviews every canonical/new tutorial usefulness/necessity/frequency; Li Chao Low.
+No automatic all-High or attach/detach rank changes; IDs/progress/admin revisions preserved.
+Next implementation04 requires user start instruction; do not silently start02.
+This checkpoint changes plans only. PR18 merged; deployment/live still unverified.
+
 # Latest — package01 frontend v40, local verified; do not start02
 
 Read audit/PART01-EDITOR-FRONTEND.md. User narrowed current work to existing

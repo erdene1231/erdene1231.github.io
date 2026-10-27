@@ -1,6 +1,6 @@
 # Erdene Club — дэлгэрэнгүй ажлын бүрэн жагсаалт
 
-Гүйцэтгэх үндсэн төлөвлөгөө: [яг8 дэд хэсэг](EIGHT-PART-PLAN.md).180 ажлын задаргаа; багц бүрийг дуусгаад дараагийн хэрэглэгчийн зааврыг хүлээнэ.
+Гүйцэтгэх үндсэн төлөвлөгөө: [яг8 дэд хэсэг](EIGHT-PART-PLAN.md).185 ажлын задаргаа; багц бүрийг дуусгаад дараагийн хэрэглэгчийн зааврыг хүлээнэ.
 
 2026-10-26. Энэ шинэчлэлт нь шаардлага задлах, төлөвлөх ажил. Код болон production database өөрчлөөгүй.
 
@@ -144,6 +144,9 @@ START-HERE.md (220 мөр), requirements-01.txt (1197 мөр), requirements-02.t
 
 Хүлээн авах: tutorial бүрийн body/relationship hashes-тай review card, actual C++ results, source links, MN/EN status, current IDs, browser checks. Editor хоосон нийтлэл зөвшөөрсөн нь энэ curriculum шалгуурыг сулруулахгүй.
 
+- [ ] C13 — Багц4-ийн шинэчилсэн сангаас tutorial **бүрд** сэдвийг эзэмшихэд хэрэгтэй practice сонгох: intended solution/observation/prerequisite/stage/objective/rationale-г хянах. Зайлшгүй хэрэгтэй mastery task-ийг High, өндөр өгөөжтэй нэмэлт practice-г Medium зэрэг шалгуураар үнэлж, global problem priority-г үндэслэлтэй өсгөх; бүх attached task-ийг автоматаар High болгохгүй.
+- [ ] C14 — Нэг task олон tutorial-д ашиглагдвал source-of-truth global priority/rationale shared; local stage/objective тусдаа. Lesson тус бүрийн хувьд essential/useful/extension шалтгааныг хадгалж, publish үед revision guard-тай priority promotion хийх. Relation хасагдлаа гээд global priority-г автоматаар бууруулахгүй; tags/reading/solved events priority өөрчлөхгүй.
+
 ## 05. Дутуу бүх сэдвийг prerequisite дарааллаар нөхөх
 
 Эх: R1 §3, R2 §2. **A/P.** Сэдэв бүрийн бүрэн эх жагсаалт доорх хавсралтад байна.
@@ -164,6 +167,8 @@ START-HERE.md (220 мөр), requirements-01.txt (1197 мөр), requirements-02.t
 - [ ] T14 — Шинэ tutorial бүрд C01–C12 чанарын цикл болон practice matching хамт; fake empty lessons-ээр coverage нэмэгдүүлэхгүй. Нэг том tutorial эсвэл тусдаа variation сонголтыг reasoning-тай бүртгэх.
 
 Хүлээн авах: source topic → canonical ID → anchor → reviewed content/practice/hash гэсэн coverage matrix. 319 мөрийн тоог distinct tutorial quota болгон ашиглахгүй.
+
+- [ ] T15 — Багц3-т tutorial бүрийн Low/Medium/High priority-г хэрэглээ/сургалтын өгөөж/түгээмэл байдлаар rubric+rationale-тай review хийх; Low сэдвүүдийг coverage-оос хасахгүй. Li Chao Tree = Low; beginner/advanced түвшинтэй адилтгахгүй. Practice problems-ийн priority-г мөн багц2-ын mastery/creativity дүрмээр үргэлжлүүлэн review хийх.
 
 ## 06. Бодлогын сан, practice холбоос, hints
 
@@ -273,10 +278,13 @@ START-HERE.md (220 мөр), requirements-01.txt (1197 мөр), requirements-02.t
 - [ ] X03 —100-step boundary tests; arbitrary intermediate value mapping-г баримтжуулах, rating-ийг өнгөнд тааруулж өөрчлөхгүй; official/estimate/unrated independent label, dark black contrast, color-blind readable.
 - [ ] X04 — Нэмэлт quota эхлэх baseline ID set/provenance freeze; existing edit/duplicate-г шинэ task гэж тооцохгүй. Өмнө баттай оруулсан бол evidence reuse.
 - [ ] X05 — **IOI +30**, **EGOI +30**, **JOI +20**, **APIO +15**, **Codeforces +100**, **AtCoder +50** буюу доод нийлбэр245 verified unique new tasks. CF/AtCoder сонголт нь чанартай, сургалтын өгөөж/priority өндөр байна. Тоонууд нь existing source totals биш.
-- [ ] X06 — Tutorial/problem **Low/Medium/High/Extreme importance**4 түвшин: DB validation/default/backfill, admin selector, import/export, badge/filter/sort.
-- [ ] X07 — Importance нь difficulty болон ⭐ Priority mastery-selection-ээс өөр; boolean-г сохроор4түвшинд хөрвүүлэхгүй. Editorial rubric/rationale; бүгд Extreme болохгүй.
+- [ ] X06 — Problem **Low/Medium/High priority**3 түвшин нь хуучин boolean Priority-ийн шинэ хувилбар. Extreme/тусдаа4importance сонголт хийхгүй. DB validation, audited backfill, admin selector, JSON import/export, badge/filter/sort, popup/main/detail бүгд ижил утгатай.
+- [ ] X07 — Tutorial мөн **Low/Medium/High priority**3 түвшинтэй: хэрэгцээ/сургалтын өгөөж/түгээмэл хэрэглээ. Problem priority нь topic mastery-д зайлшгүй хэрэгтэй эсэх, бүтээлч observation/логик сэтгэлгээний чанараар өснө; difficulty эсвэл tag match дангаараа өсгөхгүй. Problem/tutorial аль алинд Extreme болон тусдаа давхар importance үүсгэхгүй.
 
-Хүлээн авах: source-specific new-ID quota ledger, verified statements/editorials/source metadata, safe import; importance round-trip ба palette boundary/contrast tests.
+Хүлээн авах: source-specific new-ID quota ledger, verified statements/editorials/source metadata, safe import; problem/tutorial3-tier priority round-trip ба palette boundary/contrast tests.
+
+- [ ] X08 — Багц4-т problem/tutorial priority-ийн canonical3-tier contracts, constraints/indexes/RLS-aware edit, backfill dry-run, import/export compatibility, High→Medium→Low sort, all/level filters, badges/shared popup/learning-card/editor controls. Old boolean metadata/rationale-г audit хийж хадгалж шилжүүлэх; stale overwrite болон progress/ID өөрчлөлтгүй.
+- [ ] X09 — Багц4-т existing tutorial inventory-ийн provisional priority audit; **Li Chao Tree = Low**. Багц3-т бүх canonical/new tutorial-ийн priority-г reviewed rationale-тай бүрэн үнэлэх. Related variants/advanced lessons-ийн багатай түгээмэл хэрэглээг topic deletion эсвэл draft болгох шалтаг болгохгүй.
 
 ## 12. Сонголттой өргөтгөлүүд
 
@@ -332,7 +340,7 @@ START-HERE.md (220 мөр), requirements-01.txt (1197 мөр), requirements-02.t
 
 **Нэг удаад нэг багц:** тухайн багцын бүх дэд ажил/тест/баримт/commit/remote verification/ZIP-г дуусгаад тайлагнаж зогсоно. Дараагийн багцыг хэрэглэгч “дараагийн хэсгийг үргэлжлүүл” гэж хэлсний дараа эхлүүлнэ. Багц дотроо олон жижиг migration/content batch/commit хийж болно; энэ нь нэг багцыг орхиж нөгөө рүү үсрэх зөвшөөрөл биш. Runtime тасарвал ижил багцын checkpoint-оос үргэлжлүүлнэ; бүрэн дуусаагүйг дууссан гэж нэрлэхгүй. Blocker байвал тодорхой тайлагнаж, дараагийн багц руу автоматаар шилжихгүй.
 
-Одоогийн task нь зөвхөн төлөвлөгөө шинэчлэх. Багц1-ийн feature implementation эсвэл production migration эхлээгүй.
+Сүүлийн дараалал: **1 →4 →2 →3 →5 →6 →7 →8**. Багц1 frontend checkpoint хийгдсэн; өргөн backlog/deploy/live нөхцөлийг тусад нь хэвээр хадгална. Энэ task зөвхөн шинэ priority/дарааллын төлөвлөгөө; багц4 хэрэгжүүлээгүй.
 
 ## 15. Бүх сэдвийн эх жагсаалт — нэг ч нэрийг чимээгүй хасахгүй
 
