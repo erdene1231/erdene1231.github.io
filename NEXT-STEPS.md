@@ -1,3 +1,10 @@
+# Package04 checkpoint — CF36,overall86 reviewed; source provenance and old-toggle removal
+
+CF36/100+AtCoder50/50=86/245 reviewed local new tasks; remaining159(IOI30,EGOI30,APIO15,JOI20,CF64). Strict quota gate0rejections, combined86import records pass. CF review method: official statement+official API+independent proof, NOT an editorial-read claim; proof JSON file hashes validated. No new server IDs allocated or production import.
+Import/validation now retains ratingSource/ratingVerifiedAt/raw sourceTags separately from curated teaching tags. Prepared032 persists and validates these fields, with original hash/CAS/auth guards intact. Local PGlite test validates new-save roundtrip;032 NOT applied to production. Existing748catalog bodies pass parser validation. Full Node65pass.
+User-requested obsolete priority-only toggle removed. Explicit3-tier filter retained; stale preference keys discarded at init. Priority browser7groups pass with old true-preference seeded and no hidden filtering. Legacy model support and mastery/star data preserved.
+Baseline review30/748,718pending;30rationale proposals unapplied. Continue remaining159new tasks and718semantic baseline reviews; no production/migration/merge/deploy authorization.
+
 # Package04 editor toolbar checkpoint — coherent frontend v43
 
 Bold/Italic/Underline/Strike now B/I/U/S icons plus inline-code symbol, accessible names/tooltips and Ctrl/Meta shortcut metadata retained.44px controls, theme-aware pressed state, selection capture and existing grouped Undo/Redo unchanged. Current editor-frontend8 groups and tutorial-media6 groups pass; no real Storage/production call. Overall UI/minimalist/navigation changes remain in PR20.

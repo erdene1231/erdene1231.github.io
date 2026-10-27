@@ -61,7 +61,15 @@ begin
  end loop;
  if jsonb_array_length(coalesce(p_body->'hints','[]'::jsonb))<>jsonb_array_length(coalesce(p_body->'hintsEn','[]'::jsonb)) then raise exception 'Хоёр хэлний hint-ийн тоо ижил байна.'; end if;
  if length(coalesce(p_body->>'lesson',''))>2000 then raise exception 'Тайлбар хэт урт байна.'; end if;
- foreach field in array array['sourceId','sourceCategory','verifiedAt','difficultyCategory','ratingBasis','ratingConfidence','ratingEstimatedAt'] loop
+ if p_body ? 'ratingSource' and not public.valid_task_url(p_body->>'ratingSource') then raise exception 'Rating source HTTPS URL шаардлагатай.'; end if;
+ if p_body ? 'sourceTags' then
+  if jsonb_typeof(p_body->'sourceTags') is distinct from 'array' then raise exception 'Source tags array шаардлагатай.'; end if;
+  if jsonb_array_length(p_body->'sourceTags')>20 then raise exception 'Source tags хэт олон байна.'; end if;
+  for tag in select value from jsonb_array_elements(p_body->'sourceTags') loop
+   if jsonb_typeof(tag)<>'string' or (tag#>>'{}') !~ '^[a-zA-Z0-9 +/&()_*-]{1,50}$' then raise exception 'Source tag буруу байна.'; end if;
+  end loop;
+ end if;
+ foreach field in array array['sourceId','sourceCategory','verifiedAt','difficultyCategory','ratingBasis','ratingConfidence','ratingEstimatedAt','ratingSource','ratingVerifiedAt'] loop
   if p_body ? field and (jsonb_typeof(p_body->field) is distinct from 'string' or length(p_body->>field)>500) then raise exception 'Metadata талбар буруу: %',field; end if;
  end loop;
  return p_body;
@@ -93,7 +101,7 @@ begin
  end if;
  payload:=jsonb_build_object('id',task_id,'number',n,'pack',pack,'title',btrim(p_body->>'title'),'source',p_body->>'source','ref',btrim(p_body->>'ref'),'url',p_body->>'url','rating',rate,'ratingKind',p_body->>'ratingKind','priority',(p_body->>'priority')::boolean,'level',coalesce(p_body->>'level','Practice'),'tags',p_body->'tags','hints',coalesce(p_body->'hints','[]'::jsonb),'hintsEn',coalesce(p_body->'hintsEn','[]'::jsonb),'lesson',coalesce(p_body->>'lesson',''));
  if coalesce(p_body->>'editorialUrl','')<>'' then payload:=payload||jsonb_build_object('editorialUrl',p_body->>'editorialUrl'); end if;
- payload:=payload||jsonb_strip_nulls(jsonb_build_object('sourceId',p_body->>'sourceId','sourceCategory',p_body->>'sourceCategory','verifiedAt',p_body->>'verifiedAt','difficultyCategory',p_body->>'difficultyCategory','ratingBasis',p_body->>'ratingBasis','ratingConfidence',p_body->>'ratingConfidence','ratingEstimatedAt',p_body->>'ratingEstimatedAt'));
+ payload:=payload||jsonb_strip_nulls(jsonb_build_object('sourceId',p_body->>'sourceId','sourceCategory',p_body->>'sourceCategory','verifiedAt',p_body->>'verifiedAt','difficultyCategory',p_body->>'difficultyCategory','ratingBasis',p_body->>'ratingBasis','ratingConfidence',p_body->>'ratingConfidence','ratingEstimatedAt',p_body->>'ratingEstimatedAt','ratingSource',p_body->>'ratingSource','ratingVerifiedAt',p_body->>'ratingVerifiedAt','sourceTags',p_body->'sourceTags'));
  payload:=coalesce(current_row.body,'{}'::jsonb)||payload;
  payload:=payload||jsonb_build_object(
   'priorityLevel',coalesce(p_body->>'priorityLevel',current_row.body->>'priorityLevel',case when (p_body->>'priority')::boolean then 'high' else 'medium' end),

@@ -29,6 +29,8 @@ export function validateProblem(input) {
  if(p.hints.length!==p.hintsEn.length)throw new Error('Монгол болон English hint-ийн тоо ижил байна.');
  if(p.lesson.length>2000)throw new Error('Бодсоны дараах тайлбар 2000 тэмдэгт хүртэл байна.');
  for(const key of ['sourceId','sourceCategory','verifiedAt','difficultyCategory','ratingBasis','ratingConfidence','ratingEstimatedAt'])if(typeof input[key]==='string'&&input[key].length<=500)p[key]=input[key];
+ for(const key of ['ratingSource','ratingVerifiedAt'])if(Object.hasOwn(input,key)){if(typeof input[key]!=='string'||input[key].length>500||(key==='ratingSource'&&!validUrl(input[key])))throw new Error('Rating provenance талбар буруу байна.');p[key]=input[key];}
+ if(Object.hasOwn(input,'sourceTags')){if(!Array.isArray(input.sourceTags)||input.sourceTags.length>20||input.sourceTags.some(t=>typeof t!=='string'||!/^[a-zA-Z0-9 +/&()_*-]{1,50}$/.test(t)))throw new Error('Source tags буруу байна.');p.sourceTags=[...input.sourceTags];}
  if(Object.hasOwn(input,'priorityLevel'))p.priorityLevel=priorityLevel(input);if(Object.hasOwn(input,'priorityReason'))p.priorityReason=input.priorityReason;
  return p;
 }

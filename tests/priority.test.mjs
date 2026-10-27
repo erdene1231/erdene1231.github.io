@@ -32,6 +32,8 @@ test('032 preserves validators/CAS/content and persists tiers without stripping 
  await assert.rejects(save({...fixture,priority:true}));await db.query("select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000001',false)");
  const result=(await save({...fixture,priority:false})).rows[0].body;assert.equal(result.priorityLevel,'high');assert.equal(result.priority,true);assert.equal(result.priorityReason,'Original reasoning');assert.deepEqual(result.hintReview,{status:'keep'});assert.equal(result.ratingSource,old.ratingSource);await assert.rejects(save({...fixture,priority:true}),e=>e.code==='40001');
  const low=(await save({...fixture,priorityLevel:'low',priority:false,priorityReason:'Specialized practice'},19,2)).rows[0].body;assert.equal(low.priorityLevel,'low');assert.equal(low.priority,false);assert.equal(low.id,'stable');
+ const sourced=(await save({...fixture,priority:true,priorityLevel:'high',ratingSource:'https://codeforces.com/api/problemset.problems',ratingVerifiedAt:'2026-10-27',sourceTags:['math']},null,null)).rows[0].body;assert.equal(sourced.ratingSource,'https://codeforces.com/api/problemset.problems');assert.equal(sourced.ratingVerifiedAt,'2026-10-27');assert.deepEqual(sourced.sourceTags,['math']);
+ await assert.rejects(validate({...fixture,priority:true,ratingSource:'http://example.com'}));await assert.rejects(validate({...fixture,priority:true,sourceTags:'math'}));
  await assert.rejects(db.exec(fs.readFileSync('supabase/032-three-tier-priority.sql','utf8')),/re-audit/);await db.exec('rollback');
  }finally{await db.close();}
 });

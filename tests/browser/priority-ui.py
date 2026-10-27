@@ -22,13 +22,16 @@ try:
    elif '/tutorials.json' in r.request.url:r.fulfill(status=200,content_type='application/json',body=json.dumps(lessons))
    else:r.continue_()
   page.route('**/*',route);page.add_init_script('window.MathJax={startup:{promise:Promise.resolve()},typesetClear:()=>{},typesetPromise:async()=>{}};')
+  page.add_init_script("localStorage.setItem('think-cp:catalog-preferences',JSON.stringify({showTags:false,sort:'rating-asc',priorityOnly:true}));")
   page.goto(base+'/index.html#library',wait_until='networkidle');page.wait_for_selector('#problems .priority-badge')
+  assert page.locator('#priority-only').count()==0 and page.locator('#problems .problem').count()==9
+  assert not page.evaluate("Object.hasOwn(JSON.parse(localStorage.getItem('think-cp:catalog-preferences')),'priorityOnly')")
   page.locator('#priority-filter').select_option('low');assert page.locator('#problems .problem').count()==3
   assert page.locator('#problems .priority-low').count()==3
   page.locator('#reset-filters').click();page.locator('#sort').select_option('priority')
   assert 'High' in page.locator('#problems .priority-badge').first.inner_text()
-  page.locator('#priority-only').check();assert page.locator('#problems .problem').count()==3
-  page.locator('#reset-filters').click();report['canonical_main_filter_sort_and_high_shortcut']='PASS'
+  page.locator('#priority-filter').select_option('high');assert page.locator('#problems .problem').count()==3
+  page.locator('#reset-filters').click();report['canonical_main_filter_sort_and_obsolete_toggle_removed']='PASS'
   assert page.locator('#problems .rating-legendary').count()==1
   assert page.locator('#problems .rating-candidate-master').count()==1
   for index,problem in enumerate(data['problems']):

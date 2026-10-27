@@ -60,7 +60,7 @@ function render() {
   const percent=(data.problems.length?Math.round(solved/data.problems.length*100):0);
   $('total').textContent=data.problems.length;$('solved').textContent=solved;$('trying').textContent=trying;$('percent').textContent=percent+'%';$('progress').value=percent;
   renderHome();learningUI?.render();
-  const filters={query:$('search').value,source:$('source').value,status:$('status-filter').value,tag:$('tag-filter').value,minRating:$('min-rating').value,maxRating:$('max-rating').value,priorityOnly:$('priority-only').checked,priorityLevel:$('priority-filter').value,sort:$('sort').value};
+  const filters={query:$('search').value,source:$('source').value,status:$('status-filter').value,tag:$('tag-filter').value,minRating:$('min-rating').value,maxRating:$('max-rating').value,priorityLevel:$('priority-filter').value,sort:$('sort').value};
   const filterKey=JSON.stringify(filters);if(filterKey!==lastFilterKey){problemPage=0;lastFilterKey=filterKey;}
   $('problems').classList.toggle('compact',$('problem-density').value==='compact');$('problems').classList.toggle('minimalist',$('problem-density').value==='minimalist');$('problems').replaceChildren();
   const invalidRange=!$('min-rating').checkValidity()||!$('max-rating').checkValidity()||($('min-rating').value!==''&&$('max-rating').value!==''&&Number($('min-rating').value)>Number($('max-rating').value));
@@ -199,12 +199,13 @@ async function init() {
   $('refresh-catalog').onclick=()=>void refreshCatalog();
   try {const prefs=JSON.parse(localStorage.getItem('think-cp:catalog-preferences')||'{}');$('show-tags').checked=prefs.showTags===true;if(['rating-asc','rating-desc','priority','title','number-asc'].includes(prefs.sort))$('sort').value=prefs.sort;}catch{}
   const savePreferences=()=>{try{localStorage.setItem('think-cp:catalog-preferences',JSON.stringify({showTags:$('show-tags').checked,sort:$('sort').value}));}catch{}};
-  for(const id of ['search','source','status-filter','tag-filter','min-rating','max-rating','priority-filter','priority-only'])$(id).addEventListener('input',render);
+  savePreferences(); // Discard obsolete priority-only preference keys; explicit level filtering stays visible.
+  for(const id of ['search','source','status-filter','tag-filter','min-rating','max-rating','priority-filter'])$(id).addEventListener('input',render);
   for(const [id,delta] of [['problem-prev',-1],['problem-next',1]])$(id).onclick=()=>{problemPage+=delta;render();$('library').scrollIntoView({block:'start'});};
   $('sort').addEventListener('change',()=>{savePreferences();render();});
   $('show-tags').addEventListener('change',()=>{detailTagsShown=false;savePreferences();render();if(selectedProblem)renderDetail();});
   $('reveal-detail-tags').onclick=()=>{detailTagsShown=!detailTagsShown;renderDetail();};
-  $('reset-filters').onclick=()=>{for(const id of ['search','source','status-filter','tag-filter','min-rating','max-rating','priority-filter'])$(id).value='';$('priority-only').checked=false;$('sort').value='rating-asc';savePreferences();render();};
+  $('reset-filters').onclick=()=>{for(const id of ['search','source','status-filter','tag-filter','min-rating','max-rating','priority-filter'])$(id).value='';$('sort').value='rating-asc';savePreferences();render();};
   render();
   document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
   $('account').onclick=()=>{updateAccount();$('auth').showModal();};
