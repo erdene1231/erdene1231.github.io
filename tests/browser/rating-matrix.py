@@ -53,7 +53,7 @@ try:
                 detail = page.locator('#detail-note .rating')
                 assert detail.inner_text()==label and 'rating-'+band in detail.get_attribute('class')
                 assert detail.evaluate('(e)=>{const s=getComputedStyle(e);return [s.color,s.backgroundColor]}')==color
-                page.locator('[data-close=detail]').click()
+                page.locator('#problem-back').click()
             page.evaluate('''async(pool)=>{const {openProblemSelection}=await import('/problem-selection-dialog.js?v=42');openProblemSelection({problems:()=>pool,onSelect:()=>{}})}''', pool)
             picker = page.locator('[data-selection-available] .rating'); assert picker.count()==34
             for i, band in enumerate(bands):

@@ -18,11 +18,11 @@ try:
    elif '/problems.json'in r.request.url:r.fulfill(status=200,content_type='application/json',body=json.dumps({'problems':pool}))
    else:r.continue_()
   page.route('**/*',route);page.goto(base+'/index.html#library',wait_until='networkidle');page.wait_for_selector('#problems .open')
-  page.get_by_role('button',name='Math High',exact=False).first.click();page.locator('#next-hint').click();page.locator('[data-close=detail]').click()
-  page.get_by_role('button',name='Math Low',exact=False).first.click();assert page.locator('#detail .hints').is_hidden();assert page.locator('#hint-list mjx-container').count()==0;page.locator('[data-close=detail]').click()
+  page.get_by_role('button',name='Math High',exact=False).first.click();page.locator('#problem-hints-button').click();page.locator('#next-hint').click();page.locator('#problem-back').click()
+  page.get_by_role('button',name='Math Low',exact=False).first.click();assert page.locator('#detail .hints').is_hidden();assert page.locator('#hint-list mjx-container').count()==0;page.locator('#problem-back').click()
   for theme,width in [('light',1200),('dark',375)]:
    page.set_viewport_size({'width':width,'height':950});page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
-   page.get_by_role('button',name='Math High',exact=False).first.click()
+   page.get_by_role('button',name='Math High',exact=False).first.click();page.locator('#problem-hints-button').click()
    while page.locator('#next-hint').is_visible():page.locator('#next-hint').click()
    for language in ['mn','en']:
     page.locator('#hint-language').select_option(language)
@@ -34,7 +34,7 @@ try:
     assert page.locator('#detail').evaluate('e=>e.scrollWidth<=e.clientWidth')
     page.locator('#toggle-hints').click();assert page.locator('#hint-list').is_hidden()
     page.locator('#toggle-hints').click();page.wait_for_function("document.querySelectorAll('#hint-list mjx-container').length===3")
-   page.locator('[data-close=detail]').click();page.wait_for_function("document.querySelectorAll('#hint-list mjx-container').length===0")
+   page.locator('#problem-back').click();page.wait_for_function("document.querySelectorAll('#hint-list mjx-container').length===0")
   saved=page.evaluate("JSON.parse(localStorage.getItem('think-cp:v1:guest')).progress['math-high'].hints");assert saved==3
   assert not errors,errors;checks={'actual_bundled_mathjax':'passed','inline_display_subscript_fraction_inequality':'passed','mn_en_reveal_repeat_close_reopen':'passed','light_desktop_dark_mobile':'passed','code_spans_and_html_escape':'passed','low_hidden_and_hint_progress_preserved':'passed'};b.close()
 finally:s.shutdown()

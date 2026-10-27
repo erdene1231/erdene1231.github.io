@@ -1,10 +1,10 @@
-import {priorityLevel,priorityLabel} from './priority.js?v=44';
-import {CHECKS,canonicalKey,problemIndex,resolvePractice,tutorialMastery,dayCompletion,buildStatistics,weekStatistics,dateKey,addDays,monday,loadLearningContent,validateRelations,withArchivedProblems} from './learning-model.js?v=44';
+import {priorityLevel,priorityLabel} from './priority.js?v=46';
+import {CHECKS,canonicalKey,problemIndex,resolvePractice,tutorialMastery,dayCompletion,buildStatistics,weekStatistics,dateKey,addDays,monday,loadLearningContent,validateRelations,withArchivedProblems} from './learning-model.js?v=46';
 import {createLearningStore} from './learning-store.js?v=23';
-import {ratingLabel,difficultyLabel} from './catalog.js?v=44';
-import {avatarUrl} from './accounts.js?v=44';
-import {typeset} from './tutorials.js?v=44';
-import {view} from './tutorial-model.js?v=44';
+import {ratingLabel,difficultyLabel} from './catalog.js?v=46';
+import {avatarUrl} from './accounts.js?v=46';
+import {typeset} from './tutorials.js?v=46';
+import {view} from './tutorial-model.js?v=46';
 const $=id=>document.getElementById(id);
 const el=(tag,text,cls)=>{const x=document.createElement(tag);if(text!==undefined)x.textContent=text;if(cls)x.className=cls;return x;};
 const button=(text,action,cls)=>{const x=el('button',text,cls);x.type='button';x.onclick=action;return x;};
@@ -115,7 +115,7 @@ export async function setupLearning(ctx) {
   setTopics(value){topics=value;render();ctx.redraw?.();},
   planDaysFor:p=>content.plan.days.filter(d=>d.required.includes(typeof p==='string'?p:canonicalKey(p))||d.challenge.includes(typeof p==='string'?p:canonicalKey(p))).map(d=>d.day),
   linksForProblem:p=>{ensureRelations();return problemLessons.get(canonicalKey(p))||[];},
-  renderProblemLinks(p,parent){for(const d of content.plan.days.filter(d=>d.required.includes(canonicalKey(p))||d.challenge.includes(canonicalKey(p)))){const a=link('Өдөр '+d.day,'#plan/'+d.day);a.onclick=()=>$('detail').close();parent.append(a);}parent.append(button(store.get('bookmark',p.id).saved?'Хадгалсан ✓':'Дараа бодох',()=>{store.set('bookmark',p.id,{saved:!store.get('bookmark',p.id).saved});ctx.refreshDetail?.();}));},
+  renderProblemLinks(p,parent){for(const d of content.plan.days.filter(d=>d.required.includes(canonicalKey(p))||d.challenge.includes(canonicalKey(p)))){const a=link('Өдөр '+d.day,'#plan/'+d.day);parent.append(a);}parent.append(button(store.get('bookmark',p.id).saved?'Хадгалсан ✓':'Дараа бодох',()=>{store.set('bookmark',p.id,{saved:!store.get('bookmark',p.id).saved});ctx.refreshDetail?.();}));},
   progressChanged(id,before,after){store.recordTransition(id,before,after);schedule();},profileUpdated(){if(location.hash.startsWith('#profile'))void loadProfile();},
   mastery:t=>tutorialMastery(t.id,recordFor(t.id),resolvePractice(relationsFor(t.id)?.practice||[],ctx.problems()),ctx.progress())
  };

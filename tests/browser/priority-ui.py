@@ -35,7 +35,7 @@ try:
   before=page.evaluate("localStorage.getItem('think-cp:v1:guest')")
   page.evaluate("document.querySelector('#next-hint').onclick()")
   assert page.evaluate("localStorage.getItem('think-cp:v1:guest')")==before
-  page.locator('[data-close=detail]').click();report['low_hint_suppression_all_modes_without_progress_mutation']='PASS'
+  page.locator('#problem-back').click();report['low_hint_suppression_all_modes_without_progress_mutation']='PASS'
 
   assert page.locator('#problems .priority-low').count()==3
   page.locator('#reset-filters').click();page.locator('#sort').select_option('priority')
@@ -49,7 +49,7 @@ try:
    assert page.locator('#detail-note .rating').count()==1
    label=page.locator('#detail-note .rating').inner_text()
    assert ('Unrated' in label) if problem['ratingKind']=='unrated' else ('≈' in label)==(problem['ratingKind']=='estimated')
-   page.locator('[data-close=detail]').click()
+   page.locator('#problem-back').click()
   report['rating_detail_official_estimated_unrated']='PASS'
   page.evaluate('(p)=>window.fixturePool=p',data['problems'])
   page.evaluate('''async()=>{const {openProblemSelection}=await import('/problem-selection-dialog.js?v=41');openProblemSelection({problems:()=>fixturePool,onSelect:()=>{}})}''')
@@ -75,8 +75,9 @@ try:
   page.wait_for_function("document.querySelector('#tutorial-grid .priority-badge').textContent.includes('High')")
   report['tutorial_priority_filter_and_sort']='PASS'
   # Real admin form payload with fixture RPC; canonical field beats legacy boolean.
-  page.evaluate('''async()=>{document.querySelector('#admin-priority-reason')?.closest('label').remove();const {setupAdmin}=await import('/admin.js?v=41');window.adminPayload=null;const client={rpc:async(name,args)=>{if(name==='is_admin')return {data:true};if(name==='get_admin_catalog')return {data:fixturePool};if(name==='admin_list')return {data:[]};if(name==='admin_save_problem'){adminPayload=args.p_body;return {data:{...args.p_body,number:999}};}return {data:[]};}};window.testAdmin=setupAdmin({user:()=>({id:'fixture'}),client:()=>client,sources:()=>[],refreshCatalog:async()=>{}});testAdmin.connected();location.hash='#admin-section';}''')
+  page.evaluate('''async(doc)=>{document.querySelector('#admin-priority-reason')?.closest('label').remove();document.querySelector('.admin-rating-provenance')?.remove();document.querySelector('#admin-editorial-document')?.remove();fixturePool[0].editorial=doc;fixturePool[0].hints=['One','Two','Three'];fixturePool[0].hintsEn=['A','B','C'];const {setupAdmin}=await import('/admin.js?v=46');window.adminPayload=null;const client={rpc:async(name,args)=>{if(name==='is_admin')return {data:true};if(name==='get_admin_catalog')return {data:fixturePool};if(name==='admin_list')return {data:[]};if(name==='admin_save_problem'){adminPayload=args.p_body;return {data:{...args.p_body,number:999}};}return {data:[]};}};window.testAdmin=setupAdmin({user:()=>({id:'fixture'}),client:()=>client,sources:()=>[],refreshCatalog:async()=>{}});testAdmin.connected();location.hash='#admin-section';}''',next(p['editorial']for p in json.loads((ROOT/'audit/PART04-REVIEWED-NEW-TASKS.json').read_text())if p.get('editorial')))
   page.wait_for_function("document.querySelector('#admin-choose').options.length>1")
+  page.evaluate("const s=document.querySelector('#admin-choose');s.value=String(fixturePool[0].number);s.onchange()")
   page.locator('#admin-title').fill('Priority fixture');page.locator('#admin-ref').fill('fixture');page.locator('#admin-url').fill('https://example.com/task');page.locator('#admin-tags').fill('math');page.locator('#admin-priority').select_option('high');page.locator('#admin-priority-reason').fill('Necessary mastery observation')
   page.locator('#admin-save').click();page.wait_for_function('adminPayload!==null')
   assert page.evaluate("adminPayload.priorityLevel==='high'&&adminPayload.priority===true&&adminPayload.priorityReason==='Necessary mastery observation'")

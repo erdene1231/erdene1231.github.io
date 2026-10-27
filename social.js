@@ -1,4 +1,4 @@
-import {avatarUrl,rpc,accountError,requestRecovery,setRecoveredPassword} from './accounts.js?v=44';
+import {avatarUrl,rpc,accountError,requestRecovery,setRecoveredPassword} from './accounts.js?v=46';
 export function setupSocial(ctx) {
  const $=id=>document.getElementById(id),node=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
  let tab='leaderboard',page=0,friendPage=0,followPage=0,leaderToken=0,friendToken=0,followToken=0,profileToken=0,viewedId=null,relation='guest',accountId=null,searchTimer;

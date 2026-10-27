@@ -1,3 +1,19 @@
+# Current package04 checkpoint — v46 problem pages and rich editorials
+
+PR20open draft. Fetched main b8c2eb2(PR19merge): same tree as recovery base66c8aa8; no overwrite/rebase/merge/deploy. Feature remote before this checkpointf8830e2. Read audit/PART04-READINESS.json and completion checklist first; older checkpoints below are historical.
+
+Counts:92new source-reviewed(AtCoder50,CF42), all92rated;21content/local-import-ready(AtCoder3,CF18), production-ready/imported0.71prepared items need content;153source reviews remain(CF58,IOI30,EGOI30,APIO15,JOI20). Baseline35/748reviewed,713pending;30rating-rationale and2baseline High editorial proposals unapplied. All35patch revision/body hashes verified. IDs, original ratings/hints/progress preserved.
+
+Problem popup replaced by #problem/{stable-id} page: numeric aliases, direct/refresh/history/list filters+sort+pagination+scroll, source/hint/editorial/solver actions, progress/notes, safe share and responsive themes. Hidden unsolved tags/topic links absent from page DOM; Low hint controls/content absent. Existing public solver RPC reused with50+1paging; no grant change.
+
+Admin/lazy editorial reader uses actual tutorial schema/editor/renderer/media helpers; catalog metadata onlyhasEditorial. supabase/proposals/033-problem-editorials.sql is PROPOSAL ONLY: private current/history tables, admin+CAS atomic saves, active public reader/admin archived access, private media references, rating/content/CF-alias gates and strict learning-import dry run. Exact ACL/media review: audit/PART04-EDITORIAL-IMPLEMENTATION.md. Every problem save/import and editorial image upload fails closed until this backend exists.032/033NOTapplied; fresh actual-schema/ACL/Storage audit, private recovery and explicit approval required before execution. Admin profile scope remains separately pending; bounded proposal prepared, no real records touched.
+
+Latest math/C++ policy:23authored/proposed rich docs and126new MN/EN hint strings lint clean; actual inline L/R/n/m rendering/code exclusion verified.8existing tutorials still need math-prose review.3authored C++17programs have state/preprocessing/algorithm/output explanations,4space formatting/descriptive names;0compile warnings,180seeded oracles with exact code hashes.196existing CPP blocks(110full programs across languages) need contextual explanation/style/name review. No blind code/variable replacement.
+
+Current checks:71Node pass;23document editor/renderer/actual MathJax; actual page URL/history/refresh/auth/share/solver/error/hidden-tag browser coverage; priority8groups/modes24combos/full rating palette/catalog8/hint MathJax pass. RPC/Auth mocks and synthetic PGlite are not live verification.
+
+Next: finish71prepared content items,153source reviews,713baseline reviews, tutorial/practice/math/CPP audits and remaining performance/delivery checks. Keep package4incomplete and PRdraft. No later packages, production writes, migration, merge or deployment.
+
 # Handoff details after af41854
 
 Draft PR20 head af41854d3f1502d9422f4621e41a5a5bd1d92b0e verified on GitHub; mergeState CLEAN, still draft, no CI checks configured/reported. Worktree checkpoint tests above are current local results. Parent requested a progress boundary, not completion. Latest High content gate reports9/245ready and86source-reviewed; continue without asking for package authorization again.

@@ -34,9 +34,9 @@ try:
   checks['hint_0_to_3_boxes_before_status']='PASS'
   row=page.locator('#problems .problem').filter(has=page.locator('.number',has_text='#'+str(data['problems'][0]['number']).zfill(3)))
   row.locator('button.open').click();assert page.locator('#detail-tags').is_visible();assert page.locator('#tags').is_visible();checks['solved_detail_tags_visible']='PASS'
-  page.evaluate("document.querySelector('#detail').close()");row=page.locator('#problems .problem').filter(has=page.locator('.number',has_text='#'+str(data['problems'][1]['number']).zfill(3)));row.locator('button.open').click()
-  page.locator('#reveal-detail-tags').click();assert page.locator('#detail-tags').is_visible();page.evaluate("document.querySelector('#detail').close()")
-  page.locator('#show-tags').check();page.locator('#show-tags').uncheck();row.locator('button.open').click();assert page.locator('#detail-tags').is_hidden();page.evaluate("document.querySelector('#detail').close()")
+  page.evaluate("document.querySelector('#problem-back').click()");row=page.locator('#problems .problem').filter(has=page.locator('.number',has_text='#'+str(data['problems'][1]['number']).zfill(3)));row.locator('button.open').click()
+  page.locator('#reveal-detail-tags').click();assert page.locator('#detail-tags').is_visible();page.evaluate("document.querySelector('#problem-back').click()")
+  page.locator('#show-tags').check();page.locator('#show-tags').uncheck();row.locator('button.open').click();assert page.locator('#detail-tags').is_hidden();page.evaluate("document.querySelector('#problem-back').click()")
   checks['explicit_detail_reveal_and_global_reset']='PASS'
   for width in [375,1200]:
    for theme in ['light','dark']:

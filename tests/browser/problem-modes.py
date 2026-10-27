@@ -47,7 +47,7 @@ try:
   page.locator('#search').fill('no-matching-fixture');assert page.locator('#problems .problem').count()==0
   assert 'Тохирох бодлого' in page.locator('#problems').inner_text()
   page.locator('#reset-filters').click();assert page.locator('#problems .problem').count()==100
-  page.locator('#problems .open').first.click();assert page.locator('#notes').input_value()=='Keep me';page.locator('[data-close=detail]').click()
+  page.locator('#problems .open').first.click();assert page.locator('#notes').input_value()=='Keep me';page.locator('#problem-back').click()
   for theme,mode in [('light','compact'),('dark','minimalist'),('light','comfortable')]:
    if page.evaluate('document.documentElement.dataset.theme')!=theme:page.locator('#theme-toggle').click()
    page.locator('#problem-density').select_option(mode);page.reload(wait_until='networkidle');page.wait_for_selector('#problems .problem')
@@ -74,15 +74,15 @@ try:
    page.set_viewport_size({'width':width,'height':950})
    for theme in ['light','dark']:
     page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
-    page.evaluate("async()=>{const nav=await import('/navigation.js?v=43');nav.setAdminRoute(false);location.hash='#admin';}")
+    page.evaluate("async()=>{const nav=await import('/navigation.js?v=46');nav.setAdminRoute(false);location.hash='#admin';}")
     page.locator('#route-message').wait_for(state='visible');assert page.locator('#admin').is_hidden();assert page.locator('#admin-nav').is_hidden()
-    page.evaluate("async()=>{const nav=await import('/navigation.js?v=43');nav.setAdminRoute(true);location.hash='#admin';}")
+    page.evaluate("async()=>{const nav=await import('/navigation.js?v=46');nav.setAdminRoute(true);location.hash='#admin';}")
     page.locator('#admin').wait_for(state='visible');assert page.locator('.site-nav [data-route=admin]').count()==1
     for target in ['admin-section','admin-tutorials','learning-admin']:
      page.locator('#admin a[href="#'+target+'"]').click();page.locator('#'+target).wait_for(state='visible')
      assert page.locator('#admin-nav').get_attribute('aria-current')=='page'
      page.locator('#'+target+' .admin-back').click();page.locator('#admin').wait_for(state='visible')
-    page.evaluate("async()=>{const nav=await import('/navigation.js?v=43');nav.setAdminRoute(false);location.hash='#admin-tutorials';}")
+    page.evaluate("async()=>{const nav=await import('/navigation.js?v=46');nav.setAdminRoute(false);location.hash='#admin-tutorials';}")
     page.locator('#route-message').wait_for(state='visible');assert page.locator('#admin-tutorials').is_hidden()
   checks['single_admin_hub_three_routes_and_role_visibility']={'status':'passed','scope':'UI role state only; backend auth unchanged'}
 

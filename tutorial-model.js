@@ -1,5 +1,5 @@
-import {validatePriority} from './priority.js?v=44';
-import {validateExtendedBlock} from './tutorial-blocks.js?v=44';
+import {validatePriority} from './priority.js?v=46';
+import {validateExtendedBlock} from './tutorial-blocks.js?v=46';
 export const levels=['beginner','intermediate','advanced'];
 export const levelNames={mn:['Анхан шат','Дунд шат','Ахисан шат'],en:['Beginner','Intermediate','Advanced']};
 export function validateTutorial(t){
