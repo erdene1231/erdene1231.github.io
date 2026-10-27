@@ -1,3 +1,9 @@
+# Package04 source-review checkpoint —27 new records,6 baseline reviews
+
+New reviewed local tasks27/245 (AtCoder27/50); remaining IOI30,EGOI30,APIO15,JOI20,CF100,AtCoder23 =218. No production imports. AtCoder batches02/03 add24 individually source-reviewed records. Combined27 import validation and quota duplicate/evidence checks pass with no rejected records.
+Baseline CSES priority/hints reviewed6/748;6 rating-rationale proposals of30 prepared with source hashes, independent proof notes and revision guards;24 rationale reviews remain. See PART04-BASELINE-REVIEW-PATCH01.json and PART04-REVIEW-LEDGER.json. No rating numbers, hints or original IDs changed.
+Frontend/SQL unchanged from prior64-case Node pass; no redundant full rerun. Continue next23 AtCoder tasks, other-source quotas,742 baseline priority reviews and remaining checklist.
+
 # Package04 current checkpoint — 3 reviewed new tasks, CF URL normalization
 
 Draft PR20. Current Node64 pass; priority browser7 groups pass, dialog17 checks pass.
