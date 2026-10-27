@@ -1,0 +1,150 @@
+{
+  "scope": "anonymous HTTPS urllib default certificate verification; browser direct measurements blocked by Chromium trust store. No writes/account/session/provider settings.",
+  "assets": [
+    {
+      "path": "app.js?v=40",
+      "status": 200,
+      "headers_ms": 687,
+      "total_ms": 717,
+      "decoded_bytes": 31520,
+      "sha256": "ba0017b7f4a573d14aebde0b6c6f0f4c8a116a15f5f03510fa3efd3726ae940f"
+    },
+    {
+      "path": "config.js",
+      "status": 200,
+      "headers_ms": 571,
+      "total_ms": 571,
+      "decoded_bytes": 252,
+      "sha256": "984e4690a34866c090acc8d4d6bd8b41134a9aa5e9025da2f0692037da99034e"
+    },
+    {
+      "path": "learning.js?v=23",
+      "status": 200,
+      "headers_ms": 741,
+      "total_ms": 777,
+      "decoded_bytes": 34841,
+      "sha256": "0fd8233b60aa85dbb7e6e453e910f56e8f8c89f514a0e884f1a8b4b09591d8e6"
+    },
+    {
+      "path": "tutorials.js?v=23",
+      "status": 200,
+      "headers_ms": 470,
+      "total_ms": 485,
+      "decoded_bytes": 25259,
+      "sha256": "01cb5a6b53dbe8877ba0a4a74c03ac0b6e273e9c6300307e8d63fa962502a0be"
+    },
+    {
+      "path": "problems.json?v=16",
+      "status": 200,
+      "headers_ms": 566,
+      "total_ms": 981,
+      "decoded_bytes": 689473,
+      "sha256": "63cd9f03f75ba9172b38d431f175d334cfe9783bece6e391db84420999fd828e"
+    },
+    {
+      "path": "learning-model.js?v=23",
+      "status": 200,
+      "headers_ms": 182,
+      "total_ms": 183,
+      "decoded_bytes": 9037,
+      "sha256": "46fa5f8115318dd36579278b84e39022ab470419e17b9df8563c234f95884abe"
+    }
+  ],
+  "rpc": [
+    {
+      "name": "get_catalog",
+      "status": 200,
+      "headers_ms": 2623,
+      "total_ms": 3275,
+      "decoded_bytes": 613212,
+      "records": 748,
+      "rich_editorial_bodies": 0,
+      "statement_bodies": 0,
+      "hint_strings": 828
+    },
+    {
+      "name": "get_tutorials",
+      "status": 200,
+      "headers_ms": 1698,
+      "total_ms": 2970,
+      "decoded_bytes": 1314930,
+      "records": 55,
+      "rich_document_rows": 55
+    }
+  ],
+  "exact_dependency_assets": [
+    {
+      "path": "learning.js?v=40",
+      "status": 200,
+      "headers_ms": 590,
+      "total_ms": 621,
+      "decoded_bytes": 34841
+    },
+    {
+      "path": "tutorials.js?v=40",
+      "status": 200,
+      "headers_ms": 586,
+      "total_ms": 610,
+      "decoded_bytes": 25259
+    },
+    {
+      "path": "curriculum.json?v=23",
+      "status": 200,
+      "headers_ms": 798,
+      "total_ms": 943,
+      "decoded_bytes": 102072
+    },
+    {
+      "path": "study-plan.json?v=23",
+      "status": 200,
+      "headers_ms": 629,
+      "total_ms": 782,
+      "decoded_bytes": 103896
+    },
+    {
+      "path": "tutorial-editions.json?v=23",
+      "status": 200,
+      "headers_ms": 574,
+      "total_ms": 751,
+      "decoded_bytes": 145990
+    },
+    {
+      "path": "learning-problems.json?v=23",
+      "status": 200,
+      "headers_ms": 736,
+      "total_ms": 1058,
+      "decoded_bytes": 330618
+    }
+  ],
+  "recorded_at_utc": "2026-10-27T11:57:59.378573+00:00",
+  "browser_direct": {
+    "status": "blocked",
+    "action": "Chromium anonymous GET https://erdeneclub.com/#library",
+    "reason": "net::ERR_CERT_AUTHORITY_INVALID in browser trust store; urllib HTTPS default certificate verification succeeded200. No ignore-HTTPS/security override used.",
+    "first_usable_list_ms": null,
+    "js_parse_render_ms": null,
+    "signed_in_mobile_reproduction": "not run"
+  },
+  "findings": [
+    "Live index loads app.js?v=40, distinct from current undeployed PR branch.",
+    "Live v40 awaits seed problems.json and setupLearning (four content JSON files) before importing Supabase SDK and requesting get_catalog. Current branch inherited this dependency; local fix removes both prerequisites.",
+    "get_tutorials returns55rich documents, but starts after catalog in this bootstrap path; its large payload is not established as the first-list blocker.",
+    "Catalog RPC measured3275ms total/2623ms response headers,613212decoded bytes/748records; this includes network/TLS/server time, not measured SQL execution duration. No statement/editorial bodies in catalog."
+  ],
+  "limitations": [
+    "Single anonymous HTTP sample per RPC from cloud environment, not user device. Serial asset probes are not a browser waterfall and must not be summed as page time.",
+    "No authenticated session, live main-thread parse/render trace or first-usable list due Chromium certificate error.",
+    "Frontend fix is undeployed; no claim that live experience is already improved."
+  ],
+  "frontend_fix": {
+    "state": "local draft PR only, undeployed",
+    "cache_epoch": 48,
+    "changes": [
+      "Configured clients start authoritative catalog without a redundant seed download.",
+      "Tutorial seed and learning assets defer until catalog completes, except when the user explicitly opens a study route.",
+      "Learning UI initialization no longer awaits before catalog bootstrap; shared lightweight progress store preserves early attempt/solved dates and account isolation.",
+      "Statement/editorial bodies remain outside catalog and load only for the selected problem/actions."
+    ],
+    "verification": "audit/PART04-CATALOG-STARTUP.json; held4learning requests:old0catalog/0usable rows,new1catalog/100usable rows,no online seed; explicit early solved timestamp survives initialization."
+  }
+}

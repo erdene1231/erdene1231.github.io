@@ -1,10 +1,10 @@
-import {priorityLevel,priorityLabel} from './priority.js?v=47';
-import {CHECKS,canonicalKey,problemIndex,resolvePractice,tutorialMastery,dayCompletion,buildStatistics,weekStatistics,dateKey,addDays,monday,loadLearningContent,validateRelations,withArchivedProblems} from './learning-model.js?v=47';
+import {priorityLevel,priorityLabel} from './priority.js?v=48';
+import {CHECKS,canonicalKey,problemIndex,resolvePractice,tutorialMastery,dayCompletion,buildStatistics,weekStatistics,dateKey,addDays,monday,loadLearningContent,validateRelations,withArchivedProblems} from './learning-model.js?v=48';
 import {createLearningStore} from './learning-store.js?v=23';
-import {ratingLabel,difficultyLabel} from './catalog.js?v=47';
-import {avatarUrl} from './accounts.js?v=47';
-import {typeset} from './tutorials.js?v=47';
-import {view} from './tutorial-model.js?v=47';
+import {ratingLabel,difficultyLabel} from './catalog.js?v=48';
+import {avatarUrl} from './accounts.js?v=48';
+import {typeset} from './tutorials.js?v=48';
+import {view} from './tutorial-model.js?v=48';
 const $=id=>document.getElementById(id);
 const el=(tag,text,cls)=>{const x=document.createElement(tag);if(text!==undefined)x.textContent=text;if(cls)x.className=cls;return x;};
 const button=(text,action,cls)=>{const x=el('button',text,cls);x.type='button';x.onclick=action;return x;};
@@ -13,12 +13,12 @@ const checkMN=['Яагаад хэрэгтэйг тайлбарлаж чадна.
 const checkEN=['I can explain why it is useful.','I can justify its correctness.','I can derive time and space complexity.','I can implement it without the reference.','I can identify common mistakes with counterexamples.'];
 const statusText=(status,en=false)=>status==='solved'?(en?'✓ Solved':'✓ Бодсон'):status==='trying'?(en?'◷ Attempting':'◷ Оролдож байгаа'):(en?'○ Not started':'○ Эхлээгүй');
 export async function setupLearning(ctx) {
- const content=await loadLearningContent();let topics=[],admin=false,scheduled=false,importBusy=false,accountId,profileToken=0,profileData=null,viewed=null,profileLoading=false,weekOffset=0,tutorialStatusRefresh,lastTutorial;
+ const content=await loadLearningContent();let topics=[],admin=ctx.isAdmin?.()===true,scheduled=false,importBusy=false,accountId,profileToken=0,profileData=null,viewed=null,profileLoading=false,weekOffset=0,tutorialStatusRefresh,lastTutorial;
  let indexedProblems,indexedMap;
  const index=()=>{const ps=ctx.problems();if(ps!==indexedProblems){indexedProblems=ps;indexedMap=problemIndex(ps);}return indexedMap;};
  const allProblems=()=>content.catalog.problems.concat(ctx.problems());
  const message=text=>{if($('learning-save-status'))$('learning-save-status').textContent=text;if($('learning-retry-save'))$('learning-retry-save').hidden=!ctx.user();};
- const store=createLearningStore({...ctx,message},schedule),recordFor=id=>store.get('tutorial',id);
+ const store=ctx.learningStore||createLearningStore({...ctx,message},schedule),recordFor=id=>store.get('tutorial',id);
  let relationTopics,relationProblems,relationMap,problemLessons;
  function ensureRelations(){if(relationTopics===topics&&relationProblems===ctx.problems())return;relationTopics=topics;relationProblems=ctx.problems();relationMap=new Map();problemLessons=new Map();const known=allProblems();
   for(const[id,base]of Object.entries(content.curriculum.lessons)){let rel=base;const t=topics.find(t=>t.id===id);if(t?.learningRelations)try{rel={...base,...validateRelations(t.learningRelations,id,topics,known)};}catch{}relationMap.set(id,rel);
@@ -110,7 +110,7 @@ export async function setupLearning(ctx) {
  function render(){for(const box of document.querySelectorAll('#tutorial-learning-extras [data-tutorial-id]'))for(const input of box.querySelectorAll('[data-tutorial-check]'))input.checked=(recordFor(box.dataset.tutorialId).checks||[]).includes(input.dataset.tutorialCheck);if(location.hash==='#tutorials')ctx.refreshTutorialLibrary?.();for(const card of document.querySelectorAll('#tutorial-learning-extras .learning-problem[data-problem-id],#tutorial-content .learning-problem[data-problem-id],#tutorial-preview-content .learning-problem[data-problem-id]')){const id=card.dataset.problemId,status=ctx.progress()[id]?.status||'new',en=card.dataset.lang==='en',badge=card.querySelector('.badge');if(badge){badge.className='badge '+status;badge.textContent=statusText(status,en);}const saved=card.querySelector('[data-bookmark]');if(saved)saved.textContent=store.get('bookmark',id).saved?(en?'Saved ✓':'Хадгалсан ✓'):(en?'Save for later':'Дараа бодох');}tutorialStatusRefresh?.();const state=store.get('plan',content.plan.id);if(state.startedAt){const summary=planSummary(),completedDays=content.plan.days.filter((_,i)=>summary.values[i].complete).map(d=>d.day),firstIncomplete=summary.values.findIndex(x=>!x.complete),currentDay=firstIncomplete<0?100:firstIncomplete+1;if(JSON.stringify(state.completedDays||[])!==JSON.stringify(completedDays)||state.currentDay!==currentDay)store.set('plan',content.plan.id,{...state,completedDays,currentDay});}if(location.hash.startsWith('#plan'))renderPlan();if(location.hash.startsWith('#profile'))renderProfile();if(location.hash==='#learning-admin'&&!importBusy)renderAdmin();}
  async function accountChanged(){const next=ctx.user()?.id||null;if(next===accountId)return;accountId=next;const loading=store.accountChanged();if(location.hash.startsWith('#profile'))void loadProfile();await loading;}
  window.addEventListener('hashchange',()=>{if(location.hash.startsWith('#profile'))void loadProfile();else{profileToken++;render();}});window.addEventListener('erdene-admin',e=>{const next=e.detail===true,changed=admin!==next;admin=next;if(!admin)document.querySelectorAll('[data-admin-reasons]').forEach(x=>x.remove());if(changed&&lastTutorial){const {t,lang,parent}=lastTutorial;parent.replaceChildren();renderTutorial(t,lang,parent);}render();});$('learning-retry-save')?.addEventListener('click',()=>void store.flush());await store.accountChanged();if(location.hash.startsWith('#profile'))void loadProfile();render();
- return {store,content,render,accountChanged,relationsFor,problemsForRelations:()=>ctx.problems(),progressForPicker:()=>ctx.progress(),renderTutorial,lessonRecord:recordFor,
+ return {store,content,render,storeChanged:schedule,accountChanged,relationsFor,problemsForRelations:()=>ctx.problems(),progressForPicker:()=>ctx.progress(),renderTutorial,lessonRecord:recordFor,
   renderEmbeddedProblem(key,parent,lang='mn'){const problem=index().get(key);if(problem)parent.append(problemCard({key,problem},lang));else parent.append(el('p',lang==='en'?'Linked problem is unavailable.':'Холбосон бодлого одоогоор боломжгүй.','learning-note'));},
   setTopics(value){topics=value;render();ctx.redraw?.();},
   planDaysFor:p=>content.plan.days.filter(d=>d.required.includes(typeof p==='string'?p:canonicalKey(p))||d.challenge.includes(typeof p==='string'?p:canonicalKey(p))).map(d=>d.day),

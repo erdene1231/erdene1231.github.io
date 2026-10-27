@@ -1,19 +1,21 @@
-import {setupProblemEditorial} from './problem-editorial.js?v=47';
-import {appendHintText} from './hint-content.js?v=47';
-import {canonicalProblemUrl} from './problem-url.js?v=47';
-import {priorityLevel,priorityLabel,isHighPriority,ratingClass} from './priority.js?v=47';
-import {setupLearning} from './learning.js?v=47';
-import {setupTutorials,typeset} from './tutorials.js?v=47';
+import {createLearningStore} from './learning-store.js?v=23';
+import {setupProblemStatement} from './problem-statement.js?v=48';
+import {setupProblemEditorial} from './problem-editorial.js?v=48';
+import {appendHintText} from './hint-content.js?v=48';
+import {canonicalProblemUrl} from './problem-url.js?v=48';
+import {priorityLevel,priorityLabel,isHighPriority,ratingClass} from './priority.js?v=48';
+import {setupLearning} from './learning.js?v=48';
+import {setupTutorials,typeset} from './tutorials.js?v=48';
 import {setupGroups} from './groups.js?v=20';
-let tutorialUI, learningUI=null,hintRenderTurn=0,problemEditorialUI;
-import {CURRENT_EMPTY,cleanProgress,parseCurrentBackup,progressRows} from './progress.js?v=47';
+let tutorialUI, learningUI=null,hintRenderTurn=0,problemEditorialUI,problemStatementUI,learningProgressStore;
+import {CURRENT_EMPTY,cleanProgress,parseCurrentBackup,progressRows} from './progress.js?v=48';
 import {getSolvers} from './community.js?v=6';
-import {setupAdmin} from './admin.js?v=47';
-import {parseCatalog,hintTexts,getSources} from './problem-store.js?v=47';
-import {rpc} from './accounts.js?v=47';
-import {ownProfile,saveOwnProfile,avatarUrl,accountError} from './accounts.js?v=47';
-import {setupSocial} from './social.js?v=47';
-import {filterProblems, getTags, ratingLabel,difficultyLabel} from './catalog.js?v=47';
+import {setupAdmin} from './admin.js?v=48';
+import {parseCatalog,hintTexts,getSources} from './problem-store.js?v=48';
+import {rpc} from './accounts.js?v=48';
+import {ownProfile,saveOwnProfile,avatarUrl,accountError} from './accounts.js?v=48';
+import {setupSocial} from './social.js?v=48';
+import {filterProblems, getTags, ratingLabel,difficultyLabel} from './catalog.js?v=48';
 const $ = id => document.getElementById(id);
 const STATUS = {new:'Эхлээгүй',trying:'Оролдож байгаа',solved:'Бодсон'};
 let data, selectedProblem, state={}, dirty={}, user=null, client=null, loading=false, syncing=false, syncAgain=false, epoch=0;
@@ -43,7 +45,7 @@ function persist() {
   catch {notice('Browser хадгалалт боломжгүй байна. Хуудсаа хаахаас өмнө progress-оо татаж аваарай.');return false;}
 }
 function entry(id) {return state[id] || {...CURRENT_EMPTY};}
-function setEntry(id, patch) {if(loading)return; const before=entry(id).status;state[id]=cleanProgress({...entry(id),...patch});learningUI?.progressChanged(id,before,state[id].status);if(before!==state[id].status){if(['trying','solved'].includes(state[id].status))activityPending[id]={};else delete activityPending[id];}dirty[id]=state[id];const saved=persist();render();if(user)void sync();else if(saved)notice('Progress энэ browser-т хадгалагдлаа.');}
+function setEntry(id, patch) {if(loading)return; const before=entry(id).status;state[id]=cleanProgress({...entry(id),...patch});if(learningUI)learningUI.progressChanged(id,before,state[id].status);else learningProgressStore?.recordTransition(id,before,state[id].status);if(before!==state[id].status){if(['trying','solved'].includes(state[id].status))activityPending[id]={};else delete activityPending[id];}dirty[id]=state[id];const saved=persist();render();if(user)void sync();else if(saved)notice('Progress энэ browser-т хадгалагдлаа.');}
 function el(tag, cls, text) {const node=document.createElement(tag); if(cls)node.className=cls;if(text!==undefined)node.textContent=text;return node;}
 function renderHome() {
   const active=data.problems.filter(problem=>entry(problem.id).status==='trying');
@@ -103,7 +105,7 @@ function openProblem(p){
  const origin={...problemSnapshot(),problemId:p.id};history.replaceState({...history.state,erdeneProblemReturn:origin},'');history.pushState({erdeneProblemOrigin:origin},'',hash);window.dispatchEvent(new HashChangeEvent('hashchange'));
 }
 function resetHintView(){revealedHintCount=0;hiddenHints.clear();hintPanelOpen=false;}
-function leaveProblem(){resetHintView();solverRequest++;selectedProblem=null;hintRenderTurn++;problemEditorialUI?.clear();try{window.MathJax?.typesetClear?.([$ ('hint-list')]);}catch{}$('hint-list').replaceChildren();}
+function leaveProblem(){resetHintView();solverRequest++;selectedProblem=null;hintRenderTurn++;problemEditorialUI?.clear();problemStatementUI?.clear();try{window.MathJax?.typesetClear?.([$ ('hint-list')]);}catch{}$('hint-list').replaceChildren();}
 function syncProblemRoute(){
  const previous=previousProblemHash;previousProblemHash=location.hash;
  if(!/^#problem\//.test(location.hash)){
@@ -118,7 +120,7 @@ function syncProblemRoute(){
 }
 function showProblemPage(p) {$('problem-share').disabled=false;$('problem-back').textContent=history.state?.erdeneProblemOrigin?.hash&&history.state.erdeneProblemOrigin.hash!=='#library'?'← Буцах':'← Бодлогын жагсаалт';const changed=selectedProblem?.id!==p.id;selectedProblem=p;if(changed){detailTagsShown=false;resetHintView();}$('problem-detail-body').hidden=false;$('problem-route-state').textContent='';$('problem-retry').hidden=true;$('detail-title').textContent=(isHighPriority(p)?'★ ':'')+p.title;$('detail-source').textContent='#'+p.number+' · '+p.source+' · '+p.ref;$('detail-note').textContent=(p.ratingKind==='unrated'?'Үнэлгээгүй':p.ratingKind==='official'?'CF албан rating':'CF difficulty-ийн баримжаа'+(p.ratingConfidence==='rough'?' · Урьдчилсан үнэлгээ':''))+(p.level==='Interactive'?' · Interactive':'')+(p.source==='EGOI'?' · Full task; subtask-аас эхэл':'')+' · '+priorityLabel(p);const detailRating=el('span','rating '+ratingClass(p),ratingLabel(p));$('detail-note').prepend(detailRating,document.createTextNode(' · '));$('problem-link').href=p.url;if(changed)$('notes').value=entry(p.id).notes;$('detail-feedback').textContent='';document.title=p.title+' — Erdene Club';renderDetail();if(changed){void loadSolvers();requestAnimationFrame(()=>$('detail-title').focus({preventScroll:true}));}}
 function renderDetail() {
-  if(!selectedProblem)return;problemEditorialUI?.render(selectedProblem);const p=selectedProblem,e=entry(p.id),tagsVisible=$('show-tags').checked||detailTagsShown||e.status==='solved',learningLinks=$('detail-learning-links');learningLinks.replaceChildren();if(tagsVisible){for(const t of learningUI?.linksForProblem(p)||[]){const a=el('a','',(t.primary?'Үндсэн · ':'')+t.title);a.href='#tutorial/'+t.id;learningLinks.append(a);}}learningUI?.renderProblemLinks(p,learningLinks);const hintCount=hintTexts(p,'mn').length;$('hint-list').closest('.hints').hidden=priorityLevel(p)==='low'||!hintPanelOpen;$('problem-hints-button').hidden=priorityLevel(p)==='low'||!hintCount;$('problem-hints-button').setAttribute('aria-expanded',String(hintPanelOpen));$('problem-editorial-button').hidden=priorityLevel(p)!=='high'&&!p.hasEditorial&&!p.editorial;$('problem-admin-edit').hidden=!problemAdminAllowed;$('hint-language').closest('label').hidden=!hintCount;$('problem-status').value=e.status;$('problem-status').disabled=loading;$('notes').disabled=loading;$('save-note').disabled=loading;const hintTurn=++hintRenderTurn;try{window.MathJax?.typesetClear?.([$ ('hint-list')]);}catch{}const hintBody=el('div','hint-render-body');$('hint-list').replaceChildren(hintBody);
+  if(!selectedProblem)return;problemEditorialUI?.render(selectedProblem);problemStatementUI?.render(selectedProblem);const p=selectedProblem,e=entry(p.id),tagsVisible=$('show-tags').checked||detailTagsShown||e.status==='solved',learningLinks=$('detail-learning-links');learningLinks.replaceChildren();if(tagsVisible){for(const t of learningUI?.linksForProblem(p)||[]){const a=el('a','',(t.primary?'Үндсэн · ':'')+t.title);a.href='#tutorial/'+t.id;learningLinks.append(a);}}learningUI?.renderProblemLinks(p,learningLinks);const hintCount=hintTexts(p,'mn').length;$('hint-list').closest('.hints').hidden=priorityLevel(p)==='low'||!hintPanelOpen;$('problem-hints-button').hidden=priorityLevel(p)==='low'||!hintCount;$('problem-hints-button').setAttribute('aria-expanded',String(hintPanelOpen));$('problem-editorial-button').hidden=priorityLevel(p)!=='high'&&!p.hasEditorial&&!p.editorial;$('problem-admin-edit').hidden=!problemAdminAllowed;$('hint-language').closest('label').hidden=!hintCount;$('problem-status').value=e.status;$('problem-status').disabled=loading;$('notes').disabled=loading;$('save-note').disabled=loading;const hintTurn=++hintRenderTurn;try{window.MathJax?.typesetClear?.([$ ('hint-list')]);}catch{}const hintBody=el('div','hint-render-body');$('hint-list').replaceChildren(hintBody);
   hintTexts(p,hintLanguage).slice(0,revealedHintCount).forEach((hint,i)=>{const h=el('div','hint');const text=el('span');appendHintText(text,hint);h.append(el('b','','HINT '+(i+1)),text);hintBody.append(h);});
   const hintsVisible=!hiddenHints.has(p.id);
   $('hint-list').hidden=!hintsVisible;
@@ -134,7 +136,7 @@ function renderDetail() {
 }
 async function switchUser(next) {
   if(user?.id===next?.id)return;
-  const turn=++epoch;user=next;username=null;myProfile=null;if(avatarPreviewUrl){URL.revokeObjectURL(avatarPreviewUrl);avatarPreviewUrl=null;}for(const id of ['full-name','first-name','last-name','school','avatar-file'])$(id).value='';$('legacy-name-note').textContent='';$('remove-avatar').checked=false;renderOwnAvatar();profileLoading=false;profileSaving=false;$('username').value='';$('profile-feedback').textContent='';loading=!!user;resetHintView();readLocal();render();updateAccount();if(selectedProblem){$('notes').value=entry(selectedProblem.id).notes;renderDetail();void loadSolvers();}
+  const turn=++epoch;user=next;username=null;myProfile=null;if(avatarPreviewUrl){URL.revokeObjectURL(avatarPreviewUrl);avatarPreviewUrl=null;}for(const id of ['full-name','first-name','last-name','school','avatar-file'])$(id).value='';$('legacy-name-note').textContent='';$('remove-avatar').checked=false;renderOwnAvatar();profileLoading=false;profileSaving=false;$('username').value='';$('profile-feedback').textContent='';loading=!!user;resetHintView();problemStatementUI?.clear();problemEditorialUI?.clear();readLocal();void learningProgressStore?.accountChanged();render();updateAccount();if(selectedProblem){$('notes').value=entry(selectedProblem.id).notes;renderDetail();void loadSolvers();}
   if(user) {
     void loadProfile();
     try {
@@ -222,8 +224,13 @@ async function refreshCatalog(){if(!client){catalogLoading=false;render();notice
 async function init() {
   const filterPanel=$('catalog-filter-panel'),smallScreen=matchMedia('(max-width:700px)');if(filterPanel){filterPanel.open=!smallScreen.matches;smallScreen.addEventListener('change',event=>{filterPanel.open=!event.matches;});}
 
-  const response=await fetch('./problems.json?v=16', {cache:'no-store'});if(!response.ok)throw new Error('Бодлогын санг ачаалж чадсангүй.');data=await response.json();data.problems=data.problems.map(p=>({...p,url:canonicalProblemUrl(p.url)}));catalogIds=new Set(data.problems.map(p=>p.id));catalogLoading=configured;
+  data={problems:[],sources:[]};catalogLoading=configured;
+  // Configured clients use the authoritative catalog, without first downloading
+  // a seed that cannot be used until that request completes.
+  if(!configured){const response=await fetch('./problems.json?v=16',{cache:'no-store'});if(!response.ok)throw new Error('Бодлогын санг ачаалж чадсангүй.');data=await response.json();data.problems=data.problems.map(p=>({...p,url:canonicalProblemUrl(p.url)}));}
+  catalogIds=new Set(data.problems.map(p=>p.id));
   try{const cached=parseCatalog(JSON.parse(localStorage.getItem('think-cp:online-catalog')||'null'));data.problems=cached.problems;data.sources=cached.sources||[];for(const id of cached.knownIds)catalogIds.add(id);}catch{}
+  learningProgressStore=createLearningStore({client:()=>client,user:()=>user,message:text=>{if($('learning-save-status'))$('learning-save-status').textContent=text;if($('learning-retry-save'))$('learning-retry-save').hidden=!user;}},()=>learningUI?.storeChanged());void learningProgressStore.accountChanged();
   readLocal();render();updateAccount();
   populateTags();populateSources();
   $('hint-language').value=hintLanguage;
@@ -250,12 +257,18 @@ async function init() {
   $('problem-share').onclick=async()=>{if(!selectedProblem)return;const url=location.origin+location.pathname+'#problem/'+encodeURIComponent(selectedProblem.id);try{await navigator.clipboard.writeText(url);$('problem-share-message').textContent='Бодлогын холбоос хуулагдлаа.';}catch{$('problem-share-url').hidden=false;$('problem-share-url').value=url;$('problem-share-url').select();$('problem-share-message').textContent='Холбоосыг сонгон хуулна уу.';}};
   window.addEventListener('hashchange',syncProblemRoute);
   $('account').onclick=()=>{updateAccount();$('auth').showModal();};
-  tutorialUI=setupTutorials({requiresOnline:configured,problems:()=>data.problems,progress:()=>state,client:()=>client,user:()=>user,learning:()=>learningUI});
   groupUI=setupGroups({client:()=>client,user:()=>user,openAccount:()=>{$('account').onclick();}});
+  problemStatementUI=setupProblemStatement($('problem-statement'),{client:()=>client,user:()=>user,active:id=>selectedProblem?.id===id&&problemPageActive()});
   problemEditorialUI=setupProblemEditorial($('problem-editorial'),{client:()=>client,user:()=>user,active:id=>selectedProblem?.id===id&&problemPageActive()});
   social=setupSocial({client:()=>client,user:()=>user,problems:()=>data.problems,openProblem,viewProfile:id=>{if(learningUI)location.hash='#profile/'+id;else void social?.openProfile(id);},openAccount:()=>{$('account').onclick();},notice});
   adminUI=setupAdmin({progress:()=>state,client:()=>client,user:()=>user,refreshCatalog,sources:()=>getSources(data.problems,data.sources||[])});
-  try{learningUI=await setupLearning({client:()=>client,user:()=>user,profile:()=>myProfile,problems:()=>data.problems,progress:()=>state,openProblem,refreshCatalog,redraw:render,refreshDetail:renderDetail,refreshTutorialLibrary:()=>tutorialUI?.refreshStatus(),openAccount:()=>{$('account').onclick();},socialProfile:id=>social.openProfile(id)});tutorialUI.refreshLearning();render();}catch{for(const id of ['learning-profile-body','study-plan-body','learning-admin-body'])$(id).textContent='Сургалтын хэсэг түр ачаалсангүй. Хуудсаа дахин ачаална уу.';}
+  let studyStarted=false;
+  function startStudy(){if(studyStarted)return;studyStarted=true;
+  tutorialUI=setupTutorials({requiresOnline:configured,problems:()=>data.problems,progress:()=>state,client:()=>client,user:()=>user,learning:()=>learningUI});
+  void setupLearning({learningStore:learningProgressStore,isAdmin:()=>problemAdminAllowed,client:()=>client,user:()=>user,profile:()=>myProfile,problems:()=>data.problems,progress:()=>state,openProblem,refreshCatalog,redraw:render,refreshDetail:renderDetail,refreshTutorialLibrary:()=>tutorialUI?.refreshStatus(),openAccount:()=>{$('account').onclick();},socialProfile:id=>social.openProfile(id)}).then(ui=>{learningUI=ui;learningUI.accountChanged();tutorialUI.refreshLearning();render();if(selectedProblem)renderDetail();}).catch(()=>{for(const id of ['learning-profile-body','study-plan-body','learning-admin-body'])$(id).textContent='Сургалтын хэсэг түр ачаалсангүй. Хуудсаа дахин ачаална уу.';});
+  }
+  const studyRoute=()=>/^#(?:tutorial|plan|profile|learning-admin)/.test(location.hash)||location.hash==='#admin-tutorials';
+  if(!configured||studyRoute())startStudy();window.addEventListener('hashchange',()=>{if(studyRoute())startStudy();});
   try{const density=localStorage.getItem('erdene:problem-density');$('problem-density').value=['comfortable','compact','minimalist'].includes(density)?density:'comfortable';}catch{}$('problem-density').onchange=()=>{try{localStorage.setItem('erdene:problem-density',$('problem-density').value);}catch{}render();};render();
   $('avatar-file').onchange=()=>{if(avatarPreviewUrl)URL.revokeObjectURL(avatarPreviewUrl);avatarPreviewUrl=null;const file=$('avatar-file').files?.[0];if(file){avatarPreviewUrl=URL.createObjectURL(file);$('remove-avatar').checked=false;}renderOwnAvatar();};
   $('remove-avatar').onchange=()=>{if($('remove-avatar').checked){$('avatar-file').value='';if(avatarPreviewUrl)URL.revokeObjectURL(avatarPreviewUrl);avatarPreviewUrl=null;$('own-avatar').hidden=true;$('own-avatar-fallback').hidden=false;}else renderOwnAvatar();};
@@ -279,10 +292,10 @@ async function init() {
     try {
       const {createClient}=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');client=createClient(cfg.supabaseUrl,cfg.supabaseKey);
       client.auth.onAuthStateChange((event,session)=>{social.authEvent(event,session);setTimeout(()=>void switchUser(session?.user || null),0);});
-      await refreshCatalog();
+      await refreshCatalog();startStudy();
       const {data:sessionData,error}=await client.auth.getSession();if(error)throw error;await switchUser(sessionData.session?.user || null);updateAccount();social.connected();adminUI.connected();tutorialUI.connected();groupUI.connected();
     } catch(error){client=null;catalogLoading=false;render();updateAccount();notice('Account холболт ажилласангүй: '+error.message);}
   }
-  syncProblemRoute();
+  startStudy();syncProblemRoute();
 }
 init().catch(error=>{$('problems').textContent=error.message;$('detail-title').textContent='Бодлого ачаалсангүй';$('problem-route-state').textContent='Холболтоо шалгаад хуудсаа дахин ачаална уу.';$('problem-retry').hidden=false;notice('Хуудсаа дахин ачаалаарай.');});

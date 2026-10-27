@@ -1,6 +1,7 @@
-import {validateTutorial} from './tutorial-model.js?v=47';
-import {canonicalProblemUrl,problemUrlIdentity} from './problem-url.js?v=47';
-import {validatePriority,priorityLevel,isHighPriority} from './priority.js?v=47';
+import {assertProblemStatementReady} from './problem-statement-policy.js?v=48';
+import {validateTutorial} from './tutorial-model.js?v=48';
+import {canonicalProblemUrl,problemUrlIdentity} from './problem-url.js?v=48';
+import {validatePriority,priorityLevel,isHighPriority} from './priority.js?v=48';
 export function validateSource(value) {
  if(typeof value!=='string')throw new Error('Source нэр оруулна уу.');
  const name=value.trim().replace(/\s+/g,' ');
@@ -32,6 +33,7 @@ export function validateProblem(input) {
  for(const key of ['sourceId','sourceCategory','verifiedAt','difficultyCategory','ratingBasis','ratingConfidence','ratingEstimatedAt'])if(typeof input[key]==='string'&&input[key].length<=500)p[key]=input[key];
  for(const key of ['ratingSource','ratingVerifiedAt'])if(Object.hasOwn(input,key)){if(typeof input[key]!=='string'||input[key].length>500||(key==='ratingSource'&&!validUrl(input[key])))throw new Error('Rating provenance талбар буруу байна.');p[key]=input[key];}
  if(Object.hasOwn(input,'sourceTags')){if(!Array.isArray(input.sourceTags)||input.sourceTags.length>20||input.sourceTags.some(t=>typeof t!=='string'||!/^[a-zA-Z0-9 +/&()_*-]{1,50}$/.test(t)))throw new Error('Source tags буруу байна.');p.sourceTags=[...input.sourceTags];}
+ if(Object.hasOwn(input,'statement')){if(input.statement!==null){assertProblemStatementReady(input);p.statementProvenance=structuredClone(input.statementProvenance);}p.statement=structuredClone(input.statement);}
  if(Object.hasOwn(input,'editorial')){if(input.editorial!==null)validateTutorial(input.editorial);p.editorial=structuredClone(input.editorial);}
  if(Object.hasOwn(input,'priorityLevel'))p.priorityLevel=priorityLevel(input);if(Object.hasOwn(input,'priorityReason'))p.priorityReason=input.priorityReason;
  return p;

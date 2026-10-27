@@ -1,8 +1,8 @@
-import {priorityLevel} from './priority.js?v=47';
-import {validateTutorial} from './tutorial-model.js?v=47';
-import {drawArticle,typeset} from './tutorials.js?v=47';
-import {mountBlockEditor} from './tutorial-block-editor.js?v=47';
-import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=47';
+import {priorityLevel} from './priority.js?v=48';
+import {validateTutorial} from './tutorial-model.js?v=48';
+import {drawArticle,typeset} from './tutorials.js?v=48';
+import {mountBlockEditor} from './tutorial-block-editor.js?v=48';
+import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=48';
 const node=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const clearMath=root=>{try{window.MathJax?.typesetClear?.([root]);}catch{}};
 const missing='Editorial одоогоор бэлтгэгдэж байна.';

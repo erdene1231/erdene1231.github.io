@@ -1,5 +1,5 @@
 import {createReportLatex, createReportPdf} from './group-document.js?v=19';
-import {rpc} from './accounts.js?v=47';
+import {rpc} from './accounts.js?v=48';
 import {createReportWorkbook, todayInMongolia, validDate, weekday, shiftDate, dateRange, filterWeekdays, selectReportRows} from './group-export.js?v=20';
 
 const MARKUP = `

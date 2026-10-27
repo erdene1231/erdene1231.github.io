@@ -20,7 +20,7 @@ try:
    for width,theme in [(375,'light'),(1200,'dark')]:
     page.set_viewport_size({'width':width,'height':950});page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
     result=page.evaluate(r'''async(doc)=>{
-     const {validateTutorial}=await import('/tutorial-model.js?v=47'),{mountBlockEditor}=await import('/tutorial-block-editor.js?v=47'),{drawArticle,typeset}=await import('/tutorials.js?v=47');
+     const {validateTutorial}=await import('/tutorial-model.js?v=48'),{mountBlockEditor}=await import('/tutorial-block-editor.js?v=48'),{drawArticle,typeset}=await import('/tutorials.js?v=48');
      validateTutorial(doc);const copy=JSON.parse(JSON.stringify(doc)),editor=document.createElement('div'),reader=document.createElement('article');reader.className='tutorial-content';fixture.replaceChildren(editor,reader);
      const mounted=mountBlockEditor(editor,copy.sections,{changed:()=>{}});const input=editor.querySelector('.block-rich-input');input.textContent='Changed proof <img src=x onerror=alert(1)>';input.dispatchEvent(new Event('input',{bubbles:true}));
      validateTutorial(copy);copy.sections[0].blocks.push({type:'rich',content:[{text:'Хилүүд $L$, $R$ ба хэмжээ $n$, $m$. ',marks:[]},{text:'n + m',marks:['code']}]});copy.sections[0].blocks.push({type:'math',tex:'\\frac{x_1}{2}\\le y'});await typeset([reader],()=>drawArticle(copy,reader,'mn'));mounted.destroy();

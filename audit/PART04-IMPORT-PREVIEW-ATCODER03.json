@@ -8,8 +8,16 @@
     "priorityReason": "Tree-ийн bipartite шинж ба pigeonhole argument-аар хүнд мэт optimization-ийг constructive сонголт болгох чухал ажиглалт.",
     "rating": 1500,
     "ratingKind": "estimated",
-    "hints": [],
-    "hintsEn": [],
+    "hints": [
+      "Модыг depth parity-аар хоёр өнгөөр будахад нэг өнгийн хоёр орой залгаа байж болох уу?",
+      "Хоёр color class-ийн ядаж нэг нь $N/2$-оос багагүй оройтой.",
+      "BFS/DFS-аар bipartition хийгээд том class-аас дурын $N/2$ орой хэвлэ. Maximum independent set бодох шаардлагагүй."
+    ],
+    "hintsEn": [
+      "Color the tree by depth parity. Can two vertices of the same color be adjacent?",
+      "At least one of the two color classes has size at least $N/2$.",
+      "Use BFS/DFS to bipartition the tree, then output any $N/2$ vertices from a large enough class; no maximum independent-set DP is needed."
+    ],
     "tags": [
       "bipartite graphs"
     ],
@@ -18,7 +26,139 @@
     "ratingBasis": "Rough CF-scale calibration: Tree bipartition plus pigeonhole construction of N/2 independent vertices; basic traversal with an extremal argument. Not official.",
     "ratingConfidence": "rough",
     "ratingEstimatedAt": "2026-10-27",
-    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_z"
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_z",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-z",
+      "title": "Independent Set on a Tree — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Bipartition",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Модонд root сонгож depth parity-аар өнгө өг. Ирмэг бүр parent-child тул endpoint-уудын parity ялгаатай. Иймээс нэг color class дотор ирмэг огт байхгүй, тэр class бүхэлдээ independent set.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Яагаад хүрэлцэх вэ?",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Хоёр class-ийн хэмжээ нийлээд тэгш $N$ болно. Pigeonhole principle-аар нэг нь ядаж $N/2$ хэмжээтэй. Түүнээс ямар ч $N/2$ орой авахад adjacency үүсэхгүй. Энэ нь яг шаардсан хэмжээний witness өгнө; хамгийн их independent set-ийн хэмжээ олох шаардлагагүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Өртөг ба сонголт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Нэг BFS нь $O(N)$ хугацаа, adjacency list ба queue нь $O(N)$ санах ой. Class-ийн хэмжээ тэнцүү бол аль нь ч зөв. Output олон зөв хувилбартай тул sample-ийн яг тексттэй тэнцүүлэхийн оронд хэмжээ, ялгаатай байдал, adjacency predicate-ийг шалгана.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, preprocessing ба гол алхам",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "color",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийн $-1$ нь үзээгүй орой, $0/1$ нь parity. Queue-оос орой гаргах бүрт ",
+                  "marks": []
+                },
+                {
+                  "text": "classes[color]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-д цуглуулж, үзээгүй хөршид эсрэг өнгө өгнө.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — үр дүн ба output",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Том class-ийг сонгож эхний $N/2$ оройг $1$-based дугаараар хэвлэнэ. Бүх оройг хэвлэхгүй; яг шаардсан тоог хязгаарлана.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 implementation",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> graph(n);\n    for (int i = 0; i < n - 1; ++i) {\n        int first, second;\n        cin >> first >> second;\n        --first;\n        --second;\n        graph[first].push_back(second);\n        graph[second].push_back(first);\n    }\n    vector<int> color(n, -1);\n    array<vector<int>, 2> classes;\n    queue<int> pending;\n    pending.push(0);\n    color[0] = 0;\n    while (!pending.empty()) {\n        int vertex = pending.front();\n        pending.pop();\n        classes[color[vertex]].push_back(vertex);\n        for (int next : graph[vertex]) {\n            if (color[next] != -1) continue;\n            color[next] = color[vertex] ^ 1;\n            pending.push(next);\n        }\n    }\n    const auto& chosen = classes[0].size() >= static_cast<size_t>(n / 2) ? classes[0] : classes[1];\n    for (int i = 0; i < n / 2; ++i) cout << chosen[i] + 1 << (i + 1 == n / 2 ? '\\n' : ' ');\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Албан statement болон author solution-ийн алгоритмыг тулгаж, тайлбар ба implementation-ийг шинээр бичсэн. Албан code-ийг хуулсан хувилбар биш.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_z"
+                },
+                {
+                  "label": "Official author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/026.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
   },
   {
     "source": "AtCoder",

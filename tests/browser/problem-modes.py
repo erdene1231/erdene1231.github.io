@@ -73,15 +73,15 @@ try:
    page.set_viewport_size({'width':width,'height':950})
    for theme in ['light','dark']:
     page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
-    page.evaluate("async()=>{const nav=await import('/navigation.js?v=47');nav.setAdminRoute(false);location.hash='#admin';}")
+    page.evaluate("async()=>{const nav=await import('/navigation.js?v=48');nav.setAdminRoute(false);location.hash='#admin';}")
     page.locator('#route-message').wait_for(state='visible');assert page.locator('#admin').is_hidden();assert page.locator('#admin-nav').is_hidden()
-    page.evaluate("async()=>{const nav=await import('/navigation.js?v=47');nav.setAdminRoute(true);location.hash='#admin';}")
+    page.evaluate("async()=>{const nav=await import('/navigation.js?v=48');nav.setAdminRoute(true);location.hash='#admin';}")
     page.locator('#admin').wait_for(state='visible');assert page.locator('.site-nav [data-route=admin]').count()==1
     for target in ['admin-section','admin-tutorials','learning-admin']:
      page.locator('#admin a[href="#'+target+'"]').click();page.locator('#'+target).wait_for(state='visible')
      assert page.locator('#admin-nav').get_attribute('aria-current')=='page'
      page.locator('#'+target+' .admin-back').click();page.locator('#admin').wait_for(state='visible')
-    page.evaluate("async()=>{const nav=await import('/navigation.js?v=47');nav.setAdminRoute(false);location.hash='#admin-tutorials';}")
+    page.evaluate("async()=>{const nav=await import('/navigation.js?v=48');nav.setAdminRoute(false);location.hash='#admin-tutorials';}")
     page.locator('#route-message').wait_for(state='visible');assert page.locator('#admin-tutorials').is_hidden()
   checks['single_admin_hub_three_routes_and_role_visibility']={'status':'passed','scope':'UI role state only; backend auth unchanged'}
 
