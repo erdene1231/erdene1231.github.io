@@ -1,3 +1,7 @@
+# Lightweight selection batch05 —151/245 eligible,94 remaining
+
+JOI20/20national-final selections prepared from organizer-attributed AtCoder task pages. SourceJOI determines quota,not hosting domain;no AtCoder double credit. Deliberately excluded existing2018DCommuter Pass and2019DCoin Collecting. Each new row has teaching usefulness,tags,individual priority and rough CF-scale rating/provenance. No statement/editorial/proof/C++authoring or baseline review. Coverage:AtCoder50/50,CF42/100,IOI8/30,EGOI16/30,APIO15/15,JOI20/20. Remaining94=CF58+IOI22+EGOI14. Existing131records/baseline/completed optional content preserved. Production0;all backend/migration/permission/publication/merge/deploy gates remain.
+
 # Lightweight selection batch04 —131/245 eligible,114 remaining
 
 APIO15/15new unique selections prepared with tags,individual priority rationale and rough CF-scale rating. Read original task definitions only;no official solution/proof/code audit or optional-content authorship. Coverage:AtCoder50/50,CF42/100,IOI8/30,EGOI16/30,APIO15/15,JOI0/20. Remaining114=CF58+IOI22+EGOI14+JOI20. TwoAPIO2018PDFs had empty web text and ordinary HTTPS403;neither retried,bypassed nor selected. Five older tool-inaccessible task URLs likewise excluded. Details:audit/PART04-SELECTION04.json. Existing116records/baseline/completed optional content preserved. Production0;backend/migration/permission/publication/merge/deploy gates remain.
