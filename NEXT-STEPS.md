@@ -1,4 +1,16 @@
-# Current package04 checkpoint — v48 statements, initial-load diagnosis,12AtCoder C++ editorials
+# Current package04 checkpoint —12MN/EN statements locally checked
+
+Latest data-only batch completes10original functional restatements:typical90_c,f,h,l,m,n,u,v,x,z. Combined with b,j,12unique problems/24language versions passed native policy, independently frozen37source samples and actual renderer/MathJax48language/theme/width combinations. Updated034synthetic publication validates all12; representative admin/stale/logout/rights/CAS/media/bulk guards pass. Exact source nuances recorded in CONTENT02-REVIEW:parallel added road allowed,red-only active connectivity/no repeated paint,walk vs simple path,within-array distinct coordinates,fixed-position cuts,exact-K and any valid tree subset. No source narrative/prose copied or closely translated; official task attribution and exact constraints/samples retained.
+
+Local quota credit now requires semantic-review document AND provenance fingerprints plus passed native/reference-sample/browser/SQL evidence; a checked publication box alone is insufficient. Tampered body/provenance is rejected. CLI works outside repo cwd. Existing2statements,all92identity order/ratings/priorities/hints/source evidence and15C++programs unchanged. Only previous editorial refinement:typical90_v explicitly derives uniform grid size and justifies largest common real measure without inventing integer cut coordinates.47editorial native/render/033checks pass; unchanged C++checks reused by exact code identity.
+
+Counts:source-reviewed92;editorial explanations47unique=45new+2baseline;C++15new verified/30other new explanations missing implementations. Full new content/local-import-ready12/245;prepared statement/full-content pending80,prepared editorial pending47;additional source reviews153(CF58,IOI30,EGOI30,APIO15,JOI20). Baseline35/748priority reviewed/713pending;0/748baseline statements;828known statement gaps across current840records plus153future tasks. Existing CPP32/196reviewed/164pending. Production-ready/imported/published0; package4incomplete.
+
+v48frontend/startup fix unchanged from7728bc6; previous live HTTP measurements remain historical, no new live probe. Browser certificate warning not bypassed.032/033/034remain proposals only with fresh actual schema/ACL/Storage audit/private recovery and separate approval pending. No permissions/profile writes,production import,publication,merge/deploy or later package. PR20draft; user merges. Affected data tests passed; unchanged77-suite/UI/CPPchecks retained.
+
+Next sensible content batch:statements for already-coded typical90_a,d,g (verified: Yokan Party,Cross Sum,CP Classes), then remaining prepared statement/editorial/code gaps; genuine source/baseline reviews and164existing CPPblocks remain required. Do not mark all editorials implemented while30new explanations lack C++.
+
+# Previous checkpoint — v48 statements, initial-load diagnosis,12AtCoder C++ editorials
 
 This top checkpoint and readiness/checklist are current. Older sections below are historical and may use earlier scope/credit rules. Package4incomplete; PR20must remain draft. No next package, production migration/import/permission change, publication, merge or deploy.
 
