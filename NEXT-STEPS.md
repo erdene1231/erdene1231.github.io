@@ -1,3 +1,8 @@
+# Package04 editor toolbar checkpoint — coherent frontend v43
+
+Bold/Italic/Underline/Strike now B/I/U/S icons plus inline-code symbol, accessible names/tooltips and Ctrl/Meta shortcut metadata retained.44px controls, theme-aware pressed state, selection capture and existing grouped Undo/Redo unchanged. Current editor-frontend8 groups and tutorial-media6 groups pass; no real Storage/production call. Overall UI/minimalist/navigation changes remain in PR20.
+Data progress unchanged:50/245 new reviewed local tasks (AtCoder50 complete),195remaining;30/748 baseline priority/hint reviews,718remaining;30rating-rationale proposals unapplied. Continue remaining authorized work; no production migration/import/merge/deploy authorized.
+
 # Package04 UI update — minimalist mode and overall workspace refresh
 
 New UI scope implemented in app.js/index.html/navigation.js/theme.css; see audit/PART04-UI-REFRESH.md. Minimalist hides hint count only, preserves data; all3modes/theme persistence tested. Light neutral surfaces, shared cards/forms/dialog/focus, wide sidebar and mobile collapsible filters. Primary Friends/Following removed; Users subtabs/deep routes and active-state retained. Long-title Profile overflow fixed.

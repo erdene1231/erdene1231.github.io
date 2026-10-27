@@ -1,11 +1,11 @@
-import {priorityLevel,priorityLabel,priorityRank} from './priority.js?v=42';
-import {renderExtendedBlock} from './tutorial-block-renderer.js?v=42';
-import {clearMediaCache} from './tutorial-media.js?v=42';
-import {loadLearningContent,bodyHash} from './learning-model.js?v=42';
+import {priorityLevel,priorityLabel,priorityRank} from './priority.js?v=43';
+import {renderExtendedBlock} from './tutorial-block-renderer.js?v=43';
+import {clearMediaCache} from './tutorial-media.js?v=43';
+import {loadLearningContent,bodyHash} from './learning-model.js?v=43';
 import {algorithmDemo} from './algorithm-demos.js?v=23';
 import {segmentTreeDemo} from './segment-tree-demo.js?v=16';
-import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=42';
-import {setupTutorialEditor} from './tutorial-editor.js?v=42';
+import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=43';
+import {setupTutorialEditor} from './tutorial-editor.js?v=43';
 const $=id=>document.getElementById(id);
 export const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
 let mathPromise=null,mathQueue=Promise.resolve();

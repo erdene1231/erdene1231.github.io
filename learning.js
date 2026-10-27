@@ -1,10 +1,10 @@
-import {priorityLevel,priorityLabel} from './priority.js?v=42';
-import {CHECKS,canonicalKey,problemIndex,resolvePractice,tutorialMastery,dayCompletion,buildStatistics,weekStatistics,dateKey,addDays,monday,loadLearningContent,validateRelations,withArchivedProblems} from './learning-model.js?v=42';
+import {priorityLevel,priorityLabel} from './priority.js?v=43';
+import {CHECKS,canonicalKey,problemIndex,resolvePractice,tutorialMastery,dayCompletion,buildStatistics,weekStatistics,dateKey,addDays,monday,loadLearningContent,validateRelations,withArchivedProblems} from './learning-model.js?v=43';
 import {createLearningStore} from './learning-store.js?v=23';
-import {ratingLabel,difficultyLabel} from './catalog.js?v=42';
+import {ratingLabel,difficultyLabel} from './catalog.js?v=43';
 import {avatarUrl} from './accounts.js?v=17';
-import {typeset} from './tutorials.js?v=42';
-import {view} from './tutorial-model.js?v=42';
+import {typeset} from './tutorials.js?v=43';
+import {view} from './tutorial-model.js?v=43';
 const $=id=>document.getElementById(id);
 const el=(tag,text,cls)=>{const x=document.createElement(tag);if(text!==undefined)x.textContent=text;if(cls)x.className=cls;return x;};
 const button=(text,action,cls)=>{const x=el('button',text,cls);x.type='button';x.onclick=action;return x;};

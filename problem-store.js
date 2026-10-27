@@ -1,5 +1,5 @@
-import {canonicalProblemUrl,problemUrlIdentity} from './problem-url.js?v=42';
-import {validatePriority,priorityLevel,isHighPriority} from './priority.js?v=42';
+import {canonicalProblemUrl,problemUrlIdentity} from './problem-url.js?v=43';
+import {validatePriority,priorityLevel,isHighPriority} from './priority.js?v=43';
 export function validateSource(value) {
  if(typeof value!=='string')throw new Error('Source нэр оруулна уу.');
  const name=value.trim().replace(/\s+/g,' ');
