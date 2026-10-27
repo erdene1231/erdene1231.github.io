@@ -1,3 +1,13 @@
+# Package04 checkpoint — AtCoder50,30 baseline reviews, complete rating UI matrix
+
+AtCoder50/50 reviewed local records; total50/245,195 remaining across CF100/IOI30/EGOI30/APIO15/JOI20. All50 import records validate together; strict quota gate rejects0. Production imports0.
+Baseline priority and bilingual hints reviewed30/748;718 remain. All30 previously missing ratingBasis fields now have editorial proposals with source hashes and revision guards, preserved rating values/hints. IOI Race2000 has explicit full-task calibration caveat. No backfill applied.
+User clarified mongolia is editor test/joke content; preserve unchanged, exclude substantive curriculum rank review. No blocker remains for its objective.
+Browser rating-matrix.py PASS for800..4000 every100 +unrated on actual list/detail/shared picker in both themes; exact configured palette RGB and contrast>=4.5 verified. Light minimum4.537,dark7.253.
+Shopping Fever96 partition-oracle cases and Circle Passing16240 BFS oracle queries support existing hint review.
+CF research started:20C/580C/580B statements200, but official tutorial blog20468 GET via urllib returned403. Body/headers were not retained, so denial classification unknown; do not claim bot vs policy. Not retried. This limits that editorial only; continue independent source tasks. CF quota remains0 until genuine review complete.
+No production migration/import/publish/merge/deploy authorized. Continue remaining195new tasks,718baseline reviews and completion checklist.
+
 # Package04 source-review checkpoint —27 new records,6 baseline reviews
 
 New reviewed local tasks27/245 (AtCoder27/50); remaining IOI30,EGOI30,APIO15,JOI20,CF100,AtCoder23 =218. No production imports. AtCoder batches02/03 add24 individually source-reviewed records. Combined27 import validation and quota duplicate/evidence checks pass with no rejected records.
