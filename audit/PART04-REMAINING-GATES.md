@@ -8,7 +8,7 @@ The strict quota and identity/import checks pass. Metadata-only previews contain
 
 ## Production inspection before any approval to write
 
-A fresh read-only inspection and private recovery capture must establish actual schema, function signatures, ACL/RLS, Storage policies, catalog identities and revisions. The old after-031 snapshot is historical evidence, not proof of current production state. Do not replay applied migrations 021–025 or 028–031. Pending 026/027 are not an automatic execution queue. No Supabase call was made for this final selection batch.
+A fresh read-only inspection and scoped private recovery capture completed on 2026-10-27 at 17:43 UTC. See `PART04-PRODUCTION-READONLY-20261027.json` and `PART04-APPROVAL-PLAN.md`. Actual schema matches after-031, problem identities/bodies/revisions match the frozen snapshot, and one tutorial has a newer unpublished revision that must be preserved. Recheck current state before any future write. The scoped capture is not a full database/PITR/media-binary backup. The old after-031 snapshot is historical evidence, not proof of current production state. Do not replay applied migrations 021–025 or 028–031. Pending 026/027 are not an automatic execution queue. No Supabase call was made for this final selection batch.
 
 Only after that inspection can an exact action-time write proposal be approved. Proposed order is 032, then 033, then 034, subject to compatibility review:
 
