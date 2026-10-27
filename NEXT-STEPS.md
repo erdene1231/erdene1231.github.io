@@ -1,3 +1,11 @@
+# Handoff details after af41854
+
+Draft PR20 head af41854d3f1502d9422f4621e41a5a5bd1d92b0e verified on GitHub; mergeState CLEAN, still draft, no CI checks configured/reported. Worktree checkpoint tests above are current local results. Parent requested a progress boundary, not completion. Latest High content gate reports9/245ready and86source-reviewed; continue without asking for package authorization again.
+
+Admin profile read-only assessment is now audit/PART04-ADMIN-PROFILE-PROPOSAL.md. Exact fields/avatar and persistent authorization expansion remain pending parent/user review. Owner-only profile and Storage policies prevent simply reusing saveOwnProfile for another target. Other package4 work is independent.
+
+Next engineering target: typed problem editorial storage/atomic save and lazy public reader using existing validate_tutorial_body + tutorial editor/renderer; audit media-reference/publication behavior before preparing a migration. Do not embed every editorial body into get_catalog or insert fake tutorials into the56tutorial catalog. No032execution or production/security actions. Additional source/semantic work can proceed in parallel within this same task, without agents.
+
 # Current package04 checkpoint — latest content, rating, hint and auth requirements
 
 Source/solution-reviewed new entries86/245 (AtCoder50,CF36), all86numerically rated. Latest High policy requires authored tutorial-schema editorial plus3MN+EN hints: only9/86content-ready;77still need original content. Another159source reviews remain. Do not repeat older readiness claims below: they predate the user policy. Baseline30/748reviewed,718pending;30rating-rationale proposals unapplied. Existing IDs/data preserved.
