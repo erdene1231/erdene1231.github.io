@@ -1,3 +1,12 @@
+# Package04 current checkpoint — 3 reviewed new tasks, CF URL normalization
+
+Draft PR20. Current Node64 pass; priority browser7 groups pass, dialog17 checks pass.
+AtCoder typical90_a/d/g reviewed from statements + author solutions linked by official editorial;180 random oracle tests pass. Import preview valid; IDs unassigned, production imported0. Quota verification3/245 local reviewed, remaining242; no partial quota completion claim.
+CF URL normalizer handles both forms, D1/multi-letter indexes, idempotence; preserves Gym/nonproblem URLs.267 bundled seed URLs changed only;271 production baseline URL-only proposals in PART04-CF-URL-DATA-PLAN.json, NOT applied. Python quota/audit identity shares both-form equivalence.
+Frontend v42 adds detail rating badge and correct Unrated language; actual dark/light text contrast>=4.5 checked. Full100-step browser matrix remains open.
+Mongolia lesson lacks meaningful textual teaching objective; image-only private content needs inspection/intended purpose before ranking.30 estimated ratings still lack calibrated rationale; preserve estimates.
+Continue requirement checklist; no production migration/import/publication/merge/deploy authorized.
+
 # Package04 checkpoint — draft PR preparation
 
 Current tests:62 Node cases; dialog17, priority5, catalog8, publication5 browser groups PASS.

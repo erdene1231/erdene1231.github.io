@@ -1,4 +1,4 @@
-import {priorityLevel,priorityRank,isHighPriority} from './priority.js?v=41';
+import {priorityLevel,priorityRank,isHighPriority} from './priority.js?v=42';
 export function ratingLabel(problem) {
   return problem.ratingKind==='unrated'||!Number.isFinite(problem.rating)?'Unrated':(problem.ratingKind==='estimated'?'≈ ':'')+problem.rating;
 }

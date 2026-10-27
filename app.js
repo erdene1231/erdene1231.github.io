@@ -1,16 +1,17 @@
-import {priorityLevel,priorityLabel,isHighPriority,ratingClass} from './priority.js?v=41';
-import {setupLearning} from './learning.js?v=41';
-import {setupTutorials} from './tutorials.js?v=41';
+import {canonicalProblemUrl} from './problem-url.js?v=42';
+import {priorityLevel,priorityLabel,isHighPriority,ratingClass} from './priority.js?v=42';
+import {setupLearning} from './learning.js?v=42';
+import {setupTutorials} from './tutorials.js?v=42';
 import {setupGroups} from './groups.js?v=20';
 let tutorialUI, learningUI=null;
 import {EMPTY, cleanEntry, parseBackup} from './progress.js';
 import {getSolvers} from './community.js?v=6';
-import {setupAdmin} from './admin.js?v=41';
-import {parseCatalog,hintTexts,getSources} from './problem-store.js?v=41';
+import {setupAdmin} from './admin.js?v=42';
+import {parseCatalog,hintTexts,getSources} from './problem-store.js?v=42';
 import {rpc} from './accounts.js?v=17';
 import {ownProfile,saveOwnProfile,avatarUrl,accountError} from './accounts.js?v=17';
 import {setupSocial} from './social.js?v=23';
-import {filterProblems, getTags, ratingLabel,difficultyLabel} from './catalog.js?v=41';
+import {filterProblems, getTags, ratingLabel,difficultyLabel} from './catalog.js?v=42';
 const $ = id => document.getElementById(id);
 const STATUS = {new:'Эхлээгүй',trying:'Оролдож байгаа',solved:'Бодсон'};
 let data, selectedProblem, state={}, dirty={}, user=null, client=null, loading=false, syncing=false, syncAgain=false, epoch=0;
@@ -74,7 +75,7 @@ function render() {
     const row=el('article','problem'+(isHighPriority(p)?' is-priority':'')), n=el('span','number','#'+String(p.number).padStart(3,'0')), b=el('button','open');b.disabled=loading||catalogLoading;
     const heading=el('h3','',p.title);
     if(isHighPriority(p)){const star=el('span','priority-star','★');star.title='Priority бодлого';star.setAttribute('aria-label','Priority');heading.prepend(star);}
-    const meta=el('div','problem-meta');const rating=el('span','rating '+ratingClass(p),ratingLabel(p));rating.title=p.ratingKind==='official'?'Codeforces-ийн албан rating':(p.ratingBasis||'Зохиогчийн CF difficulty-ийн estimate; official биш');
+    const meta=el('div','problem-meta');const rating=el('span','rating '+ratingClass(p),ratingLabel(p));rating.title=p.ratingKind==='unrated'?'Түвшин тогтоогоогүй':p.ratingKind==='official'?'Codeforces-ийн албан rating':(p.ratingBasis||'Зохиогчийн CF difficulty-ийн estimate; official биш');
     meta.append(rating,el('span','priority-badge priority-'+priorityLevel(p),priorityLabel(p)),el('small','',p.source+' · '+p.ref+' · '+difficultyLabel(p)+(p.level==='Interactive'?' · Interactive':'')));
     b.append(heading,meta);b.onclick=()=>openProblem(p);
     {const tags=el('div','tag-chips');for(const tag of p.tags)tags.append(el('span','tag-chip',tag));tags.title=p.tags.join(' · ');tags.classList.toggle('tags-concealed',!$('show-tags').checked&&entry(p.id).status!=='solved');b.append(tags);}
@@ -85,7 +86,7 @@ function render() {
   }
   if(!filtered.length)$('problems').append(el('p','muted','Тохирох бодлого олдсонгүй. Шүүлтүүрээ өөрчлөөрэй.'));
 }
-function openProblem(p) {selectedProblem=p;detailTagsShown=false;$('detail-title').textContent=(isHighPriority(p)?'★ ':'')+p.title;$('detail-source').textContent='#'+p.number+' · '+p.source+' · '+p.ref;$('detail-note').textContent=ratingLabel(p)+(p.ratingKind==='official'?' · CF албан rating':' · CF difficulty-ийн баримжаа'+(p.ratingConfidence==='rough'?' · Урьдчилсан үнэлгээ':''))+(p.level==='Interactive'?' · Interactive':'')+(p.source==='EGOI'?' · Full task; subtask-аас эхэл':'')+' · '+priorityLabel(p);$('problem-link').href=p.url;$('notes').value=entry(p.id).notes;$('detail-feedback').textContent='';renderDetail();$('detail').showModal();void loadSolvers();}
+function openProblem(p) {selectedProblem=p;detailTagsShown=false;$('detail-title').textContent=(isHighPriority(p)?'★ ':'')+p.title;$('detail-source').textContent='#'+p.number+' · '+p.source+' · '+p.ref;$('detail-note').textContent=(p.ratingKind==='unrated'?'Үнэлгээгүй':p.ratingKind==='official'?'CF албан rating':'CF difficulty-ийн баримжаа'+(p.ratingConfidence==='rough'?' · Урьдчилсан үнэлгээ':''))+(p.level==='Interactive'?' · Interactive':'')+(p.source==='EGOI'?' · Full task; subtask-аас эхэл':'')+' · '+priorityLabel(p);const detailRating=el('span','rating '+ratingClass(p),ratingLabel(p));$('detail-note').prepend(detailRating,document.createTextNode(' · '));$('problem-link').href=p.url;$('notes').value=entry(p.id).notes;$('detail-feedback').textContent='';renderDetail();$('detail').showModal();void loadSolvers();}
 function renderDetail() {
   if(!selectedProblem)return;const learningLinks=$('detail-learning-links');learningLinks.replaceChildren();for(const t of learningUI?.linksForProblem(selectedProblem)||[]){const a=el('a','',(t.primary?'Үндсэн · ':'')+t.title);a.href='#tutorial/'+t.id;a.onclick=()=>$('detail').close();learningLinks.append(a);}learningUI?.renderProblemLinks(selectedProblem,learningLinks);const p=selectedProblem,e=entry(p.id),hintCount=p.hints?.length||0;$('hint-language').closest('label').hidden=!hintCount;$('problem-status').value=e.status;$('hint-list').replaceChildren();
   hintTexts(p,hintLanguage).slice(0,e.hints).forEach((hint,i)=>{const h=el('div','hint');h.append(el('b','','HINT '+(i+1)),el('span','',hint));$('hint-list').append(h);});
@@ -187,7 +188,7 @@ async function refreshCatalog(){if(!client){catalogLoading=false;render();notice
  finally{catalogLoading=false;render();}
 }
 async function init() {
-  const response=await fetch('./problems.json?v=16', {cache:'no-store'});if(!response.ok)throw new Error('Бодлогын санг ачаалж чадсангүй.');data=await response.json();catalogIds=new Set(data.problems.map(p=>p.id));catalogLoading=configured;
+  const response=await fetch('./problems.json?v=16', {cache:'no-store'});if(!response.ok)throw new Error('Бодлогын санг ачаалж чадсангүй.');data=await response.json();data.problems=data.problems.map(p=>({...p,url:canonicalProblemUrl(p.url)}));catalogIds=new Set(data.problems.map(p=>p.id));catalogLoading=configured;
   try{const cached=parseCatalog(JSON.parse(localStorage.getItem('think-cp:online-catalog')||'null'));data.problems=cached.problems;data.sources=cached.sources||[];for(const id of cached.knownIds)catalogIds.add(id);}catch{}
   readLocal();render();updateAccount();
   populateTags();populateSources();

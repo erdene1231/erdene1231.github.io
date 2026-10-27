@@ -1,4 +1,5 @@
-import {validatePriority,priorityLevel,isHighPriority} from './priority.js?v=41';
+import {canonicalProblemUrl,problemUrlIdentity} from './problem-url.js?v=42';
+import {validatePriority,priorityLevel,isHighPriority} from './priority.js?v=42';
 export function validateSource(value) {
  if(typeof value!=='string')throw new Error('Source нэр оруулна уу.');
  const name=value.trim().replace(/\s+/g,' ');
@@ -14,7 +15,7 @@ export function getSources(problems, saved=[]) {
 }
 export function validateProblem(input) {
  validatePriority(input);
- const p={title:String(input.title||'').trim(),source:validateSource(input.source),ref:String(input.ref||'').trim(),url:input.url,rating:input.ratingKind==='unrated'?null:Number(input.rating),ratingKind:input.ratingKind,level:input.level||'Practice',priority:isHighPriority(input),tags:[...new Set((input.tags||[]).map(t=>String(t).trim().toLowerCase()).filter(Boolean))],hints:input.hints===undefined?[]:input.hints,hintsEn:input.hintsEn===undefined?[]:input.hintsEn,lesson:String(input.lesson||'').trim()};
+ const p={title:String(input.title||'').trim(),source:validateSource(input.source),ref:String(input.ref||'').trim(),url:canonicalProblemUrl(input.url),rating:input.ratingKind==='unrated'?null:Number(input.rating),ratingKind:input.ratingKind,level:input.level||'Practice',priority:isHighPriority(input),tags:[...new Set((input.tags||[]).map(t=>String(t).trim().toLowerCase()).filter(Boolean))],hints:input.hints===undefined?[]:input.hints,hintsEn:input.hintsEn===undefined?[]:input.hintsEn,lesson:String(input.lesson||'').trim()};
  if(!p.title||p.title.length>200||!p.ref||p.ref.length>80)throw new Error('Бодлогын нэр болон эх бодлогын ID-гаа шалгана уу.');
  if(p.source.toLowerCase()==='codeforces')p.source='Codeforces';
  const validUrl=s=>{try{const u=new URL(s);return u.protocol==='https:'&&!u.username&&!u.password&&String(s).length<=1000&&!/\s/.test(s);}catch{return false;}};
@@ -37,7 +38,7 @@ export function parseCatalog(document) {
  const ids=new Set(),numbers=new Set();
  for(const p of document.problems){validateProblem(p);if(typeof p.id!=='string'||!/^[a-zA-Z0-9_-]{1,100}$/.test(p.id)||ids.has(p.id)||!Number.isSafeInteger(p.number)||p.number<1||numbers.has(p.number))throw new Error('Бодлогын ID давхардсан эсвэл буруу байна.');ids.add(p.id);numbers.add(p.number);}
  if(document.knownIds.some(id=>typeof id!=='string'||!/^[a-zA-Z0-9_-]{1,100}$/.test(id))||[...ids].some(id=>!document.knownIds.includes(id)))throw new Error('Бодлогын ID жагсаалт буруу байна.');
- return document;
+ return {...document,problems:document.problems.map(p=>({...p,url:canonicalProblemUrl(p.url)}))};
 }
 export function hintTexts(problem,language) {return (language==='en'?problem.hintsEn:problem.hints)||[];}
 
@@ -50,8 +51,8 @@ export function parseProblemImport(document) {
    if(!input||typeof input!=='object'||Array.isArray(input)||!Array.isArray(input.tags))throw new Error('Бодлогын object болон tags array шаардлагатай.');
    if(!Object.hasOwn(input,'priorityLevel')&&typeof input.priority!=='boolean')throw new Error('Priority нь true эсвэл false байна.');
    const p=validateProblem(input),key=p.source.toLowerCase()+'|'+p.ref.toLowerCase();
-   if(urls.has(p.url)||refs.has(key))throw new Error('Файл дотор бодлого давхардсан байна.');
-   urls.add(p.url);refs.add(key);return p;
+   if(urls.has(problemUrlIdentity(p.url))||refs.has(key))throw new Error('Файл дотор бодлого давхардсан байна.');
+   urls.add(problemUrlIdentity(p.url));refs.add(key);return p;
   }catch(e){throw new Error('Бодлого '+(index+1)+': '+e.message);}
  });
 }

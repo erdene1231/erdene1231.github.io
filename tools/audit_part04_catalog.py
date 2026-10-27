@@ -11,6 +11,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def url_key(url):
     p = urlsplit(url)
+    if p.scheme == 'https' and p.netloc.lower() in ['codeforces.com', 'www.codeforces.com']:
+        match = re.fullmatch(r'/(?:problemset/problem/(\d+)/([A-Za-z][A-Za-z0-9]*)|contest/(\d+)/problem/([A-Za-z][A-Za-z0-9]*))/?', p.path)
+        if match:
+            return 'https://codeforces.com/contest/' + (match[1] or match[3]) + '/problem/' + (match[2] or match[4])
     query = urlencode(sorted((k, v) for k, v in parse_qsl(p.query, keep_blank_values=True)
                              if not k.lower().startswith('utm_')))
     return urlunsplit((p.scheme.lower(), p.netloc.lower(), p.path.rstrip('/'), query, ''))
