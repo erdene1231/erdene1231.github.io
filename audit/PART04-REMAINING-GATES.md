@@ -4,7 +4,7 @@
 
 ## Local delivery
 
-The strict quota and identity/import checks pass. Metadata-only previews contain 100 + 100 + 45 new rows, without assigned server IDs or optional statement/editorial/hint bodies. Original completed optional content remains preserved in full previews; unfinished drafts remain on backup branches. A final downloadable recovery/review ZIP with manifest, hashes and CRC verification remains to be produced for the final delivery checkpoint. Current tracked files and feature commits are the durable working checkpoint.
+The strict quota and identity/import checks pass. Metadata-only previews contain 100 + 100 + 45 new rows, without assigned server IDs or optional statement/editorial/hint bodies. Original completed optional content remains preserved in full previews; unfinished drafts remain on backup branches. A local recovery/review ZIP now exists with manifest hashes, CRC and safe-path verification, credential-pattern scan, full-history bundle verification and an offline clone/fsck check. See `PART04-RECOVERY-ARCHIVES.json`. It captures code commit cbbc6ee and preserved draft branches; the archive receipt is a subsequent metadata-only commit. Fresh private live recovery is a different untracked ZIP, excluded from the code archive. Neither archive was uploaded to Library; final user-facing handoff is not claimed. Current tracked files and feature commits are the durable working checkpoint.
 
 ## Production inspection before any approval to write
 
