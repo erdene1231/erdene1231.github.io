@@ -62,7 +62,7 @@ function render() {
   renderHome();learningUI?.render();
   const filters={query:$('search').value,source:$('source').value,status:$('status-filter').value,tag:$('tag-filter').value,minRating:$('min-rating').value,maxRating:$('max-rating').value,priorityOnly:$('priority-only').checked,priorityLevel:$('priority-filter').value,sort:$('sort').value};
   const filterKey=JSON.stringify(filters);if(filterKey!==lastFilterKey){problemPage=0;lastFilterKey=filterKey;}
-  $('problems').classList.toggle('compact',$('problem-density').value==='compact');$('problems').replaceChildren();
+  $('problems').classList.toggle('compact',$('problem-density').value==='compact');$('problems').classList.toggle('minimalist',$('problem-density').value==='minimalist');$('problems').replaceChildren();
   const invalidRange=!$('min-rating').checkValidity()||!$('max-rating').checkValidity()||($('min-rating').value!==''&&$('max-rating').value!==''&&Number($('min-rating').value)>Number($('max-rating').value));
   const filtered=invalidRange?[]:filterProblems(data.problems,state,filters);
   $('results-count').textContent=filtered.length+' / '+data.problems.length+' бодлого';
@@ -188,6 +188,8 @@ async function refreshCatalog(){if(!client){catalogLoading=false;render();notice
  finally{catalogLoading=false;render();}
 }
 async function init() {
+  const filterPanel=$('catalog-filter-panel'),smallScreen=matchMedia('(max-width:700px)');if(filterPanel){filterPanel.open=!smallScreen.matches;smallScreen.addEventListener('change',event=>{filterPanel.open=!event.matches;});}
+
   const response=await fetch('./problems.json?v=16', {cache:'no-store'});if(!response.ok)throw new Error('Бодлогын санг ачаалж чадсангүй.');data=await response.json();data.problems=data.problems.map(p=>({...p,url:canonicalProblemUrl(p.url)}));catalogIds=new Set(data.problems.map(p=>p.id));catalogLoading=configured;
   try{const cached=parseCatalog(JSON.parse(localStorage.getItem('think-cp:online-catalog')||'null'));data.problems=cached.problems;data.sources=cached.sources||[];for(const id of cached.knownIds)catalogIds.add(id);}catch{}
   readLocal();render();updateAccount();
@@ -211,7 +213,7 @@ async function init() {
   social=setupSocial({client:()=>client,user:()=>user,problems:()=>data.problems,openProblem,viewProfile:id=>{if(learningUI)location.hash='#profile/'+id;else void social?.openProfile(id);},openAccount:()=>{$('account').onclick();},notice});
   adminUI=setupAdmin({progress:()=>state,client:()=>client,user:()=>user,refreshCatalog,sources:()=>getSources(data.problems,data.sources||[])});
   try{learningUI=await setupLearning({client:()=>client,user:()=>user,profile:()=>myProfile,problems:()=>data.problems,progress:()=>state,openProblem,refreshCatalog,redraw:render,refreshDetail:renderDetail,refreshTutorialLibrary:()=>tutorialUI?.refreshStatus(),openAccount:()=>{$('account').onclick();},socialProfile:id=>social.openProfile(id)});tutorialUI.refreshLearning();render();}catch{for(const id of ['learning-profile-body','study-plan-body','learning-admin-body'])$(id).textContent='Сургалтын хэсэг түр ачаалсангүй. Хуудсаа дахин ачаална уу.';}
-  try{const density=localStorage.getItem('erdene:problem-density');$('problem-density').value=density==='compact'?'compact':'comfortable';}catch{}$('problem-density').onchange=()=>{try{localStorage.setItem('erdene:problem-density',$('problem-density').value);}catch{}render();};render();
+  try{const density=localStorage.getItem('erdene:problem-density');$('problem-density').value=['comfortable','compact','minimalist'].includes(density)?density:'comfortable';}catch{}$('problem-density').onchange=()=>{try{localStorage.setItem('erdene:problem-density',$('problem-density').value);}catch{}render();};render();
   $('avatar-file').onchange=()=>{if(avatarPreviewUrl)URL.revokeObjectURL(avatarPreviewUrl);avatarPreviewUrl=null;const file=$('avatar-file').files?.[0];if(file){avatarPreviewUrl=URL.createObjectURL(file);$('remove-avatar').checked=false;}renderOwnAvatar();};
   $('remove-avatar').onchange=()=>{if($('remove-avatar').checked){$('avatar-file').value='';if(avatarPreviewUrl)URL.revokeObjectURL(avatarPreviewUrl);avatarPreviewUrl=null;$('own-avatar').hidden=true;$('own-avatar-fallback').hidden=false;}else renderOwnAvatar();};
   $('profile-form').onsubmit=event=>void saveProfile(event);

@@ -7,7 +7,7 @@ export function route(){
  const selected=/^#profile(?:\/|$)/.test(hash)?'profile':/^#plan(?:\/|$)/.test(hash)?'plan':hash==='#learning-admin'?'learning-admin':tutorial?'tutorials':community?'community':/^#groups(?:\/|$)/.test(hash)?'groups':hash==='#admin-section'?'admin-section':hash==='#admin-tutorials'?'admin-tutorials':hash==='#library'?'library':'home';
  document.querySelectorAll('main > section').forEach(el=>{const home=el.classList.contains('hero')||el.classList.contains('method');const stats=el.classList.contains('stats');el.hidden=home?selected!=='home':stats?!['home','library'].includes(selected):el.id!==selected||(['admin-section','admin-tutorials','learning-admin'].includes(el.id)&&!admin);});
  byId('route-message').hidden=!(['admin-section','admin-tutorials','learning-admin'].includes(selected)&&!admin);
- document.querySelectorAll('.site-nav [data-route]').forEach(a=>{const active=a.dataset.route===(community?hash.slice(1):selected);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+ document.querySelectorAll('.site-nav [data-route]').forEach(a=>{const active=a.dataset.route===selected;if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
  if(!tutorial)document.title='Erdene Club — Бодлого ба DSA tutorials';
  window.scrollTo({top:0,behavior:'instant'});
 }

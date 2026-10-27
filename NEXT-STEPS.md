@@ -1,3 +1,9 @@
+# Package04 UI update — minimalist mode and overall workspace refresh
+
+New UI scope implemented in app.js/index.html/navigation.js/theme.css; see audit/PART04-UI-REFRESH.md. Minimalist hides hint count only, preserves data; all3modes/theme persistence tested. Light neutral surfaces, shared cards/forms/dialog/focus, wide sidebar and mobile collapsible filters. Primary Friends/Following removed; Users subtabs/deep routes and active-state retained. Long-title Profile overflow fixed.
+Current browser QA:24mode/theme/width combinations plus5flow groups passed; palette full100-step matrix remains passed. Catalog8/priority7/dialog17/publication5/editor regression checks pass. No live authenticated production claim.
+Quota progress unchanged:AtCoder50/50, overall50/245 local reviewed,195remaining. Baseline30/748reviewed,718remaining;30rationale proposals, none applied. Continue unfinished data audits/other-source quota work alongside checklist.
+
 # Package04 checkpoint — AtCoder50,30 baseline reviews, complete rating UI matrix
 
 AtCoder50/50 reviewed local records; total50/245,195 remaining across CF100/IOI30/EGOI30/APIO15/JOI20. All50 import records validate together; strict quota gate rejects0. Production imports0.
