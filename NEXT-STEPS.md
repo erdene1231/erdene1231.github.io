@@ -1,3 +1,7 @@
+# Executable owner245proposal ready for review ONLY
+
+`supabase/maintenance/part04-owner-245-PROPOSED.sql`220577bytes,SHA256faa73bd3d42dbca5bc22c83cedf071252bc9221a2631d0d3b8f39231e386ca23. Full86/86tests pass;3ownerjob cases coverexactmetadata,baseline/history/progress,replay,latefailure/rollbackwithsequencegaps,drift/aliasduplicates/tamper. See `audit/PART04-OWNER-JOB-EXECUTION-REVIEW.md` andverificationJSON. ProductionjobNOTexecuted;newimports0.036installedonly. Freshread-onlyschemaexactafter036;035absent/compatiblebutseparatesecurityapprovalrequired. No impersonation/grants/RLS/productionDML/browserrunner/merge/deploy/package2. Presentexactjobhash+035accesssheetforuseraction-timereviewbeforeanyexecution.
+
 # Import authority planning only
 
 Noadditionalproductionwritesafter036. Existingapp-adminRPCrequiresreal authenticatedadmin;SQLMCPcontext42501mustnotbebypassed. Noexistingowner-specificmaintenanceimporterfound. See `audit/PART04-IMPORT-AUTHORITY-OPTIONS.md` for preferredsigned-inadminrunner and separatelyauthorizedone-offownerjob specification;245identity/hashallowlist in `PART04-IMPORT-AUTHORITY-ALLOWLIST.json`. Runner/job notimplementedorexecutedunderplanning-onlyscope.035exactaccessapprovalseparate in `PART04-035-ACCESS-APPROVAL.md`. No credentials/tokens/claims/RLSchanges,0imports,no newuser/avatar/Storagewrites,merge/deploy/package2.

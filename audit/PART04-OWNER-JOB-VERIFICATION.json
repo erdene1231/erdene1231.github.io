@@ -1,0 +1,33 @@
+{
+  "status": "prepared and isolated-tested;NOT executed in production",
+  "file": "supabase/maintenance/part04-owner-245-PROPOSED.sql",
+  "bytes": 220577,
+  "sha256": "faa73bd3d42dbca5bc22c83cedf071252bc9221a2631d0d3b8f39231e386ca23",
+  "data_allowlist": "audit/PART04-IMPORT-AUTHORITY-ALLOWLIST.json",
+  "source_metadata_canonical_sha256": "2f7f6340f4eb881cd7d00de488c02c724297f4a83ba45ceb5393082b7394e9cc",
+  "preflight": "audit/PART04-OWNER-JOB-PREFLIGHT.json",
+  "tests": {
+    "command": "npm test",
+    "passed": 86,
+    "failed": 0,
+    "owner_specific_tests": 3,
+    "cases": [
+      "245exact metadata,actual allocated IDs,private receipts,existing catalog/history/progress and unchanged app-admin predicate",
+      "late constraint failure rolls back all new rows/history;sequence gap remains;retry refused",
+      "baseline revision drift,canonical CF alias duplicate and altered manifest abort before allocation",
+      "exact generated SQL matches reviewed executable artifact;successful replay aborts"
+    ]
+  },
+  "execution": "One new explicitly authorized owner-maintenance transaction;not denied app-user RPC. No auth claims/grants/RLS/security changes.Only INSERT problem_catalog/problem_changes plus sequence allocation and session-private temp objects.",
+  "expected_consequence": "If guards still match,245new catalog/history rows;748to993. History actor_idNULL transparently records database maintenance;no admin impersonation. Full receipts returned aftercommit;existing748rows unchanged.",
+  "rollback": "Catalog/history inserts transactional;sequence increments not rolled back. Never reset/reuse consumed numbers. Executor must rollback/close aborted connection;uncertain result requires read-only identity reconciliation before retry.",
+  "production_imported": 0,
+  "035_readonly_compatibility": {
+    "actual_schema_exactly_matches_after036": true,
+    "is_admin_guard_matches": true,
+    "profiles_Storage_RLS": true,
+    "035_absent": true,
+    "permissions_applied": false,
+    "live_gateway_pixel_auth_checks": "not performed"
+  }
+}
