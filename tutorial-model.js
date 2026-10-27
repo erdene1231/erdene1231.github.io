@@ -1,4 +1,5 @@
-import {validateExtendedBlock} from './tutorial-blocks.js?v=40';
+import {validatePriority} from './priority.js?v=41';
+import {validateExtendedBlock} from './tutorial-blocks.js?v=41';
 export const levels=['beginner','intermediate','advanced'];
 export const levelNames={mn:['Анхан шат','Дунд шат','Ахисан шат'],en:['Beginner','Intermediate','Advanced']};
 export function validateTutorial(t){
@@ -6,6 +7,7 @@ export function validateTutorial(t){
  const str=(s,max,label)=>{if(typeof s!=='string'||!s.trim()||s.length>max)fail(label+' буруу эсвэл хэт урт байна.');};
  const optional=(s,max,label)=>{if(s!==undefined&&(typeof s!=='string'||s.length>max))fail(label+' буруу эсвэл хэт урт байна.');};
  if(!t||typeof t!=='object'||Array.isArray(t))fail('Хичээлийн бүтэц буруу.');
+ validatePriority(t);
  if(!/^[a-z0-9-]{1,80}$/.test(t.id))fail('Хичээлийн ID буруу.');
  if(!levels.includes(t.levelKey)||!Number.isInteger(t.order)||t.order<1||t.order>1000)fail('Түвшин эсвэл дараалал буруу.');
  optional(t.category,80,'Бүлэг');optional(t.aliases,2000,'Хайлтын үг');

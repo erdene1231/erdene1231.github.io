@@ -1,0 +1,61 @@
+"""Canonical priority/filter/rating UI in Chromium; no production services."""
+import functools,http.server,json,threading
+from pathlib import Path
+from playwright.sync_api import sync_playwright
+ROOT=Path(__file__).resolve().parents[2]
+class Quiet(http.server.SimpleHTTPRequestHandler):
+ def log_message(self,*args):pass
+server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(Quiet,directory=str(ROOT)));threading.Thread(target=server.serve_forever,daemon=True).start();base=f'http://127.0.0.1:{server.server_port}';report={}
+data=json.loads((ROOT/'problems.json').read_text());data['problems']=data['problems'][:9]
+for i,p in enumerate(data['problems']):p.update(priorityLevel=['low','medium','high'][i%3],priority=False,rating=[800,1200,1400,1600,1900,2100,2400,3000,4000][i],ratingKind='estimated')
+lessons=json.loads((ROOT/'tutorials.json').read_text());lessons['tutorials']=lessons['tutorials'][:3]
+for i,t in enumerate(lessons['tutorials']):t.update(priorityLevel=['low','medium','high'][i],priorityReason='Fixture rationale',prerequisiteIds=[],related=[])
+try:
+ with sync_playwright() as pw:
+  browser=pw.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox']);page=browser.new_page(viewport={'width':1200,'height':950});page.set_default_timeout(10000);errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+  def route(r):
+   if not r.request.url.startswith(base):r.abort()
+   elif '/config.js' in r.request.url:r.fulfill(status=200,content_type='text/javascript',body='window.THINK_CP_CONFIG={};')
+   elif '/problems.json' in r.request.url:r.fulfill(status=200,content_type='application/json',body=json.dumps(data))
+   elif '/tutorials.json' in r.request.url:r.fulfill(status=200,content_type='application/json',body=json.dumps(lessons))
+   else:r.continue_()
+  page.route('**/*',route);page.add_init_script('window.MathJax={startup:{promise:Promise.resolve()},typesetClear:()=>{},typesetPromise:async()=>{}};')
+  page.goto(base+'/index.html#library',wait_until='networkidle');page.wait_for_selector('#problems .priority-badge')
+  page.locator('#priority-filter').select_option('low');assert page.locator('#problems .problem').count()==3
+  assert page.locator('#problems .priority-low').count()==3
+  page.locator('#reset-filters').click();page.locator('#sort').select_option('priority')
+  assert 'High' in page.locator('#problems .priority-badge').first.inner_text()
+  page.locator('#priority-only').check();assert page.locator('#problems .problem').count()==3
+  page.locator('#reset-filters').click();report['canonical_main_filter_sort_and_high_shortcut']='PASS'
+  assert page.locator('#problems .rating-legendary').count()==2
+  assert page.locator('#problems .rating-candidate-master').count()==1
+  page.evaluate('(p)=>window.fixturePool=p',data['problems'])
+  page.evaluate('''async()=>{const {openProblemSelection}=await import('/problem-selection-dialog.js?v=41');openProblemSelection({problems:()=>fixturePool,onSelect:()=>{}})}''')
+  page.locator('[data-filter=priorityLevel]').select_option('medium')
+  assert page.locator('[data-selection-available] input').count()==3
+  assert page.locator('[data-selection-available] [data-priority-level=medium]').count()==3
+  page.locator('[data-select-filtered]').click();page.locator('[data-reset-filters]').click()
+  assert page.locator('[data-selection-chosen] input').count()==3
+  page.get_by_role('button',name='Болих',exact=True).click();report['popup_priority_filter_preserves_selection']='PASS'
+  for width in [375,1200]:
+   for theme in ['light','dark']:
+    page.set_viewport_size({'width':width,'height':950});page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
+    assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+    assert page.locator('.rating-legendary').first.evaluate('(e)=>getComputedStyle(e).backgroundColor')!=page.locator('.rating-pupil').first.evaluate('(e)=>getComputedStyle(e).backgroundColor')
+    page.locator('#library').screenshot(path=str(ROOT/f'audit/browser/priority-catalog-{width}-{theme}.png'))
+  page.evaluate("location.hash='#tutorials'");page.wait_for_selector('#tutorial-grid .tutorial-card')
+  page.locator('#tutorial-priority-filter').select_option('high');page.wait_for_function("document.querySelectorAll('#tutorial-grid .tutorial-card').length===1")
+  assert 'High' in page.locator('#tutorial-grid .priority-badge').inner_text()
+  page.locator('#tutorial-priority-filter').select_option('');page.locator('#tutorial-priority-sort').select_option('priority')
+  page.wait_for_function("document.querySelector('#tutorial-grid .priority-badge').textContent.includes('High')")
+  report['tutorial_priority_filter_and_sort']='PASS'
+  # Real admin form payload with fixture RPC; canonical field beats legacy boolean.
+  page.evaluate('''async()=>{document.querySelector('#admin-priority-reason')?.closest('label').remove();const {setupAdmin}=await import('/admin.js?v=41');window.adminPayload=null;const client={rpc:async(name,args)=>{if(name==='is_admin')return {data:true};if(name==='get_admin_catalog')return {data:fixturePool};if(name==='admin_list')return {data:[]};if(name==='admin_save_problem'){adminPayload=args.p_body;return {data:{...args.p_body,number:999}};}return {data:[]};}};window.testAdmin=setupAdmin({user:()=>({id:'fixture'}),client:()=>client,sources:()=>[],refreshCatalog:async()=>{}});testAdmin.connected();location.hash='#admin-section';}''')
+  page.wait_for_function("document.querySelector('#admin-choose').options.length>1")
+  page.locator('#admin-title').fill('Priority fixture');page.locator('#admin-ref').fill('fixture');page.locator('#admin-url').fill('https://example.com/task');page.locator('#admin-tags').fill('math');page.locator('#admin-priority').select_option('high');page.locator('#admin-priority-reason').fill('Necessary mastery observation')
+  page.locator('#admin-save').click();page.wait_for_function('adminPayload!==null')
+  assert page.evaluate("adminPayload.priorityLevel==='high'&&adminPayload.priority===true&&adminPayload.priorityReason==='Necessary mastery observation'")
+  report['admin_canonical_priority_payload']='PASS'
+  assert not errors,errors;report['responsive_light_dark_no_runtime_errors']='PASS';browser.close()
+finally:server.shutdown()
+(ROOT/'audit/PART04-PRIORITY-BROWSER.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report))

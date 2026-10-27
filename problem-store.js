@@ -1,3 +1,4 @@
+import {validatePriority,priorityLevel,isHighPriority} from './priority.js?v=41';
 export function validateSource(value) {
  if(typeof value!=='string')throw new Error('Source нэр оруулна уу.');
  const name=value.trim().replace(/\s+/g,' ');
@@ -12,7 +13,8 @@ export function getSources(problems, saved=[]) {
  return [...names.values()].sort((a,b)=>a.localeCompare(b));
 }
 export function validateProblem(input) {
- const p={title:String(input.title||'').trim(),source:validateSource(input.source),ref:String(input.ref||'').trim(),url:input.url,rating:input.ratingKind==='unrated'?null:Number(input.rating),ratingKind:input.ratingKind,level:input.level||'Practice',priority:input.priority===true,tags:[...new Set((input.tags||[]).map(t=>String(t).trim().toLowerCase()).filter(Boolean))],hints:input.hints===undefined?[]:input.hints,hintsEn:input.hintsEn===undefined?[]:input.hintsEn,lesson:String(input.lesson||'').trim()};
+ validatePriority(input);
+ const p={title:String(input.title||'').trim(),source:validateSource(input.source),ref:String(input.ref||'').trim(),url:input.url,rating:input.ratingKind==='unrated'?null:Number(input.rating),ratingKind:input.ratingKind,level:input.level||'Practice',priority:isHighPriority(input),tags:[...new Set((input.tags||[]).map(t=>String(t).trim().toLowerCase()).filter(Boolean))],hints:input.hints===undefined?[]:input.hints,hintsEn:input.hintsEn===undefined?[]:input.hintsEn,lesson:String(input.lesson||'').trim()};
  if(!p.title||p.title.length>200||!p.ref||p.ref.length>80)throw new Error('Бодлогын нэр болон эх бодлогын ID-гаа шалгана уу.');
  if(p.source.toLowerCase()==='codeforces')p.source='Codeforces';
  const validUrl=s=>{try{const u=new URL(s);return u.protocol==='https:'&&!u.username&&!u.password&&String(s).length<=1000&&!/\s/.test(s);}catch{return false;}};
@@ -26,6 +28,7 @@ export function validateProblem(input) {
  if(p.hints.length!==p.hintsEn.length)throw new Error('Монгол болон English hint-ийн тоо ижил байна.');
  if(p.lesson.length>2000)throw new Error('Бодсоны дараах тайлбар 2000 тэмдэгт хүртэл байна.');
  for(const key of ['sourceId','sourceCategory','verifiedAt','difficultyCategory','ratingBasis','ratingConfidence','ratingEstimatedAt'])if(typeof input[key]==='string'&&input[key].length<=500)p[key]=input[key];
+ if(Object.hasOwn(input,'priorityLevel'))p.priorityLevel=priorityLevel(input);if(Object.hasOwn(input,'priorityReason'))p.priorityReason=input.priorityReason;
  return p;
 }
 export function parseCatalog(document) {
@@ -45,7 +48,7 @@ export function parseProblemImport(document) {
  return list.map((input,index)=>{
   try {
    if(!input||typeof input!=='object'||Array.isArray(input)||!Array.isArray(input.tags))throw new Error('Бодлогын object болон tags array шаардлагатай.');
-   if(typeof input.priority!=='boolean')throw new Error('Priority нь true эсвэл false байна.');
+   if(!Object.hasOwn(input,'priorityLevel')&&typeof input.priority!=='boolean')throw new Error('Priority нь true эсвэл false байна.');
    const p=validateProblem(input),key=p.source.toLowerCase()+'|'+p.ref.toLowerCase();
    if(urls.has(p.url)||refs.has(key))throw new Error('Файл дотор бодлого давхардсан байна.');
    urls.add(p.url);refs.add(key);return p;

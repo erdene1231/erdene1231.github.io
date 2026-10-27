@@ -1,9 +1,10 @@
-import {CHECKS,canonicalKey,problemIndex,resolvePractice,tutorialMastery,dayCompletion,buildStatistics,weekStatistics,dateKey,addDays,monday,loadLearningContent,validateRelations,withArchivedProblems} from './learning-model.js?v=40';
+import {priorityLevel,priorityLabel} from './priority.js?v=41';
+import {CHECKS,canonicalKey,problemIndex,resolvePractice,tutorialMastery,dayCompletion,buildStatistics,weekStatistics,dateKey,addDays,monday,loadLearningContent,validateRelations,withArchivedProblems} from './learning-model.js?v=41';
 import {createLearningStore} from './learning-store.js?v=23';
-import {ratingLabel,difficultyLabel} from './catalog.js?v=40';
+import {ratingLabel,difficultyLabel} from './catalog.js?v=41';
 import {avatarUrl} from './accounts.js?v=17';
-import {typeset} from './tutorials.js?v=40';
-import {view} from './tutorial-model.js?v=40';
+import {typeset} from './tutorials.js?v=41';
+import {view} from './tutorial-model.js?v=41';
 const $=id=>document.getElementById(id);
 const el=(tag,text,cls)=>{const x=document.createElement(tag);if(text!==undefined)x.textContent=text;if(cls)x.className=cls;return x;};
 const button=(text,action,cls)=>{const x=el('button',text,cls);x.type='button';x.onclick=action;return x;};
@@ -34,7 +35,7 @@ export async function setupLearning(ctx) {
   const en=lang==='en',p=item.problem,card=el('article',undefined,'learning-problem');
   if(!p){const seed=content.catalog.problems.find(p=>canonicalKey(p)===item.key);if(!seed)return null;card.append(el('strong',seed.title),el('small',en?'Available after the teacher updates the library.':'Багш санг шинэчилсний дараа progress тэмдэглэх боломжтой.','muted'));const a=link(en?'Read on source ↗':'Эх сурвалжаас унших ↗',seed.url);a.target='_blank';a.rel='noopener noreferrer';card.append(a);return card;}
   card.dataset.problemId=p.id;card.dataset.lang=lang;
-  const title=button('',()=>open(p),'learning-problem-open');title.append(el('strong',(item.priority?'★ ':'')+p.title),el('small',p.source+' · '+ratingLabel(p)+' · '+difficultyLabel(p,lang)+(item.stage?' · '+item.stage:'')));card.append(title);
+  const title=button('',()=>open(p),'learning-problem-open');title.append(el('strong',(item.priority?'★ ':'')+p.title),el('small',p.source+' · '+ratingLabel(p)+' · '+difficultyLabel(p,lang)+(item.stage?' · '+item.stage:'')));card.append(title,el('span',priorityLabel(p),'priority-badge priority-'+priorityLevel(p)));
   const status=ctx.progress()[p.id]?.status||'new';card.append(el('span',statusText(status,en),'badge '+status));
   const save=button('',()=>{const saved=!store.get('bookmark',p.id).saved;store.set('bookmark',p.id,{saved});updateBookmark();});save.dataset.bookmark=p.id;
   function updateBookmark(){save.textContent=store.get('bookmark',p.id).saved?(en?'Saved ✓':'Хадгалсан ✓'):(en?'Save for later':'Дараа бодох');}updateBookmark();card.append(save);return card;

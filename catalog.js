@@ -1,3 +1,4 @@
+import {priorityLevel,priorityRank,isHighPriority} from './priority.js?v=41';
 export function ratingLabel(problem) {
   return problem.ratingKind==='unrated'||!Number.isFinite(problem.rating)?'Unrated':(problem.ratingKind==='estimated'?'≈ ':'')+problem.rating;
 }
@@ -21,7 +22,8 @@ export function filterProblems(problems, progress, filters) {
     return (!filters.pack||p.pack===filters.pack)
       &&(!filters.source||p.source.toLowerCase()===filters.source.toLowerCase())
       &&(!filters.tag||p.tags.includes(filters.tag))
-      &&(!filters.priorityOnly||p.priority)
+      &&(!filters.priorityLevel||priorityLevel(p)===filters.priorityLevel)
+      &&(!filters.priorityOnly||isHighPriority(p))
       &&(!band||(Number.isFinite(p.rating)&&p.rating>=band[0]&&p.rating<=band[1]))
       &&(min===null||(Number.isFinite(p.rating)&&p.rating>=min))&&(max===null||(Number.isFinite(p.rating)&&p.rating<=max))
       &&(!filters.status||(filters.status==='hinted'?e.hints>0:e.status===filters.status))
@@ -30,7 +32,7 @@ export function filterProblems(problems, progress, filters) {
   return result.sort((a,b)=>{
     if(filters.sort==='number-asc')return a.number-b.number;
     if(filters.sort==='title')return a.title.localeCompare(b.title)||a.id.localeCompare(b.id);
-    if(filters.sort==='priority'&&a.priority!==b.priority)return Number(b.priority)-Number(a.priority);
+    if(filters.sort==='priority'&&priorityRank(a)!==priorityRank(b))return priorityRank(b)-priorityRank(a);
     return (filters.sort==='rating-desc'?(b.rating??-1)-(a.rating??-1):(a.rating??Infinity)-(b.rating??Infinity))||a.title.localeCompare(b.title)||a.id.localeCompare(b.id);
   });
 }

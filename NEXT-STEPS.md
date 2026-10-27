@@ -1,3 +1,40 @@
+# Package04 checkpoint — draft PR preparation
+
+Current tests:62 Node cases; dialog17, priority5, catalog8, publication5 browser groups PASS.
+Audit tool: python tools/audit_part04_catalog.py. Baseline748/56; no duplicate IDs/numbers/source-ref/normalized URLs;30 estimated ratings lack rationale.
+Review ledger contains55 proposed tutorial ranks,1 blocked ambiguous lesson,748 unreviewed problem ranks. No backfill performed.
+Official listing research/candidates persist privately in /workspace/part04-source-research; metadata alone has ZERO quota credit. JOI discovery and all statement/editorial/priority verification remain pending.
+Current explicit authorization: commit/push and draft PR; user merges. No migration032, production imports, deploy or publish authorization.
+See audit/PART04-COMPLETION-CHECKLIST.json for requirement coverage and actual test status. This checkpoint does not complete package04.
+
+# Active — package04 restored in authorized fresh environment
+
+Recovery verified; see audit/PART04-RECOVERY.json. Latest user instruction resumes package04 only.
+Use /workspace/erdene-part04-recovered, branch codex/part04-recovered. Original checkout preserved.
+Canonical priority is Low/Medium/High for both entities; four-tier plan is obsolete.
+Current tests: 62 Node cases, problem-dialog 17 checks, priority-ui 5 groups pass.
+032 remains unapplied. No production imports or publication. Continue remaining items in recovery report.
+
+# PAUSED BY USER — package04, enable source-domain access first
+
+User explicitly paused package04 to configure outbound source access.
+Do not continue implementation/apply/import until user resumes. Current branch
+codex/part04-bank-priority, base66c8aa8; uncommitted work preserved.
+- Actual read-only baseline:748 problems/56 tutorials;7 drafts/46 progress/1learning record.
+- Fresh metadata:supabase/audit/production-before-032.json; comparison zero differences.
+- audit/PART04-BASELINE.json is catalog-only; no learner rows exported.
+- priority.js, UI/admin/filter/badges/rating palette v41 and032 SQL prepared.
+- 032 NOT APPLIED. No production content writes/imports/backfill.
+-20 Node files PASS; priority-ui5/catalog-ui8/publication5 groups PASS.
+- Existing problem-dialog.py still expects old “★ Priority” text; new tier label
+  intentionally changed, update that assertion then rerun before checkpoint/apply.
+- Private research workspace:/workspace/research-usaco-guide at
+  40279728a239ff54e35df8626b22f8f63ccbf77a. No new quota tasks imported.
+- Research tools store has official EGOI2026 tree08eedd32 and2023 website tree
+  be6b3237; do not rely on tool store after a fresh session. Re-fetch if needed.
+Next: configure allowed source hosts; recheck current environment status and
+actual HTTP response before claiming access. Do not expose Supabase credentials.
+
 # Latest — order01→04→02→03→05→06→07→08; planning only
 
 User prioritizes problem bank04 before tutorial rewriting02/expansion03.

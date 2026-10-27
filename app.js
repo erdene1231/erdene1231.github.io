@@ -1,15 +1,16 @@
-import {setupLearning} from './learning.js?v=40';
-import {setupTutorials} from './tutorials.js?v=40';
+import {priorityLevel,priorityLabel,isHighPriority,ratingClass} from './priority.js?v=41';
+import {setupLearning} from './learning.js?v=41';
+import {setupTutorials} from './tutorials.js?v=41';
 import {setupGroups} from './groups.js?v=20';
 let tutorialUI, learningUI=null;
 import {EMPTY, cleanEntry, parseBackup} from './progress.js';
 import {getSolvers} from './community.js?v=6';
-import {setupAdmin} from './admin.js?v=40';
-import {parseCatalog,hintTexts,getSources} from './problem-store.js?v=23';
+import {setupAdmin} from './admin.js?v=41';
+import {parseCatalog,hintTexts,getSources} from './problem-store.js?v=41';
 import {rpc} from './accounts.js?v=17';
 import {ownProfile,saveOwnProfile,avatarUrl,accountError} from './accounts.js?v=17';
 import {setupSocial} from './social.js?v=23';
-import {filterProblems, getTags, ratingLabel,difficultyLabel} from './catalog.js?v=40';
+import {filterProblems, getTags, ratingLabel,difficultyLabel} from './catalog.js?v=41';
 const $ = id => document.getElementById(id);
 const STATUS = {new:'Эхлээгүй',trying:'Оролдож байгаа',solved:'Бодсон'};
 let data, selectedProblem, state={}, dirty={}, user=null, client=null, loading=false, syncing=false, syncAgain=false, epoch=0;
@@ -58,7 +59,7 @@ function render() {
   const percent=(data.problems.length?Math.round(solved/data.problems.length*100):0);
   $('total').textContent=data.problems.length;$('solved').textContent=solved;$('trying').textContent=trying;$('percent').textContent=percent+'%';$('progress').value=percent;
   renderHome();learningUI?.render();
-  const filters={query:$('search').value,source:$('source').value,status:$('status-filter').value,tag:$('tag-filter').value,minRating:$('min-rating').value,maxRating:$('max-rating').value,priorityOnly:$('priority-only').checked,sort:$('sort').value};
+  const filters={query:$('search').value,source:$('source').value,status:$('status-filter').value,tag:$('tag-filter').value,minRating:$('min-rating').value,maxRating:$('max-rating').value,priorityOnly:$('priority-only').checked,priorityLevel:$('priority-filter').value,sort:$('sort').value};
   const filterKey=JSON.stringify(filters);if(filterKey!==lastFilterKey){problemPage=0;lastFilterKey=filterKey;}
   $('problems').classList.toggle('compact',$('problem-density').value==='compact');$('problems').replaceChildren();
   const invalidRange=!$('min-rating').checkValidity()||!$('max-rating').checkValidity()||($('min-rating').value!==''&&$('max-rating').value!==''&&Number($('min-rating').value)>Number($('max-rating').value));
@@ -70,11 +71,11 @@ function render() {
   $('problem-page').textContent=pageCount?(problemPage+1)+' / '+pageCount+' хуудас · '+(start+1)+'–'+end+' / '+filtered.length+' бодлого':'0 бодлого';
   $('rating-range-message').textContent=invalidRange?'Rating хязгаар 0–4000 бүхэл тоо байна. Min rating нь Max rating-аас их байж болохгүй.':'';
   for(const p of filtered.slice(start,end)) {
-    const row=el('article','problem'+(p.priority?' is-priority':'')), n=el('span','number','#'+String(p.number).padStart(3,'0')), b=el('button','open');b.disabled=loading||catalogLoading;
+    const row=el('article','problem'+(isHighPriority(p)?' is-priority':'')), n=el('span','number','#'+String(p.number).padStart(3,'0')), b=el('button','open');b.disabled=loading||catalogLoading;
     const heading=el('h3','',p.title);
-    if(p.priority){const star=el('span','priority-star','★');star.title='Priority бодлого';star.setAttribute('aria-label','Priority');heading.prepend(star);}
-    const meta=el('div','problem-meta');const rating=el('span','rating rating-'+Math.floor(p.rating/100),ratingLabel(p));rating.title=p.ratingKind==='official'?'Codeforces-ийн албан rating':(p.ratingBasis||'Зохиогчийн CF difficulty-ийн estimate; official биш');
-    meta.append(rating,el('small','',p.source+' · '+p.ref+' · '+difficultyLabel(p)+(p.level==='Interactive'?' · Interactive':'')));
+    if(isHighPriority(p)){const star=el('span','priority-star','★');star.title='Priority бодлого';star.setAttribute('aria-label','Priority');heading.prepend(star);}
+    const meta=el('div','problem-meta');const rating=el('span','rating '+ratingClass(p),ratingLabel(p));rating.title=p.ratingKind==='official'?'Codeforces-ийн албан rating':(p.ratingBasis||'Зохиогчийн CF difficulty-ийн estimate; official биш');
+    meta.append(rating,el('span','priority-badge priority-'+priorityLevel(p),priorityLabel(p)),el('small','',p.source+' · '+p.ref+' · '+difficultyLabel(p)+(p.level==='Interactive'?' · Interactive':'')));
     b.append(heading,meta);b.onclick=()=>openProblem(p);
     {const tags=el('div','tag-chips');for(const tag of p.tags)tags.append(el('span','tag-chip',tag));tags.title=p.tags.join(' · ');tags.classList.toggle('tags-concealed',!$('show-tags').checked&&entry(p.id).status!=='solved');b.append(tags);}
     const badge=el('span','badge '+entry(p.id).status,STATUS[entry(p.id).status]);
@@ -84,7 +85,7 @@ function render() {
   }
   if(!filtered.length)$('problems').append(el('p','muted','Тохирох бодлого олдсонгүй. Шүүлтүүрээ өөрчлөөрэй.'));
 }
-function openProblem(p) {selectedProblem=p;detailTagsShown=false;$('detail-title').textContent=(p.priority?'★ ':'')+p.title;$('detail-source').textContent='#'+p.number+' · '+p.source+' · '+p.ref;$('detail-note').textContent=ratingLabel(p)+(p.ratingKind==='official'?' · CF албан rating':' · CF difficulty-ийн баримжаа'+(p.ratingConfidence==='rough'?' · Урьдчилсан үнэлгээ':''))+(p.level==='Interactive'?' · Interactive':'')+(p.source==='EGOI'?' · Full task; subtask-аас эхэл':'')+(p.priority?' · Priority':'');$('problem-link').href=p.url;$('notes').value=entry(p.id).notes;$('detail-feedback').textContent='';renderDetail();$('detail').showModal();void loadSolvers();}
+function openProblem(p) {selectedProblem=p;detailTagsShown=false;$('detail-title').textContent=(isHighPriority(p)?'★ ':'')+p.title;$('detail-source').textContent='#'+p.number+' · '+p.source+' · '+p.ref;$('detail-note').textContent=ratingLabel(p)+(p.ratingKind==='official'?' · CF албан rating':' · CF difficulty-ийн баримжаа'+(p.ratingConfidence==='rough'?' · Урьдчилсан үнэлгээ':''))+(p.level==='Interactive'?' · Interactive':'')+(p.source==='EGOI'?' · Full task; subtask-аас эхэл':'')+' · '+priorityLabel(p);$('problem-link').href=p.url;$('notes').value=entry(p.id).notes;$('detail-feedback').textContent='';renderDetail();$('detail').showModal();void loadSolvers();}
 function renderDetail() {
   if(!selectedProblem)return;const learningLinks=$('detail-learning-links');learningLinks.replaceChildren();for(const t of learningUI?.linksForProblem(selectedProblem)||[]){const a=el('a','',(t.primary?'Үндсэн · ':'')+t.title);a.href='#tutorial/'+t.id;a.onclick=()=>$('detail').close();learningLinks.append(a);}learningUI?.renderProblemLinks(selectedProblem,learningLinks);const p=selectedProblem,e=entry(p.id),hintCount=p.hints?.length||0;$('hint-language').closest('label').hidden=!hintCount;$('problem-status').value=e.status;$('hint-list').replaceChildren();
   hintTexts(p,hintLanguage).slice(0,e.hints).forEach((hint,i)=>{const h=el('div','hint');h.append(el('b','','HINT '+(i+1)),el('span','',hint));$('hint-list').append(h);});
@@ -195,12 +196,12 @@ async function init() {
   $('refresh-catalog').onclick=()=>void refreshCatalog();
   try {const prefs=JSON.parse(localStorage.getItem('think-cp:catalog-preferences')||'{}');$('show-tags').checked=prefs.showTags===true;if(['rating-asc','rating-desc','priority','title','number-asc'].includes(prefs.sort))$('sort').value=prefs.sort;}catch{}
   const savePreferences=()=>{try{localStorage.setItem('think-cp:catalog-preferences',JSON.stringify({showTags:$('show-tags').checked,sort:$('sort').value}));}catch{}};
-  for(const id of ['search','source','status-filter','tag-filter','min-rating','max-rating','priority-only'])$(id).addEventListener('input',render);
+  for(const id of ['search','source','status-filter','tag-filter','min-rating','max-rating','priority-filter','priority-only'])$(id).addEventListener('input',render);
   for(const [id,delta] of [['problem-prev',-1],['problem-next',1]])$(id).onclick=()=>{problemPage+=delta;render();$('library').scrollIntoView({block:'start'});};
   $('sort').addEventListener('change',()=>{savePreferences();render();});
   $('show-tags').addEventListener('change',()=>{detailTagsShown=false;savePreferences();render();if(selectedProblem)renderDetail();});
   $('reveal-detail-tags').onclick=()=>{detailTagsShown=!detailTagsShown;renderDetail();};
-  $('reset-filters').onclick=()=>{for(const id of ['search','source','status-filter','tag-filter','min-rating','max-rating'])$(id).value='';$('priority-only').checked=false;$('sort').value='rating-asc';savePreferences();render();};
+  $('reset-filters').onclick=()=>{for(const id of ['search','source','status-filter','tag-filter','min-rating','max-rating','priority-filter'])$(id).value='';$('priority-only').checked=false;$('sort').value='rating-asc';savePreferences();render();};
   render();
   document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
   $('account').onclick=()=>{updateAccount();$('auth').showModal();};
