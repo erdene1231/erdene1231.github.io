@@ -1,3 +1,7 @@
+# Package4coreclosed;package2started same task
+
+Userconfirmedliveadminchecks;agreedreducedpackage4corecomplete.See `audit/PACKAGE04-CLOSURE.json`;remainingcaveatsarenotrevivedrequirements. Package2branchcodex/package02-existing-tutorialsfrommain1a2be82. Freshlive993problems/56tutorials;all56bodyhashesmatchoriginalsnapshot;mongoliaunpublishedrevision2preservedasjokeeditor-testexception. Deferred26proposalsisolatedfromea0ef8f;20matchingearliercode/mathproposalsactiveLOCALONLY,6unfinishedheld. RecoveredcurrentC++harnessesrerun;quality/mastery/translation/browsercompletionnotclaimed. StartBinarySearch→Greedy→DPthenrest,15criteria/20semanticrubric/C01–14. No productionpublication/migration/rights/realuserfixtures;no problemstatement/editorialauthoring or package3+. See PACKAGE02-CHECKLIST/inventory/recoverymanifest/initialBinarySearchreview.
+
 # Activation code ready after PR21usermerge
 
 Currentbase maine9540da includesPR21usermerge. Newbranchcodex/part04-activation enables verified035/036 problemmetadata32andfour-fieldadminUI;no newrights. Metadata saves use existing dry-run negative probe to fail closed on031/missing/unauthorizedbackend;rich/bulk remains gated.88Node+activation/config/legacy/admin/richbrowserchecks pass. No prodwrites/merge/deploy inthisphase. See `audit/PART04-FRONTEND-ACTIVATION.json` andactivationplan. Userread-onlyownusername lookup+signedoutdenial is smallest livecheck afterrelease;no user/avatarfixturemutations.271rawCFURLsremainlegacywithallguardsmatching;UIalreadycanonical. No unapproveddatarewrite/newcontent/package2.
