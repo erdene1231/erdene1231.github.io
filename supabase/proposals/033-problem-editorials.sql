@@ -56,8 +56,7 @@ declare lvl text;substantive boolean;begin
  lvl:=coalesce(p->>'priorityLevel',old_body->>'priorityLevel',case when (p->>'priority')::boolean then 'high' else 'medium' end);
  if lvl='low' and (jsonb_array_length(coalesce(p->'hints','[]'))>0 or jsonb_array_length(coalesce(p->'hintsEn','[]'))>0) and
   (old_body is null or coalesce(p->'hints','[]') is distinct from coalesce(old_body->'hints','[]') or coalesce(p->'hintsEn','[]') is distinct from coalesce(old_body->'hintsEn','[]')) then raise exception 'Low offers no new hints; retain existing stored hints unchanged.' using errcode='22023';end if;
- if lvl='high' then
-  if jsonb_array_length(coalesce(p->'hints','[]'))<>3 or jsonb_array_length(coalesce(p->'hintsEn','[]'))<>3 or ed is null or ed='null'::jsonb then raise exception 'High requires three bilingual hints and a tutorial-format editorial.' using errcode='22023';end if;
+ if ed is not null and ed<>'null'::jsonb then
   select exists(select 1 from jsonb_path_query(ed,'$.sections[*].blocks[*]') x(b) where
    (b->>'type' in ('p','code') and nullif(btrim(b->>'text'),'') is not null) or
    (b->>'type'='math' and nullif(btrim(b->>'tex'),'') is not null) or

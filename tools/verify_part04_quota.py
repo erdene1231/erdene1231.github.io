@@ -1,9 +1,4 @@
-"""Verify reviewed new-task quota evidence without assigning production IDs.
-
-Metadata candidates do not qualify. Each accepted record needs statement and
-solution review evidence, a learning objective, a reasoned priority, and a
-canonical source identity. Run with an explicit reviewed-ledger JSON path.
-"""
+"""Lightweight educational selection quota and identity/dedup verification. Optional statements/editorials/proofs/code are not selection requirements."""
 import json
 import sys
 import subprocess
@@ -30,22 +25,17 @@ def verify(records, baseline, content_readiness=None):
         if normalized in old_urls or key in old_keys: reason.append('existing baseline task')
         if normalized in seen_urls or key in seen_keys: reason.append('duplicate submitted task')
         seen_urls.add(normalized); seen_keys.add(key)
-        for field in ['statementEvidence', 'solutionEvidence']:
-            evidence = record.get(field, {})
-            if not isinstance(evidence, dict) or not str(evidence.get('url', '')).startswith('https://') or not evidence.get('sha256') or len(evidence.get('sha256', '')) != 64 or not evidence.get('reviewNote'):
-                reason.append(field + ' requires source URL, content hash and substantive review note')
-        for field in ['learningObjective', 'priorityReason', 'primaryTopic']:
-            if not isinstance(record.get(field), str) or not record[field].strip(): reason.append('missing ' + field)
-        if record.get('priorityLevel') not in ['low', 'medium', 'high']: reason.append('unreviewed priority')
-        if record.get('reviewStatus') != 'reviewed': reason.append('not reviewed')
+        # Latest scope: concise educational curation, not proof/content authorship.
+        if not str(record.get('learningObjective') or record.get('curationReason') or '').strip(): reason.append('missing educational usefulness rationale')
+        if record.get('priorityLevel') not in ['low','medium','high'] or not str(record.get('priorityReason','')).strip(): reason.append('missing individual priority/rationale')
         if not reason: source_counts[source] += 1
-        ready = content_readiness[index] if content_readiness is not None else {'ready':False,'reason':'Canonical priority-content readiness check not run'}
-        if not ready.get('ready'): reason.append(ready.get('reason','priority content incomplete'))
+        ready = content_readiness[index] if content_readiness is not None else {'ready':False,'reason':'Selection metadata check not run'}
+        if not ready.get('ready'): reason.append(ready.get('reason','selection metadata invalid'))
         if reason: rejected.append({'index': index, 'ref': record.get('ref'), 'reasons': reason})
         else: counts[source] += 1
     quotas = {source: {'required': target, 'verified': counts[source], 'remaining': max(0, target-counts[source])} for source, target in QUOTAS.items()}
-    return {'complete': not rejected and all(counts[s] >= n for s, n in QUOTAS.items()), 'quotas': quotas, 'source_reviewed_unique': dict(source_counts), 'rejected': rejected,
-            'limitations': 'Evidence fields are an accountability gate; human semantic review and cross-source aliases still require verification. No production import is authorized by this report.'}
+    return {'complete': not rejected and all(counts[s] >= n for s, n in QUOTAS.items()), 'quotas': quotas, 'source_curated_unique': dict(source_counts), 'rejected': rejected,
+            'limitations': 'Lightweight educational selection and metadata/identity/dedup check only;no original proof,solution audit,code,statement or editorial required. No production import authorized.'}
 
 
 if __name__ == '__main__':

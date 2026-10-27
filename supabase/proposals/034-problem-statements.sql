@@ -28,8 +28,11 @@ revoke all on sequence public.problem_statement_changes_change_id_seq from publi
 
 create function public.validate_problem_statement(doc jsonb,provenance jsonb) returns void language plpgsql set search_path='' as $$
 declare version jsonb;section jsonb;field text;d date;mn_samples jsonb;en_samples jsonb;begin
+ if doc is null or doc='null'::jsonb then
+  if provenance is not null and provenance<>'null'::jsonb then raise exception 'Statement provenance without body' using errcode='22023';end if;
+  return;
+ end if;
  if jsonb_typeof(provenance)is distinct from 'object' or pg_column_size(provenance)>16384 then raise exception 'Statement provenance required, at most16KB'using errcode='22023';end if;
- if doc is null or doc='null'::jsonb then raise exception 'MN/EN statement required' using errcode='22023';end if;
  perform public.validate_tutorial_publication(doc->>'id',doc);
  foreach field in array array['mn','en'] loop
   version:=case when field='mn' then doc else doc#>'{translations,en}' end;

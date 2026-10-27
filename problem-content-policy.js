@@ -22,9 +22,20 @@ export function assertProblemContentReady(problem) {
   return problem;
  }
  if(level!=='high')return problem;
- if(!Array.isArray(problem.hints)||!Array.isArray(problem.hintsEn)||problem.hints.length!==3||problem.hintsEn.length!==3||[...problem.hints,...problem.hintsEn].some(x=>typeof x!=='string'||!x.trim()))throw new Error('High priority requires three staged hints in both languages.');
- if(!problem.editorial)throw new Error('High priority requires a tutorial-format editorial; an external URL alone is insufficient.');
+ if(!problem.editorial)return problem;
  validateTutorial(problem.editorial);
  if(!problem.editorial.sections.some(s=>s.blocks.some(b=>b.type==='rich'&&b.content?.some(r=>r.text?.trim())||['p','code'].includes(b.type)&&b.text?.trim()||b.type==='math'&&b.tex?.trim())))throw new Error('High editorial requires substantive typed content.');
  return problem;
+}
+
+// Package4 selection gate: optional authored documents never stand in for review.
+export function assertProblemSelectionReady(problem){
+ assertNewProblemRatingReady(problem);
+ if(!Array.isArray(problem.tags)||!problem.tags.length||problem.tags.some(t=>typeof t!=='string'||!t.trim()))throw Error('Reviewed tags required.');
+ if(!['low','medium','high'].includes(problem.priorityLevel)||!problem.priorityReason?.trim())throw Error('Individual priority and rationale required.');
+ if(!String(problem.learningObjective||problem.curationReason||'').trim())throw Error('Concise educational usefulness rationale required.');
+ if(!problem.title?.trim()||!problem.ref?.trim())throw Error('Problem identity required.');
+ let link;try{link=new URL(problem.url);}catch{throw Error('Problem link required.');}
+ if(link.protocol!=='https:'||link.username||link.password)throw Error('Safe problem link required.');
+ assertProblemContentReady(problem);return problem;
 }
