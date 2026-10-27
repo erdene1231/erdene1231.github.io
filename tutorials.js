@@ -1,11 +1,11 @@
-import {priorityLevel,priorityLabel,priorityRank} from './priority.js?v=43';
-import {renderExtendedBlock} from './tutorial-block-renderer.js?v=43';
-import {clearMediaCache} from './tutorial-media.js?v=43';
-import {loadLearningContent,bodyHash} from './learning-model.js?v=43';
+import {priorityLevel,priorityLabel,priorityRank} from './priority.js?v=44';
+import {renderExtendedBlock} from './tutorial-block-renderer.js?v=44';
+import {clearMediaCache} from './tutorial-media.js?v=44';
+import {loadLearningContent,bodyHash} from './learning-model.js?v=44';
 import {algorithmDemo} from './algorithm-demos.js?v=23';
 import {segmentTreeDemo} from './segment-tree-demo.js?v=16';
-import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=43';
-import {setupTutorialEditor} from './tutorial-editor.js?v=43';
+import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=44';
+import {setupTutorialEditor} from './tutorial-editor.js?v=44';
 const $=id=>document.getElementById(id);
 export const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
 let mathPromise=null,mathQueue=Promise.resolve();
@@ -53,8 +53,8 @@ export function drawArticle(t,parent,lang,options={}){const v=view(t,lang);paren
  }
  if(t.id==='segment-tree'&&i===3)part.append(segmentTreeDemo(lang,typeset));if(i===3){const demo=algorithmDemo(t.id,lang,typeset);if(demo)part.append(demo);}parent.append(part);
 }}
-export function typeset(elements,build){
- mathQueue=mathQueue.catch(()=>{}).then(async()=>{window.MathJax?.typesetClear?.(elements);if(build&&build()===false)return;const mj=await mathjax();await mj.typesetPromise(elements);});return mathQueue;
+export function typeset(elements,build,valid=()=>true){
+ mathQueue=mathQueue.catch(()=>{}).then(async()=>{if(!valid())return;window.MathJax?.typesetClear?.(elements);if(build&&build()===false)return;const mj=await mathjax();if(!valid())return;await mj.typesetPromise(elements);if(!valid())mj.typesetClear?.(elements);});return mathQueue;
 }
 async function copy(text,button,success){try{await navigator.clipboard.writeText(text);const previous=button.textContent;button.textContent=success;setTimeout(()=>button.textContent=previous,1800);}catch{$('tutorial-message').textContent='Хуулах боломжгүй байна / Copy unavailable.';}}
 export function setupTutorials(ctx){

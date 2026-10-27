@@ -1,3 +1,13 @@
+# Current package04 checkpoint — latest content, rating, hint and auth requirements
+
+Source/solution-reviewed new entries86/245 (AtCoder50,CF36), all86numerically rated. Latest High policy requires authored tutorial-schema editorial plus3MN+EN hints: only9/86content-ready;77still need original content. Another159source reviews remain. Do not repeat older readiness claims below: they predate the user policy. Baseline30/748reviewed,718pending;30rating-rationale proposals unapplied. Existing IDs/data preserved.
+
+Low hints suppressed in cards/detail/all modes, stored hint arrays/progress retained. Dynamic bilingual hints use bundled MathJax with safe text/code spans and stale render guards; actual browser6checks passed. Admin main menu now one hub with all3existing destinations/deep routes, local role tests passed. Recovery OTP form removed: email-link request/resend/wait UI and authenticated PASSWORD_RECOVERY callback retain new-password form; mock browser mobile/light+desktop/dark and invalid/expired links pass. Signup instruction is email-link based; live confirmation/provider delivery not exercised.
+
+Canonical new-rating/content gates added;50AtCoder rough CF-scale estimates have individual calibration rationale.9original tutorial-schema editorials pass validator/editor/renderer/MathJax roundtrip; the first3 authored C++17 implementations pass180random oracle cases;6CF editorials contain original explanation/algorithm/proof/complexity, no code-execution claim. Actual problem editorial admin editing, lazy public reader and guarded backend persistence are still pending. Do not imply production save supports typed editorial yet. Profile-admin scope/security proposal pending parent clarification; no real records touched.
+
+Node68passed. See audit/PART04-COMPLETION-CHECKLIST.json and individual browser reports. Continue High content integration/authoring, remaining source quotas/baseline semantic reviews and performance matrix.032prepared only; no migration/import/merge/deploy/publication or security-setting change authorized.
+
 # Package04 checkpoint — CF36,overall86 reviewed; source provenance and old-toggle removal
 
 CF36/100+AtCoder50/50=86/245 reviewed local new tasks; remaining159(IOI30,EGOI30,APIO15,JOI20,CF64). Strict quota gate0rejections, combined86import records pass. CF review method: official statement+official API+independent proof, NOT an editorial-read claim; proof JSON file hashes validated. No new server IDs allocated or production import.

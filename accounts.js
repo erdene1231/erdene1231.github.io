@@ -54,10 +54,10 @@ export async function verifyRecovery(client,email,token) {
  if(!data.session?.user?.id)throw new Error('Код баталгаажсангүй. Дахин код аваарай.');return data.session.user.id;
 }
 export async function setRecoveredPassword(client,verifiedUserId,password,confirm) {
- if(!verifiedUserId)throw new Error('Эхлээд email кодоо баталгаажуулна уу.');
+ if(!verifiedUserId)throw new Error('Эхлээд email дээрх баталгаажуулах холбоосыг нээнэ үү.');
  if(password.length<8)throw new Error('Нууц үг дор хаяж 8 тэмдэгттэй байна.');
  if(password!==confirm)throw new Error('Хоёр нууц үг ижил биш байна.');
  const {data,error}=await client.auth.getUser();if(error)throw error;
- if(data.user?.id!==verifiedUserId)throw new Error('Account солигдсон байна. Email кодоо дахин баталгаажуулна уу.');
+ if(data.user?.id!==verifiedUserId)throw new Error('Account солигдсон байна. Email дээрх холбоосыг дахин нээнэ үү.');
  const result=await client.auth.updateUser({password});if(result.error)throw result.error;
 }

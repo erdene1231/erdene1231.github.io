@@ -1,17 +1,18 @@
-import {canonicalProblemUrl} from './problem-url.js?v=43';
-import {priorityLevel,priorityLabel,isHighPriority,ratingClass} from './priority.js?v=43';
-import {setupLearning} from './learning.js?v=43';
-import {setupTutorials} from './tutorials.js?v=43';
+import {appendHintText} from './hint-content.js?v=44';
+import {canonicalProblemUrl} from './problem-url.js?v=44';
+import {priorityLevel,priorityLabel,isHighPriority,ratingClass} from './priority.js?v=44';
+import {setupLearning} from './learning.js?v=44';
+import {setupTutorials,typeset} from './tutorials.js?v=44';
 import {setupGroups} from './groups.js?v=20';
-let tutorialUI, learningUI=null;
+let tutorialUI, learningUI=null,hintRenderTurn=0;
 import {EMPTY, cleanEntry, parseBackup} from './progress.js';
 import {getSolvers} from './community.js?v=6';
-import {setupAdmin} from './admin.js?v=43';
-import {parseCatalog,hintTexts,getSources} from './problem-store.js?v=43';
-import {rpc} from './accounts.js?v=17';
-import {ownProfile,saveOwnProfile,avatarUrl,accountError} from './accounts.js?v=17';
-import {setupSocial} from './social.js?v=23';
-import {filterProblems, getTags, ratingLabel,difficultyLabel} from './catalog.js?v=43';
+import {setupAdmin} from './admin.js?v=44';
+import {parseCatalog,hintTexts,getSources} from './problem-store.js?v=44';
+import {rpc} from './accounts.js?v=44';
+import {ownProfile,saveOwnProfile,avatarUrl,accountError} from './accounts.js?v=44';
+import {setupSocial} from './social.js?v=44';
+import {filterProblems, getTags, ratingLabel,difficultyLabel} from './catalog.js?v=44';
 const $ = id => document.getElementById(id);
 const STATUS = {new:'Эхлээгүй',trying:'Оролдож байгаа',solved:'Бодсон'};
 let data, selectedProblem, state={}, dirty={}, user=null, client=null, loading=false, syncing=false, syncAgain=false, epoch=0;
@@ -81,15 +82,15 @@ function render() {
     {const tags=el('div','tag-chips');for(const tag of p.tags)tags.append(el('span','tag-chip',tag));tags.title=p.tags.join(' · ');tags.classList.toggle('tags-concealed',!$('show-tags').checked&&entry(p.id).status!=='solved');b.append(tags);}
     const badge=el('span','badge '+entry(p.id).status,STATUS[entry(p.id).status]);
     const arrow=el('button','arrow','↗');arrow.setAttribute('aria-label',p.title+' нээх');arrow.disabled=loading||catalogLoading;arrow.onclick=()=>openProblem(p);
-    const signals=el('div','problem-signals'),used=Math.min(3,Math.max(0,Number(entry(p.id).hints)||0)),hint=el('span','hint-meter hint-level-'+used,'Hint '+used+'/3');hint.title=used?used+' hint ашигласан':'Hint ашиглаагүй';hint.setAttribute('aria-label',hint.title);signals.append(hint,badge);
+    const signals=el('div','problem-signals'),used=Math.min(3,Math.max(0,Number(entry(p.id).hints)||0)),hint=el('span','hint-meter hint-level-'+used,'Hint '+used+'/3');hint.title=used?used+' hint ашигласан':'Hint ашиглаагүй';hint.setAttribute('aria-label',hint.title);hint.hidden=priorityLevel(p)==='low';signals.append(hint,badge);
     row.append(n,b,signals,arrow);const learningLinks=el('div','problem-learning-links');for(const t of learningUI?.linksForProblem(p)||[]){const a=el('a','',(t.primary?'Үндсэн · ':'')+t.title);a.href='#tutorial/'+t.id;learningLinks.append(a);}const days=learningUI?.planDaysFor(p)||[];if(days.length){const a=el('a','','Өдөр '+days.slice(0,3).join(', ')+(days.length>3?'…':''));a.href='#plan/'+days[0];learningLinks.append(a);}if(learningLinks.children.length)row.append(learningLinks);$('problems').append(row);
   }
   if(!filtered.length)$('problems').append(el('p','muted','Тохирох бодлого олдсонгүй. Шүүлтүүрээ өөрчлөөрэй.'));
 }
 function openProblem(p) {selectedProblem=p;detailTagsShown=false;$('detail-title').textContent=(isHighPriority(p)?'★ ':'')+p.title;$('detail-source').textContent='#'+p.number+' · '+p.source+' · '+p.ref;$('detail-note').textContent=(p.ratingKind==='unrated'?'Үнэлгээгүй':p.ratingKind==='official'?'CF албан rating':'CF difficulty-ийн баримжаа'+(p.ratingConfidence==='rough'?' · Урьдчилсан үнэлгээ':''))+(p.level==='Interactive'?' · Interactive':'')+(p.source==='EGOI'?' · Full task; subtask-аас эхэл':'')+' · '+priorityLabel(p);const detailRating=el('span','rating '+ratingClass(p),ratingLabel(p));$('detail-note').prepend(detailRating,document.createTextNode(' · '));$('problem-link').href=p.url;$('notes').value=entry(p.id).notes;$('detail-feedback').textContent='';renderDetail();$('detail').showModal();void loadSolvers();}
 function renderDetail() {
-  if(!selectedProblem)return;const learningLinks=$('detail-learning-links');learningLinks.replaceChildren();for(const t of learningUI?.linksForProblem(selectedProblem)||[]){const a=el('a','',(t.primary?'Үндсэн · ':'')+t.title);a.href='#tutorial/'+t.id;a.onclick=()=>$('detail').close();learningLinks.append(a);}learningUI?.renderProblemLinks(selectedProblem,learningLinks);const p=selectedProblem,e=entry(p.id),hintCount=p.hints?.length||0;$('hint-language').closest('label').hidden=!hintCount;$('problem-status').value=e.status;$('hint-list').replaceChildren();
-  hintTexts(p,hintLanguage).slice(0,e.hints).forEach((hint,i)=>{const h=el('div','hint');h.append(el('b','','HINT '+(i+1)),el('span','',hint));$('hint-list').append(h);});
+  if(!selectedProblem)return;const learningLinks=$('detail-learning-links');learningLinks.replaceChildren();for(const t of learningUI?.linksForProblem(selectedProblem)||[]){const a=el('a','',(t.primary?'Үндсэн · ':'')+t.title);a.href='#tutorial/'+t.id;a.onclick=()=>$('detail').close();learningLinks.append(a);}learningUI?.renderProblemLinks(selectedProblem,learningLinks);const p=selectedProblem,e=entry(p.id),hintCount=hintTexts(p,'mn').length;$('hint-list').closest('.hints').hidden=priorityLevel(p)==='low';$('hint-language').closest('label').hidden=!hintCount;$('problem-status').value=e.status;const hintTurn=++hintRenderTurn;try{window.MathJax?.typesetClear?.([$ ('hint-list')]);}catch{}const hintBody=el('div','hint-render-body');$('hint-list').replaceChildren(hintBody);
+  hintTexts(p,hintLanguage).slice(0,e.hints).forEach((hint,i)=>{const h=el('div','hint');const text=el('span');appendHintText(text,hint);h.append(el('b','','HINT '+(i+1)),text);hintBody.append(h);});
   const hintsVisible=!hiddenHints.has(p.id);
   $('hint-list').hidden=!hintsVisible;
   $('toggle-hints').hidden=!hintCount||e.hints===0;
@@ -99,6 +100,8 @@ function renderDetail() {
   const tagsVisible=$('show-tags').checked||detailTagsShown||e.status==='solved';$('tags').hidden=!tagsVisible;$('detail-tags').hidden=!tagsVisible;$('detail-tags').replaceChildren();for(const tag of p.tags)$('detail-tags').append(el('span','tag-chip',tag));
   $('reveal-detail-tags').hidden=$('show-tags').checked||e.status==='solved';$('reveal-detail-tags').textContent=detailTagsShown?'Tags нуух':'Tags харуулах';
   $('editorial-link').hidden=!p.editorialUrl;if(p.editorialUrl)$('editorial-link').href=p.editorialUrl;
+  if(hintCount&&e.hints>0&&hintsVisible){const id=p.id,language=hintLanguage,target=hintBody;void typeset([target],undefined,()=>hintTurn===hintRenderTurn&&selectedProblem?.id===id&&hintLanguage===language&&$('detail').open&&priorityLevel(selectedProblem)!=='low'&&target.isConnected).catch(()=>{if(hintTurn===hintRenderTurn)$('detail-feedback').textContent='Томъёог одоогоор дүрсэлж чадсангүй; эх бичвэр хэвээр байна.';});}
+
 }
 async function switchUser(next) {
   if(user?.id===next?.id)return;
@@ -176,7 +179,7 @@ async function authAction(signup) {
   try {
     const credentials={email:$('email').value.trim(),password:$('password').value};
     const result=signup?await client.auth.signUp({...credentials,options:{emailRedirectTo:location.origin+location.pathname}}):await client.auth.signInWithPassword(credentials);
-    if(result.error)throw result.error;$('password').value='';$('auth-feedback').textContent=result.data.session?'Амжилттай нэвтэрлээ.':'Email баталгаажуулах холбоосоо шалгаад нэвтэрнэ үү.';await switchUser(result.data.session?.user || null);
+    if(result.error)throw result.error;$('password').value='';$('auth-feedback').textContent=result.data.session?'Амжилттай нэвтэрлээ.':'Баталгаажуулах email дээрх холбоос дээр дарна уу.';await switchUser(result.data.session?.user || null);
   } catch(error){$('auth-feedback').textContent=error.message;}finally{buttons.forEach(b=>b.disabled=false);}
 }
 function populateSources(){for(const id of ['source','admin-source']){const chosen=$(id).value;$(id).replaceChildren();if(id==='source'){const option=el('option','','Бүгд');option.value='';$(id).append(option);}for(const source of getSources(data.problems,data.sources||[])){const option=el('option','',source);option.value=source;$(id).append(option);}$(id).value=[...$(id).options].some(o=>o.value===chosen)?chosen:(id==='source'?'':'Codeforces');}adminUI?.sourcesChanged();}
@@ -208,6 +211,7 @@ async function init() {
   $('reset-filters').onclick=()=>{for(const id of ['search','source','status-filter','tag-filter','min-rating','max-rating','priority-filter'])$(id).value='';$('sort').value='rating-asc';savePreferences();render();};
   render();
   document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
+  $('detail').addEventListener('close',()=>{if($('detail').open)return;hintRenderTurn++;try{window.MathJax?.typesetClear?.([$ ('hint-list')]);}catch{}$('hint-list').replaceChildren();});
   $('account').onclick=()=>{updateAccount();$('auth').showModal();};
   tutorialUI=setupTutorials({requiresOnline:configured,problems:()=>data.problems,progress:()=>state,client:()=>client,user:()=>user,learning:()=>learningUI});
   groupUI=setupGroups({client:()=>client,user:()=>user,openAccount:()=>{$('account').onclick();}});
@@ -223,7 +227,7 @@ async function init() {
   $('detail').addEventListener('close',()=>{solverRequest++;selectedProblem=null;});
   $('problem-status').onchange=()=>{setEntry(selectedProblem.id,{status:$('problem-status').value});renderDetail();};
   $('toggle-hints').onclick=()=>{const id=selectedProblem.id;if(hiddenHints.has(id))hiddenHints.delete(id);else hiddenHints.add(id);renderDetail();};
-  $('next-hint').onclick=()=>{if(!selectedProblem.hints?.length)return;hiddenHints.delete(selectedProblem.id);const e=entry(selectedProblem.id);setEntry(selectedProblem.id,{hints:Math.min(e.hints+1,selectedProblem.hints.length),status:e.status==='new'?'trying':e.status});renderDetail();};
+  $('next-hint').onclick=()=>{if(!selectedProblem||priorityLevel(selectedProblem)==='low'||!selectedProblem.hints?.length)return;hiddenHints.delete(selectedProblem.id);const e=entry(selectedProblem.id);setEntry(selectedProblem.id,{hints:Math.min(e.hints+1,selectedProblem.hints.length),status:e.status==='new'?'trying':e.status});renderDetail();};
   $('save-note').onclick=()=>{setEntry(selectedProblem.id,{notes:$('notes').value});$('detail-feedback').textContent='Тэмдэглэлийг progress-д нэмлээ. Хадгалалтын төлөвийг үндсэн хуудаснаас харна уу.';};
   $('export').onclick=()=>{const blob=new Blob([JSON.stringify({version:1,progress:state},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=el('a');a.href=url;a.download='erdene-club-progress.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
   $('import').onchange=async event=>{

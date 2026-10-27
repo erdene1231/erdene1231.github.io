@@ -1,5 +1,6 @@
-import {canonicalProblemUrl,problemUrlIdentity} from './problem-url.js?v=43';
-import {validatePriority,priorityLevel,isHighPriority} from './priority.js?v=43';
+import {validateTutorial} from './tutorial-model.js?v=44';
+import {canonicalProblemUrl,problemUrlIdentity} from './problem-url.js?v=44';
+import {validatePriority,priorityLevel,isHighPriority} from './priority.js?v=44';
 export function validateSource(value) {
  if(typeof value!=='string')throw new Error('Source нэр оруулна уу.');
  const name=value.trim().replace(/\s+/g,' ');
@@ -31,6 +32,7 @@ export function validateProblem(input) {
  for(const key of ['sourceId','sourceCategory','verifiedAt','difficultyCategory','ratingBasis','ratingConfidence','ratingEstimatedAt'])if(typeof input[key]==='string'&&input[key].length<=500)p[key]=input[key];
  for(const key of ['ratingSource','ratingVerifiedAt'])if(Object.hasOwn(input,key)){if(typeof input[key]!=='string'||input[key].length>500||(key==='ratingSource'&&!validUrl(input[key])))throw new Error('Rating provenance талбар буруу байна.');p[key]=input[key];}
  if(Object.hasOwn(input,'sourceTags')){if(!Array.isArray(input.sourceTags)||input.sourceTags.length>20||input.sourceTags.some(t=>typeof t!=='string'||!/^[a-zA-Z0-9 +/&()_*-]{1,50}$/.test(t)))throw new Error('Source tags буруу байна.');p.sourceTags=[...input.sourceTags];}
+ if(Object.hasOwn(input,'editorial')){validateTutorial(input.editorial);p.editorial=structuredClone(input.editorial);}
  if(Object.hasOwn(input,'priorityLevel'))p.priorityLevel=priorityLevel(input);if(Object.hasOwn(input,'priorityReason'))p.priorityReason=input.priorityReason;
  return p;
 }
@@ -42,7 +44,7 @@ export function parseCatalog(document) {
  if(document.knownIds.some(id=>typeof id!=='string'||!/^[a-zA-Z0-9_-]{1,100}$/.test(id))||[...ids].some(id=>!document.knownIds.includes(id)))throw new Error('Бодлогын ID жагсаалт буруу байна.');
  return {...document,problems:document.problems.map(p=>({...p,url:canonicalProblemUrl(p.url)}))};
 }
-export function hintTexts(problem,language) {return (language==='en'?problem.hintsEn:problem.hints)||[];}
+export function hintTexts(problem,language) {return priorityLevel(problem)==='low'?[]:(language==='en'?problem.hintsEn:problem.hints)||[];}
 
 export function parseProblemImport(document) {
  const list=Array.isArray(document)?document:Array.isArray(document?.problems)?document.problems:[document];

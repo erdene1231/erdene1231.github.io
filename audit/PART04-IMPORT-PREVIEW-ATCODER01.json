@@ -6,15 +6,100 @@
     "url": "https://atcoder.jp/contests/typical90/tasks/typical90_a",
     "priorityLevel": "high",
     "priorityReason": "Binary search on answer-ийн feasibility баталгаа, boundary болон greedy exchange-ийг хамтад нь сургах цөм practice.",
-    "rating": null,
-    "ratingKind": "unrated",
-    "hints": [],
-    "hintsEn": [],
+    "rating": 1600,
+    "ratingKind": "estimated",
+    "hints": [
+      "Хариу x гэж өгөгдвөл бүх хэсгийг x-ээс багагүй урттай болгож болох эсэхийг эхлээд бод.",
+      "Таслалт бүрийг хамгийн эрт боломжит байрлалд сонгох нь үлдсэн талбайд ашигтай юу? Боломжит x-үүд ямар дараалалтай вэ?",
+      "Байрлуудын төгсгөлд L-ийг нэмээд x-ээс багагүй хэсгүүдийг greedy тоол. K+1 хэсэг боломжтой эсэхээр хамгийн их x-ийг binary search хий; жижиг үлдэгдлийг өмнөх хэсэгтэй нэгтгэж болно."
+    ],
+    "hintsEn": [
+      "For a proposed answer x, ask whether all pieces can have length at least x.",
+      "Does taking the earliest feasible cut leave the best remaining space? How does feasibility change as x grows?",
+      "Append L to the positions and greedily count pieces of length at least x. Binary-search the largest x allowing K+1 pieces; a short final remainder can be merged into the last piece."
+    ],
     "tags": [
       "binary search"
     ],
     "level": "Practice",
-    "editorialUrl": "https://atcoder.jp/contests/typical90/editorial/2572"
+    "editorialUrl": "https://atcoder.jp/contests/typical90/editorial/2572",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-a",
+      "title": "Yokan Party — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хамгийн богино хэсгийг шууд сонгохын оронд түүний доод хязгаар x-ийг тогтооё. x боломжтой бол түүнээс бага утга мөн боломжтой. Иймээс feasibility predicate нь binary search хийх монотон бүтэцтэй."
+            }
+          ]
+        },
+        {
+          "title": "Шалгах алгоритм",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Зүүн заагийг 0 гэж аваад байрлуудыг өсөхөөр уншина. Өмнөх таслалтаас x-ээс багагүй зайтай анхны байрлалд хэсэг дуусгана. L төгсгөлийг мөн нэг боломжит зааг гэж тоолно. K+1-ээс олон хэсэг гарвал илүүдэл хөрш хэсгүүдийг нэгтгэж болно. Эцэст жижиг үлдэгдэл байвал сүүлийн тоолсон хэсэгт залгана."
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Greedy-ийн эхний таслалт ямар ч зөв хувилбарын эхний таслалтаас хойш байрлахгүй. Түүнийг эрт болгох нь үлдсэн таслалтуудад зориулагдах зайг багасгахгүй. Энэ аргументыг үлдсэн хэсэг бүрт давтвал greedy хамгийн олон x-ээс багагүй хэсэг гаргана. Тэгэхээр тоо K+1 хүрсэн эсэх нь шаардлагатай бөгөөд хангалттай."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба алдаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Нэг шалгалт O(N), binary search O(log L) удаа тул нийт O(N log L), хадгалалт O(N). K таслалт нь K+1 хэсэг гэдгийг андуурч болохгүй. L төгсгөл, жижиг үлдэгдэл болон боломжгүй дээд заагийг тусад нь зөв барина."
+            }
+          ]
+        },
+        {
+          "title": "C++17 хэрэгжүүлэлт",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nint main(){ios::sync_with_stdio(false);cin.tie(nullptr);\n int n,k;long long L;cin>>n>>L>>k;vector<long long> cut(n);for(auto&x:cut)cin>>x;cut.push_back(L);\n auto feasible=[&](long long x){int pieces=0;long long last=0;for(long long at:cut)if(at-last>=x){++pieces;last=at;}return pieces>=k+1;};\n long long lo=0,hi=L+1;while(hi-lo>1){long long mid=lo+(hi-lo)/2;if(feasible(mid))lo=mid;else hi=mid;}cout<<lo<<char(10);\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_a"
+                },
+                {
+                  "label": "Албан solution холбоосууд",
+                  "url": "https://atcoder.jp/contests/typical90/editorial/2572"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "ratingBasis": "Rough CF-scale calibration: Binary search on answer, greedy cut-feasibility proof and K+1 boundary handling; roughly above basic monotone counting. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_a"
   },
   {
     "source": "AtCoder",
@@ -23,15 +108,100 @@
     "url": "https://atcoder.jp/contests/typical90/tasks/typical90_d",
     "priorityLevel": "high",
     "priorityReason": "Aggregate precomputation ба inclusion-exclusion-ийн суурь алдааг тод харуулах, дараагийн prefix/range sum-д бэлтгэх өгөөжтэй.",
-    "rating": null,
-    "ratingKind": "unrated",
-    "hints": [],
-    "hintsEn": [],
+    "rating": 900,
+    "ratingKind": "estimated",
+    "hints": [
+      "Нэг cell-ийн хариуг мөрийн нийлбэр, баганын нийлбэрээр илэрхийлж үз.",
+      "Мөр ба баганын нийлбэрийг нэмэхэд аль cell хоёр удаа тоологдох вэ?",
+      "Бүх мөр, баганын нийлбэрийг нэг удаа бод. Хариу нь row[i]+column[j]-A[i][j]; бүх cell-д дахин бүтэн мөр/багана гүйх шаардлагагүй."
+    ],
+    "hintsEn": [
+      "Express one cell answer using its row sum and column sum.",
+      "Which cell is counted twice when those two sums are added?",
+      "Precompute every row and column sum. Output row[i]+column[j]-A[i][j]; do not rescan an entire row and column for every cell."
+    ],
     "tags": [
       "prefix sums"
     ],
     "level": "Practice",
-    "editorialUrl": "https://atcoder.jp/contests/typical90/editorial/2572"
+    "editorialUrl": "https://atcoder.jp/contests/typical90/editorial/2572",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-d",
+      "title": "Cross Sum — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Ижил мөр эсвэл ижил баганад байгаа cell-үүдийн нэгдлийг тоолно. Мөрийн нийлбэр ба баганын нийлбэрийг нэмэхэд зөвхөн огтлолцлын cell давхар ордог."
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Input уншихдаа A массивыг хадгалж, row[i] болон column[j]-д утгыг нэмнэ. Дараа нь cell бүрийн хариуг row[i]+column[j]-A[i][j] гэж хэвлэнэ."
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тухайн cell-тэй нэг мөрөнд байгаа бусад cell зөвхөн row нийлбэрт, нэг баганад байгаа бусад cell зөвхөн column нийлбэрт орно. Огтлолцлын A[i][j] хоёр нийлбэрт орсон тул нэг удаа хасахад шаардсан нэгдлийн cell бүр яг нэг удаа үлдэнэ."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба алдаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Input болон output өөрөө HW хэмжээтэй. Preprocessing ба бүх хариу O(HW), хадгалалт O(HW+H+W). Cell бүрт мөр/баганыг дахин тооцвол O(HW(H+W)) болж удааширна. Огтлолцлыг хоёр удаа хасаж болохгүй."
+            }
+          ]
+        },
+        {
+          "title": "C++17 хэрэгжүүлэлт",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nint main(){ios::sync_with_stdio(false);cin.tie(nullptr);int h,w;cin>>h>>w;\n vector<vector<long long>> a(h,vector<long long>(w));vector<long long> row(h),col(w);\n for(int i=0;i<h;++i)for(int j=0;j<w;++j){cin>>a[i][j];row[i]+=a[i][j];col[j]+=a[i][j];}\n for(int i=0;i<h;++i){for(int j=0;j<w;++j){if(j)cout<<' ';cout<<row[i]+col[j]-a[i][j];}cout<<char(10);}\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_d"
+                },
+                {
+                  "label": "Албан solution холбоосууд",
+                  "url": "https://atcoder.jp/contests/typical90/editorial/2572"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "ratingBasis": "Rough CF-scale calibration: Row/column precomputation plus one-cell overlap correction; straightforward linear input/output implementation. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_d"
   },
   {
     "source": "AtCoder",
@@ -40,14 +210,99 @@
     "url": "https://atcoder.jp/contests/typical90/tasks/typical90_g",
     "priorityLevel": "high",
     "priorityReason": "Lower bound-ийн зөв хэрэглээ, begin/end болон exact-match edge case-ийг эзэмшүүлэх цөм practice.",
-    "rating": null,
-    "ratingKind": "unrated",
-    "hints": [],
-    "hintsEn": [],
+    "rating": 1100,
+    "ratingKind": "estimated",
+    "hints": [
+      "Class rating-уудыг эрэмбэлбэл query бүрт бүх утгатай харьцуулах шаардлагатай юу?",
+      "Query b-ээс багагүй эхний class болон түүний өмнөх class-ийг л шалгах шалтгааныг бод.",
+      "Sort хийж query бүрд lower_bound ашигла. Олдсон iterator end биш бол баруун candidate, begin биш бол өмнөх candidate-ийн absolute difference-ийг ав; N=1 болон яг таарсан утгыг шалга."
+    ],
+    "hintsEn": [
+      "After sorting class ratings, must every class be compared for each query?",
+      "Why can only the first class not below b and its predecessor be nearest?",
+      "Sort, then use lower_bound per query. Check the returned iterator unless it is end and its predecessor unless it is begin; include singleton and exact-match cases."
+    ],
     "tags": [
       "binary search"
     ],
     "level": "Practice",
-    "editorialUrl": "https://atcoder.jp/contests/typical90/editorial/2572"
+    "editorialUrl": "https://atcoder.jp/contests/typical90/editorial/2572",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-g",
+      "title": "CP Classes — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эрэмбэлсэн массив дээр b-ийн зүүн талд b-д хамгийн ойр утга нь хамгийн баруун зүүн candidate; баруун талд нь хамгийн зүүн баруун candidate байна. Эдгээр нь lower_bound ба түүний өмнөх элемент юм."
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "A-г нэг удаа sort хийнэ. Query b бүрд lower_bound(A,b)-г олно. end биш бол тухайн утга, begin биш бол өмнөх утгаас b хүртэлх зөрүүний хамгийн багыг хариулна."
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "b-ээс бага утгуудын хувьд утга өсөх тусам b хүртэлх зай багасна. b-ээс багагүй утгуудын хувьд утга өсөх тусам зай нэмэгдэнэ. Тиймээс хоёр талын хамгийн ойр хоёр candidate-аас гаднах аль ч утга илүү сайн байж чадахгүй. Exact match-ийн зай 0 учраас шууд optimum."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба алдаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эрэмбэлэлт O(N log N), query бүр O(log N), нийт O(N log N+Q log N). Хадгалалт O(N). begin iterator-ийг decrement хийх, end-ийг dereference хийхээс хамгаална. Subsequence биш nearest-value query гэдгийг ялгана."
+            }
+          ]
+        },
+        {
+          "title": "C++17 хэрэгжүүлэлт",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nint main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<long long>a(n);for(auto&x:a)cin>>x;sort(a.begin(),a.end());int q;cin>>q;\n while(q--){long long b;cin>>b;auto it=lower_bound(a.begin(),a.end(),b);long long ans=LLONG_MAX;if(it!=a.end())ans=min(ans,llabs(*it-b));if(it!=a.begin())ans=min(ans,llabs(*prev(it)-b));cout<<ans<<char(10);}\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_g"
+                },
+                {
+                  "label": "Албан solution холбоосууд",
+                  "url": "https://atcoder.jp/contests/typical90/editorial/2572"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "ratingBasis": "Rough CF-scale calibration: Sort plus lower_bound/predecessor queries with begin/end cases; a foundational search task. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_g"
   }
 ]

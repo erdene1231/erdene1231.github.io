@@ -10,6 +10,7 @@ data=json.loads((ROOT/'problems.json').read_text());data['problems']=data['probl
 for i,p in enumerate(data['problems']):p.update(priorityLevel=['low','medium','high'][i%3],priority=False,rating=[800,1200,1400,1600,1900,2100,2400,3000,4000][i],ratingKind='estimated')
 data['problems'][0]['ratingKind']='official'
 data['problems'][8].update(rating=None,ratingKind='unrated')
+data['problems'][0].update(hints=['Hidden one','Hidden two','Hidden three'],hintsEn=['Hidden A','Hidden B','Hidden C'])
 lessons=json.loads((ROOT/'tutorials.json').read_text());lessons['tutorials']=lessons['tutorials'][:3]
 for i,t in enumerate(lessons['tutorials']):t.update(priorityLevel=['low','medium','high'][i],priorityReason='Fixture rationale',prerequisiteIds=[],related=[])
 try:
@@ -27,6 +28,15 @@ try:
   assert page.locator('#priority-only').count()==0 and page.locator('#problems .problem').count()==9
   assert not page.evaluate("Object.hasOwn(JSON.parse(localStorage.getItem('think-cp:catalog-preferences')),'priorityOnly')")
   page.locator('#priority-filter').select_option('low');assert page.locator('#problems .problem').count()==3
+  for mode in ['comfortable','compact','minimalist']:
+   page.locator('#problem-density').select_option(mode);assert page.locator('#problems .hint-meter:visible').count()==0
+  page.locator('#problem-density').select_option('comfortable')
+  page.locator('#problems .open').first.click();assert page.locator('#detail .hints').is_hidden();assert page.locator('#hint-list .hint').count()==0
+  before=page.evaluate("localStorage.getItem('think-cp:v1:guest')")
+  page.evaluate("document.querySelector('#next-hint').onclick()")
+  assert page.evaluate("localStorage.getItem('think-cp:v1:guest')")==before
+  page.locator('[data-close=detail]').click();report['low_hint_suppression_all_modes_without_progress_mutation']='PASS'
+
   assert page.locator('#problems .priority-low').count()==3
   page.locator('#reset-filters').click();page.locator('#sort').select_option('priority')
   assert 'High' in page.locator('#problems .priority-badge').first.inner_text()

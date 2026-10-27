@@ -9,8 +9,8 @@
     "priorityLevel": "high",
     "priorityReason": "Binary search on answer-ийн feasibility баталгаа, boundary болон greedy exchange-ийг хамтад нь сургах цөм practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1600,
+    "ratingKind": "estimated",
     "ratingNote": "AtCoder star score is not an official CF rating; no CF estimate assigned.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_a?lang=en",
@@ -28,10 +28,95 @@
       "binary-search",
       "greedy"
     ],
-    "hints": [],
-    "hintsEn": [],
-    "hintPolicy": "No hints authored in this batch; empty bilingual arrays preserved.",
-    "productionImported": false
+    "hints": [
+      "Хариу x гэж өгөгдвөл бүх хэсгийг x-ээс багагүй урттай болгож болох эсэхийг эхлээд бод.",
+      "Таслалт бүрийг хамгийн эрт боломжит байрлалд сонгох нь үлдсэн талбайд ашигтай юу? Боломжит x-үүд ямар дараалалтай вэ?",
+      "Байрлуудын төгсгөлд L-ийг нэмээд x-ээс багагүй хэсгүүдийг greedy тоол. K+1 хэсэг боломжтой эсэхээр хамгийн их x-ийг binary search хий; жижиг үлдэгдлийг өмнөх хэсэгтэй нэгтгэж болно."
+    ],
+    "hintsEn": [
+      "For a proposed answer x, ask whether all pieces can have length at least x.",
+      "Does taking the earliest feasible cut leave the best remaining space? How does feasibility change as x grows?",
+      "Append L to the positions and greedily count pieces of length at least x. Binary-search the largest x allowing K+1 pieces; a short final remainder can be merged into the last piece."
+    ],
+    "hintPolicy": "Three manually authored staged bilingual hints; source/proof reviewed.",
+    "productionImported": false,
+    "editorial": {
+      "id": "editorial-atcoder-typical90-a",
+      "title": "Yokan Party — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хамгийн богино хэсгийг шууд сонгохын оронд түүний доод хязгаар x-ийг тогтооё. x боломжтой бол түүнээс бага утга мөн боломжтой. Иймээс feasibility predicate нь binary search хийх монотон бүтэцтэй."
+            }
+          ]
+        },
+        {
+          "title": "Шалгах алгоритм",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Зүүн заагийг 0 гэж аваад байрлуудыг өсөхөөр уншина. Өмнөх таслалтаас x-ээс багагүй зайтай анхны байрлалд хэсэг дуусгана. L төгсгөлийг мөн нэг боломжит зааг гэж тоолно. K+1-ээс олон хэсэг гарвал илүүдэл хөрш хэсгүүдийг нэгтгэж болно. Эцэст жижиг үлдэгдэл байвал сүүлийн тоолсон хэсэгт залгана."
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Greedy-ийн эхний таслалт ямар ч зөв хувилбарын эхний таслалтаас хойш байрлахгүй. Түүнийг эрт болгох нь үлдсэн таслалтуудад зориулагдах зайг багасгахгүй. Энэ аргументыг үлдсэн хэсэг бүрт давтвал greedy хамгийн олон x-ээс багагүй хэсэг гаргана. Тэгэхээр тоо K+1 хүрсэн эсэх нь шаардлагатай бөгөөд хангалттай."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба алдаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Нэг шалгалт O(N), binary search O(log L) удаа тул нийт O(N log L), хадгалалт O(N). K таслалт нь K+1 хэсэг гэдгийг андуурч болохгүй. L төгсгөл, жижиг үлдэгдэл болон боломжгүй дээд заагийг тусад нь зөв барина."
+            }
+          ]
+        },
+        {
+          "title": "C++17 хэрэгжүүлэлт",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nint main(){ios::sync_with_stdio(false);cin.tie(nullptr);\n int n,k;long long L;cin>>n>>L>>k;vector<long long> cut(n);for(auto&x:cut)cin>>x;cut.push_back(L);\n auto feasible=[&](long long x){int pieces=0;long long last=0;for(long long at:cut)if(at-last>=x){++pieces;last=at;}return pieces>=k+1;};\n long long lo=0,hi=L+1;while(hi-lo>1){long long mid=lo+(hi-lo)/2;if(feasible(mid))lo=mid;else hi=mid;}cout<<lo<<char(10);\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_a"
+                },
+                {
+                  "label": "Албан solution холбоосууд",
+                  "url": "https://atcoder.jp/contests/typical90/editorial/2572"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "ratingBasis": "Rough CF-scale calibration: Binary search on answer, greedy cut-feasibility proof and K+1 boundary handling; roughly above basic monotone counting. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_a"
   },
   {
     "source": "AtCoder",
@@ -43,8 +128,8 @@
     "priorityLevel": "high",
     "priorityReason": "Aggregate precomputation ба inclusion-exclusion-ийн суурь алдааг тод харуулах, дараагийн prefix/range sum-д бэлтгэх өгөөжтэй.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 900,
+    "ratingKind": "estimated",
     "ratingNote": "AtCoder star score is not an official CF rating; no CF estimate assigned.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_d?lang=en",
@@ -62,10 +147,95 @@
       "arrays",
       "complexity"
     ],
-    "hints": [],
-    "hintsEn": [],
-    "hintPolicy": "No hints authored in this batch; empty bilingual arrays preserved.",
-    "productionImported": false
+    "hints": [
+      "Нэг cell-ийн хариуг мөрийн нийлбэр, баганын нийлбэрээр илэрхийлж үз.",
+      "Мөр ба баганын нийлбэрийг нэмэхэд аль cell хоёр удаа тоологдох вэ?",
+      "Бүх мөр, баганын нийлбэрийг нэг удаа бод. Хариу нь row[i]+column[j]-A[i][j]; бүх cell-д дахин бүтэн мөр/багана гүйх шаардлагагүй."
+    ],
+    "hintsEn": [
+      "Express one cell answer using its row sum and column sum.",
+      "Which cell is counted twice when those two sums are added?",
+      "Precompute every row and column sum. Output row[i]+column[j]-A[i][j]; do not rescan an entire row and column for every cell."
+    ],
+    "hintPolicy": "Three manually authored staged bilingual hints; source/proof reviewed.",
+    "productionImported": false,
+    "editorial": {
+      "id": "editorial-atcoder-typical90-d",
+      "title": "Cross Sum — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Ижил мөр эсвэл ижил баганад байгаа cell-үүдийн нэгдлийг тоолно. Мөрийн нийлбэр ба баганын нийлбэрийг нэмэхэд зөвхөн огтлолцлын cell давхар ордог."
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Input уншихдаа A массивыг хадгалж, row[i] болон column[j]-д утгыг нэмнэ. Дараа нь cell бүрийн хариуг row[i]+column[j]-A[i][j] гэж хэвлэнэ."
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тухайн cell-тэй нэг мөрөнд байгаа бусад cell зөвхөн row нийлбэрт, нэг баганад байгаа бусад cell зөвхөн column нийлбэрт орно. Огтлолцлын A[i][j] хоёр нийлбэрт орсон тул нэг удаа хасахад шаардсан нэгдлийн cell бүр яг нэг удаа үлдэнэ."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба алдаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Input болон output өөрөө HW хэмжээтэй. Preprocessing ба бүх хариу O(HW), хадгалалт O(HW+H+W). Cell бүрт мөр/баганыг дахин тооцвол O(HW(H+W)) болж удааширна. Огтлолцлыг хоёр удаа хасаж болохгүй."
+            }
+          ]
+        },
+        {
+          "title": "C++17 хэрэгжүүлэлт",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nint main(){ios::sync_with_stdio(false);cin.tie(nullptr);int h,w;cin>>h>>w;\n vector<vector<long long>> a(h,vector<long long>(w));vector<long long> row(h),col(w);\n for(int i=0;i<h;++i)for(int j=0;j<w;++j){cin>>a[i][j];row[i]+=a[i][j];col[j]+=a[i][j];}\n for(int i=0;i<h;++i){for(int j=0;j<w;++j){if(j)cout<<' ';cout<<row[i]+col[j]-a[i][j];}cout<<char(10);}\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_d"
+                },
+                {
+                  "label": "Албан solution холбоосууд",
+                  "url": "https://atcoder.jp/contests/typical90/editorial/2572"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "ratingBasis": "Rough CF-scale calibration: Row/column precomputation plus one-cell overlap correction; straightforward linear input/output implementation. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_d"
   },
   {
     "source": "AtCoder",
@@ -77,8 +247,8 @@
     "priorityLevel": "high",
     "priorityReason": "Lower bound-ийн зөв хэрэглээ, begin/end болон exact-match edge case-ийг эзэмшүүлэх цөм practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1100,
+    "ratingKind": "estimated",
     "ratingNote": "AtCoder star score is not an official CF rating; no CF estimate assigned.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_g?lang=en",
@@ -96,10 +266,95 @@
       "sorting",
       "binary-search"
     ],
-    "hints": [],
-    "hintsEn": [],
-    "hintPolicy": "No hints authored in this batch; empty bilingual arrays preserved.",
-    "productionImported": false
+    "hints": [
+      "Class rating-уудыг эрэмбэлбэл query бүрт бүх утгатай харьцуулах шаардлагатай юу?",
+      "Query b-ээс багагүй эхний class болон түүний өмнөх class-ийг л шалгах шалтгааныг бод.",
+      "Sort хийж query бүрд lower_bound ашигла. Олдсон iterator end биш бол баруун candidate, begin биш бол өмнөх candidate-ийн absolute difference-ийг ав; N=1 болон яг таарсан утгыг шалга."
+    ],
+    "hintsEn": [
+      "After sorting class ratings, must every class be compared for each query?",
+      "Why can only the first class not below b and its predecessor be nearest?",
+      "Sort, then use lower_bound per query. Check the returned iterator unless it is end and its predecessor unless it is begin; include singleton and exact-match cases."
+    ],
+    "hintPolicy": "Three manually authored staged bilingual hints; source/proof reviewed.",
+    "productionImported": false,
+    "editorial": {
+      "id": "editorial-atcoder-typical90-g",
+      "title": "CP Classes — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эрэмбэлсэн массив дээр b-ийн зүүн талд b-д хамгийн ойр утга нь хамгийн баруун зүүн candidate; баруун талд нь хамгийн зүүн баруун candidate байна. Эдгээр нь lower_bound ба түүний өмнөх элемент юм."
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "A-г нэг удаа sort хийнэ. Query b бүрд lower_bound(A,b)-г олно. end биш бол тухайн утга, begin биш бол өмнөх утгаас b хүртэлх зөрүүний хамгийн багыг хариулна."
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "b-ээс бага утгуудын хувьд утга өсөх тусам b хүртэлх зай багасна. b-ээс багагүй утгуудын хувьд утга өсөх тусам зай нэмэгдэнэ. Тиймээс хоёр талын хамгийн ойр хоёр candidate-аас гаднах аль ч утга илүү сайн байж чадахгүй. Exact match-ийн зай 0 учраас шууд optimum."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба алдаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эрэмбэлэлт O(N log N), query бүр O(log N), нийт O(N log N+Q log N). Хадгалалт O(N). begin iterator-ийг decrement хийх, end-ийг dereference хийхээс хамгаална. Subsequence биш nearest-value query гэдгийг ялгана."
+            }
+          ]
+        },
+        {
+          "title": "C++17 хэрэгжүүлэлт",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nint main(){ios::sync_with_stdio(false);cin.tie(nullptr);int n;cin>>n;vector<long long>a(n);for(auto&x:a)cin>>x;sort(a.begin(),a.end());int q;cin>>q;\n while(q--){long long b;cin>>b;auto it=lower_bound(a.begin(),a.end(),b);long long ans=LLONG_MAX;if(it!=a.end())ans=min(ans,llabs(*it-b));if(it!=a.begin())ans=min(ans,llabs(*prev(it)-b));cout<<ans<<char(10);}\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_g"
+                },
+                {
+                  "label": "Албан solution холбоосууд",
+                  "url": "https://atcoder.jp/contests/typical90/editorial/2572"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "ratingBasis": "Rough CF-scale calibration: Sort plus lower_bound/predecessor queries with begin/end cases; a foundational search task. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_g"
   },
   {
     "source": "AtCoder",
@@ -111,8 +366,8 @@
     "priorityLevel": "high",
     "priorityReason": "Prefix invariant ба жижиг N-д exhaustive enumeration-ийг зөв сонгох суурь дадал; odd N, early negative prefix болон lexicographic order-ийг ялгана.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1300,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating; contest star difficulty is not converted to CF rating.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_b",
@@ -129,7 +384,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No hints authored; no automatic hint generation.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: N<=20 permits exhaustive bracket generation; prefix balance, final balance and lexicographic output require explicit invariants. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_b"
   },
   {
     "source": "AtCoder",
@@ -141,8 +400,8 @@
     "priorityLevel": "high",
     "priorityReason": "Tree diameter-ийг cycle objective-т хувиргах ажиглалт болон хоёр traversal-ийн хэрэглээ; graph/tree суурийн өгөөжтэй practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1600,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating; contest star difficulty is not converted to CF rating.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_c",
@@ -159,7 +418,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No hints authored; no automatic hint generation.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Reduce added-cycle optimum to tree diameter plus one, then two BFS traversals; more reasoning than basic tree traversal. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_c"
   },
   {
     "source": "AtCoder",
@@ -171,8 +434,8 @@
     "priorityLevel": "high",
     "priorityReason": "Greedy сонголтод feasibility үлдээх баталгаа, subsequence/substring ялгаа болон next occurrence preprocessing-ийг холбоно.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1800,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating; contest star difficulty is not converted to CF rating.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_f",
@@ -189,7 +452,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No hints authored; no automatic hint generation.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Lexicographic greedy with remaining-length feasibility and next-occurrence preprocessing; nontrivial dominance proof. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_f"
   },
   {
     "source": "AtCoder",
@@ -201,8 +468,8 @@
     "priorityLevel": "high",
     "priorityReason": "Subsequence DP-ийн state/transition болон index-distinct counting-ийн цөм жишээ; modular arithmetic-тай хослоно.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1400,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating; contest star difficulty is not converted to CF rating.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_h",
@@ -219,7 +486,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No hints authored; no automatic hint generation.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Fixed-target subsequence-count DP, skip/take transitions and modular arithmetic; no witness reconstruction. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_h"
   },
   {
     "source": "AtCoder",
@@ -231,8 +502,8 @@
     "priorityLevel": "high",
     "priorityReason": "Prefix sum-ийн үндсэн range identity-г хоёр ангилалд давтан хэрэглэж эзэмшүүлэх стандарт practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 900,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating; contest star difficulty is not converted to CF rating.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_j",
@@ -249,7 +520,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No hints authored; no automatic hint generation.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Two category prefix sums and inclusive range subtraction; basic indexing and initialization. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_j"
   },
   {
     "source": "AtCoder",
@@ -261,8 +536,8 @@
     "priorityLevel": "high",
     "priorityReason": "Dynamic connectivity-г DSU-д хувиргах, inactive vertex-ийг ижил root байсан ч connected гэж үзэхгүй байх чухал ялгааг сургана.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1600,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating; contest star difficulty is not converted to CF rating.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_l",
@@ -279,7 +554,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No hints authored; no automatic hint generation.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Incremental grid activation with DSU, active-endpoint checks and coordinate flattening; simpler than CF25D repair construction1900. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_l"
   },
   {
     "source": "AtCoder",
@@ -291,8 +570,8 @@
     "priorityLevel": "high",
     "priorityReason": "Shortest-path decomposition ба хоёр эхлэлээс distance тооцох дахин ашиглагддаг pattern; single-source хэрэгслийг өргөтгөнө.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1700,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating; contest star difficulty is not converted to CF rating.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_m",
@@ -309,7 +588,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No hints authored; no automatic hint generation.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Two Dijkstra runs and path-through-vertex decomposition,64-bit distances; no path reconstruction. CF20C1900 is an imperfect algorithmic anchor. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_m"
   },
   {
     "source": "AtCoder",
@@ -321,8 +604,8 @@
     "priorityLevel": "high",
     "priorityReason": "Sorting greedy-г зөвхөн heuristic биш exchange argument-аар батлах цөм practice; matching objective-ийн талыг харуулна.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1500,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating; contest star difficulty is not converted to CF rating.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_n",
@@ -339,7 +622,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No hints authored; no automatic hint generation.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Sorted minimum-absolute matching needs an uncrossing/exchange proof and64-bit objective. Comparable reasoning load to sorted-window CF580B1500. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_n"
   },
   {
     "source": "AtCoder",
@@ -351,8 +638,8 @@
     "priorityLevel": "high",
     "priorityReason": "Олон loop-оос нэг хувьсагчийг equation-оор арилгах, constraint-based search болон greedy counterexample-ийн суурь practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1400,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating; contest star difficulty is not converted to CF rating.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_p",
@@ -369,7 +656,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No hints authored; no automatic hint generation.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Eliminate one of three coin-count variables using divisibility; choose bounded enumeration despite large target. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_p"
   },
   {
     "source": "AtCoder",
@@ -381,8 +672,8 @@
     "priorityLevel": "high",
     "priorityReason": "SCC-ийн утгыг pair-counting-д шууд ашиглаж graph condensation-ийн суурийг эзэмшүүлэх practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1700,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating; contest star difficulty is not converted to CF rating.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_u",
@@ -399,7 +690,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No hints authored; no automatic hint generation.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Recognize mutual reachability as SCC membership and count unordered pairs; SCC modelling comparable to CF427C1700. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_u"
   },
   {
     "source": "AtCoder",
@@ -411,8 +706,8 @@
     "priorityLevel": "high",
     "priorityReason": "GCD-г хуваагдах геометрийн нөхцөлтэй холбох, minimum objective-г largest divisor руу хувиргах цөм тооны онолын practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1200,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating; contest star difficulty is not converted to CF rating.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_v",
@@ -429,7 +724,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No hints authored; no automatic hint generation.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: GCD divisibility and minimum-cut arithmetic, including64-bit dimensions; one mathematical reduction. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_v"
   },
   {
     "source": "AtCoder",
@@ -441,8 +740,8 @@
     "priorityLevel": "high",
     "priorityReason": "Necessary/sufficient нөхцөлийг ялгаж батлах, parity invariant ба илүүдэл үйлдлийн constructive argument-ийн суурь practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1100,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating; contest star difficulty is not converted to CF rating.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_x",
@@ -459,7 +758,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No hints authored; no automatic hint generation.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Minimum L1 moves plus parity of extra operations; necessary-and-sufficient proof rather than simulation. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_x"
   },
   {
     "source": "AtCoder",
@@ -471,8 +774,8 @@
     "priorityLevel": "high",
     "priorityReason": "Tree-ийн bipartite шинж ба pigeonhole argument-аар хүнд мэт optimization-ийг constructive сонголт болгох чухал ажиглалт.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1500,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or fabricated estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_z",
@@ -489,7 +792,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Tree bipartition plus pigeonhole construction of N/2 independent vertices; basic traversal with an extremal argument. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_z"
   },
   {
     "source": "AtCoder",
@@ -501,8 +808,8 @@
     "priorityLevel": "high",
     "priorityReason": "Set/map membership-ийн үндсэн хэрэглээ, input order-ийг хадгалсан dedup ба first-occurrence semantics-ийг эзэмшүүлэх цөм practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 800,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or fabricated estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_aa",
@@ -519,7 +826,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: First occurrence tracking with set/map and input-order preservation; direct container application. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_aa"
   },
   {
     "source": "AtCoder",
@@ -531,8 +842,8 @@
     "priorityLevel": "high",
     "priorityReason": "2D difference array, half-open boundary болон coverage histogram-ийг холбосон reusable range-update practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1600,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or fabricated estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ab",
@@ -549,7 +860,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Four-corner2D differences, two-axis prefix reconstruction and coverage histogram; boundary discipline beyond basic sums. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_ab"
   },
   {
     "source": "AtCoder",
@@ -561,8 +876,8 @@
     "priorityLevel": "high",
     "priorityReason": "Lazy propagation-ийн query+update invariant, assignment/chmax-ийн энэ бодлогод л эквивалент болох шалтгааныг ялгаж сургана.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1900,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or fabricated estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ac",
@@ -579,7 +894,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Lazy segment-tree range maximum and range assignment/chmax with inclusive-bound conversion; above CF339D1700 point updates. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_ac"
   },
   {
     "source": "AtCoder",
@@ -591,8 +910,8 @@
     "priorityLevel": "high",
     "priorityReason": "Sieve-ийг primality-аас distinct factor count руу өргөтгөх, multiplicity-г андуурахгүй байх цөм тооны онолын practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1500,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or fabricated estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ad",
@@ -609,7 +928,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Sieve-style count of distinct prime divisors through multiples, prime-power distinction and bounded1e7 memory. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_ad"
   },
   {
     "source": "AtCoder",
@@ -621,8 +944,8 @@
     "priorityLevel": "high",
     "priorityReason": "Permutation enumeration-ийн feasibility/objective-г салгаж constraint-оос factorial algorithm сонгох бүрэн search practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1300,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or fabricated estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_af",
@@ -639,7 +962,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: N<=10 permutation enumeration with adjacent feasibility checks and runner-position objective; reject impossible permutations. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_af"
   },
   {
     "source": "AtCoder",
@@ -651,8 +978,8 @@
     "priorityLevel": "high",
     "priorityReason": "Upper-bound + construction баталгаа болон degenerate case-ийг томъёонд сохроор орлуулахгүй байх чухал practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1300,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or fabricated estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ag",
@@ -669,7 +996,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Grid packing upper bound and matching construction with special one-dimensional cases. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_ag"
   },
   {
     "source": "AtCoder",
@@ -681,8 +1012,8 @@
     "priorityLevel": "high",
     "priorityReason": "Sliding-window invariant болон frequency multiplicity-г ялгах, хоёр заагийг ухраахгүй явуулах standard mastery practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1600,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or fabricated estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ah",
@@ -699,7 +1030,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: At-most-K distinct sliding window with frequency bookkeeping; slightly above money-range window CF580B1500. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_ah"
   },
   {
     "source": "AtCoder",
@@ -711,8 +1046,8 @@
     "priorityLevel": "high",
     "priorityReason": "Manhattan transform-ийг four-extrema query болгон хувиргах бүтээлч бөгөөд дахин хэрэглэгддэг geometry observation.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1800,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or fabricated estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_aj",
@@ -729,7 +1064,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Manhattan-to-transformed-coordinate observation and four extrema with64-bit queries; main difficulty is geometric reduction. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_aj"
   },
   {
     "source": "AtCoder",
@@ -741,8 +1080,8 @@
     "priorityLevel": "high",
     "priorityReason": "GCD/LCM-ийн суурь identity болон overflow-оос өмнөх division guard-г эзэмшүүлэх бодит integer-safety practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1100,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or fabricated estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_al",
@@ -759,7 +1098,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: LCM via GCD and overflow-safe division comparison before multiplication; small arithmetic implementation. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_al"
   },
   {
     "source": "AtCoder",
@@ -771,8 +1114,8 @@
     "priorityLevel": "high",
     "priorityReason": "Pair enumeration-оос contribution counting руу шилжих болон subtree size-ийг холбох цөм tree observation.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1800,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or fabricated estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_am",
@@ -789,7 +1132,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Reframe all-pairs tree distance as per-edge s*(N-s) contributions; subtree-size proof beyond basic DFS. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_am"
   },
   {
     "source": "AtCoder",
@@ -801,8 +1148,8 @@
     "priorityLevel": "high",
     "priorityReason": "Number-theory observation-оор constraint арилгаад ordered counting DP байгуулах, composition/order-ийн ялгааг эзэмшүүлэх practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1500,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or fabricated estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ap",
@@ -819,7 +1166,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Divisibility-by9 observation removes a condition, followed by ordered-composition DP modulo1e9+7. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_ap"
   },
   {
     "source": "AtCoder",
@@ -831,8 +1182,8 @@
     "priorityLevel": "high",
     "priorityReason": "Массивийг физикээр шилжүүлэхийн оронд logical offset хадгалах invariant; modulo boundary болон swap/query mapping-ийг нэг мөр зөв хэрэглэх суурь practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1300,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ar",
@@ -849,7 +1200,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Represent repeated rotation by a modular offset shared by swaps and queries; boundary/index consistency. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_ar"
   },
   {
     "source": "AtCoder",
@@ -861,8 +1216,8 @@
     "priorityLevel": "high",
     "priorityReason": "Их утгуудыг remainder equivalence class-аар багасгах, frequency product ба index-distinct counting-ийн цөм pattern.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1300,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_at",
@@ -879,7 +1234,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Compress values to46 residue frequencies and multiply counts; count index multiplicity with64-bit totals. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_at"
   },
   {
     "source": "AtCoder",
@@ -891,8 +1250,8 @@
     "priorityLevel": "high",
     "priorityReason": "Greedy sorting яагаад precedence constraint-ийг эвдэхгүйг input inequality-тай холбож батлах чухал exchange/dominance practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1700,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_av",
@@ -909,7 +1268,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Global top-K marginal gains is valid only because partial gain exceeds second gain; precedence-aware greedy proof. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_av"
   },
   {
     "source": "AtCoder",
@@ -921,8 +1284,8 @@
     "priorityLevel": "high",
     "priorityReason": "DP-ийн base case ба last-transition decomposition-ийг эзэмшүүлэх энгийн боловч зайлшгүй суурь practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1000,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ax",
@@ -939,7 +1302,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Elementary last-jump DP with dp0=1, bounds and modulus; educational importance is independent of this low difficulty. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_ax"
   },
   {
     "source": "AtCoder",
@@ -951,8 +1318,8 @@
     "priorityLevel": "high",
     "priorityReason": "Exponential enumeration-г distributive law-аар арилгах, sum ба expectation-ийг ялгах дахин хэрэглэгдэх algebraic observation.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1200,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_az",
@@ -969,7 +1336,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Use distributivity to factor an exponential sum of products into per-die sums; avoid confusing sum with expectation. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_az"
   },
   {
     "source": "AtCoder",
@@ -981,8 +1352,8 @@
     "priorityLevel": "high",
     "priorityReason": "Constraint-based enumeration, combinations/permutations ялгаа болон composite-modulus arithmetic-ийн аюулгүй ажиллагааг эзэмшүүлэх practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1300,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bc",
@@ -999,7 +1370,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Choose5 enumeration within combinatorial bounds; reduce after each64-bit multiplication, no modular inverse assumption. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bc"
   },
   {
     "source": "AtCoder",
@@ -1011,8 +1386,8 @@
     "priorityLevel": "high",
     "priorityReason": "Feasibility DP-гээс бодит witness сэргээх, layer invariant ба exactly-one selection-ийг холбох цөм knapsack practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1700,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bd",
@@ -1029,7 +1404,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Layered exactly-one knapsack feasibility and witness reconstruction; compare state/reconstruction burden to CF977F1700. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bd"
   },
   {
     "source": "AtCoder",
@@ -1041,8 +1420,8 @@
     "priorityLevel": "high",
     "priorityReason": "Хязгаарлагдмал state space-оос cycle үүсэх баталгаа, prefix/cycle заагийг зөв тооцох functional-graph суурь practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1700,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bf",
@@ -1059,7 +1438,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Finite functional trajectory with preperiod/cycle and K<=1e18; correct time-index reduction is the key implementation risk. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bf"
   },
   {
     "source": "AtCoder",
@@ -1071,8 +1454,8 @@
     "priorityLevel": "high",
     "priorityReason": "LIS-ийг нэг total answer-аас per-index contribution болгон өргөтгөж хоёр чиглэлийн үр дүнг нийлүүлэх reusable pattern.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1900,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bh",
@@ -1089,7 +1472,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Per-index LIS from both directions and peak composition with strict inequalities; beyond one-direction LIS length. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bh"
   },
   {
     "source": "AtCoder",
@@ -1101,8 +1488,8 @@
     "priorityLevel": "high",
     "priorityReason": "Operation contract-аас зөв container сонгох, endpoint insertion ба random access-ийн шаардлагыг хамтад нь харах суурь practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 800,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bi",
@@ -1119,7 +1506,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Use deque endpoint insertions and indexed reads; direct data-structure selection. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bi"
   },
   {
     "source": "AtCoder",
@@ -1131,8 +1522,8 @@
     "priorityLevel": "high",
     "priorityReason": "Range update-ийн доторх ялгавар хэвээр үлдэх invariant-аар global objective-г O(1) update болгох бүтээлч practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1700,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bl",
@@ -1149,7 +1540,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Range addition changes only two boundary differences of a global absolute-sum objective;64-bit updates and edge cases. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bl"
   },
   {
     "source": "AtCoder",
@@ -1161,8 +1556,8 @@
     "priorityLevel": "high",
     "priorityReason": "Number ба representation-ийн ялгаа, base parsing/conversion contract болон zero edge case-ийг эзэмшүүлэх суурь implementation practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1200,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bo",
@@ -1179,7 +1574,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Octal parse/base9 conversion and digit replacement, repeated bounded times; representation-versus-value and zero handling. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bo"
   },
   {
     "source": "AtCoder",
@@ -1191,8 +1590,8 @@
     "priorityLevel": "high",
     "priorityReason": "Local restriction-аас product rule гаргах, huge exponent-д fast power сонгох болон small-case boundary-г зөв салгах суурь practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1400,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bq",
@@ -1209,7 +1608,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Local coloring product formula plus fast exponentiation for N<=1e18 and small-N/K edge cases. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bq"
   },
   {
     "source": "AtCoder",
@@ -1221,8 +1624,8 @@
     "priorityLevel": "high",
     "priorityReason": "L1 optimum median болох баталгаа, coordinate separability ба even-count ambiguity-г эзэмшүүлэх reusable optimization pattern.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1400,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_br",
@@ -1239,7 +1642,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Separate Manhattan coordinates and prove median minimizes absolute deviations; sorting and64-bit sum. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_br"
   },
   {
     "source": "AtCoder",
@@ -1251,8 +1658,8 @@
     "priorityLevel": "high",
     "priorityReason": "Small-state exhaustive DFS, visited lifetime ба valid cycle closure-ийн contract-ийг эзэмшүүлэх backtracking practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1800,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bt",
@@ -1269,7 +1676,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Longest simple cycle via exponential backtracking under16-cell bound; visited undo and valid return-to-start semantics. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bt"
   },
   {
     "source": "AtCoder",
@@ -1281,8 +1692,8 @@
     "priorityLevel": "high",
     "priorityReason": "Factor multiplicity-г binary process-ийн depth lower bound-тай холбож constructive attainability батлах бүтээлч observation.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1600,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bw",
@@ -1299,7 +1710,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Factor multiplicity becomes balanced binary-split depth; combine lower bound and attainable ceil-log rounds. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bw"
   },
   {
     "source": "AtCoder",
@@ -1311,8 +1726,8 @@
     "priorityLevel": "high",
     "priorityReason": "Circular-to-linear reduction, positive-value monotonicity ба integer divisibility-г хослуулах standard window practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1500,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bx",
@@ -1329,7 +1744,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Positive circular target-sum window with array doubling and total-divisibility check; similar core window skills to CF580B1500. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bx"
   },
   {
     "source": "AtCoder",
@@ -1341,8 +1760,8 @@
     "priorityLevel": "high",
     "priorityReason": "Graph representation-оос local predicate-ийг шууд тооцох, шаардлагагүй DFS/DSU хэрэглэхгүйгээр degree-like count байгуулах суурь practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 900,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bz",
@@ -1359,7 +1778,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Count lower-index neighbors from adjacency/edge input; simple graph predicate without unnecessary traversal. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bz"
   },
   {
     "source": "AtCoder",
@@ -1371,8 +1794,8 @@
     "priorityLevel": "high",
     "priorityReason": "Forced greedy elimination-ийн uniqueness ба feasibility boundary-г батлах, arbitrary local choice-оос ялгах чухал practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1700,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ca",
@@ -1389,7 +1812,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Forced row-major2x2 elimination, feasibility of final borders and minimal-operation proof;64-bit accumulated cost. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_ca"
   },
   {
     "source": "AtCoder",
@@ -1401,8 +1828,8 @@
     "priorityLevel": "high",
     "priorityReason": "Pairwise constraints-г bounding rectangle болгон хувиргах,2D prefix inclusion-exclusion ба inclusive span-ийн boundary-г сургах practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1700,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_cc",
@@ -1419,7 +1846,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Pairwise coordinate constraints reduce to a bounded square, then2D prefix counts and inclusive K+1 windows; memory planning matters. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_cc"
   },
   {
     "source": "AtCoder",
@@ -1431,8 +1862,8 @@
     "priorityLevel": "high",
     "priorityReason": "Endpoint contribution counting болон latest-occurrence bound-ийг холбох, quadratic interval enumeration-г шугаман болгох reusable pattern.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1400,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_cf",
@@ -1449,7 +1880,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Count valid interval starts using latest positions of both symbols, or complement constant runs;64-bit endpoint contributions. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_cf"
   },
   {
     "source": "AtCoder",
@@ -1461,8 +1896,8 @@
     "priorityLevel": "high",
     "priorityReason": "Divisor enumeration ба equation-оор нэг хувьсагч арилгах, symmetry/order болон overflow guard-г хамтад нь эзэмшүүлэх practice.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1600,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_cg",
@@ -1479,7 +1914,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: Enumerate sorted divisor pairs, derive third factor, enforce ordering and guard product overflow for K<=1e12. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_cg"
   },
   {
     "source": "AtCoder",
@@ -1491,8 +1930,8 @@
     "priorityLevel": "high",
     "priorityReason": "Bit independence-оор enormous-value search-г жижиг Boolean exhaustive search болгон задлах, product rule-ийг зөв батлах цөм technique.",
     "reviewStatus": "reviewed",
-    "rating": null,
-    "ratingKind": "unrated",
+    "rating": 1900,
+    "ratingKind": "estimated",
     "ratingNote": "No official CF rating or invented estimate.",
     "statementEvidence": {
       "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ch",
@@ -1509,7 +1948,11 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No automatically generated hints.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Rough CF-scale calibration: OR constraints separate over60 bits; enumerate2^N assignments per bit and multiply independent counts. Not official.",
+    "ratingConfidence": "rough",
+    "ratingEstimatedAt": "2026-10-27",
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_ch"
   },
   {
     "source": "Codeforces",
@@ -1542,10 +1985,92 @@
       "reviewNote": "Use Dijkstra with64-bit distances and a parent per strict relaxation, then follow parents from n. Extracting the smallest unsettled distance is safe because weights are positive; ignore stale heap entries. O((N+M)logN). Check m=0, unreachable target, parallel edges and path reconstruction rather than printing only the distance.",
       "authorship": "Independent project analysis, not official editorial"
     },
-    "hints": [],
-    "hintsEn": [],
-    "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "hints": [
+      "Ирмэгийн жин бүгд эерэг үед хамгийн богино замыг ямар алгоритмаар олдог вэ?",
+      "Зайг сайжруулах бүрдээ тухайн оройд аль оройгоос ирснийг хадгал.",
+      "Dijkstra дууссаны дараа n-ээс parent заалтаар 1 хүртэл ухарч, жагсаалтыг урвуул. Heap-ийн хуучирсан бичлэгийг алгас."
+    ],
+    "hintsEn": [
+      "Which shortest-path algorithm applies when all edge weights are positive?",
+      "Whenever a distance improves, remember the preceding vertex.",
+      "Run Dijkstra, follow parent pointers from n back to 1, then reverse the path. Skip stale heap entries."
+    ],
+    "hintPolicy": "Three original staged bilingual hints; Low UI suppression remains independent.",
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official",
+    "editorial": {
+      "id": "editorial-cf-20-c",
+      "title": "Dijkstra? — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эерэг жинтэй графт BFS-ийн давхарга бус хуримтлагдсан зайг харьцуулна. Dijkstra-ийн min-heap нь дараагийн хамгийн бага зайтай оройг гаргана. Хариу нь зөвхөн урт биш, замын оройн дараалал тул өмнөх оройг бас хадгална."
+            },
+            {
+              "type": "math",
+              "tex": "d(u)>d(v)+w(v,u)"
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "dist[1]=0, бусад зайг INF гэж эхлүүлнэ. Heap-ээс (d,v) авахад d нь dist[v]-ээс өөр бол алгасна. Ирмэг (v,u,w) бүрт dist[v]+w бага байвал dist[u] болон parent[u]-г шинэчилнэ. n хүрэх боломжгүй бол -1, бусад үед n-ээс parent дагаж үүсгэсэн замыг урвуулж хэвлэнэ."
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Heap-ээс хамгийн бага шинэ бичлэгээр гарсан v-ийн зай буруу гэж үзье. Илүү богино замын анхны шийдэгдээгүй оройн өмнөх орой аль хэдийн шийдэгдэж, тэр ирмэгийг relax хийсэн байх ёстой. Эерэг жинтэй тул уг оройн heap зай v-ээс их байж болохгүй нь зөрчил болно. Strict relaxation бүр parent ирмэгийг бодит сайжруулсан замд тааруулдаг учир ухрааж сэргээсэн дараалал хамгийн богино зам мөн."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "O((N+M) log N) хугацаа, O(N+M) санах ой. Зайг 64-bit бүхэл тоонд хадгал. Олон ирмэг, loop, хүрэхгүй төгсгөл болон heap-ийн давхардсан бичлэгийг зөв боловсруул; зөвхөн dist[n]-ийг хэвлэх нь шаардлагыг хангахгүй."
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Албан statement болон төслийн бие даасан математик шинжилгээнд тулгуурлан шинээр бичсэн тайлбар. Codeforces-ийн албан editorial-ийг уншсан эсвэл хуулсан гэсэн мэдэгдэл биш."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://codeforces.com/contest/20/problem/C"
+                },
+                {
+                  "label": "Төслийн бие даасан proof review",
+                  "url": "https://github.com/erdene1231/erdene1231.github.io/blob/codex/part04-recovered/audit/PART04-CF-SOLUTION-REVIEWS01.json"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "editorialAuthorship": "Original project explanation in tutorial schema, 2026-10-27; independent proof, not an official editorial copy."
   },
   {
     "source": "Codeforces",
@@ -1579,10 +2104,92 @@
       "reviewNote": "Traverse from root carrying consecutive-cat count: increment on cat, reset on non-cat, and prune above m. A root-to-leaf path is unique, so this state exactly captures its validity. Count childless non-root vertices only after the check. O(N); use an iterative stack for depth100000.",
       "authorship": "Independent project analysis, not official editorial"
     },
-    "hints": [],
-    "hintsEn": [],
-    "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "hints": [
+      "Модны орой бүр рүү язгуураас очих зам цорын ганц байдаг.",
+      "DFS/BFS төлөвт замын төгсгөл дэх дараалсан мууртай оройн тоог авч яв. Муургүй оройд энэ тоо тэг болно.",
+      "Тоолуур m-ээс их болсон мөчид тухайн салааг тасал. Зөв төлөвтэй, хүүхэдгүй орой бүр нэг ресторан."
+    ],
+    "hintsEn": [
+      "Every vertex has a unique path from the root.",
+      "Carry the number of consecutive cat vertices at the end of the path; reset it at a cat-free vertex.",
+      "Prune a branch as soon as the counter exceeds m. Count valid vertices with no children as restaurants."
+    ],
+    "hintPolicy": "Three original staged bilingual hints; Low UI suppression remains independent.",
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official",
+    "editorial": {
+      "id": "editorial-cf-580-c",
+      "title": "Kefa and Park — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Нийт муурын тоо бус, залгаа хэсгийн урт л хязгаарлагдана. Язгуураас орой бүрт нэг зам байх учир оройд хүрэх олон төлөвийг харьцуулах шаардлагагүй."
+            },
+            {
+              "type": "math",
+              "tex": "r_v=\\begin{cases}r_{parent(v)}+1,&a_v=1\\0,&a_v=0\\end{cases}"
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Stack-д (1,parent=0,run=0) оруулна. Оройг боловсруулахдаа мууртай бол run-ийг нэгээр нэм, үгүй бол тэглэ. run>m бол үргэлжлүүлэхгүй. Эсрэг тохиолдолд parent-аас бусад хөршийг хүүхэд гэж stack-д оруул. Хүүхэдгүй бол хариуг нэгээр нэм."
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Орой дээрх run нь тэр оройгоор төгссөн хамгийн сүүлийн залгаа мууртай хэсгийн урт гэдэг инвариант шилжилтээр хадгалагдана. Хязгаар хэтэрсэн prefix бүхий ямар ч урт зам зөв болж чадахгүй тул тайралт зөв. Үлдсэн навч бүрийн цорын ганц зам бүх prefix дээрээ хязгаарыг хангана, иймээс яг зөв ресторануудыг нэг удаа тоолно."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "O(N) хугацаа, O(N) санах ой. N=100000 гүн гинжин модонд рекурсийн stack хүрэлцэхгүй байж болох тул iterative traversal тохиромжтой. Язгуурын parent-ийг хүүхэд гэж тоолохгүй; муургүй оройд өмнөх run-ийг заавал тэглэнэ."
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Албан statement болон төслийн бие даасан математик шинжилгээнд тулгуурлан шинээр бичсэн тайлбар. Codeforces-ийн албан editorial-ийг уншсан эсвэл хуулсан гэсэн мэдэгдэл биш."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://codeforces.com/contest/580/problem/C"
+                },
+                {
+                  "label": "Төслийн бие даасан proof review",
+                  "url": "https://github.com/erdene1231/erdene1231.github.io/blob/codex/part04-recovered/audit/PART04-CF-SOLUTION-REVIEWS01.json"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "editorialAuthorship": "Original project explanation in tutorial schema, 2026-10-27; independent proof, not an official editorial copy."
   },
   {
     "source": "Codeforces",
@@ -1616,10 +2223,92 @@
       "reviewNote": "Sort by money and use two pointers to keep max-min<d. Nonnegative factors mean including every friend within a valid money interval cannot hurt, so an optimum is represented by a contiguous sorted window. Maintain a64-bit sum; equality to d is forbidden. O(NlogN), including sorting.",
       "authorship": "Independent project analysis, not official editorial"
     },
-    "hints": [],
-    "hintsEn": [],
-    "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "hints": [
+      "Найзуудыг мөнгөөр нь эрэмбэлбэл сонгосон бүлгийн зөв эсэхийг зөвхөн хоёр захын мөнгөөр шалгана.",
+      "Friendship factor сөрөг биш учир зөв интервал доторх хүнийг нэмэхэд нийлбэр буурахгүй.",
+      "Хоёр заагтай цонхны max-min нь d-ээс бага байхаар зүүн заагийг урагшлуулж, нийлбэрийн хамгийн ихийг ав."
+    ],
+    "hintsEn": [
+      "Sort friends by money; validity then depends only on the two endpoints.",
+      "Friendship factors are nonnegative, so adding an interior friend cannot reduce the objective.",
+      "Use a sliding window with maximum money minus minimum money strictly less than d, maintaining the sum."
+    ],
+    "hintPolicy": "Three original staged bilingual hints; Low UI suppression remains independent.",
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official",
+    "editorial": {
+      "id": "editorial-cf-580-b",
+      "title": "Kefa and Company — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эрэмбэлсэн жагсаалтын ямар ч зөв бүлгийг түүний хамгийн бага ба их мөнгөний хоорондох бүх хүнээр өргөтгөж болно. Сөрөг factor байхгүй тул хариу муудахгүй. Тиймээс тасралтгүй цонхнуудаас хамгийн их нийлбэртэйг хайхад хангалттай."
+            },
+            {
+              "type": "math",
+              "tex": "money_r-money_l<d"
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Money өсөхөөр эрэмбэлээд l=0, sum=0 авна. Баруун r-ийг нэг нэгээр нэмэх бүрд factor[r]-ийг sum-д нэм. money[r]-money[l]>=d байх хугацаанд factor[l]-ийг хасаад l-ийг өсгөнө. Үлдсэн зөв цонхны sum-аар хариуг шинэчил."
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Баруун зах r бүрт алгоритм зөв нөхцөл хангах хамгийн зүүн l-ийг олно: түүнээс өмнөх захтай цонх мөнгөний зөрөөгөөр буруу. Сөрөг биш factor-тай тул r дээр төгссөн аль ч богино зөв цонхны нийлбэр үүнээс ихгүй. Баруун бүх захыг шалгаснаар бүх боломжит оновчтой интервал хамрагдана."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эрэмбэлэлт O(N log N), хоёр заагийн нийт хөдөлгөөн O(N), санах ой O(N). sum болон хариуг 64-bit-д хадгал. Зөрөө яг d бол зөв биш: while нөхцөл >=d байна."
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Албан statement болон төслийн бие даасан математик шинжилгээнд тулгуурлан шинээр бичсэн тайлбар. Codeforces-ийн албан editorial-ийг уншсан эсвэл хуулсан гэсэн мэдэгдэл биш."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://codeforces.com/contest/580/problem/B"
+                },
+                {
+                  "label": "Төслийн бие даасан proof review",
+                  "url": "https://github.com/erdene1231/erdene1231.github.io/blob/codex/part04-recovered/audit/PART04-CF-SOLUTION-REVIEWS01.json"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "editorialAuthorship": "Original project explanation in tutorial schema, 2026-10-27; independent proof, not an official editorial copy."
   },
   {
     "source": "Codeforces",
@@ -1653,10 +2342,92 @@
       "reviewNote": "Mutual reachability is exactly the SCC equivalence relation. Each SCC needs at least one post, and its cheapest vertex suffices. Sum component minima in64-bit; multiply counts of minima modulo1e9+7. The minimum-post tie-break still selects one vertex per SCC even when costs are zero. O(N+M).",
       "authorship": "Independent project analysis, not official editorial"
     },
-    "hints": [],
-    "hintsEn": [],
-    "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "hints": [
+      "Хоёр орой хоёулаа бие бие рүүгээ хүрдэг байх нь ямар графын бүлэг үүсгэдэг вэ?",
+      "SCC бүрт нэг пост хангалттай. Хамгийн бага зардлыг тухайн компонент дотроос тусад нь сонго.",
+      "Компонентуудын minimum cost-ыг нэм; minimum-д хүрэх оройн тоонуудыг 10^9+7 модулиар үржүүл."
+    ],
+    "hintsEn": [
+      "Which graph decomposition groups vertices that can reach each other?",
+      "One post per strongly connected component is sufficient; minimize its cost independently.",
+      "Sum each component's minimum cost and multiply the counts of minimum-cost vertices modulo 10^9+7."
+    ],
+    "hintPolicy": "Three original staged bilingual hints; Low UI suppression remains independent.",
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official",
+    "editorial": {
+      "id": "editorial-cf-427-c",
+      "title": "Checkposts — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Постын хамгаалалт харилцан хүрэлцэх нөхцөлөөр тодорхойлогдоно. Энэ нь SCC-ийн яг тодорхойлолт тул өөр SCC дэх пост тухайн компонентыг орлож чадахгүй. Компонент бүрийн сонголт бие даасан болно."
+            },
+            {
+              "type": "math",
+              "tex": "cost=\\sum_C\\min_{v\\in C} a_v,\\qquad ways=\\prod_C\\left|\\{v\\in C:a_v=\\min_{u\\in C}a_u\\}\\right|\\pmod{10^9+7}"
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Kosaraju эсвэл Tarjan-аар бүх SCC-ийг ол. Компонент бүрт cost-ийн minimum болон түүнтэй тэнцүү оройн тоог цуглуул. Minimum-уудын нийлбэр нь нийт зардал; тоонуудын үржвэрийг 1000000007 модулиар авбал сонголтын тоо гарна."
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Компонент бүрд дор хаяж нэг пост хэрэгтэй; түүний minimum-cost оройд нэг пост байрлуулахад бүх орой хамгаалагдана. Иймээс нийлбэр minimum нь доод хязгаарт хүрнэ. Зардал тэг байж болох ч дараагийн постын тоог багасгах шаардлага нэг SCC-д яг нэгийг сонгоно. Бие даасан компонентуудын minimum оройн сонголт бүр ялгаатай оптимум учир үржүүлэх зарчим үйлчилнэ."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "O(N+M) хугацаа, O(N+M) санах ой. Нийлбэрийг 64-bit ашиглан тооцно. SCC-ийн зөвхөн эх үүсвэр компонентуудыг бус бүх компонентыг тоол. Гүн DFS-д stack-ийн хязгаарыг анхаар."
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Албан statement болон төслийн бие даасан математик шинжилгээнд тулгуурлан шинээр бичсэн тайлбар. Codeforces-ийн албан editorial-ийг уншсан эсвэл хуулсан гэсэн мэдэгдэл биш."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://codeforces.com/contest/427/problem/C"
+                },
+                {
+                  "label": "Төслийн бие даасан proof review",
+                  "url": "https://github.com/erdene1231/erdene1231.github.io/blob/codex/part04-recovered/audit/PART04-CF-SOLUTION-REVIEWS01.json"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "editorialAuthorship": "Original project explanation in tutorial schema, 2026-10-27; independent proof, not an official editorial copy."
   },
   {
     "source": "Codeforces",
@@ -1690,10 +2461,92 @@
       "reviewNote": "A longest manager chain forces at least its vertex count groups. Grouping employees by depth from any root attains that bound because ancestors have strictly smaller depth. Thus answer is maximum root-to-vertex depth. O(N) with parent/children traversal; support multiple roots and a singleton.",
       "authorship": "Independent project analysis, not official editorial"
     },
-    "hints": [],
-    "hintsEn": [],
-    "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "hints": [
+      "Нэг manager chain дээрх бүх хүн өөр өөр бүлэгт орох ёстой.",
+      "Хүн бүрийг язгуураас тоолсон гүнээр нь бүлэглэвэл нэг бүлэгт ancestor хос орж чадах уу?",
+      "Ойн бүх язгуураас traversal хийж хамгийн их гүнийг ол; язгуурын гүнийг 1 гэж тоол."
+    ],
+    "hintsEn": [
+      "All employees on a single manager chain must occupy different groups.",
+      "If employees are grouped by depth, can any group contain an ancestor pair?",
+      "Traverse every root of the forest and take the maximum depth, counting a root as depth one."
+    ],
+    "hintPolicy": "Three original staged bilingual hints; Low UI suppression remains independent.",
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official",
+    "editorial": {
+      "id": "editorial-cf-115-a",
+      "title": "Party — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хамгийн урт удирдлагын гинжний хүмүүс хоорондоо бүгд ancestor холбоотой тул дор хаяж тэр гинжний урттай тэнцүү бүлэг шаардлагатай. Гүнээр ангилах нь энэ доод хязгаарт хүрдэг."
+            },
+            {
+              "type": "math",
+              "tex": "answer=\\max_v depth(v)"
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Parent нь -1 бүх хүнийг язгуур болгож children жагсаалт байгуулна. Язгуур бүрээс depth=1-ээр эхлэн хүүхдийн гүнийг нэгээр өсгөж яв. Бүх оройн хамгийн их depth-ийг хэвлэнэ."
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Ancestor оройн гүн descendant-аасаа заавал бага. Иймээс ижил гүнтэй хоёр хүн нэгнийхээ ancestor биш бөгөөд нэг бүлэгт орж болно. Энэ байгуулалт хамгийн их гүнтэй тэнцүү бүлэг ашиглана; хамгийн урт chain-ийн доод хязгаартай тэнцсэн тул оптимум."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Children жагсаалттай traversal O(N) хугацаа, O(N) санах ой. Parent-ийг хүн бүр дээр дахин дахин дагавал O(N²) болж болно. Олон язгуур болон ганц оройг зөв боловсруул; гүнийг ирмэгээр бус хүний тоогоор тоол."
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Албан statement болон төслийн бие даасан математик шинжилгээнд тулгуурлан шинээр бичсэн тайлбар. Codeforces-ийн албан editorial-ийг уншсан эсвэл хуулсан гэсэн мэдэгдэл биш."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://codeforces.com/contest/115/problem/A"
+                },
+                {
+                  "label": "Төслийн бие даасан proof review",
+                  "url": "https://github.com/erdene1231/erdene1231.github.io/blob/codex/part04-recovered/audit/PART04-CF-SOLUTION-REVIEWS01.json"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "editorialAuthorship": "Original project explanation in tutorial schema, 2026-10-27; independent proof, not an official editorial copy."
   },
   {
     "source": "Codeforces",
@@ -1728,10 +2581,92 @@
       "reviewNote": "Require first vertex1. Map each vertex to its proposed position, sort each adjacency list by that position, then run BFS and compare the whole output. Any feasible order must enqueue a parent's unseen children in proposed relative order, so this canonical order succeeds iff one exists. O(NlogN); same depth alone is insufficient.",
       "authorship": "Independent project analysis, not official editorial"
     },
-    "hints": [],
-    "hintsEn": [],
-    "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "hints": [
+      "Зөвхөн оройнуудын гүн өсөх дараалал хангалттай юу? Нэг эцгийн хүүхдүүд queue-д хамт ордог.",
+      "Өгсөн permutation-д орой бүрийн байрлалыг хадгал. Хөршүүдийг тэр байрлалаар эрэмбэлбэл ямар BFS гардаг вэ?",
+      "1-ээс BFS хийж гарсан дарааллыг бүхэлд нь өгсөн permutation-тай харьцуул. Эхний орой заавал 1 байна."
+    ],
+    "hintsEn": [
+      "Depth order alone is insufficient: each parent's undiscovered children enter the queue together.",
+      "Store every vertex's proposed position and sort adjacency lists by those positions.",
+      "Run BFS from 1 and compare its entire output with the permutation; the first vertex must be 1."
+    ],
+    "hintPolicy": "Three original staged bilingual hints; Low UI suppression remains independent.",
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official",
+    "editorial": {
+      "id": "editorial-cf-1037-d",
+      "title": "Valid BFS? — Editorial",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "BFS-ийн чөлөөтэй сонгож болох зүйл нь тухайн оройн хөршүүдийг үзэх дараалал юм. Хүссэн гаралтад орой бүр хаана байгааг мэдэж байгаа тул хөршүүдийг тэр дарааллаар үзэх canonical оролдлого байгуулж болно."
+            },
+            {
+              "type": "math",
+              "tex": "pos(v)=\\text{position of }v\\text{ in the proposed order}"
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Permutation-ийн pos[v]-г тооцож, эхний утга 1 биш бол татгалз. Орой бүрийн adjacency жагсаалтыг pos өсөхөөр эрэмбэл. Энгийн visited+queue BFS-ийг 1-ээс ажиллуулаад dequeue дараалал өгсөн жагсаалттай яг тэнцүү эсэхийг шалга."
+            }
+          ]
+        },
+        {
+          "title": "Зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Зөв BFS байвал нэг эцгийн шинээр олдох хүүхдүүд permutation-д яг enqueue болсон харьцангуй дарааллаар орно. Манай эрэмбэлэлт тэднийг тэр л дарааллаар queue-д нэмдэг; аль хэдийн visited эцэг зэрэг хөрш дараалалд нөлөөлөхгүй. Queue-ийн инвариантаар бүх алхам хүссэн BFS-тэй таарна. Харин харьцуулалт тэнцвэл ажиллуулсан бодит BFS өөрөө боломжтойг нотолно."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "O(N log N) дээд хугацаа, O(N) санах ой. Зөвхөн depth эсвэл parent-ийн гүнийг харьцуулах нь хангалтгүй. N=1 үед [1] зөв; permutation-ийн эхний оройг шалга."
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж ба зохиогчийн тайлбар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Албан statement болон төслийн бие даасан математик шинжилгээнд тулгуурлан шинээр бичсэн тайлбар. Codeforces-ийн албан editorial-ийг уншсан эсвэл хуулсан гэсэн мэдэгдэл биш."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Албан statement",
+                  "url": "https://codeforces.com/contest/1037/problem/D"
+                },
+                {
+                  "label": "Төслийн бие даасан proof review",
+                  "url": "https://github.com/erdene1231/erdene1231.github.io/blob/codex/part04-recovered/audit/PART04-CF-SOLUTION-REVIEWS01.json"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "editorialAuthorship": "Original project explanation in tutorial schema, 2026-10-27; independent proof, not an official editorial copy."
   },
   {
     "source": "Codeforces",
@@ -1771,7 +2706,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -1808,7 +2745,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -1844,7 +2783,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -1881,7 +2822,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -1916,7 +2859,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -1955,7 +2900,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -1992,7 +2939,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2027,7 +2976,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2064,7 +3015,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2101,7 +3054,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2136,7 +3091,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2172,7 +3129,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2209,7 +3168,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2246,7 +3207,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2281,7 +3244,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2318,7 +3283,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2356,7 +3323,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2393,7 +3362,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2430,7 +3401,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2468,7 +3441,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2508,7 +3483,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2547,7 +3524,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2583,7 +3562,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2622,7 +3603,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2661,7 +3644,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2697,7 +3682,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2735,7 +3722,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2774,7 +3763,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2810,7 +3801,9 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   },
   {
     "source": "Codeforces",
@@ -2848,6 +3841,8 @@
     "hints": [],
     "hintsEn": [],
     "hintPolicy": "No generated hints; empty arrays retained.",
-    "productionImported": false
+    "productionImported": false,
+    "ratingBasis": "Official Codeforces problemset API rating field; contest points are not used.",
+    "ratingConfidence": "official"
   }
 ]

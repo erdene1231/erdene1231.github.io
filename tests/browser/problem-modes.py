@@ -70,6 +70,22 @@ try:
   assert page.locator('.site-nav [data-route=community]').get_attribute('aria-current')=='page'
   page.locator('#following-tab').click();page.wait_for_function("location.hash==='#following'");page.locator('#following-panel').wait_for(state='visible')
   checks['users_subtabs_and_deep_links']={'status':'passed'}
+  for width in [375,1440]:
+   page.set_viewport_size({'width':width,'height':950})
+   for theme in ['light','dark']:
+    page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
+    page.evaluate("async()=>{const nav=await import('/navigation.js?v=43');nav.setAdminRoute(false);location.hash='#admin';}")
+    page.locator('#route-message').wait_for(state='visible');assert page.locator('#admin').is_hidden();assert page.locator('#admin-nav').is_hidden()
+    page.evaluate("async()=>{const nav=await import('/navigation.js?v=43');nav.setAdminRoute(true);location.hash='#admin';}")
+    page.locator('#admin').wait_for(state='visible');assert page.locator('.site-nav [data-route=admin]').count()==1
+    for target in ['admin-section','admin-tutorials','learning-admin']:
+     page.locator('#admin a[href="#'+target+'"]').click();page.locator('#'+target).wait_for(state='visible')
+     assert page.locator('#admin-nav').get_attribute('aria-current')=='page'
+     page.locator('#'+target+' .admin-back').click();page.locator('#admin').wait_for(state='visible')
+    page.evaluate("async()=>{const nav=await import('/navigation.js?v=43');nav.setAdminRoute(false);location.hash='#admin-tutorials';}")
+    page.locator('#route-message').wait_for(state='visible');assert page.locator('#admin-tutorials').is_hidden()
+  checks['single_admin_hub_three_routes_and_role_visibility']={'status':'passed','scope':'UI role state only; backend auth unchanged'}
+
   error_page=browser.new_page()
   def failed_route(r):
    if not r.request.url.startswith(base):r.abort()

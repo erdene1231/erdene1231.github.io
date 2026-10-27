@@ -6,6 +6,7 @@ canonical source identity. Run with an explicit reviewed-ledger JSON path.
 """
 import json
 import sys
+import subprocess
 from collections import Counter
 from pathlib import Path
 from audit_part04_catalog import url_key
@@ -13,11 +14,11 @@ from audit_part04_catalog import url_key
 QUOTAS = {'IOI': 30, 'EGOI': 30, 'APIO': 15, 'JOI': 20, 'Codeforces': 100, 'AtCoder': 50}
 
 
-def verify(records, baseline):
+def verify(records, baseline, content_readiness=None):
     old_urls = {url_key(row['body']['url']) for row in baseline['problems']}
     old_keys = {(row['body']['source'].casefold(), row['body']['ref'].replace('/', '').casefold()) for row in baseline['problems']}
     seen_urls, seen_keys = set(), set()
-    counts, rejected = Counter(), []
+    counts, source_counts, rejected = Counter(), Counter(), []
     for index, record in enumerate(records):
         reason = []
         source = record.get('source', '')
@@ -37,16 +38,20 @@ def verify(records, baseline):
             if not isinstance(record.get(field), str) or not record[field].strip(): reason.append('missing ' + field)
         if record.get('priorityLevel') not in ['low', 'medium', 'high']: reason.append('unreviewed priority')
         if record.get('reviewStatus') != 'reviewed': reason.append('not reviewed')
+        if not reason: source_counts[source] += 1
+        ready = content_readiness[index] if content_readiness is not None else {'ready':False,'reason':'Canonical priority-content readiness check not run'}
+        if not ready.get('ready'): reason.append(ready.get('reason','priority content incomplete'))
         if reason: rejected.append({'index': index, 'ref': record.get('ref'), 'reasons': reason})
         else: counts[source] += 1
     quotas = {source: {'required': target, 'verified': counts[source], 'remaining': max(0, target-counts[source])} for source, target in QUOTAS.items()}
-    return {'complete': not rejected and all(counts[s] >= n for s, n in QUOTAS.items()), 'quotas': quotas, 'rejected': rejected,
+    return {'complete': not rejected and all(counts[s] >= n for s, n in QUOTAS.items()), 'quotas': quotas, 'source_reviewed_unique': dict(source_counts), 'rejected': rejected,
             'limitations': 'Evidence fields are an accountability gate; human semantic review and cross-source aliases still require verification. No production import is authorized by this report.'}
 
 
 if __name__ == '__main__':
     root = Path(__file__).resolve().parents[1]
     records = json.loads(Path(sys.argv[1]).read_text())
-    report = verify(records, json.loads((root/'audit/PART04-BASELINE.json').read_text()))
+    checked = subprocess.run(['node',str(root/'tools/check_problem_content.mjs')], input=json.dumps(records), text=True, capture_output=True, check=True)
+    report = verify(records, json.loads((root/'audit/PART04-BASELINE.json').read_text()), json.loads(checked.stdout))
     print(json.dumps(report, ensure_ascii=False, indent=2))
     sys.exit(0 if report['complete'] else 1)

@@ -1,8 +1,8 @@
-import {priorityLevel} from './priority.js?v=43';
-import {openProblemSelection} from './problem-selection-dialog.js?v=43';
-import {setAdminRoute} from './navigation.js?v=23';
-import {rpc,accountError} from './accounts.js?v=6';
-import {validateProblem,parseProblemImport,validateSource,getSources} from './problem-store.js?v=43';
+import {priorityLevel} from './priority.js?v=44';
+import {openProblemSelection} from './problem-selection-dialog.js?v=44';
+import {setAdminRoute} from './navigation.js?v=44';
+import {rpc,accountError} from './accounts.js?v=44';
+import {validateProblem,parseProblemImport,validateSource,getSources} from './problem-store.js?v=44';
 export function setupAdmin(ctx) {
  const $=id=>document.getElementById(id);let rows=[],selected=null,admin=false,accountId=null,token=0,busy=false,pendingImport=[],grantTarget=null,fileToken=0; 
  function setBusy(value){busy=value;for(const el of $('admin-form').querySelectorAll('input,select,textarea,button'))el.disabled=value;$('admin-choose').disabled=value;$('admin-new').disabled=value;$('admin-reload').disabled=value;for(const id of ['admin-source-name','admin-source-add','admin-import-file','admin-grant-username','admin-grant-find','admin-grant-submit'])$(id).disabled=value;$('admin-import-submit').disabled=value||!pendingImport.length;}
