@@ -1012,13 +1012,60 @@
               ]
             }
           ]
+        },
+        {
+          "title": "C++17 — төлөв,бэлтгэл,алгоритм ба гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "oriented",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь string бүрийн хоёр хувилбар. ",
+                  "marks": []
+                },
+                {
+                  "text": "cost",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь сүүлийн orientation-оор prefix minimum. Шинэ мөр бүрт өмнөх хоёр төлөвөөс зөв lexicographic хилтэйг туршина;хүрээгүй sentinel дээр нэмэхгүй. Гаралт minimum эсвэл $-1$. Нийт уртаар $O(L+n)$ хугацаа,$O(L)$ зай. / Precompute both orientations;check all four adjacent transitions including equality. Add reversal cost only for reversed state,using64-bit totals.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<long long> reversalCost(n);\n    for (long long &value : reversalCost) cin >> value;\n    vector<array<string, 2>> oriented(n);\n    for (auto &versions : oriented) {\n        cin >> versions[0];\n        versions[1] = versions[0];\n        reverse(versions[1].begin(), versions[1].end());\n    }\n    const long long infinity = 4000000000000000000LL;\n    array<long long, 2> cost{0, reversalCost[0]};\n    for (int i = 1; i < n; ++i) {\n        array<long long, 2> next{infinity, infinity};\n        for (int previous = 0; previous < 2; ++previous) {\n            if (cost[previous] == infinity) continue;\n            for (int current = 0; current < 2; ++current) {\n                if (oriented[i - 1][previous] <= oriented[i][current]) {\n                    next[current] = min(next[current], cost[previous] + current * reversalCost[i]);\n                }\n            }\n        }\n        cost = next;\n    }\n    long long answer = min(cost[0], cost[1]);\n    cout << (answer == infinity ? -1 : answer) << '\\n';\n}\n"
+            }
+          ]
         }
       ]
     },
     "tags": [
       "dynamic programming"
     ],
-    "level": "Practice"
+    "level": "Practice",
+    "implementationEvidence": {
+      "report": "audit/PART04-PROBLEM-CPP02.json",
+      "source_basis": "Retained reviewed functional contract/independent proof;no fresh fetch,sample or judge-submission claim. Statement readiness separate.",
+      "status": "passed",
+      "code_sha256": "62c7329148e83ecb26651bd3db70384a44b69ad2a77d9dab3d8c5ea1c60abf5a"
+    },
+    "editorialAuthorship": "Original project explanation in actual tutorial schema,2026-10-27; historical proof-only checkpoint. Original C++17 independently tested in PART04-PROBLEM-CPP02;no fresh-source,official-sample or judge-submission claim."
   },
   {
     "source": "Codeforces",
