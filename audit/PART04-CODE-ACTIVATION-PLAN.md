@@ -1,3 +1,9 @@
+## Current activation code prepared after user merged PR21
+
+PR21merged at maine9540da. Follow-up branch `codex/part04-activation` now explicitly sets problemBackendVersion32 and adminProfileEditorEnabledtrue for the already-audited035/036project. Missing/invalid declarations still fall back31;metadata writes require a read-only negative validation probe through existing authenticated dry-run RPC.036rejects the invalid tier before writes;031success/missing/unauthorized responses fail closed. Optionaleditorial/statement/bulkremain gated—no033/034claims or newrights. New config/app/module cache versions avoid stale code. This is preparedcode,not a deployment. Older default-off instructions below describe previous checkpoints.
+
+Smallest live check after user merges/releases the activation PR:sign into the existing admin account,open Admin→Хэрэглэгчийн мэдээлэл,look up your own username and confirm the four fields load. Do not save/select/upload a picture. In a signed-out/private window the admin menu/page must be inaccessible. Report only success/error text;no credentials/tokens or user details are needed. Live avatar upload/save/concurrency tests still need an explicitly authorized safe fixture;none run.
+
 # Activation after approved database operations
 
 035and036are installed and verified.245metadata records are live;public catalog993. Original748records,profiles/progress and previous problem history were verified unchanged;new245history records identify owner maintenance with actorNULL. No032–034or271existingURLwrites/optionalpublication executed. See current production reports;older pending/blocker documents are historical.
