@@ -1560,8 +1560,16 @@
     "priorityReason": "Graph representation-оос local predicate-ийг шууд тооцох, шаардлагагүй DFS/DSU хэрэглэхгүйгээр degree-like count байгуулах суурь practice.",
     "rating": 900,
     "ratingKind": "estimated",
-    "hints": [],
-    "hintsEn": [],
+    "hints": [
+      "Шаардлага нь traversal-ийн parent биш, оройн дугаарын харьцуулалт юм.",
+      "Ирмэг бүрийн их дугаартай үзүүрт бага дугаартай нэг хөрш нэмэгдэнэ.",
+      "Ирмэгүүдийг уншихдаа их дугаартай үзүүрийн тоолуурыг нэм; эцэст нь яг $1$ тоолууртай оройг тоол."
+    ],
+    "hintsEn": [
+      "The condition concerns vertex labels, not parents in a traversal.",
+      "Each edge contributes one lower-numbered neighbor to its higher-numbered endpoint.",
+      "Increment that endpoint’s counter while reading edges, then count vertices whose counter is exactly $1$."
+    ],
     "tags": [
       "graphs"
     ],
@@ -1570,7 +1578,414 @@
     "ratingBasis": "Rough CF-scale calibration: Count lower-index neighbors from adjacency/edge input; simple graph predicate without unnecessary traversal. Not official.",
     "ratingConfidence": "rough",
     "ratingEstimatedAt": "2026-10-27",
-    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bz"
+    "ratingSource": "https://atcoder.jp/contests/typical90/tasks/typical90_bz",
+    "editorial": {
+      "id": "editorial-atcoder-typical90-bz",
+      "title": "Easy Graph Problem — Editorial",
+      "levelKey": "beginner",
+      "order": 1,
+      "category": "Problem editorial",
+      "sections": [
+        {
+          "title": "Алгоритм ба зөв болох баталгаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Дурын ирмэгийн хоёр үзүүр ялгаатай. Их дугаартай үзүүрийн хувьд нөгөө үзүүр нь бага дугаартай хөрш, харин бага үзүүрийн хувьд ийм хөрш биш. Иймээс ирмэгийг нэг удаа уншаад их үзүүрийн тоолуурыг нэгээр нэмэхэд, дуусах үед орой бүрийн тоолуур нь өөрөөс нь бага дугаартай хөршүүдийн яг тоо болно. Энгийн граф учир нэг хөршийг давхар ирмэгээр давхар тоолохгүй. Тоолуур яг нэгтэй оройнуудыг тоолбол шаардлага биелнэ. Граф холбоост ч DFS эсвэл BFS хэрэггүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17 — төлөв, гол алхам, output ба өртөг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Төлөв: ",
+                  "marks": []
+                },
+                {
+                  "text": "lowerNeighbors",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь орой бүрийн тоолуур, эхэндээ тэг. Гол алхам: ",
+                  "marks": []
+                },
+                {
+                  "text": "max(first, second)",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " үзүүрийн тоолуурыг нэмнэ. Гаралт: $1$-ээс $N$ хүртэлх тоолуур яг $1$ байх оройн тоо. $1$ дугаартай оройд бага хөрш байх боломжгүй. Хугацаа $O(N+M)$, санах ой $O(N)$; adjacency list хадгалах шаардлагагүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "C++17",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, edgeCount;\n    cin >> n >> edgeCount;\n    vector<int> lowerNeighbors(n + 1);\n    for (int i = 0; i < edgeCount; ++i) {\n        int first, second;\n        cin >> first >> second;\n        ++lowerNeighbors[max(first, second)];\n    }\n    int answer = 0;\n    for (int vertex = 1; vertex <= n; ++vertex) {\n        if (lowerNeighbors[vertex] == 1) ++answer;\n    }\n    cout << answer << '\\n';\n}\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bz"
+                },
+                {
+                  "label": "Reviewed author solution",
+                  "url": "https://raw.githubusercontent.com/E869120/kyopro_educational_90/main/sol/078.cpp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "statement": {
+      "id": "statement-atcoder-typical90-bz",
+      "levelKey": "beginner",
+      "order": 1,
+      "title": "Easy Graph Problem",
+      "sections": [
+        {
+          "title": "Бодлогын нөхцөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$1$-ээс $N$ хүртэл дугаарласан оройтой холбоост, энгийн, чиглэлгүй граф өгөгдөнө. Өөрөөс нь бага дугаартай хөрш яг нэгтэй оройнуудын тоог ол. Бусад, их дугаартай хөршүүдийн тоонд хязгаарлалт тавихгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Оролт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхлээд $N,M$, дараах $M$ мөрөнд ирмэгийн хоёр үзүүр $a_i,b_i$ өгөгдөнө.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "N M\na_1 b_1\n...\na_M b_M\n"
+            }
+          ]
+        },
+        {
+          "title": "Гаралт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Шаардлага хангасан оройн тоог нэг мөрөнд хэвлэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Хязгаарлалт",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$2\\le N\\le100000$; $N-1\\le M\\le\\min(N(N-1)/2,100000)$; $1\\le a_i,b_i\\le N$. Өөртэйгөө холбосон болон давхар ирмэггүй, граф холбоост. Бүх оролт бүхэл.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Samples",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 1",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "5 5\n1 2\n1 3\n3 2\n5 2\n4 2\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "3\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 2",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "2 1\n1 2\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "1\n"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Sample 3",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "7 18\n7 2\n1 6\n5 2\n1 3\n7 6\n5 3\n5 6\n5 4\n1 7\n2 6\n3 4\n5 1\n4 7\n4 6\n5 7\n3 2\n4 2\n1 4\n"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "text": "0\n"
+            }
+          ]
+        },
+        {
+          "title": "Source",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Original functional restatement; not an official translation.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "Official task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bz"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Easy Graph Problem",
+          "sections": [
+            {
+              "title": "Task",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Given a connected simple undirected graph whose vertices are labeled $1$ through $N$, count vertices having exactly one neighbor with a smaller label. The number of larger-labeled neighbors is unrestricted.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Input",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The input gives $N,M$, followed by $M$ endpoint pairs $a_i,b_i$.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "N M\na_1 b_1\n...\na_M b_M\n"
+                }
+              ]
+            },
+            {
+              "title": "Output",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Print the number of qualifying vertices on one line.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Constraints",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "$2\\le N\\le100000$; $N-1\\le M\\le\\min(N(N-1)/2,100000)$; $1\\le a_i,b_i\\le N$. The graph is connected, without self-loops or repeated edges. All input values are integers.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Samples",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 1",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "5 5\n1 2\n1 3\n3 2\n5 2\n4 2\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "3\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "2 1\n1 2\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "1\n"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Sample 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "7 18\n7 2\n1 6\n5 2\n1 3\n7 6\n5 3\n5 6\n5 4\n1 7\n2 6\n3 4\n5 1\n4 7\n4 6\n5 7\n3 2\n4 2\n1 4\n"
+                },
+                {
+                  "type": "code",
+                  "language": "text",
+                  "text": "0\n"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Original functional restatement; not an official translation.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "Official task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bz"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "statementProvenance": {
+      "sourceUrl": "https://atcoder.jp/contests/typical90/tasks/typical90_bz",
+      "sourceSha256": "ab7ca3ee4193aa4e8f0db2d1badf25537166dfe02588371f04592182c4b89af0",
+      "rightsBasis": "original-functional-restatement",
+      "reviewedAt": "2026-10-27",
+      "checks": {
+        "task": true,
+        "input": true,
+        "output": true,
+        "constraints": true,
+        "samples": true,
+        "translation": true,
+        "rights": true
+      }
+    }
   },
   {
     "source": "AtCoder",

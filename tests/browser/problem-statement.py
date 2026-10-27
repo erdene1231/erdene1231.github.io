@@ -29,7 +29,15 @@ try:
     for lang in['mn','en']:
      root.locator('select').select_option(lang);page.wait_for_function("document.querySelectorAll('#problem-statement mjx-container').length>0");assert root.locator('mjx-merror,[data-mjx-error]').count()==0
      expected=entry['statement']if lang=='mn'else entry['statement']['translations']['en'];expected_codes=[b['text']for s in expected['sections']for b in s['blocks']if b['type']=='code'];actual=root.locator('pre code').all_text_contents();assert actual==expected_codes,(entry['ref'],lang,actual,expected_codes)
-     assert root.evaluate('e=>e.scrollWidth<=e.clientWidth');assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+     assert root.evaluate('e=>e.scrollWidth<=e.clientWidth'),(entry['ref'],lang,width,theme,root.evaluate('e=>({width:e.clientWidth,scroll:e.scrollWidth,overflow:[...e.querySelectorAll("*")].filter(x=>x.getBoundingClientRect().right>e.getBoundingClientRect().right).map(x=>({tag:x.tagName,text:x.textContent.slice(0,160),width:x.getBoundingClientRect().width}))})'))
+     assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),(entry['ref'],lang,width,theme,'page overflow')
+     if entry['ref']=='typical90_bz' and width==375:
+      # A real bank constraint is wider than the mobile column. Preserve the
+      # full formula and allow local scrolling rather than clipping/shrinking it.
+      wide=root.locator('mjx-container').filter(has_text='min').first
+      assert wide.evaluate('e=>e.scrollWidth>e.clientWidth'),(lang,'wide fixture lost')
+      assert wide.evaluate('e=>getComputedStyle(e).overflowX')=='auto'
+      assert wide.evaluate('e=>{e.scrollLeft=e.scrollWidth;const moved=e.scrollLeft>0;e.scrollLeft=0;return moved;}')
    if i==1:assert page.locator('#problem-hints-button').is_hidden()
   checks.append(f'{len(entries)} actual native documents:{len(entries)*4}language/theme/width combinations; exact literal input/sample code, MathJax, attribution; Low statement visible without hints; hidden tags and spoiler actions unaffected')
   page.goto(base+'/index.html#library',wait_until='networkidle');page.evaluate("statementMode='defer'");page.get_by_role('button',name=entries[0]['title'],exact=False).first.click();page.wait_for_function("typeof resolveStatement==='function'");page.locator('#problem-back').click();page.evaluate("statementMode='normal'");page.get_by_role('button',name=entries[1]['title'],exact=False).first.click();page.wait_for_selector('#problem-statement article section');before=page.locator('#problem-statement article').inner_text();page.evaluate("resolveStatement({data:docs['statement-1']})");page.wait_for_timeout(100);assert page.locator('#problem-statement article').inner_text()==before
