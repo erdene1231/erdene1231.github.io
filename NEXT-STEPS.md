@@ -1,4 +1,12 @@
-# Current package04 checkpoint — v47 ephemeral hints, counters removed everywhere
+# Current package04 checkpoint —35unique authored problem editorials
+
+Six more original CF editorials completed and checked:977D,977F,1352F,1352G,1399D,25D.35unique problem editorials total:33new(AtCoder3,CF30)+2baseline proposals.35actual tutorial editor/schema/renderer/MathJax roundtrips pass, synthetic SQL save/publication passes33new+2baseline,92combined import parser/identity checks pass.35docs+198hint strings math lint clean. Source/proof evidence reused from existing reviewed records; no new source reviews or CF code-execution claim.3authored AtCoder programs/180oracles remain unchanged.
+
+Current counts:92source-reviewed,33content/local-import-ready,59prepared content pending,153additional source reviews;35/748baseline reviewed,713pending. Production ready/imported0. High mapping counts in audit/PART04-PRIORITY-COUNTS.json:166in frozen baseline(legacy mapping),179after35unapplied proposals,92stagednewHigh; proposed combined271High,35withfullauthorededitorial. These are snapshots/proposals, not a fresh live query or final complete semantic classification.
+
+v47 ephemeral hint policy and8tutorial math/32CPPblock proposals remain verified;164CPPblocks remain.032/033and admin-profile scope await separate approval; no production/security/migration/import/publication/merge/deployment/later package. Continue remaining bank/semantic/tutorial/performance work; package4incomplete, PR20draft.
+
+# Previous checkpoint — v47 ephemeral hints, counters removed everywhere
 
 Latest user policy supersedes previous tracking requirements: hint reveal is current-view memory only, resets on leave/reload/account switch, no hint-use backend/localStorage/activity/analytics writes, no historical usage reads for UX. No visible used/total counters in any mode/page/picker/practice. Low suppression and High content rules remain. Existing history stays untouched; status/notes continue via whitelisted v2 progress, legacy v1 recovery read-only. See audit/PART04-HINT-POLICY.md. No destructive cleanup or production action.
 
