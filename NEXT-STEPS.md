@@ -1,4 +1,10 @@
-# Current package04 checkpoint — v46 problem pages and rich editorials
+# Current package04 checkpoint — next6CF content completed after fc9afdb
+
+New original MN explanations/proofs and staged MN/EN hints completed for1006E,977C,977E,1352C,1352E,1399C using already reviewed source/proof records. Current counts:source-reviewed92unchanged;content/local-import-ready27(AtCoder3,CF24),prepared-content pending65,additional source reviews153,baseline35/748reviewed/713pending. Production-ready/imported0.29authored/proposed documents(27new+2baseline),162hint strings lint clean; actual schema/editor/MathJax roundtrip29and affected synthetic SQL saves/publication27new+2baseline pass. Prior71Node suite and unchanged3C++/180oracles retained; no unnecessary full rerun for data-only batch.
+
+Continue remaining65prepared content items,153source reviews,713baseline reviews and math/CPP/tutorial/practice/performance/delivery audits.8existing tutorials have math flags;196existing CPP blocks need contextual review. Backend032/033approval and admin-profile field/avatar scope are still pending; no production actions. PR20must stay draft. This is not package4completion.
+
+# Previous checkpoint — v46 problem pages and rich editorials
 
 PR20open draft. Fetched main b8c2eb2(PR19merge): same tree as recovery base66c8aa8; no overwrite/rebase/merge/deploy. Feature remote before this checkpointf8830e2. Read audit/PART04-READINESS.json and completion checklist first; older checkpoints below are historical.
 
