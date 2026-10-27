@@ -1,3 +1,7 @@
+# Separate remaining package4 branch
+
+PR20code713f6e0passes80Nodeandbrowserchecks/default031compatibility;automaticreviewrejectedmarkingready,remotePR20stilldraft. Do not retrythatworkflowviaanotherroute. Currentbranchcodex/part04-admin-remainingstacksontopandaddsadminsurname/first_name/username/profilepictureonly,disabledbydefault.035localproposalusesexistingserveradminchecks,CAS/privateaudit/targetboundreservedWebPuploads;no email/school/Auth/roles/progresschanges. Allremainingproductioninstall/import/URL/live/deliverygatestrackedin `audit/PART04-PR21-DELIVERY.md`. NewPRnumbermustbeverifiedaftercreation. No productionwrites/permissionchanges/merge/deploy/package2transition.
+
 # PR20 compatibility and delivery split
 
 PR20 is being made code-merge-ready against installedafter031:defaultproblemBackendVersion31 retains existing basic edits and gates newer writes,without missingRPCcalls or silentpriority/provenanceloss.245selections complete butnotimported;no SQLexecuted. See `audit/PART04-PR20-READINESS.md`. New separate remaining-workPR carries admin surname/first_name/username/profilepicture plus applicable production/install/live gates. School/email/password/auth/roles/progress excluded. Existing optional documents preserved,no newauthoring. No package2transition.
