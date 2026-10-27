@@ -8835,7 +8835,2249 @@
         "scope": "MN/EN helper+identical complete program;code-context/proof/contract/role names,original literal samples preserved. Bitmask sentinel arithmetic guarded under clarified optimum bound.",
         "verification": "passed:CPP-TESTS03,QUALITY-BROWSER03,guard/schema/math/literal/block-identity unit"
       }
+    },
+    {
+      "id": "dijkstra",
+      "expected_revision": 5,
+      "expected_body_sha256": "f16a966c4cfc5be2ee259120fa09edf57281bfbb9a414a21b1f0e60c92c1ea4a",
+      "operations": [
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 0,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconst long long INF = 4'000'000'000'000'000'000LL;\n\nvector<long long> dijkstra(const vector<vector<pair<int, long long>>>& adj, int s) {\n    int n = adj.size();\n    vector<long long> dist(n, INF);\n\n    // Each state stores (distance, vertex).\n    using State = pair<long long, int>;\n    priority_queue<State, vector<State>, greater<State>> pq;\n\n    dist[s] = 0;\n    pq.push({0, s});\n\n    while (!pq.empty()) {\n        long long d = pq.top().first;\n        int v = pq.top().second;\n        pq.pop();\n\n        if (d != dist[v]) {\n            continue;\n        }\n\n        for (const auto& edge : adj[v]) {\n            int u = edge.first;\n            long long w = edge.second;\n\n            if (d > INF - w) {\n                continue;\n            }\n\n            long long new_dist = d + w;\n\n            if (new_dist < dist[u]) {\n                dist[u] = new_dist;\n                pq.push({dist[u], u});\n            }\n        }\n    }\n\n    return dist;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconst long long infinity = 4'000'000'000'000'000'000LL;\n\nvector<long long> dijkstra(const vector<vector<pair<int, long long>>>& neighbors, int source) {\n    int n = neighbors.size();\n    vector<long long> distance(n, infinity);\n\n    // Each state stores (distance, vertex).\n    using State = pair<long long, int>;\n    priority_queue<State, vector<State>, greater<State>> frontier;\n\n    distance[source] = 0;\n    frontier.push({0, source});\n\n    while (!frontier.empty()) {\n        long long queuedDistance = frontier.top().first;\n        int vertex = frontier.top().second;\n        frontier.pop();\n\n        if (queuedDistance != distance[vertex]) {\n            continue;\n        }\n\n        for (const auto& edge : neighbors[vertex]) {\n            int neighbor = edge.first;\n            long long weight = edge.second;\n\n            if (queuedDistance > infinity - weight) {\n                continue;\n            }\n\n            long long candidateDistance = queuedDistance + weight;\n\n            if (candidateDistance < distance[neighbor]) {\n                distance[neighbor] = candidateDistance;\n                frontier.push({distance[neighbor], neighbor});\n            }\n        }\n    }\n\n    return distance;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 1,
+          "expected": {
+            "text": "Adjacency pair нь (хөрш,жин), heap pair нь (distance,node): хоёрын дараалал өөр. Бүх жин $0\\le w<\\mathrm{INF}$, finite shortest distance INF-ээс бага байх ёстой.",
+            "type": "p",
+            "detailKey": "base-5-1"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Төлөв: ",
+                "marks": []
+              },
+              {
+                "text": "distance",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь best мэдэгдэж буй зай, ",
+                "marks": []
+              },
+              {
+                "text": "frontier",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь ",
+                "marks": []
+              },
+              {
+                "text": "(distance, vertex)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " min-heap. Харин ",
+                "marks": []
+              },
+              {
+                "text": "neighbors",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " дахь pair нь ",
+                "marks": []
+              },
+              {
+                "text": "(neighbor, weight)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " дараалалтай. ",
+                "marks": []
+              },
+              {
+                "text": "source",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хүчинтэй; чиглэлтэй ирмэгийн жин $0\\le w<4\\cdot10^{18}$, бүх reachable shortest distance sentinel-ээс бага байна.",
+                "marks": []
+              }
+            ],
+            "detailKey": "base-5-1"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 2,
+          "expected": {
+            "type": "ordered",
+            "items": [
+              "State pair-ийн эхний field distance тул heap distance-ээр эрэмбэлнэ, node дугаараар биш.",
+              "INF guard нэмэхэд overflow гаргахгүй, мөн зөв finite path INF-ээс бага байх contract хэрэгтэй.",
+              "Зөвхөн strict improvement үед dist шинэчилж push хийнэ; тэнцүү замыг дахин push хийхгүй."
+            ],
+            "detailKey": "depth-code-walk"
+          },
+          "value": {
+            "type": "ordered",
+            "items": [
+              "Heap-ийг оройн дугаар биш зайгаар эрэмбэлнэ.",
+              "Хуучирсан entry нь одоогийн best зайтай тэнцэхгүй.",
+              "Тэнцүү замыг дахин нэмэхгүй тул тэг жинтэй цикл давтан entry үүсгэхгүй."
+            ],
+            "detailKey": "depth-code-walk"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 12,
+          "block": 3,
+          "expected": {
+            "text": "Доорх program-ийг бүтнээр нь нэг файлд хуулж C++17-оор жишээ input-тай ажиллуул. Function нь алгоритмыг хэрэгжүүлнэ; main нь input уншиж, function дуудаад хариу хэвлэнэ. Index-ийн дүрмийг дээрх input тайлбараас шалга.",
+            "type": "note",
+            "detailKey": "depth-program-guide"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Бэлтгэл: ",
+                "marks": []
+              },
+              {
+                "text": "main",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " ирмэгийг зөвхөн өгөгдсөн чиглэлд хадгална. Гол алхам: хамгийн бага heap entry-г гаргаад хуучирсан бол орхино. Edge-ээр сунгахын өмнө ",
+                "marks": []
+              },
+              {
+                "text": "queuedDistance > infinity - weight",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хамгаалалт шалгаж, зөвхөн strict сайжирсан зайг heap-д нэмнэ. Гаралт: оройн дарааллаар зай, unreachable үед $-1$. Сөрөг жинд энэ алгоритм тохирохгүй. Lazy heap-ийн хугацаа $O((n+m)\\log(m+1))$, зай $O(n+m)$.",
+                "marks": []
+              }
+            ],
+            "detailKey": "depth-program-guide"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 12,
+          "block": 4,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconst long long INF = 4'000'000'000'000'000'000LL;\n\nvector<long long> dijkstra(const vector<vector<pair<int, long long>>>& adj, int s) {\n    int n = adj.size();\n    vector<long long> dist(n, INF);\n\n    // Each state stores (distance, vertex).\n    using State = pair<long long, int>;\n    priority_queue<State, vector<State>, greater<State>> pq;\n\n    dist[s] = 0;\n    pq.push({0, s});\n\n    while (!pq.empty()) {\n        long long d = pq.top().first;\n        int v = pq.top().second;\n        pq.pop();\n\n        if (d != dist[v]) {\n            continue;\n        }\n\n        for (const auto& edge : adj[v]) {\n            int u = edge.first;\n            long long w = edge.second;\n\n            if (d > INF - w) {\n                continue;\n            }\n\n            long long new_dist = d + w;\n\n            if (new_dist < dist[u]) {\n                dist[u] = new_dist;\n                pq.push({dist[u], u});\n            }\n        }\n    }\n\n    return dist;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m, s;\n    cin >> n >> m >> s;\n    vector<vector<pair<int, long long>>> adj(n);\n    for (int i = 0; i < m; i++) {\n        int u, v;\n        long long w;\n        cin >> u >> v >> w;\n        adj[u].push_back({v, w});\n    }\n    auto dist = dijkstra(adj, s);\n    for (int v = 0; v < n; v++) {\n        if (v > 0) {\n            cout << ' ';\n        }\n        cout << (dist[v] == INF ? -1 : dist[v]);\n    }\n    cout << '\\n';\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconst long long infinity = 4'000'000'000'000'000'000LL;\n\nvector<long long> dijkstra(const vector<vector<pair<int, long long>>>& neighbors, int source) {\n    int n = neighbors.size();\n    vector<long long> distance(n, infinity);\n\n    // Each state stores (distance, vertex).\n    using State = pair<long long, int>;\n    priority_queue<State, vector<State>, greater<State>> frontier;\n\n    distance[source] = 0;\n    frontier.push({0, source});\n\n    while (!frontier.empty()) {\n        long long queuedDistance = frontier.top().first;\n        int vertex = frontier.top().second;\n        frontier.pop();\n\n        if (queuedDistance != distance[vertex]) {\n            continue;\n        }\n\n        for (const auto& edge : neighbors[vertex]) {\n            int neighbor = edge.first;\n            long long weight = edge.second;\n\n            if (queuedDistance > infinity - weight) {\n                continue;\n            }\n\n            long long candidateDistance = queuedDistance + weight;\n\n            if (candidateDistance < distance[neighbor]) {\n                distance[neighbor] = candidateDistance;\n                frontier.push({distance[neighbor], neighbor});\n            }\n        }\n    }\n\n    return distance;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, edgeCount, source;\n    cin >> n >> edgeCount >> source;\n    vector<vector<pair<int, long long>>> neighbors(n);\n    for (int i = 0; i < edgeCount; i++) {\n        int from, to;\n        long long weight;\n        cin >> from >> to >> weight;\n        neighbors[from].push_back({to, weight});\n    }\n    auto distance = dijkstra(neighbors, source);\n    for (int to = 0; to < n; to++) {\n        if (to > 0) {\n            cout << ' ';\n        }\n        cout << (distance[to] == infinity ? -1 : distance[to]);\n    }\n    cout << '\\n';\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 0,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconst long long INF = 4'000'000'000'000'000'000LL;\n\nvector<long long> dijkstra(const vector<vector<pair<int, long long>>>& adj, int s) {\n    int n = adj.size();\n    vector<long long> dist(n, INF);\n\n    // Each state stores (distance, vertex).\n    using State = pair<long long, int>;\n    priority_queue<State, vector<State>, greater<State>> pq;\n\n    dist[s] = 0;\n    pq.push({0, s});\n\n    while (!pq.empty()) {\n        long long d = pq.top().first;\n        int v = pq.top().second;\n        pq.pop();\n\n        if (d != dist[v]) {\n            continue;\n        }\n\n        for (const auto& edge : adj[v]) {\n            int u = edge.first;\n            long long w = edge.second;\n\n            if (d > INF - w) {\n                continue;\n            }\n\n            long long new_dist = d + w;\n\n            if (new_dist < dist[u]) {\n                dist[u] = new_dist;\n                pq.push({dist[u], u});\n            }\n        }\n    }\n\n    return dist;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconst long long infinity = 4'000'000'000'000'000'000LL;\n\nvector<long long> dijkstra(const vector<vector<pair<int, long long>>>& neighbors, int source) {\n    int n = neighbors.size();\n    vector<long long> distance(n, infinity);\n\n    // Each state stores (distance, vertex).\n    using State = pair<long long, int>;\n    priority_queue<State, vector<State>, greater<State>> frontier;\n\n    distance[source] = 0;\n    frontier.push({0, source});\n\n    while (!frontier.empty()) {\n        long long queuedDistance = frontier.top().first;\n        int vertex = frontier.top().second;\n        frontier.pop();\n\n        if (queuedDistance != distance[vertex]) {\n            continue;\n        }\n\n        for (const auto& edge : neighbors[vertex]) {\n            int neighbor = edge.first;\n            long long weight = edge.second;\n\n            if (queuedDistance > infinity - weight) {\n                continue;\n            }\n\n            long long candidateDistance = queuedDistance + weight;\n\n            if (candidateDistance < distance[neighbor]) {\n                distance[neighbor] = candidateDistance;\n                frontier.push({distance[neighbor], neighbor});\n            }\n        }\n    }\n\n    return distance;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 1,
+          "expected": {
+            "text": "Adjacency pairs store (neighbor,weight), while heap pairs store (distance,vertex). All weights must satisfy $0\\le w<\\mathrm{INF}$ and finite shortest distances must be below INF.",
+            "type": "p",
+            "detailKey": "base-5-1"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "State: ",
+                "marks": []
+              },
+              {
+                "text": "distance",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " holds the best known distances and ",
+                "marks": []
+              },
+              {
+                "text": "frontier",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " is a min-heap of ",
+                "marks": []
+              },
+              {
+                "text": "(distance, vertex)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ". Adjacency pairs in ",
+                "marks": []
+              },
+              {
+                "text": "neighbors",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " instead store ",
+                "marks": []
+              },
+              {
+                "text": "(neighbor, weight)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ". The source is valid, weights satisfy $0\\le w<4\\cdot10^{18}$, and all reachable shortest distances are below the sentinel.",
+                "marks": []
+              }
+            ],
+            "detailKey": "base-5-1"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 2,
+          "expected": {
+            "type": "ordered",
+            "items": [
+              "The first State field is distance, so the heap orders by distance rather than vertex ID.",
+              "The INF guard prevents addition overflow; valid finite path lengths must also remain below INF.",
+              "Update and push only on strict improvement; equal-length routes do not add entries."
+            ],
+            "detailKey": "depth-code-walk"
+          },
+          "value": {
+            "type": "ordered",
+            "items": [
+              "The heap orders by distance rather than vertex label.",
+              "A stale entry differs from the current best distance.",
+              "Equal paths do not enqueue new entries, including on zero-weight cycles."
+            ],
+            "detailKey": "depth-code-walk"
+          }
+        },
+        {
+          "language": "en",
+          "section": 12,
+          "block": 3,
+          "expected": {
+            "text": "Copy the entire program below into one file. Run it as C++17 using the sample input. The function handles the algorithm; main reads the input, calls it and prints the answer. Indices follow the input contract above.",
+            "type": "note",
+            "detailKey": "depth-program-guide"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Preprocessing: ",
+                "marks": []
+              },
+              {
+                "text": "main",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " stores only the given directed edge. Pop the smallest heap entry and skip it if stale. Before relaxation, test ",
+                "marks": []
+              },
+              {
+                "text": "queuedDistance > infinity - weight",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "; enqueue only strict distance improvements. Print distances in vertex order, using $-1$ for unreachable vertices. Negative edges are unsupported. This lazy heap uses $O((n+m)\\log(m+1))$ time and $O(n+m)$ space.",
+                "marks": []
+              }
+            ],
+            "detailKey": "depth-program-guide"
+          }
+        },
+        {
+          "language": "en",
+          "section": 12,
+          "block": 4,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconst long long INF = 4'000'000'000'000'000'000LL;\n\nvector<long long> dijkstra(const vector<vector<pair<int, long long>>>& adj, int s) {\n    int n = adj.size();\n    vector<long long> dist(n, INF);\n\n    // Each state stores (distance, vertex).\n    using State = pair<long long, int>;\n    priority_queue<State, vector<State>, greater<State>> pq;\n\n    dist[s] = 0;\n    pq.push({0, s});\n\n    while (!pq.empty()) {\n        long long d = pq.top().first;\n        int v = pq.top().second;\n        pq.pop();\n\n        if (d != dist[v]) {\n            continue;\n        }\n\n        for (const auto& edge : adj[v]) {\n            int u = edge.first;\n            long long w = edge.second;\n\n            if (d > INF - w) {\n                continue;\n            }\n\n            long long new_dist = d + w;\n\n            if (new_dist < dist[u]) {\n                dist[u] = new_dist;\n                pq.push({dist[u], u});\n            }\n        }\n    }\n\n    return dist;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m, s;\n    cin >> n >> m >> s;\n    vector<vector<pair<int, long long>>> adj(n);\n    for (int i = 0; i < m; i++) {\n        int u, v;\n        long long w;\n        cin >> u >> v >> w;\n        adj[u].push_back({v, w});\n    }\n    auto dist = dijkstra(adj, s);\n    for (int v = 0; v < n; v++) {\n        if (v > 0) {\n            cout << ' ';\n        }\n        cout << (dist[v] == INF ? -1 : dist[v]);\n    }\n    cout << '\\n';\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconst long long infinity = 4'000'000'000'000'000'000LL;\n\nvector<long long> dijkstra(const vector<vector<pair<int, long long>>>& neighbors, int source) {\n    int n = neighbors.size();\n    vector<long long> distance(n, infinity);\n\n    // Each state stores (distance, vertex).\n    using State = pair<long long, int>;\n    priority_queue<State, vector<State>, greater<State>> frontier;\n\n    distance[source] = 0;\n    frontier.push({0, source});\n\n    while (!frontier.empty()) {\n        long long queuedDistance = frontier.top().first;\n        int vertex = frontier.top().second;\n        frontier.pop();\n\n        if (queuedDistance != distance[vertex]) {\n            continue;\n        }\n\n        for (const auto& edge : neighbors[vertex]) {\n            int neighbor = edge.first;\n            long long weight = edge.second;\n\n            if (queuedDistance > infinity - weight) {\n                continue;\n            }\n\n            long long candidateDistance = queuedDistance + weight;\n\n            if (candidateDistance < distance[neighbor]) {\n                distance[neighbor] = candidateDistance;\n                frontier.push({distance[neighbor], neighbor});\n            }\n        }\n    }\n\n    return distance;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, edgeCount, source;\n    cin >> n >> edgeCount >> source;\n    vector<vector<pair<int, long long>>> neighbors(n);\n    for (int i = 0; i < edgeCount; i++) {\n        int from, to;\n        long long weight;\n        cin >> from >> to >> weight;\n        neighbors[from].push_back({to, weight});\n    }\n    auto distance = dijkstra(neighbors, source);\n    for (int to = 0; to < n; to++) {\n        if (to > 0) {\n            cout << ' ';\n        }\n        cout << (distance[to] == infinity ? -1 : distance[to]);\n    }\n    cout << '\\n';\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          }
+        }
+      ],
+      "cpp_review": {
+        "batch": "04",
+        "blocks": 4,
+        "scope": "Retained MN/EN helper/full-program code-context and edited prose;literal I/O,block IDs,public function signatures preserved. Iterative tree traversal;explicit weighted numeric contracts.",
+        "verification": "pending"
+      }
+    },
+    {
+      "id": "floyd-warshall",
+      "expected_revision": 3,
+      "expected_body_sha256": "6a2dbf0952f056867db2aa29adb6ec02278fa00b607f1b0d1529a49a87156792",
+      "operations": [
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 0,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconst long long INF = 4000000000000000000LL;\n\nvector<vector<long long>> floyd(vector<vector<long long>> dist) {\n    int n = dist.size();\n\n    for (int k = 0; k < n; k++) {\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < n; j++) {\n                if (dist[i][k] == INF || dist[k][j] == INF) {\n                    continue;\n                }\n\n                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);\n            }\n        }\n    }\n\n    return dist;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconst long long infinity = 4000000000000000000LL;\n\nvector<vector<long long>> floyd(vector<vector<long long>> distance) {\n    int n = distance.size();\n\n    for (int intermediate = 0; intermediate < n; intermediate++) {\n        for (int from = 0; from < n; from++) {\n            for (int to = 0; to < n; to++) {\n                if (distance[from][intermediate] == infinity || distance[intermediate][to] == infinity) {\n                    continue;\n                }\n\n                distance[from][to] = min(distance[from][to], distance[from][intermediate] + distance[intermediate][to]);\n            }\n        }\n    }\n\n    return distance;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 1,
+          "expected": {
+            "text": "Floyd-д бэлэн matrix өгнө. Давхар edge байвал хамгийн бага жинг тавь. Энэ reference-ийн үндсэн хэрэглээ сөрөг биш жинтэй graph; finite замын нийлбэр INF-ээс бага байхаар хязгаарлана.",
+            "type": "p",
+            "detailKey": "base-5-1"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Төлөв: ",
+                "marks": []
+              },
+              {
+                "text": "distance[from][to]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь зөвшөөрсөн дундын оройнуудтай minimum зай. ",
+                "marks": []
+              },
+              {
+                "text": "floyd",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " матрицыг хуулж боловсруулаад буцаана. Энэ runnable reference нь сөрөг биш жинтэй чиглэлтэй графт зориулагдсан; diagonal тэг, unreachable sentinel $4\\cdot10^{18}$, бүх reachable shortest distance түүнээс бага.",
+                "marks": []
+              }
+            ],
+            "detailKey": "base-5-1"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 2,
+          "expected": {
+            "type": "ordered",
+            "items": [
+              "INF шалгах нь байхгүй хоёр замыг нэмээд хуурамч зам гаргахаас хамгаална.",
+              "Inner minimum нь одоогийн route ба $k$-ээр дамжсан route-ийг харьцуулна.",
+              "Input дээр diagonal $0$ бэлдэнэ; output матрицын мөр эхлэх node, багана destination."
+            ],
+            "detailKey": "depth-code-walk"
+          },
+          "value": {
+            "type": "ordered",
+            "items": [
+              "Шинэ дундын оройг ашиглаагүй эсвэл ашигласан хоёр тохиолдлыг харьцуулна.",
+              "Байхгүй замын sentinel-ийг бодит жин мэт нэмэхгүй.",
+              "Матрицын эхлэх/хүрэх координатыг сольж хэвлэхгүй."
+            ],
+            "detailKey": "depth-code-walk"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 12,
+          "block": 3,
+          "expected": {
+            "text": "Доорх program-ийг бүтнээр нь нэг файлд хуулж C++17-оор жишээ input-тай ажиллуул. Function нь алгоритмыг хэрэгжүүлнэ; main нь input уншиж, function дуудаад хариу хэвлэнэ. Index-ийн дүрмийг дээрх input тайлбараас шалга.",
+            "type": "note",
+            "detailKey": "depth-program-guide"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Бэлтгэл: ",
+                "marks": []
+              },
+              {
+                "text": "main",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " diagonal-д тэг, бусдад sentinel тавьж, давхар ирмэгийн minimum-ийг хадгална. Гол алхам: ",
+                "marks": []
+              },
+              {
+                "text": "intermediate",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийг хамгийн гадна давталтад байлгана. Аль нэг хагас зам unreachable бол нэмэхгүй. Бусад хоёр утга хоёулаа sentinel-ээс бага, сөрөг биш тул нийлбэр $8\\cdot10^{18}$-аас бага бөгөөд ",
+                "marks": []
+              },
+              {
+                "text": "long long",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-д багтана. Гаралт: мөр нь эхлэх, багана нь хүрэх орой; unreachable үед $-1$. Хугацаа $O(n^3)$, зай $O(n^2)$. Энэ reference-ийн negative-cycle behavior-ийг баталгаажуулсан гэж үзэхгүй.",
+                "marks": []
+              }
+            ],
+            "detailKey": "depth-program-guide"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 12,
+          "block": 4,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconst long long INF = 4000000000000000000LL;\n\nvector<vector<long long>> floyd(vector<vector<long long>> dist) {\n    int n = dist.size();\n\n    for (int k = 0; k < n; k++) {\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < n; j++) {\n                if (dist[i][k] == INF || dist[k][j] == INF) {\n                    continue;\n                }\n\n                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);\n            }\n        }\n    }\n\n    return dist;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    vector<vector<long long>> dist(n, vector<long long>(n, INF));\n    for (int i = 0; i < n; i++) {\n        dist[i][i] = 0;\n    }\n    for (int i = 0; i < m; i++) {\n        int u, v;\n        long long w;\n        cin >> u >> v >> w;\n        dist[u][v] = min(dist[u][v], w);\n    }\n    dist = floyd(dist);\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < n; j++) {\n            if (j > 0) {\n                cout << ' ';\n            }\n            cout << (dist[i][j] == INF ? -1 : dist[i][j]);\n        }\n        cout << '\\n';\n    }\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconst long long infinity = 4000000000000000000LL;\n\nvector<vector<long long>> floyd(vector<vector<long long>> distance) {\n    int n = distance.size();\n\n    for (int intermediate = 0; intermediate < n; intermediate++) {\n        for (int from = 0; from < n; from++) {\n            for (int to = 0; to < n; to++) {\n                if (distance[from][intermediate] == infinity || distance[intermediate][to] == infinity) {\n                    continue;\n                }\n\n                distance[from][to] = min(distance[from][to], distance[from][intermediate] + distance[intermediate][to]);\n            }\n        }\n    }\n\n    return distance;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, edgeCount;\n    cin >> n >> edgeCount;\n    vector<vector<long long>> distance(n, vector<long long>(n, infinity));\n    for (int i = 0; i < n; i++) {\n        distance[i][i] = 0;\n    }\n    for (int i = 0; i < edgeCount; i++) {\n        int from, to;\n        long long weight;\n        cin >> from >> to >> weight;\n        distance[from][to] = min(distance[from][to], weight);\n    }\n    distance = floyd(distance);\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < n; j++) {\n            if (j > 0) {\n                cout << ' ';\n            }\n            cout << (distance[i][j] == infinity ? -1 : distance[i][j]);\n        }\n        cout << '\\n';\n    }\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 0,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconst long long INF = 4000000000000000000LL;\n\nvector<vector<long long>> floyd(vector<vector<long long>> dist) {\n    int n = dist.size();\n\n    for (int k = 0; k < n; k++) {\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < n; j++) {\n                if (dist[i][k] == INF || dist[k][j] == INF) {\n                    continue;\n                }\n\n                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);\n            }\n        }\n    }\n\n    return dist;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconst long long infinity = 4000000000000000000LL;\n\nvector<vector<long long>> floyd(vector<vector<long long>> distance) {\n    int n = distance.size();\n\n    for (int intermediate = 0; intermediate < n; intermediate++) {\n        for (int from = 0; from < n; from++) {\n            for (int to = 0; to < n; to++) {\n                if (distance[from][intermediate] == infinity || distance[intermediate][to] == infinity) {\n                    continue;\n                }\n\n                distance[from][to] = min(distance[from][to], distance[from][intermediate] + distance[intermediate][to]);\n            }\n        }\n    }\n\n    return distance;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 1,
+          "expected": {
+            "text": "Pass an initialized matrix to floyd. For parallel edges, keep the smallest weight. The reference’s basic use is a nonnegative-weight graph with all finite path sums below INF.",
+            "type": "p",
+            "detailKey": "base-5-1"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "State: ",
+                "marks": []
+              },
+              {
+                "text": "distance[from][to]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " is the minimum distance using the currently allowed intermediate vertices. ",
+                "marks": []
+              },
+              {
+                "text": "floyd",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " processes a matrix copy and returns it. This runnable reference uses directed nonnegative weights, zero diagonals, the $4\\cdot10^{18}$ unreachable sentinel, and reachable shortest distances below that sentinel.",
+                "marks": []
+              }
+            ],
+            "detailKey": "base-5-1"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 2,
+          "expected": {
+            "type": "ordered",
+            "items": [
+              "The INF check prevents combining nonexistent paths into a false candidate.",
+              "The inner minimum compares the current route with the route through $k$.",
+              "The input wrapper initializes a zero diagonal; output rows are sources and columns are destinations."
+            ],
+            "detailKey": "depth-code-walk"
+          },
+          "value": {
+            "type": "ordered",
+            "items": [
+              "Compare paths excluding or including the new intermediate vertex.",
+              "Never treat an unreachable sentinel as an actual edge weight.",
+              "Preserve source-row and destination-column orientation."
+            ],
+            "detailKey": "depth-code-walk"
+          }
+        },
+        {
+          "language": "en",
+          "section": 12,
+          "block": 3,
+          "expected": {
+            "text": "Copy the entire program below into one file. Run it as C++17 using the sample input. The function handles the algorithm; main reads the input, calls it and prints the answer. Indices follow the input contract above.",
+            "type": "note",
+            "detailKey": "depth-program-guide"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Preprocessing: initialize zero diagonals and sentinel elsewhere, retaining the minimum parallel edge. Keep ",
+                "marks": []
+              },
+              {
+                "text": "intermediate",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " as the outer loop. Skip an addition if either half-path is unreachable. Otherwise both nonnegative values are below the sentinel, so their sum is below $8\\cdot10^{18}$ and fits ",
+                "marks": []
+              },
+              {
+                "text": "long long",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ". Print rows by source and columns by destination, using $-1$ for unreachable pairs. Time is $O(n^3)$ and space $O(n^2)$. No negative-cycle behavior is claimed for this reference.",
+                "marks": []
+              }
+            ],
+            "detailKey": "depth-program-guide"
+          }
+        },
+        {
+          "language": "en",
+          "section": 12,
+          "block": 4,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconst long long INF = 4000000000000000000LL;\n\nvector<vector<long long>> floyd(vector<vector<long long>> dist) {\n    int n = dist.size();\n\n    for (int k = 0; k < n; k++) {\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < n; j++) {\n                if (dist[i][k] == INF || dist[k][j] == INF) {\n                    continue;\n                }\n\n                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);\n            }\n        }\n    }\n\n    return dist;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    vector<vector<long long>> dist(n, vector<long long>(n, INF));\n    for (int i = 0; i < n; i++) {\n        dist[i][i] = 0;\n    }\n    for (int i = 0; i < m; i++) {\n        int u, v;\n        long long w;\n        cin >> u >> v >> w;\n        dist[u][v] = min(dist[u][v], w);\n    }\n    dist = floyd(dist);\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < n; j++) {\n            if (j > 0) {\n                cout << ' ';\n            }\n            cout << (dist[i][j] == INF ? -1 : dist[i][j]);\n        }\n        cout << '\\n';\n    }\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconst long long infinity = 4000000000000000000LL;\n\nvector<vector<long long>> floyd(vector<vector<long long>> distance) {\n    int n = distance.size();\n\n    for (int intermediate = 0; intermediate < n; intermediate++) {\n        for (int from = 0; from < n; from++) {\n            for (int to = 0; to < n; to++) {\n                if (distance[from][intermediate] == infinity || distance[intermediate][to] == infinity) {\n                    continue;\n                }\n\n                distance[from][to] = min(distance[from][to], distance[from][intermediate] + distance[intermediate][to]);\n            }\n        }\n    }\n\n    return distance;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, edgeCount;\n    cin >> n >> edgeCount;\n    vector<vector<long long>> distance(n, vector<long long>(n, infinity));\n    for (int i = 0; i < n; i++) {\n        distance[i][i] = 0;\n    }\n    for (int i = 0; i < edgeCount; i++) {\n        int from, to;\n        long long weight;\n        cin >> from >> to >> weight;\n        distance[from][to] = min(distance[from][to], weight);\n    }\n    distance = floyd(distance);\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < n; j++) {\n            if (j > 0) {\n                cout << ' ';\n            }\n            cout << (distance[i][j] == infinity ? -1 : distance[i][j]);\n        }\n        cout << '\\n';\n    }\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          }
+        }
+      ],
+      "cpp_review": {
+        "batch": "04",
+        "blocks": 4,
+        "scope": "Retained MN/EN helper/full-program code-context and edited prose;literal I/O,block IDs,public function signatures preserved. Iterative tree traversal;explicit weighted numeric contracts.",
+        "verification": "pending"
+      }
+    },
+    {
+      "id": "flood-fill",
+      "expected_revision": 5,
+      "expected_body_sha256": "2e9796d5c7f7c2bd2af121cbdf588dd0f95f2adbee6e511a60f89daa0498a7a9",
+      "operations": [
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 0,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint count_rooms(const vector<string>& grid) {\n    int n = grid.size();\n\n    if (n == 0) {\n        return 0;\n    }\n\n    int m = grid[0].size();\n    vector<vector<bool>> visited(n, vector<bool>(m, false));\n    int dr[4] = {-1, 1, 0, 0};\n    int dc[4] = {0, 0, -1, 1};\n    int ans = 0;\n\n    for (int r = 0; r < n; r++) {\n        for (int c = 0; c < m; c++) {\n            if (grid[r][c] == '#' || visited[r][c]) {\n                continue;\n            }\n\n            ans++;\n            queue<pair<int, int>> q;\n            q.push({r, c});\n            visited[r][c] = true;\n\n            while (!q.empty()) {\n                int row = q.front().first;\n                int col = q.front().second;\n                q.pop();\n\n                for (int d = 0; d < 4; d++) {\n                    int nr = row + dr[d];\n                    int nc = col + dc[d];\n\n                    if (nr < 0 || nr >= n || nc < 0 || nc >= m) {\n                        continue;\n                    }\n\n                    if (grid[nr][nc] == '#' || visited[nr][nc]) {\n                        continue;\n                    }\n\n                    visited[nr][nc] = true;\n                    q.push({nr, nc});\n                }\n            }\n        }\n    }\n\n    return ans;\n}",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint count_rooms(const vector<string>& grid) {\n    int rowCount = grid.size();\n\n    if (rowCount == 0) {\n        return 0;\n    }\n\n    int columnCount = grid[0].size();\n    vector<vector<bool>> visited(rowCount, vector<bool>(columnCount, false));\n    int rowDelta[4] = {-1, 1, 0, 0};\n    int columnDelta[4] = {0, 0, -1, 1};\n    int roomCount = 0;\n\n    for (int startRow = 0; startRow < rowCount; startRow++) {\n        for (int startColumn = 0; startColumn < columnCount; startColumn++) {\n            if (grid[startRow][startColumn] == '#' || visited[startRow][startColumn]) {\n                continue;\n            }\n\n            roomCount++;\n            queue<pair<int, int>> pending;\n            pending.push({startRow, startColumn});\n            visited[startRow][startColumn] = true;\n\n            while (!pending.empty()) {\n                int row = pending.front().first;\n                int column = pending.front().second;\n                pending.pop();\n\n                for (int direction = 0; direction < 4; direction++) {\n                    int nextRow = row + rowDelta[direction];\n                    int nextColumn = column + columnDelta[direction];\n\n                    if (nextRow < 0 || nextRow >= rowCount || nextColumn < 0 || nextColumn >= columnCount) {\n                        continue;\n                    }\n\n                    if (grid[nextRow][nextColumn] == '#' || visited[nextRow][nextColumn]) {\n                        continue;\n                    }\n\n                    visited[nextRow][nextColumn] = true;\n                    pending.push({nextRow, nextColumn});\n                }\n            }\n        }\n    }\n\n    return roomCount;\n}",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 1,
+          "expected": {
+            "text": "$\\mathrm{dr},\\mathrm{dc}$ нь дөрвөн чиглэлийн мөр, баганын өөрчлөлт. Reference нь stack-ийн гүнээс хамаарахгүй BFS хэрэглэнэ. Grid-ийн мөрүүд ижил урттай, зөвхөн . болон # байна.",
+            "type": "p",
+            "detailKey": "base-5-1"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Төлөв: ",
+                "marks": []
+              },
+              {
+                "text": "visited",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь аль өрөөнд аль хэдийн бүртгэсэн нүдийг тэмдэглэнэ. ",
+                "marks": []
+              },
+              {
+                "text": "rowDelta",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", ",
+                "marks": []
+              },
+              {
+                "text": "columnDelta",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь дөрвөн чиглэл; диагональ биш. ",
+                "marks": []
+              },
+              {
+                "text": "pending",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " queue нь нэг өрөөний BFS. Grid тэгш өнцөгт, ",
+                "marks": []
+              },
+              {
+                "text": ".",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нээлттэй, ",
+                "marks": []
+              },
+              {
+                "text": "#",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хана. Helper хоосон болон тэг өргөн grid-д тэг буцаана.",
+                "marks": []
+              }
+            ],
+            "detailKey": "base-5-1"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 2,
+          "expected": {
+            "type": "ordered",
+            "items": [
+              "Direction array-ийн нэг pair нь нэг алхмын row, column өөрчлөлт.",
+              "Visited-г queue-д хийхтэй хамт тавьж duplicate enqueue-ийг зогсооно.",
+              "Rooms нэмэгдэх нь гаднах scan шинэ component олоход, нүд бүр dequeue хийхэд биш."
+            ],
+            "detailKey": "depth-code-walk"
+          },
+          "value": {
+            "type": "ordered",
+            "items": [
+              "Нэг өрөөг эхлүүлсэн scan л өрөөний тоог нэгээр нэмнэ.",
+              "BFS тэр өрөөний бүх нүдийг тэмдэглэнэ.",
+              "Дараагийн scan өмнөх өрөөг дахин эхлүүлэхгүй."
+            ],
+            "detailKey": "depth-code-walk"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 12,
+          "block": 3,
+          "expected": {
+            "text": "Доорх program-ийг бүтнээр нь нэг файлд хуулж C++17-оор жишээ input-тай ажиллуул. Function нь алгоритмыг хэрэгжүүлнэ; main нь input уншиж, function дуудаад хариу хэвлэнэ. Index-ийн дүрмийг дээрх input тайлбараас шалга.",
+            "type": "note",
+            "detailKey": "depth-program-guide"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Бэлтгэл: ",
+                "marks": []
+              },
+              {
+                "text": "main",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " эерэг хэмжээнүүд ба grid мөрүүдийг уншина. Гол алхам: гаднах scan шинэ нээлттэй, хараахан үзээгүй нүд олоход л ",
+                "marks": []
+              },
+              {
+                "text": "roomCount",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нэмнэ. BFS-д нүдийг queue-д оруулах үед тэмдэглэж давхар enqueue-ээс сэргийлнэ; хөршийн заагийг grid уншихаас өмнө шалгана. Гаралт: өрөөний тоо болохоос нээлттэй нүдний тоо биш. Хугацаа, зай $O(nm)$; recursive stack ашиглахгүй.",
+                "marks": []
+              }
+            ],
+            "detailKey": "depth-program-guide"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 12,
+          "block": 4,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint count_rooms(const vector<string>& grid) {\n    int n = grid.size();\n\n    if (n == 0) {\n        return 0;\n    }\n\n    int m = grid[0].size();\n    vector<vector<bool>> visited(n, vector<bool>(m, false));\n    int dr[4] = {-1, 1, 0, 0};\n    int dc[4] = {0, 0, -1, 1};\n    int ans = 0;\n\n    for (int r = 0; r < n; r++) {\n        for (int c = 0; c < m; c++) {\n            if (grid[r][c] == '#' || visited[r][c]) {\n                continue;\n            }\n\n            ans++;\n            queue<pair<int, int>> q;\n            q.push({r, c});\n            visited[r][c] = true;\n\n            while (!q.empty()) {\n                int row = q.front().first;\n                int col = q.front().second;\n                q.pop();\n\n                for (int d = 0; d < 4; d++) {\n                    int nr = row + dr[d];\n                    int nc = col + dc[d];\n\n                    if (nr < 0 || nr >= n || nc < 0 || nc >= m) {\n                        continue;\n                    }\n\n                    if (grid[nr][nc] == '#' || visited[nr][nc]) {\n                        continue;\n                    }\n\n                    visited[nr][nc] = true;\n                    q.push({nr, nc});\n                }\n            }\n        }\n    }\n\n    return ans;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    vector<string> grid(n);\n    for (int r = 0; r < n; r++) {\n        cin >> grid[r];\n    }\n    cout << count_rooms(grid) << '\\n';\n\n    return 0;\n}",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint count_rooms(const vector<string>& grid) {\n    int rowCount = grid.size();\n\n    if (rowCount == 0) {\n        return 0;\n    }\n\n    int columnCount = grid[0].size();\n    vector<vector<bool>> visited(rowCount, vector<bool>(columnCount, false));\n    int rowDelta[4] = {-1, 1, 0, 0};\n    int columnDelta[4] = {0, 0, -1, 1};\n    int roomCount = 0;\n\n    for (int startRow = 0; startRow < rowCount; startRow++) {\n        for (int startColumn = 0; startColumn < columnCount; startColumn++) {\n            if (grid[startRow][startColumn] == '#' || visited[startRow][startColumn]) {\n                continue;\n            }\n\n            roomCount++;\n            queue<pair<int, int>> pending;\n            pending.push({startRow, startColumn});\n            visited[startRow][startColumn] = true;\n\n            while (!pending.empty()) {\n                int row = pending.front().first;\n                int column = pending.front().second;\n                pending.pop();\n\n                for (int direction = 0; direction < 4; direction++) {\n                    int nextRow = row + rowDelta[direction];\n                    int nextColumn = column + columnDelta[direction];\n\n                    if (nextRow < 0 || nextRow >= rowCount || nextColumn < 0 || nextColumn >= columnCount) {\n                        continue;\n                    }\n\n                    if (grid[nextRow][nextColumn] == '#' || visited[nextRow][nextColumn]) {\n                        continue;\n                    }\n\n                    visited[nextRow][nextColumn] = true;\n                    pending.push({nextRow, nextColumn});\n                }\n            }\n        }\n    }\n\n    return roomCount;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int rowCount, columnCount;\n    cin >> rowCount >> columnCount;\n    vector<string> grid(rowCount);\n    for (int row = 0; row < rowCount; row++) {\n        cin >> grid[row];\n    }\n    cout << count_rooms(grid) << '\\n';\n\n    return 0;\n}",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 0,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint count_rooms(const vector<string>& grid) {\n    int n = grid.size();\n\n    if (n == 0) {\n        return 0;\n    }\n\n    int m = grid[0].size();\n    vector<vector<bool>> visited(n, vector<bool>(m, false));\n    int dr[4] = {-1, 1, 0, 0};\n    int dc[4] = {0, 0, -1, 1};\n    int ans = 0;\n\n    for (int r = 0; r < n; r++) {\n        for (int c = 0; c < m; c++) {\n            if (grid[r][c] == '#' || visited[r][c]) {\n                continue;\n            }\n\n            ans++;\n            queue<pair<int, int>> q;\n            q.push({r, c});\n            visited[r][c] = true;\n\n            while (!q.empty()) {\n                int row = q.front().first;\n                int col = q.front().second;\n                q.pop();\n\n                for (int d = 0; d < 4; d++) {\n                    int nr = row + dr[d];\n                    int nc = col + dc[d];\n\n                    if (nr < 0 || nr >= n || nc < 0 || nc >= m) {\n                        continue;\n                    }\n\n                    if (grid[nr][nc] == '#' || visited[nr][nc]) {\n                        continue;\n                    }\n\n                    visited[nr][nc] = true;\n                    q.push({nr, nc});\n                }\n            }\n        }\n    }\n\n    return ans;\n}",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint count_rooms(const vector<string>& grid) {\n    int rowCount = grid.size();\n\n    if (rowCount == 0) {\n        return 0;\n    }\n\n    int columnCount = grid[0].size();\n    vector<vector<bool>> visited(rowCount, vector<bool>(columnCount, false));\n    int rowDelta[4] = {-1, 1, 0, 0};\n    int columnDelta[4] = {0, 0, -1, 1};\n    int roomCount = 0;\n\n    for (int startRow = 0; startRow < rowCount; startRow++) {\n        for (int startColumn = 0; startColumn < columnCount; startColumn++) {\n            if (grid[startRow][startColumn] == '#' || visited[startRow][startColumn]) {\n                continue;\n            }\n\n            roomCount++;\n            queue<pair<int, int>> pending;\n            pending.push({startRow, startColumn});\n            visited[startRow][startColumn] = true;\n\n            while (!pending.empty()) {\n                int row = pending.front().first;\n                int column = pending.front().second;\n                pending.pop();\n\n                for (int direction = 0; direction < 4; direction++) {\n                    int nextRow = row + rowDelta[direction];\n                    int nextColumn = column + columnDelta[direction];\n\n                    if (nextRow < 0 || nextRow >= rowCount || nextColumn < 0 || nextColumn >= columnCount) {\n                        continue;\n                    }\n\n                    if (grid[nextRow][nextColumn] == '#' || visited[nextRow][nextColumn]) {\n                        continue;\n                    }\n\n                    visited[nextRow][nextColumn] = true;\n                    pending.push({nextRow, nextColumn});\n                }\n            }\n        }\n    }\n\n    return roomCount;\n}",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 1,
+          "expected": {
+            "text": "Dr and dc store coordinate changes for the four directions. The reference uses BFS to avoid deep recursion. Grid rows must have equal lengths and contain only dots and #.",
+            "type": "p",
+            "detailKey": "base-5-1"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "State: ",
+                "marks": []
+              },
+              {
+                "text": "visited",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " marks cells already assigned to a room. ",
+                "marks": []
+              },
+              {
+                "text": "rowDelta",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " and ",
+                "marks": []
+              },
+              {
+                "text": "columnDelta",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " encode four directions, excluding diagonals. The ",
+                "marks": []
+              },
+              {
+                "text": "pending",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " queue explores one room by BFS. The grid is rectangular, with ",
+                "marks": []
+              },
+              {
+                "text": ".",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " open and ",
+                "marks": []
+              },
+              {
+                "text": "#",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " blocked. The helper returns zero for empty and zero-width grids.",
+                "marks": []
+              }
+            ],
+            "detailKey": "base-5-1"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 2,
+          "expected": {
+            "type": "ordered",
+            "items": [
+              "Each direction pair gives one-step row and column offsets.",
+              "Mark visited when enqueueing to prevent duplicate entries.",
+              "Increment rooms when the outer scan finds a new component, not on every dequeue."
+            ],
+            "detailKey": "depth-code-walk"
+          },
+          "value": {
+            "type": "ordered",
+            "items": [
+              "Only the scan starting a new room increments the count.",
+              "BFS marks every cell in that room.",
+              "Later scans cannot start the same room again."
+            ],
+            "detailKey": "depth-code-walk"
+          }
+        },
+        {
+          "language": "en",
+          "section": 12,
+          "block": 3,
+          "expected": {
+            "text": "Copy the entire program below into one file. Run it as C++17 using the sample input. The function handles the algorithm; main reads the input, calls it and prints the answer. Indices follow the input contract above.",
+            "type": "note",
+            "detailKey": "depth-program-guide"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Preprocessing: ",
+                "marks": []
+              },
+              {
+                "text": "main",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " reads positive dimensions and the grid rows. Increment ",
+                "marks": []
+              },
+              {
+                "text": "roomCount",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " only when the outer scan finds a new unvisited open cell. Mark a cell when enqueuing it and test neighbor bounds before reading the grid. Output the number of rooms, not the number of open cells. Time and storage are $O(nm)$, with no recursive stack.",
+                "marks": []
+              }
+            ],
+            "detailKey": "depth-program-guide"
+          }
+        },
+        {
+          "language": "en",
+          "section": 12,
+          "block": 4,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint count_rooms(const vector<string>& grid) {\n    int n = grid.size();\n\n    if (n == 0) {\n        return 0;\n    }\n\n    int m = grid[0].size();\n    vector<vector<bool>> visited(n, vector<bool>(m, false));\n    int dr[4] = {-1, 1, 0, 0};\n    int dc[4] = {0, 0, -1, 1};\n    int ans = 0;\n\n    for (int r = 0; r < n; r++) {\n        for (int c = 0; c < m; c++) {\n            if (grid[r][c] == '#' || visited[r][c]) {\n                continue;\n            }\n\n            ans++;\n            queue<pair<int, int>> q;\n            q.push({r, c});\n            visited[r][c] = true;\n\n            while (!q.empty()) {\n                int row = q.front().first;\n                int col = q.front().second;\n                q.pop();\n\n                for (int d = 0; d < 4; d++) {\n                    int nr = row + dr[d];\n                    int nc = col + dc[d];\n\n                    if (nr < 0 || nr >= n || nc < 0 || nc >= m) {\n                        continue;\n                    }\n\n                    if (grid[nr][nc] == '#' || visited[nr][nc]) {\n                        continue;\n                    }\n\n                    visited[nr][nc] = true;\n                    q.push({nr, nc});\n                }\n            }\n        }\n    }\n\n    return ans;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    vector<string> grid(n);\n    for (int r = 0; r < n; r++) {\n        cin >> grid[r];\n    }\n    cout << count_rooms(grid) << '\\n';\n\n    return 0;\n}",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint count_rooms(const vector<string>& grid) {\n    int rowCount = grid.size();\n\n    if (rowCount == 0) {\n        return 0;\n    }\n\n    int columnCount = grid[0].size();\n    vector<vector<bool>> visited(rowCount, vector<bool>(columnCount, false));\n    int rowDelta[4] = {-1, 1, 0, 0};\n    int columnDelta[4] = {0, 0, -1, 1};\n    int roomCount = 0;\n\n    for (int startRow = 0; startRow < rowCount; startRow++) {\n        for (int startColumn = 0; startColumn < columnCount; startColumn++) {\n            if (grid[startRow][startColumn] == '#' || visited[startRow][startColumn]) {\n                continue;\n            }\n\n            roomCount++;\n            queue<pair<int, int>> pending;\n            pending.push({startRow, startColumn});\n            visited[startRow][startColumn] = true;\n\n            while (!pending.empty()) {\n                int row = pending.front().first;\n                int column = pending.front().second;\n                pending.pop();\n\n                for (int direction = 0; direction < 4; direction++) {\n                    int nextRow = row + rowDelta[direction];\n                    int nextColumn = column + columnDelta[direction];\n\n                    if (nextRow < 0 || nextRow >= rowCount || nextColumn < 0 || nextColumn >= columnCount) {\n                        continue;\n                    }\n\n                    if (grid[nextRow][nextColumn] == '#' || visited[nextRow][nextColumn]) {\n                        continue;\n                    }\n\n                    visited[nextRow][nextColumn] = true;\n                    pending.push({nextRow, nextColumn});\n                }\n            }\n        }\n    }\n\n    return roomCount;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int rowCount, columnCount;\n    cin >> rowCount >> columnCount;\n    vector<string> grid(rowCount);\n    for (int row = 0; row < rowCount; row++) {\n        cin >> grid[row];\n    }\n    cout << count_rooms(grid) << '\\n';\n\n    return 0;\n}",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          }
+        }
+      ],
+      "cpp_review": {
+        "batch": "04",
+        "blocks": 4,
+        "scope": "Retained MN/EN helper/full-program code-context and edited prose;literal I/O,block IDs,public function signatures preserved. Iterative tree traversal;explicit weighted numeric contracts.",
+        "verification": "pending"
+      }
+    },
+    {
+      "id": "tree-basics",
+      "expected_revision": 3,
+      "expected_body_sha256": "d315030e2130f1243f50ec1cbe1a5c665bdda9c400a9752dbb752f605d4c0b08",
+      "operations": [
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 0,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvoid tree_dfs(int v, int p, const vector<vector<int>>& adj,\n              vector<int>& parent, vector<int>& depth, vector<int>& sz) {\n    parent[v] = p;\n    sz[v] = 1;\n\n    for (int u : adj[v]) {\n        if (u == p) {\n            continue;\n        }\n\n        depth[u] = depth[v] + 1;\n        tree_dfs(u, v, adj, parent, depth, sz);\n        sz[v] += sz[u];\n    }\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvoid tree_dfs(int vertex, int previous, const vector<vector<int>>& neighbors,\n              vector<int>& parent, vector<int>& depth, vector<int>& subtreeSize) {\n    vector<pair<int, int>> pending{{vertex, previous}};\n    vector<int> order;\n    while (!pending.empty()) {\n        int current = pending.back().first;\n        int incoming = pending.back().second;\n        pending.pop_back();\n        parent[current] = incoming;\n        subtreeSize[current] = 1;\n        order.push_back(current);\n        for (int neighbor : neighbors[current]) {\n            if (neighbor == incoming) continue;\n            depth[neighbor] = depth[current] + 1;\n            pending.push_back({neighbor, current});\n        }\n    }\n    for (int index = static_cast<int>(order.size()) - 1; index > 0; --index) {\n        int child = order[index];\n        subtreeSize[parent[child]] += subtreeSize[child];\n    }\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 1,
+          "expected": {
+            "text": "Tree_dfs-ийг parent($n$), depth($n$,0), sz($n$,0) vector-уудтай, root $0$ дээр parent $-1$ өгч дууд. Энэ код зөвхөн tree-д зориулагдсан; general graph дээр parent-ийг алгасах төдий нь cycle-оос хамгаалахгүй.",
+            "type": "p",
+            "detailKey": "base-5-1"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Төлөв: ",
+                "marks": []
+              },
+              {
+                "text": "parent",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", ",
+                "marks": []
+              },
+              {
+                "text": "depth",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", ",
+                "marks": []
+              },
+              {
+                "text": "subtreeSize",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь хүчинтэй root-той холбоост модны мэдээлэл. ",
+                "marks": []
+              },
+              {
+                "text": "tree_dfs",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нэр, параметрийн дарааллыг хадгалсан ч implementation нь explicit ",
+                "marks": []
+              },
+              {
+                "text": "pending",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " stack ба ",
+                "marks": []
+              },
+              {
+                "text": "order",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " ашиглана. Root-ийн эхний depth тэг, орж ирсэн parent $-1$; массивууд $n$ урттай байна.",
+                "marks": []
+              }
+            ],
+            "detailKey": "base-5-1"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 2,
+          "expected": {
+            "type": "ordered",
+            "items": [
+              "Tree_dfs-д $p$ нь орж ирсэн parent, $parent[v]$ түүнд тохирно.",
+              "$sz[v]$ эхэнд $1$: node өөрөө заавал тоологдоно.",
+              "Depth child-д call-аас өмнө, size parent-д call-ын дараа шинэчлэгдэнэ."
+            ],
+            "detailKey": "depth-code-walk"
+          },
+          "value": {
+            "type": "ordered",
+            "items": [
+              "Орой бүр өөрөөсөө өмнө эцэг нь order-д орсон байна.",
+              "Урвуу order-д бүх хүүхэд эцгээсээ өмнө нэгтгэгдэнэ.",
+              "Навчны эхний хэмжээ $1$ нь induction-ийн эхлэл."
+            ],
+            "detailKey": "depth-code-walk"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 12,
+          "block": 3,
+          "expected": {
+            "text": "Доорх program-ийг бүтнээр нь нэг файлд хуулж C++17-оор жишээ input-тай ажиллуул. Function нь алгоритмыг хэрэгжүүлнэ; main нь input уншиж, function дуудаад хариу хэвлэнэ. Index-ийн дүрмийг дээрх input тайлбараас шалга.",
+            "type": "note",
+            "detailKey": "depth-program-guide"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Бэлтгэл: ",
+                "marks": []
+              },
+              {
+                "text": "main",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " чиглэлгүй модны ирмэгүүдийг хоёр чиглэлд хадгална. Гол алхам: stack-аас авахдаа parent, өөрийн хэмжээ $1$-ийг тавьж, хүүхдийн depth-ийг тогтооно. ",
+                "marks": []
+              },
+              {
+                "text": "order",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийн урвуу дарааллаар хүүхдийн хэмжээг эцэгт нэмэхэд хүүхдүүд эхэлж бүрэн болно. Root-ийг гадаад parent рүү нэмэхгүй. Гаралт: орой бүрт parent, depth, subtree хэмжээ; root-ийн parent $-1$. Хугацаа, explicit санах ой $O(n)$; урт chain-д recursive call stack шаардахгүй. Parent-ийг алгасах нь зөвхөн модонд хангалттай, ердийн cycle-тэй графт биш.",
+                "marks": []
+              }
+            ],
+            "detailKey": "depth-program-guide"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 12,
+          "block": 4,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvoid tree_dfs(int v, int p, const vector<vector<int>>& adj,\n              vector<int>& parent, vector<int>& depth, vector<int>& sz) {\n    parent[v] = p;\n    sz[v] = 1;\n\n    for (int u : adj[v]) {\n        if (u == p) {\n            continue;\n        }\n\n        depth[u] = depth[v] + 1;\n        tree_dfs(u, v, adj, parent, depth, sz);\n        sz[v] += sz[u];\n    }\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, root;\n    cin >> n >> root;\n    vector<vector<int>> adj(n);\n    for (int i = 0; i < n - 1; i++) {\n        int u, v;\n        cin >> u >> v;\n        adj[u].push_back(v);\n        adj[v].push_back(u);\n    }\n    vector<int> parent(n, -1), depth(n, 0), sz(n, 0);\n    tree_dfs(root, -1, adj, parent, depth, sz);\n    for (int v = 0; v < n; v++) {\n        cout << parent[v] << ' ' << depth[v] << ' ' << sz[v] << '\\n';\n    }\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvoid tree_dfs(int vertex, int previous, const vector<vector<int>>& neighbors,\n              vector<int>& parent, vector<int>& depth, vector<int>& subtreeSize) {\n    vector<pair<int, int>> pending{{vertex, previous}};\n    vector<int> order;\n    while (!pending.empty()) {\n        int current = pending.back().first;\n        int incoming = pending.back().second;\n        pending.pop_back();\n        parent[current] = incoming;\n        subtreeSize[current] = 1;\n        order.push_back(current);\n        for (int neighbor : neighbors[current]) {\n            if (neighbor == incoming) continue;\n            depth[neighbor] = depth[current] + 1;\n            pending.push_back({neighbor, current});\n        }\n    }\n    for (int index = static_cast<int>(order.size()) - 1; index > 0; --index) {\n        int child = order[index];\n        subtreeSize[parent[child]] += subtreeSize[child];\n    }\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, root;\n    cin >> n >> root;\n    vector<vector<int>> neighbors(n);\n    for (int i = 0; i < n - 1; i++) {\n        int first, second;\n        cin >> first >> second;\n        neighbors[first].push_back(second);\n        neighbors[second].push_back(first);\n    }\n    vector<int> parent(n, -1), depth(n, 0), subtreeSize(n, 0);\n    tree_dfs(root, -1, neighbors, parent, depth, subtreeSize);\n    for (int second = 0; second < n; second++) {\n        cout << parent[second] << ' ' << depth[second] << ' ' << subtreeSize[second] << '\\n';\n    }\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 6,
+          "block": 0,
+          "expected": {
+            "text": "Leaf-ийн size $1$ зөв. Child subtree-үүд зөв тоологдсон бол өөрийгөө нэг нэмээд бүх child size-ийг нийлүүлэхэд өөрийн subtree зөв гарна.",
+            "type": "p",
+            "detailKey": "base-6-0"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Навчны хэмжээ $1$. Traversal-ийн order-д эцэг нь хүүхдээсээ өмнө ордог тул урвуу order-д хүүхэд бүрийн хэмжээ аль хэдийн бүрэн. Өөрийн $1$ дээр хүүхдүүдийн хэмжээг нэмэхэд тухайн subtree-ийн бүх оройг яг нэг тоолно.",
+                "marks": []
+              }
+            ],
+            "detailKey": "base-6-0"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 6,
+          "block": 1,
+          "expected": {
+            "text": "$O(n)$ хугацаа ба $O(n)$ зай. Урт chain-д recursive depth томорно.",
+            "type": "p",
+            "detailKey": "base-6-1"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "$O(n)$ хугацаа ба $O(n)$ explicit санах ой. Энэ implementation recursive call ашиглахгүй; мод байх precondition хэвээр.",
+                "marks": []
+              }
+            ],
+            "detailKey": "base-6-1"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 0,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvoid tree_dfs(int v, int p, const vector<vector<int>>& adj,\n              vector<int>& parent, vector<int>& depth, vector<int>& sz) {\n    parent[v] = p;\n    sz[v] = 1;\n\n    for (int u : adj[v]) {\n        if (u == p) {\n            continue;\n        }\n\n        depth[u] = depth[v] + 1;\n        tree_dfs(u, v, adj, parent, depth, sz);\n        sz[v] += sz[u];\n    }\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvoid tree_dfs(int vertex, int previous, const vector<vector<int>>& neighbors,\n              vector<int>& parent, vector<int>& depth, vector<int>& subtreeSize) {\n    vector<pair<int, int>> pending{{vertex, previous}};\n    vector<int> order;\n    while (!pending.empty()) {\n        int current = pending.back().first;\n        int incoming = pending.back().second;\n        pending.pop_back();\n        parent[current] = incoming;\n        subtreeSize[current] = 1;\n        order.push_back(current);\n        for (int neighbor : neighbors[current]) {\n            if (neighbor == incoming) continue;\n            depth[neighbor] = depth[current] + 1;\n            pending.push_back({neighbor, current});\n        }\n    }\n    for (int index = static_cast<int>(order.size()) - 1; index > 0; --index) {\n        int child = order[index];\n        subtreeSize[parent[child]] += subtreeSize[child];\n    }\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 1,
+          "expected": {
+            "text": "Call tree_dfs at root $0$ with parent $-1$, after allocating parent, depth and sz vectors and setting depths to zero. This code is for trees; skipping the parent alone does not prevent cycles in a general graph.",
+            "type": "p",
+            "detailKey": "base-5-1"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "State: ",
+                "marks": []
+              },
+              {
+                "text": "parent",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", ",
+                "marks": []
+              },
+              {
+                "text": "depth",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", and ",
+                "marks": []
+              },
+              {
+                "text": "subtreeSize",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " describe a connected tree rooted at a valid vertex. The function keeps the ",
+                "marks": []
+              },
+              {
+                "text": "tree_dfs",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " name and argument order but uses an explicit ",
+                "marks": []
+              },
+              {
+                "text": "pending",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " stack and ",
+                "marks": []
+              },
+              {
+                "text": "order",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ". Initialize root depth to zero, its incoming parent to $-1$, and all output arrays to length $n$.",
+                "marks": []
+              }
+            ],
+            "detailKey": "base-5-1"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 2,
+          "expected": {
+            "type": "ordered",
+            "items": [
+              "Argument $p$ is the incoming parent and is stored at $parent[v]$.",
+              "$sz[v]$ starts at $1$ to include the vertex itself.",
+              "Child depth is set before recursion; parent size is updated after recursion."
+            ],
+            "detailKey": "depth-code-walk"
+          },
+          "value": {
+            "type": "ordered",
+            "items": [
+              "Every parent enters the order before its descendants.",
+              "Reversing the order aggregates children before their parents.",
+              "A leaf’s initial size $1$ supplies the induction base."
+            ],
+            "detailKey": "depth-code-walk"
+          }
+        },
+        {
+          "language": "en",
+          "section": 12,
+          "block": 3,
+          "expected": {
+            "text": "Copy the entire program below into one file. Run it as C++17 using the sample input. The function handles the algorithm; main reads the input, calls it and prints the answer. Indices follow the input contract above.",
+            "type": "note",
+            "detailKey": "depth-program-guide"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Preprocessing: ",
+                "marks": []
+              },
+              {
+                "text": "main",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " stores each tree edge in both directions. Popping a stack entry assigns its parent and own size $1$, then sets child depths. Process ",
+                "marks": []
+              },
+              {
+                "text": "order",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " backward to add completed child sizes into parents; never add the root into an external parent. Print parent, depth, and subtree size for each vertex, with root parent $-1$. Time and explicit storage are $O(n)$, avoiding recursive call depth on long chains. Skipping only the incoming parent is valid for a tree, not a general cyclic graph.",
+                "marks": []
+              }
+            ],
+            "detailKey": "depth-program-guide"
+          }
+        },
+        {
+          "language": "en",
+          "section": 12,
+          "block": 4,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvoid tree_dfs(int v, int p, const vector<vector<int>>& adj,\n              vector<int>& parent, vector<int>& depth, vector<int>& sz) {\n    parent[v] = p;\n    sz[v] = 1;\n\n    for (int u : adj[v]) {\n        if (u == p) {\n            continue;\n        }\n\n        depth[u] = depth[v] + 1;\n        tree_dfs(u, v, adj, parent, depth, sz);\n        sz[v] += sz[u];\n    }\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, root;\n    cin >> n >> root;\n    vector<vector<int>> adj(n);\n    for (int i = 0; i < n - 1; i++) {\n        int u, v;\n        cin >> u >> v;\n        adj[u].push_back(v);\n        adj[v].push_back(u);\n    }\n    vector<int> parent(n, -1), depth(n, 0), sz(n, 0);\n    tree_dfs(root, -1, adj, parent, depth, sz);\n    for (int v = 0; v < n; v++) {\n        cout << parent[v] << ' ' << depth[v] << ' ' << sz[v] << '\\n';\n    }\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvoid tree_dfs(int vertex, int previous, const vector<vector<int>>& neighbors,\n              vector<int>& parent, vector<int>& depth, vector<int>& subtreeSize) {\n    vector<pair<int, int>> pending{{vertex, previous}};\n    vector<int> order;\n    while (!pending.empty()) {\n        int current = pending.back().first;\n        int incoming = pending.back().second;\n        pending.pop_back();\n        parent[current] = incoming;\n        subtreeSize[current] = 1;\n        order.push_back(current);\n        for (int neighbor : neighbors[current]) {\n            if (neighbor == incoming) continue;\n            depth[neighbor] = depth[current] + 1;\n            pending.push_back({neighbor, current});\n        }\n    }\n    for (int index = static_cast<int>(order.size()) - 1; index > 0; --index) {\n        int child = order[index];\n        subtreeSize[parent[child]] += subtreeSize[child];\n    }\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, root;\n    cin >> n >> root;\n    vector<vector<int>> neighbors(n);\n    for (int i = 0; i < n - 1; i++) {\n        int first, second;\n        cin >> first >> second;\n        neighbors[first].push_back(second);\n        neighbors[second].push_back(first);\n    }\n    vector<int> parent(n, -1), depth(n, 0), subtreeSize(n, 0);\n    tree_dfs(root, -1, neighbors, parent, depth, subtreeSize);\n    for (int second = 0; second < n; second++) {\n        cout << parent[second] << ' ' << depth[second] << ' ' << subtreeSize[second] << '\\n';\n    }\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          }
+        },
+        {
+          "language": "en",
+          "section": 6,
+          "block": 0,
+          "expected": {
+            "text": "Leaves correctly have size $1$. If child sizes are correct, adding them and one for the current vertex gives the correct subtree size.",
+            "type": "p",
+            "detailKey": "base-6-0"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "A leaf has size $1$. Parents precede descendants in the traversal order, so reversing it completes every child first. Adding child sizes to the vertex’s own $1$ counts each subtree vertex exactly once.",
+                "marks": []
+              }
+            ],
+            "detailKey": "base-6-0"
+          }
+        },
+        {
+          "language": "en",
+          "section": 6,
+          "block": 1,
+          "expected": {
+            "text": "$O(n)$ time and $O(n)$ space. A long chain creates deep recursion.",
+            "type": "p",
+            "detailKey": "base-6-1"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "$O(n)$ time and $O(n)$ explicit storage. This implementation makes no recursive calls; the tree precondition still applies.",
+                "marks": []
+              }
+            ],
+            "detailKey": "base-6-1"
+          }
+        }
+      ],
+      "cpp_review": {
+        "batch": "04",
+        "blocks": 4,
+        "scope": "Retained MN/EN helper/full-program code-context and edited prose;literal I/O,block IDs,public function signatures preserved. Iterative tree traversal;explicit weighted numeric contracts.",
+        "verification": "pending"
+      }
+    },
+    {
+      "id": "kruskal",
+      "expected_revision": 3,
+      "expected_body_sha256": "7bd8da2919eceed1486e3248408e67746aaacb79433f84117ab0eb3dba1d1fdf",
+      "operations": [
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 0,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct DSU {\n    vector<int> parent;\n    vector<int> sz;\n\n    DSU(int n) {\n        parent.resize(n);\n        sz.assign(n, 1);\n        iota(parent.begin(), parent.end(), 0);\n    }\n\n    int find(int v) {\n        if (parent[v] == v) {\n            return v;\n        }\n\n        parent[v] = find(parent[v]);\n        return parent[v];\n    }\n\n    bool unite(int u, int v) {\n        u = find(u);\n        v = find(v);\n\n        if (u == v) {\n            return false;\n        }\n\n        if (sz[u] < sz[v]) {\n            swap(u, v);\n        }\n\n        parent[v] = u;\n        sz[u] += sz[v];\n        return true;\n    }\n};\n\nstruct Edge {\n    int u;\n    int v;\n    long long w;\n};\n\nbool compare_edges(const Edge& a, const Edge& b) {\n    return a.w < b.w;\n}\n\npair<bool, long long> kruskal(int n, vector<Edge> edges) {\n    sort(edges.begin(), edges.end(), compare_edges);\n    DSU dsu(n);\n    long long ans = 0;\n    int used = 0;\n\n    for (const auto& edge : edges) {\n        if (dsu.unite(edge.u, edge.v)) {\n            ans += edge.w;\n            used++;\n        }\n    }\n\n    return {used == n - 1, ans};\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct DSU {\n    vector<int> parent;\n    vector<int> componentSize;\n\n    DSU(int n) : parent(n), componentSize(n, 1) {\n        iota(parent.begin(), parent.end(), 0);\n    }\n\n    int find(int vertex) {\n        if (parent[vertex] == vertex) return vertex;\n        parent[vertex] = find(parent[vertex]);\n        return parent[vertex];\n    }\n\n    bool unite(int first, int second) {\n        int firstRoot = find(first), secondRoot = find(second);\n        if (firstRoot == secondRoot) return false;\n        if (componentSize[firstRoot] < componentSize[secondRoot]) swap(firstRoot, secondRoot);\n        parent[secondRoot] = firstRoot;\n        componentSize[firstRoot] += componentSize[secondRoot];\n        return true;\n    }\n};\n\nstruct Edge {\n    int first;\n    int second;\n    long long weight;\n};\n\nbool compare_edges(const Edge& firstEdge, const Edge& secondEdge) {\n    return firstEdge.weight < secondEdge.weight;\n}\n\npair<bool, long long> kruskal(int n, vector<Edge> edges) {\n    sort(edges.begin(), edges.end(), compare_edges);\n    DSU dsu(n);\n    long long totalWeight = 0;\n    int usedEdges = 0;\n    for (const auto& edge : edges) {\n        if (dsu.unite(edge.first, edge.second)) {\n            totalWeight += edge.weight;\n            ++usedEdges;\n        }\n    }\n    return {usedEdges == n - 1, totalWeight};\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 1,
+          "expected": {
+            "text": "Edge struct $u,v,w$ хадгална. Kruskal нь connected эсэх bool болон total weight pair буцаана. $n\\ge1$, хүчинтэй endpoint, total long long-д багтах ёстой. False үед total нь forest-ийн жин, MST гэж хэвлэхгүй.",
+            "type": "p",
+            "detailKey": "base-5-1"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Төлөв: DSU-ийн ",
+                "marks": []
+              },
+              {
+                "text": "parent",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", ",
+                "marks": []
+              },
+              {
+                "text": "componentSize",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь холбоотой бүлгүүд. ",
+                "marks": []
+              },
+              {
+                "text": "Edge",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь ",
+                "marks": []
+              },
+              {
+                "text": "first",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", ",
+                "marks": []
+              },
+              {
+                "text": "second",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", ",
+                "marks": []
+              },
+              {
+                "text": "weight",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " талбаруудтай. ",
+                "marks": []
+              },
+              {
+                "text": "kruskal",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь connected эсэх bool ба сонгосон forest-ийн нийт жинг буцаана. $n\\ge1$, endpoint хүчинтэй, жин сөрөг ч байж болно; бүх хуримтлагдах нийлбэр ",
+                "marks": []
+              },
+              {
+                "text": "long long",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-д багтана.",
+                "marks": []
+              }
+            ],
+            "detailKey": "base-5-1"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 2,
+          "expected": {
+            "type": "ordered",
+            "items": [
+              "Edge struct нь хоёр төгсгөл ба weight; comparator зөвхөн weight-ээр өсөхөөр эрэмбэлнэ.",
+              "Unite true үед л cost болон used нэмнэ.",
+              "Буцаасан bool нь connectivity шалгана; false үед accumulated cost нь spanning forest-ийнх, MST-ийнх биш."
+            ],
+            "detailKey": "depth-code-walk"
+          },
+          "value": {
+            "type": "ordered",
+            "items": [
+              "Хамгийн хямд, одоогийн forest-д цикл үүсгэхгүй ирмэгийг сонгоно.",
+              "Модонд $n-1$ амжилттай нийлүүлэлт хэрэгтэй.",
+              "Тэнцүү жинд хэд хэдэн өөр MST байж болно."
+            ],
+            "detailKey": "depth-code-walk"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 12,
+          "block": 3,
+          "expected": {
+            "text": "Доорх program-ийг бүтнээр нь нэг файлд хуулж C++17-оор жишээ input-тай ажиллуул. Function нь алгоритмыг хэрэгжүүлнэ; main нь input уншиж, function дуудаад хариу хэвлэнэ. Index-ийн дүрмийг дээрх input тайлбараас шалга.",
+            "type": "note",
+            "detailKey": "depth-program-guide"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Бэлтгэл: ",
+                "marks": []
+              },
+              {
+                "text": "main",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " ирмэгүүдийг уншина; helper ирмэгийн хуулбарыг жингээр sort хийнэ. Гол алхам: өөр component-ийг нийлүүлэхэд л ",
+                "marks": []
+              },
+              {
+                "text": "totalWeight",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", ",
+                "marks": []
+              },
+              {
+                "text": "usedEdges",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нэмнэ. Self-loop эсвэл цикл үүсгэх ирмэгийг авахгүй. Гаралт: connected бол MST-ийн жин, үгүй бол яг ",
+                "marks": []
+              },
+              {
+                "text": "IMPOSSIBLE",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "; false үеийн forest-ийн жинг MST гэж хэвлэхгүй. Хугацаа $O(m\\log m+n)$, DSU-ийн нэмэлт зай $O(n)$, ирмэгийн хуулбар $O(m)$. Union-by-size нь DSU-ийн гүнийг хязгаарлана.",
+                "marks": []
+              }
+            ],
+            "detailKey": "depth-program-guide"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 12,
+          "block": 4,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct DSU {\n    vector<int> parent;\n    vector<int> sz;\n\n    DSU(int n) {\n        parent.resize(n);\n        sz.assign(n, 1);\n        iota(parent.begin(), parent.end(), 0);\n    }\n\n    int find(int v) {\n        if (parent[v] == v) {\n            return v;\n        }\n\n        parent[v] = find(parent[v]);\n        return parent[v];\n    }\n\n    bool unite(int u, int v) {\n        u = find(u);\n        v = find(v);\n\n        if (u == v) {\n            return false;\n        }\n\n        if (sz[u] < sz[v]) {\n            swap(u, v);\n        }\n\n        parent[v] = u;\n        sz[u] += sz[v];\n        return true;\n    }\n};\n\nstruct Edge {\n    int u;\n    int v;\n    long long w;\n};\n\nbool compare_edges(const Edge& a, const Edge& b) {\n    return a.w < b.w;\n}\n\npair<bool, long long> kruskal(int n, vector<Edge> edges) {\n    sort(edges.begin(), edges.end(), compare_edges);\n    DSU dsu(n);\n    long long ans = 0;\n    int used = 0;\n\n    for (const auto& edge : edges) {\n        if (dsu.unite(edge.u, edge.v)) {\n            ans += edge.w;\n            used++;\n        }\n    }\n\n    return {used == n - 1, ans};\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    vector<Edge> edges(m);\n    for (int i = 0; i < m; i++) {\n        cin >> edges[i].u >> edges[i].v >> edges[i].w;\n    }\n    auto result = kruskal(n, edges);\n    if (result.first) {\n        cout << result.second << '\\n';\n    } else {\n        cout << \"IMPOSSIBLE\\n\";\n    }\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct DSU {\n    vector<int> parent;\n    vector<int> componentSize;\n\n    DSU(int n) : parent(n), componentSize(n, 1) {\n        iota(parent.begin(), parent.end(), 0);\n    }\n\n    int find(int vertex) {\n        if (parent[vertex] == vertex) return vertex;\n        parent[vertex] = find(parent[vertex]);\n        return parent[vertex];\n    }\n\n    bool unite(int first, int second) {\n        int firstRoot = find(first), secondRoot = find(second);\n        if (firstRoot == secondRoot) return false;\n        if (componentSize[firstRoot] < componentSize[secondRoot]) swap(firstRoot, secondRoot);\n        parent[secondRoot] = firstRoot;\n        componentSize[firstRoot] += componentSize[secondRoot];\n        return true;\n    }\n};\n\nstruct Edge {\n    int first;\n    int second;\n    long long weight;\n};\n\nbool compare_edges(const Edge& firstEdge, const Edge& secondEdge) {\n    return firstEdge.weight < secondEdge.weight;\n}\n\npair<bool, long long> kruskal(int n, vector<Edge> edges) {\n    sort(edges.begin(), edges.end(), compare_edges);\n    DSU dsu(n);\n    long long totalWeight = 0;\n    int usedEdges = 0;\n    for (const auto& edge : edges) {\n        if (dsu.unite(edge.first, edge.second)) {\n            totalWeight += edge.weight;\n            ++usedEdges;\n        }\n    }\n    return {usedEdges == n - 1, totalWeight};\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, edgeCount;\n    cin >> n >> edgeCount;\n    vector<Edge> edges(edgeCount);\n    for (int i = 0; i < edgeCount; i++) {\n        cin >> edges[i].first >> edges[i].second >> edges[i].weight;\n    }\n    auto result = kruskal(n, edges);\n    if (result.first) {\n        cout << result.second << '\\n';\n    } else {\n        cout << \"IMPOSSIBLE\\n\";\n    }\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 0,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct DSU {\n    vector<int> parent;\n    vector<int> sz;\n\n    DSU(int n) {\n        parent.resize(n);\n        sz.assign(n, 1);\n        iota(parent.begin(), parent.end(), 0);\n    }\n\n    int find(int v) {\n        if (parent[v] == v) {\n            return v;\n        }\n\n        parent[v] = find(parent[v]);\n        return parent[v];\n    }\n\n    bool unite(int u, int v) {\n        u = find(u);\n        v = find(v);\n\n        if (u == v) {\n            return false;\n        }\n\n        if (sz[u] < sz[v]) {\n            swap(u, v);\n        }\n\n        parent[v] = u;\n        sz[u] += sz[v];\n        return true;\n    }\n};\n\nstruct Edge {\n    int u;\n    int v;\n    long long w;\n};\n\nbool compare_edges(const Edge& a, const Edge& b) {\n    return a.w < b.w;\n}\n\npair<bool, long long> kruskal(int n, vector<Edge> edges) {\n    sort(edges.begin(), edges.end(), compare_edges);\n    DSU dsu(n);\n    long long ans = 0;\n    int used = 0;\n\n    for (const auto& edge : edges) {\n        if (dsu.unite(edge.u, edge.v)) {\n            ans += edge.w;\n            used++;\n        }\n    }\n\n    return {used == n - 1, ans};\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct DSU {\n    vector<int> parent;\n    vector<int> componentSize;\n\n    DSU(int n) : parent(n), componentSize(n, 1) {\n        iota(parent.begin(), parent.end(), 0);\n    }\n\n    int find(int vertex) {\n        if (parent[vertex] == vertex) return vertex;\n        parent[vertex] = find(parent[vertex]);\n        return parent[vertex];\n    }\n\n    bool unite(int first, int second) {\n        int firstRoot = find(first), secondRoot = find(second);\n        if (firstRoot == secondRoot) return false;\n        if (componentSize[firstRoot] < componentSize[secondRoot]) swap(firstRoot, secondRoot);\n        parent[secondRoot] = firstRoot;\n        componentSize[firstRoot] += componentSize[secondRoot];\n        return true;\n    }\n};\n\nstruct Edge {\n    int first;\n    int second;\n    long long weight;\n};\n\nbool compare_edges(const Edge& firstEdge, const Edge& secondEdge) {\n    return firstEdge.weight < secondEdge.weight;\n}\n\npair<bool, long long> kruskal(int n, vector<Edge> edges) {\n    sort(edges.begin(), edges.end(), compare_edges);\n    DSU dsu(n);\n    long long totalWeight = 0;\n    int usedEdges = 0;\n    for (const auto& edge : edges) {\n        if (dsu.unite(edge.first, edge.second)) {\n            totalWeight += edge.weight;\n            ++usedEdges;\n        }\n    }\n    return {usedEdges == n - 1, totalWeight};\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 1,
+          "expected": {
+            "text": "Edge stores $u,v,w$. Kruskal returns a connectivity flag and total weight. Require $n\\ge1$, valid endpoints and a fitting total. On false, the weight belongs to a forest, not a spanning tree.",
+            "type": "p",
+            "detailKey": "base-5-1"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "State: DSU’s ",
+                "marks": []
+              },
+              {
+                "text": "parent",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " and ",
+                "marks": []
+              },
+              {
+                "text": "componentSize",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " represent connected components. ",
+                "marks": []
+              },
+              {
+                "text": "Edge",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " has ",
+                "marks": []
+              },
+              {
+                "text": "first",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", ",
+                "marks": []
+              },
+              {
+                "text": "second",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", and ",
+                "marks": []
+              },
+              {
+                "text": "weight",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " fields. ",
+                "marks": []
+              },
+              {
+                "text": "kruskal",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " returns a connectivity boolean and the selected forest’s weight. Require $n\\ge1$, valid endpoints, and all accumulated sums fitting ",
+                "marks": []
+              },
+              {
+                "text": "long long",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "; negative weights are allowed.",
+                "marks": []
+              }
+            ],
+            "detailKey": "base-5-1"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 2,
+          "expected": {
+            "type": "ordered",
+            "items": [
+              "Edge stores two endpoints and a weight; the comparator sorts by increasing weight.",
+              "Increase cost and used only when unite returns true.",
+              "The returned boolean checks connectivity. If false, the accumulated cost belongs to a spanning forest, not an MST."
+            ],
+            "detailKey": "depth-code-walk"
+          },
+          "value": {
+            "type": "ordered",
+            "items": [
+              "Choose cheapest edges that do not form cycles in the current forest.",
+              "A spanning tree needs $n-1$ successful merges.",
+              "Equal weights may admit multiple different MSTs."
+            ],
+            "detailKey": "depth-code-walk"
+          }
+        },
+        {
+          "language": "en",
+          "section": 12,
+          "block": 3,
+          "expected": {
+            "text": "Copy the entire program below into one file. Run it as C++17 using the sample input. The function handles the algorithm; main reads the input, calls it and prints the answer. Indices follow the input contract above.",
+            "type": "note",
+            "detailKey": "depth-program-guide"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Preprocessing: ",
+                "marks": []
+              },
+              {
+                "text": "main",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " reads the edges; the helper sorts a copy by weight. Increase ",
+                "marks": []
+              },
+              {
+                "text": "totalWeight",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " and ",
+                "marks": []
+              },
+              {
+                "text": "usedEdges",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " only when joining different components, rejecting self-loops and cycle edges. Print the MST weight if connected, or exactly ",
+                "marks": []
+              },
+              {
+                "text": "IMPOSSIBLE",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "; do not present a disconnected forest’s weight as an MST. Time is $O(m\\log m+n)$, DSU storage $O(n)$, and the edge copy $O(m)$. Union by size bounds DSU depth.",
+                "marks": []
+              }
+            ],
+            "detailKey": "depth-program-guide"
+          }
+        },
+        {
+          "language": "en",
+          "section": 12,
+          "block": 4,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct DSU {\n    vector<int> parent;\n    vector<int> sz;\n\n    DSU(int n) {\n        parent.resize(n);\n        sz.assign(n, 1);\n        iota(parent.begin(), parent.end(), 0);\n    }\n\n    int find(int v) {\n        if (parent[v] == v) {\n            return v;\n        }\n\n        parent[v] = find(parent[v]);\n        return parent[v];\n    }\n\n    bool unite(int u, int v) {\n        u = find(u);\n        v = find(v);\n\n        if (u == v) {\n            return false;\n        }\n\n        if (sz[u] < sz[v]) {\n            swap(u, v);\n        }\n\n        parent[v] = u;\n        sz[u] += sz[v];\n        return true;\n    }\n};\n\nstruct Edge {\n    int u;\n    int v;\n    long long w;\n};\n\nbool compare_edges(const Edge& a, const Edge& b) {\n    return a.w < b.w;\n}\n\npair<bool, long long> kruskal(int n, vector<Edge> edges) {\n    sort(edges.begin(), edges.end(), compare_edges);\n    DSU dsu(n);\n    long long ans = 0;\n    int used = 0;\n\n    for (const auto& edge : edges) {\n        if (dsu.unite(edge.u, edge.v)) {\n            ans += edge.w;\n            used++;\n        }\n    }\n\n    return {used == n - 1, ans};\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    vector<Edge> edges(m);\n    for (int i = 0; i < m; i++) {\n        cin >> edges[i].u >> edges[i].v >> edges[i].w;\n    }\n    auto result = kruskal(n, edges);\n    if (result.first) {\n        cout << result.second << '\\n';\n    } else {\n        cout << \"IMPOSSIBLE\\n\";\n    }\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct DSU {\n    vector<int> parent;\n    vector<int> componentSize;\n\n    DSU(int n) : parent(n), componentSize(n, 1) {\n        iota(parent.begin(), parent.end(), 0);\n    }\n\n    int find(int vertex) {\n        if (parent[vertex] == vertex) return vertex;\n        parent[vertex] = find(parent[vertex]);\n        return parent[vertex];\n    }\n\n    bool unite(int first, int second) {\n        int firstRoot = find(first), secondRoot = find(second);\n        if (firstRoot == secondRoot) return false;\n        if (componentSize[firstRoot] < componentSize[secondRoot]) swap(firstRoot, secondRoot);\n        parent[secondRoot] = firstRoot;\n        componentSize[firstRoot] += componentSize[secondRoot];\n        return true;\n    }\n};\n\nstruct Edge {\n    int first;\n    int second;\n    long long weight;\n};\n\nbool compare_edges(const Edge& firstEdge, const Edge& secondEdge) {\n    return firstEdge.weight < secondEdge.weight;\n}\n\npair<bool, long long> kruskal(int n, vector<Edge> edges) {\n    sort(edges.begin(), edges.end(), compare_edges);\n    DSU dsu(n);\n    long long totalWeight = 0;\n    int usedEdges = 0;\n    for (const auto& edge : edges) {\n        if (dsu.unite(edge.first, edge.second)) {\n            totalWeight += edge.weight;\n            ++usedEdges;\n        }\n    }\n    return {usedEdges == n - 1, totalWeight};\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, edgeCount;\n    cin >> n >> edgeCount;\n    vector<Edge> edges(edgeCount);\n    for (int i = 0; i < edgeCount; i++) {\n        cin >> edges[i].first >> edges[i].second >> edges[i].weight;\n    }\n    auto result = kruskal(n, edges);\n    if (result.first) {\n        cout << result.second << '\\n';\n    } else {\n        cout << \"IMPOSSIBLE\\n\";\n    }\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          }
+        }
+      ],
+      "cpp_review": {
+        "batch": "04",
+        "blocks": 4,
+        "scope": "Retained MN/EN helper/full-program code-context and edited prose;literal I/O,block IDs,public function signatures preserved. Iterative tree traversal;explicit weighted numeric contracts.",
+        "verification": "pending"
+      }
+    },
+    {
+      "id": "lca",
+      "expected_revision": 5,
+      "expected_body_sha256": "0a5040b50d9601d8f1dee267465711ba566d0675c07a92a6eb3efbfca5ade298",
+      "operations": [
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 0,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct LCA {\n    int n;\n    int LOG;\n    vector<int> depth;\n    vector<vector<int>> up;\n\n    LCA(const vector<vector<int>>& adj, int root) {\n        n = adj.size();\n        LOG = 1;\n\n        while ((1LL << LOG) <= n) {\n            LOG++;\n        }\n\n        depth.assign(n, -1);\n        up.assign(LOG, vector<int>(n, root));\n        queue<int> q;\n\n        depth[root] = 0;\n        q.push(root);\n\n        while (!q.empty()) {\n            int v = q.front();\n            q.pop();\n\n            for (int u : adj[v]) {\n                if (depth[u] == -1) {\n                    depth[u] = depth[v] + 1;\n                    up[0][u] = v;\n                    q.push(u);\n                }\n            }\n        }\n\n        for (int k = 1; k < LOG; k++) {\n            for (int v = 0; v < n; v++) {\n                int parent = up[k - 1][v];\n                up[k][v] = up[k - 1][parent];\n            }\n        }\n    }\n\n    int query(int u, int v) const {\n        if (depth[u] < depth[v]) {\n            swap(u, v);\n        }\n\n        int diff = depth[u] - depth[v];\n\n        for (int k = 0; k < LOG; k++) {\n            if ((diff & (1 << k)) != 0) {\n                u = up[k][u];\n            }\n        }\n\n        if (u == v) {\n            return u;\n        }\n\n        for (int k = LOG - 1; k >= 0; k--) {\n            if (up[k][u] != up[k][v]) {\n                u = up[k][u];\n                v = up[k][v];\n            }\n        }\n\n        return up[0][u];\n    }\n\n    int distance(int u, int v) const {\n        int ancestor = query(u, v);\n        return depth[u] + depth[v] - 2 * depth[ancestor];\n    }\n};\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct LCA {\n    int vertexCount, levelCount;\n    vector<int> depth;\n    vector<vector<int>> ancestor;\n\n    LCA(const vector<vector<int>>& neighbors, int root) {\n        vertexCount = static_cast<int>(neighbors.size());\n        levelCount = 1;\n        while ((1LL << levelCount) <= vertexCount) ++levelCount;\n        depth.assign(vertexCount, -1);\n        ancestor.assign(levelCount, vector<int>(vertexCount, root));\n        queue<int> pending;\n        depth[root] = 0;\n        pending.push(root);\n        while (!pending.empty()) {\n            int vertex = pending.front();\n            pending.pop();\n            for (int neighbor : neighbors[vertex]) {\n                if (depth[neighbor] != -1) continue;\n                depth[neighbor] = depth[vertex] + 1;\n                ancestor[0][neighbor] = vertex;\n                pending.push(neighbor);\n            }\n        }\n        for (int level = 1; level < levelCount; ++level) {\n            for (int vertex = 0; vertex < vertexCount; ++vertex) {\n                int parent = ancestor[level - 1][vertex];\n                ancestor[level][vertex] = ancestor[level - 1][parent];\n            }\n        }\n    }\n\n    int query(int first, int second) const {\n        if (depth[first] < depth[second]) swap(first, second);\n        int depthDifference = depth[first] - depth[second];\n        for (int level = 0; level < levelCount; ++level) {\n            if ((depthDifference & (1LL << level)) != 0) first = ancestor[level][first];\n        }\n        if (first == second) return first;\n        for (int level = levelCount - 1; level >= 0; --level) {\n            if (ancestor[level][first] != ancestor[level][second]) {\n                first = ancestor[level][first];\n                second = ancestor[level][second];\n            }\n        }\n        return ancestor[0][first];\n    }\n\n    int distance(int first, int second) const {\n        int commonAncestor = query(first, second);\n        return static_cast<int>(1LL * depth[first] + depth[second] - 2LL * depth[commonAncestor]);\n    }\n};\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 1,
+          "expected": {
+            "text": "LCA data($\\mathrm{adj},\\mathrm{root}$) нь холбоотой, хоосон биш tree авна. Query($u,v$) ancestor index; distance($u,v$) edge-ийн тоо. Root-ийн parent өөрөө гэж хадгалснаар хэт өндөр jump root дээр үлдэнэ.",
+            "type": "p",
+            "detailKey": "base-5-1"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Төлөв: ",
+                "marks": []
+              },
+              {
+                "text": "ancestor[level][vertex]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь $2^k$ алхмын ancestor, энд ",
+                "marks": []
+              },
+              {
+                "text": "level",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь $k$. ",
+                "marks": []
+              },
+              {
+                "text": "depth",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь root-оос ирмэгийн зай. ",
+                "marks": []
+              },
+              {
+                "text": "LCA",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь хоосон биш, холбоост, хүчинтэй root-той мод авна. Root өөрийгөө parent гэж хадгалдаг тул хэт өндөр jump root дээр үлдэнэ.",
+                "marks": []
+              }
+            ],
+            "detailKey": "base-5-1"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 2,
+          "expected": {
+            "type": "ordered",
+            "items": [
+              "BFS depth ба $up[0]$ parent-уудыг тогтооно; recursion depth-ийн асуудалгүй.",
+              "Table build parent-ийн ancestor-ийг дахин уншиж jump-ийг хоёр дахин уртасгана.",
+              "Distance-ийн $2\\cdot depth[LCA]$ нь root-оос LCA хүртэл хоёр удаа тоологдсон хэсгийг хасна."
+            ],
+            "detailKey": "depth-code-walk"
+          },
+          "value": {
+            "type": "ordered",
+            "items": [
+              "BFS нь recursive stack-ийн гүнээс хамаарахгүй.",
+              "Түвшин бүр өмнөх jump-ийг хоёр удаа дагаж уртыг хоёр дахин өсгөнө.",
+              "Ижил орой, root, ancestor-child query-уудыг тусдаа буруу тохиолдол гэж үзэхгүй."
+            ],
+            "detailKey": "depth-code-walk"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 12,
+          "block": 3,
+          "expected": {
+            "text": "Доорх program-ийг бүтнээр нь нэг файлд хуулж C++17-оор жишээ input-тай ажиллуул. Function нь алгоритмыг хэрэгжүүлнэ; main нь input уншиж, function дуудаад хариу хэвлэнэ. Index-ийн дүрмийг дээрх input тайлбараас шалга.",
+            "type": "note",
+            "detailKey": "depth-program-guide"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Бэлтгэл: ",
+                "marks": []
+              },
+              {
+                "text": "main",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " модыг уншаад constructor-оор BFS depth, parent болон хоёртын jump хүснэгтийг байгуулна. Query: гүн оройг эхлээд түвшин тэнцүүлж, дараа нь ancestor нь ялгаатай байх том jump-уудаар хоёуланг дээшлүүлнэ. Ижил орой болсон бол тэр нь хариу; бусад үед шууд parent нь LCA. Гаралт: query бүрт LCA-ийн индекс ба ирмэгийн distance. Зайн томьёог 64-bit завсрын арифметикаар бодоод API-ийн ",
+                "marks": []
+              },
+              {
+                "text": "int",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-д буцаана; модны зай хамгийн ихдээ $n-1$. Build $O(n\\log n)$ хугацаа/зай, query $O(\\log n)$.",
+                "marks": []
+              }
+            ],
+            "detailKey": "depth-program-guide"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 12,
+          "block": 4,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct LCA {\n    int n;\n    int LOG;\n    vector<int> depth;\n    vector<vector<int>> up;\n\n    LCA(const vector<vector<int>>& adj, int root) {\n        n = adj.size();\n        LOG = 1;\n\n        while ((1LL << LOG) <= n) {\n            LOG++;\n        }\n\n        depth.assign(n, -1);\n        up.assign(LOG, vector<int>(n, root));\n        queue<int> q;\n\n        depth[root] = 0;\n        q.push(root);\n\n        while (!q.empty()) {\n            int v = q.front();\n            q.pop();\n\n            for (int u : adj[v]) {\n                if (depth[u] == -1) {\n                    depth[u] = depth[v] + 1;\n                    up[0][u] = v;\n                    q.push(u);\n                }\n            }\n        }\n\n        for (int k = 1; k < LOG; k++) {\n            for (int v = 0; v < n; v++) {\n                int parent = up[k - 1][v];\n                up[k][v] = up[k - 1][parent];\n            }\n        }\n    }\n\n    int query(int u, int v) const {\n        if (depth[u] < depth[v]) {\n            swap(u, v);\n        }\n\n        int diff = depth[u] - depth[v];\n\n        for (int k = 0; k < LOG; k++) {\n            if ((diff & (1 << k)) != 0) {\n                u = up[k][u];\n            }\n        }\n\n        if (u == v) {\n            return u;\n        }\n\n        for (int k = LOG - 1; k >= 0; k--) {\n            if (up[k][u] != up[k][v]) {\n                u = up[k][u];\n                v = up[k][v];\n            }\n        }\n\n        return up[0][u];\n    }\n\n    int distance(int u, int v) const {\n        int ancestor = query(u, v);\n        return depth[u] + depth[v] - 2 * depth[ancestor];\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, root, q;\n    cin >> n >> root >> q;\n    vector<vector<int>> adj(n);\n    for (int i = 0; i < n - 1; i++) {\n        int u, v;\n        cin >> u >> v;\n        adj[u].push_back(v);\n        adj[v].push_back(u);\n    }\n    LCA lca(adj, root);\n    for (int i = 0; i < q; i++) {\n        int u, v;\n        cin >> u >> v;\n        cout << lca.query(u, v) << ' ' << lca.distance(u, v) << '\\n';\n    }\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct LCA {\n    int vertexCount, levelCount;\n    vector<int> depth;\n    vector<vector<int>> ancestor;\n\n    LCA(const vector<vector<int>>& neighbors, int root) {\n        vertexCount = static_cast<int>(neighbors.size());\n        levelCount = 1;\n        while ((1LL << levelCount) <= vertexCount) ++levelCount;\n        depth.assign(vertexCount, -1);\n        ancestor.assign(levelCount, vector<int>(vertexCount, root));\n        queue<int> pending;\n        depth[root] = 0;\n        pending.push(root);\n        while (!pending.empty()) {\n            int vertex = pending.front();\n            pending.pop();\n            for (int neighbor : neighbors[vertex]) {\n                if (depth[neighbor] != -1) continue;\n                depth[neighbor] = depth[vertex] + 1;\n                ancestor[0][neighbor] = vertex;\n                pending.push(neighbor);\n            }\n        }\n        for (int level = 1; level < levelCount; ++level) {\n            for (int vertex = 0; vertex < vertexCount; ++vertex) {\n                int parent = ancestor[level - 1][vertex];\n                ancestor[level][vertex] = ancestor[level - 1][parent];\n            }\n        }\n    }\n\n    int query(int first, int second) const {\n        if (depth[first] < depth[second]) swap(first, second);\n        int depthDifference = depth[first] - depth[second];\n        for (int level = 0; level < levelCount; ++level) {\n            if ((depthDifference & (1LL << level)) != 0) first = ancestor[level][first];\n        }\n        if (first == second) return first;\n        for (int level = levelCount - 1; level >= 0; --level) {\n            if (ancestor[level][first] != ancestor[level][second]) {\n                first = ancestor[level][first];\n                second = ancestor[level][second];\n            }\n        }\n        return ancestor[0][first];\n    }\n\n    int distance(int first, int second) const {\n        int commonAncestor = query(first, second);\n        return static_cast<int>(1LL * depth[first] + depth[second] - 2LL * depth[commonAncestor]);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, root, queryCount;\n    cin >> n >> root >> queryCount;\n    vector<vector<int>> neighbors(n);\n    for (int i = 0; i < n - 1; i++) {\n        int first, second;\n        cin >> first >> second;\n        neighbors[first].push_back(second);\n        neighbors[second].push_back(first);\n    }\n    LCA lca(neighbors, root);\n    for (int i = 0; i < queryCount; i++) {\n        int first, second;\n        cin >> first >> second;\n        cout << lca.query(first, second) << ' ' << lca.distance(first, second) << '\\n';\n    }\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 0,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct LCA {\n    int n;\n    int LOG;\n    vector<int> depth;\n    vector<vector<int>> up;\n\n    LCA(const vector<vector<int>>& adj, int root) {\n        n = adj.size();\n        LOG = 1;\n\n        while ((1LL << LOG) <= n) {\n            LOG++;\n        }\n\n        depth.assign(n, -1);\n        up.assign(LOG, vector<int>(n, root));\n        queue<int> q;\n\n        depth[root] = 0;\n        q.push(root);\n\n        while (!q.empty()) {\n            int v = q.front();\n            q.pop();\n\n            for (int u : adj[v]) {\n                if (depth[u] == -1) {\n                    depth[u] = depth[v] + 1;\n                    up[0][u] = v;\n                    q.push(u);\n                }\n            }\n        }\n\n        for (int k = 1; k < LOG; k++) {\n            for (int v = 0; v < n; v++) {\n                int parent = up[k - 1][v];\n                up[k][v] = up[k - 1][parent];\n            }\n        }\n    }\n\n    int query(int u, int v) const {\n        if (depth[u] < depth[v]) {\n            swap(u, v);\n        }\n\n        int diff = depth[u] - depth[v];\n\n        for (int k = 0; k < LOG; k++) {\n            if ((diff & (1 << k)) != 0) {\n                u = up[k][u];\n            }\n        }\n\n        if (u == v) {\n            return u;\n        }\n\n        for (int k = LOG - 1; k >= 0; k--) {\n            if (up[k][u] != up[k][v]) {\n                u = up[k][u];\n                v = up[k][v];\n            }\n        }\n\n        return up[0][u];\n    }\n\n    int distance(int u, int v) const {\n        int ancestor = query(u, v);\n        return depth[u] + depth[v] - 2 * depth[ancestor];\n    }\n};\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct LCA {\n    int vertexCount, levelCount;\n    vector<int> depth;\n    vector<vector<int>> ancestor;\n\n    LCA(const vector<vector<int>>& neighbors, int root) {\n        vertexCount = static_cast<int>(neighbors.size());\n        levelCount = 1;\n        while ((1LL << levelCount) <= vertexCount) ++levelCount;\n        depth.assign(vertexCount, -1);\n        ancestor.assign(levelCount, vector<int>(vertexCount, root));\n        queue<int> pending;\n        depth[root] = 0;\n        pending.push(root);\n        while (!pending.empty()) {\n            int vertex = pending.front();\n            pending.pop();\n            for (int neighbor : neighbors[vertex]) {\n                if (depth[neighbor] != -1) continue;\n                depth[neighbor] = depth[vertex] + 1;\n                ancestor[0][neighbor] = vertex;\n                pending.push(neighbor);\n            }\n        }\n        for (int level = 1; level < levelCount; ++level) {\n            for (int vertex = 0; vertex < vertexCount; ++vertex) {\n                int parent = ancestor[level - 1][vertex];\n                ancestor[level][vertex] = ancestor[level - 1][parent];\n            }\n        }\n    }\n\n    int query(int first, int second) const {\n        if (depth[first] < depth[second]) swap(first, second);\n        int depthDifference = depth[first] - depth[second];\n        for (int level = 0; level < levelCount; ++level) {\n            if ((depthDifference & (1LL << level)) != 0) first = ancestor[level][first];\n        }\n        if (first == second) return first;\n        for (int level = levelCount - 1; level >= 0; --level) {\n            if (ancestor[level][first] != ancestor[level][second]) {\n                first = ancestor[level][first];\n                second = ancestor[level][second];\n            }\n        }\n        return ancestor[0][first];\n    }\n\n    int distance(int first, int second) const {\n        int commonAncestor = query(first, second);\n        return static_cast<int>(1LL * depth[first] + depth[second] - 2LL * depth[commonAncestor]);\n    }\n};\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 1,
+          "expected": {
+            "text": "LCA takes a connected nonempty tree and a valid root. Query returns an ancestor index; distance returns edge count. The root is its own parent so jumps beyond it stay at the root.",
+            "type": "p",
+            "detailKey": "base-5-1"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "State: ",
+                "marks": []
+              },
+              {
+                "text": "ancestor[level][vertex]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " is the $2^k$-step ancestor, with ",
+                "marks": []
+              },
+              {
+                "text": "level",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " representing $k$. ",
+                "marks": []
+              },
+              {
+                "text": "depth",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " counts edges from the root. ",
+                "marks": []
+              },
+              {
+                "text": "LCA",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " requires a nonempty connected tree and a valid root. The root is its own parent, so jumps above it remain at the root.",
+                "marks": []
+              }
+            ],
+            "detailKey": "base-5-1"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 2,
+          "expected": {
+            "type": "ordered",
+            "items": [
+              "BFS computes depths and immediate parents without a recursion-depth risk.",
+              "Table construction reads the ancestor of an ancestor, doubling jump lengths.",
+              "The distance formula subtracts $2\\cdot depth[LCA]$ because the root-to-LCA segment was counted twice."
+            ],
+            "detailKey": "depth-code-walk"
+          },
+          "value": {
+            "type": "ordered",
+            "items": [
+              "BFS does not depend on recursive stack depth.",
+              "Each level follows the previous jump twice to double its length.",
+              "Same-vertex, root, and ancestor-child queries are all valid."
+            ],
+            "detailKey": "depth-code-walk"
+          }
+        },
+        {
+          "language": "en",
+          "section": 12,
+          "block": 3,
+          "expected": {
+            "text": "Copy the entire program below into one file. Run it as C++17 using the sample input. The function handles the algorithm; main reads the input, calls it and prints the answer. Indices follow the input contract above.",
+            "type": "note",
+            "detailKey": "depth-program-guide"
+          },
+          "value": {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Preprocessing: ",
+                "marks": []
+              },
+              {
+                "text": "main",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " reads the tree; the constructor builds BFS depths, parents, and binary jumps. First equalize query depths, then lift both vertices by the largest jumps whose ancestors differ. If they meet, that vertex is the answer; otherwise their immediate parent is the LCA. Output the ancestor index and edge distance. Evaluate the distance formula in64-bit intermediates before returning the API’s ",
+                "marks": []
+              },
+              {
+                "text": "int",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "; tree distance is at most $n-1$. Build takes $O(n\\log n)$ time/space and a query $O(\\log n)$.",
+                "marks": []
+              }
+            ],
+            "detailKey": "depth-program-guide"
+          }
+        },
+        {
+          "language": "en",
+          "section": 12,
+          "block": 4,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct LCA {\n    int n;\n    int LOG;\n    vector<int> depth;\n    vector<vector<int>> up;\n\n    LCA(const vector<vector<int>>& adj, int root) {\n        n = adj.size();\n        LOG = 1;\n\n        while ((1LL << LOG) <= n) {\n            LOG++;\n        }\n\n        depth.assign(n, -1);\n        up.assign(LOG, vector<int>(n, root));\n        queue<int> q;\n\n        depth[root] = 0;\n        q.push(root);\n\n        while (!q.empty()) {\n            int v = q.front();\n            q.pop();\n\n            for (int u : adj[v]) {\n                if (depth[u] == -1) {\n                    depth[u] = depth[v] + 1;\n                    up[0][u] = v;\n                    q.push(u);\n                }\n            }\n        }\n\n        for (int k = 1; k < LOG; k++) {\n            for (int v = 0; v < n; v++) {\n                int parent = up[k - 1][v];\n                up[k][v] = up[k - 1][parent];\n            }\n        }\n    }\n\n    int query(int u, int v) const {\n        if (depth[u] < depth[v]) {\n            swap(u, v);\n        }\n\n        int diff = depth[u] - depth[v];\n\n        for (int k = 0; k < LOG; k++) {\n            if ((diff & (1 << k)) != 0) {\n                u = up[k][u];\n            }\n        }\n\n        if (u == v) {\n            return u;\n        }\n\n        for (int k = LOG - 1; k >= 0; k--) {\n            if (up[k][u] != up[k][v]) {\n                u = up[k][u];\n                v = up[k][v];\n            }\n        }\n\n        return up[0][u];\n    }\n\n    int distance(int u, int v) const {\n        int ancestor = query(u, v);\n        return depth[u] + depth[v] - 2 * depth[ancestor];\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, root, q;\n    cin >> n >> root >> q;\n    vector<vector<int>> adj(n);\n    for (int i = 0; i < n - 1; i++) {\n        int u, v;\n        cin >> u >> v;\n        adj[u].push_back(v);\n        adj[v].push_back(u);\n    }\n    LCA lca(adj, root);\n    for (int i = 0; i < q; i++) {\n        int u, v;\n        cin >> u >> v;\n        cout << lca.query(u, v) << ' ' << lca.distance(u, v) << '\\n';\n    }\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          },
+          "value": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct LCA {\n    int vertexCount, levelCount;\n    vector<int> depth;\n    vector<vector<int>> ancestor;\n\n    LCA(const vector<vector<int>>& neighbors, int root) {\n        vertexCount = static_cast<int>(neighbors.size());\n        levelCount = 1;\n        while ((1LL << levelCount) <= vertexCount) ++levelCount;\n        depth.assign(vertexCount, -1);\n        ancestor.assign(levelCount, vector<int>(vertexCount, root));\n        queue<int> pending;\n        depth[root] = 0;\n        pending.push(root);\n        while (!pending.empty()) {\n            int vertex = pending.front();\n            pending.pop();\n            for (int neighbor : neighbors[vertex]) {\n                if (depth[neighbor] != -1) continue;\n                depth[neighbor] = depth[vertex] + 1;\n                ancestor[0][neighbor] = vertex;\n                pending.push(neighbor);\n            }\n        }\n        for (int level = 1; level < levelCount; ++level) {\n            for (int vertex = 0; vertex < vertexCount; ++vertex) {\n                int parent = ancestor[level - 1][vertex];\n                ancestor[level][vertex] = ancestor[level - 1][parent];\n            }\n        }\n    }\n\n    int query(int first, int second) const {\n        if (depth[first] < depth[second]) swap(first, second);\n        int depthDifference = depth[first] - depth[second];\n        for (int level = 0; level < levelCount; ++level) {\n            if ((depthDifference & (1LL << level)) != 0) first = ancestor[level][first];\n        }\n        if (first == second) return first;\n        for (int level = levelCount - 1; level >= 0; --level) {\n            if (ancestor[level][first] != ancestor[level][second]) {\n                first = ancestor[level][first];\n                second = ancestor[level][second];\n            }\n        }\n        return ancestor[0][first];\n    }\n\n    int distance(int first, int second) const {\n        int commonAncestor = query(first, second);\n        return static_cast<int>(1LL * depth[first] + depth[second] - 2LL * depth[commonAncestor]);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, root, queryCount;\n    cin >> n >> root >> queryCount;\n    vector<vector<int>> neighbors(n);\n    for (int i = 0; i < n - 1; i++) {\n        int first, second;\n        cin >> first >> second;\n        neighbors[first].push_back(second);\n        neighbors[second].push_back(first);\n    }\n    LCA lca(neighbors, root);\n    for (int i = 0; i < queryCount; i++) {\n        int first, second;\n        cin >> first >> second;\n        cout << lca.query(first, second) << ' ' << lca.distance(first, second) << '\\n';\n    }\n\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "depth-full-program"
+          }
+        }
+      ],
+      "cpp_review": {
+        "batch": "04",
+        "blocks": 4,
+        "scope": "Retained MN/EN helper/full-program code-context and edited prose;literal I/O,block IDs,public function signatures preserved. Iterative tree traversal;explicit weighted numeric contracts.",
+        "verification": "pending"
+      }
     }
   ],
-  "latest_cpp_batch": "03:6additional tutorials/24blocks passed;20guarded tutorials/80reviewed CPPblocks total;unapplied"
+  "latest_cpp_batch": "04:6additional tutorials/24blocks;verification pending;local-only"
 }
