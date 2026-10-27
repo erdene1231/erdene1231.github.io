@@ -1,3 +1,7 @@
+# Lightweight selection batch07 —187/245 eligible,58 remaining
+
+IOI30/30complete after22new selections. Original task definitions read for educational usefulness,tags,individual priority and rough numeric difficulty;no official solution/proof/code audit or optional-content authoring. Art Class,Seats,Counting Mushrooms PDFs were tool-inaccessible,excluded and not retried. Replacements are distinct tasks,not mirror credit. Coverage:AtCoder50/50,CF42/100,IOI30/30,EGOI30/30,APIO15/15,JOI20/20. Remaining58Codeforces. Existing165records/baseline/completed optional content preserved. Production0;all backend/migration/permission/publication/merge/deploy gates remain. After source quotas,reconcile reduced package4functional/delivery gates;do not revive deferred authoring or baseline review.
+
 # Lightweight selection batch06 —165/245 eligible,80 remaining
 
 EGOI30/30complete after14new selections from official task pages and linked PDFs. Tags,individual educational priority and rough numeric ratings/provenance supplied;specialized communication/encoding tasks appropriately lower priority. Full-score versus partial-score difficulty distinguished where relevant. No statement/editorial/proof/C++authoring or baseline review. Coverage:AtCoder50/50,CF42/100,IOI8/30,EGOI30/30,APIO15/15,JOI20/20. Remaining80=CF58+IOI22. Existing151records/baseline/completed optional content preserved. No new access failures. Production0;all backend/migration/permission/publication/merge/deploy gates remain.
