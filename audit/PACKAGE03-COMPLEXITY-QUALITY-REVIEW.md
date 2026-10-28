@@ -1,4 +1,4 @@
-# Complexity revision 9: user-rejected exemplar, not accepted completion
+# Complexity revision 9: improved but incomplete against requested source coverage
 
 The published revision9/history204 receipt remains a factual record of execution and exact-body verification. It is not pedagogical acceptance. On the owner's latest feedback this exemplar is reopened; scaling its template and publishing other candidates are paused. No unpublish, SQL replay or private-draft rewrite is required.
 
@@ -48,3 +48,10 @@ for(int l = 0; l < n; l++) {
 `sum`-ийг доторх давталтын өмнө эхлүүлсэн нь чухал. Ингэснээр нэг зүүн төгсгөлөөс эхэлсэн нийлбэрүүд өмнөх ажлаа үргэлжлүүлнэ. Харин дараагийн зүүн төгсгөл рүү шилжихэд хуучин нийлбэр хэрэггүй тул дахин тэглэнэ. Боломжит хэсгүүдийг орхиогүй; тэдгээрийн нийлбэрийг олох давтагдсан ажлыг л хассан. Одоо $n+(n-1)+\cdots+1$ удаа шинэ утга нэмэх учраас хугацаа $O(n^2)$ болно.
 
 Next: preserve the book's nonempty ending-segment state `sum = max(a[i], sum + a[i])`, while `best` starts at zero because the final answer allows an empty segment. Trace all eight positions before showing its explained compact implementation and final complete program. Do not claim this short excerpt is the completed replacement lesson or verified renderer output.
+
+
+## Latest owner clarification (supersedes blanket rejection wording)
+
+The owner explicitly says revision9 is much better than before. Preserve its useful original explanations, correctness details, native code/math, practice and improvements. It remains incomplete against the requested source coverage, not an entirely bad lesson. The FOUR MAIN internal sections must be Calculation rules, Complexity classes, Estimating efficiency and Maximum subarray sum, with detailed examples/code as internal headings. Reuse ordinary existing sections/TOC/anchors. The separate sub-tutorial feature was cancelled; no nested entities, new editor hierarchy, schema/migration or progress semantics are authorized. Other chapter topics likewise retain their substantive internal source subtopics, not an arbitrary4or15section quota.
+
+All five additional full-book TOC PNGs and the two later topic crops were materialized and actual pixels inspected. They cover chapters1–30 and118numbered subtopics, not merely complexity. The coverage ledger records targets, not proof of implementation. Preserve stable focused lesson IDs with crosslinks where a primary containing lesson covers the full chapter; never destructively merge IDs/progress or silently omit advanced source subtopics to enforce the earlier illustrative17count. A final container/crosslink map is still to reconcile before scaling.
