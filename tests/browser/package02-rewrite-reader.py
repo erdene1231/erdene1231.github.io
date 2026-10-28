@@ -1,8 +1,9 @@
-import functools,http.server,json,threading,subprocess
+import argparse,functools,http.server,json,threading,subprocess
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[2]
-docs=[json.loads((ROOT/'audit/package02-rewrite'/f'{id}.json').read_text())['body']for id in ['binary-search','greedy','dynamic-programming']]
+parser=argparse.ArgumentParser();parser.add_argument('--candidate',type=Path,action='append');parser.add_argument('--report',default='audit/PACKAGE02-REWRITE-BROWSER.json');args=parser.parse_args()
+docs=[json.loads(p.read_text())['body']for p in args.candidate]if args.candidate else[json.loads((ROOT/'audit/package02-rewrite'/f'{id}.json').read_text())['body']for id in ['binary-search','greedy','dynamic-programming']]
 rows=[r for r in json.loads((ROOT/'audit/PART04-BASELINE.json').read_text())['tutorials'] if r['id']!='mongolia']
 for row in rows:
  for doc in docs:
@@ -17,7 +18,7 @@ try:
   for width,mobile,theme in [(375,True,'light'),(393,True,'dark'),(980,True,'light'),(1200,False,'dark')]:
    page=b.new_page(viewport={'width':width,'height':950},is_mobile=mobile,has_touch=mobile);page.on('pageerror',lambda e:errors.append(str(e)))
    page.route('**/*',lambda r:r.abort()if not r.request.url.startswith(base)else r.fulfill(status=200,content_type='text/javascript',body='')if '/app.js?'in r.request.url or'/navigation.js?'in r.request.url else r.continue_())
-   page.goto(base+'/index.html#tutorial/binary-search',wait_until='networkidle')
+   page.goto(base+'/index.html#tutorial/'+docs[0]['id'],wait_until='networkidle')
    page.evaluate('''async payload=>{const{setupTutorials}=await import('/tutorials.js?v=52');const{setupLearning}=await import('/learning.js?v=52');const section=document.getElementById('tutorial-reader').closest('section');for(const e of document.querySelectorAll('main>section'))e.hidden=e!==section;section.hidden=false;document.documentElement.dataset.theme=payload.theme;window.p02Learning=await setupLearning({client:()=>null,user:()=>null,isAdmin:()=>false,problems:()=>payload.problems,progress:()=>({}),openProblem:p=>{window.p02LastOpened=p.id}});window.p02TopicIds=new Set(payload.rows.map(r=>r.body.id));const ctx={client:()=>({rpc:async name=>{if(name==='get_tutorials')return{data:payload.rows};throw Error('Unexpected RPC '+name)}}),user:()=>null,learning:()=>p02Learning,isAdmin:()=>false};window.app=setupTutorials(ctx);await app.connected();}''',{'rows':rows,'problems':problems,'theme':theme})
    for doc in docs:
     for lang in ['mn','en']:
@@ -53,5 +54,5 @@ try:
   b.close()
 finally:server.shutdown()
 report={'status':'passed','full_reader_cases':cases,'native_editor_roundtrips':roundtrips,'production_writes':0,'scope':'Actual setupTutorials reader/TOC/learning and native block editor; local candidate bodies and read-only RPC fixtures. Not live publication or user acceptance.'}
-(ROOT/'audit/PACKAGE02-REWRITE-BROWSER.json').write_text(json.dumps(report,indent=2)+'\n')
+(ROOT/args.report).write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps({'cases':len(cases),'roundtrips':len(roundtrips),'status':'passed'}))
