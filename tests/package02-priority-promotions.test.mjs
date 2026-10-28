@@ -92,4 +92,3 @@ test('one positive-window core promotion is atomic and cannot spill into previou
   await assert.rejects(db.exec(sql),/Problem history drift|Priority CAS\/body drift/);
  }finally{await db.close();}
 });
-
