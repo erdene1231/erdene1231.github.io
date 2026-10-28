@@ -1,3 +1,13 @@
+# Package 2: first three complete lessons are LIVE
+
+PR #25 merged as `6e61f2286cf932084dc2b210aca541a113516af4`. The user explicitly confirmed publication through the existing Supabase SQL operator; the exact tested owner statement ran once after fresh recovery/guards. Binary Search, Greedy and DP are published at revision 6 with exact reviewed bodies, 15 sections and complete practice relationships. Real history records are 141, 142 and 143. Anonymous public RPC retrieval and rendering of those retrieved bodies passed. See `audit/PACKAGE02-PUBLICATION-RECEIPT01.json`.
+
+Counts: **3/55 fully reviewed and published; 52 curriculum lessons remain.** All 55 priority proposals exist, with the three finished lessons now live. Mongolia remains revision 2/unpublished and entirely unchanged. Other tutorials, private Binary Search draft, 993 problems, profiles, learner data and checked permissions/functions are unchanged. No migrations, new access or app-user impersonation.
+
+Continue remaining existing lessons, then publish each fully gated batch promptly using the existing operator route and fresh recovery/CAS/history/draft/media guards. No repeated request for a site-admin session. Do not replay the already executed first-three statement or old 245 job. Frozen proposal/input artifacts retain their original pre-execution guards; the publication receipt is the live source of truth. The separate interactive/communication inventory still has 19 source/year classifications unresolved; its proposed Message tag and Sphinx addition are not executed. No new problem statement/editorial authoring or package 3.
+
+Older pre-publication planning entries below are historical and superseded by this result.
+
 # Package 2: three full foundation candidates ready locally
 
 Binary Search, Greedy and DP now pass all 15 content criteria / 20 semantic review items locally, including bilingual proofs, concrete counterexamples, operation/space reasoning, fragments before the exact full C++17, six-stage practice and mastery distinction. 98 Node tests pass. The unchanged three C++ programs retain their 199-case independent evidence by exact digest; 12 actual reader views, three native block-editor roundtrips, native SQL save/publish/reload and all practice-card actions pass. Existing section anchors, every old practice identity and all other relationships are retained. Mongolia remains entirely unchanged.

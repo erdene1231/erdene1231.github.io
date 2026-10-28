@@ -1,8 +1,12 @@
-import functools,http.server,json,threading,subprocess
+import argparse,functools,http.server,json,threading,subprocess
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[2]
-docs=json.loads(subprocess.check_output(['node','--input-type=module','-e',"import fs from'node:fs';import{proposedTutorialRows}from'./tools/package02_tutorial_proposals.mjs';console.log(JSON.stringify(proposedTutorialRows(JSON.parse(fs.readFileSync('audit/PART04-BASELINE.json')).tutorials).filter(r=>['binary-search','greedy','dynamic-programming'].includes(r.id)).map(r=>r.body)))"],cwd=ROOT,text=True))
+parser=argparse.ArgumentParser();parser.add_argument('--public-capture',type=Path);args=parser.parse_args()
+if args.public_capture:
+ public_rows=json.loads(args.public_capture.read_text());docs=[r['body']for r in public_rows if r['body']['id']in['binary-search','greedy','dynamic-programming']];assert len(docs)==3
+else:
+ docs=json.loads(subprocess.check_output(['node','--input-type=module','-e',"import fs from'node:fs';import{proposedTutorialRows}from'./tools/package02_tutorial_proposals.mjs';console.log(JSON.stringify(proposedTutorialRows(JSON.parse(fs.readFileSync('audit/PART04-BASELINE.json')).tutorials).filter(r=>['binary-search','greedy','dynamic-programming'].includes(r.id)).map(r=>r.body)))"],cwd=ROOT,text=True))
 problems=json.loads(subprocess.check_output(['node','--input-type=module','-e',"import{proposalProblems}from'./tools/package02_tutorial_proposals.mjs';console.log(JSON.stringify(proposalProblems()))"],cwd=ROOT,text=True))
 topics=json.loads(subprocess.check_output(['node','--input-type=module','-e',"import fs from'node:fs';console.log(JSON.stringify(JSON.parse(fs.readFileSync('audit/PART04-BASELINE.json')).tutorials.filter(r=>r.body.id!=='mongolia').map(r=>({id:r.body.id,title:r.body.title}))))"],cwd=ROOT,text=True))
 for doc in docs:
@@ -32,4 +36,4 @@ try:
    assert result['edited']and result['roundtrip']and result['math']>0 and result['mathErrors']==0;roundtrips.append(result)
   assert not errors,errors;b.close()
 finally:server.shutdown()
-report={'status':'passed','cases':cases,'native_editor_roundtrips':roundtrips,'production_writes':0,'scope':'Actual reader/editor with native learning practice cards and local fully authored foundation candidates;not production publication'};(ROOT/'audit/PACKAGE02-FOUNDATION-LESSONS-BROWSER01.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({'status':'passed','cases':len(cases)}))
+report={'status':'passed','cases':cases,'native_editor_roundtrips':roundtrips,'production_writes':0,'source':'anonymous live RPC capture'if args.public_capture else'local proposals','scope':'Actual reader/editor with native learning practice cards and local fully authored foundation candidates;not production publication'};(ROOT/('audit/PACKAGE02-FOUNDATION-LIVE-RENDER01.json'if args.public_capture else'audit/PACKAGE02-FOUNDATION-LESSONS-BROWSER01.json')).write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({'status':'passed','cases':len(cases)}))
