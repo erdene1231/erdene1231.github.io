@@ -5,12 +5,21 @@ const literal = value => "E'" + String(value).replace(/\\/g, '\\\\').replace(/'/
 const json = value => literal(JSON.stringify(value)) + '::jsonb';
 
 export function ownerPublicationSql(batch, guard) {
+    return foundationOwnerSql(batch, guard, 5);
+}
+
+// Corrected, freshly reviewed replacements of the three live revision-6 lessons.
+export function ownerReplacementSql(batch, guard) {
+    return foundationOwnerSql(batch, guard, 6);
+}
+
+function foundationOwnerSql(batch, guard, expectedRevision) {
     const ids = batch.targets.map(row=>row.id).sort();
     if (JSON.stringify(ids) !== JSON.stringify(['binary-search','dynamic-programming','greedy'])) {
         throw Error('Only the three reviewed foundation lessons are allowed');
     }
     for (const row of batch.targets) {
-        if (row.expected_revision !== 5 || row.expected_published !== true || row.body.id !== row.id ||
+        if (row.expected_revision !== expectedRevision || row.expected_published !== true || row.body.id !== row.id ||
             bodyHash(row.body) !== row.proposed_body_sha256 || !/^[a-f0-9]{32}$/.test(row.expected_body_md5)) {
             throw Error('Publication payload guard failed: ' + row.id);
         }
@@ -87,9 +96,9 @@ BEGIN
        OR (SELECT md5(coalesce(jsonb_agg(to_jsonb(h) ORDER BY change_id)::text,'[]')) FROM public.tutorial_changes h WHERE change_id<=history_limit)
             IS DISTINCT FROM history_before THEN RAISE EXCEPTION 'History preservation failed'; END IF;
     FOR target IN SELECT value FROM jsonb_array_elements(approved) LOOP
-        IF NOT EXISTS(SELECT 1 FROM public.tutorial_catalog WHERE id=target->>'id' AND revision=6 AND published AND body=target->'body')
+        IF NOT EXISTS(SELECT 1 FROM public.tutorial_catalog WHERE id=target->>'id' AND revision=${expectedRevision+1} AND published AND body=target->'body')
            OR NOT EXISTS(SELECT 1 FROM public.tutorial_changes WHERE change_id>history_limit AND tutorial_id=target->>'id'
-                         AND revision=6 AND actor_id IS NULL AND new_body=target->'body') THEN
+                         AND revision=${expectedRevision+1} AND actor_id IS NULL AND new_body=target->'body') THEN
             RAISE EXCEPTION 'Post-publication verification failed: %',target->>'id';
         END IF;
     END LOOP;
