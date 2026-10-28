@@ -109,18 +109,18 @@ START-HERE.md (220 мөр), requirements-01.txt (1197 мөр), requirements-02.t
 
 Эх: R1 §2,12,Эхлэх заавар; R2 §3,11; START §5. **A/P — бүх current lesson-д тус бүр давтана.**
 
-- [ ] C01 — Одоогийн56 tutorial-ийн ID/title/status/MN/EN/body hash/prerequisites/practice/variants inventory; actual current content-оос gaps тогтоох.
-- [ ] C02 — Binary Search-ийн authored draft ба live admin content diff; semantic review, шинэ desktop/mobile math/code/visual review-г дуусгах.
-- [ ] C03 — Greedy-д мөн адил; exchange proof, counterexample, scheduling болон бусад хэрэглээ үнэхээр заасан эсэх.
-- [ ] C04 — DP introduction-г гурав дахь жишиг болгон state/transition/invariant/implementation/practice-тай бүрэн review хийх.
-- [ ] C05 — Tree Basics/LCA/Sparse Table-ийн түүхэн reviewed hashes одоогийн body-той таарч буй эсэх; таарвал баримтыг reuse, өөрчлөгдвөл зөвхөн өөрчлөгдсөн хэсгийг дахин review.
-- [ ] C06 — Үлдсэн tutorial бүрийг дараах15 агуулгын шалгуур,20 review шалгуураар шалгах; сул хичээлд хэдэн paragraph нэмээд COMPLETE өгөхгүй, шаардлагатайг бүтнээр дахин найруулах.
-- [ ] C07 — ID/URL/progress/relationships хадгалж, latest admin хувилбартай merge; revision guard-тай жижиг content publish batch.
-- [ ] C08 — MN найруулга textbook-quality, техник үгс binary search/grid/dp/array хэвээр; машин орчуулгагүй. EN байвал ижил утга/бүтэц/чанартай, дутууг ил тод тэмдэглэх.
-- [ ] C09 — Бүх reference C++17-ийг compile/run; boundary, overflow/indexing, meaningful brute-force/differential/random tests. Oracle нь implementation-ийн хуулбар биш.
-- [ ] C10 — Beginner-friendly variable names, spacing/indentation, comments; шаардлагагүй assert, compressed macros үгүй. Суурь Segment Tree recursive, iterative нь variation.
-- [ ] C11 — Segment Tree/Dijkstra/Tree DP/Digit DP/Flow зэрэг том сэдэвт олон жишээ, олон code section, гүн proof. Ижил template/урт/хиймэл paragraph quota үгүй.
-- [ ] C12 — Тус бүрийг renderer дээр inspect: proof/math/range notation, code copy/highlight/scroll, diagrams/alt, TOC/anchors, internal/source links.
+- [x] C01 — Одоогийн56 tutorial-ийн ID/title/status/MN/EN/body hash/prerequisites/practice/variants inventory; actual current content-оос gaps тогтоох.
+- [x] C02 — Binary Search-ийн authored draft ба live admin content diff; semantic review, шинэ desktop/mobile math/code/visual review-г дуусгах.
+- [x] C03 — Greedy-д мөн адил; exchange proof, counterexample, scheduling болон бусад хэрэглээ үнэхээр заасан эсэх.
+- [x] C04 — DP introduction-г гурав дахь жишиг болгон state/transition/invariant/implementation/practice-тай бүрэн review хийх.
+- [x] C05 — Tree Basics/LCA/Sparse Table-ийн түүхэн reviewed hashes одоогийн body-той таарч буй эсэх; таарвал баримтыг reuse, өөрчлөгдвөл зөвхөн өөрчлөгдсөн хэсгийг дахин review.
+- [x] C06 — Үлдсэн tutorial бүрийг дараах15 агуулгын шалгуур,20 review шалгуураар шалгах; сул хичээлд хэдэн paragraph нэмээд COMPLETE өгөхгүй, шаардлагатайг бүтнээр дахин найруулах.
+- [x] C07 — ID/URL/progress/relationships хадгалж, latest admin хувилбартай merge; revision guard-тай жижиг content publish batch.
+- [x] C08 — MN найруулга textbook-quality, техник үгс binary search/grid/dp/array хэвээр; машин орчуулгагүй. EN байвал ижил утга/бүтэц/чанартай, дутууг ил тод тэмдэглэх.
+- [x] C09 — Бүх reference C++17-ийг compile/run; boundary, overflow/indexing, meaningful brute-force/differential/random tests. Oracle нь implementation-ийн хуулбар биш.
+- [x] C10 — Beginner-friendly variable names, spacing/indentation, comments; шаардлагагүй assert, compressed macros үгүй. Суурь Segment Tree recursive, iterative нь variation.
+- [x] C11 — Segment Tree/Dijkstra/Tree DP/Digit DP/Flow зэрэг том сэдэвт олон жишээ, олон code section, гүн proof. Ижил template/урт/хиймэл paragraph quota үгүй.
+- [x] C12 — Тус бүрийг renderer дээр inspect: proof/math/range notation, code copy/highlight/scroll, diagrams/alt, TOC/anchors, internal/source links.
 
 **Tutorial бүрийн заавал хангах15 агуулгын хэсэг:**
 
@@ -144,8 +144,8 @@ START-HERE.md (220 мөр), requirements-01.txt (1197 мөр), requirements-02.t
 
 Хүлээн авах: tutorial бүрийн body/relationship hashes-тай review card, actual C++ results, source links, MN/EN status, current IDs, browser checks. Editor хоосон нийтлэл зөвшөөрсөн нь энэ curriculum шалгуурыг сулруулахгүй.
 
-- [ ] C13 — Багц4-ийн шинэчилсэн сангаас tutorial **бүрд** сэдвийг эзэмшихэд хэрэгтэй practice сонгох: intended solution/observation/prerequisite/stage/objective/rationale-г хянах. Зайлшгүй хэрэгтэй mastery task-ийг High, өндөр өгөөжтэй нэмэлт practice-г Medium зэрэг шалгуураар үнэлж, global problem priority-г үндэслэлтэй өсгөх; бүх attached task-ийг автоматаар High болгохгүй.
-- [ ] C14 — Нэг task олон tutorial-д ашиглагдвал source-of-truth global priority/rationale shared; local stage/objective тусдаа. Lesson тус бүрийн хувьд essential/useful/extension шалтгааныг хадгалж, publish үед revision guard-тай priority promotion хийх. Relation хасагдлаа гээд global priority-г автоматаар бууруулахгүй; tags/reading/solved events priority өөрчлөхгүй.
+- [x] C13 — Багц4-ийн шинэчилсэн сангаас tutorial **бүрд** сэдвийг эзэмшихэд хэрэгтэй practice сонгох: intended solution/observation/prerequisite/stage/objective/rationale-г хянах. Зайлшгүй хэрэгтэй mastery task-ийг High, өндөр өгөөжтэй нэмэлт practice-г Medium зэрэг шалгуураар үнэлж, global problem priority-г үндэслэлтэй өсгөх; бүх attached task-ийг автоматаар High болгохгүй.
+- [x] C14 — Нэг task олон tutorial-д ашиглагдвал source-of-truth global priority/rationale shared; local stage/objective тусдаа. Lesson тус бүрийн хувьд essential/useful/extension шалтгааныг хадгалж, publish үед revision guard-тай priority promotion хийх. Relation хасагдлаа гээд global priority-г автоматаар бууруулахгүй; tags/reading/solved events priority өөрчлөхгүй.
 
 ## 05. Дутуу бүх сэдвийг prerequisite дарааллаар нөхөх
 
@@ -710,3 +710,8 @@ START-HERE.md (220 мөр), requirements-01.txt (1197 мөр), requirements-02.t
 ## 16. Анхны мөр бүрийн бүрэн traceability
 
 1467 эх мөрийн ID/source/line/section/requirement/status/evidence/next болон319 сэдэв нь REQUIREMENTS-CURRENT.json болон DELIVERY-PLAN.json-д хэвээр. Энд ажлын багц болгон нэгтгэсэн нь эх мөрийг устгах, бүгдийг complete болгох, эсвэл эхийн жишээг шинэ feature болгох зөвшөөрөл биш. START-HERE220 мөрийн нэмэлт constraints-ийг00–14 хэсэгт оруулсан; эх файлыг бүтнээр нь audit/requirements-source/START-HERE.md-ээс уншина.
+
+
+## Package 2 tutorial sub-workstream reconciliation
+
+All 55 existing non-Mongolia lessons are published and reconciled against current anonymous bodies. C01–C14 above are closed for this existing tutorial scope using individual lesson semantic/code/reader evidence plus audit/PACKAGE02-TUTORIAL-RECONCILIATION.json. The bounded reconciliation is not a substitute for those reviews or a claim of user acceptance. Current sorting revision 7 and its previously verified code are preserved; Mongolia remains unpublished revision 2, unchanged against fresh guards. No missing package 3 topics were created. The interactive/communication bank follow-up remains incomplete, so package 2 is not complete.
