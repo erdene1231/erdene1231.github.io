@@ -286,3 +286,10 @@ PR #49 merged as `3731540accb13d10faba93da1dbba839dc1ff0b0`; Pages run 406505478
 Validation: 135 Node tests, 411 unchanged independently checked C++ cases reused, 16 reader cases and 2 MN + 2 EN native editor round trips. Only Factory Machines #95 three priority fields changed to High, revision 2/history 925. Other 992 problem rows, already-High #312 and sequence preserved. All 8 private drafts, sorting revision 7, Mongolia, learner/profile state and authority fingerprints unchanged. No migration or access change. See `audit/PACKAGE02-ANSWER-COMPRESSION-PUBLICATION-RECEIPT.json`; NEVER replay the three successful SQL jobs.
 
 24/55 curriculum lessons reviewed and published; 31 remain. No user acceptance or real-account editing fixture claimed. Next existing prerequisites: tree-basics then grid-dp, with fresh captures. Preserve standing tested PR/merge and guarded publication authority; preserve private drafts without automatic rebasing. Contest proposals remain separate and unapplied, with APIO 2022–2026 evidence gaps unresolved. No deferred problem statements/editorials or package 3+.
+
+
+## Package 2: tree and grid published
+
+PR #51 merged as bc9549ba2a2e9a399c052f00bd08de98b587051d; Pages 40652896720 succeeded. Tree basics and grid DP are public revision 4, histories 173–174. Exact anonymous MN/EN native bodies verified. 138 Node tests, 183 tree and 766 grid oracle cases, 16 reader cases and four native editor round trips passed. Only core #345/#420 priority fields promoted, histories 926–927; other 991 problem rows and sequence unchanged. All eight private drafts, sorting revision 7, Mongolia, learner/profile state and authority fingerprints preserved. No migration/access changes. See audit/PACKAGE02-TREE-GRID-PUBLICATION-RECEIPT.json. NEVER replay the three successful SQL jobs.
+
+26/55 published; 29 remain, no user acceptance claim. Next existing lessons: knapsack and dsu, with fresh capture. Standing tested PR/merge and guarded publication authority retained. Contest proposals remain separate/unapplied; unresolved APIO evidence must not be bypassed. No deferred problem statements/editorials or package 3.
