@@ -1,0 +1,896 @@
+{
+  "id": "stack-queue",
+  "expected_revision": 3,
+  "expected_published": true,
+  "expected_body_sha256": "fee7bf5bba84fe9ffa0aef24c4e80ee6b04b99fd30a0e9aea9e76cff40f75d1a",
+  "status": "Semantic/native reader/editor/C++ review passed; publication requires fresh live revision and draft guards",
+  "body": {
+    "id": "stack-queue",
+    "level": "Анхан шат",
+    "order": 5,
+    "title": "Стек ба дараалал — хамгийн сүүлчийнх үү, хамгийн эхнийх үү?",
+    "aliases": "stack-queue Stack ба queue Stack and queue",
+    "related": [
+      "recursion",
+      "set-map"
+    ],
+    "summary": "Ижил утгууд яагаад хоёр өөр дарааллаар гарахыг тушаал бүрээр дагаж, хоосон төлөв, интерфейс, нийт ажлыг батална. Дараа нь өсөх стек болон графын хайлтад холбож үзнэ.",
+    "category": "Data structures",
+    "levelKey": "beginner",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Хамгийн сүүлчийн ажил уу, хамгийн түрүүчийн хүн үү?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Ширээн дээр номыг давхарлан тавиад дээрээс нь авдаг. Харин үйлчлүүлэхээр ирсэн хүмүүсээс хамгийн түрүүнд ирсэн нь эхэлж үйлчлүүлнэ. Хоёуланд нь зүйл нэмэгдэж, хасагдаж байгаа ч дараагийнхыг сонгох дүрэм өөр."
+          },
+          {
+            "type": "p",
+            "text": "Номын давхарыг стек (stack), ирсэн дарааллаар үйлчлэхийг дараалал (queue) гэж нэрлэе. Энэ хичээлд хоёр тусдаа бүтцэд ижил $10,20,30$ утгыг оруулж, ямар дарааллаар гарахыг өөрсдөө гаргана. Утгын их бага нь сонголтыг шийдэхгүй."
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Массивын эхний элементийг байнга арилгавал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Массивт шинээр ирснийг төгсгөлд нэмэх амархан. Сүүлийнхийг авахад бусад элементийг зөөхгүй. Харин эхнийхийг арилгаж үлдсэнийг нэг нэг байрлалаар урагшлуулбал нэг удаад олон элемент хөдөлнө."
+          },
+          {
+            "type": "p",
+            "text": "Эхлээд $n$ зүйл оруулаад бүгдийг нь эхнээс нь арилгавал шилжүүлэх тоо $(n-1)+(n-2)+cdots+1$, нийт $O(n^2)$. Эхлэх зааг хадгалж зөөлтөөс зайлсхийж болно; стандарт queue нь энэ хэрэглээнд бэлэн интерфейс өгнө."
+          }
+        ]
+      },
+      {
+        "key": "observation",
+        "title": "3. Утгыг биш, ирсэн дарааллыг хадгал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Стек дээр хамгийн сүүлд орсон, одоо хүртэл гараагүй зүйл дээр байна. Үүнийг сүүлд орсон нь түрүүлж гарах буюу LIFO гэдэг. Дарааллын эхэнд хамгийн эрт орсон, одоо хүртэл гараагүй зүйл байна: түрүүлж орсон нь түрүүлж гарах буюу FIFO."
+          },
+          {
+            "type": "p",
+            "text": "Давхардсан утгууд ч тусдаа зүйл. $5$ хоёр удаа ороод нэг удаа гарахад нэг $5$ үлдэнэ. Хоёр бүтэц нь set шиг давхардлыг арилгадаггүй, priority_queue шиг хамгийн ихийг сонгодоггүй."
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Хоёр өөр төлөв, дөрвөн тушаал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Манай туршилтад S+ утга нь стект, Q+ утга нь дараалалд нэмнэ. S- нь стекийн дээрхийг, Q- нь дарааллын эхнийхийг хэвлээд арилгана. Хоосон бол EMPTY хэвлэж, төлөвийг өөрчлөхгүй. Нэг тушаал нөгөө бүтцийг өөрчлөхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Стект top, дараалалд front нь утгыг уншина; pop нь арилгана, утга буцаахгүй. Тиймээс хоосон эсэхийг эхлээд шалгаж, утгыг уншиж хэвлэсний дараа арилгана. Queue-ийн back нь хамгийн сүүлд ирснийг уншдаг ч pop тэр элементийг арилгахгүй."
+          }
+        ]
+      },
+      {
+        "key": "walkthrough",
+        "title": "5. Ижил гурван утга хоёр өөр дарааллаар гарна",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Стек болон дараалалд тус бүр $10,20,30$ гэж оруулъя. Эхний хасалтаар стек $30$, дараалал $10$ гаргана. Дараагийнх нь хоёул $20$. Гурав дахьд стек $10$, дараалал $30$ гаргана."
+          },
+          {
+            "type": "p",
+            "text": "Ингэхэд хоёр бүтэц хоёул хоосон. Дахин хасахад EMPTY; шинэ утга нэмэхэд түүнээс хэвийн үргэлжилнэ. Стект $30$ байгаа нь хамгийн их учраас биш, хамгийн сүүлд орсон учраас эхэлж гарсан."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Үйлдэл",
+              "Стек доороос дээш",
+              "Queue эхнээс",
+              "Хэвлэх стек / queue"
+            ],
+            "rows": [
+              [
+                "$10,20,30$ нэмэх",
+                "$10,20,30$",
+                "$10,20,30$",
+                "—"
+              ],
+              [
+                "Нэг нэгийг хасах",
+                "$10,20$",
+                "$20,30$",
+                "$30 / 10$"
+              ],
+              [
+                "Дахин хасах",
+                "$10$",
+                "$30$",
+                "$20 / 20$"
+              ],
+              [
+                "Дахин хасах",
+                "∅",
+                "∅",
+                "$10 / 30$"
+              ],
+              [
+                "Хоосноос хасах",
+                "∅",
+                "∅",
+                "EMPTY / EMPTY"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Боловсруулсан тушаал бүрийн дараах утга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхэнд хоёр бүтэц хоосон тул амласан дараалал зөв. Эхний $k$ тушаалын дараа стек ороод гараагүй зүйлсийг доороос дээш орсон дарааллаар, queue мөн зүйлсээ эхнээс төгсгөл рүү орсон дарааллаар хадгалж байна гэж үзье."
+          },
+          {
+            "type": "p",
+            "text": "Нэмэхэд шинэ зүйл төгсгөлд орно. Стек төгсгөлөөсөө, queue эхнээсээ хасах тул тус бүрийн дүрмийн яг зөв зүйл гарна; үлдсэн зүйлсийн харьцангуй дараалал өөрчлөгдөхгүй. Хоосон хасалт өөрчлөлтгүй. Иймээс дараагийн тушаалын дараа ч амласан утга зөв."
+          },
+          {
+            "type": "p",
+            "text": "Тушаалын тоотой тэнцүү алхам хийнэ, буцаж давтах тушаал байхгүй. Индукцийн энэ баталгаа нь утга нь давхардсан эсэхээс хамаарахгүй."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Нэг үзүүрийн үйлдэл ба нийт зай",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Энд стандартын үндсэн deque суурьтай stack, queue ашиглана. Тэдгээрийн төгсгөлд нэмэх, хэрэгтэй үзүүрээс хасах, үзүүрийн утгыг унших нь тогтмол хугацааны үйлдэл. $q$ тушаалд нийт $O(q)$ хугацаа, хамгийн ихдээ $O(q)$ хадгалах зай хэрэгтэй; хоосон үед ч тогтмол суурь зай бий."
+          },
+          {
+            "type": "p",
+            "text": "Бүтцийг функцэд хуулж дамжуулахгүй, холбоосоор өөрчилнө. Vector суурьтай стек сонговол нэмэх үйлдлийн зарим нь дахин зай авах тул нэг бүр нь бус, нийтдээ дунджаар тогтмол байдаг. Энэ хичээлийн код үндсэн сууриа сольдоггүй."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. C++17: унших ба арилгахыг салга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхний мөрд тушаалын тоо 0–200000. Дараах мөр бүр S+ утга, Q+ утга, S- эсвэл Q- байна. Утга нь хасах нэг тэрбумаас нэг тэрбум хүртэл бүхэл. Хасах тушаал бүрийн хариуг тусдаа мөрд хэвлэнэ."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Стекээс хасах"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Стек хоосон бол зөвхөн EMPTY хэвлээд буцна. Бусад үед top-ын утгыг ашигласны дараа pop хийнэ. Холбоосоор авсан тул жинхэнэ стек өөрчлөгдөнө.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <iostream>\n#include <queue>\n#include <stack>\n#include <string>\nusing namespace std;\n\nvoid remove_stack(stack<long long>& pending) {\n    if (pending.empty()) {\n        cout << \"EMPTY\\n\";\n        return;\n    }\n    cout << pending.top() << '\\n';\n    pending.pop();\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Дарааллаас хасах"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Queue-д адил хамгаалалттай боловч top биш front уншина. Pop нь тэр эхний элементийг хасна. Ижил бүтэцтэй хоёр функцийн сонгох үзүүр л өөр.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "void remove_queue(queue<long long>& waiting) {\n    if (waiting.empty()) {\n        cout << \"EMPTY\\n\";\n        return;\n    }\n    cout << waiting.front() << '\\n';\n    waiting.pop();\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Хоёр төлөв эхлүүлэх"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Хурдан оролт/гаралтыг тохируулаад тушаалын тоог уншина. Хоёр тусдаа хувьсагч нь нэг тушаалаар нөгөөг санамсаргүй өөрчлөхөөс сэргийлнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int command_count;\n    cin >> command_count;\n    stack<long long> pending;\n    queue<long long> waiting;\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Тушаалыг боловсруулах"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Нэмэх тушаал л дараагийн утгыг уншина. Хасах тушаал харгалзах функцээ дуудна. Гэрээнд зөвхөн дөрвөн зөв тушаал ордог тул сүүлийн else нь Q-; дурын үл мэдэгдэх тушаал зөвшөөрсөн парсер биш.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    for (int step = 0; step < command_count; ++step) {\n        string command;\n        cin >> command;\n        if (command == \"S+\" || command == \"Q+\") {\n            long long value;\n            cin >> value;\n            if (command == \"S+\") {\n                pending.push(value);\n            } else {\n                waiting.push(value);\n            }\n        } else if (command == \"S-\") {\n            remove_stack(pending);\n        } else {\n            remove_queue(waiting);\n        }\n    }\n    return 0;\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах C++17 программ"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <iostream>\n#include <queue>\n#include <stack>\n#include <string>\nusing namespace std;\n\nvoid remove_stack(stack<long long>& pending) {\n    if (pending.empty()) {\n        cout << \"EMPTY\\n\";\n        return;\n    }\n    cout << pending.top() << '\\n';\n    pending.pop();\n}\n\nvoid remove_queue(queue<long long>& waiting) {\n    if (waiting.empty()) {\n        cout << \"EMPTY\\n\";\n        return;\n    }\n    cout << waiting.front() << '\\n';\n    waiting.pop();\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int command_count;\n    cin >> command_count;\n    stack<long long> pending;\n    queue<long long> waiting;\n\n    for (int step = 0; step < command_count; ++step) {\n        string command;\n        cin >> command;\n        if (command == \"S+\" || command == \"Q+\") {\n            long long value;\n            cin >> value;\n            if (command == \"S+\") {\n                pending.push(value);\n            } else {\n                waiting.push(value);\n            }\n        } else if (command == \"S-\") {\n            remove_stack(pending);\n        } else {\n            remove_queue(waiting);\n        }\n    }\n    return 0;\n}\n"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "10\nS+ 10\nS+ 20\nQ+ 10\nQ+ 20\nS-\nQ-\nS-\nQ-\nS-\nQ-\n"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "20\n10\n10\n20\nEMPTY\nEMPTY\n"
+          }
+        ]
+      },
+      {
+        "key": "boundaries",
+        "title": "9. Хоосон, ганц ба давхардсан зүйл",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хоосон үед top, front, pop дуудаж болохгүй. Нэг зүйлтэй үед уншаад арилгахад хоосон болно. Ижил тоог олон удаа нэмэх бүрд хэмжээ нэмэгдэнэ. Сөрөг утга ч энгийн өгөгдөл; сонголт утгаар биш орсон дарааллаар хийгдэнэ."
+          },
+          {
+            "type": "p",
+            "text": "Тэг тушаалтай оролт юу ч хэвлэхгүй. Зөвхөн нэмэх тушаалуудтай бол мөн гаралтгүй. Бүхнийг хасаад дахин нэмэх, хоёр бүтцийн тушаалуудыг ээлжлүүлэх, нэг бүтцэд л ажиллахыг тус тус шалга."
+          }
+        ]
+      },
+      {
+        "key": "mistakes",
+        "title": "10. pop утга буцаадаггүй, queue бол эрэмбэлэгч биш",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "pop-ын буцаасан утгыг хэвлэх гэж оролдох нь хөрвүүлэгдэхгүй. Эхлээд pop хийгээд дараа нь top/front уншвал өөр зүйл, эсвэл хоосон бүтцийг уншина. Арилгахын өмнөх утгаа эхлээд ашигла."
+          },
+          {
+            "type": "p",
+            "text": "Үйлчлүүлэх дарааллыг стект хадгалбал хамгийн сүүлд ирсэн нь урд орно. Queue-ээс хамгийн бага утга хайх, дундах зүйлийг дурын байрлалаар устгахыг энгийн интерфейс нь өгдөггүй. Ийм хэрэгцээтэй бол өөр бүтэц сонго; нэрэнд нь queue орсон priority_queue нь FIFO биш."
+          }
+        ]
+      },
+      {
+        "key": "connections",
+        "title": "11. Буцах ажил, өргөнөөр хайх ба өсөх стек",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Рекурсийн дуудлага дуусаад хамгийн сүүлчийн дуудлагадаа эхэлж буцдаг нь стек маягийн дараалал. Харин графын ижил зайтай оройг эхэлж боловсруулах өргөнөөр хайх арга FIFO дараалал ашиглана. Гэхдээ графын очсон тэмдэг ба зайны баталгаа нь тусдаа сурах зүйл."
+          },
+          {
+            "type": "p",
+            "text": "Nearest Smaller Values дасгалд зүүнээс баруун явж, стек дээр өмнөх боломжит байрлалуудыг хадгал. Шинэ утгаас их буюу тэнцүү утгатай дээрх байрлалуудыг хасаад, үлдсэн дээрх нь хамгийн ойрын эрс бага утгын байрлал болно."
+          },
+          {
+            "type": "p",
+            "text": "Хассан хуучин байрлалаас шинэ байрлал ойр бөгөөд утга нь ихгүй. Тиймээс ирээдүйн аль ч утгад хуучин байрлал шинэ байрлалаас дээр сонголт болохгүй. Үлдсэн утгууд доороос дээш эрс өснө; байрлал бүр нэг удаа орж, нэг удаа гарна. Энэ нэмэлт баталгааг ойлгож байж цөм дасгалыг бод; зөвхөн pop давтахыг цээжилж болохгүй."
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "recursion",
+            "label": "Рекурс"
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "12. Дараагийнхыг юугаар сонгох вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хамгийн сүүлд эхэлсэн дуусаагүй ажил руу буцах бол стек. Түрүүлж ирсэн ажлыг эхэлж боловсруулах бол queue. Энэ асуултад утгын хамгийн их/бага, давтамж, дурын түлхүүрийн хайлт гэсэн хариу гарвал эдгээр хоёр дангаараа хангалтгүй."
+          },
+          {
+            "type": "p",
+            "text": "Аль нэг зүйлийг хасахад ирээдүйн зөв хариу алдагдахгүйг тусад нь батал. Өсөх стекийн хасалт нь энгийн LIFO дүрмээс гадна давамгайлуулах баталгаатай; BFS-ийн зөв байдал нь зөвхөн queue хэрэглэснээр автоматаар үүсэхгүй."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Үзүүрийн үйлдлээс граф ба буцаалт руу",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Encyclopedia of Parentheses"
+          },
+          {
+            "type": "p",
+            "text": "Жижиг уртад бүх хаалт үүсгээд угтвар бүрийн тэнцвэр ба эцсийн тэгийг шалга. Нэг төрлийн хаалтад тоолуур хангалттайг, олон төрлийн хаалтанд стек хэрэгтэйг ялга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Nearest Smaller Values"
+          },
+          {
+            "type": "p",
+            "text": "11-р хэсгийн давамгайлуулах баталгааг хэрэглэ. Тэнцүү утга эрс бага биш тул мөн хасагдах ёстой; байрлалыг хадгал."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Message Route"
+          },
+          {
+            "type": "p",
+            "text": "Графын суурийн дараа BFS сур. Оройг дараалалд хийхдээ очсон гэж тэмдэглэж, нэг оройг дахин дахин нэмэхээс сэргийл."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Counting Rooms"
+          },
+          {
+            "type": "p",
+            "text": "Дөрвөн хөрштэй торыг граф болго. Queue ашиглах ба рекурсээр хайх хоёрт ижил холбоост хэсгийг яагаад олдгийг тайлбарла."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Course Schedule"
+          },
+          {
+            "type": "p",
+            "text": "Чиглэлт граф ба орж ирэх ирмэгийн тооны дараа эхлүүлж болох ажлуудыг queue-д хадгал. Циклтэй үед бүх орой гарахгүйг батал."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "APIO 2019 Bridges"
+          },
+          {
+            "type": "p",
+            "text": "Динамик холбоост байдал, блок хуваалт, буцаалттай DSU-г тусад нь сурсны дараах өргөтгөл. Өөрчлөлтийн түүхийг стекээр буцаах үүргийг судал; дан queue/stack мэдлэгээр энэ бодлогыг шийднэ гэж үзэхгүй."
+          }
+        ]
+      },
+      {
+        "key": "importance",
+        "title": "14. Сонгох дүрмийг тайлбарлах суурь чадвар",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "High ач холбогдолтой: рекурс, хаалт, графын хайлт, нэг чигийн боловсруулалтын олон аргын суурь. Хоёр төрлийг ялгаж, хоосон төлөвийг аюулгүй барих нь хэцүү өгөгдлийн бүтэц сурахаас өмнөх үндсэн чадвар."
+          },
+          {
+            "type": "p",
+            "text": "Nearest Smaller Values нь стекээс хэрэггүй боломжийг бүр мөсөн хасах нэмэлт баталгааг дадлагажуулах цөм дасгал. Графын дасгалууд ба буцаалттай холбоос нь цаашдын сонголтот ахиц; эдгээрийг бодоогүйгээс үндсэн интерфейсээ ойлгоогүй гэж дүгнэхгүй."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Төлөвийг гараар дагаад бие даан хэрэгжүүл",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэг ижил оролтыг хоёр бүтцэд хийж, хасагдах утгыг код ажиллуулахаас өмнө бич. Хоосон үед ямар үйлдэл хориглогдох, унших ба устгах хоёрын ялгааг өөрийн үгээр тайлбарла."
+          },
+          {
+            "type": "p",
+            "text": "Дараа нь тушаалын программыг хуулалгүй бичээд, энгийн жагсаалтаар загварчилсан жижиг шалгагчтай тулга. Өсөх стекийн давхардсан утгуудын хасалтыг, queue-ийн ирсэн дарааллын баталгааг тусад нь тайлбарлаж чадвал дараагийн сэдэвт ор."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Stacks and queues — latest or earliest?",
+        "summary": "Trace identical arrivals under two removal rules. Prove state, handle emptiness and account for total work before connecting to monotonic stacks and graph search.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Latest action or earliest arrival?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "A pile of books is removed from the top. A service line takes the earliest arrival first. Both accept and remove items, but choose the next item differently."
+              },
+              {
+                "type": "p",
+                "text": "A stack models the pile and a queue models arrival order. We will insert the same $10,20,30$ into two independent structures and derive their removal orders. Numerical size does not determine which item comes next."
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Why repeatedly erasing the first array item is costly",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Appending an arrival to an array is straightforward. Removing the last item need not shift the others. Removing the first and shifting every remaining element does."
+              },
+              {
+                "type": "p",
+                "text": "Insert $n$ items, then repeatedly shift after front erasure: the work is $(n-1)+(n-2)+cdots+1=O(n^2)$. A head index can avoid shifts; the standard queue provides a ready interface for this access pattern."
+              }
+            ]
+          },
+          {
+            "key": "observation",
+            "title": "3. Preserve arrival order, not value order",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "The stack top is the latest inserted item that has not been removed: last in, first out (LIFO). The queue front is the earliest remaining arrival: first in, first out (FIFO)."
+              },
+              {
+                "type": "p",
+                "text": "Duplicate values are separate items: insert $5$ twice and remove once, and one remains. Neither structure removes duplicates like a set or selects the largest value like a priority queue."
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Two independent states and four commands",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "In our experiment, S+ value inserts into the stack and Q+ value inserts into the queue. S- prints and removes the stack top; Q- prints and removes the queue front. An empty removal prints EMPTY without changing state. Commands never modify the other structure."
+              },
+              {
+                "type": "p",
+                "text": "Top and front read values; pop removes an item and returns no value. Check emptiness, read/print, then remove. Queue back reads the latest arrival, but queue pop does not remove that item."
+              }
+            ]
+          },
+          {
+            "key": "walkthrough",
+            "title": "5. The same three values leave in different orders",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Insert $10,20,30$ into each. The first removals return $30$ from the stack and $10$ from the queue. Both next return $20$. Finally the stack returns $10$ and the queue $30$."
+              },
+              {
+                "type": "p",
+                "text": "Both are now empty. Another removal prints EMPTY; later insertions work normally. The stack chose $30$ because it arrived last, not because it was largest."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Action",
+                  "Stack bottom→top",
+                  "Queue front→back",
+                  "Stack / queue output"
+                ],
+                "rows": [
+                  [
+                    "Insert $10,20,30$",
+                    "$10,20,30$",
+                    "$10,20,30$",
+                    "—"
+                  ],
+                  [
+                    "Remove one each",
+                    "$10,20$",
+                    "$20,30$",
+                    "$30 / 10$"
+                  ],
+                  [
+                    "Remove again",
+                    "$10$",
+                    "$30$",
+                    "$20 / 20$"
+                  ],
+                  [
+                    "Remove again",
+                    "∅",
+                    "∅",
+                    "$10 / 30$"
+                  ],
+                  [
+                    "Remove from empty",
+                    "∅",
+                    "∅",
+                    "EMPTY / EMPTY"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Meaning after each processed command",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Initially both are empty, so the promised order holds. Assume that after the first $k$ commands, each stores precisely its inserted-but-not-removed items in arrival order from bottom to top or front to back."
+              },
+              {
+                "type": "p",
+                "text": "Insertion appends the new arrival. Stack removal takes the last item; queue removal takes the first. Each returns the required item and preserves the relative order of survivors. Empty removal changes nothing. Thus the meaning holds after the next command."
+              },
+              {
+                "type": "p",
+                "text": "Exactly one step processes each command, so the program terminates. This induction does not depend on values being distinct."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Endpoint operations and total space",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "These default stack and queue adaptors use deque. Endpoint insertion/removal and endpoint access are constant-time operations. Processing $q$ commands takes $O(q)$ time and up to $O(q)$ stored items, plus constant empty-state overhead."
+              },
+              {
+                "type": "p",
+                "text": "Helpers take references instead of copying their structures. A vector-backed stack has amortized constant insertion because some pushes reallocate. This program does not change the default underlying container."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. C++17: separate reading from removal",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "First read 0–200000 commands. Each following line is S+ value, Q+ value, S- or Q-. Values are integers from negative one billion to one billion. Print one line for each removal."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. Stack removal"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The stack helper returns after EMPTY; otherwise it prints top before pop. A reference mutates the original stack.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <iostream>\n#include <queue>\n#include <stack>\n#include <string>\nusing namespace std;\n\nvoid remove_stack(stack<long long>& pending) {\n    if (pending.empty()) {\n        cout << \"EMPTY\\n\";\n        return;\n    }\n    cout << pending.top() << '\\n';\n    pending.pop();\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. Queue removal"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The queue helper uses the same guard but reads front. Pop removes that earliest item; the selected endpoint is the essential difference.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "void remove_queue(queue<long long>& waiting) {\n    if (waiting.empty()) {\n        cout << \"EMPTY\\n\";\n        return;\n    }\n    cout << waiting.front() << '\\n';\n    waiting.pop();\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. Initialize two states"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Configure stream input and output and read the command count. Separate variables represent independent structures.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int command_count;\n    cin >> command_count;\n    stack<long long> pending;\n    queue<long long> waiting;\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Dispatch commands"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Only insertion commands read a value. Removal dispatches to the appropriate helper. The contract allows exactly four commands, so the final else means Q-; this is not a parser accepting arbitrary command names.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    for (int step = 0; step < command_count; ++step) {\n        string command;\n        cin >> command;\n        if (command == \"S+\" || command == \"Q+\") {\n            long long value;\n            cin >> value;\n            if (command == \"S+\") {\n                pending.push(value);\n            } else {\n                waiting.push(value);\n            }\n        } else if (command == \"S-\") {\n            remove_stack(pending);\n        } else {\n            remove_queue(waiting);\n        }\n    }\n    return 0;\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete compilable C++17 program"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <iostream>\n#include <queue>\n#include <stack>\n#include <string>\nusing namespace std;\n\nvoid remove_stack(stack<long long>& pending) {\n    if (pending.empty()) {\n        cout << \"EMPTY\\n\";\n        return;\n    }\n    cout << pending.top() << '\\n';\n    pending.pop();\n}\n\nvoid remove_queue(queue<long long>& waiting) {\n    if (waiting.empty()) {\n        cout << \"EMPTY\\n\";\n        return;\n    }\n    cout << waiting.front() << '\\n';\n    waiting.pop();\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int command_count;\n    cin >> command_count;\n    stack<long long> pending;\n    queue<long long> waiting;\n\n    for (int step = 0; step < command_count; ++step) {\n        string command;\n        cin >> command;\n        if (command == \"S+\" || command == \"Q+\") {\n            long long value;\n            cin >> value;\n            if (command == \"S+\") {\n                pending.push(value);\n            } else {\n                waiting.push(value);\n            }\n        } else if (command == \"S-\") {\n            remove_stack(pending);\n        } else {\n            remove_queue(waiting);\n        }\n    }\n    return 0;\n}\n"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "10\nS+ 10\nS+ 20\nQ+ 10\nQ+ 20\nS-\nQ-\nS-\nQ-\nS-\nQ-\n"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "20\n10\n10\n20\nEMPTY\nEMPTY\n"
+              }
+            ]
+          },
+          {
+            "key": "boundaries",
+            "title": "9. Empty, singleton and duplicate items",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Never call top, front or pop on an empty structure. Removing a singleton empties it. Every duplicate insertion increases size. Negative numbers are ordinary data because order, not magnitude, determines selection."
+              },
+              {
+                "type": "p",
+                "text": "Zero commands produce no output, as do insertion-only inputs. Test draining then refilling, interleaving both structures and using just one structure."
+              }
+            ]
+          },
+          {
+            "key": "mistakes",
+            "title": "10. Pop returns no value; a queue does not sort",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Printing the return value of pop does not compile. Popping before reading top/front observes a different item or an empty structure. Use the old value first."
+              },
+              {
+                "type": "p",
+                "text": "A service line stored in a stack serves the latest arrival first. A queue interface offers neither minimum lookup nor arbitrary middle deletion. Choose another structure for those requirements; priority_queue is not FIFO despite its name."
+              }
+            ]
+          },
+          {
+            "key": "connections",
+            "title": "11. Returning work, breadth-first search and monotonic stacks",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Recursive calls return to the most recent unfinished call, a stack-like order. Breadth-first graph search uses a FIFO queue to process distance layers; visited-state and distance correctness are additional topics."
+              },
+              {
+                "type": "p",
+                "text": "For Nearest Smaller Values, scan left to right while keeping candidate earlier indices on a stack. Remove tops whose values are greater than or equal to the new value; the remaining top is the nearest strictly smaller position."
+              },
+              {
+                "type": "p",
+                "text": "A removed old index is farther away than the new index and has no smaller value. It can never be a better future candidate. Surviving values strictly increase bottom to top; each index enters once and leaves once. Understand this extra proof before solving the core task, rather than memorizing repeated pops."
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "recursion",
+                "label": "Recursion"
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "12. What determines the next item?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Use a stack to resume the most recently started unfinished work; use a queue to process earliest arrivals first. If selection depends on minimum/maximum value, frequency or arbitrary key lookup, these interfaces alone are insufficient."
+              },
+              {
+                "type": "p",
+                "text": "Prove separately why discarding an item cannot lose a future answer. Monotonic-stack removals need a dominance argument beyond LIFO; using a queue alone does not establish BFS correctness."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From endpoints to graphs and rollback",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Encyclopedia of Parentheses"
+              },
+              {
+                "type": "p",
+                "text": "Enumerate short bracket strings, checking every prefix and final balance. A counter suffices for one bracket type; typed brackets need a stack."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Nearest Smaller Values"
+              },
+              {
+                "type": "p",
+                "text": "Apply section 11’s dominance proof. Equal values are not strictly smaller and must also be removed; store indices."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Message Route"
+              },
+              {
+                "type": "p",
+                "text": "After graph basics, learn BFS. Mark a vertex when enqueuing to prevent repeated insertions."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Counting Rooms"
+              },
+              {
+                "type": "p",
+                "text": "Model the grid as a four-neighbour graph and compare queue traversal with recursive component search."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Course Schedule"
+              },
+              {
+                "type": "p",
+                "text": "After directed graphs and indegrees, queue currently available tasks and explain why a cycle prevents processing every vertex."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "APIO 2019 Bridges"
+              },
+              {
+                "type": "p",
+                "text": "An extension after dynamic connectivity, block decomposition and rollback DSU. Study a stack of reversible changes; basic queue/stack knowledge alone is insufficient."
+              }
+            ]
+          },
+          {
+            "key": "importance",
+            "title": "14. A foundational choice of processing order",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Priority is High: recursion, bracket processing, graph search and one-direction processing build on these orders. Distinguishing them and handling empty states safely precedes more advanced structures."
+              },
+              {
+                "type": "p",
+                "text": "Nearest Smaller Values is core practice for permanent candidate removal with an explicit extra proof. Graph tasks and rollback are optional extensions, not a requirement for basic interface mastery."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Trace state, then implement independently",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Feed identical arrivals to both structures and predict removals before running code. Explain forbidden empty-state operations and the distinction between reading and deleting."
+              },
+              {
+                "type": "p",
+                "text": "Implement the command program without copying and compare against a simple list model. Separately explain equal-value removal in a monotonic stack and FIFO order before proceeding."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know loops, functions, references and recursive return order."
+      }
+    },
+    "prerequisites": "Давталт, функц, холбоос болон рекурсийн буцах дарааллыг мэддэг байна.",
+    "prerequisiteIds": [
+      "recursion"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "recursion",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "set-map",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ],
+      "next": "set-map",
+      "practice": [
+        {
+          "key": "752",
+          "stage": "Warm-up",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "101",
+          "stage": "Standard",
+          "priority": true,
+          "reason": "Өсөх стекийн боломж хасах баталгаа, тэнцүү утгын дүрэм ба нэг удаа оруулж гаргах нийт ажлыг бие даан хэрэгжүүлэх цөм дасгал."
+        },
+        {
+          "key": "363",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "360",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "373",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "871",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false,
+    "priorityLevel": "high",
+    "priorityReason": "Сүүлд орсон болон түрүүлж орсон зүйлсийг ялган боловсруулах нь рекурс, графын хайлт, хаалт болон боломжит хариуг хасах олон аргын суурь. Үзүүрийн зөв үйлдэл ба хоосон төлөвийн хамгаалалт тогтмол хэрэглэгдэнэ."
+  }
+}
