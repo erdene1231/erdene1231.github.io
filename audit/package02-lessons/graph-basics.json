@@ -1,0 +1,1004 @@
+{
+  "id": "graph-basics",
+  "expected_revision": 3,
+  "expected_published": true,
+  "expected_body_sha256": "f68c645efcf9898cb70e2fd3e2bbb6b61aef85f263724c7dfa2d2357bea86322",
+  "status": "Full semantic/code/native reader/editor review passed; fresh live revision and target-private-draft guards required before publication",
+  "body": {
+    "id": "graph-basics",
+    "level": "Анхан шат",
+    "order": 16,
+    "title": "Графын үндэс — холболтоо дүрслээд хэсгүүдийг олох",
+    "aliases": "graph-basics Graph-ийн суурь ба adjacency list Graph basics and adjacency lists",
+    "related": [
+      "stack-queue",
+      "bfs"
+    ],
+    "summary": "Хот ба замын жишээнээс орой, ирмэг, замнал, холбоост хэсгийг ялгана. Хөршийн жагсаалт байгуулж, хэсэг бүрийг нэг удаа үзээд хамгийн цөөн шинэ замаар холбохыг батална.",
+    "category": "Graphs",
+    "levelKey": "beginner",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Замтай хотуудыг яаж нэг сүлжээ болгох вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Долоон хотод $(1,2),(1,3),(2,4),(3,4),(5,6)$ гэсэн хоёр талдаа явдаг замууд байна. Нэгээс дөрөв рүү шууд замгүй ч хоёроор эсвэл гурваар дайраад очно. Харин тав, зургаагийн хэсэг болон ганцаар долдугаар хот бусдаасаа салангид."
+          },
+          {
+            "type": "p",
+            "text": "Хотыг орой, шууд замыг ирмэг гэж дүрсэлбэл граф болно. Оройн тоог $n$, ирмэгийн тоог $m$ гэе. Хотуудын байршлын зураг, замын урт бидэнд өгөгдөөгүй; зөвхөн ямар хос шууд холбогдсоныг хадгална. Бүх хотыг хүрч болдог болгоход хамгийн цөөн хэдэн шинэ зам хэрэгтэй вэ?"
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Холболт ба хүрч болох эсэх нэг асуулт биш",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэг ирмэг нь хоёр хотыг шууд холбоно. Замнал нь ирмэгүүдээр дараалан явсан оройнууд; жишээ нь $1,2,4$ хоёр ирмэгтэй. Шууд холболтын хүснэгтэд $(1,4)$ байхгүй гээд дөрөв хүрэх боломжгүй гэж дүгнэж болохгүй."
+          },
+          {
+            "type": "p",
+            "text": "Бүх хосын хооронд замнал байгаа эсэхийг тус тус хайвал ижил хэсгийг олон дахин үзнэ. Хүрч болдог бүх оройг нэг удаагийн хайлтаар нэг бүлэг болговол дараагийн хотуудын асуултыг давтан бодохгүй."
+          }
+        ]
+      },
+      {
+        "key": "observation",
+        "title": "3. Холбоост хэсэг дотор нэг төлөөлөгч хангалттай",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хоёр талын ирмэгтэй графт хоорондоо хүрч болдог оройнууд холбоост хэсэг үүсгэнэ. Жишээнд $1,2,3,4$ нэг хэсэг, $5,6$ хоёр дахь, $7$ гурав дахь хэсэг. Ганцаар орой ч өөрийн хэсэгтэй."
+          },
+          {
+            "type": "p",
+            "text": "Хэсэг бүрээс нэг төлөөлөгч авъя. Нэгдүгээр хэсгийг бусадтай нь замаар холбоход тэр замаар зөвхөн төлөөлөгч бус, хэсгийн бүх хот нөгөө хэсэгт хүрнэ. Иймээс хот бүрийг бус, салангид хэсгүүдийг холбох хэрэгтэй."
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Хөршийн жагсаалт ба нэг хэсгийг үзэх дараалал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Орой бүрийн шууд хөршүүдийг жагсаалтад хадгална. Хоёр талын $(u,v)$ ирмэгийг $u$-ийн жагсаалтад $v$, $v$-ийн жагсаалтад $u$ гэж хоёр удаа бүртгэнэ. Нэг талд нь л нэмбэл өөр, чиглэлт граф байгуулсан болно."
+          },
+          {
+            "type": "p",
+            "text": "Үзээгүй оройгоос эхэлж түүнийг тэмдэглээд дараалалд хийнэ. Эхний оройг авч бүх хөршийг үзнэ; хараахан тэмдэглээгүй хөршөө тэмдэглээд дараалалд нэмнэ. Дараалал хоосроход энэ эхлэлээс хүрэх бүх оройг үзсэн байна."
+          },
+          {
+            "type": "p",
+            "text": "Бүх оройг гаднаас нь өсөх дарааллаар шалга. Үзээгүй орой таарах бүр шинэ хэсгийн төлөөлөгч болгоод хайлтаа эхлүүл. Ойрхон дугаартай хотууд заавал нэг хэсэгт байна гэж үзэхгүй."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Орой",
+              "Хөршийн жагсаалт"
+            ],
+            "rows": [
+              [
+                "$1$",
+                "$[2,3]$"
+              ],
+              [
+                "$2$",
+                "$[1,4]$"
+              ],
+              [
+                "$3$",
+                "$[1,4]$"
+              ],
+              [
+                "$4$",
+                "$[2,3]$"
+              ],
+              [
+                "$5$",
+                "$[6]$"
+              ],
+              [
+                "$6$",
+                "$[5]$"
+              ],
+              [
+                "$7$",
+                "$[]$"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "key": "walkthrough",
+        "title": "5. Гурван хэсэг, хоёр шинэ зам",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхлэл нэгийн хөршүүд хоёр, гурав. Хоёрыг боловсруулахад дөрөв шинэ болж дараалалд орно. Гурвыг боловсруулахад дөрөв аль хэдийн тэмдэгтэй учраас дахин нэмэхгүй. Дөрөв дуусахад эхний хэсэг бүрэн үзэгдсэн."
+          },
+          {
+            "type": "p",
+            "text": "Дараа нь хоёр, гурав, дөрөв тэмдэгтэй тул гаднах давталт алгасна. Тав шинэ эхлэл болж зургааг олно. Долоо хөршгүй ч шинэ хэсэг. Төлөөлөгчид $1,5,7$. Шинэ $(1,5),(1,7)$ замаар гурван хэсэг нэг болно."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Авсан орой",
+              "Шинэ орой",
+              "Дараалал дараа нь"
+            ],
+            "rows": [
+              [
+                "$1$",
+                "$2,3$",
+                "$[2,3]$"
+              ],
+              [
+                "$2$",
+                "$4$",
+                "$[3,4]$"
+              ],
+              [
+                "$3$",
+                "—",
+                "$[4]$"
+              ],
+              [
+                "$4$",
+                "—",
+                "$[]$"
+              ],
+              [
+                "$5$",
+                "$6$",
+                "$[6]$"
+              ],
+              [
+                "$6$",
+                "—",
+                "$[]$"
+              ],
+              [
+                "$7$",
+                "—",
+                "$[]$"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Хэсгийг бүрэн олох ба хамгийн цөөн замын баталгаа",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхлэл болон дараалалд нэмсэн орой бүр эхлэлээс хүрч болно: шинэ оройг өмнө хүрсэн оройн ирмэгээр олсон. Хайлт дууссаны дараа хүрч болох мөртлөө үзээгүй орой үлдсэн гэж бодъё. Түүнд хүрэх замналын анхны үзээгүй оройн өмнөх нь үзэгдсэн тул боловсруулахдаа түүнийг нэмэх ёстой байсан. Зөрчил."
+          },
+          {
+            "type": "p",
+            "text": "Тэгэхээр нэг хайлт яг нэг холбоост хэсгийг олно. Дараагийн үзээгүй эхлэл өөр хэсэгт байна. Бүх оройг шалгаснаар хэсэг бүр нэг төлөөлөгчтэй болно."
+          },
+          {
+            "type": "p",
+            "text": "Нийт $c$ хэсэг байвал нэг шинэ ирмэг хэсгийн тоог хамгийн ихдээ нэгээр багасгана. Нэг хэсэг болгоход дор хаяж $c-1$ ирмэг хэрэгтэй. Эхний төлөөлөгчийг бусад $c-1$ төлөөлөгчтэй холбосон байгуулалт яг тэр тоогоор хангана."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Жагсаалт, матриц ба бүх хайлтын нийт ажил",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Манай давхар ирмэггүй, өөртэйгээ холбогдоогүй графт нэг оройн шууд хөршийн тоог оройн зэрэг гэнэ. Хөршийн жагсаалтад $n$ оройн сав, хоёр талын ирмэг бүрд хоёр бичилт байна. Нийт зай $O(n+m)$. Бүх хөршийг үзэхэд тухайн оройн зэргийн тоотой тэнцүү ажил хийнэ; бүх зэргийн нийлбэр $2m$."
+          },
+          {
+            "type": "p",
+            "text": "Код орой бүрийг нэг удаа дараалалд хийж, жагсаалт бүрийг нэг удаа үзнэ. Гаднах давталт бүх $n$ оройг шалгах ч нэг хэсгийг дахин хайхгүй. Бүхэл хугацаа $O(n+m)$, хайлтын тэмдэг ба дарааллын нэмэлт зай $O(n)$."
+          },
+          {
+            "type": "p",
+            "text": "Хөршийн матриц шууд хосын холболтыг $O(1)$-д шалгана, гэхдээ $O(n^2)$ зай, нэг оройн хөршүүдийг олоход бүх мөрийг үзэх ажилтай. Жагсаалтад дурын хосын ирмэг хайх нь автоматаар тогтмол хугацаатай биш."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. C++17: дүрслэх, хэсэг олох, холбох",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхний мөрд оройн тоо 1–200000, ирмэгийн тоо 0–200000. Дараа нь хоёр талын ирмэгүүдийн үзүүрүүд нэгээс оройн тоо хүртэл өгөгдөнө. Эхлээд хамгийн цөөн нэмэх ирмэгийн тоо, дараа нь шинэ ирмэг бүрийн хоёр үзүүрийг хэвлэнэ. Ямар ч зөв хамгийн цөөн байгуулалт зөвшөөрнө."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Хөршийн жагсаалт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Хоёр талын ирмэгийг хоёр жагсаалтад нэмнэ. Оройн дугаарыг нэгээс эхлүүлсэн тул тэг дугаарын нүд ашиглахгүй, нэг илүү сав авсан.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <iostream>\n#include <queue>\n#include <vector>\nusing namespace std;\nusing Graph = vector<vector<int>>;\n\nGraph read_graph(int vertex_count, int edge_count) {\n    Graph graph(vertex_count + 1);\n    for (int edge = 0; edge < edge_count; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        graph[first].push_back(second);\n        graph[second].push_back(first);\n    }\n    return graph;\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Хэсгүүдийн төлөөлөгч"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Үзээгүй эхлэл бүрийг төлөөлөгч болгоно. Тэмдэглэх ба дараалалд нэмэхийг хамт хийнэ. Дараалал хоосрох хүртэл хөршүүдийг үзээд дараагийн хэсэгт шилжинэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "vector<int> component_representatives(const Graph& graph) {\n    int vertex_count = static_cast<int>(graph.size()) - 1;\n    vector<bool> visited(vertex_count + 1, false);\n    vector<int> representatives;\n    queue<int> pending;\n\n    for (int start = 1; start <= vertex_count; ++start) {\n        if (visited[start]) {\n            continue;\n        }\n        representatives.push_back(start);\n        visited[start] = true;\n        pending.push(start);\n        while (!pending.empty()) {\n            int vertex = pending.front();\n            pending.pop();\n            for (int next : graph[vertex]) {\n                if (!visited[next]) {\n                    visited[next] = true;\n                    pending.push(next);\n                }\n            }\n        }\n    }\n    return representatives;\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Оролт ба бэлтгэл"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролтоо уншаад графаа байгуулж, төлөөлөгчдийн жагсаалтыг авна. Графыг хайлтанд тогтмол холбоосоор өгсөн тул хуулж үрэхгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    Graph graph = read_graph(vertex_count, edge_count);\n    vector<int> representatives = component_representatives(graph);\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Төлөөлөгчдийг холбох"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Хамгийн цөөн шинэ замын тоог хэвлээд эхний төлөөлөгчөөс бусад руу нэг нэг зам өгнө. Оройн тоо нэгээс багагүй тул төлөөлөгчийн жагсаалт хоосон биш.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    cout << static_cast<int>(representatives.size()) - 1 << '\\n';\n    for (int index = 1; index < static_cast<int>(representatives.size()); ++index) {\n        cout << representatives[0] << ' ' << representatives[index] << '\\n';\n    }\n    return 0;\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах C++17 программ"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <iostream>\n#include <queue>\n#include <vector>\nusing namespace std;\nusing Graph = vector<vector<int>>;\n\nGraph read_graph(int vertex_count, int edge_count) {\n    Graph graph(vertex_count + 1);\n    for (int edge = 0; edge < edge_count; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        graph[first].push_back(second);\n        graph[second].push_back(first);\n    }\n    return graph;\n}\n\nvector<int> component_representatives(const Graph& graph) {\n    int vertex_count = static_cast<int>(graph.size()) - 1;\n    vector<bool> visited(vertex_count + 1, false);\n    vector<int> representatives;\n    queue<int> pending;\n\n    for (int start = 1; start <= vertex_count; ++start) {\n        if (visited[start]) {\n            continue;\n        }\n        representatives.push_back(start);\n        visited[start] = true;\n        pending.push(start);\n        while (!pending.empty()) {\n            int vertex = pending.front();\n            pending.pop();\n            for (int next : graph[vertex]) {\n                if (!visited[next]) {\n                    visited[next] = true;\n                    pending.push(next);\n                }\n            }\n        }\n    }\n    return representatives;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    Graph graph = read_graph(vertex_count, edge_count);\n    vector<int> representatives = component_representatives(graph);\n\n    cout << static_cast<int>(representatives.size()) - 1 << '\\n';\n    for (int index = 1; index < static_cast<int>(representatives.size()); ++index) {\n        cout << representatives[0] << ' ' << representatives[index] << '\\n';\n    }\n    return 0;\n}\n"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "7 5\n1 2\n1 3\n2 4\n3 4\n5 6\n"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "2\n1 5\n1 7\n"
+          }
+        ]
+      },
+      {
+        "key": "boundaries",
+        "title": "9. Ганц хот, ирмэггүй граф, салангид хэсгүүд",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Ганц хот аль хэдийн холбоост тул шинэ зам тэг. Ирмэггүй $n$ хотод $n$ хэсэг, $n-1$ шинэ зам хэрэгтэй. Аль хэдийн холбоост том графт ч тэг шинэ зам гарна. Нэгээс эхлээд ганц удаа хайх нь салангид хотуудыг орхино."
+          },
+          {
+            "type": "p",
+            "text": "Код нэгээс $n$ хүртэл шошготой, чиглэлгүй граф уншина. Өөртэйгөө холбосон ирмэг эсвэл давхар ирмэгийг жагсаалтад хадгалсан ч тэмдэглэгээ дахин хайлгахаас хамгаална; үндсэн дасгалд ийм ирмэг өгөгдөхгүй. Урт гинжин графт рекурсийн гүнээс хамаарахгүй дараалал ашигласан."
+          }
+        ]
+      },
+      {
+        "key": "mistakes",
+        "title": "10. Дүрслэлээ бодлогын нөхцөлтэй тааруул",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хоёр талын замыг нэг талд хадгалах, хотын дугаарыг жинтэй андуурах, шууд ирмэггүйг хүрэх аргагүй гэж үзэх нь загварыг эвдэнэ. Чиглэлт графт нэг талаас хүрэх нь эсрэг талаас хүрэхтэй адил биш тул энэ холбоост хэсгийн дүрмийг шууд хуулж болохгүй."
+          },
+          {
+            "type": "p",
+            "text": "Дараалал-д хийхдээ тэмдэглээгүй бол нэг оройг хэд хэдэн хөрш дахин нэмнэ. Манай код, баталгаа, санах ойн тооцоо тэмдэглэхийг нэмэхтэй хамт хийдэг. Мөн шинэ зам бүрийг ижил хэсгийн дотор нэмбэл салангид хэсгийн тоо буурахгүй."
+          }
+        ]
+      },
+      {
+        "key": "connections",
+        "title": "11. Дүрслэл ба хайлтын зорилгыг тусад нь сонго",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Торны нээлттэй нүд бүрийг орой, зөвшөөрсөн хөршийн алхмыг ирмэг гэж үзэж болно. Хөршүүдийг том жагсаалтанд хадгалахгүй, хэрэгтэй үед координатаар гаргах нь далд графын нэг жишээ. Хана, хил хоёрыг шалгах дүрэм шинэ загварын хэсэг."
+          },
+          {
+            "type": "p",
+            "text": "Энд дараалал зөвхөн хэсгийн бүх оройд хүрэхэд ашиглагдсан. Хамгийн богино хэдэн ирмэгтэй замыг олохдоо зай, өмнөх орой хадгалж, яагаад эхэлж олсон зай хамгийн бага болохыг нэмэлтээр батална. Үүнийг дараагийн BFS хичээлд хийнэ."
+          },
+          {
+            "type": "p",
+            "text": "Ирмэгт үнэ, хугацаа зэрэг жин байвал холбоост эсэх ба хамгийн бага нийт жин хоёр өөр асуулт. Энэ хичээлд замын зардлыг тооцоогүй."
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "stack-queue",
+            "label": "Стек ба дараалал"
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "bfs",
+            "label": "BFS — өргөнөөр хайх"
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "12. Объект, боломжит шилжилт, асуулт гурвыг тогтоо",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Орой юу илэрхийлэх вэ? Хоёр төлөвийн хооронд ямар нөхцөлд ирмэг байх вэ? Ирмэг хоёр талынх уу, нэг чигийнх үү, жинтэй юу? Эдгээрийг тогтоосны дараа хүрч болох эсэх, хэсгийн тоо, замын урт зэрэг яг асуултаа ялга."
+          },
+          {
+            "type": "p",
+            "text": "Шошго эсвэл зургийн ойр байдалд найдаж холболт зохиож болохгүй. Мөн бүх хосыг матриц болгон байгуулахаас өмнө ирмэгийн тоо цөөн эсэх, хөршийг шууд үүсгэж болох эсэхийг хар."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Хот, тор, өнгө ба цикл",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Building Roads"
+          },
+          {
+            "type": "p",
+            "text": "Хэсэг бүрийн төлөөлөгчийг олж, хэсгийн тооноос нэг бага шинэ ирмэг хангалттай бөгөөд зайлшгүйг батал."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Counting Rooms"
+          },
+          {
+            "type": "p",
+            "text": "Торны нүдийг орой болгож, нээлттэй хөршийн дүрэм ба бүх хэсгийн гаднах давталтыг гарга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Message Route"
+          },
+          {
+            "type": "p",
+            "text": "Дараагийн BFS хичээлээр хүрч болохоос цааш хамгийн цөөн ирмэг ба бодит замыг сэргээ."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Building Teams"
+          },
+          {
+            "type": "p",
+            "text": "Нэмэлт хоёр өнгөний нөхцөлийг ирмэг бүрд шалга. Холбоост байх нь хоёр өнгөөр будаж болно гэсэн үг биш."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Round Trip"
+          },
+          {
+            "type": "p",
+            "text": "Цикл илрүүлэхэд хайлтын эцэг ирмэг болон жинхэнэ буцах холбоосыг ялгах нэмэлт төлөв хэрэгтэй."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "IOI 2020 Connecting Supertrees"
+          },
+          {
+            "type": "p",
+            "text": "Хос бүрийн замналын тооны нөхцөлөөр граф байгуулах өргөтгөл. Холбоост хэсгийн загвар нь зөвхөн нэг алхам; DSU болон байгуулах нэмэлт баталгаа шаарддаг."
+          }
+        ]
+      },
+      {
+        "key": "importance",
+        "title": "14. Хамгийн түрүүнд зөв граф байгуулах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "High ач холбогдолтой: объект ба шилжилтийг зөв загварчлах, хөршийн жагсаалт байгуулах, бүх холбоост хэсгийг үзэх нь графын дараагийн бараг бүх аргын суурь. Хайлт хурдан байсан ч буруу ирмэгтэй загвар зөв хариу өгөхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Building Roads нь хэсэг бүрийн төлөөлөгч ба хамгийн цөөн нэмэлт ирмэгийн баталгааг шууд шалгах цөм дасгал. Тор, өнгө, цикл болон олимпиадын байгуулах бодлогууд нь нэмэлт зорилготой сонголтот ахиц; сан дахь үнэлгээг автоматаар өөрчлөхгүй."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Жижиг жишээнээс бүх графын баталгаа руу",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Жишээний орой бүрийн хөршийн жагсаалтыг гараар бичээд нийт бичилт хоёр дахин ирмэгийн тоотой тэнцүүг шалга. Шууд ирмэг ба олон алхмын хүрэлтийг ялга. Ганцаар долдугаар хот яагаад хэсэг болохыг тайлбарла."
+          },
+          {
+            "type": "p",
+            "text": "Кодоо хуулалгүй бичээд жижиг графын хэсгүүдийг өөр лавлах аргаар тоолон тулга. Гаргасан шинэ замуудтай граф нэг хэсэг болсон, замын тоо хэсгийн тооноос нэг бага гэдгийг тус тус шалга. Дараа нь замын хамгийн богино уртыг сонирхож BFS рүү ор."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Graph basics — model connections and find components",
+        "summary": "Distinguish vertices, edges, routes and components through a city network. Build lists, explore each component once and prove a minimum-road connection.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Connect cities into one network",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Seven cities have two-way roads $(1,2),(1,3),(2,4),(3,4),(5,6)$. City one has no direct road to four, but can reach it through two or three. Cities five and six form a separate group, and seven is isolated."
+              },
+              {
+                "type": "p",
+                "text": "Represent cities as vertices and direct roads as edges. Let $n$ be the number of vertices and $m$ the number of edges. Coordinates and road lengths are not supplied; only connections matter. How few new roads make every city reachable from every other?"
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Adjacency is not the same as reachability",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "An edge connects two cities directly. A route follows consecutive edges; $1,2,4$ uses two edges. Absence of edge $(1,4)$ does not imply four is unreachable."
+              },
+              {
+                "type": "p",
+                "text": "Searching reachability separately for every pair revisits the same group repeatedly. Discover all vertices reachable from one starting point together, then avoid rediscovering that group."
+              }
+            ]
+          },
+          {
+            "key": "observation",
+            "title": "3. One representative per connected component",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "In an undirected graph, mutually reachable vertices form connected components. Here they are $1,2,3,4$, then $5,6$, then $7$. An isolated vertex is a component too."
+              },
+              {
+                "type": "p",
+                "text": "Choose one representative from each. Joining representatives connects their entire components, because every vertex can already reach its representative. We need to connect components, not separately attach every city."
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Adjacency lists and exploring one component",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Store each vertex’s direct neighbours. An undirected edge $(u,v)$ contributes $v$ to the list for $u$ and $u$ to the list for $v$. Inserting only one direction builds a different graph."
+              },
+              {
+                "type": "p",
+                "text": "Start at an unseen vertex, mark it and enqueue it. Remove the front and inspect its neighbours, marking each unseen neighbour before enqueuing it. When the queue empties, all vertices reachable from that start have been explored."
+              },
+              {
+                "type": "p",
+                "text": "Scan every vertex in increasing label order. Each still-unseen vertex starts a new component and becomes its representative. Nearby numerical labels do not imply connectivity."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Vertex",
+                  "Adjacency list"
+                ],
+                "rows": [
+                  [
+                    "$1$",
+                    "$[2,3]$"
+                  ],
+                  [
+                    "$2$",
+                    "$[1,4]$"
+                  ],
+                  [
+                    "$3$",
+                    "$[1,4]$"
+                  ],
+                  [
+                    "$4$",
+                    "$[2,3]$"
+                  ],
+                  [
+                    "$5$",
+                    "$[6]$"
+                  ],
+                  [
+                    "$6$",
+                    "$[5]$"
+                  ],
+                  [
+                    "$7$",
+                    "$[]$"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "key": "walkthrough",
+            "title": "5. Three components and two new roads",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Starting at one discovers two and three. Processing two discovers four. Processing three sees four already marked and does not enqueue it again. After four, the first component is finished."
+              },
+              {
+                "type": "p",
+                "text": "The outer scan skips two, three and four. Five starts another search that reaches six. Seven has no neighbours but starts its own component. Representatives $1,5,7$ are joined by new edges $(1,5),(1,7)$."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Removed vertex",
+                  "New vertices",
+                  "Queue afterward"
+                ],
+                "rows": [
+                  [
+                    "$1$",
+                    "$2,3$",
+                    "$[2,3]$"
+                  ],
+                  [
+                    "$2$",
+                    "$4$",
+                    "$[3,4]$"
+                  ],
+                  [
+                    "$3$",
+                    "—",
+                    "$[4]$"
+                  ],
+                  [
+                    "$4$",
+                    "—",
+                    "$[]$"
+                  ],
+                  [
+                    "$5$",
+                    "$6$",
+                    "$[6]$"
+                  ],
+                  [
+                    "$6$",
+                    "—",
+                    "$[]$"
+                  ],
+                  [
+                    "$7$",
+                    "—",
+                    "$[]$"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Complete exploration and the minimum number of roads",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Every enqueued vertex is reachable from the start, since it is discovered along an edge from an already reachable vertex. If a reachable vertex remained unseen after termination, take the first unseen vertex on a route to it. Its seen predecessor would have discovered it when processed, a contradiction."
+              },
+              {
+                "type": "p",
+                "text": "One search therefore discovers exactly one component. The next unseen start belongs to another. Scanning all vertices produces exactly one representative per component."
+              },
+              {
+                "type": "p",
+                "text": "With $c$ components, a new edge can reduce their count by at most one, so at least $c-1$ are needed. Joining the first representative to each of the other $c-1$ achieves that lower bound."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Lists, matrices and total traversal work",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For our simple graph, the degree of a vertex is its number of neighbours. Adjacency lists store a container for each vertex and two entries per undirected edge, using $O(n+m)$ space. Scanning one list costs its degree; all degrees sum to $2m$."
+              },
+              {
+                "type": "p",
+                "text": "Each vertex is enqueued once and each list scanned once. The outer scan checks all $n$ vertices without restarting completed components. Total time is $O(n+m)$; visited state and queue add $O(n)$ space."
+              },
+              {
+                "type": "p",
+                "text": "An adjacency matrix checks a particular edge in $O(1)$ but uses $O(n^2)$ space and scans an entire row for neighbours. Arbitrary pair lookup in a list is not automatically constant-time."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. C++17: represent, explore and connect",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Read 1–200000 vertices and 0–200000 undirected edges, with endpoints labelled one through the vertex count. Print the minimum number of new edges, then their endpoints. Any minimum valid construction is allowed."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. Adjacency lists"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Store both directions and allocate an extra slot for one-based labels; slot zero is unused.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <iostream>\n#include <queue>\n#include <vector>\nusing namespace std;\nusing Graph = vector<vector<int>>;\n\nGraph read_graph(int vertex_count, int edge_count) {\n    Graph graph(vertex_count + 1);\n    for (int edge = 0; edge < edge_count; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        graph[first].push_back(second);\n        graph[second].push_back(first);\n    }\n    return graph;\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. Component representatives"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Each unseen start becomes a representative. Mark when enqueuing, exhaust its reachable neighbours, then continue the outer component scan.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "vector<int> component_representatives(const Graph& graph) {\n    int vertex_count = static_cast<int>(graph.size()) - 1;\n    vector<bool> visited(vertex_count + 1, false);\n    vector<int> representatives;\n    queue<int> pending;\n\n    for (int start = 1; start <= vertex_count; ++start) {\n        if (visited[start]) {\n            continue;\n        }\n        representatives.push_back(start);\n        visited[start] = true;\n        pending.push(start);\n        while (!pending.empty()) {\n            int vertex = pending.front();\n            pending.pop();\n            for (int next : graph[vertex]) {\n                if (!visited[next]) {\n                    visited[next] = true;\n                    pending.push(next);\n                }\n            }\n        }\n    }\n    return representatives;\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. Input and setup"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read the graph and obtain representatives. The search takes a constant reference rather than copying the adjacency structure.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    Graph graph = read_graph(vertex_count, edge_count);\n    vector<int> representatives = component_representatives(graph);\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Connect representatives"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Print the minimum number, then connect the first representative to each remaining one. At least one vertex guarantees a nonempty representative list.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    cout << static_cast<int>(representatives.size()) - 1 << '\\n';\n    for (int index = 1; index < static_cast<int>(representatives.size()); ++index) {\n        cout << representatives[0] << ' ' << representatives[index] << '\\n';\n    }\n    return 0;\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete compilable C++17 program"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <iostream>\n#include <queue>\n#include <vector>\nusing namespace std;\nusing Graph = vector<vector<int>>;\n\nGraph read_graph(int vertex_count, int edge_count) {\n    Graph graph(vertex_count + 1);\n    for (int edge = 0; edge < edge_count; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        graph[first].push_back(second);\n        graph[second].push_back(first);\n    }\n    return graph;\n}\n\nvector<int> component_representatives(const Graph& graph) {\n    int vertex_count = static_cast<int>(graph.size()) - 1;\n    vector<bool> visited(vertex_count + 1, false);\n    vector<int> representatives;\n    queue<int> pending;\n\n    for (int start = 1; start <= vertex_count; ++start) {\n        if (visited[start]) {\n            continue;\n        }\n        representatives.push_back(start);\n        visited[start] = true;\n        pending.push(start);\n        while (!pending.empty()) {\n            int vertex = pending.front();\n            pending.pop();\n            for (int next : graph[vertex]) {\n                if (!visited[next]) {\n                    visited[next] = true;\n                    pending.push(next);\n                }\n            }\n        }\n    }\n    return representatives;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    Graph graph = read_graph(vertex_count, edge_count);\n    vector<int> representatives = component_representatives(graph);\n\n    cout << static_cast<int>(representatives.size()) - 1 << '\\n';\n    for (int index = 1; index < static_cast<int>(representatives.size()); ++index) {\n        cout << representatives[0] << ' ' << representatives[index] << '\\n';\n    }\n    return 0;\n}\n"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "7 5\n1 2\n1 3\n2 4\n3 4\n5 6\n"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "2\n1 5\n1 7\n"
+              }
+            ]
+          },
+          {
+            "key": "boundaries",
+            "title": "9. One city, no edges and disconnected groups",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "A singleton is already connected, requiring zero roads. An edgeless graph has $n$ components and needs $n-1$ roads. An already connected graph also needs zero. One search from vertex one alone misses disconnected groups."
+              },
+              {
+                "type": "p",
+                "text": "The program reads an undirected graph labelled one through $n$. Stored self-loops or parallel entries do not restart exploration because of visited checks, though the core task excludes them. An iterative queue avoids recursion-depth dependence on long chains."
+              }
+            ]
+          },
+          {
+            "key": "mistakes",
+            "title": "10. Match the representation to the problem",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "One-sided storage of a two-way road, confusing labels with weights, or treating absent direct edges as unreachability all break the model. Directed reachability is not symmetric, so this undirected component rule cannot be copied unchanged."
+              },
+              {
+                "type": "p",
+                "text": "Without marking at enqueue time, several neighbours may enqueue the same vertex. This code’s proof and queue-size bound use immediate marking. Adding roads inside one component also fails to reduce the number of disconnected groups."
+              }
+            ]
+          },
+          {
+            "key": "connections",
+            "title": "11. Separate representation from the search objective",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "An open grid cell can be a vertex and an allowed neighbouring move an edge. Generate neighbours from coordinates rather than storing every list: an implicit graph. Walls and boundaries become part of that model."
+              },
+              {
+                "type": "p",
+                "text": "Here the queue only establishes component reachability. To find the fewest-edge route, record distances and parents and additionally prove why first discovery is shortest; that is the next BFS lesson."
+              },
+              {
+                "type": "p",
+                "text": "With edge costs or times, connectivity and minimum total weight are different questions. This lesson does not optimize weighted travel."
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "stack-queue",
+                "label": "Stacks and queues"
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "bfs",
+                "label": "Breadth-first search"
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "12. Identify objects, transitions and the actual question",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "What does a vertex represent? Which condition creates a transition? Is it directed or undirected, weighted or unweighted? Then distinguish reachability, component count and route length."
+              },
+              {
+                "type": "p",
+                "text": "Do not invent edges from similar labels or visual proximity. Before allocating a matrix, consider whether the graph is sparse or neighbours can be generated directly."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. Cities, grids, colours and cycles",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Building Roads"
+              },
+              {
+                "type": "p",
+                "text": "Find component representatives and prove that one fewer edge than components is both necessary and sufficient."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Counting Rooms"
+              },
+              {
+                "type": "p",
+                "text": "Model open grid cells and derive valid neighbours plus the outer component scan."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Message Route"
+              },
+              {
+                "type": "p",
+                "text": "After the BFS lesson, extend reachability to minimum edge count and route reconstruction."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Building Teams"
+              },
+              {
+                "type": "p",
+                "text": "Check an additional two-colour constraint on every edge; connectivity does not imply bipartiteness."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Round Trip"
+              },
+              {
+                "type": "p",
+                "text": "Cycle detection needs additional state distinguishing the search-parent edge from a genuine cycle connection."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "IOI 2020 Connecting Supertrees"
+              },
+              {
+                "type": "p",
+                "text": "Construct a graph under pairwise route-count constraints. Component modelling is only one ingredient; DSU and additional construction proofs are required."
+              }
+            ]
+          },
+          {
+            "key": "importance",
+            "title": "14. Build the right graph before choosing an algorithm",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Priority is High: modelling objects and transitions, constructing lists and exploring every component underpin most graph algorithms. A fast search cannot repair an incorrect edge model."
+              },
+              {
+                "type": "p",
+                "text": "Building Roads directly checks component representatives and the minimum-connection proof. Grid, colouring, cycle and olympiad construction tasks add objectives and remain optional without automatic bank-priority changes."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. From a small trace to the whole graph",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Write every example adjacency list and check that entries total twice the edges. Distinguish adjacency from multi-step reachability and explain why isolated seven is a component."
+              },
+              {
+                "type": "p",
+                "text": "Implement independently and compare component counts with another oracle. Check both connectivity after additions and the lower-bound number of new roads. Then proceed to BFS for shortest route length."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know stacks/FIFO queues, loops, arrays and reference parameters."
+      }
+    },
+    "prerequisites": "Стек ба FIFO дараалал, давталт, массив болон функцийн холбоосыг мэддэг байна.",
+    "prerequisiteIds": [
+      "stack-queue"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "stack-queue",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "bfs",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ],
+      "next": "bfs",
+      "practice": [
+        {
+          "key": "362",
+          "stage": "Warm-up",
+          "priority": true,
+          "reason": "Холбоост хэсэг бүрийг бүрэн олж, төлөөлөгчөөр холбох болон хэсгийн тооноос нэг бага шинэ ирмэгийн доод хязгаарыг бие даан батлах шууд цөм дасгал."
+        },
+        {
+          "key": "360",
+          "stage": "Standard",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "363",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "364",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "365",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "713",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false,
+    "priorityLevel": "high",
+    "priorityReason": "Объект ба боломжит шилжилтийг зөв дүрслэх, хөршийн жагсаалт байгуулах, бүх холбоост хэсгийг үзэх нь графын дараагийн хайлт, өнгө, зам болон байгуулах аргуудын нийтлэг суурь. Зөв загвар ба нийт ажлын тооцоог хамт сургана."
+  }
+}
