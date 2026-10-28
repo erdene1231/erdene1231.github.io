@@ -1,5 +1,5 @@
 import {priorityLevel,priorityLabel,priorityRank} from './priority.js?v=52';
-import {renderExtendedBlock} from './tutorial-block-renderer.js?v=52';
+import {renderExtendedBlock} from './tutorial-block-renderer.js?v=54';
 import {clearMediaCache} from './tutorial-media.js?v=52';
 import {loadLearningContent,bodyHash} from './learning-model.js?v=52';
 import {algorithmDemo} from './algorithm-demos.js?v=52';
