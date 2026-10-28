@@ -1,7 +1,7 @@
-import {assertProblemStatementReady} from './problem-statement-policy.js?v=48';
-import {validateTutorial} from './tutorial-model.js?v=48';
-import {canonicalProblemUrl,problemUrlIdentity} from './problem-url.js?v=48';
-import {validatePriority,priorityLevel,isHighPriority} from './priority.js?v=48';
+import {assertProblemStatementReady} from './problem-statement-policy.js?v=52';
+import {validateTutorial} from './tutorial-model.js?v=52';
+import {canonicalProblemUrl,problemUrlIdentity} from './problem-url.js?v=52';
+import {validatePriority,priorityLevel,isHighPriority} from './priority.js?v=52';
 export function validateSource(value) {
  if(typeof value!=='string')throw new Error('Source нэр оруулна уу.');
  const name=value.trim().replace(/\s+/g,' ');

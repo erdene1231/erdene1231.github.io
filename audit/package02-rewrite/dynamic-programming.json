@@ -1,0 +1,1366 @@
+{
+  "id": "dynamic-programming",
+  "expected_revision": 6,
+  "expected_body_sha256": "fb655d4baf3d0cde549125012c3673e26176ba55e754d21ddbff7695f1a3bb54",
+  "status": "Locally reviewed corrected replacement; publication and user acceptance pending",
+  "body": {
+    "id": "dynamic-programming",
+    "level": "Дунд шат",
+    "order": 24,
+    "title": "Динамик програмчлал — жижиг хариунуудаас бүтэн хариуг гаргах",
+    "aliases": "dynamic-programming DP-ийн эхлэл — хариунуудаа хадгалах Introduction to DP — saving smaller answers dp dynamic programming memoization tabulation төлөв transition recurrence",
+    "related": [
+      "recursion",
+      "brute-force",
+      "grid-dp"
+    ],
+    "summary": "Нэг мөрийг хавтангаар хучих жишээнээс давтагдсан жижиг бодлогыг олъё. Хадгалах утга, эхлэх тохиолдол, нэгтгэх дүрэм, бодох дарааллыг өөрсдөө гаргаж, зөв тоолж байгааг батална.",
+    "category": "Dynamic programming",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Нэг мөрийг хэдэн янзаар хучиж болох вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэг мөрөнд $n$ ширхэг нүд байна. Түүнийг нэг эсвэл хоёр нүдний урттай хавтангаар завсаргүй, давхарлалгүй хучъя. Нэг урттай хавтангууд хоорондоо ялгаагүй; байрлуулсан уртуудын дараалал өөр бол өөр хучилт гэж тоолно."
+          },
+          {
+            "type": "p",
+            "text": "$n=3$ үед $1+1+1$, $1+2$, $2+1$ гэсэн гурван арга бий. $1+2$ ба $2+1$ нь хоёр нүдтэй хавтангийн байрлал өөр тул ялгаатай. Урт мөрөнд бүх хучилтыг нэг нэгээр нь үүсгэлгүй тоог нь олох хэрэгтэй."
+          },
+          {
+            "type": "p",
+            "text": "Аргын тоо их хурдан өсөх тул доорх программ бодит тоог бүхэлд нь бус, $1000000007$-д хуваасан үлдэгдлийг гаргана. Жижиг жишээнүүдэд тоо нь энэ хуваагчаас бага тул шууд аргын тоотойгоо тэнцүү байна."
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Хавтан бүрийн сонголтыг салаалуулбал яах вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхний хавтанг нэг нүдтэй эсвэл хоёр нүдтэй гэж сонгоод үлдсэн мөрийг мөн адил хучиж болно. Ийнхүү бүх хучилтыг үүсгэдэг өөрийгөө дуудах функц бичих нь шууд арга."
+          },
+          {
+            "type": "p",
+            "text": "Гэвч $5$ нүдний хариуг бодохын тулд $4$ ба $3$ нүдний хариуг бодно. $4$ нүднийх нь дахиад $3$ ба $2$ нүдний хариуг асууна. Ижил $3$ нүдний бодлого хэдийн давтагдлаа. Мөр уртрах тусам ийм давталт олширно."
+          },
+          {
+            "type": "p",
+            "text": "Дуудлагын гүн хамгийн ихдээ $n$, нэг дуудлага хамгийн ихдээ хоёр салаатай тул $O(2^n)$ гэсэн хугацааны дээд үнэлгээ гарна. Энэ нь хамгийн нарийн үнэлгээ гэсэн үг биш, харин маш хурдан өсөхийг харуулж байна. Дуудлагын давхаргад $O(n)$ санах ой хэрэгтэй."
+          }
+        ]
+      },
+      {
+        "key": "observation",
+        "title": "3. Давтагдсан жижиг хариуг нэг удаа бодъё",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$i$ нүдийг хучих аргын тоог $w[i]$ гэж хадгалъя. Нэг удаа олсон $w[3]$-ыг дахин бодохгүй, хэрэгтэй бүрд нь хүснэгтээс уншина. Ингэснээр бүх хучилтын түүхийг хадгалахгүйгээр тэдгээрийн тоог нэг утгад нэгтгэж байна."
+          },
+          {
+            "type": "p",
+            "text": "Хучилтын сүүлийн хавтанг харъя. Нэг нүдтэй байвал өмнөх $i-1$ нүдийг хучсан байх ёстой. Хоёр нүдтэй байвал өмнөх $i-2$ нүдийг хучсан байна. Энэ хоёр бүлэг сүүлийн хавтангийн уртаараа ялгаатай тул давхцахгүй."
+          },
+          {
+            "type": "p",
+            "text": "Жижиг дэд бодлогын хариуг хадгалж, тэдгээрээс том дэд бодлогын хариуг гаргах энэ аргыг динамик програмчлал гэдэг. Товч нэр нь DP. Гол нь томьёо цээжлэх биш, яг ямар жижиг хариу хэрэгтэйг тодорхойлох юм."
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Төлөв, эхлэх утга, шилжилт, дараалал",
+        "blocks": [
+          {
+            "type": "ordered",
+            "items": [
+              "Төлөвийн утга: $w[i]$ нь эхний $i$ нүдийг бүрэн хучих аргын тоо. Нэг тоо юу илэрхийлж байгааг ийм нэг өгүүлбэрээр эхэлж бич.",
+              "Эхлэх утга: $w[0]=1$. Хоосон мөрийг хучих нэг арга нь юу ч тавихгүй байх. Энэ нь хучилт үүсэх эхлэл учраас тэг биш.",
+              "Шилжилт: $w[1]=w[0]=1$. $i\\ge2$ үед $w[i]=w[i-1]+w[i-2]$. Хариуг сүүлийн хавтангийн хоёр бүлгээс гаргаж байна.",
+              "Бодох дараалал: $i=1,2,\\ldots,n$ гэж өсгө. Шинэ утга бодоход хэрэгтэй өмнөх хоёр утга аль хэдийн бэлэн байна."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Төлөв бол жижиг бодлогын нэр, шилжилт бол түүний хариуг өмнөх хариунуудаас гаргах дүрэм. Хүснэгтээ ямар дарааллаар бөглөхийг тодорхойлох нь томьёог бичихтэй адил чухал."
+          },
+          {
+            "type": "note",
+            "text": "Өөрийгөө дууддаг функц дээр нэгэнт олсон хариугаа хадгалж бас болно. Энд эхлээд жижигээс том руу дарааллаар бөглөх хувилбарыг сонгосон нь ямар утга хэзээ бэлэн болохыг ил харахад тустай."
+          }
+        ]
+      },
+      {
+        "key": "walkthrough",
+        "title": "5. Жижиг хүснэгтийг бүрэн бөглөе",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$n=6$ гэе. Эхний утга $w[0]=1$-ээс эхэлж, мөр бүрд зөвхөн өмнөх бэлэн утгуудыг уншина."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Хучих нүдний тоо",
+              "Шинэ тооцоо",
+              "Хариу"
+            ],
+            "rows": [
+              [
+                "$0$",
+                "Юу ч тавихгүй нэг сонголт.",
+                "$1$"
+              ],
+              [
+                "$1$",
+                "$w[0]$",
+                "$1$"
+              ],
+              [
+                "$2$",
+                "$w[1]+w[0]=1+1$",
+                "$2$"
+              ],
+              [
+                "$3$",
+                "$w[2]+w[1]=2+1$",
+                "$3$"
+              ],
+              [
+                "$4$",
+                "$w[3]+w[2]=3+2$",
+                "$5$"
+              ],
+              [
+                "$5$",
+                "$w[4]+w[3]=5+3$",
+                "$8$"
+              ],
+              [
+                "$6$",
+                "$w[5]+w[4]=8+5$",
+                "$13$"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Эцсийн хүснэгт $[1,1,2,3,5,8,13]$. Бид $13$ хучилтыг тус бүрээр нь үүсгэсэнгүй; долоон жижиг хариу л хадгаллаа. $w[4]$ нь дараа $w[5]$ болон $w[6]$-д хоёуланд нь хэрэглэгдсэн ч дахин бодогдоогүй."
+          },
+          {
+            "type": "note",
+            "text": "$w[3]$-ын гурван хучилтыг гараар зурж, сүүлийн хавтан нэгтэй хоёр арга, сүүлийн хавтан хоёртой нэг арга болохыг шалга. Энэ бүлэглэлт нь дараах баталгааны жижиг жишээ юм."
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Яагаад дутуу эсвэл давхар тоолохгүй вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$i\\ge1$ нүдийг хучсан ямар ч хучилтын сүүлийн хавтан нэг эсвэл хоёр нүдтэй байна. Өөр урттай хавтан байхгүй тул дараах хоёр бүлэг бүх боломжийг хамарна."
+          },
+          {
+            "type": "ordered",
+            "items": [
+              "Сүүлийн хавтан нэг нүдтэй хучилт бүрээс түүнийг авбал $i-1$ нүдний нэг хучилт гарна. Урвуугаар, $i-1$ нүдний ямар ч хучилтад нэг нүдтэй хавтан нэмэхэд яг нэг шинэ хучилт үүснэ. Тэгэхээр энэ бүлгийн тоо $w[i-1]$.",
+              "$i\\ge2$ үед сүүлийн хавтан хоёр нүдтэй бүлэг мөн адил $i-2$ нүдний хучилтуудтай нэг нэгээрээ харгалзана. Түүний тоо $w[i-2]$.",
+              "Хоёр бүлэг сүүлийн хавтангийн уртаараа ялгаатай тул нэг хучилт хоёуланд нь орохгүй. Иймээс тоонуудыг нэмж болно. $i=1$ үед зөвхөн эхний бүлэг байна.",
+              "$w[0]=1$ зөв. Өмнөх бүх жижиг хариу зөв гэж үзвэл дээрх харгалзаагаар дараагийн хариу зөв гарна. Өсөх дарааллаар боддог тул энэ баталгаа хүснэгтийн бүх утгад үйлчилнэ."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Код хүснэгтийн утгуудыг $M=1000000007$-д хуваасан үлдэгдлээр хадгална. Нийлбэрийн үлдэгдлийг нэмэгдэхүүнүүдийн үлдэгдлээр бодож болдог тул энэ нь шаардаж буй гаралтыг хадгална. Харин том тохиолдолд хадгалсан утгыг бодит хучилтын нийт тоо гэж тайлбарлахгүй."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Хийх ажил ба санах ойн хэмжээг тооцъё",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$0$-оос $n$ хүртэл нийт $n+1$ төлөв бий. Төлөв бүр хамгийн ихдээ хоёр бэлэн утгыг уншиж, нэмээд үлдэгдэл авна. Тогтмол хэмжээтэй бүхэл тооны эдгээр үйлдлийг $O(1)$ гэж тооцвол нийт хугацаа $O(n)$. Хүснэгтийг анх тэглэх зардал ч $O(n)$ дотор багтана."
+          },
+          {
+            "type": "p",
+            "text": "Хүснэгт $n+1$ тоо хадгалдаг тул санах ой $O(n)$. $n=1000000$ үед 64 битийн утгуудын хүснэгт ойролцоогоор $8$ сая байт эзэлнэ. Энэ нь зөвхөн утгуудын хэмжээ; хэлний бүтцийн бага нэмэлт зардал байж болно."
+          },
+          {
+            "type": "p",
+            "text": "Энэ бодлогод зөвхөн өмнөх хоёр утга хэрэгтэй тул дараа нь $O(1)$ зайд багасгаж болно. Шинэ утгыг бодох хүртэл хоёр хуучин утгаа алдаж болохгүй. Одоохондоо бүтэн хүснэгтийг хадгалж байгаа нь төлөвийн утга, бодох дарааллыг сурахад илүү ойлгомжтой."
+          },
+          {
+            "type": "note",
+            "text": "Динамик програмчлал үргэлж шугаман хугацаатай биш. Төлөв бүр бүх өмнөх төлөвийг шалгавал $O(n^2)$ болж болно. Төлөвийн тоо болон нэг төлөвт хийх ажлыг тус тусад нь тооцно. Бодит маш том бүхэл тоонуудыг хадгалбал арифметикийн зардал ч өөр болно."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. C++17 хэрэгжүүлэлтийг бүтээе",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэг бүхэл $n$ уншина; $0\\le n\\le1000000$. Нэг эсвэл хоёр нүдтэй хавтангаар хучих аргын тоог $1000000007$-д хуваасан үлдэгдлийг хэвлэнэ. $n=0$ үед хариу $1$."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Хүснэгт ба эхлэх утга"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "length",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь $n$. ",
+                "marks": []
+              },
+              {
+                "text": "ways[filled]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гэсэн байрлалд эхний ",
+                "marks": []
+              },
+              {
+                "text": "filled",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нүдний хариуны үлдэгдлийг хадгална. Хүснэгтийн урт $n+1$, бүх тоо эхэндээ тэг. Зөвхөн хоосон хучилтын утгыг нэг болгоно. ",
+                "marks": []
+              },
+              {
+                "text": "modulus",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь үлдэгдэл авах хуваагч.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nlong long count_tilings(int length) {\n    const long long modulus = 1000000007;\n    vector<long long> ways(length + 1, 0);\n    ways[0] = 1;\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Бэлэн хариунуудаас шинэ утгыг олох"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Нэг нүдтэй сүүлийн хавтангийн бүлгээс эхэлнэ. Хоёр нүдтэй хавтан багтах үед хоёр дахь бүлгийг нэмнэ. ",
+                "marks": []
+              },
+              {
+                "text": "filled >= 2",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гэсэн шалгалт нь хүснэгтийн сөрөг байрлал уншихаас хамгаална. Нэмсний дараа шаардсан хуваагчаар үлдэгдэл авна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    for (int filled = 1; filled <= length; filled++) {\n        ways[filled] = ways[filled - 1];\n        if (filled >= 2) {\n            ways[filled] += ways[filled - 2];\n        }\n        ways[filled] %= modulus;\n    }\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Эцсийн хариуг буцаах"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Давталт дуусахад ",
+                "marks": []
+              },
+              {
+                "text": "ways[length]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " бэлэн байна. Хоосон мөрөнд давталт ажиллахгүй боловч эхэнд тавьсан нэгийг зөв буцаана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    return ways[length];\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Оролтыг функцтэй холбох"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Үндсэн ",
+                "marks": []
+              },
+              {
+                "text": "main",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " функц уртыг уншиж, ",
+                "marks": []
+              },
+              {
+                "text": "count_tilings",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийн буцаасан утгыг хэвлэнэ. Хучилтуудын жагсаалт хэрэггүй учраас тэдгээрийг сэргээх код байхгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int length;\n    cin >> length;\n    cout << count_tilings(length) << '\\n';\n    return 0;\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах программ"
+          },
+          {
+            "type": "note",
+            "text": "Дээрх дөрвөн хэсгийг дарааллаар нь залгахад доорх бүтэн программ үүснэ. Нэг файлд хуулж C++17-оор ажиллуулаарай."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nlong long count_tilings(int length) {\n    const long long modulus = 1000000007;\n    vector<long long> ways(length + 1, 0);\n    ways[0] = 1;\n\n    for (int filled = 1; filled <= length; filled++) {\n        ways[filled] = ways[filled - 1];\n        if (filled >= 2) {\n            ways[filled] += ways[filled - 2];\n        }\n        ways[filled] %= modulus;\n    }\n\n    return ways[length];\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int length;\n    cin >> length;\n    cout << count_tilings(length) << '\\n';\n    return 0;\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Оролт ба гаралтын жишээ"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "6"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "13"
+          },
+          {
+            "type": "p",
+            "text": "Гаралт нь гараар бөглөсөн хүснэгтийн сүүлийн утгатай таарч байна."
+          }
+        ]
+      },
+      {
+        "key": "boundaries",
+        "title": "9. Зааг ба тоон хэтрэлтийг шалгах нь",
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "$n=0$: юу ч тавихгүй нэг арга.",
+              "$n=1$: ганц нэг нүдтэй хавтан. Хоёр нүдтэй хавтан багтахгүй.",
+              "$n=2$: хоёр нэг нүдтэй хавтан эсвэл нэг хоёр нүдтэй хавтан; нийт $2$.",
+              "Хамгийн их зөвшөөрсөн уртад хүснэгтийн хамгийн сүүлийн хүчинтэй байрлал руу л хандана."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Хадгалсан нэмэгдэхүүн бүр $M$-ээс бага. Нэг төлөвт хамгийн ихдээ хоёр ийм утга нэмэх тул нийлбэр $2M$-ээс бага бөгөөд 64 битийн бүхэл тоонд аюулгүй багтана. Үлдэгдэл авахгүй явбал аргын бодит тоо өссөөр энгийн бүхэл тоонд багтахаа болино."
+          },
+          {
+            "type": "note",
+            "text": "Жижиг уртуудад бүх хучилтыг шууд үүсгэдэг бие даасан аргатай харьцуул. Том уртад зөвхөн жишээ гаралтыг бус, индексийн хүрээ, хадгалах утгын хязгаар, хугацаа ба санах ойг шалга."
+          }
+        ]
+      },
+      {
+        "key": "mistakes",
+        "title": "10. Түгээмэл алдааг ялгая",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Хоосон хучилтыг тэг болгох"
+          },
+          {
+            "type": "p",
+            "text": "$w[0]=0$ тавивал эхний шинэ хариу ч тэг болж, дараах бүх утга тэг хэвээр үлдэнэ. Юу ч тавихгүй байх нь боломжгүй гэсэн үг биш, нэг хүчинтэй эхлэл."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Байхгүй өмнөх байрлалыг унших"
+          },
+          {
+            "type": "p",
+            "text": "$i=1$ үед $i-2=-1$. Хоёр дахь бүлэг байхгүй болохоос сөрөг байрлалд дурын утга байна гэсэн үг биш. Код нөхцөлөөр хамгаална."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Аргын тоо ба хамгийн бага өртгийг холих"
+          },
+          {
+            "type": "p",
+            "text": "Хамгийн бага өртөг олох бодлогод хоёр өмнөх хариуг шууд нэмэхгүй, боломжит шилжилтүүдээс хамгийн багыг авна. Хүрч болохгүй төлөвийг тэгээр эхлүүлбэл өртөгтэй ганц боломж байсан ч буруу тэг үлдэж болно."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Өөр дарааллуудыг ижил гэж андуурах"
+          },
+          {
+            "type": "p",
+            "text": "Манай хучилтад $1+2$ ба $2+1$ өөр. Зөвхөн нэг ба хоёр нүдтэй хавтангийн ширхэгийг тоолдог өөр бодлогод тэдгээрийг ижил гэж үзэж болно. Юуг нэг арга гэж тоолж байгаагаа эхлээд тогтоо."
+          }
+        ]
+      },
+      {
+        "key": "connections",
+        "title": "11. Холбоотой хичээлүүд ба төлөвийг өргөжүүлэх нь",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өөрийгөө дууддаг функц, бүх боломжийг шалгах арга болон дарааллын байрлалыг мэддэг байх нь суурь. Дараах сэдэв бүрд шинэ хэмжээсийг нэрээр нь бус, ирээдүйн сонголтыг ялгахад шаардлагатай мэдээллээс гаргана."
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "grid-dp",
+            "label": "Торны мөр ба баганаар төлөв үүсгэх"
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "knapsack",
+            "label": "Үүргэвчийн бодлогод нөөцийн хязгаар хадгалах"
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "interval-dp",
+            "label": "Завсрыг жижиг хэсгүүдэд хуваах төлөв"
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "tree-dp",
+            "label": "Модны хүүхэд хэсгүүдийн хариуг нэгтгэх"
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "bitmask-dp",
+            "label": "Сонгосон жижиг олонлогийг төлөвт хадгалах"
+          },
+          {
+            "type": "p",
+            "text": "Дараагийн торны хичээл дээр нэг дугаарын оронд нүдний хоёр дугаар хэрэгтэй болно. Тэглээ гээд энд сурсан төлөв, эхлэх утга, шилжилт, бодох дараалал гэсэн дөрвөн асуулт өөрчлөгдөхгүй."
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "12. Өөр бодлогод энэ санааг хэрхэн таних вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өөр сонголтууд ижил жижиг бодлогод хүргэж байна уу? Тэр жижиг бодлогын хариу зөвхөн хадгалсан мэдээллээсээ хамаарч байна уу? Хэрэв тийм бол хариуг нь нэг удаа олоод дахин хэрэглэх боломжийг судал."
+          },
+          {
+            "type": "p",
+            "text": "Жишээ нь гурван байрлалын өндөр $[5,14,9]$ бөгөөд нэг эсвэл хоёр байрлал урагшлахад өндөрүүдийн зөрүүний хэмжээг төлдөг байг. Хамгийн бага өртгүүд $[0,9,4]$ болно: сүүлийнх нь $\\min(9+5,0+4)=4$. Өмнөх байрлалууд төстэй ч аргын тоо нэмдэгийн оронд өртгүүдийн бага утгыг сонгож байна."
+          },
+          {
+            "type": "p",
+            "text": "Төлөв хангалттай эсэхийг хоёр өөр түүхээр шалга. Хэрэв ижил урттай хавтанг дараалуулж болохгүй гэсэн шинэ нөхцөл нэмбэл $1+2$ ба $2+1$ хоёулаа $3$ нүд дүүргэсэн ч дараагийн зөвшөөрөх хавтан өөр болно. Тэгвэл зөвхөн дүүргэсэн нүдний тоо хангалтгүй; сүүлийн хавтангийн уртыг бас ялгана."
+          },
+          {
+            "type": "note",
+            "text": "Бүх хамаарал тойрог үүсгэдэг өөр бодлогод жижигээс том руу ганц удаа бөглөх энэ хувилбар автоматаар ажиллахгүй. Төлөвүүдийн хамаарал болон бодох дарааллыг заавал шалга."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Зургаан шаттай дасгал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Дасгал бүрд эхлээд хадгалах нэг утга юу илэрхийлэхийг өгүүлбэрээр бич. Тоолох, хамгийн бага өртөг, хамгийн их оноо гэсэн зорилгыг ялгаж байж шилжилтээ гарга. Дараах бодлогын картууд нэгдсэн жагсаалтад бий."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Халаалт · Dice Combinations"
+          },
+          {
+            "type": "p",
+            "text": "Хавтангийн уртыг нэг, хоёр гэж хязгаарлахын оронд шооноос нэгээс зургаа хүртэлх утга гарч болно. Сүүлийн утгаар бүлэглэх ижил санаагаар нийлбэр үүсгэх дарааллуудыг тоол. Дараалал өөр бол өөр арга болохыг жижиг тоон дээр шалга. Энэ нь эхэлж бие даан бодох үндсэн дасгал."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Үндсэн дасгал · Frog 1"
+          },
+          {
+            "type": "p",
+            "text": "Аргын тоо биш, хамгийн бага өртөг хадгалах төлөвийг тодорхойл. Нэг эсвэл хоёр байрлалаас ирж болох нь төстэй ч хариунуудыг нэмэхийн оронд аль бага өртгийг сонгох хэрэгтэйг тайлбарла. Эхний байрлалын өртөг яагаад тэг болохыг хэл. Энэ мөн үндсэн дасгал."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Ажиглалтаа өөрчлөх · Vacation"
+          },
+          {
+            "type": "p",
+            "text": "Ижил өдөрт хүрсэн ч өчигдөр өөр үйл ажиллагаа хийсэн хоёр түүхийн маргаашийн сонголт өөр байж болно. Тиймээс өдрөөс гадна хамгийн сүүлийн үйл ажиллагааг төлөвт ялгаж хадгал. Дараа нь хамгийн их нийт онооны шилжилтээ гарга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Өөр нөхцөлд хэрэглэх · Grid 1"
+          },
+          {
+            "type": "p",
+            "text": "Нүдний мөр, багана гэсэн хоёр дугаараар төлөв үүсгэ. Хана, хил, эхлэх нүдийг ялгаж, дээрээс ба зүүнээс ирэх замуудыг хэрхэн нэгтгэхийг тайлбарла. Торны динамик програмчлалын хичээлээ эхэлж үз."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Сорилт · Book Shop"
+          },
+          {
+            "type": "p",
+            "text": "Нэг номыг нэгээс олон удаа авч болохгүйг төлөвдөө тусга. Эхлээд ямар ном хүртэл үзсэн, хэдэн төгрөгийн боломж үлдсэнийг тодорхойл. Нэг хэмжээстээр хадгалахаар багасгавал мөнгөний хязгаарыг яагаад буурахаар боловсруулах ёстойг батал. Үүргэвчийн бодлогын хичээлийн дараа оролд."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Олимпиадын өргөтгөл · IOI 2009 Raisins"
+          },
+          {
+            "type": "p",
+            "text": "Нэг дугаарын оронд тэгш өнцөгт хэсгийг төлөв болгох шаардлага гарна. Хийх нэг зүсэлтийн төлбөр болон үүсэх хоёр жижиг хэсгийн хариуг ялгаж загварчил. Завсрын динамик програмчлал, хоёр хэмжээст хуримтлагдсан нийлбэрийг үзсэний дараах нэмэлт дасгал; суурь хичээлд заавал биш."
+          }
+        ]
+      },
+      {
+        "key": "importance",
+        "title": "14. Эхэлж эзэмших чадвар ба ач холбогдол",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Динамик програмчлал нь олон сэдэвт дахин хэрэглэгдэх тул сургалтын ач холбогдол өндөр. Жижиг хариуг хадгалах санаанаас илүү, ямар мэдээлэл хадгалбал ирээдүйн боломжийг бүрэн ялгахыг сурах нь гол зорилго. Эхний жишээ энгийн байгаа нь бүх хэрэглээ хялбар гэсэн үг биш."
+          },
+          {
+            "type": "p",
+            "text": "Эхлээд хүснэгтийн утгыг тайлбарлаж, хоосон эхлэлийн нэгийг ойлгож, зөв дарааллаар бодож чад. Dice Combinations ба Frog 1-ийг бие даан бодох нь тооллого болон хамгийн бага өртөгт санаагаа шилжүүлж чадсаныг шалгана."
+          },
+          {
+            "type": "note",
+            "text": "Тор, үүргэвч, завсар, олимпиадын өргөтгөлийг бүгдийг дуусгасны дараа л энэ эхлэлийг эзэмшинэ гэсэн үг биш. Шинэ сэдэв шаардсан нэмэлт дасгалуудыг тохирох үед нь үргэлжлүүл."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Дүгнэлт ба өөрийн үнэлгээ",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Динамик програмчлалын шийдлийг эхлээд томьёо бус, тодорхой утгатай жижиг хариунуудаар байгуулна. Тэдгээрийг зөв эхлүүлж, дутуу эсвэл давхар тоолохгүйгээр нэгтгэж, хэрэгтэй өмнөх утгууд бэлэн байх дарааллаар бодно."
+          },
+          {
+            "type": "list",
+            "items": [
+              "Төлөвийн утгыг нэг өгүүлбэрээр тодорхойлж чадна.",
+              "Эхлэх утга яагаад зөв болохыг тайлбарлаж чадна.",
+              "Шилжилтийн бүлгүүд бүх боломжийг хамарч, давхцахгүйг баталж чадна.",
+              "Төлөвийн тоо ба нэг төлөвт хийх ажлаас нийт зардлыг гаргаж чадна.",
+              "Код харалгүй хэрэгжүүлж, тоолох ба өртөг олох дасгалд зорилгод нь тохирсон шилжилт гаргаж чадна."
+            ]
+          },
+          {
+            "type": "note",
+            "text": "Уншсан тэмдэглэгээг ойлгосон, хэрэгжүүлсэн, бие даан бодсон гэсэн тусдаа чадвараас ялга. Доорх өөрийн үнэлгээ болон үндсэн дасгалын тэмдэглэлээр ахицаа шалга."
+          },
+          {
+            "type": "links",
+            "items": [
+              {
+                "label": "Нэмэлт унших: USACO Guide — динамик програмчлалын эхлэл",
+                "url": "https://usaco.guide/gold/intro-dp"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Dynamic programming — building answers from smaller answers",
+        "summary": "Discover repeated subproblems while tiling a row. Define the state, base, transition and order, then prove the count and implement it.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. How many ways can we tile one row?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "A row has $n$ cells. Cover it exactly with tiles of length one or two, leaving no gaps or overlaps. Tiles of the same length are indistinguishable; different length orders are different tilings."
+              },
+              {
+                "type": "p",
+                "text": "For $n=3$, the possibilities are $1+1+1$, $1+2$ and $2+1$. The latter two place the length-two tile differently. We want to count long rows without constructing every tiling."
+              },
+              {
+                "type": "p",
+                "text": "Counts grow rapidly, so the program returns the remainder modulo $1000000007$. Small examples remain below that divisor, so their displayed values equal the actual count."
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. What if we branch on every tile?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Choose a first tile of length one or two and solve the remaining row recursively. This directly generates every tiling."
+              },
+              {
+                "type": "p",
+                "text": "Length $5$ asks for lengths $4$ and $3$; length $4$ asks for $3$ and $2$ again. Identical remaining-length problems repeat, increasingly often as the row grows."
+              },
+              {
+                "type": "p",
+                "text": "Depth is at most $n$ with at most two children per call, giving an $O(2^n)$ time upper bound, not a tight-bound claim. The recursive call stack uses $O(n)$ memory."
+              }
+            ]
+          },
+          {
+            "key": "observation",
+            "title": "3. Compute each smaller answer once",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Store the number of tilings of $i$ cells as $w[i]$. Once $w[3]$ is known, reuse it rather than recomputing it. One stored count represents many construction histories."
+              },
+              {
+                "type": "p",
+                "text": "Look at the final tile. A one-cell tile follows a tiling of $i-1$ cells; a two-cell tile follows a tiling of $i-2$ cells. These groups are disjoint because the final lengths differ."
+              },
+              {
+                "type": "p",
+                "text": "Dynamic programming, or DP, stores subproblem answers and derives larger answers from them. The essential step is defining the right subproblem, not memorizing a recurrence."
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. State, base, transition and evaluation order",
+            "blocks": [
+              {
+                "type": "ordered",
+                "items": [
+                  "State: $w[i]$ counts complete tilings of the first $i$ cells. Define what one stored value means before writing formulas.",
+                  "Base: $w[0]=1$ counts the one empty construction. Taking no tiles is one valid starting choice.",
+                  "Transition: $w[1]=w[0]=1$. For $i\\ge2$, $w[i]=w[i-1]+w[i-2]$, grouping by the final tile.",
+                  "Order: process $i=1,2,\\ldots,n$, so required predecessors are already ready."
+                ]
+              },
+              {
+                "type": "p",
+                "text": "A state names a subproblem; a transition derives its answer from other answers. Choosing a valid evaluation order is as important as writing the formula."
+              },
+              {
+                "type": "note",
+                "text": "Caching answers inside a recursive procedure is another implementation. Here we fill a full table from small to large to make the dependency order explicit."
+              }
+            ]
+          },
+          {
+            "key": "walkthrough",
+            "title": "5. Fill the entire small table",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Take $n=6$ and initialize $w[0]=1$. Each row uses only completed earlier values."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Cells",
+                  "Calculation",
+                  "Count"
+                ],
+                "rows": [
+                  [
+                    "$0$",
+                    "One empty construction.",
+                    "$1$"
+                  ],
+                  [
+                    "$1$",
+                    "$w[0]$",
+                    "$1$"
+                  ],
+                  [
+                    "$2$",
+                    "$w[1]+w[0]=1+1$",
+                    "$2$"
+                  ],
+                  [
+                    "$3$",
+                    "$w[2]+w[1]=2+1$",
+                    "$3$"
+                  ],
+                  [
+                    "$4$",
+                    "$w[3]+w[2]=3+2$",
+                    "$5$"
+                  ],
+                  [
+                    "$5$",
+                    "$w[4]+w[3]=5+3$",
+                    "$8$"
+                  ],
+                  [
+                    "$6$",
+                    "$w[5]+w[4]=8+5$",
+                    "$13$"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "The table is $[1,1,2,3,5,8,13]$. We stored seven answers rather than thirteen tilings. Both $w[5]$ and $w[6]$ reuse $w[4]$ without recomputing it."
+              },
+              {
+                "type": "note",
+                "text": "Draw the three tilings counted by $w[3]$: two end in a one-cell tile and one in a two-cell tile. This is the small instance of the proof below."
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Why is nothing omitted or double-counted?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For $i\\ge1$, every tiling of $i$ cells ends in a tile of length one or two. Since no other length is allowed, the following groups cover every possibility."
+              },
+              {
+                "type": "ordered",
+                "items": [
+                  "Removing a final one-cell tile gives a tiling of $i-1$ cells. Appending one to any such tiling reverses that operation uniquely, so this group has $w[i-1]$ members.",
+                  "For $i\\ge2$, final two-cell tilings correspond in the same one-to-one way to tilings of $i-2$ cells, giving $w[i-2]$.",
+                  "A tiling cannot belong to both groups because their final lengths differ. Add the counts; for $i=1$, only the first group exists.",
+                  "The base $w[0]=1$ is correct. Assuming smaller answers correct, the correspondence proves the next answer correct. Increasing-index processing applies this induction to the full table."
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Code stores remainders modulo $M=1000000007$. Addition of remainders preserves the required remainder, but large stored values must not be described as exact tiling counts."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Count the work and memory",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "There are $n+1$ states. Each reads at most two predecessors, adds and takes a remainder. With fixed-width arithmetic, this is constant work per state and $O(n)$ total time, including initialization."
+              },
+              {
+                "type": "p",
+                "text": "The full table stores $n+1$ values, using $O(n)$ memory. At $n=1000000$, 64-bit values occupy about eight million bytes, plus small container overhead."
+              },
+              {
+                "type": "p",
+                "text": "Only two preceding values are needed here, allowing later compression to $O(1)$ space if both survive until the new value is computed. The full table is initially clearer for learning the state and order."
+              },
+              {
+                "type": "note",
+                "text": "DP is not always linear: scanning every earlier state per state can cost $O(n^2)$. Count states and work per state separately. Exact arbitrary-size integer arithmetic would also have a different cost."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Build the C++17 implementation",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Read one integer $n$, with $0\\le n\\le1000000$. Print the tiling count modulo $1000000007$; for $n=0$, print one."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. Table and base value"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "length",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " is $n$. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ways[filled]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " stores the count remainder for that many covered cells. Allocate $n+1$ zeros and set the empty construction to one. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "modulus",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " is the divisor.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nlong long count_tilings(int length) {\n    const long long modulus = 1000000007;\n    vector<long long> ways(length + 1, 0);\n    ways[0] = 1;\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. Derive the next answer"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Start with the final one-cell group. Add the final two-cell group only when ",
+                    "marks": []
+                  },
+                  {
+                    "text": "filled >= 2",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", avoiding a negative predecessor index. Take the remainder after addition.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    for (int filled = 1; filled <= length; filled++) {\n        ways[filled] = ways[filled - 1];\n        if (filled >= 2) {\n            ways[filled] += ways[filled - 2];\n        }\n        ways[filled] %= modulus;\n    }\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. Return the result"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "At termination ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ways[length]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " is ready. For an empty row the loop is skipped and the initialized one is returned.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    return ways[length];\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Connect the input"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "main",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " reads the length and prints ",
+                    "marks": []
+                  },
+                  {
+                    "text": "count_tilings",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". No reconstruction is needed because only a count is requested.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int length;\n    cin >> length;\n    cout << count_tilings(length) << '\\n';\n    return 0;\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete program"
+              },
+              {
+                "type": "note",
+                "text": "The four fragments concatenate in order to this complete program. Copy it into one file and compile as C++17."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nlong long count_tilings(int length) {\n    const long long modulus = 1000000007;\n    vector<long long> ways(length + 1, 0);\n    ways[0] = 1;\n\n    for (int filled = 1; filled <= length; filled++) {\n        ways[filled] = ways[filled - 1];\n        if (filled >= 2) {\n            ways[filled] += ways[filled - 2];\n        }\n        ways[filled] %= modulus;\n    }\n\n    return ways[length];\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int length;\n    cin >> length;\n    cout << count_tilings(length) << '\\n';\n    return 0;\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Sample input and output"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "6"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "13"
+              },
+              {
+                "type": "p",
+                "text": "The result matches the last entry of the hand-computed table."
+              }
+            ]
+          },
+          {
+            "key": "boundaries",
+            "title": "9. Boundaries and arithmetic safety",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "$n=0$: one empty tiling.",
+                  "$n=1$: one one-cell tile; a two-cell tile does not fit.",
+                  "$n=2$: two one-cell tiles or one two-cell tile, giving two tilings.",
+                  "At the maximum input, access only allocated table positions."
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Each stored addend is below $M$. At most two are added, so the sum is below $2M$ and safely fits in signed 64-bit storage. Omitting the remainder operation eventually overflows an ordinary integer."
+              },
+              {
+                "type": "note",
+                "text": "Compare small lengths with an independent direct enumeration. For large inputs, inspect index bounds, numeric bounds and resource use rather than relying only on samples."
+              }
+            ]
+          },
+          {
+            "key": "mistakes",
+            "title": "10. Distinguish common mistakes",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Initializing the empty tiling to zero"
+              },
+              {
+                "type": "p",
+                "text": "Setting $w[0]=0$ makes every later count zero. An empty construction is valid, not impossible."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Reading a nonexistent predecessor"
+              },
+              {
+                "type": "p",
+                "text": "At $i=1$, index $i-2=-1$ is invalid. The group is absent, not a table value to read; guard it explicitly."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Confusing counts and minimum cost"
+              },
+              {
+                "type": "p",
+                "text": "Minimum-cost DP chooses the best transition rather than adding predecessor answers. Initializing an unreachable minimum state to zero can preserve an impossible free solution."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Confusing ordered and unordered objects"
+              },
+              {
+                "type": "p",
+                "text": "Here $1+2$ and $2+1$ occupy different positions. A task counting only quantities of each tile size could identify them. Decide what constitutes one object before counting."
+              }
+            ]
+          },
+          {
+            "key": "connections",
+            "title": "11. Related states and next lessons",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Recursion, direct enumeration and array indexing are prerequisites. Introduce another state dimension only when future options actually require it."
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "grid-dp",
+                "label": "Grid coordinates as state"
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "knapsack",
+                "label": "A resource limit in knapsack"
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "interval-dp",
+                "label": "Splittable intervals"
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "tree-dp",
+                "label": "Combining child-subtree answers"
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "bitmask-dp",
+                "label": "A selected small set as state"
+              },
+              {
+                "type": "p",
+                "text": "Grid DP replaces one position by row and column. The same four questions—state, base, transition, order—still apply."
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "12. Recognize the idea in another problem",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Do different choices reach the same smaller problem? Does the stored information fully determine its future options? If so, explore computing that smaller answer once and reusing it."
+              },
+              {
+                "type": "p",
+                "text": "For example, let heights be $[5,14,9]$, with jumps of one or two positions costing the absolute height difference. Minimum costs are $[0,9,4]$, since the last is $\\min(9+5,0+4)=4$. Similar predecessor positions now require a minimum rather than a sum of counts."
+              },
+              {
+                "type": "p",
+                "text": "Test sufficiency with different histories. If equal tile lengths cannot be consecutive, $1+2$ and $2+1$ both cover three cells but permit different next tiles. Covered length alone is no longer sufficient; retain the final tile length too."
+              },
+              {
+                "type": "note",
+                "text": "Cyclic dependencies do not automatically fit an increasing-index one-pass table. Check the dependency structure and evaluation order."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. Six-stage practice",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Define the meaning of one stored answer before writing transitions. Distinguish counting, minimum cost and maximum score. The consolidated cards below open these tasks."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Warm-up · Dice Combinations"
+              },
+              {
+                "type": "p",
+                "text": "Replace tile sizes one/two by die outcomes one through six. Count ordered sequences by their final outcome and verify small sums. This is a core independent exercise."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Standard · Frog 1"
+              },
+              {
+                "type": "p",
+                "text": "Redefine the state as minimum cost, not number of paths. Similar one/two-position predecessors now require choosing the cheapest total rather than adding answers. Explain the zero-cost initial position. This is also core practice."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Observation · Vacation"
+              },
+              {
+                "type": "p",
+                "text": "Two histories reaching the same day can allow different next activities. Retain the last activity in the state before deriving a maximum-score transition."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Application · Grid 1"
+              },
+              {
+                "type": "p",
+                "text": "Use row/column coordinates as state. Distinguish walls, boundaries and the start, then combine above/left paths in a valid order. Study grid DP first."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Challenge · Book Shop"
+              },
+              {
+                "type": "p",
+                "text": "Represent both the considered items and resource limit so a book is not reused. If compressing to one array, justify descending budget order. Study knapsack first."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Olympiad extension · IOI 2009 Raisins"
+              },
+              {
+                "type": "p",
+                "text": "Use a rectangle as the state and distinguish the current cut cost from its two subrectangle answers. This optional extension requires interval DP and 2D prefix sums."
+              }
+            ]
+          },
+          {
+            "key": "importance",
+            "title": "14. What should you master first?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "DP has high educational importance because its modeling questions transfer across many topics. The central skill is retaining enough information for future choices, not merely caching a formula. A simple first example does not make every application easy."
+              },
+              {
+                "type": "p",
+                "text": "First explain the table, the empty base and the processing order. Independently solve Dice Combinations and Frog 1 to transfer the idea from counts to minimum costs."
+              },
+              {
+                "type": "note",
+                "text": "Grid, knapsack, interval and olympiad extensions need not all be completed to master this introduction. Continue them when their prerequisites are ready."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Synthesis and self-assessment",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Build a DP solution from precisely defined smaller answers. Initialize them correctly, combine without omissions or double counting, and process them only after their dependencies are ready."
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Define a state in one sentence.",
+                  "Explain why its base is correct.",
+                  "Prove that transition groups cover the possibilities without overlap.",
+                  "Derive cost from the number of states and work per state.",
+                  "Implement independently and choose the right combination operation for counting versus optimization."
+                ]
+              },
+              {
+                "type": "note",
+                "text": "Assess reading, understanding, implementation and independent solving separately. Use the checks and core practice records below."
+              },
+              {
+                "type": "links",
+                "items": [
+                  {
+                    "label": "Further reading: USACO Guide — introduction to DP",
+                    "url": "https://usaco.guide/gold/intro-dp"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know recursion, direct enumeration, array positions and loops."
+      }
+    },
+    "prerequisites": "Өөрийгөө дууддаг функц, бүх боломжийг шалгах арга, дарааллын байрлал болон давталтыг мэддэг байна.",
+    "prerequisiteIds": [
+      "recursion",
+      "brute-force"
+    ],
+    "priorityLevel": "high",
+    "priorityReason": "Төлөвийн утга, эхлэх тохиолдол, нэгтгэх дүрэм, бодох дарааллыг үндэслэн гаргах чадвар нь тооллого ба өртөг олох олон сэдэвт хэрэглэгддэг тул сургалтын ач холбогдол өндөр.",
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "grid-dp",
+          "description": "Нүдний мөр ба баганаар жижиг бодлогыг ялгах.",
+          "descriptionEn": "States indexed by grid coordinates."
+        },
+        {
+          "tutorialId": "knapsack",
+          "description": "Сонгосон зүйлс болон нөөцийн хязгаарыг төлөвт тусгах.",
+          "descriptionEn": "States with a resource constraint."
+        },
+        {
+          "tutorialId": "interval-dp",
+          "description": "Нэг завсрын хариуг жижиг завсруудаас гаргах.",
+          "descriptionEn": "Derive interval splits from the final operation."
+        },
+        {
+          "tutorialId": "tree-dp",
+          "description": "Хүүхэд моднуудын хариуг зөв нөхцөлөөр нэгтгэх.",
+          "descriptionEn": "Combine child-subtree states."
+        },
+        {
+          "tutorialId": "bitmask-dp",
+          "description": "Сонгосон жижиг олонлогийг төлөвт хадгалах.",
+          "descriptionEn": "Represent a small set using a mask."
+        }
+      ],
+      "next": "grid-dp",
+      "practice": [
+        {
+          "key": "340",
+          "stage": "Warm-up",
+          "priority": true,
+          "reason": "Сүүлийн сонголтоор давхцахгүй бүлэг үүсгэж тоолох шилжилтээ бие даан гаргах үндсэн дасгал."
+        },
+        {
+          "key": "677",
+          "stage": "Standard",
+          "priority": true,
+          "reason": "Төлөвийн утгыг аргын тооноос хамгийн бага өртөг болгон өөрчилж, нэгтгэх үйлдлээ үндэслэн сонгох үндсэн дасгал."
+        },
+        {
+          "key": "679",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "684",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "346",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "915",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "341",
+          "stage": "Standard",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "342",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "343",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "344",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "111",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false
+  }
+}
