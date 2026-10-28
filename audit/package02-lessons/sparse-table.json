@@ -1,0 +1,829 @@
+{
+  "id": "sparse-table",
+  "expected_revision": 5,
+  "expected_published": true,
+  "expected_body_sha256": "f29fb0dee02e283228b5e04cfb08945e74cdd2ce5457f97fdffb71e975d4b392",
+  "status": "Authored; semantic/code/native editor review pending",
+  "body": {
+    "id": "sparse-table",
+    "level": "Дунд шат",
+    "order": 37,
+    "title": "Sparse table — өөрчлөгдөхгүй завсрын хамгийн бага утга",
+    "aliases": "sparse-table Sparse table — static range minimum Sparse tables — static range minimum sparse table rmq static range minimum query min gcd",
+    "related": [
+      "segment-tree",
+      "bit-operations",
+      "number-theory"
+    ],
+    "summary": "Хоёрын зэрэг урттай хэсгүүдийг урьдчилан бодож, давхцсан хоёр хэсгийн хамгийн бага утгаар завсрын асуултад тогтмол хугацаанд хариулна.",
+    "category": "Data structures",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Массив өөрчлөгдөхгүй бол урьдчилж юу бэлдэх вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$[5,2,7,3,6,1,4,8]$ массивт олон хамгийн бага утгын асуулт ирнэ. $[2,7]$-ийн хамгийн бага утга нэг, $[3,3]$-ийнх долоо, $[1,4]$-ийнх хоёр. Нэг ч утга солихгүй."
+          },
+          {
+            "type": "p",
+            "text": "Сегментийн мод логарифм асуулттай. Илүү урьдчилсан ажил ба санах ой төлөөд асуулт бүрийг хоёр бэлэн хариунаас гаргаж болох уу?"
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Бүх завсрыг хадгалах нь квадрат",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Завсар бүрийн хамгийн бага утгыг хадгалбал $O(n^2)$ санах ой. Зөвхөн урт нь $1,2,4,8$ гэх мэт хэсгүүдийг эхлэх байрлал бүрд хадгалбал түвшний тоо логарифм болно."
+          },
+          {
+            "type": "p",
+            "text": "Ижил урттай хоёр хөрш хэсгийн хамгийн бага утгаас хоёр дахин урт хэсгийг байгуулж болно. Ингэж хэмжээг өсгөх DP гарна."
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "3. Түвшин ба эхлэх байрлал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$table[k][l]$ нь $l$-ээс эхлэх $2^k$ урттай хэсгийн хамгийн бага утга. Тэг түвшин анхны утгууд. Дараагийнх нь өмнөх түвшний зүүн ба баруун хагасын хамгийн бага утга."
+          },
+          {
+            "type": "p",
+            "text": "Зөвхөн бүтэн хэсэг массив дотор багтах байрлалыг байгуулна. Хүснэгтийн төгсгөлийн ашиглахгүй нүднүүдийг асуултад унших ёсгүй."
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Завсрыг давхцсан хоёр блокоор бүрхэх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Урт $L=r-l+1$-д $k=\\lfloor\\log_2 L\\rfloor$, $p=2^k$ гэе. Зүүн $[l,l+p-1]$, баруун $[r-p+1,r]$ хоёр хэсгийн хамгийн бага утга авна."
+          },
+          {
+            "type": "p",
+            "text": "$p\\le L<2p$ тул хоёр хэсэг нийлээд завсрыг бүрэн хамарна, дундаа давхцаж болно. Minimum-д нэг утгыг хоёр удаа харсан ч хариу өөрчлөгдөхгүй."
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "5. Зургаан урттай асуулт хоёр дөрвөөр",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэгээс эхэлсэн $[2,7]$ асуултын урт зургаа, хамгийн том хоёрын зэрэг дөрөв. $[2,5]$ утгууд $2,7,3,6$, хамгийн бага утга хоёр. $[4,7]$ утгууд $3,6,1,4$, хамгийн бага утга нэг."
+          },
+          {
+            "type": "p",
+            "text": "Дунд нь $[4,5]$ давхцсан ч хамгийн бага утга нэг хэвээр. Ганц элементийн асуултад хоёр блок ижил нэг нүд болох тул хариу тэр утга."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Блок",
+              "Утгууд",
+              "Хамгийн бага"
+            ],
+            "rows": [
+              [
+                "[2,5]",
+                "2,7,3,6",
+                "2"
+              ],
+              [
+                "[4,7]",
+                "3,6,1,4",
+                "1"
+              ],
+              [
+                "[2,7]",
+                "2,7,3,6,1,4",
+                "1"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Давхардалд өөрчлөгдөхгүй шинж",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Байгуулахад хоёр хагас давхцахгүй яг бүтэн блокийг бүрдүүлдэг тул индукцээр бүх хадгалсан хамгийн бага утга зөв. Асуултын хоёр блок хоёулаа хүссэн завсар дотор, нийлээд түүнийг хамардаг."
+          },
+          {
+            "type": "p",
+            "text": "Хамгийн бага утгын хувьд $min(x,x)=x$. Давхардсан утгуудыг дахин оруулсан ч нийт хамгийн бага утга хэвээр тул хоёр зөв блокийн хамгийн бага утга нь яг завсрынх. Энэ давхардалд өөрчлөгдөхгүй шинжийг идемпотент гэж нэрлэдэг."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Урьдчилсан зардлаар асуултаа хялбарчлах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Байгуулах ба хадгалах $O(n\\log(n+1))$, асуулт $O(1)$. Бүхэл логарифмыг $log[L]=log[L/2]+1$-ээр урьдчилан бодох $O(n)$ ажилтай тул асуултад бодит тооны log функц хэрэглэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "$n,q\\le200000$, утгын абсолют хэмжээ $10^9$-өөс ихгүй. Утгуудыг зөвхөн харьцуулна. Санах ойн хязгаарыг шалга: түвшин бүрийн массив нэмэгддэг, сегментийн модноос том байж болно."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. Бүхэл логарифм, хоёр хагас, хоёр блок",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Эхлэл ба төлөв"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Уртын бүхэл логарифмыг хуваах давталтаар байгуулна. Нэг элементийн логарифм тэг. Хоосон биш массив гэсэн гэрээтэй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass SparseMinimum {\n    vector<int> logarithm;\n    vector<vector<long long>> table;\npublic:\n    explicit SparseMinimum(const vector<long long>& values) {\n        int count = static_cast<int>(values.size());\n        logarithm.resize(count + 1);\n        for (int length = 2; length <= count; ++length) {\n            logarithm[length] = logarithm[length / 2] + 1;\n        }\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Хураангуй ба хувиргалт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Тэг түвшинд анхны утгууд. Дараагийн түвшний зөвхөн бүтэн багтах хэсгүүдийг хоёр өмнөх хагасаас нэгтгэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "        int levels = logarithm[count] + 1;\n        table.assign(levels, vector<long long>(count));\n        table[0] = values;\n        for (int level = 1; level < levels; ++level) {\n            int half = 1 << (level - 1);\n            for (int left = 0; left + 2 * half <= count; ++left) {\n                table[level][left] = min(table[level - 1][left],\n                                         table[level - 1][left + half]);\n            }\n        }\n    }\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Үндсэн үйлдэл"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Зүүн ба баруунаас ижил хамгийн том хоёрын зэрэг уртыг авна. Хамгийн бага утга давхардлаас өөрчлөгдөхгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    long long range_minimum(int left, int right) const {\n        int level = logarithm[right - left + 1];\n        int length = 1 << level;\n        return min(table[level][left], table[level][right - length + 1]);\n    }\n};\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Хариу ба нийтийн интерфейс"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт $1$–$200000$ элемент, $0$–$200000$ асуулт; утгын абсолют хэмжээ $10^9$-өөс ихгүй. Нэгээс эхэлсэн хаалттай хилүүдийг тэг индекс рүү хөрвүүлж асуулт бүрд утгыг хэвлэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int count, query_count;\n    cin >> count >> query_count;\n    vector<long long> values(count);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    SparseMinimum table(values);\n    for (int query = 0; query < query_count; ++query) {\n        int left, right;\n        cin >> left >> right;\n        cout << table.range_minimum(left - 1, right - 1) << '\\n';\n    }\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах C++17 программ"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass SparseMinimum {\n    vector<int> logarithm;\n    vector<vector<long long>> table;\npublic:\n    explicit SparseMinimum(const vector<long long>& values) {\n        int count = static_cast<int>(values.size());\n        logarithm.resize(count + 1);\n        for (int length = 2; length <= count; ++length) {\n            logarithm[length] = logarithm[length / 2] + 1;\n        }\n        int levels = logarithm[count] + 1;\n        table.assign(levels, vector<long long>(count));\n        table[0] = values;\n        for (int level = 1; level < levels; ++level) {\n            int half = 1 << (level - 1);\n            for (int left = 0; left + 2 * half <= count; ++left) {\n                table[level][left] = min(table[level - 1][left],\n                                         table[level - 1][left + half]);\n            }\n        }\n    }\n    long long range_minimum(int left, int right) const {\n        int level = logarithm[right - left + 1];\n        int length = 1 << level;\n        return min(table[level][left], table[level][right - length + 1]);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int count, query_count;\n    cin >> count >> query_count;\n    vector<long long> values(count);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    SparseMinimum table(values);\n    for (int query = 0; query < query_count; ++query) {\n        int left, right;\n        cin >> left >> right;\n        cout << table.range_minimum(left - 1, right - 1) << '\\n';\n    }\n}\n"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "8 3\n5 2 7 3 6 1 4 8\n2 7\n3 3\n1 4\n"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "1\n7\n2\n"
+          }
+        ]
+      },
+      {
+        "key": "errors",
+        "title": "9. Нийлбэрт хоёр давхцсан блок нэмэхгүй",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$[1,2,3]$-ийн нийлбэр зургаа. Давхцсан хоёр урт хоёр блокийн нийлбэрүүд гурав ба тав, нийлүүлбэл найм болж хоёр давхар тоологдоно. XOR-д давхардсан хэсэг арилж мөн өөр утга гарна."
+          },
+          {
+            "type": "p",
+            "text": "Нийлбэрт энгийн prefix илүү тохиромжтой. Хүсвэл давхцахгүй хоёрын зэргийн хэсгүүдээр $O(\\log n)$ нэгтгэж болно, гэхдээ хамгийн бага утгын хоёр блокийн $O(1)$ аргыг сохроор хуулж болохгүй."
+          }
+        ]
+      },
+      {
+        "key": "updates",
+        "title": "10. Утга солих интерфейс байхгүй",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэг утгыг сольбол түүнийг агуулсан олон урттай олон эхлэлийн блок өөрчлөгдөнө. Энэ бүтэц динамик өөрчлөлтийг логарифм болгох зорилготой биш."
+          },
+          {
+            "type": "p",
+            "text": "Өгөгдөл өөрчлөгдвөл Фенвик, сегментийн мод эсвэл дахин байгуулах зардлаа харьцуул. Хүснэгтийн ганц тэг түвшний утгыг засах нь бусад түвшнийг зөв болгохгүй."
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "11. Өөрчлөлтгүй ба давхардалд тогтвортой юу?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хоёр гол нөхцөлөө шалга: массив тогтмол, нэгтгэл давхардсан хэсгээс өөрчлөгдөхгүй. Minimum, maximum, gcd зэрэгт тохирох хувилбар бий."
+          },
+          {
+            "type": "p",
+            "text": "Эдгээр нь бүлэглэхэд нийцтэй байх бас шаардлагатай. Зүгээр асуулт нь завсар хэлбэртэй байснаар sparse table-ийн хоёр блок зөв болно гэсэн үг биш."
+          }
+        ]
+      },
+      {
+        "key": "connections",
+        "title": "12. Хэсгийн хураангуйг өөрөөр ашиглах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Сегментийн мод хүссэн завсрыг давхцахгүй хэсгүүдээр, sparse table энэ хамгийн бага утгын асуултыг хоёр давхцсан хэсгээр бүрдүүлж байна. Иймээс нэгтгэх үйлдлийн шаардлага нь өөр."
+          },
+          {
+            "type": "p",
+            "text": "Хамгийн бага утгын байрлал хэрэгтэй бол утга ба индексийн хос хадгалж тэнцүү үед аль индекст давуу эрх өгөхөө тогтоож болно. Энэ код зөвхөн утга буцаана."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Статик ба динамик асуултыг ялгах",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Static Range Minimum Queries"
+          },
+          {
+            "type": "p",
+            "text": "Хоёр давхцсан блок ба бүхэл логарифмын заагийг хэрэгжүүл."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Static Range Sum Queries"
+          },
+          {
+            "type": "p",
+            "text": "Хоёр давхцсан нийлбэр бус prefix ялгавар хэрэгтэйг ялга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Range Xor Queries"
+          },
+          {
+            "type": "p",
+            "text": "XOR-ийн урвуу ба давхардлын нөлөөг тусад нь гарга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Dynamic Range Minimum Queries"
+          },
+          {
+            "type": "p",
+            "text": "Өөрчлөлт орвол сегментийн мод сонгох шалтгааныг тайлбарла."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Distinct Values Queries"
+          },
+          {
+            "type": "p",
+            "text": "Ялгаатай утгын тоо хамгийн бага утга шиг давхцалд тогтвортой хураангуй биш."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Forest Queries"
+          },
+          {
+            "type": "p",
+            "text": "Хоёр хэмжээст статик нийлбэрт өөр prefix томьёо хэрэгтэйг ялга."
+          }
+        ]
+      },
+      {
+        "key": "priority",
+        "title": "14. Хязгаарласан нөхцөлд маш хурдан туслах арга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Дунд ач холбогдолтой: статик хамгийн бага утга-д маш тохиромжтой боловч динамик эсвэл урвуугүй бусад нэгтгэлд шууд солихгүй. Static Range Minimum нь шууд цөм; бусад дасгалууд аргаа зөв сонгохыг шалгана."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Бүх жижиг завсрыг шууд хамгийн бага утга-тай тулга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Жишээний урт дөрөвтэй блок бүрийг гараар гарга. Хоёрын зэрэг урт, түүнээс нэгээр их эсвэл бага, ганц элемент, бүхэл завсар, бүгд ижил ба сөрөг утгуудыг шалга."
+          },
+          {
+            "type": "p",
+            "text": "Жижиг массивын бүх $l\\le r$ завсрыг шууд гүйлгэж олсон хамгийн бага утга-тай тулга. Давхцалтай нийлбэрийн эсрэг жишээг өөрөө тайлбарлаж чаддаг байх."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Sparse table — immutable range minima",
+        "summary": "Precompute power-of-two blocks and answer immutable range-minimum queries from two overlapping blocks.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. What can be prepared for an immutable array?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Many range-minimum queries arrive on $[5,2,7,3,6,1,4,8]$. Answers for $[2,7]$, $[3,3]$, $[1,4]$ are one, seven and two. Values never change."
+              },
+              {
+                "type": "p",
+                "text": "A segment tree offers logarithmic queries; can extra preprocessing reduce each query to two stored answers?"
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Storing every interval is quadratic",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Every-interval storage is quadratic. Store only lengths one, two, four, eight and so on at every valid start, giving logarithmically many levels."
+              },
+              {
+                "type": "p",
+                "text": "Two adjacent equal-size blocks combine into a double-size minimum, yielding a length-doubling DP."
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "3. A level and a starting position",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "$table[k][l]$ stores the minimum of the length-$2^k$ block beginning at $l$. Level zero is the input; higher levels combine the two half-block minima."
+              },
+              {
+                "type": "p",
+                "text": "Build only fully contained blocks. Unused trailing cells must never be queried."
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Cover a query with two overlapping blocks",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For length $L=r-l+1$, choose $k=\\lfloor\\log_2 L\\rfloor$ and $p=2^k$. Combine minima of $[l,l+p-1]$ and $[r-p+1,r]$."
+              },
+              {
+                "type": "p",
+                "text": "Since $p\\le L<2p$, their union covers the query, possibly overlapping. Seeing a value twice does not change a minimum."
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "5. A six-element query uses two blocks of four",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Query $[2,7]$ has length six, so use four. Block $[2,5]$ has minimum two; block $[4,7]$ has minimum one."
+              },
+              {
+                "type": "p",
+                "text": "Their overlap $[4,5]$ is harmless. Singleton queries use the same singleton twice and return its value."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Block",
+                  "Values",
+                  "Minimum"
+                ],
+                "rows": [
+                  [
+                    "[2,5]",
+                    "2,7,3,6",
+                    "2"
+                  ],
+                  [
+                    "[4,7]",
+                    "3,6,1,4",
+                    "1"
+                  ],
+                  [
+                    "[2,7]",
+                    "2,7,3,6,1,4",
+                    "1"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Why overlap is safe for an idempotent operation",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Build induction follows because two adjacent halves exactly partition a stored block. Query blocks stay inside and jointly cover the desired interval."
+              },
+              {
+                "type": "p",
+                "text": "Minimum satisfies $min(x,x)=x$. Duplicating overlap values leaves the result unchanged, so combining the two stored minima is exact; this property is called idempotence."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Spend preprocessing for constant-time queries",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Build and storage are $O(n\\log(n+1))$, queries constant time. Precompute integer logs in linear time using $log[L]=log[L/2]+1$, avoiding floating-point boundary errors."
+              },
+              {
+                "type": "p",
+                "text": "For up to $200000$ elements/queries and values within magnitude $10^9$, values are only compared. Check memory: all levels may cost more than a segment tree."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Integer logs, half-blocks and query blocks",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. State and setup"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Precompute floor logs by halving lengths; singleton log is zero and the array is nonempty.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass SparseMinimum {\n    vector<int> logarithm;\n    vector<vector<long long>> table;\npublic:\n    explicit SparseMinimum(const vector<long long>& values) {\n        int count = static_cast<int>(values.size());\n        logarithm.resize(count + 1);\n        for (int length = 2; length <= count; ++length) {\n            logarithm[length] = logarithm[length / 2] + 1;\n        }\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. Summary and transformation"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Initialize level zero, then combine half-blocks only for fully contained starts.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "        int levels = logarithm[count] + 1;\n        table.assign(levels, vector<long long>(count));\n        table[0] = values;\n        for (int level = 1; level < levels; ++level) {\n            int half = 1 << (level - 1);\n            for (int left = 0; left + 2 * half <= count; ++left) {\n                table[level][left] = min(table[level - 1][left],\n                                         table[level - 1][left + half]);\n            }\n        }\n    }\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. Main operation"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Use equal power-of-two blocks from both endpoints; minimum is stable under overlap.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    long long range_minimum(int left, int right) const {\n        int level = logarithm[right - left + 1];\n        int length = 1 << level;\n        return min(table[level][left], table[level][right - length + 1]);\n    }\n};\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Result and public interface"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read up to $200000$ elements/queries, values within magnitude $10^9$. Convert one-based inclusive endpoints to zero-based indices and print each minimum.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int count, query_count;\n    cin >> count >> query_count;\n    vector<long long> values(count);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    SparseMinimum table(values);\n    for (int query = 0; query < query_count; ++query) {\n        int left, right;\n        cin >> left >> right;\n        cout << table.range_minimum(left - 1, right - 1) << '\\n';\n    }\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete compilable C++17 program"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass SparseMinimum {\n    vector<int> logarithm;\n    vector<vector<long long>> table;\npublic:\n    explicit SparseMinimum(const vector<long long>& values) {\n        int count = static_cast<int>(values.size());\n        logarithm.resize(count + 1);\n        for (int length = 2; length <= count; ++length) {\n            logarithm[length] = logarithm[length / 2] + 1;\n        }\n        int levels = logarithm[count] + 1;\n        table.assign(levels, vector<long long>(count));\n        table[0] = values;\n        for (int level = 1; level < levels; ++level) {\n            int half = 1 << (level - 1);\n            for (int left = 0; left + 2 * half <= count; ++left) {\n                table[level][left] = min(table[level - 1][left],\n                                         table[level - 1][left + half]);\n            }\n        }\n    }\n    long long range_minimum(int left, int right) const {\n        int level = logarithm[right - left + 1];\n        int length = 1 << level;\n        return min(table[level][left], table[level][right - length + 1]);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int count, query_count;\n    cin >> count >> query_count;\n    vector<long long> values(count);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    SparseMinimum table(values);\n    for (int query = 0; query < query_count; ++query) {\n        int left, right;\n        cin >> left >> right;\n        cout << table.range_minimum(left - 1, right - 1) << '\\n';\n    }\n}\n"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "8 3\n5 2 7 3 6 1 4 8\n2 7\n3 3\n1 4\n"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "1\n7\n2\n"
+              }
+            ]
+          },
+          {
+            "key": "errors",
+            "title": "9. Do not add overlapping blocks for sums",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For $[1,2,3]$, true sum is six while the overlapping two-block sums give three plus five, eight. XOR also changes when overlap cancels."
+              },
+              {
+                "type": "p",
+                "text": "Static sums suit prefixes. Disjoint power-of-two decomposition can combine other operations logarithmically, but not by blindly copying the constant-time overlapping-minimum rule."
+              }
+            ]
+          },
+          {
+            "key": "updates",
+            "title": "10. There is no update interface",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "One changed value can affect many blocks across starts and levels. This structure does not promise logarithmic updates."
+              },
+              {
+                "type": "p",
+                "text": "For changes, compare Fenwick, segment trees or rebuilding costs. Editing only a level-zero entry leaves higher summaries stale."
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "11. Immutable data and overlap-stable answers?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Check immutability and overlap-stability. Minimum, maximum and gcd have suitable forms, along with associativity."
+              },
+              {
+                "type": "p",
+                "text": "An interval-shaped query alone does not justify the two-block method."
+              }
+            ]
+          },
+          {
+            "key": "connections",
+            "title": "12. Reusing block summaries",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Segment queries use disjoint pieces; this sparse-table query uses overlapping pieces, imposing a stronger operation requirement."
+              },
+              {
+                "type": "p",
+                "text": "For the position of a minimum, store value/index pairs with an explicit tie rule. This program returns values only."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. Distinguish static and dynamic queries",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Static Range Minimum Queries"
+              },
+              {
+                "type": "p",
+                "text": "Implement overlapping blocks and integer-log boundaries."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Static Range Sum Queries"
+              },
+              {
+                "type": "p",
+                "text": "Use prefix subtraction rather than overlapping sums."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Range Xor Queries"
+              },
+              {
+                "type": "p",
+                "text": "Reason separately about XOR inverses and overlap."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Dynamic Range Minimum Queries"
+              },
+              {
+                "type": "p",
+                "text": "Explain why updates favor a segment tree."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Distinct Values Queries"
+              },
+              {
+                "type": "p",
+                "text": "Distinct-value counts do not combine like idempotent minima."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Forest Queries"
+              },
+              {
+                "type": "p",
+                "text": "Use a separate two-dimensional prefix-sum argument."
+              }
+            ]
+          },
+          {
+            "key": "priority",
+            "title": "14. A fast method under specific assumptions",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Medium priority: excellent for immutable minima, but not a universal replacement for dynamic or non-idempotent aggregates. Static Range Minimum is direct core practice; comparison tasks test method selection."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Compare all small intervals with direct minima",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Build every length-four example block by hand. Cover powers of two, neighboring lengths, singleton/full ranges, equal and negative values."
+              },
+              {
+                "type": "p",
+                "text": "Compare every small interval against direct scanning, and explain the sum-overlap counterexample."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Combining interval summaries, powers of two and integer logarithms; the array is immutable here."
+      }
+    },
+    "prerequisites": "Сегментийн хэсгийн хариу нэгтгэх санаа, хоёрын зэрэг ба бүхэл логарифм. Энэ хичээлд массив өөрчлөгдөхгүй.",
+    "prerequisiteIds": [
+      "segment-tree",
+      "bit-operations"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "segment-tree",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "bit-operations",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "number-theory",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ],
+      "next": "number-theory",
+      "practice": [
+        {
+          "key": "396",
+          "stage": "Warm-up",
+          "priority": true,
+          "reason": "Бүтцийн хадгалсан утга, үйлдлийн нөхцөл ба үндсэн шинэчлэлтийн дүрмийг шууд хэрэгжүүлэх цөм дасгал."
+        },
+        {
+          "key": "395",
+          "stage": "Standard",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "399",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "398",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "411",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "401",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false,
+    "priorityLevel": "medium",
+    "priorityReason": "Өөрчлөгдөхгүй, давхцалд үр дүн өөрчлөгдөхгүй үйлдлийн асуултад хурдан хэрэгтэй ч хэрэглээ нь нөхцөлтэй. Динамик модны дараах дунд ач холбогдолтой туслах арга; санах ой ба урьдчилсан ажлыг харьцуулж сонгохыг сургана."
+  }
+}
