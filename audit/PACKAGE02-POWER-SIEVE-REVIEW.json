@@ -1,0 +1,84 @@
+{
+  "status": "Both full native MN/EN teaching narratives reviewed locally; publication not yet executed",
+  "lessons": [
+    {
+      "id": "fast-power",
+      "criteria": {
+        "why": "Only a residue is required; huge exponent makes repeated multiplication infeasible without needing a huge integer result.",
+        "naive": "Reducing after every product is correct but O(e), separating number size from iteration count.",
+        "observation": "Even/odd identities and13=8+4+1 derive squaring and binary-bit selection.",
+        "method": "Distinct result/base/remaining state, identity residue initialization, old-base odd update before square/halve.",
+        "example": "Exact3^13mod17 trace(1,3,13)→(3,9,6)→(3,13,3)→(5,16,1)→(12,1,0), independently invariant-checked.",
+        "proof": "Result*base^remaining congruent original power; both parity cases preserve it, halving terminates, empty-product0^0convention explicit.",
+        "time": "O(log(e+2)) fixed-word operations and O(1)space; matrix/big-integer product costs must be charged separately.",
+        "implementation": "Four explained exact fragments: normalization/identity, binary loop, main setup, per-query input/output; full standard4space C++17 last.",
+        "boundaries": "Base/exponent0..1e18, modulus1..1e9+7; zero exponent, modulus1, zero base; product at most(1e9+6)^2<2^64; arbitrary larger moduli/negative inputs excluded.",
+        "mistakes": "Wrong update order, missing squaring, XORnotpower, floating-point pow and post-overflow modulo do not solve exact arithmetic.",
+        "connections": "Associative products/identity lead to matrices with extra cost; exponent-tower reduction needs extra theorems and zero-base care, not a falsely generic modulus trick.",
+        "recognition": "Repeated transformations require a fixed associative product and identity, not any loop-shaped process.",
+        "practice": "All five old identities retained; six stages; only direct437core, fixed-CSES-format adaptation explicit, tower/matrix/IOIGondola additional prerequisites.",
+        "priority": "High educational transfer justified; only437threepriorityfields promoted, optional links not blanketHigh.",
+        "mastery": "Trace separate state, prove parity cases, compare naive small products, and justify real intermediate bounds."
+      },
+      "expected_revision": 3,
+      "expected_body_sha256": "6f9dfeea95eec4fdfb86719c8e2049d9c29316bae4463669ce5be616c6d61275",
+      "body_sha256": "4f86c9e69264f996b2712b75bde436118262bd04a061f227d2dbc6e737a3dd94",
+      "relationship_sha256": "65abf9c778b43fc478d052a8d258ed80dcfcaec9cbe7a61552c2aa3b249a0d26"
+    },
+    {
+      "id": "sieve",
+      "criteria": {
+        "why": "Many primality/divisor queries under a shared manageable bound motivate one reusable table.",
+        "naive": "Trial division through sqrt(x) justified by paired factors; q independent queries O(qsqrtN) versus whole-range memory tradeoff.",
+        "observation": "Increasing discovered primes mark multiples; storing the first prime factor instead of a Boolean enables subsequent factorization.",
+        "method": "Empty entry discovers prime, store self, fill only unmarked multiples fromp^2; smaller multiples already have a smaller prime factor.",
+        "example": "N20 trace for2and3, later primes above sqrt still stored as self; exact smallest-factor table and12=2^2*3 with6divisors.",
+        "proof": "Every composite has leastprime<=sqrt(x), first visit is exact least factor; primes untouched before own turn; factor exponent choices count distinct divisors.",
+        "time": "OuterN plus sum N/p over primes; known reciprocal-prime estimate gives O(NloglogN), weaker elementary O(NlogN), not falsely linear due one write. Query O(log(x+1)); tableO(N+1).",
+        "implementation": "Four explained exact fragments: guarded SPF construction, factor/divisor helper, one-time main preprocessing, per-query flag/count; full C++17 last.",
+        "boundaries": "One nonprime with1divisor; zero excluded from finite divisor counts;N+1entries,p> N/p before square, intincrement safe under1e6, prime squares/borders/count bound addressed.",
+        "mistakes": "Boolean composite flag versus SPFself distinguished; no overwriting first factor, query reduction needed, output adapted to actual problem; giantNmemory unsuited.",
+        "connections": "Prime-exponent choices connect gcd/lcm; divisor-frequency tables are different; segmented/linear sieves named as separate algorithms not expanded here.",
+        "recognition": "Compare query volume and value bounds before paying for full table; no out-of-range indexing.",
+        "practice": "All five old practice identities retained; direct439core, frequencies/inclusion-exclusion/modular counting and actual EGOIZeros optional.",
+        "priority": "High foundation for reuse/factorization justified;439alreadylegacyHigh entire row preserved, no redundant explicit-field write.",
+        "mastery": "Hand trace all entries to20, prove square start, compare independent divisors, separate preprocessing/query/memory costs."
+      },
+      "expected_revision": 3,
+      "expected_body_sha256": "ee0a862597c7d35abc28b80d54c22e1be87a4170e502c55fa742b558f8ae092f",
+      "body_sha256": "12911295ac5025d13f3b6a27eb83d4a4802455a08c2124c24c66f396e691afb6",
+      "relationship_sha256": "3b8d1f552b678aa20c6009f951e7e937e8ed8a7ba6a72044a7494e3f16d44090"
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://cses.fi/problemset/task/1095",
+      "use": "Direct fixed-modulus power and zero-power convention"
+    },
+    {
+      "url": "https://cses.fi/problemset/task/1712",
+      "use": "Optional power tower requires different exponent handling"
+    },
+    {
+      "url": "https://cses.fi/problemset/task/1713",
+      "use": "Many divisor-count queries bounded by1e6"
+    },
+    {
+      "url": "https://arxiv.org/html/2606.22851v1#S1.SS2",
+      "use": "Section1.2classicalEratosthenes RAM marking sum and O(NloglogN) bound only; no advanced algorithms imported into lesson"
+    }
+  ],
+  "source_limits": "Princeton public sieve page403, no retry/bypass; classical complexity verified via accessible primary research introduction. Optional olympiad identities use retained curated bank evidence; no new problem statement/editorial audit claim.",
+  "issues_caught_before_publication": [
+    "TeXescaped control characters/bare command names caught by actual rendering, repaired in local authoring; control/command regression added and reader/editor rerun.",
+    "Fast-power introductory summary clarified to natural MN modular calculation conditions; targeted final full-reader/editor check recorded separately.",
+    "Sieve first-write count explicitly separated from total multiple visits; no false linear-time claim."
+  ],
+  "code_evidence": "audit/PACKAGE02-POWER-SIEVE-CODE.json",
+  "reader_evidence": "audit/PACKAGE02-POWER-SIEVE-BROWSER.json",
+  "final_power_wording_check": "audit/PACKAGE02-POWER-FINAL-BROWSER.json",
+  "english_editor_evidence": "audit/PACKAGE02-POWER-SIEVE-EN-EDITOR.json",
+  "manual_render_review": "375px light openings inspected for both lessons: natural MN sequence, correctly rendered numerical notation and full-width article with collapsed TOC. Actual reader covers both languages, themes and mobile/desktop; no real-account production editing fixture.",
+  "preservation": "Fresh revision3targets with zero target drafts; stable root identities/old practice retained. Fresh all-private/sorting/Mongolia/learner guards required immediately before write.",
+  "acceptance": "No user acceptance claimed"
+}
