@@ -20,3 +20,25 @@ test('three foundational semantic proposals validate native bilingual schema/mat
 test('implementation fragments precede and exactly reconstruct the final full program in both languages',()=>{const out=proposedTutorialRows(JSON.parse(fs.readFileSync('audit/PART04-BASELINE.json')).tutorials);for(const id of['binary-search','greedy','dynamic-programming'])for(const lang of['mn','en']){const body=out.find(r=>r.id===id).body,d=lang==='mn'?body:body.translations.en;const blocks=d.sections[5].blocks,fragments=blocks.filter(b=>b.type==='code'&&b.detailKey?.startsWith('p02-fragment-'));assert.equal(fragments.length,4);for(const b of fragments){const at=blocks.indexOf(b);assert.equal(blocks[at-1].type,'p');assert.ok(blocks[at-1].text.length>30);}const full=d.sections[12].blocks.find(b=>b.language==='C++17').text;assert.equal(fragments.map(b=>b.text).join(''),full);assert.ok(!blocks.some(b=>b.type==='code'&&b.text===full));}});
 
 test('tutorial priority proposals are individual, guarded and exclude the test lesson',()=>{const p=JSON.parse(fs.readFileSync('audit/PACKAGE02-SEMANTIC-PATCH01.json'));assert.equal(p.patches.length,3);const before=JSON.parse(fs.readFileSync('audit/PART04-BASELINE.json')).tutorials,out=proposedTutorialRows(before);for(const patch of p.patches){assert.notEqual(patch.id,'mongolia');const doc=out.find(r=>r.id===patch.id).body;assert.equal(doc.priorityLevel,'high');assert.ok(doc.priorityReason.length>60);assert.deepEqual(doc.prerequisiteIds,before.find(r=>r.id===patch.id).body.prerequisiteIds);}assert.deepEqual(out.find(r=>r.id==='mongolia'),before.find(r=>r.id==='mongolia'));});
+
+test('all 55 curriculum priority proposals preserve lesson bodies and metadata outside the two reviewed fields',()=>{
+ const before=JSON.parse(fs.readFileSync('audit/PART04-BASELINE.json')).tutorials;
+ const out=proposedTutorialRows(before),patch=JSON.parse(fs.readFileSync('audit/PACKAGE02-PRIORITY-PATCH01.json'));
+ assert.equal(patch.patches.length,52);
+ assert.equal(new Set(patch.patches.map(p=>p.id)).size,52);
+ for(const proposal of patch.patches){
+  assert.deepEqual(proposal.operations,[]);
+  const original=before.find(r=>r.body.id===proposal.id),result=out.find(r=>r.body.id===proposal.id);
+  const priorBody=structuredClone(result.body);
+  for(const key of ['priorityLevel','priorityReason']){
+   if(Object.hasOwn(original.body,key))priorBody[key]=original.body[key];else delete priorBody[key];
+  }
+  assert.equal(bodyHash(priorBody),proposal.expected_body_sha256,proposal.id+' only priority fields changed from guarded input');
+  const metadata=row=>Object.fromEntries(Object.entries(row).filter(([key])=>key!=='body'));
+  assert.deepEqual(metadata(result),metadata(original));
+
+ }
+ for(const r of out.filter(r=>r.body.id!=='mongolia')){validateTutorial(r.body);assert.ok(['low','medium','high'].includes(r.body.priorityLevel));assert.ok(r.body.priorityReason.length>60);}
+ assert.deepEqual(out.find(r=>r.body.id==='mongolia'),before.find(r=>r.body.id==='mongolia'));
+ const drift=structuredClone(before);drift.find(r=>r.body.id==='bellman-ford').body.title+=' changed';assert.throws(()=>proposedTutorialRows(drift),/Stale tutorial proposal: bellman-ford/);
+});

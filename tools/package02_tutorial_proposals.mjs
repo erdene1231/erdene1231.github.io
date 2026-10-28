@@ -4,7 +4,7 @@ const stable=value=>Array.isArray(value)?'['+value.map(stable).join(',')+']':val
 export const bodyHash=value=>crypto.createHash('sha256').update(stable(value)).digest('hex');
 export function proposedTutorialRows(rows){
  const out=structuredClone(rows);
- for(const path of ['audit/PACKAGE02-TUTORIAL-PROPOSALS.json','audit/PACKAGE02-SEMANTIC-PATCH01.json']){if(!fs.existsSync(path))continue;const proposal=JSON.parse(fs.readFileSync(path));if(proposal.applied!==false)throw Error('Proposal state is not local-only');
+ for(const path of ['audit/PACKAGE02-TUTORIAL-PROPOSALS.json','audit/PACKAGE02-SEMANTIC-PATCH01.json','audit/PACKAGE02-PRIORITY-PATCH01.json']){if(!fs.existsSync(path))continue;const proposal=JSON.parse(fs.readFileSync(path));if(proposal.applied!==false)throw Error('Proposal state is not local-only');
  for(const patch of proposal.patches){if(patch.id==='mongolia')throw Error('Preserve Mongolia test lesson unchanged');const row=out.find(r=>r.body.id===patch.id);if(!row||row.revision!==patch.expected_revision||bodyHash(row.body)!==patch.expected_body_sha256)throw Error('Stale tutorial proposal: '+patch.id);
   for(const op of patch.operations){const d=op.language==='mn'?row.body:row.body.translations.en,blocks=d.sections[op.section].blocks;
    if(op.append_blocks){if(blocks.length!==op.expected_length)throw Error('Section changed: '+patch.id);blocks.push(...structuredClone(op.append_blocks));}

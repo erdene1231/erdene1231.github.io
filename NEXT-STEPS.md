@@ -1,3 +1,9 @@
+# Package 2: tutorial priorities prepared
+
+PR #23 merged as b7ef477. The next field-only proposal batch assigns all 55 substantive tutorials an individual educational priority and rationale: 36 High, 19 Medium. There is no forced distribution; no existing Li Chao lesson to assign Low. Mongolia remains completely unchanged. This is topic-priority review, not full lesson-content completion.
+
+`audit/PACKAGE02-PRIORITY-PATCH01.json` contains the remaining 52 assignments after the earlier three foundation proposals. Exact revision/body guards, 94 Node tests and six targeted proposal tests protect content, relationships, status and metadata. No production tutorial publication. IOI 2024 now has all six official interfaces classified: Message needs a communication tag, Sphinx is missing and has valid metadata prepared; four ordinary API tasks are correctly excluded. No bank write executed. See `audit/PACKAGE02-BANK-PROPOSALS01.json`. Continue the Binary Search → Greedy → DP full rubric and six-stage practice, then other lessons, plus the separately tracked contest-format inventory.
+
 # Package 2: first semantic batch and unified bank follow-up
 
 PR #23 contains local guarded proposals. Binary Search, Greedy and DP now have MN/EN correctness arguments, bounded reference-program contracts, four explained code fragments first and the complete C++17 program last. Fragments concatenate exactly to that program. Three individual High tutorial-priority proposals are ready; 52 remain. Mongolia is entirely unchanged, including revision 2 and unpublished status.
