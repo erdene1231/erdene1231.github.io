@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {editorialDatabase} from './problem-editorial-fixture.mjs';
 import {proposalProblems} from '../tools/package02_tutorial_proposals.mjs';
-import {complexityPrioritySql,searchSortPrioritySql,recursionPrioritySql,differencePointersPrioritySql,windowPrioritySql,stackPrioritySql,bitsPrioritySql,powerPrioritySql,answerPrioritySql,treeGridPrioritySql,intervalHeapPrioritySql,sparsePrioritySql,maskPrioritySql,boundsPrioritySql,monotonicPrioritySql} from '../tools/package02_priority_promotions.mjs';
+import {complexityPrioritySql,searchSortPrioritySql,recursionPrioritySql,differencePointersPrioritySql,windowPrioritySql,stackPrioritySql,bitsPrioritySql,powerPrioritySql,answerPrioritySql,treeGridPrioritySql,intervalHeapPrioritySql,sparsePrioritySql,maskPrioritySql,boundsPrioritySql,monotonicPrioritySql,combinatoricsPrioritySql} from '../tools/package02_priority_promotions.mjs';
 const plan=JSON.parse(fs.readFileSync('audit/PACKAGE02-COMPLEXITY-PRIORITY-PROMOTIONS.json'));
 async function setup(){
  const db=await editorialDatabase({installPriority:false});
@@ -259,6 +259,23 @@ test('one histogram core promotion is atomic and cannot spill into previous two-
   await db.exec(sql);const after=(await db.query('select * from problem_catalog order by number')).rows;
   assert.deepEqual(after.filter(r=>r.number!==627),before.filter(r=>r.number!==627));
   const old=before.find(r=>r.number===627),now=after.find(r=>r.number===627);assert.deepEqual(now.body,{...old.body,...p.patches[0].changes});assert.equal(now.revision,2);
+  assert.equal((await db.query('select count(*) n from problem_changes')).rows[0].n,1);assert.equal((await db.query('select last_value from problem_number_seq')).rows[0].last_value,993);
+  await assert.rejects(db.exec(sql),/Problem history drift|Priority CAS\/body drift/);
+ }finally{await db.close();}
+});
+
+test('one repeated-string core promotion is atomic and cannot spill into previous two-target scopes',async()=>{
+ const db=await setup();try{
+  const p=JSON.parse(fs.readFileSync('audit/PACKAGE02-COMBINATORICS-PRIORITY.json')),g=await guard(db);
+  g.problems=(await db.query("select *,md5(body::text) body_md5 from problem_catalog where number=447")).rows;
+  g.non_target_fingerprint=(await db.query("select md5(jsonb_agg(to_jsonb(p) order by problem_id)::text) h from problem_catalog p where problem_id<>'cses-1715'")).rows[0].h;
+  assert.throws(()=>complexityPrioritySql(p,g),/Only the reviewed/);assert.throws(()=>windowPrioritySql(plan,g),/Only the reviewed/);
+  const before=(await db.query('select * from problem_catalog order by number')).rows,sql=combinatoricsPrioritySql(p,g);
+  await assert.rejects(db.exec(sql.replace('-- Atomic priority target and edit history complete.',"raise exception 'Injected power failure';")),/Injected power failure/);
+  assert.deepEqual((await db.query('select * from problem_catalog order by number')).rows,before);
+  await db.exec(sql);const after=(await db.query('select * from problem_catalog order by number')).rows;
+  assert.deepEqual(after.filter(r=>r.number!==447),before.filter(r=>r.number!==447));
+  const old=before.find(r=>r.number===447),now=after.find(r=>r.number===447);assert.deepEqual(now.body,{...old.body,...p.patches[0].changes});assert.equal(now.revision,2);
   assert.equal((await db.query('select count(*) n from problem_changes')).rows[0].n,1);assert.equal((await db.query('select last_value from problem_number_seq')).rows[0].last_value,993);
   await assert.rejects(db.exec(sql),/Problem history drift|Priority CAS\/body drift/);
  }finally{await db.close();}
