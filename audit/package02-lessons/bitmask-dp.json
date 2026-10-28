@@ -1,0 +1,869 @@
+{
+  "id": "bitmask-dp",
+  "expected_revision": 5,
+  "expected_published": true,
+  "expected_body_sha256": "523e481de13bf9b79dd4c61e3a1d42356aa5599576107c5340c02781f115a96f",
+  "status": "Authored; semantic/code/native editor review pending",
+  "body": {
+    "id": "bitmask-dp",
+    "level": "Ахисан шат",
+    "order": 42,
+    "title": "Битийн масктай DP — хэрэглэсэн олонлогоо төлөв болгох",
+    "aliases": "bitmask-dp Bitmask DP — сонгосон олонлогоор state үүсгэх Bitmask DP — states indexed by subsets bitmask subset dp assignment маск дэд олонлог popcount",
+    "related": [
+      "bit-operations",
+      "knapsack",
+      "lazy-segment-tree"
+    ],
+    "summary": "Тогтсон дарааллаар нэг нэгээр оноохдоо хэрэглэсэн боломжуудыг битээр хадгалж, нэг сонголтыг давхар тоолохгүй шилжилт гаргана.",
+    "category": "Dynamic programming",
+    "levelKey": "advanced",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Хүн бүрд ялгаатай боломж оноох",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Гурван хүнд гурван боломж бий. Эхний хүн нэг эсвэл хоёрыг, хоёр дахь нь нэг эсвэл гурвыг, гурав дахь нь хоёр эсвэл гурвыг зөвшөөрнө. Хүн бүр нэг боломж авч, боломж бүрийг нэг л хүн ашиглах хэдэн оноолт байна вэ?"
+          },
+          {
+            "type": "p",
+            "text": "Хүний дарааллаар $(1,3,2)$ ба $(2,1,3)$ гэсэн хоёр зөв оноолт бий. Бүх хүн ижил зөвшөөрөлтэй байх албагүй."
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Бүх сэлгэмэл ижил дэд бодлоготой",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хүн бүрийн сонголтыг салаалуулбал хамгийн муудаа $n!$ оноолт шалгана. Гэвч эхний хэдэн хүнд яг ижил боломжуудыг хэрэглэсэн хоёр хэсэгчилсэн оноолтын ирээдүй ижил."
+          },
+          {
+            "type": "p",
+            "text": "Өмнө хэн алийг авсныг бүгдийг хадгалах хэрэггүй: дараагийн хүмүүсийн хувьд ямар боломж үлдсэн нь л нөлөөлнө. Харин хүмүүсийг тогтсон дарааллаар авч байгааг төлөвийн утгад заавал оруулна."
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "3. Нэг бит нэг хэрэглэсэн боломж",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$ways[mask]$ нь эхний $popcount(mask)$ хүнд яг масктай боломжуудыг хэрэглэсэн зөв оноолтын тоо. Энд $popcount(mask)$ нь асаалттай битийн тоо. Баруун захын бага бит нь боломж нэг, дараагийнх боломж хоёр гэх мэт."
+          },
+          {
+            "type": "p",
+            "text": "Маск $101_2$ бол нэг ба гурав хэрэглэгдсэн, дараагийн хүн гурав дахь. Хоосон маскт нэг хоосон оноолт бий: $ways[0]=1$. “Хүн сонгох дараалал”-ыг чөлөөтэй тавибал энэ ганц маск хангалтгүй."
+          }
+        ]
+      },
+      {
+        "key": "transition",
+        "title": "4. Дараагийн хүнд хэрэглээгүй зөвшөөрөгдсөн сонголт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Маск дахь нэг битийн тоог $k$ гэе. Кодод тэгээс индексэлсэн хүн $k$-д, маскт байхгүй бөгөөд зөвшөөрөгдсөн боломж бүрийг өгнө. Шинэ маскт тэр битийг асааж өмнөх тоог нэмнэ."
+          },
+          {
+            "type": "p",
+            "text": "Шинэ маск тоон утгаараа үргэлж их: өмнө тэг байсан нэг битийг нэмсэн. Иймээс маскуудыг багаас ихээр явахад шилжилтийн эхлэлүүд бэлэн байна. $k=n$ бол бүх хүн оноогдсон тул цааш сунгахгүй."
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "5. Гурван битийн бүх үе",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хоосноос эхний хүн нэг эсвэл хоёр авч $001$, $010$ тус бүр нэг болно. $001$-ээс хоёр дахь хүн гурав авч $101$; $010$-оос нэг авч $011$, эсвэл гурав авч $110$ үүсгэнэ."
+          },
+          {
+            "type": "p",
+            "text": "$011$-ээс үлдсэн гурав, $101$-ээс үлдсэн хоёр гурав дахь хүнд зөвшөөрөгдөнө. $110$-д үлдсэн нэг зөвшөөрөгдөхгүй. Бүтэн $111$-д хоёр тоо цугларна."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Маск",
+              "Дараагийн хүн",
+              "Тоо"
+            ],
+            "rows": [
+              [
+                "000",
+                "1",
+                "1"
+              ],
+              [
+                "001",
+                "2",
+                "1"
+              ],
+              [
+                "010",
+                "2",
+                "1"
+              ],
+              [
+                "011",
+                "3",
+                "1"
+              ],
+              [
+                "101",
+                "3",
+                "1"
+              ],
+              [
+                "110",
+                "3",
+                "1"
+              ],
+              [
+                "111",
+                "—",
+                "2"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Хүн бүрийн дараалал давхар тоолохгүй",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Зөв хэсэгчилсэн оноолтыг хэрэглээгүй зөвшөөрөгдсөн боломжтой сунгах бүр зөв шинэ оноолт болно. Шинэ оноолтын сүүлийн хүний авсан боломжийг хасахад яг нэг өмнөх оноолт гарна."
+          },
+          {
+            "type": "p",
+            "text": "Иймээс шилжилтүүд бүх зөв оноолтыг хамарч, нэгийг хоёр замаар давхар тоолохгүй. Нэг маскт нэгтгэсэн өмнөх оноолтуудын ирээдүй зөвхөн үлдсэн боломж ба дараагийн хүнээс хамаардаг тул төлөв хангалттай."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Маск богино боловч төлөвийн тоо хоёрын зэрэг",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$2^n$ төлөв бүрд ихдээ $n$ боломж шалгана: $O(n2^n)$ хугацаа, $O(2^n+n^2)$ санах ой. Битийн тоог урьдчилан нэг шилжилтээр бодох хэсэг $O(2^n)$."
+          },
+          {
+            "type": "p",
+            "text": "Код $0\\le n\\le21$. Хоёр int массивын хэмжээ $n=21$ үед ойролцоогоор 16 MiB. Маск int-д аюулгүй багтана; хэмжээг хязгааргүй өсгөх эсвэл $1<<31$ гэж шилжүүлэхийг зөвшөөрөөгүй. Хариуг $10^9+7$-д хуваасан үлдэгдлээр хадгална."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. Маск, дараагийн хүн, шинэ бит",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Эхлэл ба төлөв"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Модулийг тогтоож, бүх маскийн асаалттай битийн тоог өмнөх хагас маскаас байгуулна. Хоёр тооллогын массив тэгээс эхэлнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr int MOD = 1000000007;\n\nint count_assignments(const vector<vector<int>>& allowed) {\n    int count = static_cast<int>(allowed.size());\n    int state_count = 1 << count;\n    vector<int> used_count(state_count), ways(state_count);\n    for (int mask = 1; mask < state_count; ++mask) {\n        used_count[mask] = used_count[mask >> 1] + (mask & 1);\n    }\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Үндсэн шилжилт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Хоосон оноолт нэг. Дараагийн хүнийг битийн тооноос гаргаж, зөвхөн хэрэглээгүй зөвшөөрөгдсөн битээр сунгана. Хоёр үлдэгдлийн нийлбэр $2M$-ээс бага тул нэг удаа модуль хасахад хангалттай.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    ways[0] = 1;\n    for (int mask = 0; mask < state_count; ++mask) {\n        int person = used_count[mask];\n        if (person == count || ways[mask] == 0) {\n            continue;\n        }\n        for (int option = 0; option < count; ++option) {\n            if ((mask & (1 << option)) == 0 && allowed[person][option]) {\n                int& next = ways[mask | (1 << option)];\n                next += ways[mask];\n                if (next >= MOD) {\n                    next -= MOD;\n                }\n            }\n        }\n    }\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Эцсийн хариу"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Бүх бит асаалттай төлөв нь бүх хүн оноогдсон тоо. Хоосон матрицт энэ нь мөн хоосон төлөвийн нэг.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    return ways[state_count - 1];\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Оролт ба гаралт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт $0$–$21$ хэмжээ, дараа нь зөвшөөрлийг заах тэг/нэг матриц. Хүний мөр ба боломжийн баганыг тэгээс индексэлж уншина. Хариуг $10^9+7$-ийн үлдэгдлээр хэвлэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int count;\n    cin >> count;\n    vector<vector<int>> allowed(count, vector<int>(count));\n    for (auto& row : allowed) {\n        for (int& value : row) {\n            cin >> value;\n        }\n    }\n    cout << count_assignments(allowed) << '\\n';\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах C++17 программ"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr int MOD = 1000000007;\n\nint count_assignments(const vector<vector<int>>& allowed) {\n    int count = static_cast<int>(allowed.size());\n    int state_count = 1 << count;\n    vector<int> used_count(state_count), ways(state_count);\n    for (int mask = 1; mask < state_count; ++mask) {\n        used_count[mask] = used_count[mask >> 1] + (mask & 1);\n    }\n    ways[0] = 1;\n    for (int mask = 0; mask < state_count; ++mask) {\n        int person = used_count[mask];\n        if (person == count || ways[mask] == 0) {\n            continue;\n        }\n        for (int option = 0; option < count; ++option) {\n            if ((mask & (1 << option)) == 0 && allowed[person][option]) {\n                int& next = ways[mask | (1 << option)];\n                next += ways[mask];\n                if (next >= MOD) {\n                    next -= MOD;\n                }\n            }\n        }\n    }\n    return ways[state_count - 1];\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int count;\n    cin >> count;\n    vector<vector<int>> allowed(count, vector<int>(count));\n    for (auto& row : allowed) {\n        for (int& value : row) {\n            cin >> value;\n        }\n    }\n    cout << count_assignments(allowed) << '\\n';\n}\n"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "3\n1 1 0\n1 0 1\n0 1 1\n"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "2\n"
+          }
+        ]
+      },
+      {
+        "key": "errors",
+        "title": "9. OR хийхээс өмнө хэрэглээгүйг шалга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Аль хэдийн асаалттай битийг OR хийхэд маск өөрчлөгдөхгүй. Тиймээс хэрэглээгүйг шалгахгүй бол боломжийг давтаж, буруу төлөв рүү өөрийг нь нэмнэ."
+          },
+          {
+            "type": "p",
+            "text": "Хоосон төлөвийг тэгээр эхлүүлбэл бүх тоо тэг хэвээр. Харин модуль авсан $ways[mask]=0$ үед цааш хувь нэмэр тэг тул алгасах нь зөв, бодит оноолт огт байхгүй гэсэн дүгнэлт заавал биш."
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "10. Гамильтоны замд маск дангаараа хүрэлцэхгүй",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Одоогийн бодлогод дараагийн хүн битийн тооноос тодорхой. Харин замын дараагийн ирмэг сүүлчийн оройгоос хамаарвал маск дээр төгсгөлийн орой нэмэх шаардлагатай. Ижил үзсэн олонлогтой хоёр замын ирээдүй өөр байж болно."
+          },
+          {
+            "type": "p",
+            "text": "Маск зөвхөн олонлог хадгална: сонгосон дараалал, үлдсэн ачаа, сүүлийн оройг автоматаар өгдөггүй. Төлөв хураахын өмнө ирээдүйд ямар мэдээлэл хэрэгтэйг батал."
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "11. n жижиг, олонлог чухал уу?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Ойролцоогоор хорь орчим элементтэй, хэрэглэсэн эсвэл үлдсэн олонлог ирээдүйг тодорхойлбол масктай DP-г бод. Хэдхэн битээр кодоллоо гээд төлөвийн тоо бага болно гэсэн үг биш."
+          },
+          {
+            "type": "p",
+            "text": "Энгийн дэд олонлог бүрийг ганц удаа гүйлгэх нь enumeration; өмнөх дэд бодлогын хариуг нэгтгэн дахин ашиглах нь DP. Хоёрыг жишээгээр ялгаж чаддаг бай."
+          }
+        ]
+      },
+      {
+        "key": "variants",
+        "title": "12. Хос төлөв, дэд маск, захын төлөв",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Elevator Rides-д маск бүрийн хамгийн сайн явалтын тоо ба сүүлийн ачааг хосоор хадгална. Grouping-д маск доторх бүлгийн сонголтуудыг шалгахад нийт зардал $3^n$ хүрч болох тул $n2^n$ гэж шууд үзэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Counting Tilings-д бүх хавтангийн маск бус мөр эсвэл баганын захын дүүрэлтийн маск гарч болно. Маск юуг тэмдэглэж байгааг бодлого бүрд шинээр тодорхойл."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Олонлогоос нэмэлт төлөв рүү",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Apple Division"
+          },
+          {
+            "type": "p",
+            "text": "Энгийн дэд олонлогийн enumeration ба DP-г ялгаж харьцуул."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Matching"
+          },
+          {
+            "type": "p",
+            "text": "Тогтсон хүний дараалал, маск ба битийн тооны төлөвийг хэрэгжүүл."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Elevator Rides"
+          },
+          {
+            "type": "p",
+            "text": "Хос утгын давамгайллыг баталж маск бүрд хамгийн сайныг хадгал."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Hamiltonian Flights"
+          },
+          {
+            "type": "p",
+            "text": "Маск дээр сүүлчийн орой хэрэгтэйг батал."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Counting Tilings"
+          },
+          {
+            "type": "p",
+            "text": "Захын дүүрэлтийн маск ба шинэ баганын шилжилтийг гарга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Grouping"
+          },
+          {
+            "type": "p",
+            "text": "Дэд маскуудын шалгалтын $3^n$ зардлыг тооц."
+          }
+        ]
+      },
+      {
+        "key": "priority",
+        "title": "14. Төлөвийн утга бол битийн үйлдлээс чухал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өндөр ач холбогдолтой. Matching нь хэрэглэсэн олонлог ба дараагийн хүний шууд цөм. Elevator Rides болон бусад нь нэмэлт төлөвийн утгаа баталж сурах дараагийн алхам."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Жижиг сэлгэмэл бүртэй тулга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Жишээний бүх зургаан сэлгэмлээс хоёр зөвийг ол. Бүх матриц нэг бол $n!$, тэг мөр байвал тэг. Хоосон $n=0$ сургалтын тохиолдолд ганц хоосон оноолт буюу нэг."
+          },
+          {
+            "type": "p",
+            "text": "Жижиг матрицт бүх сэлгэмлийг шууд шалгасан лавлахтай тулга. Нэг хүн, ганц зөв оноолттой матриц, ижил мөрүүд, бүрэн зөвшөөрөлтэй хамгийн том хэмжээг шалга."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Bitmask DP — a used subset as the state",
+        "summary": "Assign in a fixed order, encode used options as bits and count each complete assignment exactly once.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Assign distinct options to everyone",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Three people have three options. Person one allows options one/two; person two allows one/three; person three allows two/three. Count one-to-one allowed assignments."
+              },
+              {
+                "type": "p",
+                "text": "In person order, $(1,3,2)$ and $(2,1,3)$ are the two valid assignments. Allowed options differ by person."
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Permutations repeat subset subproblems",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Branching assignments can examine $n!$ permutations. Two partial assignments using exactly the same options for the same initial people have identical future choices."
+              },
+              {
+                "type": "p",
+                "text": "We need the used subset, not the entire earlier mapping, provided people are assigned in a fixed order."
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "3. One bit marks one used option",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "$ways[mask]$ counts assignments for the first $popcount(mask)$ people using exactly the marked options. The least significant bit represents option one."
+              },
+              {
+                "type": "p",
+                "text": "Mask $101_2$ uses options one and three, so person three is next. The empty state has one empty assignment. Allowing arbitrary person order would invalidate this state definition."
+              }
+            ]
+          },
+          {
+            "key": "transition",
+            "title": "4. Give the next person an unused allowed option",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Let $k$ be the set-bit count. For zero-based person $k$, try every unused allowed option, set that bit and add the old count to the new state."
+              },
+              {
+                "type": "p",
+                "text": "Setting a previously clear bit strictly increases the integer mask, so ascending masks respect dependencies. At $k=n$, assignment is complete."
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "5. The three-bit layers",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "From empty, person one gives one way each to $001$ and $010$. State $001$ reaches $101$; state $010$ reaches $011$ or $110$."
+              },
+              {
+                "type": "p",
+                "text": "For person three, $011$ can use three and $101$ can use two, but $110$ cannot use the remaining one. The full mask receives two ways."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Mask",
+                  "Next person",
+                  "Ways"
+                ],
+                "rows": [
+                  [
+                    "000",
+                    "1",
+                    "1"
+                  ],
+                  [
+                    "001",
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "010",
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "011",
+                    "3",
+                    "1"
+                  ],
+                  [
+                    "101",
+                    "3",
+                    "1"
+                  ],
+                  [
+                    "110",
+                    "3",
+                    "1"
+                  ],
+                  [
+                    "111",
+                    "—",
+                    "2"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Fixed person order prevents double counting",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Each extension is valid, and removing the last person’s option uniquely recovers its predecessor assignment. Thus transitions cover every valid assignment exactly once."
+              },
+              {
+                "type": "p",
+                "text": "Merged histories at a mask have the same future because only remaining options and next person matter; the state is sufficient."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Compact representation, exponentially many states",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Time is $O(n2^n)$, space $O(2^n+n^2)$; precomputing bit counts is linear in states."
+              },
+              {
+                "type": "p",
+                "text": "For $0\\le n\\le21$, the two int arrays use about 16 MiB at the maximum. Shifts remain within the stated int bounds. Counts are stored modulo $10^9+7$."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Mask, next person and a new bit",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. State and setup"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Set the modulus and precompute each mask’s population from its shifted predecessor; initialize the count arrays.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr int MOD = 1000000007;\n\nint count_assignments(const vector<vector<int>>& allowed) {\n    int count = static_cast<int>(allowed.size());\n    int state_count = 1 << count;\n    vector<int> used_count(state_count), ways(state_count);\n    for (int mask = 1; mask < state_count; ++mask) {\n        used_count[mask] = used_count[mask >> 1] + (mask & 1);\n    }\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. Main transition"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Seed one empty assignment, use popcount for the next person and extend only unused allowed bits. Two residues sum below $2M$, so one subtraction suffices.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    ways[0] = 1;\n    for (int mask = 0; mask < state_count; ++mask) {\n        int person = used_count[mask];\n        if (person == count || ways[mask] == 0) {\n            continue;\n        }\n        for (int option = 0; option < count; ++option) {\n            if ((mask & (1 << option)) == 0 && allowed[person][option]) {\n                int& next = ways[mask | (1 << option)];\n                next += ways[mask];\n                if (next >= MOD) {\n                    next -= MOD;\n                }\n            }\n        }\n    }\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. Final answer"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The full mask counts complete assignments, including the empty case’s one assignment.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    return ways[state_count - 1];\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Input and output"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read size $0$–$21$ and a zero/one compatibility matrix in person-row/option-column order; print the count modulo $10^9+7$.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int count;\n    cin >> count;\n    vector<vector<int>> allowed(count, vector<int>(count));\n    for (auto& row : allowed) {\n        for (int& value : row) {\n            cin >> value;\n        }\n    }\n    cout << count_assignments(allowed) << '\\n';\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete compilable C++17 program"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr int MOD = 1000000007;\n\nint count_assignments(const vector<vector<int>>& allowed) {\n    int count = static_cast<int>(allowed.size());\n    int state_count = 1 << count;\n    vector<int> used_count(state_count), ways(state_count);\n    for (int mask = 1; mask < state_count; ++mask) {\n        used_count[mask] = used_count[mask >> 1] + (mask & 1);\n    }\n    ways[0] = 1;\n    for (int mask = 0; mask < state_count; ++mask) {\n        int person = used_count[mask];\n        if (person == count || ways[mask] == 0) {\n            continue;\n        }\n        for (int option = 0; option < count; ++option) {\n            if ((mask & (1 << option)) == 0 && allowed[person][option]) {\n                int& next = ways[mask | (1 << option)];\n                next += ways[mask];\n                if (next >= MOD) {\n                    next -= MOD;\n                }\n            }\n        }\n    }\n    return ways[state_count - 1];\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int count;\n    cin >> count;\n    vector<vector<int>> allowed(count, vector<int>(count));\n    for (auto& row : allowed) {\n        for (int& value : row) {\n            cin >> value;\n        }\n    }\n    cout << count_assignments(allowed) << '\\n';\n}\n"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "3\n1 1 0\n1 0 1\n0 1 1\n"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "2\n"
+              }
+            ]
+          },
+          {
+            "key": "errors",
+            "title": "9. Check unused status before setting a bit",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "OR-ing an already-set bit leaves the state unchanged and can reuse an option or self-add; test unused status first."
+              },
+              {
+                "type": "p",
+                "text": "An empty-state count of zero would kill all counts. A zero residue may be skipped because its modular contribution is zero, not necessarily because no actual assignments exist."
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "10. A Hamiltonian path needs more than a subset",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "The next person is determined by popcount here. A path’s next edge depends on its last vertex, so Hamiltonian-path states also need an endpoint."
+              },
+              {
+                "type": "p",
+                "text": "A mask stores a set, not order, remaining load or endpoint. Prove future-relevant information is preserved before compressing state."
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "11. Is n small and subset identity important?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Consider subset DP for around twenty elements when used/remaining identities determine the future. A compact bit representation does not make exponentially many states cheap."
+              },
+              {
+                "type": "p",
+                "text": "Enumerating every subset once is enumeration; combining and reusing subproblem answers is DP. Distinguish them."
+              }
+            ]
+          },
+          {
+            "key": "variants",
+            "title": "12. Paired states, submasks and frontier states",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Elevator Rides uses a pair such as ride count and last load per subset. Grouping-style submask transitions may total $3^n$, not automatically $n2^n$."
+              },
+              {
+                "type": "p",
+                "text": "Tilings can use frontier occupancy masks instead of one bit per tile. Redefine bit meaning for each task."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From subsets to richer states",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Apple Division"
+              },
+              {
+                "type": "p",
+                "text": "Distinguish direct subset enumeration from DP reuse."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Matching"
+              },
+              {
+                "type": "p",
+                "text": "Implement fixed-person order and used-subset counts."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Elevator Rides"
+              },
+              {
+                "type": "p",
+                "text": "Prove dominance for a paired state."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Hamiltonian Flights"
+              },
+              {
+                "type": "p",
+                "text": "Add the endpoint to the state."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Counting Tilings"
+              },
+              {
+                "type": "p",
+                "text": "Derive frontier masks and column transitions."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Grouping"
+              },
+              {
+                "type": "p",
+                "text": "Account for submask-transition complexity."
+              }
+            ]
+          },
+          {
+            "key": "priority",
+            "title": "14. State meaning matters more than bit tricks",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "High priority. Matching directly links the used subset to the next person; other tasks require their own richer state meanings."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Compare every small permutation",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Find the two valid permutations among all six. An all-allowed matrix gives $n!$; an all-zero row gives zero; the teaching empty case has one empty assignment."
+              },
+              {
+                "type": "p",
+                "text": "Compare small matrices against direct permutation enumeration, including singleton, unique assignment, identical rows and a maximum-size all-allowed case."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Bit operations, subset masks and one-use-choice DP; the number of options must be small."
+      }
+    },
+    "prerequisites": "Битийн үйлдэл, олонлогийг маскаар дүрслэх, нэг удаагийн сонголтын DP. Хэмжээ бага байх шаардлагатай.",
+    "prerequisiteIds": [
+      "bit-operations",
+      "knapsack"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "bit-operations",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "knapsack",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "lazy-segment-tree",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ],
+      "next": "kmp",
+      "practice": [
+        {
+          "key": "85",
+          "stage": "Warm-up",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "691",
+          "stage": "Standard",
+          "priority": true,
+          "reason": "Төлөвийн утга, нэгтгэх тооллого ба заагийн нөхцөлийг шууд хэрэгжүүлэх цөм дасгал."
+        },
+        {
+          "key": "356",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "389",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "357",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "697",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false,
+    "priorityLevel": "high",
+    "priorityReason": "Жижиг олонлогийн бүх сонголтыг хураангуй төлөв болгон бодох үндсэн арга. Маск юу хадгалж, ямар мэдээлэл дутууг батлах, экспоненциал зардлыг үнэлэх өндөр өгөөжтэй."
+  }
+}
