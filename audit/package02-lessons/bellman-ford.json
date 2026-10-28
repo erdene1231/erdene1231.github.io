@@ -1,0 +1,831 @@
+{
+  "id": "bellman-ford",
+  "expected_revision": 1,
+  "expected_published": true,
+  "expected_body_sha256": "075615802952d1b5d5bc827c1f3eb5cbd078b472faa8bdde48f8d9dd05561aa6",
+  "status": "Authored; semantic/code/native editor review pending",
+  "body": {
+    "id": "bellman-ford",
+    "level": "Дунд шат",
+    "order": 51,
+    "title": "Беллман–Форд — сөрөг жин ба сөрөг циклийн нөлөө",
+    "aliases": "bellman-ford Bellman–Ford — сөрөг edge ба relaxation Bellman–Ford — negative edges and relaxation",
+    "related": [
+      "dijkstra",
+      "floyd-warshall"
+    ],
+    "summary": "Ирмэгүүдийг давтан сулруулж, төгсгөлтэй хамгийн бага зай, хүрэхгүй орой, доош хязгааргүй утгыг ялгана.",
+    "category": "Граф",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Хямд зам дараа нь сөрөг ирмэгээр ирж болно",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Ирмэгүүд $1\\to2:4$, $3\\to2:-3$, $1\\to3:5$ байг. Нэгээс хоёрын шууд зай дөрөв боловч гурав дайрвал хоёр. Хамгийн бага түр зайтай хоёрын хариуг шууд эцэслэх Дейкстрагийн баталгаа энд үйлчлэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Сөрөг ирмэгтэй гээд бүх хариу утгагүй болохгүй. Харин эхлэлээс хүрч болох сөрөг нийлбэртэй циклээр олон эргэвэл зарим оройд очих өртгийг дурын хэмжээгээр багасгаж болно."
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Замын ирмэгийн тоогоор үе ахиулах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$D_k[v]$-г эхлэлээс ихдээ $k$ ирмэгтэй алхалтын хамгийн бага өртөг гэе. Өмнөх үеийн замыг хэвээр үлдээх эсвэл нэг ирмэгээр сунгаж дараагийн үеийг гаргаж болно."
+          },
+          {
+            "type": "p",
+            "text": "Ирмэг бүрийг нэг удаа гүйлгэх бүтэн давталт хийе. Тусдаа хоёр массив хэрэглэвэл яг энэ үеийн тодорхойлолттой. Нэг массивт газар дээр нь шинэчлэхэд зарим урт зам эрт сайжирч болох ч дор хаяж тухайн үеийн бүх боломж хамрагдана."
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "3. Тэг эхлэл, хүрээгүйд тусгай утга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхлэлийн зай тэг, бусад нь INF. Сулруулахдаа эхлэлийн оройд хүрээгүй бол ирмэгийг алгасана. INF дээр сөрөг жин нэмээд хуурамч хүрэлт үүсгэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Хязгааргүй биш зай бүр бодит алхалтын үнэ учраас боломжгүй бага утга зохиохгүй. Нэг массив дахь шинэчлэлт бүр ч бодит өмнөх алхалтыг сунгасан хэвээр."
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Хамгийн ихдээ n−1 бүтэн гүйлгэлт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Сөрөг цикл нөлөөлөхгүй оройн хамгийн богино алхалтаас давтагдсан сөрөг бус циклийг хасаж энгийн зам үлдээж болно. Энгийн зам ихдээ $n-1$ ирмэгтэй. Иймээс $n-1$ бүтэн гүйлгэлт хангалттай."
+          },
+          {
+            "type": "p",
+            "text": "Бүтэн гүйлгэлтэд нэг ч зай сайжраагүй бол дараагийнх ч сайжруулахгүй тул эрт зогсоно. Харин $n-1$-ийн дараа сайжрах ирмэг байвал түүний төгсгөл сөрөг циклийн нөлөөнд байна; тэр оройноос гарах замуудаар BFS хийж нөлөөг тараана."
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "5. Ирмэгийн жагсаалтын дараалал үеийг өөрчилнө",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Жишээний жагсаалтыг яг $1\\to2$, $3\\to2$, $1\\to3$ гэж гүйлгэе. Эхний үед хоёр дөрөв болно, гурав руу хараахан хүрээгүй тул дундах ирмэг алгасагдана, эцэст нь гурав тав болно."
+          },
+          {
+            "type": "p",
+            "text": "Хоёр дахь үед гуравын таваас хасах гуравыг нэмээд хоёрын зай хоёр болно. $n=3$ тул хоёр үеийн дараа $0,2,5$ зөв. Жагсаалтыг өөр дарааллаар өгвөл хоёр эхний үед сайжирч болох ч эцсийн хариу өөрчлөгдөхгүй."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Бүтэн үе",
+              "1-ийн зай",
+              "2-ын зай",
+              "3-ын зай"
+            ],
+            "rows": [
+              [
+                "0",
+                "0",
+                "INF",
+                "INF"
+              ],
+              [
+                "1",
+                "0",
+                "4",
+                "5"
+              ],
+              [
+                "2",
+                "0",
+                "2",
+                "5"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Яагаад нэмэлт сайжрал сөрөг нөлөөг илтгэх вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Үе бүрийн дараа тухайн тооноос ихгүй ирмэгтэй бүх замын өртгийг дор хаяж хамарсан байна гэдгийг ирмэг сунгах индукцээр батална. Тэгэхээр сөрөг цикл нөлөөлөхгүй бүх оройд $n-1$ үеийн дараа зөв хамгийн бага зай байна."
+          },
+          {
+            "type": "p",
+            "text": "Цааш сайжрах ирмэгийн шинэ алхалт бүх энгийн замаас хямд байх тул давтагдсан хэсэгт сөрөг цикл агуулсан байна. Нөгөө талаас хүрэх сөрөг циклийн бүх ирмэг сулрахгүй байвал тэдний зайн тэнцэтгэл бишүүдийг нэмэхэд циклийн нийлбэр сөрөг биш болж зөрчилдөнө. Иймээс нөлөөлөх циклээс ядаж нэг үр гарна; урагш хайлт яг тэр циклийн дараах оройнуудыг тэмдэглэнэ."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Удаан боловч нөхцөл нь өргөн",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Гүйлгэлтүүд $O(nm)$, нөлөө тараах $O(n+m)$; ирмэг ба графын санах ой $O(n+m)$. Дейкстрагаас удаан тул зөвхөн сөрөг жин эсвэл циклийн зорилгод тохирох хязгаарт хэрэглэ."
+          },
+          {
+            "type": "p",
+            "text": "Кодын гэрээ $n\\le2500$, $m\\le5000$, жингийн абсолют утга $10^9$-өөс ихгүй. Сөрөг циклтэй үед нэг массивын зай энгийн замаас доош бууж болно. Ихдээ $(n-1)m$ сулруулалт тус бүр нэг жин нэмэх тул $1.25\\cdot10^{16}$ орчим абсолют хязгаар long long-д багтана; INF дээр нэмэхгүй."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. Төгсгөлтэй зай ба нөлөөлсөн оройг тусад нь",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Эхлэл ба төлөв"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Гарах хөршүүдийг нөлөө тараахад зориулж байгуулна. Зайн массив ба доош хязгааргүй гэсэн тэмдэг тусдаа. Эхлэл тэг, бусад INF.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long INF = numeric_limits<long long>::max() / 4;\nstruct Edge {\n    int from, to;\n    long long weight;\n};\nstruct Result {\n    vector<long long> distance;\n    vector<bool> unbounded;\n};\n\nResult shortest_paths(int vertex_count, const vector<Edge>& edges, int source) {\n    vector<vector<int>> graph(vertex_count + 1);\n    for (const Edge& edge : edges) {\n        graph[edge.from].push_back(edge.to);\n    }\n    Result result{vector<long long>(vertex_count + 1, INF),\n                  vector<bool>(vertex_count + 1)};\n    result.distance[source] = 0;\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Үндсэн үйлдэл"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Бүтэн гүйлгэлт бүрд зөвхөн хүрсэн эхлэлээс сулруулна. Нэг массивын шинэчлэлт эрт дамжиж болно. Өөрчлөлтгүй үед зогсоох нь дараагийнх ч ижил байх нөхцөлтэй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    for (int pass = 1; pass < vertex_count; ++pass) {\n        bool changed = false;\n        for (const Edge& edge : edges) {\n            if (result.distance[edge.from] == INF) {\n                continue;\n            }\n            long long candidate = result.distance[edge.from] + edge.weight;\n            if (candidate < result.distance[edge.to]) {\n                result.distance[edge.to] = candidate;\n                changed = true;\n            }\n        }\n        if (!changed) {\n            break;\n        }\n    }\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Нэгтгэл ба боловсруулалт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Зайг дахин өөрчлөлгүй сулрах ирмэгүүдийн төгсгөлийг үр болгон тэмдэглэнэ. Дараа нь зөвхөн урагш BFS хийж нөлөөлөх бүх оройд хүрнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    queue<int> pending;\n    for (const Edge& edge : edges) {\n        if (result.distance[edge.from] != INF &&\n            result.distance[edge.from] + edge.weight < result.distance[edge.to] &&\n            !result.unbounded[edge.to]) {\n            result.unbounded[edge.to] = true;\n            pending.push(edge.to);\n        }\n    }\n    while (!pending.empty()) {\n        int vertex = pending.front();\n        pending.pop();\n        for (int next : graph[vertex]) {\n            if (!result.unbounded[next]) {\n                result.unbounded[next] = true;\n                pending.push(next);\n            }\n        }\n    }\n    return result;\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Оролт ба гаралт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт $1$–$2500$ орой, $0$–$5000$ чиглэсэн ирмэг, жингийн абсолют утга $10^9$-өөс ихгүй. Эхлэл нэг. Орой бүрд төгсгөлтэй тоо, UNREACHABLE эсвэл -INF хэвлэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    vector<Edge> edges(edge_count);\n    for (Edge& edge : edges) {\n        cin >> edge.from >> edge.to >> edge.weight;\n    }\n    Result result = shortest_paths(vertex_count, edges, 1);\n    for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n        if (result.unbounded[vertex]) {\n            cout << \"-INF\";\n        } else if (result.distance[vertex] == INF) {\n            cout << \"UNREACHABLE\";\n        } else {\n            cout << result.distance[vertex];\n        }\n        cout << (vertex == vertex_count ? '\\n' : ' ');\n    }\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах C++17 программ"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long INF = numeric_limits<long long>::max() / 4;\nstruct Edge {\n    int from, to;\n    long long weight;\n};\nstruct Result {\n    vector<long long> distance;\n    vector<bool> unbounded;\n};\n\nResult shortest_paths(int vertex_count, const vector<Edge>& edges, int source) {\n    vector<vector<int>> graph(vertex_count + 1);\n    for (const Edge& edge : edges) {\n        graph[edge.from].push_back(edge.to);\n    }\n    Result result{vector<long long>(vertex_count + 1, INF),\n                  vector<bool>(vertex_count + 1)};\n    result.distance[source] = 0;\n    for (int pass = 1; pass < vertex_count; ++pass) {\n        bool changed = false;\n        for (const Edge& edge : edges) {\n            if (result.distance[edge.from] == INF) {\n                continue;\n            }\n            long long candidate = result.distance[edge.from] + edge.weight;\n            if (candidate < result.distance[edge.to]) {\n                result.distance[edge.to] = candidate;\n                changed = true;\n            }\n        }\n        if (!changed) {\n            break;\n        }\n    }\n    queue<int> pending;\n    for (const Edge& edge : edges) {\n        if (result.distance[edge.from] != INF &&\n            result.distance[edge.from] + edge.weight < result.distance[edge.to] &&\n            !result.unbounded[edge.to]) {\n            result.unbounded[edge.to] = true;\n            pending.push(edge.to);\n        }\n    }\n    while (!pending.empty()) {\n        int vertex = pending.front();\n        pending.pop();\n        for (int next : graph[vertex]) {\n            if (!result.unbounded[next]) {\n                result.unbounded[next] = true;\n                pending.push(next);\n            }\n        }\n    }\n    return result;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    vector<Edge> edges(edge_count);\n    for (Edge& edge : edges) {\n        cin >> edge.from >> edge.to >> edge.weight;\n    }\n    Result result = shortest_paths(vertex_count, edges, 1);\n    for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n        if (result.unbounded[vertex]) {\n            cout << \"-INF\";\n        } else if (result.distance[vertex] == INF) {\n            cout << \"UNREACHABLE\";\n        } else {\n            cout << result.distance[vertex];\n        }\n        cout << (vertex == vertex_count ? '\\n' : ' ');\n    }\n}\n"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "3 3\n1 2 4\n3 2 -3\n1 3 5\n"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "0 2 5\n"
+          }
+        ]
+      },
+      {
+        "key": "errors",
+        "title": "9. Эхлэлд хүрэхгүй цикл нөлөөлөхгүй",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Графын өөр хэсэгт сөрөг цикл байсан ч эхлэлээс түүнд хүрэхгүй бол энэ эхлэлийн зайд нөлөөлөхгүй. Тиймээс нэмэлт шалгалтад ч эхлэлийн зай INF бишийг шалгана."
+          },
+          {
+            "type": "p",
+            "text": "Нөлөөг ирмэгийн дагуу урагш тараана, эсрэгээр биш. Цикл рүү очиж болох орой болгон доош хязгааргүй гэсэн үг биш; циклээр эргээд тухайн орой руу буцаж хүрч чадах эсэх чухал."
+          }
+        ]
+      },
+      {
+        "key": "cycles",
+        "title": "10. Сөрөг нөлөө ба цикл сэргээх өөр зорилго",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Жишээ нь $1\\to2:1$, $2\\to3:1$, $3\\to2:-3$, $3\\to4:2$ байвал хоёр, гурав, дөрөв доош хязгааргүй, харин нэг хэвийн тэг. Нэмэлт тусгаар орой хүрэхгүй хэвээр."
+          },
+          {
+            "type": "p",
+            "text": "Код нөлөөлсөн оройг олно, циклийн ирмэгүүдийг хэвлэхгүй. Яг цикл сэргээхэд сайжруулсан өмнөх оройг хадгалж, нэмэлт үеийн оройгоос олон удаа эцгээр ухрах тусдаа алхмууд хэрэгтэй."
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "11. Зорилтот оройд цикл хүрэх үү?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "High Score шиг хамгийн их оноонд жинг сөрөг болгох эсвэл maximum сулруулалт хэрэглэж болно. Төгсгөл рүү хүрэх ашигтай цикл л хариуг хязгааргүй болгоно. Эхлэлээс хүрэх цикл байна гэдэг ганцаараа хангалтгүй."
+          },
+          {
+            "type": "p",
+            "text": "Харин графын хаана ч сөрөг цикл байгаа эсэхийг асуувал бүх зайг тэгээр эхлүүлэх эсвэл хийсвэр эхлэл нэмэх өөр эхлэлт хэрэгтэй. Үүнийг ганц эхлэлийн замын кодтой бүү холь."
+          }
+        ]
+      },
+      {
+        "key": "alternatives",
+        "title": "12. Циклгүй бол өөр дараалал ашиглаж болно",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Чиглэсэн граф циклгүй бол топологийн дарааллаар ирмэг бүрийг нэг удаа сулруулж болно, сөрөг жин ч зөвшөөрөгдөнө. Учир нь бүх өмнөх оройн хариу бэлэн."
+          },
+          {
+            "type": "p",
+            "text": "Бүх хосын зай хэрэгтэй жижиг графт Флойд–Уоршелл тохирч болно. Арга сонгохдоо эхлэлийн тоо, жингийн нөхцөл, цикл, $n,m$-ийн хязгаарыг хамтад нь хар."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Сөрөг жингээс зорилгын нөлөө рүү",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Shortest Routes"
+          },
+          {
+            "type": "p",
+            "text": "Сөрөг бус нөхцөлд өмнөх хурдан аргыг лавлах болгон харьцуул."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "High Score"
+          },
+          {
+            "type": "p",
+            "text": "Цикл эхлэлээс хүрч, төгсгөлд нөлөөлөх хоёр нөхцөлийг ялга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Cycle Finding"
+          },
+          {
+            "type": "p",
+            "text": "Графын хаана ч цикл олох эхлэлт, циклийн сэргээх алхмууд нэм."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Longest Flight Route"
+          },
+          {
+            "type": "p",
+            "text": "Циклгүй нөхцөлд топологийн maximum төлөвөөр хурдлуулж болно."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Shortest Routes II"
+          },
+          {
+            "type": "p",
+            "text": "Бүх хосын асуултын өөр хязгаарт нэг эхлэлийн аргыг давтах эсэхээ харьцуул."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Flight Discount"
+          },
+          {
+            "type": "p",
+            "text": "Төлөв нэмэх шаардлага ба жингийн сөрөг бус нөхцөлийг тусад нь шалга."
+          }
+        ]
+      },
+      {
+        "key": "priority",
+        "title": "14. Хязгааргүй ба хүрэхгүйг ялгах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өндөр ач холбогдолтой. High Score ба Cycle Finding нь өөр өөр зорилготой: эхлэл ба төгсгөлийн нөлөө, харин нөгөө нь цикл өөрөө сэргээх. Хоёр зорилгыг нэг шалгалт гэж үзэхгүй."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Гурван төрлийн хариуг шалга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Төгсгөлтэй сөрөг зайг -1 гэсэн “хүрэхгүй” тэмдэгтэй андуурахгүйн тулд код хүрэхгүйд UNREACHABLE, нөлөөлсөнд -INF хэвлэнэ. Эдгээр нь сургалтын гаралтын гэрээ."
+          },
+          {
+            "type": "p",
+            "text": "Жижиг графт бүх хосын лавлах ба хүрэх байдлаар сөрөг циклийн нөлөөг тусад нь тооцож тулга. Сөрөг өөртэйгөө холбоос, хүрэхгүй цикл, циклээс цааш орой, өмнөх эцсийн хариу, урвуу жагсаалттай урт гинжийг шалга."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Bellman–Ford — negative edges and negative-cycle influence",
+        "summary": "Repeatedly relax edges and distinguish finite shortest distances, unreachable vertices and distances unbounded below.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. A cheaper route may arrive through a negative edge",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Edges are $1\\to2:4$, $3\\to2:-3$, $1\\to3:5$. The direct distance to two is four, but via three it is two. Dijkstra’s nonnegative-suffix finality proof fails."
+              },
+              {
+                "type": "p",
+                "text": "Negative edges do not automatically invalidate all answers. A reachable negative-total cycle can instead make distances to some vertices arbitrarily small."
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Advance by the number of allowed edges",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Let $D_k[v]$ be the minimum cost of a walk with at most $k$ edges. Keep previous walks or extend one edge to obtain the next layer."
+              },
+              {
+                "type": "p",
+                "text": "A full scan relaxes every edge. Two arrays exactly model layers; in-place updates may discover longer walks earlier, but still cover at least all walks guaranteed by that pass."
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "3. Zero source and an unreachable sentinel",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Initialize source zero and others INF. Skip an edge whose start is unreachable, preventing INF plus a negative weight from creating a fake path."
+              },
+              {
+                "type": "p",
+                "text": "Every finite label remains the cost of an actual walk, including in-place improvements."
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. At most n−1 full scans",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For vertices unaffected by negative cycles, remove repeated nonnegative cycles from a shortest walk to obtain a simple path of at most $n-1$ edges. Thus $n-1$ full scans suffice."
+              },
+              {
+                "type": "p",
+                "text": "Stop early after a scan with no change. After the scans, any still-relaxable reachable edge seeds negative-cycle influence, which is propagated forward with BFS."
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "5. Edge-list order changes early progress",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Scan in order $1\\to2$, $3\\to2$, $1\\to3$. First, two gets four; three is still unreachable when its edge is scanned; finally three gets five."
+              },
+              {
+                "type": "p",
+                "text": "On the second pass, five plus negative three improves two to two. With three vertices, two passes give $0,2,5$. A different edge order may find two sooner but cannot change the final answer."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Scan",
+                  "Distance 1",
+                  "Distance 2",
+                  "Distance 3"
+                ],
+                "rows": [
+                  [
+                    "0",
+                    "0",
+                    "INF",
+                    "INF"
+                  ],
+                  [
+                    "1",
+                    "0",
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "2",
+                    "0",
+                    "2",
+                    "5"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Why does an extra improvement signal negative influence?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Induction on extensions guarantees all walks with at most the pass count are covered. Hence every unaffected vertex has its correct shortest distance after $n-1$ scans."
+              },
+              {
+                "type": "p",
+                "text": "A further improvement beats all simple paths and must contain a negative cycle. Conversely, if no edge on a reachable negative cycle could relax, summing their distance inequalities would contradict its negative total weight. Thus at least one seed exists for each influential cycle, and forward reachability marks its descendants."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Slower, but with broader weight support",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Scans take $O(nm)$ and propagation $O(n+m)$, using $O(n+m)$ space. Check constraints rather than substituting it for Dijkstra indiscriminately."
+              },
+              {
+                "type": "p",
+                "text": "The contract is $n\\le2500$, $m\\le5000$, weight magnitude at most $10^9$. In-place labels may descend around negative cycles, but at most $(n-1)m$ additions bound magnitudes near $1.25\\cdot10^{16}$, within long long; INF is never added."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Separate finite labels from unbounded flags",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. State and setup"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Build outgoing adjacency for propagation; keep distance labels and unbounded flags separate, with source zero and others INF.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long INF = numeric_limits<long long>::max() / 4;\nstruct Edge {\n    int from, to;\n    long long weight;\n};\nstruct Result {\n    vector<long long> distance;\n    vector<bool> unbounded;\n};\n\nResult shortest_paths(int vertex_count, const vector<Edge>& edges, int source) {\n    vector<vector<int>> graph(vertex_count + 1);\n    for (const Edge& edge : edges) {\n        graph[edge.from].push_back(edge.to);\n    }\n    Result result{vector<long long>(vertex_count + 1, INF),\n                  vector<bool>(vertex_count + 1)};\n    result.distance[source] = 0;\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. Main operation"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Relax only reachable starts. In-place improvements may propagate early; a no-change scan is a fixed point and permits stopping.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    for (int pass = 1; pass < vertex_count; ++pass) {\n        bool changed = false;\n        for (const Edge& edge : edges) {\n            if (result.distance[edge.from] == INF) {\n                continue;\n            }\n            long long candidate = result.distance[edge.from] + edge.weight;\n            if (candidate < result.distance[edge.to]) {\n                result.distance[edge.to] = candidate;\n                changed = true;\n            }\n        }\n        if (!changed) {\n            break;\n        }\n    }\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. Aggregation and processing"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Without modifying distances again, seed destinations of relaxable edges and propagate influence forward with BFS.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    queue<int> pending;\n    for (const Edge& edge : edges) {\n        if (result.distance[edge.from] != INF &&\n            result.distance[edge.from] + edge.weight < result.distance[edge.to] &&\n            !result.unbounded[edge.to]) {\n            result.unbounded[edge.to] = true;\n            pending.push(edge.to);\n        }\n    }\n    while (!pending.empty()) {\n        int vertex = pending.front();\n        pending.pop();\n        for (int next : graph[vertex]) {\n            if (!result.unbounded[next]) {\n                result.unbounded[next] = true;\n                pending.push(next);\n            }\n        }\n    }\n    return result;\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Input and output"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read up to $2500$ vertices and $5000$ directed edges with signed weight magnitude at most $10^9$. Source is one; print a finite number, UNREACHABLE or -INF per vertex.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    vector<Edge> edges(edge_count);\n    for (Edge& edge : edges) {\n        cin >> edge.from >> edge.to >> edge.weight;\n    }\n    Result result = shortest_paths(vertex_count, edges, 1);\n    for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n        if (result.unbounded[vertex]) {\n            cout << \"-INF\";\n        } else if (result.distance[vertex] == INF) {\n            cout << \"UNREACHABLE\";\n        } else {\n            cout << result.distance[vertex];\n        }\n        cout << (vertex == vertex_count ? '\\n' : ' ');\n    }\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete compilable C++17 program"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long INF = numeric_limits<long long>::max() / 4;\nstruct Edge {\n    int from, to;\n    long long weight;\n};\nstruct Result {\n    vector<long long> distance;\n    vector<bool> unbounded;\n};\n\nResult shortest_paths(int vertex_count, const vector<Edge>& edges, int source) {\n    vector<vector<int>> graph(vertex_count + 1);\n    for (const Edge& edge : edges) {\n        graph[edge.from].push_back(edge.to);\n    }\n    Result result{vector<long long>(vertex_count + 1, INF),\n                  vector<bool>(vertex_count + 1)};\n    result.distance[source] = 0;\n    for (int pass = 1; pass < vertex_count; ++pass) {\n        bool changed = false;\n        for (const Edge& edge : edges) {\n            if (result.distance[edge.from] == INF) {\n                continue;\n            }\n            long long candidate = result.distance[edge.from] + edge.weight;\n            if (candidate < result.distance[edge.to]) {\n                result.distance[edge.to] = candidate;\n                changed = true;\n            }\n        }\n        if (!changed) {\n            break;\n        }\n    }\n    queue<int> pending;\n    for (const Edge& edge : edges) {\n        if (result.distance[edge.from] != INF &&\n            result.distance[edge.from] + edge.weight < result.distance[edge.to] &&\n            !result.unbounded[edge.to]) {\n            result.unbounded[edge.to] = true;\n            pending.push(edge.to);\n        }\n    }\n    while (!pending.empty()) {\n        int vertex = pending.front();\n        pending.pop();\n        for (int next : graph[vertex]) {\n            if (!result.unbounded[next]) {\n                result.unbounded[next] = true;\n                pending.push(next);\n            }\n        }\n    }\n    return result;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    vector<Edge> edges(edge_count);\n    for (Edge& edge : edges) {\n        cin >> edge.from >> edge.to >> edge.weight;\n    }\n    Result result = shortest_paths(vertex_count, edges, 1);\n    for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n        if (result.unbounded[vertex]) {\n            cout << \"-INF\";\n        } else if (result.distance[vertex] == INF) {\n            cout << \"UNREACHABLE\";\n        } else {\n            cout << result.distance[vertex];\n        }\n        cout << (vertex == vertex_count ? '\\n' : ' ');\n    }\n}\n"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "3 3\n1 2 4\n3 2 -3\n1 3 5\n"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "0 2 5\n"
+              }
+            ]
+          },
+          {
+            "key": "errors",
+            "title": "9. An unreachable negative cycle has no source influence",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "A negative cycle elsewhere does not affect this source if unreachable, so extra-pass checks also require finite starting labels."
+              },
+              {
+                "type": "p",
+                "text": "Propagate influence forward, not backward. Being able to reach a cycle does not alone make a vertex unbounded; the cycle must also reach that vertex."
+              }
+            ]
+          },
+          {
+            "key": "cycles",
+            "title": "10. Influence marking and cycle reconstruction differ",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "With $1\\to2:1$, $2\\to3:1$, $3\\to2:-3$, $3\\to4:2$, vertices two, three and four are unbounded below; one stays zero, and an isolated vertex is unreachable."
+              },
+              {
+                "type": "p",
+                "text": "The program marks influence, not cycle edges. Explicit cycle recovery needs predecessor tracking and additional backtracking steps."
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "11. Can the cycle influence the target?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For maximum score, negate weights or derive maximum relaxation. Only a profitable cycle reachable from the source and able to reach the destination makes that answer unbounded."
+              },
+              {
+                "type": "p",
+                "text": "To detect a negative cycle anywhere, use a super-source or all-zero initial labels. That is a different initialization from single-source shortest paths."
+              }
+            ]
+          },
+          {
+            "key": "alternatives",
+            "title": "12. A DAG permits another processing order",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "A DAG allows one relaxation per edge in topological order, even with negative weights, because predecessors are ready."
+              },
+              {
+                "type": "p",
+                "text": "Small all-pairs tasks may suit Floyd–Warshall. Choose by source count, weight assumptions, cycles and graph size."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From signed distances to target influence",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Shortest Routes"
+              },
+              {
+                "type": "p",
+                "text": "Compare with the faster nonnegative method."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "High Score"
+              },
+              {
+                "type": "p",
+                "text": "Check source reachability and target influence separately."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Cycle Finding"
+              },
+              {
+                "type": "p",
+                "text": "Add all-graph initialization and explicit cycle recovery."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Longest Flight Route"
+              },
+              {
+                "type": "p",
+                "text": "Use DAG-order maximum states under acyclicity."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Shortest Routes II"
+              },
+              {
+                "type": "p",
+                "text": "Compare repeated single-source methods with all-pairs bounds."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Flight Discount"
+              },
+              {
+                "type": "p",
+                "text": "Separate expanded-state modelling from weight assumptions."
+              }
+            ]
+          },
+          {
+            "key": "priority",
+            "title": "14. Distinguish unbounded from unreachable",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "High priority. High Score targets source-to-destination influence; Cycle Finding asks for the cycle itself. These are related but distinct outputs."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Test all three outcome categories",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "The teaching output uses UNREACHABLE and -INF, avoiding ambiguity with a legitimate finite distance of negative one."
+              },
+              {
+                "type": "p",
+                "text": "Use an independent all-pairs/reachability oracle for tiny graphs. Cover negative self-loops, unreachable cycles, downstream influence, finite negative paths and reverse-ordered chains."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Directed edge lists, path relaxation and BFS propagation. Negative weights are permitted."
+      }
+    },
+    "prerequisites": "Чиглэсэн графын ирмэгийн жагсаалт, зам сунгаж зай сайжруулах санаа, BFS-ээр нөлөө тараах. Сөрөг жин зөвшөөрнө.",
+    "prerequisiteIds": [
+      "graph-basics",
+      "bfs"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "dijkstra",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "floyd-warshall",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ],
+      "next": "floyd-warshall",
+      "practice": [
+        {
+          "key": "367",
+          "stage": "Warm-up",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "369",
+          "stage": "Standard",
+          "priority": true,
+          "reason": "Жингийн нөхцөл, замын төлөв ба циклийн эсвэл бүх хосын зорилгыг шууд хэрэгжүүлэх цөм дасгал."
+        },
+        {
+          "key": "122",
+          "stage": "Observation",
+          "priority": true,
+          "reason": "Жингийн нөхцөл, замын төлөв ба циклийн эсвэл бүх хосын зорилгыг шууд хэрэгжүүлэх цөм дасгал."
+        },
+        {
+          "key": "374",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "368",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "370",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false,
+    "priorityLevel": "high",
+    "priorityReason": "Сөрөг жинтэй зам, эхлэлээс хүрэх циклийн нөлөө, зорилтот оройд хүрэх эсэхийг ялгах суурь. Шунахай аргын нөхцөл эвдэрвэл өөр баталгаа хэрэгтэйг харуулдаг өндөр өгөөжтэй хичээл."
+  }
+}
