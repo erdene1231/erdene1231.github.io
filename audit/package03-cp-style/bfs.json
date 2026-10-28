@@ -1,0 +1,925 @@
+{
+  "id": "bfs",
+  "expected_revision": 6,
+  "expected_published": true,
+  "expected_body_md5": "17c597555b545391699079a7ca68b4c0",
+  "expected_body_sha256": "a9d63f847c701d5dec7db7ece9f283d54ab5fb6f107e6c1f87632e26155dda1c",
+  "body": {
+    "id": "bfs",
+    "level": "Анхан шат",
+    "order": 17,
+    "title": "BFS — давхаргаар хамгийн богино зам олох",
+    "aliases": "bfs BFS — хамгийн цөөн алхмаар хүрэх BFS — reaching a vertex in the fewest steps bfs breadth first search grid graph unweighted shortest path өргөнөөр богино зам queue",
+    "related": [
+      "graph-basics",
+      "stack-queue",
+      "dfs"
+    ],
+    "summary": "Нэгж өртөгтэй графт FIFO дараалал яагаад хамгийн бага зайг анх олдсон мөчид тогтоодгийг батална. Зай, өмнөх холбоос, зам сэргээх болон хэрэглэх хязгаарыг нэг жишээгээр сурна.",
+    "category": "Graphs",
+    "levelKey": "beginner",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Хүрч болохоос цааш хамгийн цөөн алхмыг ол",
+        "blocks": [
+          {
+            "text": "Өмнөх долоон хотын графт нэгээс дөрөв рүү $1,2,4$ болон $1,3,4$ гэсэн хоёр замнал байна. Аль аль нь хоёр ирмэгтэй. Хүрч болохыг мэдэхээс гадна хамгийн цөөн ирмэгтэй замналын нэгийг өөрөө гаргаж өгье.",
+            "type": "p"
+          },
+          {
+            "text": "Оройн тоог $n$, ирмэгийн тоог $m$, эхлэлийг $s$, зорилтыг $t$ гэе. Ирмэг бүр нэг алхмын ижил өртөгтэй үед эхлээд нэг алхамд хүрэх, дараа нь хоёр алхамд хүрэх оройнуудыг үзвэл хамгийн богино уртыг олж болно. Энэ нь өргөнөөр хайх буюу BFS арга.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Олдсон эхний дурын зам хамгийн богино биш",
+        "blocks": [
+          {
+            "text": "Нэг чигт аль болох гүн явсан хайлт зорилтыг тойруу замаар эхэлж олж болно. Бүх энгийн замыг жагсаавал ч хамгийн богиныг сонгож болох ч замын тоо асар олон байж болно. Бидэнд хэрэггүй урт замуудыг бүгдийг үүсгэх шаардлагагүй.",
+            "type": "p"
+          },
+          {
+            "text": "Оройг анх олсон үед зөв хамгийн бага зай нь бэлэн байх дарааллаар ажиллая. Үүний тулд шинэ хөршийг хамгийн түрүүнд боловсруулах бус, өмнө олсон оройнуудын араас FIFO дараалалд хийнэ.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "observation",
+        "title": "3. Нэг давхаргын хөрш дараагийн давхаргад орно",
+        "blocks": [
+          {
+            "text": "Эхлэлээс тэг алхамд зөвхөн эхлэлд хүрнэ. Нэг алхмын оройнууд нь түүний хөршүүд. Тэдгээрээс шинэ орой олоход хоёр алхмын зам гарна. Ижил зарчмаар $d$ алхмын оройн шинэ хөршид $d+1$ алхмын зам байна.",
+            "type": "p"
+          },
+          {
+            "text": "Дарааллын эхэнд байгаа оройг боловсруулж шинэ хөршүүдийг төгсгөлд нэмэхэд өмнөх давхаргын бүх орой шинэ давхаргаас өмнө гарна. Иймээс урт замаар очихоос өмнө богино боломж нь шалгагддаг.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Зай нь тэмдэг, өмнөх орой нь замын холбоос",
+        "blocks": [
+          {
+            "text": "Орой $v$-ийн зайг $D_v$, өмнөх оройг $P_v$ гэе. Орой бүрийн зайг эхлээд $-1$ гэж, олдоогүйг тэмдэглэнэ. Эхлэлд тэг өгөөд дараалалд хийнэ. Нэг оройн хөршийн зай $-1$ байвал одоогийн зай дээр нэг нэмээд хадгалж, өмнөх оройг нь одоогийн орой болгоод дараалалд нэмнэ.",
+            "type": "p"
+          },
+          {
+            "text": "Зай оноох ба дараалалд нэмэхийг хамт хийнэ. Иймээс нэг орой дахин анхдагчаар олдохгүй, өмнөх холбоос нь дурын сүүлчийн зочлолтоор солигдохгүй. Эхлэлийн өмнөх орой $-1$ хэвээр, зам сэргээх төгсгөлийн тэмдэг болно.",
+            "type": "p"
+          },
+          {
+            "text": "Хайлт дуусахад зорилтын зай $-1$ бол хүрэх замгүй. Бусад үед зорилтоос өмнөх холбоосоор эхлэл рүү ухарч жагсаагаад, жагсаалтаа урвуулж зөв чиглэлтэй зам болгоно.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "walkthrough",
+        "title": "5. Дөрөв хоёр удаа нэмэгдэхгүй",
+        "blocks": [
+          {
+            "text": "Эхлэл нэгийн зай тэг. Түүнийг боловсруулахад хоёр, гурав тус бүр зай нэг, өмнөх орой нэг болж дараалалд орно. Хоёрыг гаргахад дөрөв зай хоёр, өмнөх орой хоёр гэж анх олдоно.",
+            "type": "p"
+          },
+          {
+            "text": "Гурвыг дараа нь боловсруулахад дөрөв аль хэдийн зайтай тул дахин нэмэхгүй. Дөрвийн өмнөхийг гурваар солихгүй. Зорилт дөрвөөс $4,2,1$ гэж ухраад $1,2,4$ болгоно. Хоёр ирмэгтэй мөртлөө гурван орой хэвлэж байгааг ялга.",
+            "type": "p"
+          },
+          {
+            "text": "Тав, зургаа болон долоогийн зай $-1$ хэвээр. Эхлэлээс нэг хайлт хийсэн нь тэдгээрийг шинэ эхлэл болгоогүй. Тиймээс хэсэг бүрийг олох өмнөх хичээлийн гаднах давталтыг энд шууд нэмэхгүй.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "$1$",
+                "$[2,3]$",
+                "$D_2=1,P_2=1; D_3=1,P_3=1$"
+              ],
+              [
+                "$2$",
+                "$[3,4]$",
+                "$D_4=2,P_4=2$"
+              ],
+              [
+                "$3$",
+                "$[4]$",
+                "—"
+              ],
+              [
+                "$4$",
+                "$[]$",
+                "—"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Боловсруулсан",
+              "Дараалал",
+              "Шинэ зай, өмнөх"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Анх олсон зай яагаад хамгийн бага вэ?",
+        "blocks": [
+          {
+            "text": "Эхлэлийн зай тэг зөв. FIFO дарааллаар $d$ давхаргын оройг боловсруулахын өмнө түүнээс бага зайтай бүх орой боловсруулагдсан байна. Шинэ хөршид өгсөн $d+1$ нь бодит зам: одоогийн зам дээр нэг ирмэг залгасан.",
+            "type": "p"
+          },
+          {
+            "text": "Хэрэв тэр шинэ хөршид $d$ буюу түүнээс бага урттай зам байсан бол түүний замын өмнөх оройн зай хамгийн ихдээ $d-1$. Тэр орой өмнө боловсруулагдаж энэ хөршийг аль хэдийн олох ёстой. Зөрчил. Тиймээс анхны өгсөн зай хамгийн бага; давхарга бүрд энэ баталгаа үргэлжилнэ.",
+            "type": "p"
+          },
+          {
+            "text": "Өмнөх холбоос бүр зайг яг нэгээр багасгана. Иймээс ухрах зам циклгүй, эцэстээ зай тэгтэй эхлэлд хүрнэ. Холбоосууд жинхэнэ ирмэгээр үүссэн тул урвуулсан зам хүчинтэй бөгөөд ирмэгийн тоо нь олсон хамгийн бага зайтай тэнцүү.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Орой бүр нэг удаа, жагсаалтын бичилт бүр нэг удаа",
+        "blocks": [
+          {
+            "text": "Тэмдэглэхийг нэмэх үед хийсэн тул орой бүр дараалалд хамгийн ихдээ нэг удаа орно. Хүрсэн орой бүрийн хөршийн жагсаалтыг нэг удаа үзнэ. Хоёр талын ирмэгийн хоёр бичилтийг тооцоод нийт хугацаа $O(n+m)$.",
+            "type": "p"
+          },
+          {
+            "text": "Зай, өмнөх орой, дараалал, сэргээсэн зам нь тус бүр $O(n)$-ээс ихгүй зайтай. Хөршийн жагсаалттай нийлээд бүтэн программ $O(n+m)$ зай хэрэглэнэ. Замыг урвуулах, хэвлэхэд мөн хамгийн ихдээ $O(n)$ ажил орно. Матрицаар хөрш хайвал энэ жагсаалтын хугацааг шууд хэлж болохгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. C++17: олдох үед хадгалаад, эцэст нь зам сэргээ",
+        "blocks": [
+          {
+            "text": "Эхний мөрд оройн тоо 1–200000, ирмэгийн тоо 0–200000, эхлэл ба зорилт байна. Дараа нь хоёр талын ирмэгүүдийн хоёр үзүүр өгөгдөнө. Бүх шошго нэгээс оройн тоо хүртэл. Жингүй графт хамгийн богино замын оройн тоо ба жагсаалтыг, боломжгүй бол IMPOSSIBLE хэвлэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "8.1. Зайгаар тэмдэглэж хайх",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Зай хасах нэг нь хараахан олоогүй гэсэн тэмдэг. Эхлэл тэг; хөрш анх олдох үед зай, өмнөх холбоосыг оноогоод дараалалд нэмнэ. Хөршийн жагсаалтыг өөрчлөхгүй тогтмол холбоосоор уншина.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <algorithm>\n#include <iostream>\n#include <queue>\n#include <vector>\nusing namespace std;\nusing Graph = vector<vector<int>>;\n\nvector<int> shortest_path(const Graph& adj, int source, int target) {\n    vector<int> dist(adj.size(), -1);\n    vector<int> par(adj.size(), -1);\n    queue<int> pending;\n    dist[source] = 0;\n    pending.push(source);\n\n    while (!pending.empty()) {\n        int vertex = pending.front();\n        pending.pop();\n        for (int next : adj[vertex]) {\n            if (dist[next] == -1) {\n                dist[next] = dist[vertex] + 1;\n                par[next] = vertex;\n                pending.push(next);\n            }\n        }\n    }\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.2. Өмнөх холбоосоор зам сэргээх",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Олдоогүй зорилтоос зам сэргээхгүй. Бусад үед өмнөх холбоосоор ухрах бүрд зай нэгээр багасч эхлэлд хүрнэ; урвуулахад эхлэлээс зорилт руу болно.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    if (dist[target] == -1) {\n        return {};\n    }\n    vector<int> path;\n    for (int vertex = target; vertex != -1; vertex = par[vertex]) {\n        path.push_back(vertex);\n    }\n    reverse(path.begin(), path.end());\n    return path;\n}\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.3. Граф ба хоёр үзүүрийн оролт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Энэ хувилбарт эхлэл ба зорилтыг эхний мөрд өгнө. Хоёр талын ирмэг бүрийг хоёр жагсаалтад нэмнэ. Оройн дугаар нэгээс эхэлнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m, source, target;\n    cin >> n >> m >> source >> target;\n    Graph adj(n + 1);\n    for (int edge = 0; edge < m; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        adj[first].push_back(second);\n        adj[second].push_back(first);\n    }\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.4. Гаралтын гэрээ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Хоосон замд IMPOSSIBLE хэвлэнэ. Бусад үед оройн тоо ба дарааллыг хэвлэнэ. Хамгийн богино ирмэгийн тоо нь тэр хэмжээнээс нэг бага.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    vector<int> path = shortest_path(adj, source, target);\n    if (path.empty()) {\n        cout << \"IMPOSSIBLE\\n\";\n    } else {\n        cout << path.size() << '\\n';\n        for (int vertex : path) {\n            cout << vertex << ' ';\n        }\n        cout << '\\n';\n    }\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн ажиллах C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "#include <algorithm>\n#include <iostream>\n#include <queue>\n#include <vector>\nusing namespace std;\nusing Graph = vector<vector<int>>;\n\nvector<int> shortest_path(const Graph& adj, int source, int target) {\n    vector<int> dist(adj.size(), -1);\n    vector<int> par(adj.size(), -1);\n    queue<int> pending;\n    dist[source] = 0;\n    pending.push(source);\n\n    while (!pending.empty()) {\n        int vertex = pending.front();\n        pending.pop();\n        for (int next : adj[vertex]) {\n            if (dist[next] == -1) {\n                dist[next] = dist[vertex] + 1;\n                par[next] = vertex;\n                pending.push(next);\n            }\n        }\n    }\n\n    if (dist[target] == -1) {\n        return {};\n    }\n    vector<int> path;\n    for (int vertex = target; vertex != -1; vertex = par[vertex]) {\n        path.push_back(vertex);\n    }\n    reverse(path.begin(), path.end());\n    return path;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m, source, target;\n    cin >> n >> m >> source >> target;\n    Graph adj(n + 1);\n    for (int edge = 0; edge < m; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        adj[first].push_back(second);\n        adj[second].push_back(first);\n    }\n\n    vector<int> path = shortest_path(adj, source, target);\n    if (path.empty()) {\n        cout << \"IMPOSSIBLE\\n\";\n    } else {\n        cout << path.size() << '\\n';\n        for (int vertex : path) {\n            cout << vertex << ' ';\n        }\n        cout << '\\n';\n    }\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "7 5 1 4\n1 2\n1 3\n2 4\n3 4\n5 6\n",
+            "type": "code",
+            "language": "Input"
+          },
+          {
+            "text": "3\n1 2 4\n",
+            "type": "code",
+            "language": "Output"
+          }
+        ]
+      },
+      {
+        "key": "boundaries",
+        "title": "9. Эхлэл зорилттой ижил болон хүрэх боломжгүй үед",
+        "blocks": [
+          {
+            "text": "Эхлэл зорилттой ижил бол хамгийн богино зам тэг ирмэгтэй, ганц оройтой. Эхлэлийн өмнөх нь $-1$ учраас сэргээх давталт ганц орой нэмээд дуусна. Хүрэх боломжгүй бол өмнөх холбоосоор ухрахыг оролдохгүй, хоосон жагсаалт буцаана.",
+            "type": "p"
+          },
+          {
+            "text": "Цикл, өөртэйгөө холбосон эсвэл давхар ирмэгүүд тэмдэгтэй оройг дахин нэмэхгүй. Ирмэггүй граф, урт гинж, олон ижил урттай зам, эхлэлээс өөр салангид хэсгийг шалга. Код хамгийн богино замын аль нэгийг өгнө; хамгийн бага шошготой дараалал гэж амлахгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "mistakes",
+        "title": "10. Жинтэй хамгийн богино замд шууд хэрэглэж болохгүй",
+        "blocks": [
+          {
+            "text": "Нэгээс хоёр руу шууд ирмэгийн жин $10$, нэгээс гурав, гурваас хоёр руу тус бүр $1$ байг. BFS нэг ирмэгтэй шууд замыг сонгоно, харин нийт жин хамгийн бага зам хоёр ирмэгээр $2$ болно. Хамгийн цөөн ирмэг ба хамгийн бага нийт жин өөр.",
+            "type": "p"
+          },
+          {
+            "text": "Өмнөх холбоосыг хөрш болгонд дахин оноох, эхлэлээ тэмдэглэхгүй орхих, дарааллын оронд стек хэрэглээд ижил зайны баталгаа хэлэх нь буруу. Хожуу тэмдэглэх өөр хэрэгжүүлэлт байж болох ч манай нэг удаагийн нэмэлт ба өмнөх холбоосын баталгааг өөрчлөлтгүй хэрэглэж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Чиглэлт графт зөвхөн өгсөн чигийн хөршийг байгуулна. Энэ программ хоёр талын ирмэг уншдаг тул нэг чигийн өгөгдлийг өөрчлөлтгүй түүнд өгөх нь өөр графтай бодлого болно.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "connections",
+        "title": "11. Тор, олон эхлэл, аюул ирэх хугацаа",
+        "blocks": [
+          {
+            "text": "Торонд дөрвөн чигийн зөв алхмыг хөрш гэж гаргавал ижил BFS ажиллана. Зай нь алхмын тоо; зам сэргээхдээ өмнөх координат эсвэл хөдөлгөөний тэмдэг хадгалж болно. Хана, хил болон нээлттэй нүдний дүрэм хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "text": "Хамгийн ойрын хэд хэдэн эхлэлээс зай олохдоо эхлэл бүрийн зайг тэг болгож бүгдийг дараалалд хийж болно. Анхны давхарга хэд хэдэн оройтой ч ижил давхаргын баталгаа хадгалагдана.",
+            "type": "p"
+          },
+          {
+            "text": "Monsters зэрэг бодлогод эхлээд аюул нүд бүрд хүрэх хамгийн эрт хугацааг олж, дараа нь хүний алхам бүр аюулаас түрүүлж очих нөхцөлийг шалгана. Цагийн тэнцүү хүрэлт аюулгүй гэсэн үг биш; яг бодлогын дүрмээ унш. Энэ нь үндсэн хайлтаас цаашдын нэмэлт төлөв.",
+            "type": "p"
+          },
+          {
+            "type": "tutorial",
+            "label": "Графын үндэс",
+            "tutorialId": "graph-basics"
+          },
+          {
+            "type": "tutorial",
+            "label": "Стек ба дараалал",
+            "tutorialId": "stack-queue"
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "12. Бүх шилжилт ижил нэг алхам уу?",
+        "blocks": [
+          {
+            "text": "Хамгийн цөөн хөдөлгөөн, хамгийн цөөн ирмэг, ижил өртөгтэй шилжилт гэсэн нөхцөлд BFS-ийг бод. Орой нь зөвхөн газар биш, нүд ба түлхүүрийн төлөв зэрэг нийлмэл байж болно. Нэг төлөв гэж юуг үзэж байгаагаас давтан үзэх тэмдэг хамаарна.",
+            "type": "p"
+          },
+          {
+            "text": "Өртөг ялгаатай үед хамгийн бага нийт жинтэй зам олох өөр арга хэрэгтэй; хүрэх эсэх л хэрэгтэй бол зай хадгалах нь заавал биш. Мөн нэг эхлэлээс зай асуухад бүх хэсэгт шинэ тэг эхлэл тавибал анхны асуултаа өөрчилсөн болно.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Шууд замаас тор ба цагийн хязгаар руу",
+        "blocks": [
+          {
+            "text": "Labyrinth",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Торны нээлттэй хөрш ба хөдөлгөөний тэмдэг гарга. Оройн жагсаалт биш хөдөлгөөний мөр хэвлэх гаралтын ялгааг тохируул.",
+            "type": "p"
+          },
+          {
+            "text": "Message Route",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Тогтмол эхлэл нэг, зорилт сүүлийн орой гэсэн оролтод тохируул. Компьютерийн тоо нь ирмэгийн тооноос нэгээр ихийг ялга.",
+            "type": "p"
+          },
+          {
+            "text": "Monsters",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Аюулын хамгийн эрт ирэх хугацааг олон эхлэлийн хайлтаар бэлд. Хүний алхам зөвхөн аюулаас түрүүлж хүрэх нүдэнд зөвшөөрөгдөнө.",
+            "type": "p"
+          },
+          {
+            "text": "Building Teams",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Давхаргын тэгш сондгой байдлаар өнгө өгөөд ирмэг бүрд хоёр өнгө зөрөх эсэхийг шалгах нэмэлт баталгаа гарга.",
+            "type": "p"
+          },
+          {
+            "text": "Counting Rooms",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Нэг эхлэлийн зам бус бүх хэсгийн тоог асууж байгааг ялга. Дараагийн үзээгүй нүднээс хайх гаднах давталтыг буцааж нэм.",
+            "type": "p"
+          },
+          {
+            "text": "IOI 2009 Mecho",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Зөгийн хүрэх хугацаа, баавгайн хурд, эхлэхээс өмнөх хүлээлтийг тусад нь загварчил. Зөвшөөрөх хүлээлтэд хоёртын хайлт хийх нэмэлт нөхцөлтэй; дан үндсэн BFS код хангалтгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "importance",
+        "title": "14. Хамгийн бага зайг анх олсон мөчид батлах",
+        "blocks": [
+          {
+            "text": "High ач холбогдолтой: нэгж өртөгтэй графын зам, тор, төлөвийн хайлт, олон эхлэлийн зай зэрэг өргөн хэрэглээтэй. FIFO давхарга, олдох үеийн тэмдэг, өмнөх холбоос гурвыг хамт ойлгох нь гол.",
+            "type": "p"
+          },
+          {
+            "text": "Message Route нь зай ба бодит замыг нэг дор хэрэгжүүлэх шууд цөм дасгал бөгөөд одоогийн High priority нь хэвээр. Тор, өнгө, аюулын хугацаа, олимпиадын хүлээлттэй бодлогууд нэмэлт нөхцөлтэй сонголтот шат; бүхнийг үндсэн эзэмшил гэж шаардахгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Замын хүчинтэй байдал ба хамгийн богино уртыг тус тус шалга",
+        "blocks": [
+          {
+            "text": "Нэгээс дөрөв хүрэх жишээний дараалал, зай, өмнөх оройг мөр бүрд бич. Яагаад гурваас дөрөв дахин нэмэгдэхгүй, яагаад хоёр ирмэгтэй зам гурван орой хэвлэдгийг тайлбарла.",
+            "type": "p"
+          },
+          {
+            "text": "Программыг бие даан бичээд жижиг графын хамгийн бага зайг өөр аргаар олсон лавлахтай тулга. Гаргасан орой бүрийн дараалсан хос жинхэнэ ирмэгтэй, үзүүрүүд зөв, ирмэгийн тоо хамгийн бага байгааг тус тус шалга. Ганц жишээтэй яг ижил зам хэвлэсэн нь цорын ганц зөв хариу гэсэн үг биш.",
+            "type": "p"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "BFS — shortest routes through distance layers",
+        "summary": "Prove why FIFO discovery fixes minimum distance in unit-cost graphs. Trace distances and parents, reconstruct a route and distinguish valid applications from weighted paths.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Find the fewest steps, not merely reachability",
+            "blocks": [
+              {
+                "text": "In the previous seven-city graph, routes $1,2,4$ and $1,3,4$ both use two edges. Beyond deciding reachability, return an actual route using as few edges as possible.",
+                "type": "p"
+              },
+              {
+                "text": "Let $n,m$ count vertices and edges and $s,t$ denote source and target. When every edge is one equal-cost step, explore one-step destinations before two-step destinations. This is breadth-first search, BFS.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. An arbitrary first route need not be shortest",
+            "blocks": [
+              {
+                "text": "A depth-first route can reach the target along a detour before a shorter route. Enumerating every simple path would find a minimum but may create enormously many candidates.",
+                "type": "p"
+              },
+              {
+                "text": "Instead choose an order in which first discovery already determines minimum distance. Newly discovered neighbours wait behind earlier discoveries in a FIFO queue.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "observation",
+            "title": "3. Neighbours of a layer enter the next layer",
+            "blocks": [
+              {
+                "text": "Only the source is zero steps away. Its neighbours are one step away. A new vertex discovered from them has a two-step route; in general a new neighbour of a distance-$d$ vertex has a route of length $d+1$.",
+                "type": "p"
+              },
+              {
+                "text": "Processing the queue front and appending new neighbours keeps the earlier layer ahead of the new layer. Shorter possibilities are therefore examined before longer ones.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Distances mark discovery; parents remember the route",
+            "blocks": [
+              {
+                "text": "Write $D_v$ for the distance to $v$ and $P_v$ for its parent. Initialize every distance to $-1$ for undiscovered. Set the source to zero and enqueue it. For a neighbour still at $-1$, assign current distance plus one, record the current vertex as parent and enqueue the neighbour.",
+                "type": "p"
+              },
+              {
+                "text": "Assignment and enqueueing happen together. A vertex is never newly discovered twice and its parent is not overwritten by later visits. The source parent stays $-1$ as the reconstruction terminator.",
+                "type": "p"
+              },
+              {
+                "text": "After traversal, a target at $-1$ is unreachable. Otherwise follow parents backward from target to source, then reverse the collected list.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "walkthrough",
+            "title": "5. Vertex four is not enqueued twice",
+            "blocks": [
+              {
+                "text": "The source one has distance zero. Processing it discovers two and three at distance one, both parented by one. Processing two first discovers four at distance two with parent two.",
+                "type": "p"
+              },
+              {
+                "text": "Processing three finds four already discovered and does not enqueue or reparent it. Reconstruction gives $4,2,1$, reversed to $1,2,4$. Distinguish its two edges from its three printed vertices.",
+                "type": "p"
+              },
+              {
+                "text": "Five, six and seven remain at $-1$. This search does not restart at them: the outer component loop from the previous lesson would answer a different question.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "$1$",
+                    "$[2,3]$",
+                    "$D_2=1,P_2=1; D_3=1,P_3=1$"
+                  ],
+                  [
+                    "$2$",
+                    "$[3,4]$",
+                    "$D_4=2,P_4=2$"
+                  ],
+                  [
+                    "$3$",
+                    "$[4]$",
+                    "—"
+                  ],
+                  [
+                    "$4$",
+                    "$[]$",
+                    "—"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Processed",
+                  "Queue",
+                  "New distance and parent"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Why first discovery gives minimum distance",
+            "blocks": [
+              {
+                "text": "The source distance zero is correct. Before processing a distance-$d$ layer, FIFO has processed every smaller layer. A newly assigned $d+1$ is a real route: append one edge to the current route.",
+                "type": "p"
+              },
+              {
+                "text": "If that neighbour had a route of length at most $d$, its predecessor on that route would be at distance at most $d-1$ and would already have discovered it. This contradiction proves first assignment is minimum, inductively across layers.",
+                "type": "p"
+              },
+              {
+                "text": "Every parent step decreases distance by exactly one, so reconstruction cannot cycle and ends at the zero-distance source. Parent links are actual edges; reversing them gives a valid route with exactly the minimum number of edges.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Each vertex once, each adjacency entry once",
+            "blocks": [
+              {
+                "text": "Marking on insertion enqueues each vertex at most once. Each reached vertex’s adjacency list is scanned once. Counting both entries per undirected edge gives $O(n+m)$ total time.",
+                "type": "p"
+              },
+              {
+                "text": "Distances, parents, queue and reconstructed path each use at most $O(n)$ space. Including lists, the complete program uses $O(n+m)$. Reversing and printing the route add at most $O(n)$ work. Matrix-based neighbour scans have different costs.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. C++17: store on discovery, reconstruct afterward",
+            "blocks": [
+              {
+                "text": "Read 1–200000 vertices, 0–200000 edges, source and target on the first line, then undirected endpoint pairs. All labels are within one through the vertex count. Print the vertex count and an unweighted shortest route, or IMPOSSIBLE.",
+                "type": "p"
+              },
+              {
+                "text": "8.1. Discover with distances",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Distance minus one means undiscovered. Start at zero; on first discovery set distance and parent before enqueueing. Read lists through a constant reference.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <algorithm>\n#include <iostream>\n#include <queue>\n#include <vector>\nusing namespace std;\nusing Graph = vector<vector<int>>;\n\nvector<int> shortest_path(const Graph& adj, int source, int target) {\n    vector<int> dist(adj.size(), -1);\n    vector<int> par(adj.size(), -1);\n    queue<int> pending;\n    dist[source] = 0;\n    pending.push(source);\n\n    while (!pending.empty()) {\n        int vertex = pending.front();\n        pending.pop();\n        for (int next : adj[vertex]) {\n            if (dist[next] == -1) {\n                dist[next] = dist[vertex] + 1;\n                par[next] = vertex;\n                pending.push(next);\n            }\n        }\n    }\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.2. Reconstruct through parents",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Return empty for an unreachable target. Otherwise parent steps decrease distance until the source; reverse to obtain source-to-target order.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    if (dist[target] == -1) {\n        return {};\n    }\n    vector<int> path;\n    for (int vertex = target; vertex != -1; vertex = par[vertex]) {\n        path.push_back(vertex);\n    }\n    reverse(path.begin(), path.end());\n    return path;\n}\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.3. Read graph and endpoints",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "This version reads source and target on the first line and inserts both directions of each undirected edge. Labels start at one.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m, source, target;\n    cin >> n >> m >> source >> target;\n    Graph adj(n + 1);\n    for (int edge = 0; edge < m; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        adj[first].push_back(second);\n        adj[second].push_back(first);\n    }\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.4. Output contract",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Print IMPOSSIBLE for empty output; otherwise print vertex count and labels. Minimum edge count is one fewer than the printed size.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    vector<int> path = shortest_path(adj, source, target);\n    if (path.empty()) {\n        cout << \"IMPOSSIBLE\\n\";\n    } else {\n        cout << path.size() << '\\n';\n        for (int vertex : path) {\n            cout << vertex << ' ';\n        }\n        cout << '\\n';\n    }\n    return 0;\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete compilable C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "#include <algorithm>\n#include <iostream>\n#include <queue>\n#include <vector>\nusing namespace std;\nusing Graph = vector<vector<int>>;\n\nvector<int> shortest_path(const Graph& adj, int source, int target) {\n    vector<int> dist(adj.size(), -1);\n    vector<int> par(adj.size(), -1);\n    queue<int> pending;\n    dist[source] = 0;\n    pending.push(source);\n\n    while (!pending.empty()) {\n        int vertex = pending.front();\n        pending.pop();\n        for (int next : adj[vertex]) {\n            if (dist[next] == -1) {\n                dist[next] = dist[vertex] + 1;\n                par[next] = vertex;\n                pending.push(next);\n            }\n        }\n    }\n\n    if (dist[target] == -1) {\n        return {};\n    }\n    vector<int> path;\n    for (int vertex = target; vertex != -1; vertex = par[vertex]) {\n        path.push_back(vertex);\n    }\n    reverse(path.begin(), path.end());\n    return path;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m, source, target;\n    cin >> n >> m >> source >> target;\n    Graph adj(n + 1);\n    for (int edge = 0; edge < m; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        adj[first].push_back(second);\n        adj[second].push_back(first);\n    }\n\n    vector<int> path = shortest_path(adj, source, target);\n    if (path.empty()) {\n        cout << \"IMPOSSIBLE\\n\";\n    } else {\n        cout << path.size() << '\\n';\n        for (int vertex : path) {\n            cout << vertex << ' ';\n        }\n        cout << '\\n';\n    }\n    return 0;\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "7 5 1 4\n1 2\n1 3\n2 4\n3 4\n5 6\n",
+                "type": "code",
+                "language": "Input"
+              },
+              {
+                "text": "3\n1 2 4\n",
+                "type": "code",
+                "language": "Output"
+              }
+            ]
+          },
+          {
+            "key": "boundaries",
+            "title": "9. Same source/target and unreachable targets",
+            "blocks": [
+              {
+                "text": "When source equals target, the minimum route has zero edges and one vertex. Its parent is $-1$, so reconstruction appends it once and stops. For an unreachable target, return empty before following parents.",
+                "type": "p"
+              },
+              {
+                "text": "Cycles, self-loops and duplicate edges never newly enqueue a discovered vertex. Test edgeless graphs, long chains, equal-length alternatives and disconnected groups. The program returns any shortest route, not necessarily a lexicographically smallest one.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "mistakes",
+            "title": "10. Equal-step BFS is not weighted shortest path",
+            "blocks": [
+              {
+                "text": "Let edge one-to-two cost $10$, while one-to-three and three-to-two each cost $1$. BFS chooses the one-edge direct route, but the minimum-weight route costs $2$ through two edges. Edge count and total weight are different objectives.",
+                "type": "p"
+              },
+              {
+                "text": "Reassigning every neighbour’s parent, forgetting to mark the source or replacing the queue by a stack invalidates this argument. Other delayed-marking implementations can exist, but cannot inherit this exact one-enqueue/parent proof unchanged.",
+                "type": "p"
+              },
+              {
+                "text": "For directed graphs, store only allowed outgoing edges. This program inserts both directions, so feeding directed data unchanged solves a different graph.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "connections",
+            "title": "11. Grids, multiple sources and hazard arrival times",
+            "blocks": [
+              {
+                "text": "On a grid, generate valid four-direction neighbours and use the same BFS. Distances count moves; parents can be coordinates or movement symbols. Walls and boundaries are part of the graph definition.",
+                "type": "p"
+              },
+              {
+                "text": "For distance from the nearest of several sources, initialize every source at zero and enqueue all of them. The initial layer has multiple vertices but the same layer proof applies.",
+                "type": "p"
+              },
+              {
+                "text": "For Monsters-style tasks, first compute earliest hazard arrival, then constrain human moves to arrive safely before the hazard. Equal arrival is not automatically safe; read the exact timing rules. This adds state beyond the basic traversal.",
+                "type": "p"
+              },
+              {
+                "type": "tutorial",
+                "label": "Graph basics",
+                "tutorialId": "graph-basics"
+              },
+              {
+                "type": "tutorial",
+                "label": "Stacks and queues",
+                "tutorialId": "stack-queue"
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "12. Does every transition have the same step cost?",
+            "blocks": [
+              {
+                "text": "Consider BFS for fewest moves or edges under equal transition costs. A vertex can encode a compound state, such as position plus keys; visited identity must match that state.",
+                "type": "p"
+              },
+              {
+                "text": "Unequal costs require another shortest-path method. Reachability alone may not need distances. Restarting at every component with a new zero source changes a single-source distance question.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From direct routes to grids and timing constraints",
+            "blocks": [
+              {
+                "text": "Labyrinth",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Generate open grid neighbours and reconstruct movement symbols rather than vertex labels.",
+                "type": "p"
+              },
+              {
+                "text": "Message Route",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Adapt to source one and target last; the number of computers is one greater than the number of edges.",
+                "type": "p"
+              },
+              {
+                "text": "Monsters",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Precompute hazard arrival from multiple sources and allow human moves only when safely earlier.",
+                "type": "p"
+              },
+              {
+                "text": "Building Teams",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Use distance parity for colours, with an additional proof and consistency check on every edge.",
+                "type": "p"
+              },
+              {
+                "text": "Counting Rooms",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Distinguish counting all components from one-source routing and restore the outer unseen-cell loop.",
+                "type": "p"
+              },
+              {
+                "text": "IOI 2009 Mecho",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Model bee arrival, bear speed and initial waiting separately, then add the feasibility/binary-search reasoning; plain BFS alone is insufficient.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "importance",
+            "title": "14. Prove minimum distance at discovery time",
+            "blocks": [
+              {
+                "text": "Priority is High for unit-cost routes, grids, state search and multisource distances. Understand FIFO layers, discovery marking and parent links together.",
+                "type": "p"
+              },
+              {
+                "text": "Message Route is the direct core for both distance and actual path construction and retains its High priority. Grid, colouring, hazard and olympiad waiting problems add assumptions and remain optional.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Check route validity and minimum length separately",
+            "blocks": [
+              {
+                "text": "Trace queue, distances and parents for one to four. Explain why three does not rediscover four and why a two-edge route prints three vertices.",
+                "type": "p"
+              },
+              {
+                "text": "Implement independently and compare small-graph distances with another oracle. Separately verify endpoints, every route edge and minimum edge count. Matching one sample route is not the only valid output.",
+                "type": "p"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know adjacency lists, connected components and FIFO queues."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Графын хөршийн жагсаалт, холбоост хэсэг, FIFO дарааллыг мэддэг байна.",
+    "priorityLevel": "high",
+    "priorityReason": "Нэгж өртөгтэй зам, тор, төлөвийн хайлт, олон эхлэлийн зай зэрэг олон бодлогод хэрэглэгддэг үндсэн арга. FIFO давхарга, олдох үеийн тэмдэг, өмнөх холбоосоор хүчинтэй хамгийн богино зам сэргээх баталгааг хамтад нь сургана.",
+    "prerequisiteIds": [
+      "graph-basics",
+      "stack-queue"
+    ],
+    "learningRelations": {
+      "next": "dfs",
+      "practice": [
+        {
+          "key": "361",
+          "stage": "Warm-up",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "363",
+          "stage": "Standard",
+          "reason": "FIFO давхаргын хамгийн бага зай, олдох үеийн тэмдэг ба өмнөх холбоосоор бодит хамгийн богино зам сэргээхийг бие даан хэрэгжүүлэх шууд цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "366",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "364",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "360",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "132",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "flood-fill",
+          "description": "Grid-ийн implicit хөршүүд.",
+          "descriptionEn": "Implicit neighbours on a grid."
+        },
+        {
+          "tutorialId": "bipartite",
+          "description": "Хоёр өнгөний consistency.",
+          "descriptionEn": "Consistency of two-colour constraints."
+        },
+        {
+          "tutorialId": "dijkstra",
+          "description": "Nonnegative жинтэй зам.",
+          "descriptionEn": "Paths with nonnegative weights."
+        }
+      ]
+    }
+  },
+  "mapping": {
+    "vertex_count": "n",
+    "edge_count": "m",
+    "graph": "adj",
+    "distance": "dist",
+    "parent": "par"
+  },
+  "changed": true,
+  "reviewed_body_sha256": "adda80abf22274cd9b1516037fc334e485626e2c9b2b1cf9545d88edced7e608",
+  "proposed_body_sha256": "adda80abf22274cd9b1516037fc334e485626e2c9b2b1cf9545d88edced7e608"
+}

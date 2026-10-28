@@ -1,0 +1,1384 @@
+{
+  "id": "recursion",
+  "expected_revision": 4,
+  "expected_published": true,
+  "expected_body_md5": "fb550465378dc22d6402bc7cde10cb58",
+  "expected_body_sha256": "aab5945eb37b6b8afa06b259fb598936853360b5293c266a743d6f1adc9a2600",
+  "body": {
+    "id": "recursion",
+    "level": "Анхан шат",
+    "order": 4,
+    "title": "Өөрийгөө дуудах функц — жижиг ажлаас том ажлыг бүтээх",
+    "aliases": "recursion Recursion — өөрийгөө дуудах function Recursion — a function calling itself",
+    "related": [
+      "complexity",
+      "stack-queue"
+    ],
+    "summary": "Ханойн цамхгаар нэг дуудлага юу амлах, жижиг дуудлагаас буцсаны дараа юу үргэлжлэхийг олъё. Зөв хөдөлгөөн, хамгийн бага тоо, нийт ажил ба дуудлагын гүнийг тус тус батална.",
+    "category": "Суурь",
+    "levelKey": "beginner",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Том дискийг яаж хөдөлгөх вэ?",
+        "blocks": [
+          {
+            "text": "Гурван суурь дээр өөр өөр хэмжээтэй дугуй дискүүд байна. Эхэндээ бүгд нэгдүгээр суурь дээр, том нь доороо, жижиг нь дээрээ давхарласан. Нэг удаад зөвхөн дээд дискийг хөдөлгөж болно; том дискийг жижиг дээр тавьж болохгүй. Бүх дискийг гуравдугаар суурь руу аваачъя.",
+            "type": "p"
+          },
+          {
+            "text": "Хоёр дисктэй бол жижиг дискийг хоёрдугаар суурьт түр тавьж, томыг гуравдугаарт зөөж, дараа нь жижгийг дээр нь авчирна. Диск олон болоход “жижиг дискийг түр зайлуулах” ажил өөрөө ижил төрлийн жижиг бодлого болж байна.",
+            "type": "p"
+          },
+          {
+            "text": "Энэ Ханойн цамхгийн жишээгээр том ажлаа жижиг ижил ажлын дуудлагуудаар байгуулах, дуудлага буцсаны дараа юу үргэлжлэхийг ойлгоё.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Хөдөлгөөн бүрийг тусад нь бичвэл яах вэ?",
+        "blocks": [
+          {
+            "text": "Нэг диск, хоёр дискний хөдөлгөөнүүдийг гараар бичиж болно. Гэвч гурван диск дээр өмнөх жижиг цамхгийн хөдөлгөөнийг өөр суурийн нэрээр дахин бичнэ. Диск нэмэгдэх тусам кодоо хуулж, суурийн дугаарыг зөв солих нь төвөгтэй болно.",
+            "type": "p"
+          },
+          {
+            "text": "Бүх боломжит хөдөлгөөнийг туршиж зам хайх арга ч бодогдож болно. Гэхдээ энэ бодлогод дурын хөдөлгөөн туршихын оронд зайлшгүй хийх бүтэцтэй ажлыг олж болно. Давтагдаж буй жижиг цамхгийн ажлыг нэг нэртэй функц болгоё.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "observation",
+        "title": "3. Нэг том ажлыг гурван хэсэгт хуваая",
+        "blocks": [
+          {
+            "text": "$n$ дискийг эх сууриас зорилтот суурьт зөөх гэж байна. Хамгийн том дискийг хөдөлгөхийн тулд түүний дээрх $n-1$ дискийг туслах суурьт түр байрлуулах хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "type": "ordered",
+            "items": [
+              "Дээрх $n-1$ дискийг эх сууриас туслах суурьт зөө.",
+              "Хамгийн том дискийг эх сууриас зорилтот суурьт зөө.",
+              "Туслах дээрх $n-1$ дискийг зорилтот суурьт зөө."
+            ]
+          },
+          {
+            "text": "Эхний ба сүүлийн алхам нь анхны бодлоготой ижил, зөвхөн дискний тоо цөөн, сууриудын үүрэг өөр. Өөрийнхөө жижиг хувилбарыг дуудаж ажилладаг функцийг өөрийгөө дуудах функц буюу рекурсив функц гэдэг.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Нэг дуудлага яг юуг амлах вэ?",
+        "blocks": [
+          {
+            "text": "Дуудлага нь дискний тоо $n$, эх суурь, зорилтот суурь, туслах суурь гэсэн дөрвөн утгатай. Тэр нь эх дээрх дээд $n$ дискийг зөв дүрмээр зорилтот суурьт зөөж дуусгана гэсэн утгатай. Эдгээр дискний доор том диск байж болох ч тэдгээрийг өөрчлөхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "$n=0$ бол зөөх диск байхгүй тул шууд буцна. Үүнийг зогсох тохиолдол гэе. Бусад үед өмнөх гурван ажлыг яг дарааллаар нь хийж, жижиг дуудлага бүрд $n-1$ гэж өгнө.",
+            "type": "p"
+          },
+          {
+            "text": "Функц эхний жижиг дуудлагыг хийгээд цааш нь зэрэг ажиллуулахгүй: тэр жижиг ажил дуусаж буцсаны дараа дараагийн мөрөө гүйцэтгэнэ. Дуудлага бүр өөрийн дискний тоо, суурийн үүргүүдийг хадгалдаг. Тиймээс туслах суурь нэг дуудлагад зорилтот, нөгөөд эх болж болно.",
+            "type": "p"
+          },
+          {
+            "text": "Өөрийгөө дуудсан гэдгээр зогсоно гэсэн баталгаа гарахгүй. Зогсох тохиолдолд ойртож буй хэмжигдэхүүн болон тэр тохиолдлын үйлдлийг хоёуланг тодорхойл.",
+            "type": "note"
+          }
+        ]
+      },
+      {
+        "key": "walkthrough",
+        "title": "5. Дуудлага буцах дарааллыг харъя",
+        "blocks": [
+          {
+            "text": "Хоёр дисктэй том дуудлага эхлээд нэг дискийг нэгдүгээрээс хоёрдугаар суурьт зөөх жижиг дуудлага хийнэ. Тэр нь буцсаны дараа л том диск нэгдүгээрээс гуравдугаарт шилжинэ. Сүүлийн жижиг дуудлага хоёрдугаараас гуравдугаарт зөөнө.",
+            "type": "p"
+          },
+          {
+            "text": "Гурван дискний бүтэн явцыг хүснэгтэд үзүүлье. Дараалал бүрийг доороос дээш бичсэн; хамгийн сүүлийн тоо нь дээд диск.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "Эхлэл",
+                "—",
+                "$[3,2,1]$",
+                "Хоосон",
+                "Хоосон"
+              ],
+              [
+                "$1$",
+                "$1\\to3$",
+                "$[3,2]$",
+                "Хоосон",
+                "$[1]$"
+              ],
+              [
+                "$2$",
+                "$1\\to2$",
+                "$[3]$",
+                "$[2]$",
+                "$[1]$"
+              ],
+              [
+                "$3$",
+                "$3\\to2$",
+                "$[3]$",
+                "$[2,1]$",
+                "Хоосон"
+              ],
+              [
+                "$4$",
+                "$1\\to3$",
+                "Хоосон",
+                "$[2,1]$",
+                "$[3]$"
+              ],
+              [
+                "$5$",
+                "$2\\to1$",
+                "$[1]$",
+                "$[2]$",
+                "$[3]$"
+              ],
+              [
+                "$6$",
+                "$2\\to3$",
+                "$[1]$",
+                "Хоосон",
+                "$[3,2]$"
+              ],
+              [
+                "$7$",
+                "$1\\to3$",
+                "Хоосон",
+                "Хоосон",
+                "$[3,2,1]$"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Алхам",
+              "Хөдөлгөөн",
+              "1-р суурь",
+              "2-р суурь",
+              "3-р суурь"
+            ]
+          },
+          {
+            "text": "Хөдөлгөөний тоог буцаадаг тусдаа функц $C(3)$-ыг бодохдоо $C(2)$, $C(1)$, $C(0)$ руу орно. Дараа нь буцахад утгууд $0,1,3,7$ гэж бэлэн болно. Утга буцаах ба хөдөлгөөн хэвлэх хоёр өөр үүргийг доорх кодод тусад нь нэрлэсэн.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Зөв хөдөлгөөн, хамгийн бага тоо, төгсгөл",
+        "blocks": [
+          {
+            "type": "ordered",
+            "items": [
+              "Дискгүй үед юу ч хийхгүй байх нь зөв. Цөөн дискний дуудлагууд зөв гэж үзье.",
+              "Эхний жижиг дуудлага $n-1$ дискийг туслах руу зөв зөөнө. Одоо хамгийн том диск чөлөөтэй бөгөөд зорилтот суурь дээр түүнээс жижиг диск байхгүй. Түүнийг зөөсөний дараа сүүлийн жижиг дуудлага үлдсэн цамхгийг дээр нь зөв байрлуулна.",
+              "Ямар ч шийдэлд хамгийн том дискийг анх хөдөлгөхийн өмнө $n-1$ жижиг дискийг өөр нэг суурьт бүтэн цамхаг болгон зайлуулсан байх ёстой. Том диск зорилтот суурьт хамгийн сүүлд очсоны дараа жижиг цамхгийг дээр нь зөөх бас хэрэгтэй. Эдгээр хоёр тусдаа ажил дор хаяж тус бүр $C(n-1)$ хөдөлгөөн, том диск дор хаяж нэг хөдөлгөөн шаарддаг.",
+              "Манай арга яг $2C(n-1)+1$ хөдөлгөөн хийж тэр доод хязгаарт хүрнэ. $C(0)=0$-ээс $C(n)=2^n-1$. Хамгийн бага тоо батлагдлаа. Дуудлага бүрд дискний тоо багасаж тэгт хүрдэг тул алгоритм дуусна."
+            ]
+          },
+          {
+            "text": "“Хамгийн бага тоотой” ба “дүрэм зөрчихгүй” гэдэг хоёр тусдаа дүгнэлт. Зөвхөн долоон мөр хэвлэгдсэнийг тоолоод бүх хөдөлгөөн зөв гэж үзэхгүй.",
+            "type": "note"
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Олон дуудлага ба гүн хоёр ялгаатай",
+        "blocks": [
+          {
+            "text": "Хөдөлгөөн гаргах функцийн нийт дуудлага $2^{n+1}-1$, хэвлэх хөдөлгөөн $2^n-1$. Иймээс хугацаа $O(2^n)$. Гаралт өөрөө ийм урттай тул бүх хөдөлгөөнийг хэвлэдэг шийдэл шугаман хугацаатай байж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Харин зөвхөн тоог буцаадаг функц нэг түвшинд нэг жижиг дуудлага хийж, гарсан утгыг хоёр дахин үржүүлнэ. Түүнийг хоёр удаа дахин боддоггүй тул энэ хэсэг $O(n)$ хугацаатай. Бүтэн программын зардлыг хөдөлгөөн хэвлэх хэсэг давамгайлна.",
+            "type": "p"
+          },
+          {
+            "text": "Нэг мөчид идэвхтэй дуудлагын хамгийн их гүн $n+1$. Түвшин бүр цөөн бүхэл тоо хадгалдаг тул нэмэлт зай $O(n)$. Бүх дуудлага нэгэн зэрэг санах ойд байхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "$n=16$ үед $65535$ хөдөлгөөн хэвлэнэ. Тоо хадгалах төрөлд багтлаа гээд дискийг дурын олон болгож болохгүй: гаралтын хэмжээ, хугацаа, дуудлагын гүнийг тус тус шалгана.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. C++17: тооцох ба хөдөлгөхийг салгая",
+        "blocks": [
+          {
+            "text": "Нэг бүхэл $n$ уншина; энэ сургалтын хувилбарт $0\\le n\\le16$. Эхлээд хамгийн бага хөдөлгөөний тоог, дараа нь хөдөлгөөн бүрийн эх ба очих суурийн дугаарыг хэвлэнэ. Сууриудын дугаар $1,2,3$; эх нь $1$, зорилтот нь $3$.",
+            "type": "p"
+          },
+          {
+            "text": "8.1. Хөдөлгөөний тоог буцаах",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "moves",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь $C(n)$-ийг буцаана. Тэг дискний хариу тэг. Бусад үед өмнөх хариуг нэг удаа авч хоёр дахин үржүүлээд нэгийг нэмнэ. Тоон хариу буцах явцад доороос дээш бэлэн болно.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <iostream>\nusing namespace std;\n\nlong long moves(int disks) {\n    if (disks == 0) {\n        return 0;\n    }\n    return 2 * moves(disks - 1) + 1;\n}\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.2. Зогсох шалгалт ба эхний жижиг цамхаг",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "source",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", ",
+                "marks": []
+              },
+              {
+                "text": "to",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", ",
+                "marks": []
+              },
+              {
+                "text": "spare",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь эх, зорилтот, туслах суурийн үүрэг. Эхний дуудлагад туслах суурь шинэ зорилтот болж, хуучин зорилтот түр туслах болно. Дискгүй бол хэвлэх зүйлгүйгээр зөвхөн энэ дуудлагаас буцна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "void hanoi(int disks, int source, int to, int spare) {\n    if (disks == 0) {\n        return;\n    }\n    hanoi(disks - 1, source, spare, to);\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.3. Том диск ба үлдсэн жижиг цамхаг",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Эхний жижиг дуудлага буцсаны дараа том дискийг хэвлэнэ. Дараагийн дуудлагад хуучин туслах нь эх, хуучин эх нь туслах болно. ",
+                "marks": []
+              },
+              {
+                "text": "disks - 1",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гэж шинэ утга дамжуулах нь одоогийн дуудлагын дискний тоог өөрчлөхгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    cout << source << ' ' << to << '\\n';\n    hanoi(disks - 1, spare, to, source);\n}\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.4. Бүтэн ажлыг эхлүүлэх",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Үндсэн ",
+                "marks": []
+              },
+              {
+                "text": "main",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " функц эхлээд тоон хариуг хэвлээд, дараа нь ",
+                "marks": []
+              },
+              {
+                "text": "hanoi",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийг эхний үүргүүдтэй дуудна. Дискүүдийн жинхэнэ байрлалыг массивт загварчлаагүй ч баталсан дуудлагын утга зөв хөдөлгөөнийг байгуулна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int disks;\n    cin >> disks;\n    cout << moves(disks) << '\\n';\n    hanoi(disks, 1, 3, 2);\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн ажиллах программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Дөрвөн кодын хэсэг дарааллаараа яг доорх программ болно. Зарим нь функцийн дундаас эхэлдэг; бүтэн хувилбарыг C++17-оор хөрвүүл.",
+            "type": "note"
+          },
+          {
+            "text": "#include <iostream>\nusing namespace std;\n\nlong long moves(int disks) {\n    if (disks == 0) {\n        return 0;\n    }\n    return 2 * moves(disks - 1) + 1;\n}\n\nvoid hanoi(int disks, int source, int to, int spare) {\n    if (disks == 0) {\n        return;\n    }\n    hanoi(disks - 1, source, spare, to);\n\n    cout << source << ' ' << to << '\\n';\n    hanoi(disks - 1, spare, to, source);\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int disks;\n    cin >> disks;\n    cout << moves(disks) << '\\n';\n    hanoi(disks, 1, 3, 2);\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Оролт ба гаралтын жишээ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "3",
+            "type": "code",
+            "language": "Input"
+          },
+          {
+            "text": "7\n1 3\n1 2\n3 2\n1 3\n2 1\n2 3\n1 3",
+            "type": "code",
+            "language": "Output"
+          },
+          {
+            "text": "Хүснэгтийн долоон хөдөлгөөнтэй мөр бүрээрээ таарч байна.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "boundaries",
+        "title": "9. Зогсох тохиолдол ба хязгаар",
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Дискгүй үед зөвхөн тэг гэсэн эхний мөр хэвлэнэ; хөдөлгөөний мөр байхгүй.",
+              "Нэг диск нэг хөдөлгөөнөөр эхээс зорилтот руу очно.",
+              "Эх, зорилтот, туслах нь өөр өөр суурь байх ёстой.",
+              "Дискний тоо сөрөг байх оролт энэ программын гэрээнд орохгүй.",
+              "Дуудлага эхлэхэд түүнд хамаарах жижиг цамхаг зөв дарааллаар байрласан байх ёстой."
+            ]
+          },
+          {
+            "text": "Хөдөлгөөн бүрийг шалгах жижиг загвар байгуулж болно: хоосон сууриас авахгүй, зөвхөн дээд дискийг авна, томыг жижиг дээр тавихгүй. Дуусахад бүх диск зорилтот дээр зөв дарааллаар очсон эсэхийг шалга. Тооны томьёотой тулгах нь эдгээрийг орлохгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "mistakes",
+        "title": "10. Буцах явцыг андуурвал",
+        "blocks": [
+          {
+            "text": "Зогсох нөхцөлгүй эсвэл ойртохгүй дуудлага",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Ижил дискний тоотой өөрийгөө дахин дуудахад асуудал жижигрэхгүй. Тэг дээр юу хийх, бусад үед хэрхэн тэг рүү ойртохыг хамт тодорхойл.",
+            "type": "p"
+          },
+          {
+            "text": "Суурийн үүргийг солихгүй байх",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Эхний жижиг цамхгийн зорилтот нь туслах суурь байх ёстой. Хуучин зорилтыг хэвээр өгвөл том дискний очих суурь жижиг дискээр дүүрсэн байж болно.",
+            "type": "p"
+          },
+          {
+            "text": "Том дискийг эрт хэвлэх",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Эхний жижиг дуудлага дуусаагүй байхад том дискийг хөдөлгөх боломжгүй. Хэвлэх мөрийг хоёр жижиг дуудлагын хооронд байрлуулсан нь учиртай.",
+            "type": "p"
+          },
+          {
+            "text": "Нэг хувьсагчийг хоёр удаа бууруулах",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Хоёр дуудлагад ",
+                "marks": []
+              },
+              {
+                "text": "--disks",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гэж бичвэл одоогийн утга өөрчлөгдөж, хоёр дахь салаа өөр хэмжээтэй болж болно. ",
+                "marks": []
+              },
+              {
+                "text": "disks - 1",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь шаардсан жижиг хэмжээг тооцохоос эх утгыг өөрчлөхгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "Буцаахыг бүх программыг зогсооно гэж ойлгох",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Буцах үйлдэл тухайн нэг дуудлагыг дуусгаад түүнийг дуудсан газарт үргэлжлүүлнэ. Мөн ижил хэмжээтэй дуудлага өмнө ажилласан гээд хөдөлгөөн хэвлэхийг алгасаж болохгүй: эх, зорилтот суурь өөр бөгөөд гаралт хэрэгтэй хэвээр.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "connections",
+        "title": "11. Дуудлагын ард ямар бүтэц байна вэ?",
+        "blocks": [
+          {
+            "text": "Дуудагч нь жижиг дуудлагын дараа хаана үргэлжлэхээ санаж байдаг. Идэвхтэй дуудлагуудыг сүүлд орсон нь түрүүлж буцах дарааллаар хадгална. Энэ бүтэц дараах стек гэсэн хичээлтэй холбоотой.",
+            "type": "p"
+          },
+          {
+            "type": "tutorial",
+            "label": "Сүүлд орсон ажлаас эхэлж буцах бүтэц",
+            "tutorialId": "stack-queue"
+          },
+          {
+            "type": "tutorial",
+            "label": "Сонголт бүрд салаалах хайлт",
+            "tutorialId": "brute-force"
+          },
+          {
+            "type": "tutorial",
+            "label": "Цамхгийн оронд хоёр жижиг хэсгийг нэгтгэх",
+            "tutorialId": "sorting"
+          },
+          {
+            "type": "tutorial",
+            "label": "Давтагдсан жижиг хариуг хадгалах",
+            "tutorialId": "dynamic-programming"
+          },
+          {
+            "text": "Өөрийгөө дуудах нь ганц алгоритм биш, ажлаа илэрхийлэх арга. Нэг дуудлага жижиг хариу буцааж болно, эсвэл хөдөлгөөн хэвлэх зэрэг ажлыг хийж болно. Нийт ажлын хэмжээ нь хэдэн жижиг дуудлага үүсэхээс хамаарна.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "12. Ижил төрлийн жижиг ажил байгаа юу?",
+        "blocks": [
+          {
+            "type": "ordered",
+            "items": [
+              "Нэг дуудлага яг ямар үр дүн амлахыг нэг өгүүлбэрээр бич.",
+              "Асуудал жижигрэх хэмжигдэхүүнээ ол: дискний тоо, шийдээгүй байрлал эсвэл хэсгийн урт байж болно.",
+              "Жижиг ажлуудын өмнө, хооронд, дараа ямар ажил хийхээ ялга.",
+              "Зогсох тохиолдол, зөвийн баталгаа, нийт дуудлага ба хамгийн их гүнийг тус тус гарга."
+            ]
+          },
+          {
+            "text": "Гүн нь оролтын урттай тэнцэж маш их болох бол дуудлагын санах ойн хязгаарыг шалга. Зөв рекурсив санааг давталт эсвэл өөрийн хадгалах бүтцээр илэрхийлэх нь заримдаа тохиромжтой.",
+            "type": "note"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Хөдөлгөөнөөс хайлт, хадгалсан хариу руу",
+        "blocks": [
+          {
+            "text": "Үндсэн Ханойн дасгалаа бие даан дуусгаад, дараагийнх бүрд дуудлага юу буцаах, ямар төлөв өөрчлөхийг дахин тодорхойл. Нэмэлт арга шаардсан дасгалууд эхний эзэмшлийн заавал нөхцөл биш.",
+            "type": "p"
+          },
+          {
+            "text": "Халаалт · Tower of Hanoi",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Хоёр, гурван дискний хөдөлгөөн бүрийг эхлээд гараар хий. Дараа нь код харалгүй функцээ байгуулж, дуудлагын дөрвөн утга ямар үүрэгтэйг тайлбарла. Зөв хөдөлгөөн гаргаснаас гадна хамгийн бага тоотойг батлах нь энэ хичээлийн үндсэн бие даасан дасгал.",
+            "type": "p"
+          },
+          {
+            "text": "Үндсэн дасгал · Creating Strings",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Нэг байрлалын үсгийг сонгоод үлдсэн байрлалуудыг жижиг асуудал болго. Давхардсан үсэгтэй үед ижил гаралт олон удаа үүсэхээс сэргийлж, салаанаас буцахдаа ашигласан үсгийн төлөвөө сэргээ. Энэ нь эрэмбэлэх болон хайлтын нэмэлт нөхцөлтэй дасгал, эхний Ханойн хэрэгжүүлэлтийн заавал нөхцөл биш.",
+            "type": "p"
+          },
+          {
+            "text": "Ажиглалтаа өөрчлөх · Apple Division",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Өмнөх бүх боломжийг шалгах хичээлийн дуудлагыг дахин үз. Хөдөлгөөн хэвлэхийн оронд хамгийн сайн утга шинэчилж байгаа нь юугаараа өөр вэ? Нийлбэрийг утгаараа дамжуулах, хариуг хамт шинэчлэх хоёр үүргийг ялга.",
+            "type": "p"
+          },
+          {
+            "text": "Өөр нөхцөлд хэрэглэх · Chessboard and Queens",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Мөрийг нэгээр ахиулж, боломжит багана бүрийг турш. Байрлуулсан бэрсний багана, диагоналийн тэмдэглэгээг буцахдаа яг сэргээхийг шалга. Функц буцлаа гээд бүх хуваалцсан өгөгдөл автоматаар хуучирдаггүй.",
+            "type": "p"
+          },
+          {
+            "text": "Сорилт · Grid Path Description",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Дуудлагад хэдэн алхам хийсэн, хаана байгаа болон ямар нүд ашигласныг ялга. Бүх салааг шууд үзэх нь ихдэх тул зөв хариуг алдахгүй таслах нөхцөлөө батал. Дуудлагын синтакс зөв байгаа нь хангалттай хурдан гэдгийг батлахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Олимпиадын өргөтгөл · IOI 2009 Raisins",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Нэг тэгш өнцөгтийг зүсээд үүссэн хоёр жижиг хэсгийн хариуг нэгтгэх загварыг гарга. Ижил тэгш өнцөгт олон өөр салаанаас дахин гарч болохыг харж, хариуг хадгалах шаардлагыг ялга. Хоёр хэмжээст хуримтлагдсан нийлбэр, завсрын динамик програмчлалын дараах нэмэлт дасгал.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "importance",
+        "title": "14. Яагаад энэ ойлголт олон сэдэвт хэрэгтэй вэ?",
+        "blocks": [
+          {
+            "text": "Сургалтын ач холбогдол өндөр: мод, графын хайлт, бүх боломжийг шалгах, хувааж бодох, динамик програмчлалын олон хэрэгжүүлэлтэд дуудлагын утга ба буцах дарааллыг ойлгох шаардлагатай. Зөвхөн өөрийгөө дуудсан мөр бичиж сурах тухай биш.",
+            "type": "p"
+          },
+          {
+            "text": "Tower of Hanoi нь энэ хичээлийн цөм дасгал. Creating Strings нь давхардалтай хайлтын нэмэлт нөхцөлтэй тул холбоосыг хадгалж, заавал хийх одоос салгасан. Нийт сан дахь өөр бодлогын ач холбогдол эсвэл хүндрэлтэй үүнийг адилтгахгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Нэг дуудлагын амлалтаа тайлбарлая",
+        "blocks": [
+          {
+            "text": "Том ажлыг жижиг ижил ажлаар байгуулахдаа зогсох нөхцөл, жижигрэх хэмжээ, буцсаны дараах ажил гурав хоорондоо нийцэх ёстой. Ханойн хөдөлгөөнүүдээр эдгээрийг нэг нэгээр нь шалгалаа.",
+            "type": "p"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Нэг дуудлагын утга, дөрвөн параметрийн үүргийг тайлбарлаж чадна.",
+              "Жижиг дуудлагаас буцсаны дараа аль мөр ажиллахыг гараар дагаж чадна.",
+              "Зөв хөдөлгөөн ба хамгийн бага тооны баталгааг тусад нь хэлж чадна.",
+              "Нийт дуудлага, хэвлэх хэмжээ, хамгийн их гүнийг ялгаж тооцож чадна.",
+              "Код харалгүй хэрэгжүүлээд хөдөлгөөн бүрийг бие даасан загвараар шалгаж чадна."
+            ]
+          },
+          {
+            "text": "Уншсан, дуудлагыг ойлгосон, код бичсэн, бие даан бодсон гэдгийг тус тусад нь үнэл. Доорх тэмдэглэгээ нь чадвараа үнэн зөв шалгах хэрэгсэл.",
+            "type": "note"
+          },
+          {
+            "type": "links",
+            "items": [
+              {
+                "url": "https://cses.fi/book/book.pdf",
+                "label": "Нэмэлт унших: Competitive Programmer’s Handbook — өөрийгөө дуудах арга"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Recursion — build a larger job from smaller calls",
+        "summary": "Use Hanoi to define a call’s promise and follow return flow. Prove legal moves, minimum count, total work and call depth separately.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. How can the largest disk move?",
+            "blocks": [
+              {
+                "text": "Three pegs hold disks of different sizes. Initially all disks are on peg one, largest at the bottom. A move takes only a top disk, and a larger disk may not be placed on a smaller one. Move the tower to peg three.",
+                "type": "p"
+              },
+              {
+                "text": "With two disks, temporarily move the smaller one to peg two, move the larger to peg three, then place the smaller on it. With more disks, clearing the small disks is itself a smaller version of the same task.",
+                "type": "p"
+              },
+              {
+                "text": "Use the Tower of Hanoi to understand how calls describe smaller jobs and where execution continues after a call returns.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. What if we write each move separately?",
+            "blocks": [
+              {
+                "text": "One- and two-disk move lists can be written by hand. For three disks, copy a smaller tower’s moves with different peg roles. More disks make repeated code and role substitutions increasingly error-prone.",
+                "type": "p"
+              },
+              {
+                "text": "Searching every legal move sequence is another possibility, but the task has a necessary structure. Give the repeated smaller-tower job one function name rather than exploring arbitrary moves.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "observation",
+            "title": "3. Split the job into three parts",
+            "blocks": [
+              {
+                "text": "To transfer $n$ disks, first clear the largest disk by moving its $n-1$ smaller disks to the spare peg.",
+                "type": "p"
+              },
+              {
+                "type": "ordered",
+                "items": [
+                  "Move $n-1$ disks from source to spare.",
+                  "Move the largest disk from source to destination.",
+                  "Move $n-1$ disks from spare to destination."
+                ]
+              },
+              {
+                "text": "The first and last jobs have the original form with fewer disks and different peg roles. A function solving smaller instances by calling itself is recursive.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. What does one call promise?",
+            "blocks": [
+              {
+                "text": "A call receives $n$ and the source, destination and spare pegs. It promises to transfer the source’s top $n$ disks legally to the destination. Larger supporting disks may exist, but are not moved by that call.",
+                "type": "p"
+              },
+              {
+                "text": "At $n=0$, nothing remains to transfer, so return immediately. This is the base case. Otherwise perform the three jobs in order, passing $n-1$ to each smaller transfer.",
+                "type": "p"
+              },
+              {
+                "text": "The caller waits for its first smaller call to finish before executing the next line. Every call retains its own size and peg roles. A spare peg can therefore become a destination or source in a child call.",
+                "type": "p"
+              },
+              {
+                "text": "Self-calling syntax alone does not guarantee termination. Specify both a decreasing measure and what happens at the base case.",
+                "type": "note"
+              }
+            ]
+          },
+          {
+            "key": "walkthrough",
+            "title": "5. Follow calls and returns",
+            "blocks": [
+              {
+                "text": "A two-disk transfer first calls the one-disk transfer from peg one to peg two. Only after it returns does the large disk move from one to three. The final child then moves the small disk from two to three.",
+                "type": "p"
+              },
+              {
+                "text": "Here is the complete three-disk trace. Stacks are written bottom to top, so the final entry is the top disk.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "Initial",
+                    "—",
+                    "$[3,2,1]$",
+                    "Empty",
+                    "Empty"
+                  ],
+                  [
+                    "$1$",
+                    "$1\\to3$",
+                    "$[3,2]$",
+                    "Empty",
+                    "$[1]$"
+                  ],
+                  [
+                    "$2$",
+                    "$1\\to2$",
+                    "$[3]$",
+                    "$[2]$",
+                    "$[1]$"
+                  ],
+                  [
+                    "$3$",
+                    "$3\\to2$",
+                    "$[3]$",
+                    "$[2,1]$",
+                    "Empty"
+                  ],
+                  [
+                    "$4$",
+                    "$1\\to3$",
+                    "Empty",
+                    "$[2,1]$",
+                    "$[3]$"
+                  ],
+                  [
+                    "$5$",
+                    "$2\\to1$",
+                    "$[1]$",
+                    "$[2]$",
+                    "$[3]$"
+                  ],
+                  [
+                    "$6$",
+                    "$2\\to3$",
+                    "$[1]$",
+                    "Empty",
+                    "$[3,2]$"
+                  ],
+                  [
+                    "$7$",
+                    "$1\\to3$",
+                    "Empty",
+                    "Empty",
+                    "$[3,2,1]$"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Step",
+                  "Move",
+                  "Peg 1",
+                  "Peg 2",
+                  "Peg 3"
+                ]
+              },
+              {
+                "text": "The separate counting function descends through $C(3),C(2),C(1),C(0)$, then returns values $0,1,3,7$ while unwinding. Returning a value and printing moves are distinct roles in the code.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Legality, optimality and termination",
+            "blocks": [
+              {
+                "type": "ordered",
+                "items": [
+                  "Doing nothing for zero disks is legal. Assume smaller transfers work correctly.",
+                  "The first child moves the top $n-1$ disks to the spare. The largest disk is now accessible and its destination has no smaller disk. Move it, then legally transfer the small tower onto it.",
+                  "Before the largest disk’s first move in any solution, all $n-1$ smaller disks must have been cleared onto one other peg. After its final move to the destination, that smaller tower must be transferred onto it. These disjoint jobs need at least $C(n-1)$ moves each, and the largest disk needs at least one.",
+                  "Our construction achieves exactly $2C(n-1)+1$, meeting that lower bound. From $C(0)=0$, this is $C(n)=2^n-1$. Every child decreases the disk count toward zero, proving termination."
+                ]
+              },
+              {
+                "text": "Legality and minimum count are separate conclusions. Merely counting seven output lines does not establish that every move is valid.",
+                "type": "note"
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Total calls are different from depth",
+            "blocks": [
+              {
+                "text": "The move-emitting function makes $2^{n+1}-1$ calls and prints $2^n-1$ moves, so time is $O(2^n)$. The required output already has that length; printing every move cannot take linear time.",
+                "type": "p"
+              },
+              {
+                "text": "The counting function makes one smaller call per level and doubles the returned value instead of recomputing it. That part costs $O(n)$; output generation dominates the complete program.",
+                "type": "p"
+              },
+              {
+                "text": "At most $n+1$ calls are active together. Each stores a few scalars, so auxiliary stack space is $O(n)$, not the total number of calls.",
+                "type": "p"
+              },
+              {
+                "text": "Sixteen disks produce $65535$ moves. A count fitting its integer type does not justify arbitrarily many disks: output size, time and call depth have separate limits.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Separate counting from moving in C++17",
+            "blocks": [
+              {
+                "text": "Read $n$, with $0\\le n\\le16$ in this teaching variant. Print the minimum move count, then one source/destination peg pair per move. Pegs are numbered $1,2,3$; transfer from one to three.",
+                "type": "p"
+              },
+              {
+                "text": "8.1. Return the move count",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "moves",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " returns $C(n)$. Zero disks return zero. Otherwise compute the previous answer once, double it and add one. Answers become ready while calls return.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <iostream>\nusing namespace std;\n\nlong long moves(int disks) {\n    if (disks == 0) {\n        return 0;\n    }\n    return 2 * moves(disks - 1) + 1;\n}\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.2. Base case and first smaller tower",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "source",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", ",
+                    "marks": []
+                  },
+                  {
+                    "text": "to",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " and ",
+                    "marks": []
+                  },
+                  {
+                    "text": "spare",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " describe roles. In the first child, the old spare becomes the destination and the old destination becomes the spare. Zero disks return from this call without printing.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "void hanoi(int disks, int source, int to, int spare) {\n    if (disks == 0) {\n        return;\n    }\n    hanoi(disks - 1, source, spare, to);\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.3. Largest disk and remaining tower",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "After the first child returns, print the largest-disk move. The second child uses the old spare as source and the old source as spare. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "disks - 1",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " passes a smaller value without mutating the caller’s count.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    cout << source << ' ' << to << '\\n';\n    hanoi(disks - 1, spare, to, source);\n}\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.4. Start the complete job",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "main",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " prints the count, then calls ",
+                    "marks": []
+                  },
+                  {
+                    "text": "hanoi",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " with the initial roles. We need not model physical stacks in the program because the proved call contract constructs valid moves.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int disks;\n    cin >> disks;\n    cout << moves(disks) << '\\n';\n    hanoi(disks, 1, 3, 2);\n    return 0;\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete compilable program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "The four fragments concatenate in order into this exact C++17 program. Compile the complete version rather than a fragment beginning inside a function.",
+                "type": "note"
+              },
+              {
+                "text": "#include <iostream>\nusing namespace std;\n\nlong long moves(int disks) {\n    if (disks == 0) {\n        return 0;\n    }\n    return 2 * moves(disks - 1) + 1;\n}\n\nvoid hanoi(int disks, int source, int to, int spare) {\n    if (disks == 0) {\n        return;\n    }\n    hanoi(disks - 1, source, spare, to);\n\n    cout << source << ' ' << to << '\\n';\n    hanoi(disks - 1, spare, to, source);\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int disks;\n    cin >> disks;\n    cout << moves(disks) << '\\n';\n    hanoi(disks, 1, 3, 2);\n    return 0;\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Sample input and output",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "3",
+                "type": "code",
+                "language": "Input"
+              },
+              {
+                "text": "7\n1 3\n1 2\n3 2\n1 3\n2 1\n2 3\n1 3",
+                "type": "code",
+                "language": "Output"
+              },
+              {
+                "text": "Every move matches the complete trace above.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "boundaries",
+            "title": "9. Bases and limits",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "Zero disks print only the zero count and no moves.",
+                  "One disk moves directly from source to destination.",
+                  "Source, destination and spare must be different pegs.",
+                  "Negative counts are outside this program’s contract.",
+                  "Each call begins with its small tower in a legal stack order."
+                ]
+              },
+              {
+                "text": "Use a separate physical-stack simulation to check every move: the source is nonempty, only its top disk moves, and a larger disk is never placed on a smaller one. Finally all disks must be on the destination. Checking only the formula cannot replace these tests.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "mistakes",
+            "title": "10. Misunderstanding return flow",
+            "blocks": [
+              {
+                "text": "No base or no progress",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Calling the same size again does not shrink the problem. Define what zero does and how each other call gets closer to it.",
+                "type": "p"
+              },
+              {
+                "text": "Keeping the old peg roles",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "The first smaller tower must go to the spare. Sending it to the old destination can leave that destination blocked when the large disk needs to move.",
+                "type": "p"
+              },
+              {
+                "text": "Printing the large move too early",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "The first child must finish clearing the small disks. The print belongs between the two recursive transfers.",
+                "type": "p"
+              },
+              {
+                "text": "Decrementing one variable twice",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Writing ",
+                    "marks": []
+                  },
+                  {
+                    "text": "--disks",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " in both calls mutates the caller and can give the second branch the wrong size. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "disks - 1",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " computes the child size without changing the original.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "Treating return as program termination",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "A return ends one call and resumes its caller. Nor may an earlier equal-size call justify suppressing output: peg roles can differ, and the moves still need to be printed.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "connections",
+            "title": "11. What structure supports calls?",
+            "blocks": [
+              {
+                "text": "A caller remembers where it should continue. Active calls return in last-in-first-out order, connecting recursion with a stack.",
+                "type": "p"
+              },
+              {
+                "type": "tutorial",
+                "label": "Last-in-first-out work",
+                "tutorialId": "stack-queue"
+              },
+              {
+                "type": "tutorial",
+                "label": "Branching over choices",
+                "tutorialId": "brute-force"
+              },
+              {
+                "type": "tutorial",
+                "label": "Combining smaller parts instead of towers",
+                "tutorialId": "sorting"
+              },
+              {
+                "type": "tutorial",
+                "label": "Storing repeated smaller answers",
+                "tutorialId": "dynamic-programming"
+              },
+              {
+                "text": "Recursion is a way to express work, not one algorithm. A child may return a small answer or perform output. Total work depends on how many children are created.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "12. Is there a smaller job of the same form?",
+            "blocks": [
+              {
+                "type": "ordered",
+                "items": [
+                  "State one call’s promise in a sentence.",
+                  "Find the decreasing measure: disks, undecided positions or segment length.",
+                  "Separate work before, between and after child calls.",
+                  "Derive the base, correctness argument, total calls and maximum depth separately."
+                ]
+              },
+              {
+                "text": "A depth proportional to a very large input can exceed stack limits. A correct recursive idea may be better expressed using iteration or explicitly managed storage.",
+                "type": "note"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From moves to search and stored answers",
+            "blocks": [
+              {
+                "text": "First solve Hanoi independently. For each extension redefine what a call returns and what shared state changes. Extra prerequisites do not gate introductory mastery.",
+                "type": "p"
+              },
+              {
+                "text": "Warm-up · Tower of Hanoi",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Trace two and three disks, then implement without copying. Explain the four call arguments and prove both legality and minimum move count. This is the core independent task.",
+                "type": "p"
+              },
+              {
+                "text": "Standard · Creating Strings",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Choose one letter and recurse on remaining positions. Repeated letters require duplicate handling and restoration of shared usage state. This additional search task is not required for the first Hanoi implementation.",
+                "type": "p"
+              },
+              {
+                "text": "Observation · Apple Division",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Revisit the complete-search calls. Contrast printing moves with updating an optimum, and distinguish a by-value partial sum from a shared best answer.",
+                "type": "p"
+              },
+              {
+                "text": "Application · Chessboard and Queens",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Advance one row and try legal columns. Restore column/diagonal occupancy exactly on return; shared data is not automatically undone when a function returns.",
+                "type": "p"
+              },
+              {
+                "text": "Challenge · Grid Path Description",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Separate step count, current cell and visited-state meaning. Full search is too large; prove safe pruning. Correct recursive syntax does not establish acceptable runtime.",
+                "type": "p"
+              },
+              {
+                "text": "Olympiad extension · IOI 2009 Raisins",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Model a cut into two smaller rectangles. Identical rectangles recur through different branches, motivating stored answers. This optional extension follows 2D prefix sums and interval DP.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "importance",
+            "title": "14. Why this supports many topics",
+            "blocks": [
+              {
+                "text": "This topic has high educational importance for tree/graph traversal, complete search, divide-and-combine methods and many DP implementations. Understanding a call contract and return flow matters more than writing a self-call.",
+                "type": "p"
+              },
+              {
+                "text": "Tower of Hanoi is core practice. Creating Strings adds duplicate-aware search, so its link is retained as optional work rather than a requirement for this introduction. This distinction does not change its bank-wide priority or difficulty.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Explain one call’s promise",
+            "blocks": [
+              {
+                "text": "The base, decreasing measure and work after returning must fit together. The Hanoi construction made each of these obligations visible.",
+                "type": "p"
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Explain the call contract and four argument roles.",
+                  "Trace which statement runs after a child returns.",
+                  "Separate legality from minimum-count proofs.",
+                  "Distinguish total calls, output length and depth.",
+                  "Implement independently and validate every move using another model."
+                ]
+              },
+              {
+                "text": "Assess reading, understanding, implementation and independent solving separately with the checks below.",
+                "type": "note"
+              },
+              {
+                "type": "links",
+                "items": [
+                  {
+                    "url": "https://cses.fi/book/book.pdf",
+                    "label": "Further reading: Competitive Programmer’s Handbook — recursion"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know function arguments, return values, conditionals and complexity basics."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Функцэд утга дамжуулах, утга буцаах, нөхцөлт салаалал болон зардлын суурийг мэддэг байна.",
+    "priorityLevel": "high",
+    "priorityReason": "Дуудлагын утга, зогсох тохиолдол, буцах дарааллыг зөв ойлгох нь мод/графын хайлт, бүрэн хайлт, хувааж бодох болон динамик програмчлалын олон хэрэгжүүлэлтийн суурь.",
+    "prerequisiteIds": [
+      "complexity"
+    ],
+    "learningRelations": {
+      "next": "sorting",
+      "practice": [
+        {
+          "key": "22",
+          "stage": "Warm-up",
+          "reason": "Жижиг дуудлагын утга, буцах дараалал, зөв хөдөлгөөн ба хамгийн бага тооны баталгааг хамтад нь бие даан хэрэгжүүлэх өөрийгөө дуудах функцийн цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "305",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "85",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "82",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "311",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "915",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "complexity",
+          "description": "Нийт дуудлагын тоо ба нэг мөчийн гүнийг тусад нь үнэл.",
+          "descriptionEn": "Separate total calls from simultaneous depth."
+        },
+        {
+          "tutorialId": "stack-queue",
+          "description": "Дуудагчдаа буцах ажлыг сүүлд орсноос нь эхэлж хадгалдагтай холбо.",
+          "descriptionEn": "Connect returns with last-in-first-out storage."
+        }
+      ]
+    }
+  },
+  "mapping": {
+    "destination": "to",
+    "required_moves": "moves",
+    "move_tower": "hanoi"
+  },
+  "changed": true,
+  "reviewed_body_sha256": "c170e4158e166b6b146f5566fa1c0d37b74affd93abf30c5dab2f07e2f78a498",
+  "proposed_body_sha256": "c170e4158e166b6b146f5566fa1c0d37b74affd93abf30c5dab2f07e2f78a498"
+}

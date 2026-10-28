@@ -1,0 +1,910 @@
+{
+  "id": "subtask-strategy",
+  "expected_revision": 2,
+  "expected_published": true,
+  "expected_body_md5": "f91efcb048a5308c41705d959831da04",
+  "expected_body_sha256": "d7d1c1131298ef8b59e892cf55a5b0fcda6406f0b393d919d7dc20bdd7da9bfd",
+  "body": {
+    "id": "subtask-strategy",
+    "level": "Дунд шат",
+    "order": 55,
+    "title": "Дэд бодлогын стратеги — хязгаараас аргаа сонгох",
+    "aliases": "subtask-strategy Subtask-oriented thinking ба meet-in-the-middle Subtask-oriented thinking and meet-in-the-middle",
+    "related": [
+      "debugging",
+      "bitmask-dp"
+    ],
+    "summary": "Жижиг зөв шийдлээ лавлах болгон хадгалж, хязгаарыг уншаад бүх хайлт, нийлбэрийн DP, хоёр хэсгийн хайлтын ялгааг сонгоё.",
+    "category": "Бодлого бодох арга",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Нийлбэртэй дэд олонлогийг хэдэн янзаар сонгох вэ?",
+        "blocks": [
+          {
+            "text": "Дөч хүртэлх индексээрээ ялгаатай тооноос нийлбэр нь өгсөн утгатай тэнцүү дэд олонлогуудыг тоолъё. Нэг индексийг ихдээ нэг сонгоно; ижил утгатай хоёр индекс өөр сонголт хэвээр.",
+            "type": "p"
+          },
+          {
+            "text": "Бүх дэд олонлогийг шалгах жижиг шийдэл бичиж чадна. Гэхдээ дөчин элементэд ойролцоогоор нэг их наяд сонголт болно. Жижиг зөв шийдлээ хаяхгүй, дараагийн аргын лавлах болгоод хайлтыг яаж багасгахыг сонгоё.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Зөв шийдэл ба хурдан шийдлийг тусад нь ахиулах",
+        "blocks": [
+          {
+            "text": "Тоо бүрийг авсан, аваагүй гэсэн бүх сонголтын нийлбэрийг бодно. Энэ нь зөвийг шалгахад амар, харин $2^n$ тоо хурдан өснө. Дэд бодлогын стратеги гэдэг нь ийм баталгаатай хүрээгээ тодорхой мэдээд дараагийн хязгаарт ахих төлөвлөгөө юм.",
+            "type": "p"
+          },
+          {
+            "text": "Энд үзүүлэх хязгаарын хүснэгт бол сургалтын жишээ, жинхэнэ тэмцээний онооны хүснэгт биш. Албан нөхцөлд өгсөн дэд бодлогын хамаарал, бүх тестийг бүлгээр үнэлэх эсэхийг тусад нь уншина.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "3. Тоолох, олох, хамгийн бага болгох нь өөр",
+        "blocks": [
+          {
+            "text": "Энд нийлбэр нь $T$ болох сонголтын тоог асууна, ганц сонголт олбол зогсохгүй. Хоосон сонголт зөвшөөрөгдөх тул $T=0$ үед тэр нэгийг тоолно. Утгууд сөрөг байж болно.",
+            "type": "p"
+          },
+          {
+            "text": "Жижиг нийлбэртэй эерэг тоонуудын DP нь тооны тооноос гадна нийлбэрийн хүрээнээс хамаардаг. Том эсвэл сөрөг утгатай үед тэр аргыг шууд хэрэглэхгүй. Харин элементийн тоо дунд зэрэг тул хоёр хэсэгт хуваах боломж байна.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Бүх сонголтыг хоёр хагасаар төлөөлөх",
+        "blocks": [
+          {
+            "text": "Массивыг тэнцүү шахуу хоёр хэсэг болго. Хэсэг бүрийн бүх дэд олонлогийн нийлбэрийг гаргана. Зүүн нийлбэр $s$ бүрд баруунд $T-s$ хэд байгааг олж хариунд нэмнэ. Баруун жагсаалтыг эрэмбэлээд хоёр заагийн ялгавраар давхардлын тоог олж болно.",
+            "type": "p"
+          },
+          {
+            "text": "Нийлбэрийн жагсаалтыг тэг гэсэн ганц утгаар эхлүүлнэ. Шинэ тоо ирэхэд хуучин нийлбэр бүр дээр түүнийг нэмсэн утгыг залга. Давталтын өмнөх уртыг хадгална: шинээр нэмэгдсэн утгыг тэр тоогоор дахин тэлж болохгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "5. Нэг, хоёр, хоёр, гурваас дөрөв үүсгэх",
+        "blocks": [
+          {
+            "text": "$[1,2]$ зүүн хэсгийн нийлбэрүүд $[0,1,2,3]$. $[2,3]$ баруун хэсэг $[0,2,3,5]$. Зүүн нэгт баруун гурав, зүүн хоёрт баруун хоёр таарна. Нийт хоёр сонголт: нэг ба гурав, мөн хоёр өөр индексийн хоёр ба хоёр.",
+            "type": "p"
+          },
+          {
+            "text": "Ижил утгатай индексүүдийг ялгана. $[0,0]$ ба зорилт тэг байвал хоосон, эхнийх, хоёр дахь, хоёул гэсэн дөрвөн сонголт бий. Давхардсан нийлбэрүүдийг олонлогоор нэгтгэж болохгүй.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "0",
+                "4",
+                "0"
+              ],
+              [
+                "1",
+                "3",
+                "1"
+              ],
+              [
+                "2",
+                "2",
+                "1"
+              ],
+              [
+                "3",
+                "1",
+                "0"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Зүүн нийлбэр",
+              "Хэрэгтэй баруун",
+              "Таарах тоо"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Нэг дэд олонлог яг нэг хос болж задарна",
+        "blocks": [
+          {
+            "text": "Анхны ямар ч дэд олонлогийг зүүнд сонгосон индексүүд, баруунд сонгосон индексүүд гэж цорын ганц аргаар салгана. Эсрэгээр хоёр талын ямар ч сонголтыг нийлүүлбэл нэг анхны дэд олонлог болно. Нийлбэр нь $s+(T-s)=T$ үед л зөв.",
+            "type": "p"
+          },
+          {
+            "text": "Иймээс зүүн жагсаалтын сонголт бүрд тохирох баруун сонголтын тоог нэмэхэд юу ч алдахгүй, нэг сонголтыг хоёр удаа тоолохгүй. Ижил нийлбэртэй олон сонголтыг жагсаалтын олон бичлэгээр хадгалсан нь яг энэ баталгааны шаардлага.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Хагас хайлт ч хугацаа ба зайтай",
+        "blocks": [
+          {
+            "text": "Хагас уртуудыг $l,r$ гэе. Нийлбэр үүсгэх нь $O(2^l+2^r)$, барууныг эрэмбэлэх $O(2^r\\log2^r)$, зүүн бүрийн хайлт $O(2^l\\log2^r)$. Нийтлэг хялбар үнэлгээ $O(n2^{n/2})$ орчим, санах ой $O(2^{n/2})$.",
+            "type": "p"
+          },
+          {
+            "text": "Дөч элементэд тал бүр $2^{20}$ бичлэгтэй. Хоёр 64 битийн нийлбэрийн жагсаалт ойролцоогоор арван зургаан MiB, харин хайлт ба эрэмбэлэлтэд олон сая харьцуулалт нэмэгдэнэ. Зөвхөн жагсаалтын тоог нийт үйлдэл гэж андуурахгүй.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "$n\\le20$",
+                "Бүх сонголтыг тоолох",
+                "Элемент бүрийг нэг удаа авах"
+              ],
+              [
+                "$n\\le40$, нийт нийлбэр $S\\le100000$",
+                "Нийлбэрийн DP",
+                "Бүх утга сөрөг биш, тоололд 64 бит"
+              ],
+              [
+                "$n\\le40$, том эсвэл сөрөг утга",
+                "Хоёр хагасын нийлбэр",
+                "Давхардлыг хадгалж тоолох"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Сургалтын хязгаар — албан оноо биш",
+              "Тохирох арга",
+              "Гол нөхцөл"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. Хагасын нийлбэр, давхардлын тоо, бүтэн хариу",
+        "blocks": [
+          {
+            "text": "8.1. Хагасын бүх нийлбэр",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Тэг нийлбэрээс эхлээд шинэ тоо бүрд зөвхөн хуучин хэсгийг нэг удаа тэлнэ. Хагасын урт ихдээ хорь тул хадгалах хэмжээг урьдчилан захиална.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvector<long long> subset_sums(const vector<long long>& a) {\n    vector<long long> sums;\n    sums.reserve(size_t{1} << a.size());\n    sums.push_back(0);\n    for (long long value : a) {\n        size_t old_size = sums.size();\n        for (size_t i = 0; i < old_size; ++i) {\n            sums.push_back(sums[i] + value);\n        }\n    }\n    return sums;\n}\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.2. Хуваалт ба эрэмбэлэлт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Хоёр хагасын бүх нийлбэрийг гаргаад барууныг эрэмбэлнэ. Давхардлыг устгахгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "long long count_subsets(const vector<long long>& a, long long target) {\n    size_t mid = a.size() / 2;\n    vector<long long> left_a(a.begin(), a.begin() + mid);\n    vector<long long> right_a(a.begin() + mid, a.end());\n    vector<long long> left_sums = subset_sums(left_a);\n    vector<long long> right_sum = subset_sums(right_a);\n    sort(right_sum.begin(), right_sum.end());\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.3. Тэнцүүгийн бүх давхардал",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Зүүн сонголт бүрийн шаардлагатай баруун утгын хоёр заагийн ялгаврыг нэмнэ. Хариу 64 бит.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    long long answer = 0;\n    for (long long left_sum : left_sums) {\n        auto [first, last] = equal_range(right_sum.begin(), right_sum.end(), target - left_sum);\n        answer += static_cast<long long>(last - first);\n    }\n    return answer;\n}\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.4. Оролт ба гаралт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Элементийн тоо, зорилт, утгуудыг уншаад индексээр ялгаатай дэд олонлогийн тоог хэвлэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    long long target;\n    cin >> n >> target;\n    vector<long long> a(n);\n    for (long long& value : a) {\n        cin >> value;\n    }\n    cout << count_subsets(a, target) << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн ажиллах C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvector<long long> subset_sums(const vector<long long>& a) {\n    vector<long long> sums;\n    sums.reserve(size_t{1} << a.size());\n    sums.push_back(0);\n    for (long long value : a) {\n        size_t old_size = sums.size();\n        for (size_t i = 0; i < old_size; ++i) {\n            sums.push_back(sums[i] + value);\n        }\n    }\n    return sums;\n}\n\nlong long count_subsets(const vector<long long>& a, long long target) {\n    size_t mid = a.size() / 2;\n    vector<long long> left_a(a.begin(), a.begin() + mid);\n    vector<long long> right_a(a.begin() + mid, a.end());\n    vector<long long> left_sums = subset_sums(left_a);\n    vector<long long> right_sum = subset_sums(right_a);\n    sort(right_sum.begin(), right_sum.end());\n    long long answer = 0;\n    for (long long left_sum : left_sums) {\n        auto [first, last] = equal_range(right_sum.begin(), right_sum.end(), target - left_sum);\n        answer += static_cast<long long>(last - first);\n    }\n    return answer;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    long long target;\n    cin >> n >> target;\n    vector<long long> a(n);\n    for (long long& value : a) {\n        cin >> value;\n    }\n    cout << count_subsets(a, target) << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "4 4\n1 2 2 3\n",
+            "type": "code",
+            "language": "Input"
+          },
+          {
+            "text": "2\n",
+            "type": "code",
+            "language": "Output"
+          }
+        ]
+      },
+      {
+        "key": "errors",
+        "title": "9. Давхардал, хоосон сонголт, сөрөг тоо",
+        "blocks": [
+          {
+            "text": "Ижил нийлбэрийг ганц утга болговол тоолол буруу. Ганц тохирох индекс олж нэг нэмэх нь ч хангалтгүй; ижил утгын бүх хүрээний уртыг нэмнэ. Хоосон сонголт хориглосон өөр бодлогод зорилт тэг бол зөвхөн тэр нэгийг хасах шаардлагатай.",
+            "type": "p"
+          },
+          {
+            "text": "Сөрөг утга зөвшөөрсөн үед явцын нийлбэр зорилтоос их бол шууд зогсоож болохгүй: дараагийн сөрөг тоо буцааж багасгана. Жижиг хязгаарт зөв байсан эрт таслах дүрмийг нөхцөл өөрчлөгдсөн том хувилбарт сохроор бүү хуул.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "10. Программ ба тоон төрлийн гэрээ",
+        "blocks": [
+          {
+            "text": "Код $0\\le n\\le40$, утга бүр $\\pm10^9$, зорилт $\\pm4\\cdot10^{10}$ дотор авна. Бүх нийлбэр, хайх ялгавар 64 битэд багтана. Хариу ихдээ $2^{40}$ тул 32 битийн тоо хангалтгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Оролт эхлээд элементийн тоо ба зорилт, дараа нь утгууд. Хоосон массивт зорилт тэг бол нэг, бусад үед тэг. Код үүсгэсэн нийлбэрүүдийг хадгалдаг тул элементийн тоог дурын их болгон өсгөж болохгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "planning",
+        "title": "11. Албан дэд бодлогын хүснэгтийг унших",
+        "blocks": [
+          {
+            "text": "Тэмцээний нөхцөлөөс хязгаар, тусгай бүтэц, оноо, хамаарлыг хүснэгтэд салгаж бич. Жижиг урт, бага нийлбэр, тусгай мод, шинэчлэлтгүй хувилбар нь өөр өөр боломж нээдэг. Хэсэг бүрд алгоритм, зөвийн үндэслэл, хугацаа ба зайг тэмдэглэ.",
+            "type": "p"
+          },
+          {
+            "text": "Оноо автоматаар нэмэгдэнэ гэж бүү таа: бүлгийн бүх тестийг давах эсэх, өмнөх бүлгээс хамаарах эсэхийг албан дүрмээс шалга. Эндхийн жишээг жинхэнэ IOI бодлогын онооны хуваарь болгон тайлбарлахгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "workflow",
+        "title": "12. Баталгаатай жижиг хувилбараа хамгаалах",
+        "blocks": [
+          {
+            "text": "Шинэ хурдан аргаа тусдаа функцэд бичээд жижиг зөв шийдэлтэй тулга. Буцааж болох хадгалсан хувилбар, ойлгомжтой шалгалтын оролттой бай. Хугацаа үлдэхгүй үед дутуу том аргаар өмнөх зөв хэсгийг эвдэх эрсдэлийг тооц.",
+            "type": "p"
+          },
+          {
+            "text": "Гэхдээ жижиг тоонд л зөв таамгийг “хязгаар том үед ч магадгүй” гэж хэрэглэж болохгүй. Алгоритм сонгох салбар бүр зөвхөн өөрийн баталсан нөхцөлөөр ажиллах ёстой. Албан бүрэн шаардлагыг хангаагүйг шударгаар тэмдэглэ.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Жижиг лавлахаас олимпиадын хүрээ рүү",
+        "blocks": [
+          {
+            "text": "Apple Division",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Бүх жижиг сонголтоос хамгийн сайн хариу авах лавлахыг хадгал.",
+            "type": "p"
+          },
+          {
+            "text": "Meet in the Middle",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Хоёр талын нийлбэрийн давхардлыг хадгалж яг тоол.",
+            "type": "p"
+          },
+          {
+            "text": "Chessboard and Queens",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Мөр бүрийн сонголт ба хоригийн бүтцээр хайлтыг бууруул; зөв буцаах төлөвөө батал.",
+            "type": "p"
+          },
+          {
+            "text": "IOI 2016 — Detecting Molecules",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Албан нөхцөл ба дэд хязгааруудыг уншаад жижиг яг зөв лавлахаас ахих аргаа сонго.",
+            "type": "p"
+          },
+          {
+            "text": "IOI 2014 — Wall",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Цөөн шинэчлэлтийн шууд лавлахыг бүтэн нийлмэл шинэчлэлтийн аргаас ялга.",
+            "type": "p"
+          },
+          {
+            "text": "Олимпиадын өргөтгөл: Mecho ба Race",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "IOI 2009 — Mecho: Цаг хугацаа, хүрэх байдлын нөхцөлийг албан хувилбараар нь шалга.",
+            "type": "p"
+          },
+          {
+            "text": "IOI 2011 — Race: Модны жижиг бүх замын лавлах ба том хязгаарын нэмэлт аргыг тусад нь төлөвлө.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "priority",
+        "title": "14. Хязгаар унших ба хүрээгээ мэдэх чадвар",
+        "blocks": [
+          {
+            "text": "Өндөр ач холбогдолтой. Meet in the Middle нь энэ хичээлийн шууд тооллын цөм. Detecting Molecules дээр албан дэд нөхцөл бүрийг ялгаж, жижиг яг зөв шийдлээ лавлах болгох дадлыг хэрэглэ. Бусад олимпиадын бодлогын бүтэн шийдлийг энэ хичээл өгсөн гэж үзэхгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Шийдвэр бүрийн нөхцөлийг тайлбарлах",
+        "blocks": [
+          {
+            "text": "Яагаад дөчин элементэд бүх хайлт хэт их, яагаад нийлбэрийн DP зарим оролтод зай ихтэй, яагаад хоёр хагас яг тоолдгийг тайлбарла. Ижил утга олон, тэг, сөрөг тооны жишээг шалга.",
+            "type": "p"
+          },
+          {
+            "text": "Нэг бодлогын албан нөхцөлөөс өөрийн хүснэгт үүсгээд “зөв хүрээ”, “туршсан хүрээ”, “биелээгүй хэсэг”-ийг ялга. Дараа нь жижиг лавлахтай тулгасан баримт, нийт хугацаа ба зайны тооцоогоор төлөвлөгөөгөө хаа.",
+            "type": "p"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Subtask strategy — choose algorithms from constraints",
+        "summary": "Keep a correct small baseline and use constraints to distinguish exhaustive search, sum DP and meet-in-the-middle.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Count subsets with a target sum",
+            "blocks": [
+              {
+                "text": "Count index-distinct subsets of at most forty numbers with a target sum, using each index at most once. Equal values at different indices remain different choices.",
+                "type": "p"
+              },
+              {
+                "text": "Exhaustive search is a correct small baseline, but forty elements give about a trillion subsets. Keep that baseline as a reference while finding a smaller search space.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Improve speed without losing a correct baseline",
+            "blocks": [
+              {
+                "text": "Enumerate take/skip choices for a simple correct solver. Subtask strategy means knowing exactly where that solver is valid and affordable before extending it.",
+                "type": "p"
+              },
+              {
+                "text": "The constraint comparisons here are teaching examples, not invented official scoring groups. Read actual subtask dependencies and grouped-scoring rules from the contest.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "3. Counting, finding and optimizing are different",
+            "blocks": [
+              {
+                "text": "We count subsets summing to $T$, not merely find one. The empty subset is allowed and contributes when $T=0$. Values may be negative.",
+                "type": "p"
+              },
+              {
+                "text": "Sum DP depends on the sum domain as well as the item count; large or signed values may make it inappropriate. A moderate item count instead suggests splitting the set.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Represent choices by two halves",
+            "blocks": [
+              {
+                "text": "Split into nearly equal halves and enumerate their subset sums. For every left sum $s$, count right sums equal to $T-s$, using a sorted right list and equal-range boundaries.",
+                "type": "p"
+              },
+              {
+                "text": "Start each sum list with zero. For each new item, append its value plus each old sum, using the saved old length so the item is not reused.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "5. Form four from one, two, two and three",
+            "blocks": [
+              {
+                "text": "Left half $[1,2]$ has sums $[0,1,2,3]$; right half $[2,3]$ has $[0,2,3,5]$. Left one pairs with right three, and left two with right two: two subsets.",
+                "type": "p"
+              },
+              {
+                "text": "For $[0,0]$ and target zero there are four choices, including empty. Deduplicating equal sums would destroy the multiplicity of index-distinct subsets.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "0",
+                    "4",
+                    "0"
+                  ],
+                  [
+                    "1",
+                    "3",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "3",
+                    "1",
+                    "0"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Left sum",
+                  "Needed right",
+                  "Matches"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Every subset corresponds to exactly one pair",
+            "blocks": [
+              {
+                "text": "Every original subset splits uniquely into its selected left and right indices; every pair of half-subsets combines into one original subset. It qualifies exactly when the sums add to $T$.",
+                "type": "p"
+              },
+              {
+                "text": "Counting every matching right occurrence for each left occurrence is therefore exhaustive and duplicate-free at the subset level. Repeated list entries are necessary to represent distinct choices with equal sums.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Half-sized search still has time and memory costs",
+            "blocks": [
+              {
+                "text": "For half sizes $l,r$, generation takes $O(2^l+2^r)$, sorting $O(2^r\\log2^r)$ and all binary searches $O(2^l\\log2^r)$. A simplified bound is about $O(n2^{n/2})$ time and $O(2^{n/2})$ memory.",
+                "type": "p"
+              },
+              {
+                "text": "At forty items, each side has $2^{20}$ entries; the two 64-bit lists need about sixteen MiB, plus millions of comparisons. Entry count is not the complete operation count.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "$n\\le20$",
+                    "Enumerate subsets",
+                    "Use each item once"
+                  ],
+                  [
+                    "$n\\le40$, total sum $S\\le100000$",
+                    "Sum DP",
+                    "Nonnegative values; 64-bit counts"
+                  ],
+                  [
+                    "$n\\le40$, large or signed values",
+                    "Meet in the middle",
+                    "Retain multiplicities"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Teaching limits, not official scores",
+                  "Method",
+                  "Key condition"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Half sums, multiplicity and the complete answer",
+            "blocks": [
+              {
+                "text": "8.1. Half-subset sums",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Start at zero and extend only the saved old list once per item; each half has at most twenty items.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvector<long long> subset_sums(const vector<long long>& a) {\n    vector<long long> sums;\n    sums.reserve(size_t{1} << a.size());\n    sums.push_back(0);\n    for (long long value : a) {\n        size_t old_size = sums.size();\n        for (size_t i = 0; i < old_size; ++i) {\n            sums.push_back(sums[i] + value);\n        }\n    }\n    return sums;\n}\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.2. Split and sort",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Enumerate both halves, sort the right list and retain duplicate entries.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "long long count_subsets(const vector<long long>& a, long long target) {\n    size_t mid = a.size() / 2;\n    vector<long long> left_a(a.begin(), a.begin() + mid);\n    vector<long long> right_a(a.begin() + mid, a.end());\n    vector<long long> left_sums = subset_sums(left_a);\n    vector<long long> right_sum = subset_sums(right_a);\n    sort(right_sum.begin(), right_sum.end());\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.3. Count every equal occurrence",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "For every left occurrence add the equal-range length of its complementary right sum into a 64-bit answer.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    long long answer = 0;\n    for (long long left_sum : left_sums) {\n        auto [first, last] = equal_range(right_sum.begin(), right_sum.end(), target - left_sum);\n        answer += static_cast<long long>(last - first);\n    }\n    return answer;\n}\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.4. Input and output",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read the length, target and values, then print the count of index-distinct subsets.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    long long target;\n    cin >> n >> target;\n    vector<long long> a(n);\n    for (long long& value : a) {\n        cin >> value;\n    }\n    cout << count_subsets(a, target) << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete compilable C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvector<long long> subset_sums(const vector<long long>& a) {\n    vector<long long> sums;\n    sums.reserve(size_t{1} << a.size());\n    sums.push_back(0);\n    for (long long value : a) {\n        size_t old_size = sums.size();\n        for (size_t i = 0; i < old_size; ++i) {\n            sums.push_back(sums[i] + value);\n        }\n    }\n    return sums;\n}\n\nlong long count_subsets(const vector<long long>& a, long long target) {\n    size_t mid = a.size() / 2;\n    vector<long long> left_a(a.begin(), a.begin() + mid);\n    vector<long long> right_a(a.begin() + mid, a.end());\n    vector<long long> left_sums = subset_sums(left_a);\n    vector<long long> right_sum = subset_sums(right_a);\n    sort(right_sum.begin(), right_sum.end());\n    long long answer = 0;\n    for (long long left_sum : left_sums) {\n        auto [first, last] = equal_range(right_sum.begin(), right_sum.end(), target - left_sum);\n        answer += static_cast<long long>(last - first);\n    }\n    return answer;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    long long target;\n    cin >> n >> target;\n    vector<long long> a(n);\n    for (long long& value : a) {\n        cin >> value;\n    }\n    cout << count_subsets(a, target) << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "4 4\n1 2 2 3\n",
+                "type": "code",
+                "language": "Input"
+              },
+              {
+                "text": "2\n",
+                "type": "code",
+                "language": "Output"
+              }
+            ]
+          },
+          {
+            "key": "errors",
+            "title": "9. Duplicates, empty choices and negative values",
+            "blocks": [
+              {
+                "text": "Do not deduplicate sums or add only one for a match: add the full equal-range length. A different task forbidding empty subsets would subtract exactly one when target zero.",
+                "type": "p"
+              },
+              {
+                "text": "With negative values, a partial sum above the target can later decrease. Do not copy pruning that relied on positivity into a changed domain.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "10. Program and numeric contracts",
+            "blocks": [
+              {
+                "text": "The code accepts $0\\le n\\le40$, values within $\\pm10^9$ and target within $\\pm4\\cdot10^{10}$. Sums and search differences fit 64-bit. The answer can be $2^{40}$, exceeding 32-bit.",
+                "type": "p"
+              },
+              {
+                "text": "Read length and target, then values. Empty input gives one for zero target and zero otherwise. Stored exponential lists prevent arbitrary increases in the length limit.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "planning",
+            "title": "11. Read actual subtask groups",
+            "blocks": [
+              {
+                "text": "Extract constraints, special structure, points and dependencies from the official statement. For each group record the algorithm, correctness argument, time and space.",
+                "type": "p"
+              },
+              {
+                "text": "Do not assume points add independently: inspect grouped and dependent scoring rules. The teaching examples here are not official IOI score allocations.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "workflow",
+            "title": "12. Protect the correct small solver",
+            "blocks": [
+              {
+                "text": "Keep the baseline and implement the faster method separately, comparing on small cases. Save a recoverable working version and weigh the risk of breaking known coverage near a deadline.",
+                "type": "p"
+              },
+              {
+                "text": "A small-case assumption is not a large-case proof. Every algorithm branch must be restricted to its justified domain, and incomplete full coverage should remain explicit.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From small references to olympiad domains",
+            "blocks": [
+              {
+                "text": "Apple Division",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Keep an exhaustive small optimization reference.",
+                "type": "p"
+              },
+              {
+                "text": "Meet in the Middle",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Preserve multiplicities while counting half-sum matches.",
+                "type": "p"
+              },
+              {
+                "text": "Chessboard and Queens",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Reduce search using row structure and correctly restored constraints.",
+                "type": "p"
+              },
+              {
+                "text": "IOI 2016 — Detecting Molecules",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Read the official domain and sublimits before extending an exact small reference.",
+                "type": "p"
+              },
+              {
+                "text": "IOI 2014 — Wall",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Separate a naive few-update reference from a full composed-update method.",
+                "type": "p"
+              },
+              {
+                "text": "Olympiad extension: Mecho and Race",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "IOI 2009 — Mecho: Inspect the actual time and reachability conditions.",
+                "type": "p"
+              },
+              {
+                "text": "IOI 2011 — Race: Separate exhaustive small tree paths from the technique needed for large constraints.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "priority",
+            "title": "14. Read constraints and know your coverage",
+            "blocks": [
+              {
+                "text": "High priority. Meet in the Middle is the direct counting core. Detecting Molecules is practice in reading actual conditions and retaining an exact small reference, not a claim that this lesson supplies every olympiad solution.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Justify each algorithm choice",
+            "blocks": [
+              {
+                "text": "Explain why full search is excessive at forty items, why sum DP can be too large and why the two halves count exactly. Test equal values, zeros and negatives.",
+                "type": "p"
+              },
+              {
+                "text": "From one real statement, distinguish justified domain, tested domain and unfinished coverage, then support your plan with differential evidence and full time/space estimates.",
+                "type": "p"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Exhaustive search, sorting, binary search and time/space estimates."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Бүрэн хайлт, эрэмбэлэлт, хоёртын хайлт, хугацаа ба зайны үнэлгээ.",
+    "priorityLevel": "high",
+    "priorityReason": "Нөхцөл ба хязгаараа унших, баталгаатай жижиг шийдлээс ахих, оноо ба хугацааны эрсдэлийг бодитоор төлөвлөх тэмцээний суурь чадвар. Алгоритмын нэр бус хэрэглэгдэх хүрээг сонгох ач холбогдлоор High.",
+    "prerequisiteIds": [
+      "brute-force",
+      "sorting",
+      "binary-search"
+    ],
+    "learningRelations": {
+      "next": "lca",
+      "practice": [
+        {
+          "key": "85",
+          "stage": "Warm-up",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "510",
+          "stage": "Standard",
+          "reason": "Хичээлийн үндсэн нөхцөл, баталгаа эсвэл жижиг зөв лавлахаас ахих аргыг шууд дадлагажуулах цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "82",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "115",
+          "stage": "Application",
+          "reason": "Хичээлийн үндсэн нөхцөл, баталгаа эсвэл жижиг зөв лавлахаас ахих аргыг шууд дадлагажуулах цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "133",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "132",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "138",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "debugging",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "bitmask-dp",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "mapping": {
+    "values": "a",
+    "middle": "mid",
+    "index": "i",
+    "count": "n",
+    "left_values": "left_a",
+    "right_values": "right_a",
+    "right_sums": "right_sum"
+  },
+  "changed": true,
+  "reviewed_body_sha256": "9506db633f9677865df29f38d6b50a2297ca0e6b32b691de9112d0d4bba0dd03",
+  "proposed_body_sha256": "9506db633f9677865df29f38d6b50a2297ca0e6b32b691de9112d0d4bba0dd03"
+}

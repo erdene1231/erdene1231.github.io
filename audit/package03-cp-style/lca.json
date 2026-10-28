@@ -1,0 +1,924 @@
+{
+  "id": "lca",
+  "expected_revision": 6,
+  "expected_published": true,
+  "expected_body_md5": "722b1c08372befdbf7de0c8cf7d53015",
+  "expected_body_sha256": "b247ad93b8eef6a8ed51cdd4e5d7231fe4b5a6a96bde914464784b9930834f0c",
+  "body": {
+    "id": "lca",
+    "level": "Ахисан шат",
+    "order": 41,
+    "title": "LCA — хамгийн ойр нийтлэг өвгийг олох",
+    "aliases": "lca LCA — хоёр node-ийн нийтлэг ancestor LCA — lowest common ancestor tree lca lowest common ancestor binary lifting ancestor мод өвөг",
+    "related": [
+      "tree-basics",
+      "bit-operations",
+      "bfs",
+      "bitmask-dp"
+    ],
+    "summary": "Үндэстэй модонд эхлээд гүнийг тэнцүүлж, дараа нь хоёрын зэргийн үсрэлтээр нийтлэг өвгийн яг доор хүрье.",
+    "category": "Trees",
+    "levelKey": "advanced",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Хоёр салаа хаана анх нийлдэг вэ?",
+        "blocks": [
+          {
+            "text": "Нэгийг үндэс болгосон модонд $1–2$, $1–3$, $2–4$, $2–5$, $3–6$, $6–7$ ирмэг байг. Дөрөв ба тавын үндэс рүү өгсөх зам хоёр дээр анх нийлнэ. Дөрөв ба долоогийнх нэг дээр нийлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "Нийтлэг өвөг гэдэг нь хоёр оройн үндэс хүрэх замд хоёуланд нь байдаг орой. Тэдгээрээс хамгийн гүнд оршихыг LCA гэж товчилно. “Хамгийн доод” нь оройн дугаар хамгийн бага гэсэн үг биш. Орой өөрөө өөрийнхөө өвөг мөн.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Эцгээр нэг нэгээр өгсөх арга",
+        "blocks": [
+          {
+            "text": "Оройн тоог $n$, асуултын тоог $q$, оройн гүнийг үндсээс түүнд хүрэх ирмэгийн тоо гэе. Эхлээд гүн оройг эцэг рүү нь ахиулж гүнийг тэнцүүлнэ. Дараа нь хоёуланг зэрэг эцэг рүү нь шилжүүлж таарахыг хүлээнэ.",
+            "type": "p"
+          },
+          {
+            "text": "Энэ арга зөв ч урт гинжин модонд нэг асуулт $O(n)$ алхам. $n=q=200000$ үед давтан өгсөх нь хэт удаан. Өмнө тооцсон урт үсрэлтүүдийг ашиглах хэрэгтэй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "3. Нэг үсрэлтийн утгыг яг тогтоох",
+        "blocks": [
+          {
+            "text": "Хоёрын зэргийн хүснэгтийн $j$-р мөр, $v$-р багана нь $v$ оройгоос $2^j$ ирмэг өгсөөд хүрэх өвөг. Тэг дэх мөр шууд эцэг. Үндэсний эцэг байхгүйг бодит орой биш тэг дугаараар тэмдэглэнэ. Тэгээс цааш өгссөн ч тэг хэвээр.",
+            "type": "p"
+          },
+          {
+            "text": "Кодын үндэс нэг, гүн нь тэг. BFS-ээр эцэг ба гүнийг олно. Мод холбоост, циклгүй тул үндсээс орой бүрд цорын ганц зам бий. Дурын графт нэг BFS мод сонгосон нь анхны графын бүх замд LCA ойлголт өгсөн гэсэн үг биш.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Гүнийг тэнцүүлээд хоёуланг зэрэг үсэргэх",
+        "blocks": [
+          {
+            "text": "Хүснэгтийн $j$-р мөрийг өмнөх мөрөөр хоёр удаа үсэрч байгуулна: эхлээд $2^{j-1}$, дараа нь дахиад тийм урт. Нийлээд $2^j$ болно. Гүний зөрүүг хоёртын бичлэгт задлан тавигдсан бит бүрээр гүн оройг ахиулна.",
+            "type": "p"
+          },
+          {
+            "text": "Тэнцүүлсний дараа оройнууд адил бол тэр нь хариу. Үгүй бол хамгийн том үсрэлтээс буурах дарааллаар харна. Хоёр оройн тэр уртын өвөг ялгаатай үед л хоёуланг тийш шилжүүлнэ. Ижил үед үсэрвэл нийтлэг өвгийг давж алдаж болно. Дуусахад хоёул хүссэн өвгийн хүүхэд болсон тул нэгнийх нь эцгийг буцаана.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "5. Дөрөв ба долоогийн замыг мөрдөх",
+        "blocks": [
+          {
+            "text": "Жишээнд дөрвийн гүн хоёр, долоогийнх гурав. Долоог нэг алхам ахиулж зургаа болгоход гүн тэнцэнэ. Одоо дөрөв ба зургаагийн хоёр алхмын өвөг хоёул нэг тул тэр үсрэлтийг авахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Нэг алхмын өвөг нь хоёр ба гурав, ялгаатай тул хоёуланг ахиулна. Одоо эцэг нь хоёул нэг. LCA нь нэг, замын урт тав: дөрөвөөс хоёр, нэг, гурав, зургаа, долоо гэсэн зам. Өөр жишээнд зургаа ба долоог тэнцүүлэхэд шууд зургаа дээр таарна.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "0",
+                "4",
+                "7",
+                "Гүн хоёр ба гурав"
+              ],
+              [
+                "1",
+                "4",
+                "6",
+                "Гүнийг тэнцүүлэв"
+              ],
+              [
+                "2",
+                "4",
+                "6",
+                "Хоёр алхмын өвөг ижил"
+              ],
+              [
+                "3",
+                "2",
+                "3",
+                "Нэг алхмын өвөг ялгаатай"
+              ],
+              [
+                "4",
+                "1",
+                "1",
+                "Хариу нэг"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Алхам",
+              "Эхний орой",
+              "Хоёр дахь орой",
+              "Шалтгаан"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Нийтлэг өвгийг давалгүй ойртох баталгаа",
+        "blocks": [
+          {
+            "text": "Нэг орой нөгөөгийн өвөг биш бол гүн оройг гүний зөрүүгээр өгсгөхөд LCA-г давж гарахгүй: LCA-ийн гүн хоёр анхны гүнээс ихгүй. Тэнцүүлэхэд таарвал нэг нь нөгөөгийн өвөг байсан гэсэн үг, зөв хариу.",
+            "type": "p"
+          },
+          {
+            "text": "Үлдсэн хоёр орой ижил гүнд, хүссэн өвгийн доор байна. Тэднээс ижил уртаар үсрээд өвгүүд ялгаатай байвал хоёул одоо ч хүссэн өвгийн доор: түүн дээр эсвэл түүнээс дээш ижил гүнд очсон бол заавал адил байх байв. Томоос жижиг үсрэлт сонгосноор эцэст нэг алхмын өвөг ялгаатай байх боломж ч үлдэхгүй. Оройнууд өөр хэвээр, эцэг нь ижил тул тэр эцэг нь хамгийн ойр нийтлэг өвөг.",
+            "type": "p"
+          },
+          {
+            "text": "Хүссэн өвөг хүртэлх үлдсэн зайг $d$ гэе. $2^j$ уртын алхмыг шийдэхийн өмнө өмнөх том үсрэлтүүдээс $d\\le2^{j+1}$ болсон байна. Өвгүүд ижил бол $d\\le2^j$; ялгаатай бол $d>2^j$ тул тэр хэмжээг хасаад мөн $d\\le2^j$ болгоно. Сүүлийн нэг алхмыг шийдсэний дараа зай ихдээ нэг; оройнууд өөр хэвээр учир яг нэг байна.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Нэг бэлтгэл, олон асуулт",
+        "blocks": [
+          {
+            "text": "Хүснэгтийн мөрийн тоо $O(\\log n)$. BFS $O(n)$, хүснэгт байгуулах $O(n\\log n)$ хугацаа ба зай. Нэг асуулт гүн тэнцүүлэх болон зэрэг үсрэх хоёр логарифм давталттай: $O(\\log n)$. Нийт $O((n+q)\\log n)$.",
+            "type": "p"
+          },
+          {
+            "text": "Нэг л LCA асуулттай бол эцгээр өгсөх энгийн арга хангалттай байж болно. Харин олон асуултад хүснэгтийн зардал нөхөгдөнө. Урт гинжин модонд BFS нь рекурсийн дуудлагын стек дүүргэхгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. Эцэг, үсрэлт, хариуг хэсэглэн байгуулах",
+        "blocks": [
+          {
+            "text": "8.1. Гүн ба шууд эцэг",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Эхлээд хүснэгтийн мөрийн тоог элементийн хүрээнээс гаргана. Бүх байхгүй өвөг тэг. BFS үзээгүй хөршийн гүн ба шууд эцгийг тэмдэглээд нэмдэг тул холбоост модны бүх орой нэг удаа боловсруулагдана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct LCA {\n    int levels = 1;\n    vector<int> depth;\n    vector<vector<int>> up;\n\n    explicit LCA(const vector<vector<int>>& adj) {\n        int n = static_cast<int>(adj.size()) - 1;\n        while ((1LL << levels) <= n) {\n            ++levels;\n        }\n        depth.assign(n + 1, -1);\n        up.assign(levels, vector<int>(n + 1, 0));\n        queue<int> pending;\n        depth[1] = 0;\n        pending.push(1);\n        while (!pending.empty()) {\n            int vertex = pending.front();\n            pending.pop();\n            for (int next : adj[vertex]) {\n                if (depth[next] != -1) {\n                    continue;\n                }\n                depth[next] = depth[vertex] + 1;\n                up[0][next] = vertex;\n                pending.push(next);\n            }\n        }\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.2. Хоёрын зэргийн хүснэгт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Урт үсрэлтийг хоёр богино үсрэлтээр байгуулна. Гадна давталт хүснэгтийн мөрөөр явна; тэг дугаартай багана үргэлж тэг үлдэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "        for (int level = 1; level < levels; ++level) {\n            for (int vertex = 1; vertex <= n; ++vertex) {\n                up[level][vertex] = up[level - 1][up[level - 1][vertex]];\n            }\n        }\n    }\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.3. Гүний зөрүүгээр өгсөх",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Гүний зөрүүний тавигдсан бит бүрээр өгсөнө. Энэ дотоод үйлдэлд алхам гүнээс ихгүй байх гэрээтэй; үндсээс давсан асуултыг дангаараа шийдэхгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    int climb(int vertex, int steps) const {\n        for (int level = 0; level < levels; ++level) {\n            if ((steps >> level) & 1) {\n                vertex = up[level][vertex];\n            }\n        }\n        return vertex;\n    }\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.4. Хамгийн ойр өвөг",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Гүнийг тэнцүүлээд таарсан эсэхийг шалгана. Таараагүй бол ялгаатай өвөг рүү томоос жижиг үсрээд эцэст нийтлэг эцгийг буцаана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    int lca(int first, int second) const {\n        if (depth[first] < depth[second]) {\n            swap(first, second);\n        }\n        first = climb(first, depth[first] - depth[second]);\n        if (first == second) {\n            return first;\n        }\n        for (int level = levels - 1; level >= 0; --level) {\n            if (up[level][first] != up[level][second]) {\n                first = up[level][first];\n                second = up[level][second];\n            }\n        }\n        return up[0][first];\n    }\n};\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.5. Асуулт ба замын урт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Эхний мөр орой ба асуултын тоо; дараа нь модны ирмэгүүд, хоёр оройтой асуултууд. Асуулт бүрд нийтлэг өвгийн дугаар, дараа нь замын ирмэгийн тоог хэвлэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<vector<int>> adj(n + 1);\n    for (int edge = 0; edge < n - 1; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        adj[first].push_back(second);\n        adj[second].push_back(first);\n    }\n    LCA table(adj);\n    for (int query = 0; query < q; ++query) {\n        int first, second;\n        cin >> first >> second;\n        int ancestor = table.lca(first, second);\n        int dist = table.depth[first] + table.depth[second] - 2 * table.depth[ancestor];\n        cout << ancestor << ' ' << dist << '\\n';\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн ажиллах C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct LCA {\n    int levels = 1;\n    vector<int> depth;\n    vector<vector<int>> up;\n\n    explicit LCA(const vector<vector<int>>& adj) {\n        int n = static_cast<int>(adj.size()) - 1;\n        while ((1LL << levels) <= n) {\n            ++levels;\n        }\n        depth.assign(n + 1, -1);\n        up.assign(levels, vector<int>(n + 1, 0));\n        queue<int> pending;\n        depth[1] = 0;\n        pending.push(1);\n        while (!pending.empty()) {\n            int vertex = pending.front();\n            pending.pop();\n            for (int next : adj[vertex]) {\n                if (depth[next] != -1) {\n                    continue;\n                }\n                depth[next] = depth[vertex] + 1;\n                up[0][next] = vertex;\n                pending.push(next);\n            }\n        }\n        for (int level = 1; level < levels; ++level) {\n            for (int vertex = 1; vertex <= n; ++vertex) {\n                up[level][vertex] = up[level - 1][up[level - 1][vertex]];\n            }\n        }\n    }\n\n    int climb(int vertex, int steps) const {\n        for (int level = 0; level < levels; ++level) {\n            if ((steps >> level) & 1) {\n                vertex = up[level][vertex];\n            }\n        }\n        return vertex;\n    }\n\n    int lca(int first, int second) const {\n        if (depth[first] < depth[second]) {\n            swap(first, second);\n        }\n        first = climb(first, depth[first] - depth[second]);\n        if (first == second) {\n            return first;\n        }\n        for (int level = levels - 1; level >= 0; --level) {\n            if (up[level][first] != up[level][second]) {\n                first = up[level][first];\n                second = up[level][second];\n            }\n        }\n        return up[0][first];\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<vector<int>> adj(n + 1);\n    for (int edge = 0; edge < n - 1; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        adj[first].push_back(second);\n        adj[second].push_back(first);\n    }\n    LCA table(adj);\n    for (int query = 0; query < q; ++query) {\n        int first, second;\n        cin >> first >> second;\n        int ancestor = table.lca(first, second);\n        int dist = table.depth[first] + table.depth[second] - 2 * table.depth[ancestor];\n        cout << ancestor << ' ' << dist << '\\n';\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "7 4\n1 2\n1 3\n2 4\n2 5\n3 6\n6 7\n4 5\n4 7\n6 7\n1 1\n",
+            "type": "code",
+            "language": "Input"
+          },
+          {
+            "text": "2 2\n1 5\n6 1\n1 0\n",
+            "type": "code",
+            "language": "Output"
+          }
+        ]
+      },
+      {
+        "key": "errors",
+        "title": "9. Ижил өвөгтэй үед шууд ахихгүй",
+        "blocks": [
+          {
+            "text": "Хоёрын зэргийн хүснэгтийг мөр бүрээр нь байгуулна: тухайн мөр өмнөх мөрийн бүх оройд тулгуурладаг. Зөвхөн оройн дугаарын өсөлтөд найдаж болохгүй, эцэг нь том дугаартай байж болно.",
+            "type": "p"
+          },
+          {
+            "text": "Гүнийг тэнцүүлэхгүй зэрэг үсэргэвэл ижил түвшний харьцуулалт алдагдана. Тэнцсэний дараа оройнууд адил эсэхийг алгасвал өвөг орсон асуулт буруу болно. Хоёр оройн үсрэлтийн өвөг ижил үед бус, ялгаатай үед шилжүүлдгийг анхаар.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "distance",
+        "title": "10. Өвгөөс замын урт гаргах",
+        "blocks": [
+          {
+            "text": "Хоёр оройг $u,v$, нийтлэг өвгийг $w$ гэе. Үндэс хүртэлх хоёр замын давхар хэсгийг хасвал ирмэгийн тоо $\\mathrm{depth}(u)+\\mathrm{depth}(v)-2\\mathrm{depth}(w)$. Жишээний дөрөв ба долоод хоёр дээр гурвыг нэмээд тэгийг хоёр дахин хасаж тав гарна.",
+            "type": "p"
+          },
+          {
+            "text": "Энэ томьёонд гүн нь ирмэгийн тоо. Жинтэй модонд үндсээс хүрэх замын жинг тусад нь хангалттай том тоон төрөлд хадгалж ижил хасалтыг хийнэ. Код жингүй хувилбар: жин өгсөн оролт уншихгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "11. Үндэс, байхгүй өвөг, оролтын гэрээ",
+        "blocks": [
+          {
+            "text": "Код $1\\le n\\le200000$, $0\\le q\\le200000$, нэгээс эхэлсэн хүчинтэй оройн дугаар, холбоост жингүй мод авна. Нэг оройтой мод болон өөртэй нь асуухад тэр орой, зай тэг. Модны чиглэлгүй ирмэг бүрийг хоёр талд хадгална.",
+            "type": "p"
+          },
+          {
+            "text": "Дотоод өгсгөх үйлдэлд алхмын тоо оройн гүнээс ихгүй. Company Queries-ийн эхний хувилбар шиг байхгүй өндөр өвөг асуухад тусдаа хүрээ шалгалт хэрэгтэй; энэ программ тэр асуултын форматыг хэрэгжүүлээгүй. Үндэс өөр бол LCA өөрчлөгдөж болно, харин модны хоёр оройн зай өөрчлөгдөхгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "variants",
+        "title": "12. Өөрчлөгдөх мод ба бусад аргын хил",
+        "blocks": [
+          {
+            "text": "Урьдчилан байгуулсан хүснэгт эцэг ба гүн тогтмол байх үед хүчинтэй. Ирмэг нэмэх, таслах бүрд хуучин хүснэгт зөв гэж үзэж болохгүй. Модон дээрх замын нийлбэр, хамгийн бага утгад LCA дангаараа хангалтгүй, нэмэлт мэдээлэл хадгална.",
+            "type": "p"
+          },
+          {
+            "text": "Euler тойролт дээр гүний хамгийн бага утгын асуулт болгон хувиргах өөр арга бий. Энэ хичээл хоёрын зэргийн өгсөлтөөр нэг баталгаатай хувилбарыг сурна. Олон эцэгтэй чиглэсэн графт хамгийн ойр нийтлэг өвөг цорын ганц байх албагүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Өгсөлтөөс замын асуултууд руу",
+        "blocks": [
+          {
+            "text": "Company Queries I",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Алхамын тоог хоёртын бичлэгт задла. Үндсээс давсан хүсэлтэд байхгүй хариуг тусад нь шалга.",
+            "type": "p"
+          },
+          {
+            "text": "Company Queries II",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Гүн тэнцүүлээд ялгаатай өвөг рүү зэрэг үсрэх үндсэн аргыг хэрэгжүүл.",
+            "type": "p"
+          },
+          {
+            "text": "Distance Queries",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "LCA-аар үндэс хүртэлх замын давхардлыг хоёр удаа хас.",
+            "type": "p"
+          },
+          {
+            "text": "Counting Paths",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Олон замын тэмдэглэгээг доороос дээш нэгтгэх нэмэлт тоолол хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "text": "Path Queries",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Утга өөрчлөгдөхөд Euler дараалал ба нийлбэр хадгалах бүтэц зэрэг нэмэлт арга шаардлагатай.",
+            "type": "p"
+          },
+          {
+            "text": "Tree Distances II",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Бүх оройг үндэс болгон нийт зайг олох нь LCA асуултуудыг шууд давтах бус, дахин үндэслэх тооцооны дасгал.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "priority",
+        "title": "14. Олон асуултад бэлтгэлийг дахин ашиглах",
+        "blocks": [
+          {
+            "text": "Өндөр ач холбогдолтой. Company Queries II ба Distance Queries нь хүснэгтийн утга, гүн тэнцүүлэх, хамт үсрэх ба замын томьёог шууд бататгана. Бусад дасгалд шинээр хэрэгтэй нэмэлт аргыг нь ялгаж судал.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Энгийн өгсөлттэй тулгаж баталгаажуулах",
+        "blocks": [
+          {
+            "text": "Гинж, од хэлбэртэй мод, тэнцүү орой, нэг нь нөгөөгийн өвөг, өөр салааны орой гэсэн таван тохиолдлыг гараар бод. Эцэг нь хүүхдээсээ том дугаартай жишээ нэм.",
+            "type": "p"
+          },
+          {
+            "text": "Жижиг мод бүрд нэг нэгээр эцэг рүү өгсөх лавлахтай LCA-г тулга. Зайг тусдаа BFS-ээр тооцож шалга. Яагаад тэг дугаартай байхгүй өвөг рүү зөв асуултын хариу шилжихгүйг ижил гүний баталгаагаар тайлбарла.",
+            "type": "p"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "LCA — find the lowest common ancestor",
+        "summary": "Equalize depths in a rooted tree, then use power-of-two jumps to stop immediately below the lowest common ancestor.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Where do two root paths first meet?",
+            "blocks": [
+              {
+                "text": "Root the tree at one, with edges $1–2$, $1–3$, $2–4$, $2–5$, $3–6$, $6–7$. Root paths from four and five first meet at two; those from four and seven first meet at one.",
+                "type": "p"
+              },
+              {
+                "text": "A common ancestor lies on both root paths. LCA abbreviates the deepest such vertex, not the vertex with the smallest numerical label. A vertex is its own ancestor.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Walk through parents one step at a time",
+            "blocks": [
+              {
+                "text": "Let $n$ be the vertex count and $q$ the queries. Depth counts edges from the root. Move the deeper vertex upward until depths match, then move both parents at a time until they coincide.",
+                "type": "p"
+              },
+              {
+                "text": "This is correct but can take linear time per query on a chain. With $n=q=200000$, repeated single steps are too slow. Precompute longer jumps.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "3. Give every jump an exact meaning",
+            "blocks": [
+              {
+                "text": "Row $j$, column $v$ stores the ancestor reached after $2^j$ parent edges from vertex $v$. Row zero is the immediate parent. Missing ancestors use sentinel vertex zero, whose ancestors also remain zero.",
+                "type": "p"
+              },
+              {
+                "text": "Root one has depth zero. BFS determines parents and depths on the connected acyclic input. A general graph’s BFS tree does not define a unique LCA for all paths in the original graph.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Equalize depths, then jump together",
+            "blocks": [
+              {
+                "text": "Build row $j$ by applying two jumps of length $2^{j-1}$. Decompose the depth difference into set bits and lift the deeper vertex accordingly.",
+                "type": "p"
+              },
+              {
+                "text": "If the aligned vertices coincide, return it. Otherwise inspect jump lengths from largest to smallest, moving both vertices only when their destination ancestors differ. Equal destinations might meet at or above the answer, so do not take that jump. Finally return their shared immediate parent.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "5. Trace vertices four and seven",
+            "blocks": [
+              {
+                "text": "Depths are two and three. Lift seven by one edge to six. The two-edge ancestors of four and six are both one, so skip that joint jump.",
+                "type": "p"
+              },
+              {
+                "text": "Their one-edge ancestors are two and three, so move both. Their immediate parent is now one: the LCA. The original path has five edges. For six and seven, equalizing depth immediately makes both vertices six.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "0",
+                    "4",
+                    "7",
+                    "Depths two and three"
+                  ],
+                  [
+                    "1",
+                    "4",
+                    "6",
+                    "Aligned depths"
+                  ],
+                  [
+                    "2",
+                    "4",
+                    "6",
+                    "Equal two-edge ancestors"
+                  ],
+                  [
+                    "3",
+                    "2",
+                    "3",
+                    "Different parents"
+                  ],
+                  [
+                    "4",
+                    "1",
+                    "1",
+                    "Answer one"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Step",
+                  "First",
+                  "Second",
+                  "Reason"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Approach the answer without crossing it",
+            "blocks": [
+              {
+                "text": "Equalizing depths cannot cross the answer: its depth is no larger than either original depth. Coincidence after alignment correctly handles an ancestor-descendant query.",
+                "type": "p"
+              },
+              {
+                "text": "For distinct aligned vertices below the answer, different equal-length destination ancestors must still be below it: at or above it, equal depth on their shared root path would imply equality. Taking safe jumps from largest to smallest leaves no possible one-edge move to different parents. The vertices remain distinct with the same parent, which must be their lowest common ancestor.",
+                "type": "p"
+              },
+              {
+                "text": "Let $d$ be the remaining distance to the answer. Before deciding a jump of $2^j$, larger jumps have ensured $d\\le2^{j+1}$. Equal destinations imply $d\\le2^j$; different destinations imply $d>2^j$, so subtracting that jump also leaves $d\\le2^j$. After the one-edge decision, distinct vertices remain at distance exactly one below their common ancestor.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. One preprocessing phase, many queries",
+            "blocks": [
+              {
+                "text": "There are logarithmically many rows. BFS is linear; table construction takes $O(n\\log n)$ time and space. Depth alignment and joint lifting each take logarithmic time, for $O((n+q)\\log n)$ overall.",
+                "type": "p"
+              },
+              {
+                "text": "For a single query, parent walking may suffice. Many queries justify preprocessing. Iterative BFS avoids call-stack overflow on a long chain.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Build parents, jumps and answers in stages",
+            "blocks": [
+              {
+                "text": "8.1. Depths and parents",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Choose the number of rows from the vertex bound and initialize missing ancestors to zero. BFS assigns depths and immediate parents on discovery.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct LCA {\n    int levels = 1;\n    vector<int> depth;\n    vector<vector<int>> up;\n\n    explicit LCA(const vector<vector<int>>& adj) {\n        int n = static_cast<int>(adj.size()) - 1;\n        while ((1LL << levels) <= n) {\n            ++levels;\n        }\n        depth.assign(n + 1, -1);\n        up.assign(levels, vector<int>(n + 1, 0));\n        queue<int> pending;\n        depth[1] = 0;\n        pending.push(1);\n        while (!pending.empty()) {\n            int vertex = pending.front();\n            pending.pop();\n            for (int next : adj[vertex]) {\n                if (depth[next] != -1) {\n                    continue;\n                }\n                depth[next] = depth[vertex] + 1;\n                up[0][next] = vertex;\n                pending.push(next);\n            }\n        }\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.2. Power-of-two table",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Build each long jump from two shorter jumps, row by row; sentinel column zero stays zero.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "        for (int level = 1; level < levels; ++level) {\n            for (int vertex = 1; vertex <= n; ++vertex) {\n                up[level][vertex] = up[level - 1][up[level - 1][vertex]];\n            }\n        }\n    }\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.3. Lift a depth difference",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Apply each set bit of the depth difference. This internal helper assumes the step count does not exceed the depth.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    int climb(int vertex, int steps) const {\n        for (int level = 0; level < levels; ++level) {\n            if ((steps >> level) & 1) {\n                vertex = up[level][vertex];\n            }\n        }\n        return vertex;\n    }\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.4. Lowest common ancestor",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Align depths, handle coincidence, then jump from large to small only to different ancestors before returning the common parent.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    int lca(int first, int second) const {\n        if (depth[first] < depth[second]) {\n            swap(first, second);\n        }\n        first = climb(first, depth[first] - depth[second]);\n        if (first == second) {\n            return first;\n        }\n        for (int level = levels - 1; level >= 0; --level) {\n            if (up[level][first] != up[level][second]) {\n                first = up[level][first];\n                second = up[level][second];\n            }\n        }\n        return up[0][first];\n    }\n};\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.5. Queries and distances",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read vertex/query counts, tree edges and query pairs. Print the ancestor label followed by the path’s edge count.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<vector<int>> adj(n + 1);\n    for (int edge = 0; edge < n - 1; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        adj[first].push_back(second);\n        adj[second].push_back(first);\n    }\n    LCA table(adj);\n    for (int query = 0; query < q; ++query) {\n        int first, second;\n        cin >> first >> second;\n        int ancestor = table.lca(first, second);\n        int dist = table.depth[first] + table.depth[second] - 2 * table.depth[ancestor];\n        cout << ancestor << ' ' << dist << '\\n';\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete compilable C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct LCA {\n    int levels = 1;\n    vector<int> depth;\n    vector<vector<int>> up;\n\n    explicit LCA(const vector<vector<int>>& adj) {\n        int n = static_cast<int>(adj.size()) - 1;\n        while ((1LL << levels) <= n) {\n            ++levels;\n        }\n        depth.assign(n + 1, -1);\n        up.assign(levels, vector<int>(n + 1, 0));\n        queue<int> pending;\n        depth[1] = 0;\n        pending.push(1);\n        while (!pending.empty()) {\n            int vertex = pending.front();\n            pending.pop();\n            for (int next : adj[vertex]) {\n                if (depth[next] != -1) {\n                    continue;\n                }\n                depth[next] = depth[vertex] + 1;\n                up[0][next] = vertex;\n                pending.push(next);\n            }\n        }\n        for (int level = 1; level < levels; ++level) {\n            for (int vertex = 1; vertex <= n; ++vertex) {\n                up[level][vertex] = up[level - 1][up[level - 1][vertex]];\n            }\n        }\n    }\n\n    int climb(int vertex, int steps) const {\n        for (int level = 0; level < levels; ++level) {\n            if ((steps >> level) & 1) {\n                vertex = up[level][vertex];\n            }\n        }\n        return vertex;\n    }\n\n    int lca(int first, int second) const {\n        if (depth[first] < depth[second]) {\n            swap(first, second);\n        }\n        first = climb(first, depth[first] - depth[second]);\n        if (first == second) {\n            return first;\n        }\n        for (int level = levels - 1; level >= 0; --level) {\n            if (up[level][first] != up[level][second]) {\n                first = up[level][first];\n                second = up[level][second];\n            }\n        }\n        return up[0][first];\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<vector<int>> adj(n + 1);\n    for (int edge = 0; edge < n - 1; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        adj[first].push_back(second);\n        adj[second].push_back(first);\n    }\n    LCA table(adj);\n    for (int query = 0; query < q; ++query) {\n        int first, second;\n        cin >> first >> second;\n        int ancestor = table.lca(first, second);\n        int dist = table.depth[first] + table.depth[second] - 2 * table.depth[ancestor];\n        cout << ancestor << ' ' << dist << '\\n';\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "7 4\n1 2\n1 3\n2 4\n2 5\n3 6\n6 7\n4 5\n4 7\n6 7\n1 1\n",
+                "type": "code",
+                "language": "Input"
+              },
+              {
+                "text": "2 2\n1 5\n6 1\n1 0\n",
+                "type": "code",
+                "language": "Output"
+              }
+            ]
+          },
+          {
+            "key": "errors",
+            "title": "9. Do not jump to equal ancestors",
+            "blocks": [
+              {
+                "text": "Build the table row by row: each row needs the previous row for every vertex. Parent labels need not precede children numerically.",
+                "type": "p"
+              },
+              {
+                "text": "Joint lifting requires equal depth. Check for equality immediately after alignment to handle ancestor queries. Move on different destination ancestors, not on equal ones.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "distance",
+            "title": "10. Turn the ancestor into a path length",
+            "blocks": [
+              {
+                "text": "For vertices $u,v$ with LCA $w$, the edge distance is $\\mathrm{depth}(u)+\\mathrm{depth}(v)-2\\mathrm{depth}(w)$. Subtract the shared root-path part twice. The example gives two plus three, or five edges.",
+                "type": "p"
+              },
+              {
+                "text": "Here depths count edges. Weighted trees need separate sufficiently wide root-distance sums; the program implements only the unweighted contract.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "11. Root, missing ancestors and the input contract",
+            "blocks": [
+              {
+                "text": "Accept $1\\le n\\le200000$, $0\\le q\\le200000$, valid one-based vertices and a connected unweighted tree. Self-queries and singleton trees return the same vertex with distance zero. Store both directions of each edge.",
+                "type": "p"
+              },
+              {
+                "text": "The internal climb is called only with steps no larger than the vertex depth. Arbitrarily high ancestor queries need a separate range check, as in the first Company Queries task; that input format is not implemented here. Changing the root can change LCA but not path distance.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "variants",
+            "title": "12. Changing trees and alternative methods",
+            "blocks": [
+              {
+                "text": "The table assumes fixed parents and depths; adding or cutting edges invalidates it. Path sums and minima need additional stored information.",
+                "type": "p"
+              },
+              {
+                "text": "An Euler traversal with range-minimum queries is an alternative. This lesson develops binary lifting as one complete method. A directed graph with multiple parents need not have a unique lowest common ancestor.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From ancestor jumps to path queries",
+            "blocks": [
+              {
+                "text": "Company Queries I",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Decompose the jump count and explicitly reject requests above the root.",
+                "type": "p"
+              },
+              {
+                "text": "Company Queries II",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Implement depth alignment and joint jumps to different ancestors.",
+                "type": "p"
+              },
+              {
+                "text": "Distance Queries",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Subtract the shared root-path contribution twice using LCA.",
+                "type": "p"
+              },
+              {
+                "text": "Counting Paths",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Add path-difference marking and bottom-up aggregation.",
+                "type": "p"
+              },
+              {
+                "text": "Path Queries",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Add Euler-order indexing and a sum data structure for updates.",
+                "type": "p"
+              },
+              {
+                "text": "Tree Distances II",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "All-root distance sums call for rerooting rather than blindly repeating LCA queries.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "priority",
+            "title": "14. Reuse preprocessing across many queries",
+            "blocks": [
+              {
+                "text": "High educational priority. Company Queries II and Distance Queries directly exercise table semantics, alignment, joint lifting and the distance formula. Identify the extra technique required by each later task.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Check against simple parent walking",
+            "blocks": [
+              {
+                "text": "Test a chain, a star, identical vertices, ancestor-descendant pairs and different branches, including parents with larger labels.",
+                "type": "p"
+              },
+              {
+                "text": "Compare LCA against one-step parent walking on small trees and distances against independent BFS. Explain why the equal-depth invariant prevents a valid query from returning the missing-ancestor sentinel.",
+                "type": "p"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Rooted trees, parents and depths, BFS, binary representation and bit tests."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Үндэстэй мод, эцэг ба гүн, BFS, хоёртын бичлэг ба бит шалгах.",
+    "priorityLevel": "high",
+    "priorityReason": "Үндэстэй модны өвөг, олон замын асуулт, зай ба модон дээрх тооллын нийтлэг суурь. Нэг бэлтгэлийг олон асуултад ашиглах, гүн ба хоёрын зэргийн хүснэгтийг холбох ач холбогдлоор High; хүндрэлийн зэрэг биш.",
+    "prerequisiteIds": [
+      "tree-basics",
+      "bit-operations",
+      "bfs"
+    ],
+    "learningRelations": {
+      "next": "tree-dp",
+      "practice": [
+        {
+          "key": "425",
+          "stage": "Warm-up",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "426",
+          "stage": "Standard",
+          "reason": "Хоёрын зэргийн хүснэгт, гүн тэнцүүлэх ба нийтлэг өвгөөр замыг задлахыг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "427",
+          "stage": "Observation",
+          "reason": "Хоёрын зэргийн хүснэгт, гүн тэнцүүлэх ба нийтлэг өвгөөр замыг задлахыг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "428",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "430",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "424",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "tree-basics",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "bit-operations",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "bfs",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "bitmask-dp",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "mapping": {
+    "query_count": "q",
+    "graph": "adj",
+    "distance": "dist",
+    "count": "n",
+    "AncestorTable": "LCA"
+  },
+  "changed": true,
+  "reviewed_body_sha256": "ebdd2ffbb3f70197628e533084fec532823d4245f555e489a83fe7268ebc1690",
+  "proposed_body_sha256": "ebdd2ffbb3f70197628e533084fec532823d4245f555e489a83fe7268ebc1690"
+}

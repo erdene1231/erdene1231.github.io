@@ -1,0 +1,854 @@
+{
+  "id": "tree-dp",
+  "expected_revision": 2,
+  "expected_published": true,
+  "expected_body_md5": "93fe17b776a13d255104670fc52041f9",
+  "expected_body_sha256": "d7b17d620e043a04af9910e5cbb65b11dcf9e505b8baecaab39279e95859cf10",
+  "body": {
+    "id": "tree-dp",
+    "level": "Ахисан шат",
+    "order": 50,
+    "title": "Модон дээрх DP — хөрш оройг хамт сонгохгүй тоолох",
+    "aliases": "tree-dp Tree DP — хүүхдийн хариуг нэгтгэх Tree DP — combining child-subtree answers",
+    "related": [
+      "lca",
+      "bitmask-dp"
+    ],
+    "summary": "Орой сонгосон эсэх хоёр төлөвөөр хүүхдүүдийн боломжийг нэгтгэж, дэд модны тооллогыг үндэс рүү дамжуулна.",
+    "category": "Dynamic programming",
+    "levelKey": "advanced",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Хөрш хоёр оройг зэрэг авахгүй сонголтууд",
+        "blocks": [
+          {
+            "text": "Модны ирмэгүүд $1–2$, $1–3$, $2–4$, $2–5$ байг. Зарим оройг сонгоно, гэхдээ ямар ч ирмэгийн хоёр төгсгөлийг хоёуланг нь авахгүй. Хоосон сонголтыг оруулаад хэдэн боломж байна вэ?",
+            "type": "p"
+          },
+          {
+            "text": "Ийм сонголтыг графын хараат бус олонлог гэдэг. Бид хамгийн их хэдэн орой авахыг бус бүх зөв сонголтын тоог асууж байна.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Бүх олонлогоос модны хэсэг рүү",
+        "blocks": [
+          {
+            "text": "$2^n$ дэд олонлог бүрд ирмэг шалгах арга жижиг модонд лавлах боловч томд боломжгүй. Үндэс нэг гэж сонгоод хүүхэд бүрийн дэд модны хариуг бодъё.",
+            "type": "p"
+          },
+          {
+            "text": "Эцэг сонгогдсон эсэх нь хүүхдийн үндэс сонгогдож болох эсэхэд нөлөөлнө. Ийм заагийн нөхцөлийг төлөвт оруулахгүйгээр хүүхдийн “нийт тоо”-г сохроор үржүүлж болохгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "3. Сонгосон ба орхисон хоёр төлөв",
+        "blocks": [
+          {
+            "text": "$omitted[v]$ нь $v$-ийг сонгоогүй дэд модны зөв сонголтын тоо, $selected[v]$ нь $v$-ийг сонгосон тоо. Эцэгт дамжих бүх шаардлагатай мэдээлэл энэ хоёрт байна.",
+            "type": "p"
+          },
+          {
+            "text": "Навчинд хоёр төлөв тус бүр нэг: орхивол хоосон, сонговол ганц орой. Хүүхэдгүй үржвэр нэг байдаг нь энэ суурийг мөн илэрхийлнэ.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "transition",
+        "title": "4. Хүүхдийн хоёр сонголтыг хэзээ зөвшөөрөх вэ?",
+        "blocks": [
+          {
+            "text": "$v$-ийг орхисон бол хүүхэд $c$-г авах эсвэл авахгүй байж болно: $omitted[v]=\\prod_c(omitted[c]+selected[c])$. $v$-ийг авсан бол хүүхдийг заавал орхино: $selected[v]=\\prod_c omitted[c]$.",
+            "type": "p"
+          },
+          {
+            "text": "Нэг хүүхдийн хоёр төлөв давхцахгүй тул нэмнэ. Өөр өөр хүүхдийн дэд модны сонголтуудыг хамтатгаж болох тул үржүүлнэ. Модонд хүүхдийн салбаруудын хооронд өөр ирмэг байхгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "5. Таван оройд арван дөрвөн боломж",
+        "blocks": [
+          {
+            "text": "Навч гурав, дөрөв, тав тус бүр $(omitted,selected)=(1,1)$. Хоёрын хүүхэд дөрөв ба тав тул орхисон төлөв $2\\cdot2=4$, сонгосон нь $1\\cdot1=1$.",
+            "type": "p"
+          },
+          {
+            "text": "Үндэс нэгийг орхивол $(4+1)(1+1)=10$, авбал $4\\cdot1=4$. Нийт $10+4=14$. Үндсийг авсан үед хоёр, гурав орохгүй ч дөрөв, тавыг бие даан сонгож болно.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "3",
+                "1",
+                "1"
+              ],
+              [
+                "4",
+                "1",
+                "1"
+              ],
+              [
+                "5",
+                "1",
+                "1"
+              ],
+              [
+                "2",
+                "4",
+                "1"
+              ],
+              [
+                "1",
+                "10",
+                "4"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Орой",
+              "Орхисон",
+              "Сонгосон"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Эцгийн төлөвөөр нөхцөлдөхөд хүүхдүүд бие даана",
+        "blocks": [
+          {
+            "text": "Навчны суурь зөв. Хүүхдийн хоёр төлөв зөв гэж үзье. Эцгийн орой сонгогдсон үед зөвхөн хүүхдийн орхисон төлөв зөвшөөрөгдөнө; орхисон үед хоёулаа. Эдгээрээс хүүхэд бүрд сонгосон нэг хувилбарын хослол яг нэг дэд модны сонголт үүсгэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "Хүүхдийн дэд моднууд давхцахгүй, хооронд нь ирмэггүй тул өөр зөрчил нэмэгдэхгүй. Ингэснээр бүх зөв сонголт нэг удаа тоологдоно. Үндэсний хоёр төлөв мөн давхцахгүй тул эцэст нь нэмнэ.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "order",
+        "title": "7. Хүүхдийн хариуг эцгээс өмнө бэлдэх",
+        "blocks": [
+          {
+            "text": "Эхлээд стекээр эцэг ба үзсэн дарааллыг олно. Энэ дарааллыг урвуулахад хүүхэд бүр эцгээсээ өмнө боловсруулагдана. Үндэс сонголт өөр байсан ч бүх модны нийт сонголтын тоо өөрчлөгдөхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Нийт ажил $O(n)$, санах ой $O(n)$. $n\\le200000$ гинжин модонд рекурсийн гүн асар болохоос зайлсхийж ил стек хэрэглэсэн. DP-ийн рекурс хамааралтай утгыг урвуу дарааллаар бодож байна.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. Эцэг олох, урвуу төлөв, үндэсний нийлбэр",
+        "blocks": [
+          {
+            "text": "8.1. Эхлэл ба төлөв",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Үндэс нэгээс эцэг ба үзсэн дарааллыг стекээр олно. Холбоост циклгүй мод тул зөвхөн эцгийг алгасахад хүүхдийг нэг удаа үзнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long MOD = 1000000007;\n\nlong long count_sets(const vector<vector<int>>& adj) {\n    int n = static_cast<int>(adj.size()) - 1;\n    vector<int> par(n + 1), order, pending{1};\n    order.reserve(n);\n    while (!pending.empty()) {\n        int vertex = pending.back();\n        pending.pop_back();\n        order.push_back(vertex);\n        for (int next : adj[vertex]) {\n            if (next != par[vertex]) {\n                par[next] = vertex;\n                pending.push_back(next);\n            }\n        }\n    }\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.2. Үндсэн шилжилт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Хүүхэдгүй үржвэрүүдийг нэгээр эхлүүлнэ. Урвуу дарааллаар хүүхдийн бэлэн хоёр төлөвийг зөвшөөрөгдөх нөхцөлөөр нэмж, өөр хүүхдүүдийн хариуг үржүүлнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    vector<long long> omitted(n + 1, 1), selected(n + 1, 1);\n    for (int i = n - 1; i >= 0; --i) {\n        int vertex = order[i];\n        for (int child : adj[vertex]) {\n            if (child == par[vertex]) {\n                continue;\n            }\n            omitted[vertex] = omitted[vertex]\n                * ((omitted[child] + selected[child]) % MOD) % MOD;\n            selected[vertex] = selected[vertex] * omitted[child] % MOD;\n        }\n    }\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.3. Эцсийн хариу",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Үндэсийг орхисон ба сонгосон хоёр давхцахгүй тоог нэмж модуль авна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    return (omitted[1] + selected[1]) % MOD;\n}\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.4. Оролт ба гаралт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт $1$–$200000$ оройтой холбоост циклгүй мод, дараа нь $n-1$ ирмэг. Оройнууд нэгээс эхэлнэ. Хараат бус олонлогийн тоог $10^9+7$-ийн үлдэгдлээр хэвлэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> adj(n + 1);\n    for (int edge = 0; edge < n - 1; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        adj[first].push_back(second);\n        adj[second].push_back(first);\n    }\n    cout << count_sets(adj) << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн ажиллах C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long MOD = 1000000007;\n\nlong long count_sets(const vector<vector<int>>& adj) {\n    int n = static_cast<int>(adj.size()) - 1;\n    vector<int> par(n + 1), order, pending{1};\n    order.reserve(n);\n    while (!pending.empty()) {\n        int vertex = pending.back();\n        pending.pop_back();\n        order.push_back(vertex);\n        for (int next : adj[vertex]) {\n            if (next != par[vertex]) {\n                par[next] = vertex;\n                pending.push_back(next);\n            }\n        }\n    }\n    vector<long long> omitted(n + 1, 1), selected(n + 1, 1);\n    for (int i = n - 1; i >= 0; --i) {\n        int vertex = order[i];\n        for (int child : adj[vertex]) {\n            if (child == par[vertex]) {\n                continue;\n            }\n            omitted[vertex] = omitted[vertex]\n                * ((omitted[child] + selected[child]) % MOD) % MOD;\n            selected[vertex] = selected[vertex] * omitted[child] % MOD;\n        }\n    }\n    return (omitted[1] + selected[1]) % MOD;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> adj(n + 1);\n    for (int edge = 0; edge < n - 1; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        adj[first].push_back(second);\n        adj[second].push_back(first);\n    }\n    cout << count_sets(adj) << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "5\n1 2\n1 3\n2 4\n2 5\n",
+            "type": "code",
+            "language": "Input"
+          },
+          {
+            "text": "14\n",
+            "type": "code",
+            "language": "Output"
+          }
+        ]
+      },
+      {
+        "key": "errors",
+        "title": "9. Нэмэх ба үржүүлэхийн үүргийг сольж болохгүй",
+        "blocks": [
+          {
+            "text": "Хоёр хүүхэд тус бүр хоёр боломжтой бол хамтын дөрөв, хоёр дээр хоёр нэмсэн дөрөвтэй санамсаргүй таарч болно. Харин гурван боломж ба хоёр боломжтой бол зургаа болохоос тав биш. Сонголтын дүрмээр үйлдлээ гарга.",
+            "type": "p"
+          },
+          {
+            "text": "Хүүхэд бүрийн эхний үржвэрийг тэгээр эхлүүлбэл бүх тоо тэг болно. Мөн сонгосон оройн хүүхдэд selected төлөвийг оруулбал хөршийн хориг зөрчинө.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "numbers",
+        "title": "10. Үлдэгдэл ба үржүүлэх төрлөө шалга",
+        "blocks": [
+          {
+            "text": "Хариуг $M=10^9+7$-д хуваасан үлдэгдлээр хадгална. Хүүхэд бүрээр үржүүлэхдээ модуль авна. Хоёр үржигдэхүүн $M$-ээс бага тул үржвэр $M^2$-оос бага, signed long long-д багтана.",
+            "type": "p"
+          },
+          {
+            "text": "Код long long массивтай. Int дээр эхэлж үржүүлээд дараа нь long long руу оноох нь аль хэдийн халисныг засахгүй. Үлдэгдлийн тэг нь бодит тоо тэг гэсэн үг заавал биш.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "11. Ерөнхий циклтэй графт хүүхдүүд бие даахгүй",
+        "blocks": [
+          {
+            "text": "Модонд эцгээс өөр хөрш хүүхэд болно. Циклтэй графт зөвхөн эцгийг алгасахад давтан орж болно, мөн хоёр салбарын сонголт хоорондоо зөрчилдөнө. Энэ код холбоост, циклгүй оролтын гэрээтэй.",
+            "type": "p"
+          },
+          {
+            "text": "Үндэсний бүх дэд модыг бодсон нь гаднах бүх асуултад хариулсан гэсэн үг биш. Орой бүрийг үндэс болгосон хариунд дахин үндэслэх нэмэлт шилжилт хэрэгтэй байж болно.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "variants",
+        "title": "12. Ирмэг сонгох ба орой сонгох өөр",
+        "blocks": [
+          {
+            "text": "Tree Matching-д орой биш ирмэг сонгож, нэг оройд ихдээ нэг сонгосон ирмэг тулгана. Эцэгтэй холбогдсон эсэх төлөв, хүүхдүүдээс нэгийг сонгох өөр шилжилт гарна. Энэ хараат бус олонлогийн үржвэрийг хуулж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Tree Distances бодлогууд нь тооллого бус зайны хураангуй, заримд гаднах салбарын мэдээлэл хэрэгтэй. Сэдвийн нэр модны DP гэж ижил ч төлөвийн утга өөр.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Хөршийн хоригноос шинэ заагийн нөхцөл рүү",
+        "blocks": [
+          {
+            "text": "Subordinates",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Хүүхэд түрүүлж дуусах дарааллыг энгийн нэгтгэлээр сэргээ.",
+            "type": "p"
+          },
+          {
+            "text": "Independent Set",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Эцгийн сонголт хүүхдийн хоёр төлөвт нөлөөлөх тооллогыг хэрэгжүүл.",
+            "type": "p"
+          },
+          {
+            "text": "Tree Matching",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Ирмэг сонгох өөр заагийн төлөв, хүүхдийн хослолын шилжилт гарга.",
+            "type": "p"
+          },
+          {
+            "text": "Tree Distances I",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Дэд модны гаднах хамгийн хол замын мэдээлэл нэм.",
+            "type": "p"
+          },
+          {
+            "text": "Tree Distances II",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Үндэс шилжүүлэхэд зайны нийлбэр хэрхэн өөрчлөгдөхийг батал.",
+            "type": "p"
+          },
+          {
+            "text": "Subtree",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Бүх үндэсний нийлбэр/үржвэрийн дахин үндэслэх арга, нийлмэл модульд хуваалтгүй нэгтгэл хэрэгтэй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "priority",
+        "title": "14. Хүүхэдтэй холбогдох заагийн мэдээллээ ол",
+        "blocks": [
+          {
+            "text": "Өндөр ач холбогдолтой. Independent Set нь хоёр төлөвийн шууд цөм. Нэгтгэхийн өмнө хүүхдүүд ямар нөхцөлд бие дааж байгааг тайлбарлах нь олон модны DP-г өөрөө гаргах түлхүүр.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Бүх жижиг оройн олонлогтой тулга",
+        "blocks": [
+          {
+            "text": "Таван оройн бүх 32 олонлогоос хөршийн зөрчилгүй 14-ийг гаргаж шалга. Нэг оройд хоёр сонголт, хоёр оройд гурван сонголт байх ёстой. Навчны тоо олонтой од, урт гинжийг бас шалга.",
+            "type": "p"
+          },
+          {
+            "text": "Жижиг модонд битийн маск бүрд ирмэгийн хоёр төгсгөл зэрэг сонгогдсон эсэхийг шууд үзсэн лавлахтай тулга. Эцгийн дараалал, ирмэгийн оролтын чиглэлийг сольсон ч нийт хариу ижил байна.",
+            "type": "p"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Tree DP — count subsets with no adjacent selected vertices",
+        "summary": "Use selected/omitted states to combine independent child choices and aggregate counts to the root.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Choose vertices without taking both endpoints of an edge",
+            "blocks": [
+              {
+                "text": "Edges are $1–2$, $1–3$, $2–4$, $2–5$. Count all vertex subsets, including empty, with no edge having both endpoints selected.",
+                "type": "p"
+              },
+              {
+                "text": "These are independent sets. The objective is their count, not maximum cardinality.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. From all subsets to rooted subproblems",
+            "blocks": [
+              {
+                "text": "Brute-force every subset and check edges only for tiny trees. Root at one and solve child subtrees.",
+                "type": "p"
+              },
+              {
+                "text": "Whether the parent is selected affects whether the child root is allowed. A single unconditional subtree total loses that boundary information.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "3. Selected and omitted states",
+            "blocks": [
+              {
+                "text": "$omitted[v]$ counts valid subtree choices excluding $v$, while $selected[v]$ counts those including it. These encode the boundary condition seen by the parent.",
+                "type": "p"
+              },
+              {
+                "text": "A leaf has one choice in each state: empty or the singleton. Empty products equal one, matching this base case.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "transition",
+            "title": "4. When are both child states allowed?",
+            "blocks": [
+              {
+                "text": "If $v$ is omitted, each child may be selected or omitted, so $omitted[v]=\\prod_c(omitted[c]+selected[c])$. If $v$ is selected, every child must be omitted: $selected[v]=\\prod_c omitted[c]$.",
+                "type": "p"
+              },
+              {
+                "text": "Add disjoint states for one child; multiply independent choices across different child subtrees, which have no cross edges in a tree.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "5. Fourteen possibilities on five vertices",
+            "blocks": [
+              {
+                "text": "Leaves three, four and five each have pair $(1,1)$. Vertex two has omitted count four and selected count one.",
+                "type": "p"
+              },
+              {
+                "text": "At root one, omitted count is $(4+1)(1+1)=10$, selected count $4\\cdot1=4$, total fourteen. Selecting the root forbids two and three, not their more distant descendants four and five.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "3",
+                    "1",
+                    "1"
+                  ],
+                  [
+                    "4",
+                    "1",
+                    "1"
+                  ],
+                  [
+                    "5",
+                    "1",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "4",
+                    "1"
+                  ],
+                  [
+                    "1",
+                    "10",
+                    "4"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Vertex",
+                  "Omitted",
+                  "Selected"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Children become independent after conditioning on the root",
+            "blocks": [
+              {
+                "text": "Leaves are correct. Assuming correct child states, a selected root permits only omitted children; an omitted root permits both. Choosing one valid option for each child gives exactly one subtree choice.",
+                "type": "p"
+              },
+              {
+                "text": "Disjoint child subtrees have no cross edges, so no further conflicts occur. Every valid choice is counted once; the root’s two disjoint states are finally added.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "order",
+            "title": "7. Finish children before parents",
+            "blocks": [
+              {
+                "text": "Record parent and discovery order with an explicit stack, then reverse it so children precede parents. Changing the root does not change the total independent-set count.",
+                "type": "p"
+              },
+              {
+                "text": "Time and memory are linear. An explicit stack avoids deep recursion on a $200000$-vertex chain while computing the same dependency recurrence in reverse order.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Parents, reverse states and the root total",
+            "blocks": [
+              {
+                "text": "8.1. State and setup",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Record parents and discovery order from root one; the connected-tree contract makes skipping the parent sufficient.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long MOD = 1000000007;\n\nlong long count_sets(const vector<vector<int>>& adj) {\n    int n = static_cast<int>(adj.size()) - 1;\n    vector<int> par(n + 1), order, pending{1};\n    order.reserve(n);\n    while (!pending.empty()) {\n        int vertex = pending.back();\n        pending.pop_back();\n        order.push_back(vertex);\n        for (int next : adj[vertex]) {\n            if (next != par[vertex]) {\n                par[next] = vertex;\n                pending.push_back(next);\n            }\n        }\n    }\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.2. Main transition",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Start empty products at one. Reverse discovery order, adding allowed states within each child and multiplying across children.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    vector<long long> omitted(n + 1, 1), selected(n + 1, 1);\n    for (int i = n - 1; i >= 0; --i) {\n        int vertex = order[i];\n        for (int child : adj[vertex]) {\n            if (child == par[vertex]) {\n                continue;\n            }\n            omitted[vertex] = omitted[vertex]\n                * ((omitted[child] + selected[child]) % MOD) % MOD;\n            selected[vertex] = selected[vertex] * omitted[child] % MOD;\n        }\n    }\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.3. Final answer",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Add the root’s disjoint omitted/selected counts modulo the constant.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    return (omitted[1] + selected[1]) % MOD;\n}\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.4. Input and output",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read a connected acyclic tree on $1$–$200000$ vertices, then $n-1$ edges. Print the independent-set count modulo $10^9+7$.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> adj(n + 1);\n    for (int edge = 0; edge < n - 1; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        adj[first].push_back(second);\n        adj[second].push_back(first);\n    }\n    cout << count_sets(adj) << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete compilable C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long MOD = 1000000007;\n\nlong long count_sets(const vector<vector<int>>& adj) {\n    int n = static_cast<int>(adj.size()) - 1;\n    vector<int> par(n + 1), order, pending{1};\n    order.reserve(n);\n    while (!pending.empty()) {\n        int vertex = pending.back();\n        pending.pop_back();\n        order.push_back(vertex);\n        for (int next : adj[vertex]) {\n            if (next != par[vertex]) {\n                par[next] = vertex;\n                pending.push_back(next);\n            }\n        }\n    }\n    vector<long long> omitted(n + 1, 1), selected(n + 1, 1);\n    for (int i = n - 1; i >= 0; --i) {\n        int vertex = order[i];\n        for (int child : adj[vertex]) {\n            if (child == par[vertex]) {\n                continue;\n            }\n            omitted[vertex] = omitted[vertex]\n                * ((omitted[child] + selected[child]) % MOD) % MOD;\n            selected[vertex] = selected[vertex] * omitted[child] % MOD;\n        }\n    }\n    return (omitted[1] + selected[1]) % MOD;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> adj(n + 1);\n    for (int edge = 0; edge < n - 1; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        adj[first].push_back(second);\n        adj[second].push_back(first);\n    }\n    cout << count_sets(adj) << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "5\n1 2\n1 3\n2 4\n2 5\n",
+                "type": "code",
+                "language": "Input"
+              },
+              {
+                "text": "14\n",
+                "type": "code",
+                "language": "Output"
+              }
+            ]
+          },
+          {
+            "key": "errors",
+            "title": "9. Do not swap addition and multiplication",
+            "blocks": [
+              {
+                "text": "Two-by-two happens to equal two plus two, which can hide the wrong operation. Three independent choices and two choices give six, not five; derive operations from counting meaning.",
+                "type": "p"
+              },
+              {
+                "text": "Products initialized to zero kill every count. Including selected-child states under a selected parent violates the adjacency rule.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "numbers",
+            "title": "10. Modulo counts and multiplication types",
+            "blocks": [
+              {
+                "text": "Store residues modulo $M=10^9+7$ and reduce after each child product. Factors are below $M$, so products below $M^2$ fit signed long long.",
+                "type": "p"
+              },
+              {
+                "text": "The arrays use long long. Multiplying ints first then assigning to long long does not repair overflow; zero residue need not mean zero actual choices.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "11. Child branches are not independent in cyclic graphs",
+            "blocks": [
+              {
+                "text": "In a tree, neighbors other than the parent are children. Cyclic graphs can revisit vertices and create cross-branch conflicts; this implementation requires a connected acyclic graph.",
+                "type": "p"
+              },
+              {
+                "text": "A root-subtree computation does not automatically answer all outside-subtree questions. All-root answers may require rerooting transitions.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "variants",
+            "title": "12. Selecting edges differs from selecting vertices",
+            "blocks": [
+              {
+                "text": "Tree Matching selects edges with at most one incident selected edge per vertex, requiring different parent-edge states and child choices. Do not copy the independent-set product.",
+                "type": "p"
+              },
+              {
+                "text": "Tree-distance tasks store distance summaries and sometimes outside-branch information, not the same counting state.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From adjacency exclusion to new boundary states",
+            "blocks": [
+              {
+                "text": "Subordinates",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Review child-first processing with a simple aggregate.",
+                "type": "p"
+              },
+              {
+                "text": "Independent Set",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Implement selected/omitted child-conditioned counting.",
+                "type": "p"
+              },
+              {
+                "text": "Tree Matching",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Derive different boundary states for selecting edges.",
+                "type": "p"
+              },
+              {
+                "text": "Tree Distances I",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Add outside-subtree distance information.",
+                "type": "p"
+              },
+              {
+                "text": "Tree Distances II",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Prove changes in distance sums when rerooting.",
+                "type": "p"
+              },
+              {
+                "text": "Subtree",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Derive rerooting products without unsafe modular division under a possibly composite modulus.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "priority",
+            "title": "14. Find the boundary information a parent needs",
+            "blocks": [
+              {
+                "text": "High priority. Independent Set directly teaches two boundary states; understanding conditional child independence is central to deriving other tree DPs.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Compare every small vertex subset",
+            "blocks": [
+              {
+                "text": "Check fourteen valid choices among the five-vertex example’s thirty-two subsets. Singletons give two choices and a single edge gives three; test stars and long chains.",
+                "type": "p"
+              },
+              {
+                "text": "For small trees, enumerate subsets and directly reject any selected edge endpoints. Reorder and reverse input edges without changing the total.",
+                "type": "p"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Rooted trees, parents, children, reverse DFS order and DP counting by sums/products."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Модны үндэс, эцэг, хүүхэд, урвуу DFS дараалал, DP-ийн төлөв ба тооллогын нэмэх/үржүүлэх зарчим.",
+    "priorityLevel": "high",
+    "priorityReason": "Модны заагаар гаднах нөлөөг төлөвт тусгаж, хүүхдүүдийн хариуг бие даан нэгтгэх үндсэн арга. Оновчлох ба тоолох DP-ийн шилжилтүүдийг өөрөө гаргахад өндөр ач холбогдолтой.",
+    "prerequisiteIds": [
+      "tree-basics",
+      "dfs",
+      "dynamic-programming"
+    ],
+    "learningRelations": {
+      "next": "lazy-segment-tree",
+      "practice": [
+        {
+          "key": "420",
+          "stage": "Warm-up",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "692",
+          "stage": "Standard",
+          "reason": "Төлөвийн утга, нэгтгэх тооллого ба заагийн нөхцөлийг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "421",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "423",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "424",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "698",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "lca",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "bitmask-dp",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "mapping": {
+    "graph": "adj",
+    "parent": "par",
+    "index": "i",
+    "count": "n",
+    "count_independent_sets": "count_sets"
+  },
+  "changed": true,
+  "reviewed_body_sha256": "63838a66e98b25de40fcfce040b1b3542fb56e0f6a76cbcbb18aed9b5186b7a2",
+  "proposed_body_sha256": "63838a66e98b25de40fcfce040b1b3542fb56e0f6a76cbcbb18aed9b5186b7a2"
+}

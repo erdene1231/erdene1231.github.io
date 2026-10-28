@@ -1,0 +1,906 @@
+{
+  "id": "kmp",
+  "expected_revision": 6,
+  "expected_published": true,
+  "expected_body_md5": "92d93f60f140b38b2a21cf1e7971d5f8",
+  "expected_body_sha256": "4aa5ffa7a23be77a4f814b8a62221e1d6ab3f6aab9dc7acf23ed5c00b306a52f",
+  "body": {
+    "id": "kmp",
+    "level": "Ахисан шат",
+    "order": 40,
+    "title": "KMP — таарсан эхний хэсгээ дахин ашиглах",
+    "aliases": "kmp KMP — string дотор pattern хайх KMP — finding a pattern in a string kmp prefix function string pattern matching текст хайх border substring",
+    "related": [
+      "binary-search",
+      "dynamic-programming",
+      "lca"
+    ],
+    "summary": "Угтвар ба төгсгөлийн холбоосоор буцаж, текстийн байрлалыг ухраахгүй бүх давхцсан таарцыг олно.",
+    "category": "Strings",
+    "levelKey": "advanced",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Давхцсан хоёр таарцыг хоёуланг олох",
+        "blocks": [
+          {
+            "text": "Загвар “aba”, текст “ababa” байг. Загвар эхлэх байрлалууд нэг ба гурав. Эхний таарцыг олоод гурван байрлал алгасвал хоёр дахь давхцсан таарцыг алддаг.",
+            "type": "p"
+          },
+          {
+            "text": "Бид зөвхөн тоо бус эхлэх бүх байрлалыг нэгээс эхэлсэн дугаараар гаргана. Текстийг нэг чиглэлд уншаад өмнө таарсан хэсгийн хэрэгтэй мэдээллийг хадгалъя.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Байрлал бүрээс эхнээс нь харьцуулах",
+        "blocks": [
+          {
+            "text": "Текстийн уртыг $n$, загварын уртыг $m$ гэе. Энгийн арга текстийн боломжит эхлэл бүрд загварын бүх үсгийг харьцуулна. Текст урт ижил үсгүүдтэй, загварын сүүлийн үсэг л зөрвөл өмнөх урт таарцыг дахин дахин шалгаж $O(nm)$ хүрнэ.",
+            "type": "p"
+          },
+          {
+            "text": "Зөрсөн үед өмнө таарсан хэсгийн зарим төгсгөл загварын эхлэлтэй ижил байж болно. Тэр мэдээллийг урьдчилан гаргавал текст рүү ухрах шаардлагагүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "3. Богино угтвар ба төгсгөлийн хамгийн урт давхцал",
+        "blocks": [
+          {
+            "text": "$border[i]$ нь загварын $[0,i]$ хэсгийн өөрөөс нь богино, эхлэл ба төгсгөлд ижил байдаг хамгийн урт хэсгийн урт. Өөрийг нь бүтнээр авахгүй учраас proper буюу өөрөөс нь богино угтвар гэдэг.",
+            "type": "p"
+          },
+          {
+            "text": "“ababa”-гийн угтвар-төгсгөлийн давхцал “aba” урт гурав. Ганц үсгийнх тэг. Кодод эхлэлээс таарсан уртыг хадгалж байгаа болохоос төгсгөлийн индексийг хадгалахгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Зөрвөл дараагийн боломжит урт руу буцах",
+        "blocks": [
+          {
+            "text": "Дараагийн үсэг зөрвөл $length=border[length-1]$ гэж богиносгоно. Бүхэл таарсан хэсгийг шинээр эхлэх бус түүний хамгийн урт зөв давхцлыг үлдээнэ. Тэр ч зөрвөл дахин холбоосоор явна.",
+            "type": "p"
+          },
+          {
+            "text": "Таарвал уртыг нэгээр нэмнэ. Загварын border массивыг байгуулахад ч, текст уншихад ч ижил санаа үйлчилнэ. Бүтэн таарсны дараа мөн border-ийн холбоосоор буцаж давхцлыг хадгална.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "5. Загварын холбоос ба текстийн хоёр таарц",
+        "blocks": [
+          {
+            "text": "“ababaca” загварын border утгууд $[0,0,1,2,3,0,1]$. “c” дээр урт гуравтай “aba”-г сунгаж болохгүй; гуравнаас нэг, нэгээс тэг рүү буцаж байж зогсоно.",
+            "type": "p"
+          },
+          {
+            "text": "“aba”-г “ababa”-д хайхад таарсан уртууд нэг, хоёр, гурав. Гурав хүрэхэд эхлэл нэгийг гаргаад уртыг border[2] буюу нэг болгоно. Дараагийн “b”, “a” хоёр уртыг гурав болгож эхлэл гурвыг гаргана.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "0",
+                "a",
+                "0"
+              ],
+              [
+                "1",
+                "b",
+                "0"
+              ],
+              [
+                "2",
+                "a",
+                "1"
+              ],
+              [
+                "3",
+                "b",
+                "2"
+              ],
+              [
+                "4",
+                "a",
+                "3"
+              ],
+              [
+                "5",
+                "c",
+                "0"
+              ],
+              [
+                "6",
+                "a",
+                "1"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Загварын индекс",
+              "Үсэг",
+              "Border урт"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Яагаад боломжит таарцыг алгасахгүй вэ?",
+        "blocks": [
+          {
+            "text": "Өмнөх таарсан хэсгийн урт $j$ байг. Шинэ таарцыг түүн дотроос эхлүүлэх боломж байвал үлдэх хэсэг нь тэр таарсан хэсгийн төгсгөл бөгөөд загварын угтвар байх ёстой. Иймээс дараагийн урт нь зөв давхцлын гинжин холбоос дээр байна.",
+            "type": "p"
+          },
+          {
+            "text": "Хамгийн урт зөв давхцлаас нь эхэлж дараалан шалгах нь бүх боломжит богино угтварыг хамарна. Таарсан үед нэгээр сунгах, бүтэн үед байрлал гаргах хоёр нь яг загварын урттай тохирлыг бүртгэнэ. Иймээс таарц алдахгүй, хуурамч таарц үүсгэхгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Урт өсөх ба буурах нийт зардал",
+        "blocks": [
+          {
+            "text": "Нэг үсэг уншихад таарсан урт хамгийн ихдээ нэгээр өснө. Холбоосоор буцах алхам бүр уртыг эрс бууруулдаг тул бүх бууралтын тоо өмнөх өсөлтүүдээр хязгаарлагдана. Угтварын хүснэгт байгуулах $O(m)$, текст хайх $O(n)$ нийт $O(n+m)$.",
+            "type": "p"
+          },
+          {
+            "text": "Border $O(m)$, энэ кодын гаргах байрлалын массив $O(n)$ хүртэл зай авна. Зөвхөн тоо асуувал байрлалуудыг хадгалахгүй байж болно.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. Border байгуулаад текстийг урагш унших",
+        "blocks": [
+          {
+            "text": "8.1. Эхлэл ба төлөв",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Загварын өмнөх зөв давхцлын уртаас эхэлж, зөрөх бүрд богино холбоос руу буцаж prefix хүснэгтийг байгуулна. Нэг үсэгт тэг.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvector<int> prefix_function(const string& pattern) {\n    int n = static_cast<int>(pattern.size());\n    vector<int> border(n);\n    for (int i = 1; i < n; ++i) {\n        int length = border[i - 1];\n        while (length > 0 && pattern[i] != pattern[length]) {\n            length = border[length - 1];\n        }\n        if (pattern[i] == pattern[length]) {\n            ++length;\n        }\n        border[i] = length;\n    }\n    return border;\n}\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.2. Үндсэн үйлдэл",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Текстийн индекс зөвхөн урагшилна. Бүтэн таарвал нэгээс эхэлсэн байрлалыг хадгалаад давхцлын холбоос руу шууд буцна. Загвар хоосон биш гэсэн гэрээтэй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "vector<int> find_occurrences(const string& text, const string& pattern) {\n    vector<int> border = prefix_function(pattern), positions;\n    int matched = 0;\n    for (int i = 0; i < static_cast<int>(text.size()); ++i) {\n        while (matched > 0 && text[i] != pattern[matched]) {\n            matched = border[matched - 1];\n        }\n        if (text[i] == pattern[matched]) {\n            ++matched;\n        }\n        if (matched == static_cast<int>(pattern.size())) {\n            positions.push_back(i - matched + 2);\n            matched = border[matched - 1];\n        }\n    }\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.3. Үр дүн",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Бүх байрлалын векторыг буцаана. Тоо л асуух хувилбарт векторын оронд тоолуур хэрэглэж болно.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    return positions;\n}\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.4. Оролт ба гаралт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Эхний мөрд текст, дараагийн мөрд загвар; хоёул жижиг латин үсэгтэй, урт $1$–$200000$. Эхний гаралтын мөрд тоо, дараагийн мөрд нэгээс эхэлсэн эхлэх байрлалууд, таарцгүй бол хоосон мөр.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string pattern, text;\n    cin >> text >> pattern;\n    vector<int> positions = find_occurrences(text, pattern);\n    cout << positions.size() << '\\n';\n    for (int i = 0; i < static_cast<int>(positions.size()); ++i) {\n        cout << positions[i] << (i + 1 == static_cast<int>(positions.size()) ? '\\n' : ' ');\n    }\n    if (positions.empty()) {\n        cout << '\\n';\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн ажиллах C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvector<int> prefix_function(const string& pattern) {\n    int n = static_cast<int>(pattern.size());\n    vector<int> border(n);\n    for (int i = 1; i < n; ++i) {\n        int length = border[i - 1];\n        while (length > 0 && pattern[i] != pattern[length]) {\n            length = border[length - 1];\n        }\n        if (pattern[i] == pattern[length]) {\n            ++length;\n        }\n        border[i] = length;\n    }\n    return border;\n}\n\nvector<int> find_occurrences(const string& text, const string& pattern) {\n    vector<int> border = prefix_function(pattern), positions;\n    int matched = 0;\n    for (int i = 0; i < static_cast<int>(text.size()); ++i) {\n        while (matched > 0 && text[i] != pattern[matched]) {\n            matched = border[matched - 1];\n        }\n        if (text[i] == pattern[matched]) {\n            ++matched;\n        }\n        if (matched == static_cast<int>(pattern.size())) {\n            positions.push_back(i - matched + 2);\n            matched = border[matched - 1];\n        }\n    }\n    return positions;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string pattern, text;\n    cin >> text >> pattern;\n    vector<int> positions = find_occurrences(text, pattern);\n    cout << positions.size() << '\\n';\n    for (int i = 0; i < static_cast<int>(positions.size()); ++i) {\n        cout << positions[i] << (i + 1 == static_cast<int>(positions.size()) ? '\\n' : ' ');\n    }\n    if (positions.empty()) {\n        cout << '\\n';\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "ababa\naba\n",
+            "type": "code",
+            "language": "Input"
+          },
+          {
+            "text": "2\n1 3\n",
+            "type": "code",
+            "language": "Output"
+          }
+        ]
+      },
+      {
+        "key": "errors",
+        "title": "9. Бүтэн таарсан уртаар дараагийн үсэг уншихгүй",
+        "blocks": [
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Бүтэн таарц $matched=m$ болсон даруйд хариугаа гаргаад зөв давхцлын урт руу буцна. Үгүй бол дараагийн үсэгт ",
+                "marks": []
+              },
+              {
+                "text": "pattern[m]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гэж хязгаараас гарна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "Таарсны дараа шууд тэг болгож ч болохгүй: “aba” жишээний хоёр дахь таарцын эхний “a”-г алдана. Border[length-1] гэдэг нь индекс нэгээр бага байгааг анхаар.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "meaning",
+        "title": "10. Дэд дараалал ба залгаа дэд мөр өөр",
+        "blocks": [
+          {
+            "text": "KMP нь залгаа үсгүүдээрх таарцыг хайна. “abc” нь “axbyc”-ийн дэд дараалал байж болох ч залгаа дэд мөр биш тул KMP таарц гэж авахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Энэ код жижиг латин үсэгтэй хоосон бус хоёр мөр авдаг. UTF-8 текстийг өөрчлөлтгүй string-ээр уншвал индекс нь байтын байрлал болохыг ойлго; энэ сургалтын гаралт нэг үсэг нэг байт гэсэн гэрээтэй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "applications",
+        "title": "11. Border-оос үелэл рүү",
+        "blocks": [
+          {
+            "text": "Бүх зөв давхцлыг олохдоо бүтэн мөрийн сүүлийн border-оос эхлэн border холбоосоор буцаж болно. Үелэлтэй холбоог гаргахдаа сүүлийн хэсэг дутуу байж болох эсэхийг бодлогын тодорхойлолтоос шалга.",
+            "type": "p"
+          },
+          {
+            "text": "Мөр яг ижил хэсгүүдийн бүтэн давталт байх зорилгод урт нь тухайн богино уртад хуваагдах нөхцөл нэмэгдэнэ. Finding Periods-ийн бүх асуултыг ганц хуваагдах шалгалтаар орлуулахгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "connections",
+        "title": "12. Нэг загвар ба олон загвар",
+        "blocks": [
+          {
+            "text": "Олон загварыг нэг текстэд тус тус KMP хийвэл текстийг загвар бүрд дахин уншина. Олон загварын нийт хэмжээнд тохирох өөр бүтэц, тухайлбал автомат хэрэгтэй байж болно.",
+            "type": "p"
+          },
+          {
+            "text": "Хэш нь хурдан хураангуй өгдөг ч мөргөлдөх боломжтой; KMP-ийн яг тааруулах баталгаа ийм магадлалын нөхцөлгүй. Ямар хариу, ямар хэмжээ хэрэгтэйгээс аргаа сонго.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Таарцаас холбоосын өөр хэрэглээ рүү",
+        "blocks": [
+          {
+            "text": "String Matching",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Давхцсан таарцуудыг алдахгүй, эх бодлого зөвхөн тоо асуувал гаралтаа тохируул.",
+            "type": "p"
+          },
+          {
+            "text": "Finding Borders",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Сүүлийн border-оос холбоосоор бүх зөв уртыг гарга.",
+            "type": "p"
+          },
+          {
+            "text": "Finding Periods",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Бүтэн ба дутуу давталтын тодорхойлолтыг ялга.",
+            "type": "p"
+          },
+          {
+            "text": "String Functions",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Prefix ба өөр төрлийн мөрийн функцийн утгыг тусад нь гарга.",
+            "type": "p"
+          },
+          {
+            "text": "Minimal Rotation",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Хамгийн бага эргэлт нь таарц хайхаас өөр зорилго, нэмэлт арга хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "text": "Pattern Positions",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Олон загварын нийт хэмжээгээр аргаа сонго; ганц KMP давтах нь үнэтэй байж болно.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "priority",
+        "title": "14. Зөв холбоос нь өмнөх ажлыг хадгална",
+        "blocks": [
+          {
+            "text": "Өндөр ач холбогдолтой. String Matching ба Finding Borders нь таарах урт ба зөв давхцлын шууд цөм. Үсгийг дахин шалгахгүй байхын цаана ямар мэдээлэл хадгалж байгааг тайлбарла.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Энгийн залгаа хайлттай тулга",
+        "blocks": [
+          {
+            "text": "“aba” ба “ababa”-гийн хоёр байрлалыг гараар ол. Нэг үсгийн загвар, ижил олон үсэг, огт таарахгүй, загвар текстээс урт, олон давхцалтай тохиолдлуудыг шалга.",
+            "type": "p"
+          },
+          {
+            "text": "Жижиг мөр бүрд бүх боломжит эхлэлээс шууд харьцуулсан лавлахтай гарсан байрлалын жагсаалтыг яг тулга. Border массивын утга бүр үнэхээр өөрөөс нь богино угтвар/төгсгөлийн хамгийн урт урт эсэхийг бас шалгаж болно.",
+            "type": "p"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "KMP — reuse the matched prefix",
+        "summary": "Follow proper prefix/suffix links to find every overlapping occurrence without moving the text position backward.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Find both overlapping occurrences",
+            "blocks": [
+              {
+                "text": "Pattern “aba” occurs in “ababa” at positions one and three. Skipping the whole pattern after a match would miss the overlapping occurrence.",
+                "type": "p"
+              },
+              {
+                "text": "Return every one-based starting position, not just a count, while reading text forward and retaining useful matched information.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Restarting comparisons at every position",
+            "blocks": [
+              {
+                "text": "Let text length be $n$ and pattern length $m$. Naive matching may take $O(nm)$ when long runs match until the final pattern character repeatedly fails.",
+                "type": "p"
+              },
+              {
+                "text": "After a mismatch, a suffix of the matched part may equal a pattern prefix. Precomputing those possibilities avoids backing up in the text.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "3. Longest proper prefix that is also a suffix",
+            "blocks": [
+              {
+                "text": "$border[i]$ is the longest proper prefix of pattern prefix $[0,i]$ that is also its suffix. Proper excludes the entire prefix itself.",
+                "type": "p"
+              },
+              {
+                "text": "For “ababa”, the longest proper border is “aba”, length three; a singleton has zero. Store lengths, not ending indices.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Fall back to the next possible border length",
+            "blocks": [
+              {
+                "text": "On mismatch set $length=border[length-1]$, preserving the longest possible proper overlap rather than restarting blindly. Follow further links if necessary.",
+                "type": "p"
+              },
+              {
+                "text": "On equality extend by one. The same idea builds borders and scans text; after a full match, fall back to preserve overlaps.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "5. Pattern links and two text matches",
+            "blocks": [
+              {
+                "text": "The border array for “ababaca” is $[0,0,1,2,3,0,1]$. At “c”, fallback tries lengths three, one and zero.",
+                "type": "p"
+              },
+              {
+                "text": "Searching “aba” in “ababa” reaches matched lengths one, two, three; report start one and reset to border[2], one. The next “b”, “a” produce the second match at three.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "0",
+                    "a",
+                    "0"
+                  ],
+                  [
+                    "1",
+                    "b",
+                    "0"
+                  ],
+                  [
+                    "2",
+                    "a",
+                    "1"
+                  ],
+                  [
+                    "3",
+                    "b",
+                    "2"
+                  ],
+                  [
+                    "4",
+                    "a",
+                    "3"
+                  ],
+                  [
+                    "5",
+                    "c",
+                    "0"
+                  ],
+                  [
+                    "6",
+                    "a",
+                    "1"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Pattern index",
+                  "Character",
+                  "Border length"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Why does fallback skip no possible match?",
+            "blocks": [
+              {
+                "text": "If a new candidate starts inside an already matched length-$j$ part, its retained portion must be both a suffix of that part and a pattern prefix. Its length therefore lies on the proper-border chain.",
+                "type": "p"
+              },
+              {
+                "text": "Trying borders from longest downward covers all viable shorter prefixes. Extending on equality and reporting full length records exactly the pattern matches, with neither omissions nor false positives.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Bound total rises and falls",
+            "blocks": [
+              {
+                "text": "Matched length rises by at most one per consumed character, while every fallback strictly lowers it, so total fallback work is bounded by prior rises. Building borders takes $O(m)$ and scanning $O(n)$.",
+                "type": "p"
+              },
+              {
+                "text": "Borders use $O(m)$ space and returned positions up to $O(n)$. Counting only can avoid storing positions.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Build borders, then scan text forward",
+            "blocks": [
+              {
+                "text": "8.1. State and setup",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Build the prefix table from the previous border length, following shorter links on mismatch; singleton border is zero.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvector<int> prefix_function(const string& pattern) {\n    int n = static_cast<int>(pattern.size());\n    vector<int> border(n);\n    for (int i = 1; i < n; ++i) {\n        int length = border[i - 1];\n        while (length > 0 && pattern[i] != pattern[length]) {\n            length = border[length - 1];\n        }\n        if (pattern[i] == pattern[length]) {\n            ++length;\n        }\n        border[i] = length;\n    }\n    return border;\n}\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.2. Main operation",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Move text only forward. Record one-based starts on full matches and immediately fall back to retain overlap; the pattern is nonempty.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "vector<int> find_occurrences(const string& text, const string& pattern) {\n    vector<int> border = prefix_function(pattern), positions;\n    int matched = 0;\n    for (int i = 0; i < static_cast<int>(text.size()); ++i) {\n        while (matched > 0 && text[i] != pattern[matched]) {\n            matched = border[matched - 1];\n        }\n        if (text[i] == pattern[matched]) {\n            ++matched;\n        }\n        if (matched == static_cast<int>(pattern.size())) {\n            positions.push_back(i - matched + 2);\n            matched = border[matched - 1];\n        }\n    }\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.3. Result",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Return all positions; a count-only version can use a counter instead.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    return positions;\n}\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.4. Input and output",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read text then pattern, both nonempty lowercase Latin strings of length at most $200000$. Print count then one-based starting positions; no matches gives a blank second line.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string pattern, text;\n    cin >> text >> pattern;\n    vector<int> positions = find_occurrences(text, pattern);\n    cout << positions.size() << '\\n';\n    for (int i = 0; i < static_cast<int>(positions.size()); ++i) {\n        cout << positions[i] << (i + 1 == static_cast<int>(positions.size()) ? '\\n' : ' ');\n    }\n    if (positions.empty()) {\n        cout << '\\n';\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete compilable C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvector<int> prefix_function(const string& pattern) {\n    int n = static_cast<int>(pattern.size());\n    vector<int> border(n);\n    for (int i = 1; i < n; ++i) {\n        int length = border[i - 1];\n        while (length > 0 && pattern[i] != pattern[length]) {\n            length = border[length - 1];\n        }\n        if (pattern[i] == pattern[length]) {\n            ++length;\n        }\n        border[i] = length;\n    }\n    return border;\n}\n\nvector<int> find_occurrences(const string& text, const string& pattern) {\n    vector<int> border = prefix_function(pattern), positions;\n    int matched = 0;\n    for (int i = 0; i < static_cast<int>(text.size()); ++i) {\n        while (matched > 0 && text[i] != pattern[matched]) {\n            matched = border[matched - 1];\n        }\n        if (text[i] == pattern[matched]) {\n            ++matched;\n        }\n        if (matched == static_cast<int>(pattern.size())) {\n            positions.push_back(i - matched + 2);\n            matched = border[matched - 1];\n        }\n    }\n    return positions;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string pattern, text;\n    cin >> text >> pattern;\n    vector<int> positions = find_occurrences(text, pattern);\n    cout << positions.size() << '\\n';\n    for (int i = 0; i < static_cast<int>(positions.size()); ++i) {\n        cout << positions[i] << (i + 1 == static_cast<int>(positions.size()) ? '\\n' : ' ');\n    }\n    if (positions.empty()) {\n        cout << '\\n';\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "ababa\naba\n",
+                "type": "code",
+                "language": "Input"
+              },
+              {
+                "text": "2\n1 3\n",
+                "type": "code",
+                "language": "Output"
+              }
+            ]
+          },
+          {
+            "key": "errors",
+            "title": "9. Do not retain full pattern length for the next access",
+            "blocks": [
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "After matched length reaches $m$, report and fall back immediately, avoiding an out-of-range ",
+                    "marks": []
+                  },
+                  {
+                    "text": "pattern[m]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " access.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "Resetting to zero instead also loses overlaps such as the second “aba”. Note the length-minus-one index in border links.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "meaning",
+            "title": "10. Subsequences and contiguous substrings differ",
+            "blocks": [
+              {
+                "text": "KMP finds contiguous substrings, not subsequences: “abc” is a subsequence of “axbyc” but not a substring.",
+                "type": "p"
+              },
+              {
+                "text": "The program takes nonempty lowercase Latin strings. Its character positions assume one byte per input character; raw UTF-8 string indices would instead be byte positions.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "applications",
+            "title": "11. From borders to periods",
+            "blocks": [
+              {
+                "text": "Follow the final border chain to enumerate borders. For periods, check whether a partial final repetition is allowed by the definition.",
+                "type": "p"
+              },
+              {
+                "text": "An exact repetition decomposition adds a divisibility condition; do not replace every period task with that single test.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "connections",
+            "title": "12. One pattern versus many patterns",
+            "blocks": [
+              {
+                "text": "Running KMP separately for many patterns repeatedly scans the text; a multi-pattern automaton may be more suitable.",
+                "type": "p"
+              },
+              {
+                "text": "Hashes offer compact fingerprints with possible collisions, while KMP’s exact-match proof needs no collision assumption. Choose by goal and bounds.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From occurrences to other border uses",
+            "blocks": [
+              {
+                "text": "String Matching",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Keep overlaps and adapt output if only count is requested.",
+                "type": "p"
+              },
+              {
+                "text": "Finding Borders",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Follow the final border chain.",
+                "type": "p"
+              },
+              {
+                "text": "Finding Periods",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Distinguish exact and partial repetition definitions.",
+                "type": "p"
+              },
+              {
+                "text": "String Functions",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Derive meanings of prefix and other string functions.",
+                "type": "p"
+              },
+              {
+                "text": "Minimal Rotation",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Minimum rotation is a different objective requiring more reasoning.",
+                "type": "p"
+              },
+              {
+                "text": "Pattern Positions",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Account for total multi-pattern work.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "priority",
+            "title": "14. Correct links preserve useful work",
+            "blocks": [
+              {
+                "text": "High priority. String Matching and Finding Borders directly exercise matched lengths and proper borders. Understand preserved information behind the linear-time bound.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Compare with direct substring search",
+            "blocks": [
+              {
+                "text": "Check the two example starts by hand. Cover singleton patterns, repeated letters, no match, pattern longer than text and heavy overlaps.",
+                "type": "p"
+              },
+              {
+                "text": "Compare complete position lists with direct substring comparisons at every start, and independently verify each border length on small patterns.",
+                "type": "p"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "String indices and reuse of prefix states; the program uses lowercase Latin letters."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Дарааллын индекс, prefix төлөвийн санаа, өмнөх бэлэн хариуг дахин ашиглах. Кодын тэмдэгтүүд жижиг латин үсэг байна.",
+    "priorityLevel": "high",
+    "priorityReason": "Яг таарцыг мөргөлдөөнгүй шугаман хугацаанд олох суурь. Угтвар/төгсгөлийн утга, fallback ба нийлбэр зардлын баталгааг ойлгох нь олон тэмдэгт мөрийн бодлогод өндөр өгөөжтэй.",
+    "prerequisiteIds": [
+      "binary-search",
+      "dynamic-programming"
+    ],
+    "learningRelations": {
+      "next": "string-hashing",
+      "practice": [
+        {
+          "key": "474",
+          "stage": "Warm-up",
+          "reason": "Яг таарц эсвэл угтвар-төгсгөлийн холбоосыг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "475",
+          "stage": "Standard",
+          "reason": "Яг таарц эсвэл угтвар-төгсгөлийн холбоосыг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "476",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "488",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "477",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "484",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "binary-search",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "dynamic-programming",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "lca",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "mapping": {
+    "index": "i",
+    "count": "n"
+  },
+  "changed": true,
+  "reviewed_body_sha256": "815a989e61729775c1dee50a7810f71fb10d18b1ef39e2e22729fde43cf59eb2",
+  "proposed_body_sha256": "815a989e61729775c1dee50a7810f71fb10d18b1ef39e2e22729fde43cf59eb2"
+}
