@@ -1,3 +1,11 @@
+# Package 2: three full foundation candidates ready locally
+
+Binary Search, Greedy and DP now pass all 15 content criteria / 20 semantic review items locally, including bilingual proofs, concrete counterexamples, operation/space reasoning, fragments before the exact full C++17, six-stage practice and mastery distinction. 98 Node tests pass. The unchanged three C++ programs retain their 199-case independent evidence by exact digest; 12 actual reader views, three native block-editor roundtrips, native SQL save/publish/reload and all practice-card actions pass. Existing section anchors, every old practice identity and all other relationships are retained. Mongolia remains entirely unchanged.
+
+Counts: **3 full local candidates, 0 live publications, 52 other curriculum tutorials remaining**. All 55 tutorial-priority proposals exist; only finished lesson candidates include them for publication. No new problem statements/editorials, bank metadata writes, migrations or access changes in this batch.
+
+Current server validators accepted the three candidates read-only. The SQL connection is healthy but has no app-admin session. Binary Search's one private draft is an unchanged fallback-relationship form copy and must remain preserved. A precisely guarded owner publication statement is prepared but unexecuted; see `audit/PACKAGE02-FOUNDATION-PUBLICATION-REVIEW.md` for exact effects/hash and decision. Never reuse the old 245-job approval, impersonate a user or retry an uncertain write. Continue the other 52 lesson reviews and the separate 2020–2026 interactive/communication inventory while this narrow publication route awaits its decision.
+
 # Package 2: tutorial priorities prepared
 
 PR #23 merged as b7ef477. The next field-only proposal batch assigns all 55 substantive tutorials an individual educational priority and rationale: 36 High, 19 Medium. There is no forced distribution; no existing Li Chao lesson to assign Low. Mongolia remains completely unchanged. This is topic-priority review, not full lesson-content completion.

@@ -1,3 +1,4 @@
+import crypto from'node:crypto';
 import test from'node:test';import assert from'node:assert/strict';import fs from'node:fs';import{proposedTutorialRows,bodyHash}from'../tools/package02_tutorial_proposals.mjs';import{validateTutorial}from'../tutorial-model.js';import{mathProseWarnings}from'../math-prose.js';
 test('tutorial proposals are revision/hash guarded, non-mutating, math clean and preserve identities/relations/samples',()=>{
  const rows=JSON.parse(fs.readFileSync('audit/PART04-BASELINE.json')).tutorials,before=JSON.stringify(rows),proposal=JSON.parse(fs.readFileSync('audit/PACKAGE02-TUTORIAL-PROPOSALS.json')),out=proposedTutorialRows(rows);assert.equal(JSON.stringify(rows),before);assert.equal(out.length,56);
@@ -7,7 +8,7 @@ test('tutorial proposals are revision/hash guarded, non-mutating, math clean and
    const literals=code=>code.match(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g)||[];
    assert.deepEqual(literals(op.value.text),literals(op.expected.text),p.id+' identifier changes must preserve C++ string/character literals');
   }
-  for(const key of ['id','prerequisiteIds','learningRelations','related','priority'])assert.deepEqual(row.body[key],old.body[key]);
+  for(const key of ['id','prerequisiteIds','related','priority'])assert.deepEqual(row.body[key],old.body[key]);
   const samples=d=>[d,...Object.values(d.translations||{})].flatMap(v=>v.sections.flatMap(s=>s.blocks.filter(b=>b.type==='code'&&['Input','Output'].includes(b.language)).map(b=>b.text)));assert.deepEqual(samples(row.body),samples(old.body));
   const codes=d=>d.sections.flatMap(s=>s.blocks.filter(b=>b.type==='code'&&b.language==='C++17').map(b=>b.text));assert.deepEqual(codes(row.body),codes(row.body.translations.en));
  }
@@ -41,4 +42,45 @@ test('all 55 curriculum priority proposals preserve lesson bodies and metadata o
  for(const r of out.filter(r=>r.body.id!=='mongolia')){validateTutorial(r.body);assert.ok(['low','medium','high'].includes(r.body.priorityLevel));assert.ok(r.body.priorityReason.length>60);}
  assert.deepEqual(out.find(r=>r.body.id==='mongolia'),before.find(r=>r.body.id==='mongolia'));
  const drift=structuredClone(before);drift.find(r=>r.body.id==='bellman-ford').body.title+=' changed';assert.throws(()=>proposedTutorialRows(drift),/Stale tutorial proposal: bellman-ford/);
+});
+
+test('complete foundation candidates keep every existing practice identity and add six staged objectives without changing problem priorities', async()=>{
+ const {proposalProblems}=await import('../tools/package02_tutorial_proposals.mjs');
+ const {validateRelations,normalizeProblemReferences,problemIndex,tutorialMastery,CHECKS}=await import('../learning-model.js');
+ const {priorityLevel}=await import('../priority.js');
+ const {publicationBody}=await import('../tutorial-publication.js');
+ const baseline=JSON.parse(fs.readFileSync('audit/PART04-BASELINE.json')).tutorials;
+ const out=proposedTutorialRows(baseline),problems=proposalProblems(),before=JSON.stringify(problems),idx=problemIndex(problems);
+ const plan=JSON.parse(fs.readFileSync('audit/PACKAGE02-FOUNDATION-PRACTICE01.json'));
+ const curriculum=JSON.parse(fs.readFileSync('curriculum.json'));
+ for(const [id,selected]of Object.entries(plan.lessons)){
+  const body=out.find(r=>r.body.id===id).body,original=baseline.find(r=>r.body.id===id).body;
+  const rel=validateRelations(body.learningRelations,id,out.map(r=>r.body),problems);
+  assert.deepEqual(new Set(selected.map(p=>p.stage)),new Set(['Warm-up','Standard','Observation','Application','Challenge','Olympiad extension']));
+  assert.equal(selected.length,6);assert.equal(new Set(selected.map(p=>p.key)).size,6);
+  const old=normalizeProblemReferences({learningRelations:curriculum.lessons[id]},problems).learningRelations;
+  for(const row of old.practice)assert.ok(rel.practice.some(p=>p.key===row.key),id+' retains '+row.key);
+  assert.deepEqual(rel.variants,old.variants);assert.equal(rel.next,old.next);
+  assert.deepEqual(body.prerequisiteIds,original.prerequisiteIds);assert.deepEqual(body.related,original.related);
+  for(const p of selected){assert.ok(idx.has(p.key));if(p.required)assert.equal(priorityLevel(idx.get(p.key)),'high');}
+  const resolved=rel.practice.map(p=>({...p,problem:idx.get(p.key)}));
+  assert.equal(tutorialMastery(id,{checks:CHECKS},resolved,{}).mastered,false);
+  const solved=Object.fromEntries(resolved.filter(p=>p.priority).map(p=>[p.problem.id,{status:'solved'}]));
+  assert.equal(tutorialMastery(id,{checks:CHECKS},resolved,solved).mastered,true);
+  assert.equal(tutorialMastery(id,{checks:[]},resolved,solved).mastered,false);
+  assert.deepEqual(publicationBody(JSON.parse(JSON.stringify(body)),out.map(r=>r.body),problems),body);
+  for(const d of[body,body.translations.en]){assert.equal(d.sections.length,15);assert.equal(d.sections[14].blocks.find(b=>b.detailKey==='p02-mastery-checklist').items.length,4);}
+ }
+ assert.equal(JSON.stringify(problems),before);
+});
+
+test('foundation prose/practice revision reuses only byte-identical independently tested C++ programs',()=>{
+ const report=JSON.parse(fs.readFileSync('audit/PACKAGE02-FOUNDATIONS-CODE.json'));
+ const rows=proposedTutorialRows(JSON.parse(fs.readFileSync('audit/PART04-BASELINE.json')).tutorials);
+ for(const entry of report.programs){const doc=rows.find(r=>r.body.id===entry.lesson).body;
+  for(const language of[doc,doc.translations.en]){const code=language.sections[12].blocks.find(b=>b.detailKey==='depth-full-program').text;
+   assert.equal(crypto.createHash('sha256').update(code).digest('hex'),entry.program_sha256);
+   assert.ok(!code.includes('\t')); // Four-space blocks; aligned parameter continuations are preserved.
+  }
+ }
 });
