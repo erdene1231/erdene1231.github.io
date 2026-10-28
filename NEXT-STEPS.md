@@ -713,3 +713,10 @@ PR #45 merged as `8469a23016ee90338e030b2beb27238573617b47`; Pages run 406449458
 All 993 problem rows, problem history and sequence remain unchanged; core #362/#363 already resolve to High through existing flags. All 8 private drafts, user sorting revision 7, Mongolia, profile/learner state and authority fingerprints match fresh pre-publication guards. Graph basics has a differing private draft revision 1/base 3: it remains exactly unchanged. Resuming it after public revision 4 requires normal explicit conflict/rebase handling; no silent overwrite or rebase occurred. No migration/access changes. Read `audit/PACKAGE02-GRAPH-BFS-PUBLICATION-RECEIPT.json`; never replay the two recorded SQL jobs.
 
 Twenty of 55 curriculum lessons reviewed/published; 35 remain. No user acceptance or real-account editing fixture claimed. Next existing prerequisites: dfs then flood-fill, with fresh captures before authoring. Keep standing tested PR/merge and guarded publication authority. Bank inventory remains separate and unapplied; APIO 2022–2026 evidence gaps unresolved without 403 retry/bypass. No deferred problem statements/editorials or package 3+.
+
+
+## Package 2: DFS and flood fill verified published
+
+PR47 merged as87fb0a574b0c3195c8246c1f729a5d33ab4bc481; Pages40648044442 succeeded. DFS and flood-fill are revision6, histories169–170. Exact anonymous bodies and all preservation guards verified; see audit/PACKAGE02-DFS-FILL-PUBLICATION-RECEIPT.json.132Node tests,259DFSgraphs,812grids,16reader cases and2MN+2ENeditor round trips passed. No problem writes, migrations or access changes. All8private drafts,sorting7,Mongolia and learner/profile/authority fingerprints unchanged. Never replay the two SQL jobs, including after capacity interruption.
+
+22/55curriculum lessons published;33remain, no user acceptance claim. Next existing lessons:binary-search-answer then hash-compression. Preserve standing workflow authority, private drafts without automatic rebase, and deferred problem-content/later-package restrictions. Contest proposals remain separate and unapplied.
