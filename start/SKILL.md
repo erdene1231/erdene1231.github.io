@@ -277,3 +277,12 @@ Twenty of 55 curriculum lessons reviewed/published; 35 remain. No user acceptanc
 PR47 merged as87fb0a574b0c3195c8246c1f729a5d33ab4bc481; Pages40648044442 succeeded. DFS and flood-fill are revision6, histories169–170. Exact anonymous bodies and all preservation guards verified; see audit/PACKAGE02-DFS-FILL-PUBLICATION-RECEIPT.json.132Node tests,259DFSgraphs,812grids,16reader cases and2MN+2ENeditor round trips passed. No problem writes, migrations or access changes. All8private drafts,sorting7,Mongolia and learner/profile/authority fingerprints unchanged. Never replay the two SQL jobs, including after capacity interruption.
 
 22/55curriculum lessons published;33remain, no user acceptance claim. Next existing lessons:binary-search-answer then hash-compression. Preserve standing workflow authority, private drafts without automatic rebase, and deferred problem-content/later-package restrictions. Contest proposals remain separate and unapplied.
+
+
+## Package 2: answer search and compression verified published
+
+PR #49 merged as `3731540accb13d10faba93da1dbba839dc1ff0b0`; Pages run 40650547877 succeeded. Answer search is public revision 4/history 171 and coordinate compression revision 6/history 172. Exact anonymous MN/EN native bodies match the reviewed documents. Each has a coherent fifteen-section teaching narrative, worked trace and correctness argument, meaningful explained code fragments followed by complete C++17, and justified staged practice/priority.
+
+Validation: 135 Node tests, 411 unchanged independently checked C++ cases reused, 16 reader cases and 2 MN + 2 EN native editor round trips. Only Factory Machines #95 three priority fields changed to High, revision 2/history 925. Other 992 problem rows, already-High #312 and sequence preserved. All 8 private drafts, sorting revision 7, Mongolia, learner/profile state and authority fingerprints unchanged. No migration or access change. See `audit/PACKAGE02-ANSWER-COMPRESSION-PUBLICATION-RECEIPT.json`; NEVER replay the three successful SQL jobs.
+
+24/55 curriculum lessons reviewed and published; 31 remain. No user acceptance or real-account editing fixture claimed. Next existing prerequisites: tree-basics then grid-dp, with fresh captures. Preserve standing tested PR/merge and guarded publication authority; preserve private drafts without automatic rebasing. Contest proposals remain separate and unapplied, with APIO 2022–2026 evidence gaps unresolved. No deferred problem statements/editorials or package 3+.
