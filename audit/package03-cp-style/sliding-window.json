@@ -1,0 +1,996 @@
+{
+  "id": "sliding-window",
+  "expected_revision": 2,
+  "expected_published": true,
+  "expected_body_md5": "122ab22d7966a44a7836e9222b7f4e7c",
+  "expected_body_sha256": "cdc7d8aa2b1b276b4e178d9e45a012c2807aca5e6d4aeb3cd5c62d54f9335f83",
+  "body": {
+    "id": "sliding-window",
+    "level": "Анхан шат",
+    "order": 46,
+    "title": "Гулсах цонх — зүүн зааг яагаад ухрахгүй вэ?",
+    "aliases": "sliding-window Sliding window — цонхоо ухраахгүй байх Sliding window — moving a window without backtracking",
+    "related": [
+      "binary-search-answer",
+      "monotonic-stack"
+    ],
+    "summary": "Эерэг утгатай дарааллын яг нийлбэртэй хэсгүүдийг нэг давталтаар тоолъё. Цонхны төлөв, хассан эхлэлийн баталгаа, нийт хөдөлгөөн болон тэг/сөрөг утгын эсрэг жишээг хамтад нь шалгана.",
+    "category": "Array ба search",
+    "levelKey": "beginner",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Дараалсан өдрүүдийн яг нийлбэр",
+        "blocks": [
+          {
+            "text": "Өдөр бүр эерэг хэмжээний орлого орно. $[2,1,3,2,1]$ гэсэн таван өдрөөс дараалсан хэдэн хэсгийн нийлбэр $3$ болох вэ? Эхний хоёр өдөр, гуравдугаар өдөр дангаараа, сүүлийн хоёр өдөр гэсэн нийт гурван хэсэг байна.",
+            "type": "p"
+          },
+          {
+            "text": "Дараалсан гэдэг нь анхны жагсаалтын дундуур элемент алгасахгүй гэсэн үг. Эрэмбэлбэл өдрүүдийн дараалал өөрчлөгдөж, өөр бодлого болно. Өмнөх хичээлийн эрэмбэлэгдсэн хосын хайлтыг шууд хуулж болохгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Бүх эхлэл, төгсгөлийг шалгах",
+        "blocks": [
+          {
+            "text": "Эхлэл бүрээс баруун тийш явж нийлбэр нэмбэл $O(n^2)$ завсар үзнэ. Хуримтлагдсан нийлбэрээр нэг завсрын нийлбэрийг $O(1)$ болгосон ч бүх хоёр заагийг сонговол квадрат асуулт хэвээр.",
+            "type": "p"
+          },
+          {
+            "text": "Өмнөх баруун төгсгөлд тохирохгүй болсон зарим эхлэлийг дараагийн төгсгөлд дахин турших шаардлагагүй байж болно. Яагаад гэдгийг эерэг утгын нөхцөлөөс гаргая.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "observation",
+        "title": "3. Эерэг тоо нэмэхэд нийлбэр зөвхөн өснө",
+        "blocks": [
+          {
+            "text": "Баруун талд эерэг элемент нэмбэл цонхны нийлбэр өснө. Зүүн захын эерэг элементийг хасвал буурна. Иймээс нийлбэр зорилтоос эрс их болсон эхлэлийг баруун тийш улам сунгаад засаж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Нэг баруун төгсгөлд зүүн эхлэлийг урагшлуулахад нийлбэр эрс багасна. Тиймээс нэг төгсгөлтэй, яг зорилтот нийлбэртэй эхлэл хамгийн ихдээ нэг байна. Код тэнцэх бүрд нэг нэмэх нь энэ нөхцөл дээр тулгуурладаг.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Цонхыг сунгаад, хэтэрвэл зүүнээс хумь",
+        "blocks": [
+          {
+            "text": "Зүүн заагийг тэг, нийлбэр ба хариуг тэг гэж эхлүүлнэ. Баруун шинэ элемент бүрийг нэмээд, нийлбэр зорилтоос их байх хугацаанд зүүн элементийг хасаж зүүн заагийг урагшлуулна. Дараа нь нийлбэр тэнцүү бол хариуг нэгээр нэмнэ.",
+            "type": "p"
+          },
+          {
+            "text": "Кодын баруун хувьсагч одоо багтсан элементийн байрлал. Тиймээс цонх $[l,r+1)$ гэсэн хагас нээлттэй завсартай. Зүүн зааг барууны дараа очвол цонх хоосон, нийлбэр тэг.",
+            "type": "p"
+          },
+          {
+            "text": "Баруун заагийг буцаахгүй, зүүн заагийг ч ухраахгүй. Цонхонд байгаа элементүүдийн нийлбэрийг л хадгална; өмнөх бүх цонхыг хүснэгтэд хадгалах шаардлагагүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "walkthrough",
+        "title": "5. Нэг алхамд зүүн зааг хэд ч хөдөлж болно",
+        "blocks": [
+          {
+            "text": "Зорилт $3$, утгууд $[2,1,3,2,1]$. Эхний хоёр өдөрт нийлбэр $2$, дараа нь $3$ болж нэг хариу олдоно. Гурав дахь өдрийн $3$-ыг нэмэхэд нийлбэр $6$ болно.",
+            "type": "p"
+          },
+          {
+            "text": "Одоо зүүнээс $2$-ыг хасахад $4$ — одоо ч их. Дараагийн $1$-ийг мөн хасаж байж $3$ болж хоёр дахь хариу гарна. Нэг л if шалгалтаар зогсвол энэ хариуг алдана.",
+            "type": "p"
+          },
+          {
+            "text": "Дөрөв дэх өдөр нэмэхэд $5$; өмнөх $3$-ыг хасаад $2$ үлдэнэ. Сүүлийн өдөр $1$ нэмэхэд $3$ болж гурав дахь хариу гарна. Олдсон гурван завсрын нэгээс эхэлсэн үзүүрүүд $[1,2]$, $[3,3]$, $[4,5]$.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "$0$",
+                "$2$",
+                "—",
+                "$2$",
+                "$0$"
+              ],
+              [
+                "$1$",
+                "$3$",
+                "—",
+                "$3$",
+                "$1$"
+              ],
+              [
+                "$2$",
+                "$6$",
+                "$2,1$",
+                "$3$",
+                "$2$"
+              ],
+              [
+                "$3$",
+                "$5$",
+                "$3$",
+                "$2$",
+                "$2$"
+              ],
+              [
+                "$4$",
+                "$3$",
+                "—",
+                "$3$",
+                "$3$"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Баруун байрлал",
+              "Нэмсний дараа",
+              "Зүүнээс хасах",
+              "Үлдсэн нийлбэр",
+              "Нийт хариу"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Хассан эхлэл дахин хариу болохгүй",
+        "blocks": [
+          {
+            "text": "Баруун элементийг нэмэхийн өмнө хадгалсан нийлбэр нь одоогийн цонхных. Барууныг нэмэх, зүүнийг хасах үйлдэл бүр энэ утгыг яг зөв шинэчилнэ. Хэтэрсэн үед хассан эхлэлтэй завсар одоогийн төгсгөлд их бөгөөд эерэг ирээдүйн утгаар сунгавал улам их болно.",
+            "type": "p"
+          },
+          {
+            "text": "Хумьж дуусахад нийлбэр зорилтоос ихгүй. Хэрэв тэнцүү бол ганц боломжит эхлэлийг тоолно: түүнээс баруун эхлэлтэй завсар бүр эрс бага, өмнө хассан эхлэлтэй бүр хэтэрсэн. Хэрэв бага бол баруун эхлэлүүд улам бага тул энэ төгсгөлд хариу байхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Баруун төгсгөл бүрийг нэг удаа үзэж, тухайн төгсгөлтэй цорын ганц боломжит хариуг яг нэг удаа тоолсон тул нийт хариу зөв. Хоёр заагийн хөдөлгөөн хязгаартай учраас алгоритм дуусна.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Давхар давталт болгон квадрат биш",
+        "blocks": [
+          {
+            "text": "Гаднах давталт $n$ удаа ажиллана. Доторх давталтын бүх удааг нийлүүлбэл зүүн зааг тэгээс хамгийн ихдээ $n$ хүртэл явна. Элемент бүр цонхонд нэг удаа орж, хамгийн ихдээ нэг удаа гарна. Иймээс нийт хугацаа $O(n)$, $O(n^2)$ биш.",
+            "type": "p"
+          },
+          {
+            "text": "Хайлтын функц нэмэлт цөөн хувьсагчтай тул өөрийн нэмэлт зай $O(1)$. Оролтын массивыг хадгалж байгаа бүтэн программын зай $O(n)$. Массивыг тогтмол холбоосоор дамжуулж хуулдаггүй.",
+            "type": "p"
+          },
+          {
+            "text": "Энэ хувилбарт утгууд болон зорилт эерэг. Нэг баруун төгсгөлд нэгээс олон хариу байхгүй тул хариу $n$-ээс ихгүй. Нийлбэрийг 64 битээр авна; хариуг мөн тэр төрөлд авсан нь бүх дэд завсрын тоо энд квадрат хүрнэ гэсэн үг биш.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. C++17: цонхны төлөвийг яг хадгал",
+        "blocks": [
+          {
+            "text": "Эхний мөрд хэмжээ ба зорилт, дараагийн мөрд утгууд. Хэмжээ 0–200000, зорилт ба утга бүр 1–нэг тэрбум. Хоосон массив зөвшөөрнө, харин хоосон завсрыг тоолохгүй. Яг зорилтот нийлбэртэй дараалсан хоосон биш хэсгийн тоог хэвлэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "8.1. Төлөв",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Зүүн зааг, одоогийн нийлбэр, нийт хариу гурван өөр утгатай. Массивыг тогтмол холбоосоор авч өөрчлөхгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nlong long count_windows(const vector<long long>& a, long long target) {\n    int l = 0;\n    long long sum = 0;\n    long long answer = 0;\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.2. Сунгах ба хумьх",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Баруун шинэ элементийг нэмээд нийлбэр их байх хугацаанд зүүн элементийг эхлээд хасаж, дараа нь заагийг ахиулна. Үүний дараа цонхны нийлбэр зорилтоос ихгүй байна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    for (int r = 0; r < static_cast<int>(a.size()); ++r) {\n        sum += a[r];\n        while (l <= r && sum > target) {\n            sum -= a[l];\n            ++l;\n        }\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.3. Хариу тоолох",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Хумьж дууссан цонх тэнцүү байвал нэг хариу нэмнэ. Эерэгийн баталгаагаар энэ төгсгөлд өөр зөв эхлэл байхгүй. Бүх баруун төгсгөлийн дараа нийт хариуг буцаана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "        if (sum == target) {\n            ++answer;\n        }\n    }\n    return answer;\n}\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.4. Оролт, гаралт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Эхлээд хэмжээ, зорилт, дараа нь эерэг утгуудыг уншина. Гэрээнд эерэг бус утга орохгүй; ийм оролтод кодыг өөр аргын оронд хэрэглэнэ гэж амлахгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int size;\n    long long target;\n    cin >> size >> target;\n    vector<long long> a(size);\n    for (long long& value : a) {\n        cin >> value;\n    }\n    cout << count_windows(a, target) << '\\n';\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн ажиллах C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nlong long count_windows(const vector<long long>& a, long long target) {\n    int l = 0;\n    long long sum = 0;\n    long long answer = 0;\n\n    for (int r = 0; r < static_cast<int>(a.size()); ++r) {\n        sum += a[r];\n        while (l <= r && sum > target) {\n            sum -= a[l];\n            ++l;\n        }\n        if (sum == target) {\n            ++answer;\n        }\n    }\n    return answer;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int size;\n    long long target;\n    cin >> size >> target;\n    vector<long long> a(size);\n    for (long long& value : a) {\n        cin >> value;\n    }\n    cout << count_windows(a, target) << '\\n';\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "5 3\n2 1 3 2 1\n",
+            "type": "code",
+            "language": "Input"
+          },
+          {
+            "text": "3\n",
+            "type": "code",
+            "language": "Output"
+          }
+        ]
+      },
+      {
+        "key": "boundaries",
+        "title": "9. Нэг элемент зорилтоос их байвал",
+        "blocks": [
+          {
+            "text": "Нэг элемент зорилтоос их бол түүнийг өөрийг нь хүртэл зүүнээс хасаад хоосон цонх үлдэж болно. Нийлбэр тэг, зорилт эерэг тул хоосон хэсгийг хариунд тоолохгүй. Дараагийн баруун элементээс дахин эхэлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "Хоосон массивт хариу тэг. Нэг элемент зорилттой тэнцүү бол нэг, бага/их бол тэг. Бүх утга нэг, давхардсан эерэг утгууд, зорилтоос олон дахин их элементүүд болон яг бүтэн массив таарахыг шалга.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "mistakes",
+        "title": "10. Эерэг гэдгийг орхивол тооллого өөр болно",
+        "blocks": [
+          {
+            "text": "Сөрөг тоотой $[4,-1]$, зорилт $3$ дээр эхний $4$-ийг хэтэрсэн гэж хасвал дараа нь $-1$ ирэхэд зөв бүтэн завсрыг олж чадахгүй. Ирээдүйн нийлбэр зөвхөн өснө гэсэн баталгаа эвдэрсэн.",
+            "type": "p"
+          },
+          {
+            "text": "Тэг утгыг зөвшөөрсөн $[0,1]$, зорилт $1$ дээр хоёр зөв завсар байна: бүтэн хэсэг ба ганц $1$. Гэтэл энэ код нэг л эхлэл тоолно. Тэгийн хувьд ч яг одоогийн тооллогыг өөрчлөлтгүй ашиглаж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Хумьсаныхаа дараа биш өмнө нь хариу шалгах, while-ын оронд if хэрэглэх, зүүн элементийг нийлбэрээс хасахаа мартах нь төлөвийг эвдэнэ. Мөн дараалсан хэсэг асуусан бодлогод утгуудыг эрэмбэлж болохгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "connections",
+        "title": "11. Тогтмол урт ба бусад цонхны төлөв",
+        "blocks": [
+          {
+            "text": "Урт нь тогтмол $k$ цонхны нийлбэрт шинэ утгыг нэмээд, $k$-аас олон элемент бол хамгийн хуучныг хасна. Хэмжээгээр нь захыг шийдэж байгаа тул энэ өөр хувилбар сөрөг тоонд ч зөв. Харин өнөөдрийн яг нийлбэрийн хумилт эерэгт тулгуурласан.",
+            "type": "p"
+          },
+          {
+            "text": "Давтагдахгүй утгын цонхонд нийлбэр биш, утга бүрийн давтамж хадгална. Хамгийн бага утгын цонхонд энгийн хасалтаар шинэ минимум олдохгүй; дараалалтай өөр бүтэц хэрэгтэй. Цонх бүрд хадгалах төлөв, хасах дүрэм хоёрыг шинээр тодорхойл.",
+            "type": "p"
+          },
+          {
+            "type": "tutorial",
+            "label": "Хоёр заагийн арга",
+            "tutorialId": "two-pointers"
+          },
+          {
+            "type": "tutorial",
+            "label": "Хуримтлагдсан нийлбэр",
+            "tutorialId": "prefix-sums"
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "12. Зүүн зааг ухрах шаардлагагүй юу?",
+        "blocks": [
+          {
+            "text": "Барууныг сунгах үед зөрчигдсөн нөхцөлийг зөвхөн зүүнээс хасаж сэргээж болох уу? Хассан эхлэл ирээдүйд дахин зөв болохгүйг баталж чадах уу? Эдгээр нь сум, давтамж, төсөв зэрэг тохиолдол бүрд өөр утгатай.",
+            "type": "p"
+          },
+          {
+            "text": "Өнөөдрийн сөрөг тоотой эсрэг жишээнд зааг ухрах хэрэг гарч болзошгүй тул аргаа хүчээр хэрэглэхгүй. Дурын тэмдэгтэй яг нийлбэрийн тооллогод хуримтлагдсан нийлбэрийн давтамж зэрэг өөр санаа хэрэглэнэ; set/map хичээлийн дараа холбо.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Нийлбэрээс давтамж, медиан ба төсөв рүү",
+        "blocks": [
+          {
+            "text": "Subarray Sums I",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Эерэгийн нөхцөл, нэг төгсгөлийн ганц эхлэлийн баталгааг ашиглан яг нийлбэрийн тоог бие даан ол.",
+            "type": "p"
+          },
+          {
+            "text": "Playlist",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Давтамжаа шинэчилж, давхардал арилтал зүүнээс хас. Нэг if биш while шаардлагатай жишээ гарга.",
+            "type": "p"
+          },
+          {
+            "text": "Distinct Values Subarrays II",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Хамгийн ихдээ өгсөн тооны ялгаатай утгатай завсруудыг тоолоход нэг төгсгөлд олон эхлэл зөв байдгийг гарга. Өнөөдрийн answer++-ийг шууд хуулж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Maximum Subarray Sum II",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Зөвшөөрсөн уртын завсрыг хуримтлагдсан нийлбэрийн боломжит эхлэлүүдийн цонх болго. Хамгийн бага prefix-ийг хадгалах шинэ бүтэц хэрэгтэйг ялга.",
+            "type": "p"
+          },
+          {
+            "text": "Sliding Window Median",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Орох/гарах утгатай үед дундах эрэмбийн байрлалыг хадгал. Хоёр хэсгийн хэмжээ ба тэнцүү утгыг ялган устгах дүрэм хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "text": "IOI 2011 Rice Hub",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Эрэмбэлэгдсэн талбайн цонхны будааг медианд хүргэх зардлыг хуримтлагдсан нийлбэрээр ол. Илүү олон талбай нэмэхэд хамгийн бага зардал буурахгүйг батал; медианы солих баталгаа нэмэлтээр хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "text": "Нэмэлт Sliding Window Sum холбоос тогтмол уртын хувилбарыг дадлагажуулна.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "importance",
+        "title": "14. Нэг код биш, нийт хөдөлгөөний санаа",
+        "blocks": [
+          {
+            "text": "High ач холбогдолтой: нэг элементийг нэг удаа оруулж, нэг удаа гаргах нийт ажлын тооцоо болон давталтын төлөвийг хадгалах чадвар олон сэдэвт дамжина. Гэхдээ хоёр зааг байгаа нь өөрөө зөв, шугаман гэсэн баталгаа биш.",
+            "type": "p"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Цөм дасгал ",
+                "marks": []
+              },
+              {
+                "text": "Subarray Sums I",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь эерэг нийлбэрийн энэ загварт яг тохирно. Playlist нь давтамж хадгалах нэмэлт суурьтай тул холбоосыг хадгалж сонголтот болгосон; сан дахь түүний үнэлгээг автоматаар өөрчлөхгүй.",
+                "marks": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Хугацаа ба хэрэглэх нөхцөлийг хамт батал",
+        "blocks": [
+          {
+            "text": "Жишээний зүүн зааг хоёр удаа хөдөлсөн алхмыг гараар дага. Хассан эхлэл ирээдүйд яагаад тохирохгүй, нэг төгсгөлд яагаад ганц хариу байдгийг тайлбарла. Дараа нь кодоо бие даан бичиж бүх завсрыг үздэг жижиг лавлахтай тулга.",
+            "type": "p"
+          },
+          {
+            "text": "Эерэг, тэгтэй, сөрөг гурван оролтын гэрээг ялга. Тогтмол уртын цонх ба яг нийлбэрийн хувьсах уртын цонхны баталгааг бүү холь. Уншсан, ойлгосон, хэрэгжүүлсэн, бие даан бодсон чадвараа тусад нь үнэл.",
+            "type": "p"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Sliding windows — why the left boundary never moves backward",
+        "summary": "Count exact-sum intervals of positive values in linear time. Prove state, permanent rejection and total movement; test why zeros and negatives invalidate this version.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Count consecutive periods with an exact sum",
+            "blocks": [
+              {
+                "text": "Daily incomes are strictly positive. In $[2,1,3,2,1]$, three consecutive intervals total $3$: the first two days, the third day alone and the last two days.",
+                "type": "p"
+              },
+              {
+                "text": "Consecutive means no skipped positions in the original order. Sorting changes the intervals and therefore the problem; do not copy sorted pair search directly.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Try every start and end",
+            "blocks": [
+              {
+                "text": "For each start, extend right while maintaining a sum: there are $O(n^2)$ intervals. Prefix sums make one interval query constant-time but do not reduce the number of boundary pairs.",
+                "type": "p"
+              },
+              {
+                "text": "Some starts rejected for the previous right endpoint need never be retried. Strict positivity tells us when that rejection is permanent.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "observation",
+            "title": "3. Positive extensions only increase the sum",
+            "blocks": [
+              {
+                "text": "Adding a positive value on the right increases the sum; removing a positive value on the left decreases it. A start that is already too large cannot be rescued by further right extension.",
+                "type": "p"
+              },
+              {
+                "text": "For one right endpoint, moving the start forward strictly decreases the sum. Thus at most one start gives the target, which justifies counting one on equality.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Extend right, then shrink if necessary",
+            "blocks": [
+              {
+                "text": "Initialize left, sum and answer to zero. Add each new right value, then repeatedly remove left values while the sum exceeds the target. Count one if the remaining sum equals the target.",
+                "type": "p"
+              },
+              {
+                "text": "The code’s right index is included, so the window is half-open $[l,r+1)$. If left moves just beyond right, it is empty with sum zero.",
+                "type": "p"
+              },
+              {
+                "text": "Neither boundary moves backward. Keep only the current aggregate instead of storing all previous windows.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "walkthrough",
+            "title": "5. One right step may require several removals",
+            "blocks": [
+              {
+                "text": "For target $3$ and values $[2,1,3,2,1]$, sums after the first two days are $2$ and $3$, yielding one answer. Adding the third value makes $6$.",
+                "type": "p"
+              },
+              {
+                "text": "Removing $2$ leaves $4$, still too large. Remove the next $1$ too, leaving $3$ and the second answer. A single if instead of a while would miss it.",
+                "type": "p"
+              },
+              {
+                "text": "The fourth addition makes $5$; remove $3$ to leave $2$. The final $1$ makes $3$ and the third answer. One-based intervals are $[1,2]$, $[3,3]$, $[4,5]$.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "$0$",
+                    "$2$",
+                    "—",
+                    "$2$",
+                    "$0$"
+                  ],
+                  [
+                    "$1$",
+                    "$3$",
+                    "—",
+                    "$3$",
+                    "$1$"
+                  ],
+                  [
+                    "$2$",
+                    "$6$",
+                    "$2,1$",
+                    "$3$",
+                    "$2$"
+                  ],
+                  [
+                    "$3$",
+                    "$5$",
+                    "$3$",
+                    "$2$",
+                    "$2$"
+                  ],
+                  [
+                    "$4$",
+                    "$3$",
+                    "—",
+                    "$3$",
+                    "$3$"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Right index",
+                  "After addition",
+                  "Remove left",
+                  "Remaining sum",
+                  "Answers"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. A discarded start can never become an answer",
+            "blocks": [
+              {
+                "text": "The stored sum equals the current window. Every right addition and left removal preserves this meaning. A start removed for being too large remains too large for every future right endpoint because all extensions are positive.",
+                "type": "p"
+              },
+              {
+                "text": "After shrinking, the sum is at most the target. Equality counts the only valid start: later starts are strictly smaller and earlier discarded starts too large. If it is smaller, all later starts are smaller too, so this endpoint has no answer.",
+                "type": "p"
+              },
+              {
+                "text": "Every right endpoint is visited once and its only possible answer counted exactly once, proving the total. Both boundaries have finitely many forward moves.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Nested loops need not be quadratic",
+            "blocks": [
+              {
+                "text": "The outer loop runs $n$ times. Across all inner loops, left moves at most $n$ positions. Each element enters once and leaves at most once, so total time is $O(n)$, not $O(n^2)$.",
+                "type": "p"
+              },
+              {
+                "text": "The search uses $O(1)$ auxiliary variables; the complete program stores the input in $O(n)$ space. The constant-reference parameter avoids copying it.",
+                "type": "p"
+              },
+              {
+                "text": "Values and target are strictly positive. At most one answer per right endpoint means the answer is at most $n$. Sums use 64-bit integers; choosing the same type for the answer does not imply a quadratic answer count here.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. C++17: maintain exact window state",
+            "blocks": [
+              {
+                "text": "Read size and target, then values. Size is 0–200000; target and each value are 1–one billion. An empty array is allowed, but empty intervals are not counted. Print the number of nonempty consecutive intervals with the exact target sum.",
+                "type": "p"
+              },
+              {
+                "text": "8.1. State",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Left, current sum and total answers have distinct meanings; a constant reference preserves the array.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nlong long count_windows(const vector<long long>& a, long long target) {\n    int l = 0;\n    long long sum = 0;\n    long long answer = 0;\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.2. Extend and shrink",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Add the new right value; while too large, subtract the current left value before advancing left. The resulting sum is at most the target.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    for (int r = 0; r < static_cast<int>(a.size()); ++r) {\n        sum += a[r];\n        while (l <= r && sum > target) {\n            sum -= a[l];\n            ++l;\n        }\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.3. Count answers",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Count equality after shrinking. Strict positivity proves there is no second valid start at this endpoint. Return the total after all right endpoints.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "        if (sum == target) {\n            ++answer;\n        }\n    }\n    return answer;\n}\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.4. Input and output",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read size, target and positive values. Nonpositive elements are outside this contract; the program is not a substitute for a signed-array method.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int size;\n    long long target;\n    cin >> size >> target;\n    vector<long long> a(size);\n    for (long long& value : a) {\n        cin >> value;\n    }\n    cout << count_windows(a, target) << '\\n';\n    return 0;\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete compilable C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nlong long count_windows(const vector<long long>& a, long long target) {\n    int l = 0;\n    long long sum = 0;\n    long long answer = 0;\n\n    for (int r = 0; r < static_cast<int>(a.size()); ++r) {\n        sum += a[r];\n        while (l <= r && sum > target) {\n            sum -= a[l];\n            ++l;\n        }\n        if (sum == target) {\n            ++answer;\n        }\n    }\n    return answer;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int size;\n    long long target;\n    cin >> size >> target;\n    vector<long long> a(size);\n    for (long long& value : a) {\n        cin >> value;\n    }\n    cout << count_windows(a, target) << '\\n';\n    return 0;\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "5 3\n2 1 3 2 1\n",
+                "type": "code",
+                "language": "Input"
+              },
+              {
+                "text": "3\n",
+                "type": "code",
+                "language": "Output"
+              }
+            ]
+          },
+          {
+            "key": "boundaries",
+            "title": "9. An element larger than the target",
+            "blocks": [
+              {
+                "text": "An oversized element may be removed itself, leaving an empty window. Its sum is zero while the target is positive, so it is not counted. The next element starts a new window.",
+                "type": "p"
+              },
+              {
+                "text": "An empty array returns zero. A singleton returns one only on equality. Test all ones, positive duplicates, repeatedly oversized elements and a full-array match.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "mistakes",
+            "title": "10. Dropping positivity changes the problem",
+            "blocks": [
+              {
+                "text": "For $[4,-1]$ and target $3$, discarding the initial $4$ misses the valid full interval after $-1$ arrives. Future sums no longer only increase.",
+                "type": "p"
+              },
+              {
+                "text": "With zeros, $[0,1]$ and target $1$ have two valid intervals: both elements and the singleton $1$. This code counts only one start. Even nonnegative values cannot use this exact counting logic unchanged.",
+                "type": "p"
+              },
+              {
+                "text": "Checking before shrinking, using if instead of while or forgetting to subtract the removed value breaks the state. Sorting also changes a consecutive-interval problem.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "connections",
+            "title": "11. Fixed lengths and other window states",
+            "blocks": [
+              {
+                "text": "For fixed length $k$, add a new value and remove the oldest when size exceeds $k$. That size-based rule works with negative values too; today’s sum-based shrinking relies on positivity.",
+                "type": "p"
+              },
+              {
+                "text": "For distinct-value windows, maintain frequencies rather than a sum. Removing the old minimum does not reveal the next minimum by subtraction; a different structure is needed. Define state and removal rules separately for each variant.",
+                "type": "p"
+              },
+              {
+                "type": "tutorial",
+                "label": "Two pointers",
+                "tutorialId": "two-pointers"
+              },
+              {
+                "type": "tutorial",
+                "label": "Prefix sums",
+                "tutorialId": "prefix-sums"
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "12. Can the left boundary avoid moving backward?",
+            "blocks": [
+              {
+                "text": "Can extending right violate a condition that removing left can restore? Can a discarded start never become valid later? Those questions need separate answers for sums, frequencies and budgets.",
+                "type": "p"
+              },
+              {
+                "text": "The signed counterexample invalidates forward-only rejection, so do not force the pattern. Signed exact-sum counting can instead use frequencies of prefix sums after studying maps.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From sums to frequencies, medians and budgets",
+            "blocks": [
+              {
+                "text": "Subarray Sums I",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Use positivity and uniqueness per endpoint to count target sums independently.",
+                "type": "p"
+              },
+              {
+                "text": "Playlist",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Update frequencies and remove left values until duplicates vanish; construct a case needing while rather than if.",
+                "type": "p"
+              },
+              {
+                "text": "Distinct Values Subarrays II",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "For at-most-$k$ distinct values, derive why many starts can work at one endpoint instead of copying answer++.",
+                "type": "p"
+              },
+              {
+                "text": "Maximum Subarray Sum II",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Turn length constraints into a window of candidate prefix starts and maintain their minimum with an additional structure.",
+                "type": "p"
+              },
+              {
+                "text": "Sliding Window Median",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Maintain median rank under insertions/removals, including size balance and deletion of duplicate occurrences.",
+                "type": "p"
+              },
+              {
+                "text": "IOI 2011 Rice Hub",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Use prefix sums for transport cost to a median; prove adding fields cannot decrease minimum cost. The median argument is an additional prerequisite.",
+                "type": "p"
+              },
+              {
+                "text": "Additional Sliding Window Sum practices fixed-length windows.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "importance",
+            "title": "14. Learn the movement argument, not one code template",
+            "blocks": [
+              {
+                "text": "Priority is High because one-entry/one-exit work accounting and exact state maintenance transfer broadly. Two moving indices alone do not prove correctness or linear time.",
+                "type": "p"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "",
+                    "marks": []
+                  },
+                  {
+                    "text": "Subarray Sums I",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " directly matches the positive-sum model and is core. Playlist remains optional because frequency maintenance adds prerequisites; its bank-wide priority is unchanged.",
+                    "marks": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Prove both cost and assumptions",
+            "blocks": [
+              {
+                "text": "Trace the step requiring two left removals. Explain why discarded starts stay invalid and why each endpoint has at most one answer. Implement independently and compare with all-interval enumeration.",
+                "type": "p"
+              },
+              {
+                "text": "Distinguish positive, zero-containing and signed contracts. Do not mix fixed-length and exact-sum variable-window proofs. Assess reading, understanding, implementation and independent solving separately.",
+                "type": "p"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know two pointers, consecutive intervals, prefix sums and loop-state reasoning."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Хоёр заагийн арга, дараалсан завсар, хуримтлагдсан нийлбэр болон давталтын утгыг мэддэг байна.",
+    "priorityLevel": "high",
+    "priorityReason": "Төлөвийг зөв хадгалж, нэг элементийг нэг удаа оруулж гаргах нийт ажлын тооцоо хийх нь олон цонхны алгоритмын суурь. Хассан эхлэл дахин хэрэггүйг батлах нь синтаксаас илүү чухал.",
+    "prerequisiteIds": [
+      "two-pointers",
+      "prefix-sums"
+    ],
+    "learningRelations": {
+      "next": "stack-queue",
+      "practice": [
+        {
+          "key": "334",
+          "stage": "Warm-up",
+          "reason": "Эерэг нийлбэрийн цонхны төлөв, зүүн эхлэл хасах баталгаа, нэг төгсгөлийн ганц хариуг бие даан хэрэгжүүлэх шууд цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "23",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "336",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "339",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "542",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "841",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "535",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "binary-search-answer",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "monotonic-stack",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "mapping": {
+    "values": "a",
+    "left": "l",
+    "right": "r",
+    "count_target_windows": "count_windows"
+  },
+  "changed": true,
+  "reviewed_body_sha256": "96ccaf78be36c50a200ef98394876c91ddee9320c0027ac10d711df5910fbe81",
+  "proposed_body_sha256": "96ccaf78be36c50a200ef98394876c91ddee9320c0027ac10d711df5910fbe81"
+}

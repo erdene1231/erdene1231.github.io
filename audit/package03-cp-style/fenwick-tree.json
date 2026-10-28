@@ -1,0 +1,872 @@
+{
+  "id": "fenwick-tree",
+  "expected_revision": 6,
+  "expected_published": true,
+  "expected_body_md5": "2da7dede7fffad4977e6880a6f2909f2",
+  "expected_body_sha256": "dd16208fe2c5c5d8fa45f09ff3f37a48a0617f20cb08abd8307fc0ffcc251b0a",
+  "body": {
+    "id": "fenwick-tree",
+    "level": "Дунд шат",
+    "order": 35,
+    "title": "Фенвикийн мод — өөрчлөлттэй завсрын нийлбэр",
+    "aliases": "fenwick-tree Fenwick tree — өөрчлөгддөг prefix sum Fenwick trees — prefix sums with updates fenwick tree bit binary indexed tree point update range sum",
+    "related": [
+      "prefix-sums",
+      "bit-operations",
+      "segment-tree"
+    ],
+    "summary": "Урьдчилсан нийлбэрийг хоёрын зэрэгтэй хэсгүүдэд хувааж, нэг утгын өөрчлөлт ба нийлбэрийн асуултыг логарифм хугацаанд бодно.",
+    "category": "Data structures",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Нийлбэр асуухын дундуур утга өөрчлөгдвөл",
+        "blocks": [
+          {
+            "text": "$[2,1,3,4,5]$ массивын $[2,4]$ нийлбэр найм. Гурав дахь утгыг зургаа болговол тэр нийлбэр арван нэг, бүх нийлбэр арван найм болно. Асуулт ба өөрчлөлт олон удаа ээлжилнэ.",
+            "type": "p"
+          },
+          {
+            "text": "Индексүүд нэгээс эхэлнэ. Өөрчлөлт нь хуучныг шинэ утгаар солих үйлдэл; бүтцийн дотоод add нь харин зөрүү нэмдэг өөр үйлдэл гэдгийг эхнээс нь ялга.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Эхний нийлбэрийг бүхэлд нь засахгүй",
+        "blocks": [
+          {
+            "text": "Урьдчилсан нийлбэрээр асуулт тогтмол хугацаатай ч нэг утга өөрчлөгдвөл түүнээс хойших бүх нийлбэр өөрчлөгдөнө: $O(n)$ шинэчлэлт. Харин асуулт бүрд завсраа гүйлгэвэл асуулт $O(n)$.",
+            "type": "p"
+          },
+          {
+            "text": "Зарим эхний хэсгийг урьдчилан нийлүүлсэн, хоорондоо давхцахгүй цөөн бүлгээр илэрхийлж чадвал хоёр ажлыг хоёул хурдасгаж болно.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "3. Индексийн бага бит хэсгийн уртыг хэлнэ",
+        "blocks": [
+          {
+            "text": "$lowbit(i)=i\\mathbin{\\&}(-i)$ нь эерэг $i$-ийн хамгийн бага нэг битийн утга. $tree[i]$ нь $[i-lowbit(i)+1,i]$ хэсгийн нийлбэр. Жишээ нь дөрөв $100_2$ тул lowbit дөрөв, зургаа $110_2$ тул хоёр.",
+            "type": "p"
+          },
+          {
+            "text": "Иймээс $tree[4]$ эхний дөрвийн нийлбэр, $tree[6]$ тав ба зургаагийн нийлбэр. Энэ нь бүх $i$-д эхний $i$-ийн нийлбэр хадгалсан массив биш.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Асуултад бит арилгаж, өөрчлөлтөд өвөг рүү очих",
+        "blocks": [
+          {
+            "text": "Эхний $r$ утгын нийлбэрт $tree[r]$-г нэмээд $r-=lowbit(r)$ хийнэ. Ингэхэд яг авсан хэсгийн зүүн талд очно; тэг хүртэл үргэлжлүүл. $[l,r]$ нийлбэр нь эхний $r$-ийнхээс эхний $l-1$-ийнхийг хассан утга.",
+            "type": "p"
+          },
+          {
+            "text": "Байрлал $p$-д зөрүү нэмэхэд $p$-ээс эхлэн $i+=lowbit(i)$ гэж явж тухайн байрлалыг агуулдаг хэсгүүдийг засна. Нэмэх зөрүү нь шинэ утгаас хуучныг хассан тоо.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "5. Гурав дахь утгыг гурваар өсгөх",
+        "blocks": [
+          {
+            "text": "Эхний бүтэц $tree[1..5]=[2,3,3,10,5]$. Эхний тавын нийлбэрт тав дахь тав, дөрөв дэх арав нийлээд арван тав болно. $[2,4]$ асуулт арав хасах хоёр, найм.",
+            "type": "p"
+          },
+          {
+            "text": "Гурав дахь утгыг гурваас зургаа болгох зөрүү гурав. Шинэчлэх индексүүд гурав, дөрөв; дараагийн найм хязгаараас гарна. Бүтэц $[2,3,6,13,5]$. $[2,4]$ нийлбэр арван гурав хасах хоёр буюу арван нэг.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "1",
+                "[1,1]",
+                "2",
+                "2"
+              ],
+              [
+                "2",
+                "[1,2]",
+                "3",
+                "3"
+              ],
+              [
+                "3",
+                "[3,3]",
+                "3",
+                "6"
+              ],
+              [
+                "4",
+                "[1,4]",
+                "10",
+                "13"
+              ],
+              [
+                "5",
+                "[5,5]",
+                "5",
+                "5"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Индекс",
+              "Хадгалах хэсэг",
+              "Өмнө",
+              "Дараа"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Давхцахгүй хэсгүүд нийлээд яг эхний муж",
+        "blocks": [
+          {
+            "text": "Асуултын одоогийн $i$-д авсан хэсэг $i$-д дуусна. Дараагийн индекс тэр хэсгийн зүүнээс нэгээр бага тул хэсгүүд давхцахгүй, хоосон завсар үлдээхгүй. Тэгт хүрэхэд анхны эхний хэсэг бүхэлдээ хамрагдсан байна.",
+            "type": "p"
+          },
+          {
+            "text": "Өөрчлөлтийн зам нь нэг байрлалыг агуулдаг хэсгүүдийн өвгийн холбоос. Тэр хэсэг бүрд ижил зөрүү нэмэхэд тэдний нийлбэрийн утга хадгалагдана, агуулдаггүй хэсгүүд өөрчлөгдөхгүй. Ингэснээр дараагийн асуултын хэсгүүд мөн зөв.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Нэг битийн ахиц логарифм алхамтай",
+        "blocks": [
+          {
+            "text": "Асуулт бүр хамгийн бага нэг битийг арилгана. Өөрчлөлт хэсгийн уртыг өсгөж өвөг рүү шилжинэ. Хоёул $O(\\log(n+1))$, санах ой $O(n)$. Энэ код анхны утга бүрийг add хийдэг тул байгуулах $O(n\\log(n+1))$; шугаман байгуулах өөр хувилбар кодод ороогүй.",
+            "type": "p"
+          },
+          {
+            "text": "$n,q\\le200000$, утгуудын абсолют хэмжээ $10^9$-өөс ихгүй. Нийлбэр $2\\cdot10^{14}$ хүрч болох тул long long хэрэглэнэ. Индексүүд жижиг эерэг int тул lowbit-ийн тэмдэгт арифметик хүрээндээ байна.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. Add, эхний нийлбэр, завсрын ялгавар",
+        "blocks": [
+          {
+            "text": "8.1. Эхлэл ба төлөв",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Хэмжээ ба нэгээс эхэлсэн хэсгийн нийлбэрүүдийг хадгална. Add нь тухайн байрлалыг агуулсан өвгүүдэд зөрүүг нэмнэ; индекс тэг өгөхгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Fenwick {\n    int n;\n    vector<long long> tree;\npublic:\n    explicit Fenwick(int size) : n(size), tree(size + 1) {}\n    void add(int position, long long change) {\n        for (int i = position; i <= n; i += i & -i) {\n            tree[i] += change;\n        }\n    }\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.2. Үндсэн үйлдэл",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Prefix асуулт давхцахгүй хэсгүүдийг тэг хүртэл цуглуулна. Завсрын асуулт хоёр prefix-ийн ялгавар. Эдгээр нь бүтцийг өөрчлөхгүй const үйлдэл.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    long long prefix_sum(int position) const {\n        long long total = 0;\n        for (int i = position; i > 0; i -= i & -i) {\n            total += tree[i];\n        }\n        return total;\n    }\n    long long range_sum(int l, int r) const {\n        return prefix_sum(r) - prefix_sum(l - 1);\n    }\n};\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.3. Нэгтгэл ба боловсруулалт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт $1$–$200000$ элемент, $0$–$200000$ асуулт; утгын абсолют хэмжээ $10^9$-өөс ихгүй. Хуучин утгуудыг уншаад тус бүрийг add хийн байгуулна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<long long> a(n + 1);\n    Fenwick tree(n);\n    for (int i = 1; i <= n; ++i) {\n        cin >> a[i];\n        tree.add(i, a[i]);\n    }\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.4. Оролт ба гаралт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Төрөл нэг нь байрлал ба шинэ утга, төрөл хоёр нь хоёр хаалттай хил. Assignment-д шинэ-хуучин зөрүүг нэмээд хуучин массивыг шинэчилнэ; асуултын хариуг тусдаа мөрд хэвлэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    for (int query = 0; query < q; ++query) {\n        int type;\n        cin >> type;\n        if (type == 1) {\n            int position;\n            long long value;\n            cin >> position >> value;\n            tree.add(position, value - a[position]);\n            a[position] = value;\n        } else {\n            int l, r;\n            cin >> l >> r;\n            cout << tree.range_sum(l, r) << '\\n';\n        }\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн ажиллах C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Fenwick {\n    int n;\n    vector<long long> tree;\npublic:\n    explicit Fenwick(int size) : n(size), tree(size + 1) {}\n    void add(int position, long long change) {\n        for (int i = position; i <= n; i += i & -i) {\n            tree[i] += change;\n        }\n    }\n    long long prefix_sum(int position) const {\n        long long total = 0;\n        for (int i = position; i > 0; i -= i & -i) {\n            total += tree[i];\n        }\n        return total;\n    }\n    long long range_sum(int l, int r) const {\n        return prefix_sum(r) - prefix_sum(l - 1);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<long long> a(n + 1);\n    Fenwick tree(n);\n    for (int i = 1; i <= n; ++i) {\n        cin >> a[i];\n        tree.add(i, a[i]);\n    }\n    for (int query = 0; query < q; ++query) {\n        int type;\n        cin >> type;\n        if (type == 1) {\n            int position;\n            long long value;\n            cin >> position >> value;\n            tree.add(position, value - a[position]);\n            a[position] = value;\n        } else {\n            int l, r;\n            cin >> l >> r;\n            cout << tree.range_sum(l, r) << '\\n';\n        }\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "5 4\n2 1 3 4 5\n2 2 4\n1 3 6\n2 2 4\n2 1 5\n",
+            "type": "code",
+            "language": "Input"
+          },
+          {
+            "text": "8\n11\n18\n",
+            "type": "code",
+            "language": "Output"
+          }
+        ]
+      },
+      {
+        "key": "errors",
+        "title": "9. Тэг индекст add дуудахгүй",
+        "blocks": [
+          {
+            "text": "Тэгийн lowbit тэг учраас add-ийн индекс ахихгүй. Манай нийтийн гэрээнд шинэчлэх индекс $1$-ээс $n$, харин prefix_sum(0) нь зөв хоосон нийлбэр тэг.",
+            "type": "p"
+          },
+          {
+            "text": "Шинэ утгыг add руу шууд өгвөл хуучин дээр нь давхар нэмнэ. Тиймээс хуучныг тусдаа массивт хадгалж зөрүүг тооцоод дараа нь хуучныг шинэчил.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "10. Хоёр эхний минимумыг хасаад болохгүй",
+        "blocks": [
+          {
+            "text": "Нийлбэрийн хоёр эхний хэсгийн ялгавар зөв завсрыг өгдөг нь нэмэхийн урвуу хасах үйлдэлтэй холбоотой. Minimum-д ийм урвуу байхгүй. Жишээ $[1,9,8]$-ийн эхний хоёр, эхний гурав хоёул минимум нэг боловч $[3,3]$ минимум найм.",
+            "type": "p"
+          },
+          {
+            "text": "Ерөнхий утга солих ба завсрын minimum-д сегментийн мод тохиромжтой. Хязгаарласан нэг чигийн minimum шинэчлэлтийн тусгай Фенвикийн хувилбар байж болох ч энэ нийлбэрийн кодыг шууд minimum болгохгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "11. Нэг байрлалын өөрчлөлт, нийлдэг эхний хэсэг",
+        "blocks": [
+          {
+            "text": "Олон завсрын нийлбэр, давтамж, өмнөх бага утгын тоо асуухад Фенвикийг бод. Утгууд том бол координат шахалттай холбож болно, гэхдээ дугаарын зай нь анхны тоон зай биш.",
+            "type": "p"
+          },
+          {
+            "text": "Сөрөг утгууд нийлбэрийн асуулт ба нэмэхэд саад болохгүй. Харин $k$-р нэгж хайх зэрэг эхний нийлбэр нэг чигт өсөх шаардлагатай нэмэлт аргын нөхцөл өөр.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "variants",
+        "title": "12. Завсарт нэмэхийг ялгаварт шилжүүлэх",
+        "blocks": [
+          {
+            "text": "Ялгаврын массивт $[l,r]$-д нэмэх нь хоёр байрлал өөрчлөхөд шилжинэ; анхны нэг утга нь ялгаврын эхний нийлбэр. Range Update Queries-д энэ холбоог ашиглаж болно.",
+            "type": "p"
+          },
+          {
+            "text": "List Removals-д амьд элементийн давтамж, Salary Queries-д шахсан утгын давтамж, Distinct Values Queries-д асуултуудын өөр дараалал зэрэг нэмэлт санаа орно. Нийлбэрийн мод ганцаараа бүх асуудлыг шийдэхгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Шууд нийлбэрээс давтамжийн хэрэглээ рүү",
+        "blocks": [
+          {
+            "text": "Dynamic Range Sum Queries",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Утга солихыг зөрүү нэмэхэд хувиргаж prefix ялгавар асуу.",
+            "type": "p"
+          },
+          {
+            "text": "Range Update Queries",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Ялгаврын массив дээр хоёр add ба нэг prefix хэрэгтэйг гарга.",
+            "type": "p"
+          },
+          {
+            "text": "List Removals",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Сөрөг бус давтамжаас $k$-р амьд элементийг хайх нэмэлт арга гарга.",
+            "type": "p"
+          },
+          {
+            "text": "Salary Queries",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Бүх шинэ цалинг шахалтад багтааж, утгын хилээр давтамж асуу.",
+            "type": "p"
+          },
+          {
+            "text": "Distinct Values Queries",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Асуултын дараалал ба сүүлийн байрлалын нэмэлт санаа хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "text": "Range Xor Queries",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Өөрчлөлтгүй XOR бодлогод энгийн prefix хангалттайг ялгаж, урвуу үйлдлийн санааг харьцуул.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "priority",
+        "title": "14. Хадгалдаг хэсгээ зурж чаддаг байх",
+        "blocks": [
+          {
+            "text": "Өндөр ач холбогдолтой. Dynamic Range Sum нь add ба assignment-ийн ялгаа, prefix ялгаврыг шууд шалгах цөм. Битийн томьёог цээжлэхээс илүү хэсгийн хил ба шинэчлэгдэх өвгүүдийг тайлбарла.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Энгийн массивын нийлбэртэй тулга",
+        "blocks": [
+          {
+            "text": "Жишээн дээр индекс бүрийн хадгалсан хэсэг ба шинэчлэлтийн замыг зур. Нэг элемент, эхний ба сүүлийн байрлал, бүхэл завсар, сөрөг утга, ижил утгыг дахин оноохыг шалга.",
+            "type": "p"
+          },
+          {
+            "text": "Санамсаргүй жижиг асуулт бүрд энгийн массивыг үнэхээр өөрчилж, завсрыг гүйлгэсэн лавлахтай тулга. Өөрчлөлтийн дараа бүх хадгалсан хэсгийн нийлбэрийг шалгавал индексийн алдаа илүү хурдан илэрнэ.",
+            "type": "p"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Fenwick tree — dynamic range sums",
+        "summary": "Decompose prefixes into binary-sized blocks for logarithmic point changes and range-sum queries.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Values change between sum queries",
+            "blocks": [
+              {
+                "text": "Array $[2,1,3,4,5]$ has sum eight on $[2,4]$. Assigning six at position three makes that sum eleven and total eighteen. Queries and changes alternate.",
+                "type": "p"
+              },
+              {
+                "text": "Indices are one-based. An external assignment replaces a value, while the structure’s internal add applies a delta; distinguish them.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Avoid repairing every prefix",
+            "blocks": [
+              {
+                "text": "Plain prefix sums answer fast but require $O(n)$ suffix repairs after one change. Direct range scanning instead costs $O(n)$ per query.",
+                "type": "p"
+              },
+              {
+                "text": "Represent prefixes by a few disjoint pre-aggregated blocks to speed both operations.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "3. The low bit specifies a block length",
+            "blocks": [
+              {
+                "text": "$lowbit(i)=i\\mathbin{\\&}(-i)$ is the value of the least significant set bit for positive $i$. Store the sum of $[i-lowbit(i)+1,i]$ at $tree[i]$.",
+                "type": "p"
+              },
+              {
+                "text": "For four the low bit is four; for six it is two. Thus tree four covers the first four values, while tree six covers positions five and six, not the entire prefix.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Clear a bit for queries, climb ancestors for updates",
+            "blocks": [
+              {
+                "text": "A prefix query adds tree at $r$, then sets $r-=lowbit(r)$ to move immediately left of the consumed block. Repeat to zero; subtract prefix $l-1$ from prefix $r$ for a range.",
+                "type": "p"
+              },
+              {
+                "text": "For a point delta, start at $p$ and move by $i+=lowbit(i)$ through containing blocks. Assignment uses new value minus old value.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "5. Increase position three by three",
+            "blocks": [
+              {
+                "text": "Initially tree positions one through five contain $[2,3,3,10,5]$. Prefix five uses five plus ten; range $[2,4]$ uses ten minus two, giving eight.",
+                "type": "p"
+              },
+              {
+                "text": "Assigning six at position three adds delta three at indices three and four; next index eight is out of bounds. Tree becomes $[2,3,6,13,5]$, and range $[2,4]$ is thirteen minus two, eleven.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "1",
+                    "[1,1]",
+                    "2",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "[1,2]",
+                    "3",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "[3,3]",
+                    "3",
+                    "6"
+                  ],
+                  [
+                    "4",
+                    "[1,4]",
+                    "10",
+                    "13"
+                  ],
+                  [
+                    "5",
+                    "[5,5]",
+                    "5",
+                    "5"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Index",
+                  "Block",
+                  "Before",
+                  "After"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Disjoint blocks exactly partition a prefix",
+            "blocks": [
+              {
+                "text": "At query index $i$, the consumed block ends exactly there. The next index lies immediately before its start, so blocks neither overlap nor leave gaps; reaching zero covers the original prefix.",
+                "type": "p"
+              },
+              {
+                "text": "The update path follows ancestors whose blocks contain the point. Adding the same delta to each preserves their sum meaning and leaves all unrelated blocks unchanged, so later queries remain correct.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Binary progress gives logarithmic steps",
+            "blocks": [
+              {
+                "text": "Queries clear one set bit per step; updates climb increasingly large containing blocks. Each costs $O(\\log(n+1))$ and memory is $O(n)$. This implementation builds by repeated adds in $O(n\\log(n+1))$, not the separate linear-build variant.",
+                "type": "p"
+              },
+              {
+                "text": "With up to $200000$ elements/queries and values of magnitude $10^9$, use long long for sums up to $2\\cdot10^{14}$. Index arithmetic stays in the small positive-int contract.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Add, prefix and range difference",
+            "blocks": [
+              {
+                "text": "8.1. State and setup",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Store one-based block sums; add applies a delta along containing ancestors and requires a positive index.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Fenwick {\n    int n;\n    vector<long long> tree;\npublic:\n    explicit Fenwick(int size) : n(size), tree(size + 1) {}\n    void add(int position, long long change) {\n        for (int i = position; i <= n; i += i & -i) {\n            tree[i] += change;\n        }\n    }\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.2. Main operation",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Prefix queries consume disjoint blocks down to zero; ranges subtract prefixes. Const queries do not mutate the structure.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    long long prefix_sum(int position) const {\n        long long total = 0;\n        for (int i = position; i > 0; i -= i & -i) {\n            total += tree[i];\n        }\n        return total;\n    }\n    long long range_sum(int l, int r) const {\n        return prefix_sum(r) - prefix_sum(l - 1);\n    }\n};\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.3. Aggregation and processing",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read up to $200000$ elements/queries with value magnitude at most $10^9$; retain originals and initialize by repeated adds.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<long long> a(n + 1);\n    Fenwick tree(n);\n    for (int i = 1; i <= n; ++i) {\n        cin >> a[i];\n        tree.add(i, a[i]);\n    }\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.4. Input and output",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Type one assigns a new point value through its delta and updates originals; type two queries inclusive endpoints and prints a sum.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    for (int query = 0; query < q; ++query) {\n        int type;\n        cin >> type;\n        if (type == 1) {\n            int position;\n            long long value;\n            cin >> position >> value;\n            tree.add(position, value - a[position]);\n            a[position] = value;\n        } else {\n            int l, r;\n            cin >> l >> r;\n            cout << tree.range_sum(l, r) << '\\n';\n        }\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete compilable C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Fenwick {\n    int n;\n    vector<long long> tree;\npublic:\n    explicit Fenwick(int size) : n(size), tree(size + 1) {}\n    void add(int position, long long change) {\n        for (int i = position; i <= n; i += i & -i) {\n            tree[i] += change;\n        }\n    }\n    long long prefix_sum(int position) const {\n        long long total = 0;\n        for (int i = position; i > 0; i -= i & -i) {\n            total += tree[i];\n        }\n        return total;\n    }\n    long long range_sum(int l, int r) const {\n        return prefix_sum(r) - prefix_sum(l - 1);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<long long> a(n + 1);\n    Fenwick tree(n);\n    for (int i = 1; i <= n; ++i) {\n        cin >> a[i];\n        tree.add(i, a[i]);\n    }\n    for (int query = 0; query < q; ++query) {\n        int type;\n        cin >> type;\n        if (type == 1) {\n            int position;\n            long long value;\n            cin >> position >> value;\n            tree.add(position, value - a[position]);\n            a[position] = value;\n        } else {\n            int l, r;\n            cin >> l >> r;\n            cout << tree.range_sum(l, r) << '\\n';\n        }\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "5 4\n2 1 3 4 5\n2 2 4\n1 3 6\n2 2 4\n2 1 5\n",
+                "type": "code",
+                "language": "Input"
+              },
+              {
+                "text": "8\n11\n18\n",
+                "type": "code",
+                "language": "Output"
+              }
+            ]
+          },
+          {
+            "key": "errors",
+            "title": "9. Never call add at index zero",
+            "blocks": [
+              {
+                "text": "At zero, lowbit is zero and add cannot progress. Updates require indices one through $n$; prefix_sum(0) is a valid empty sum.",
+                "type": "p"
+              },
+              {
+                "text": "Passing an assigned value directly to add double-counts the old value. Store the old values, compute a delta, then update that array.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "10. Two prefix minima cannot be subtracted",
+            "blocks": [
+              {
+                "text": "Prefix subtraction works because addition has subtraction as an inverse. Minimum has no such inverse: prefixes of $[1,9,8]$ can both have minimum one while the final singleton’s minimum is eight.",
+                "type": "p"
+              },
+              {
+                "text": "General assignments and range minima suit a segment tree. Restricted monotone Fenwick variants exist, but replacing plus with min does not make this code general-purpose.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "11. Point changes and composable prefixes",
+            "blocks": [
+              {
+                "text": "Consider Fenwick for dynamic sums, frequencies or ordered-prefix counts; compression can map large values to ranks without preserving numeric distances.",
+                "type": "p"
+              },
+              {
+                "text": "Negative values are fine for sums and delta updates, but selecting the rank-$k$ unit requires extra monotonic-prefix assumptions.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "variants",
+            "title": "12. Convert range additions through differences",
+            "blocks": [
+              {
+                "text": "A difference array converts a range add into two point changes, and an original point value is a difference-prefix sum. This connects to Range Update Queries.",
+                "type": "p"
+              },
+              {
+                "text": "List Removals adds alive-frequency selection, Salary Queries compressed frequencies and Distinct Values Queries offline ordering. The sum structure alone is not every complete solution.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From direct sums to frequencies",
+            "blocks": [
+              {
+                "text": "Dynamic Range Sum Queries",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Convert assignment to delta and subtract prefixes.",
+                "type": "p"
+              },
+              {
+                "text": "Range Update Queries",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Derive two difference updates and one prefix query.",
+                "type": "p"
+              },
+              {
+                "text": "List Removals",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Add rank-$k$ selection over nonnegative alive counts.",
+                "type": "p"
+              },
+              {
+                "text": "Salary Queries",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Collect update salaries for compression and query frequency bounds.",
+                "type": "p"
+              },
+              {
+                "text": "Distinct Values Queries",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Add offline ordering and last-occurrence reasoning.",
+                "type": "p"
+              },
+              {
+                "text": "Range Xor Queries",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Recognize that static XOR queries need only prefixes and compare inverse operations.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "priority",
+            "title": "14. Be able to draw the stored blocks",
+            "blocks": [
+              {
+                "text": "High priority. Dynamic Range Sum directly tests assignment versus add and prefix subtraction. Explain block boundaries and containing ancestors rather than only memorizing bit formulas.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Compare against a plain array",
+            "blocks": [
+              {
+                "text": "Draw every stored block and update path in the example. Cover singleton, endpoint updates, full ranges, negatives and repeated identical assignments.",
+                "type": "p"
+              },
+              {
+                "text": "Use a plain mutable array and direct range scans as an independent oracle; checking stored block sums also exposes index errors.",
+                "type": "p"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Prefix sums, binary low bits and one-based indexing; a range sum is a difference of prefixes."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Урьдчилсан нийлбэр, хоёртын бичлэгийн бага бит, нэгээс эхэлсэн индекс. Завсрын нийлбэр хоёр эхний хэсгийн ялгавар.",
+    "priorityLevel": "high",
+    "priorityReason": "Өөрчлөгдөх массивын нийлбэр, давтамж, эрэмбийн тооллого зэрэг олон бодлогын жижиг үр ашигтай суурь. Хадгалсан хэсгийн утга ба индексийн алхмыг батлахад өндөр өгөөжтэй.",
+    "prerequisiteIds": [
+      "prefix-sums",
+      "bit-operations"
+    ],
+    "learningRelations": {
+      "next": "segment-tree",
+      "practice": [
+        {
+          "key": "397",
+          "stage": "Warm-up",
+          "reason": "Нэг утгын өөрчлөлт, хэсгийн нийлбэр эсвэл minimum-ийн нэгтгэл, саармаг утгыг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "400",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "403",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "404",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "411",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "399",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "prefix-sums",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "bit-operations",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "segment-tree",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "mapping": {
+    "query_count": "q",
+    "values": "a",
+    "left": "l",
+    "right": "r",
+    "index": "i",
+    "count": "n"
+  },
+  "changed": true,
+  "reviewed_body_sha256": "cb28689454007cf3e9087f4a3f72d4fbb57289b8f2707d445142c5420f3771d6",
+  "proposed_body_sha256": "cb28689454007cf3e9087f4a3f72d4fbb57289b8f2707d445142c5420f3771d6"
+}

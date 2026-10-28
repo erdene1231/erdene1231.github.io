@@ -1,0 +1,866 @@
+{
+  "id": "segment-tree",
+  "expected_revision": 6,
+  "expected_published": true,
+  "expected_body_md5": "f2cc08b1c73de418cbc03b9ac8c156da",
+  "expected_body_sha256": "61420fcc054806b840eed3c277b25392928dfaa9c1c5095884c4355c0756d111",
+  "body": {
+    "id": "segment-tree",
+    "level": "Дунд шат",
+    "order": 36,
+    "title": "Сегментийн мод — завсрыг хувааж нэгтгэх",
+    "aliases": "segment-tree Recursive segment tree — хэсгийг хувааж хадгалах Recursive segment trees — storing split intervals segment tree range sum min max point update мод interval query",
+    "related": [
+      "prefix-sums",
+      "recursion",
+      "tree-basics",
+      "sparse-table"
+    ],
+    "summary": "Навчинд нэг утга, дотоод оройд хоёр хүүхдийн нийлбэр хадгалж, нэг утга солих ба завсрын асуултыг бодно.",
+    "category": "Data structures",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Өөрчлөлттэй нийлбэрээс илүү ерөнхий хэрэгцээ",
+        "blocks": [
+          {
+            "text": "$[2,1,3,4,5]$-д $[2,4]$ нийлбэр найм; гурав дахь утгыг зургаа болговол арван нэг. Үүнийг Фенвикийн модоор бодож болно. Харин завсрын minimum зэрэг урвуугүй нэгтгэлд prefix хасалт ажиллахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Хэсгийн хариуг хоёр хүүхдийн хариунаас нэгтгэж болох бол завсраа модоор хувааж хадгалах илүү ерөнхий бүтэц байгуулъя. Эхлээд нийлбэр дээр нь бүх ажиллагааг хараад minimum-ийн ялгааг гаргана.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Өөрчлөлт бүрд бүх асуултын хэсгийг бодохгүй",
+        "blocks": [
+          {
+            "text": "Завсар бүрийн хариуг хадгалбал $O(n^2)$ төлөв, нэг утга солиход олон төлөв өөрчлөгдөнө. Бүх боломжит завсар биш, зөвхөн модны тогтсон хуваалтуудыг хадгална.",
+            "type": "p"
+          },
+          {
+            "text": "Үндэс бүх $[1,n]$-ийг, хүүхдүүд зүүн ба баруун талыг, навч ганц элементийг хариуцна. Асуултын дурын завсрыг ийм цөөн хэсгээр бүрдүүлнэ.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "3. Орой бүр өөрийн завсрын нийлбэртэй",
+        "blocks": [
+          {
+            "text": "Орой $[l,r]$ бол дунд $m=l+(r-l)/2$, хүүхдүүд $[l,m]$, $[m+1,r]$. Дотоод оройн утга хүүхдүүдийн нийлбэр. Навчны утга анхны массивын нэг элемент.",
+            "type": "p"
+          },
+          {
+            "text": "Модыг heap шиг дугаарлахад хүүхдүүд $2v,2v+1$, гэхдээ энэ нь утгын heap эрэмбэ биш. Энд эцгийн нийлбэр хүүхдээсээ бага эсвэл их байх шаардлагагүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Шинэчлэлт нэг зам, асуулт гурван нөхцөлтэй",
+        "blocks": [
+          {
+            "text": "Утга солиход тухайн навч хүртэл зөвхөн нэг хүүхдээр явж, буцахдаа өвөг бүрийн нийлбэрийг дахин тооцно. Зөвхөн навчийг засч эцгүүдийг орхиж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Асуулттай огтлолцохгүй хэсэг тэг; бүтнээр орсон хэсэг хадгалсан хариу; хэсэгчлэн огтлолцвол хоёр хүүхдээс асуугаад нийлүүлнэ. Бүтнээр орсон үед цааш задлахгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "5. Гурав дахь навчийн өөрчлөлт өвгүүдэд нөлөөлнө",
+        "blocks": [
+          {
+            "text": "Таван элементэд үндэс $[1,5]$ нийлбэр арван тав. Хүүхдүүд $[1,3]$ нийлбэр зургаа, $[4,5]$ нийлбэр ес. Гурав дахь утга зургаа болбол навч $[3,3]$ зургаа, $[1,3]$ ес, үндэс арван найм болно.",
+            "type": "p"
+          },
+          {
+            "text": "$[2,4]$ асуултад $[2,2]$, $[3,3]$, $[4,4]$ хэсгүүд нийлээд $1+6+4=11$. Огтлолцохгүй $[1,1]$, $[5,5]$ нь тэг өгнө.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "[3,3]",
+                "3",
+                "6"
+              ],
+              [
+                "[1,3]",
+                "6",
+                "9"
+              ],
+              [
+                "[1,5]",
+                "15",
+                "18"
+              ],
+              [
+                "[4,5]",
+                "9",
+                "9"
+              ],
+              [
+                "[2,4] query",
+                "8",
+                "11"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Завсар",
+              "Өмнө",
+              "Дараа"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Хүүхдийн хариу зөв бол эцгийнх зөв",
+        "blocks": [
+          {
+            "text": "Навч нэг утгаа зөв хадгална. Хоёр хүүхэд завсрыг давхцахгүй бүрэн хуваадаг тул тэдний нийлбэр эцгийн нийлбэр. Индукцээр байгуулах зөв; шинэчлэлт яг нөлөөлсөн өвгүүдийг дахин нэгтгэдэг тул чанарыг хадгална.",
+            "type": "p"
+          },
+          {
+            "text": "Асуултын огтлолцол хоосон бол тэг зөв. Бүтэн бол хадгалсан утга зөв. Хэсэгчилсэн бол хүүхдийн асуултуудын хамрах хэсгүүд давхцахгүй бөгөөд нийлээд яг асуултын огтлолцол болно. Иймээс тэднийг нэмэх нь зөв.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Хилийн хоёр салаа л цааш задарна",
+        "blocks": [
+          {
+            "text": "Байгуулах $O(n)$: жинхэнэ навч $n$, дотоод орой $n-1$. Нэг өөрчлөлт $O(\\log(n+1))$. Завсрын асуулт бүрд түвшин тутамд хамгийн ихдээ хоёр хэсэгчилсэн орой цааш задарч, бүтэн орсон хэсгүүд зогсдог тул $O(\\log(n+1))$.",
+            "type": "p"
+          },
+          {
+            "text": "Санах ой $O(n)$, энгийн дугаарлалтанд $4n$ зай авсан. Энэ нь яг $4n$ жинхэнэ оройтой гэсэн үг биш. $n,q\\le200000$, утга $\\pm10^9$ үед нийлбэр long long-д багтана; рекурсийн гүн логарифм.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. Байгуулах, утга оноох, завсар асуух",
+        "blocks": [
+          {
+            "text": "8.1. Эхлэл ба төлөв",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Нэг навч нэг утгатай. Бусад оройг хоёр талд хувааж рекурсээр байгуулсны дараа хүүхдийн нийлбэрийг хадгална.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass SegTree {\n    int n;\n    vector<long long> tree;\n    void build(int node, int l, int r, const vector<long long>& a) {\n        if (l == r) {\n            tree[node] = a[l];\n            return;\n        }\n        int mid = l + (r - l) / 2;\n        build(node * 2, l, mid, a);\n        build(node * 2 + 1, mid + 1, r, a);\n        tree[node] = tree[node * 2] + tree[node * 2 + 1];\n    }\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.2. Үндсэн үйлдэл",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оноох байрлал аль талд байгаагаар нэг хүүхдийг шинэчилж, буцахдаа эцгийн нийлбэрийг засна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    void assign(int node, int l, int r, int position, long long value) {\n        if (l == r) {\n            tree[node] = value;\n            return;\n        }\n        int mid = l + (r - l) / 2;\n        if (position <= mid) {\n            assign(node * 2, l, mid, position, value);\n        } else {\n            assign(node * 2 + 1, mid + 1, r, position, value);\n        }\n        tree[node] = tree[node * 2] + tree[node * 2 + 1];\n    }\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.3. Нэгтгэл ба боловсруулалт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Огтлолцохгүйд тэг, бүтнээр хамарвал хадгалсан нийлбэр, бусад үед хүүхдүүдийн хариуг нэгтгэнэ. Нийтийн функцүүд үндэс $[1,n]$-ээс эхэлнэ; constructor бүтцийг байгуулна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    long long query_sum(int node, int l, int r, int ql, int qr) const {\n        if (qr < l || r < ql) {\n            return 0;\n        }\n        if (ql <= l && r <= qr) {\n            return tree[node];\n        }\n        int mid = l + (r - l) / 2;\n        return query_sum(node * 2, l, mid, ql, qr)\n             + query_sum(node * 2 + 1, mid + 1, r, ql, qr);\n    }\npublic:\n    explicit SegTree(const vector<long long>& a)\n        : n(static_cast<int>(a.size()) - 1), tree(4 * n) {\n        build(1, 1, n, a);\n    }\n    void assign(int position, long long value) {\n        assign(1, 1, n, position, value);\n    }\n    long long range_sum(int l, int r) const {\n        return query_sum(1, 1, n, l, r);\n    }\n};\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.4. Оролт ба гаралт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт Фенвикийн жишээтэй ижил: утга солих төрөл нэг, хаалттай завсрын нийлбэр төрөл хоёр. Байрлалууд хүчинтэй, $n$ нэгээс багагүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<long long> a(n + 1);\n    for (int i = 1; i <= n; ++i) {\n        cin >> a[i];\n    }\n    SegTree tree(a);\n    for (int query = 0; query < q; ++query) {\n        int type;\n        cin >> type;\n        if (type == 1) {\n            int position;\n            long long value;\n            cin >> position >> value;\n            tree.assign(position, value);\n        } else {\n            int l, r;\n            cin >> l >> r;\n            cout << tree.range_sum(l, r) << '\\n';\n        }\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн ажиллах C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass SegTree {\n    int n;\n    vector<long long> tree;\n    void build(int node, int l, int r, const vector<long long>& a) {\n        if (l == r) {\n            tree[node] = a[l];\n            return;\n        }\n        int mid = l + (r - l) / 2;\n        build(node * 2, l, mid, a);\n        build(node * 2 + 1, mid + 1, r, a);\n        tree[node] = tree[node * 2] + tree[node * 2 + 1];\n    }\n    void assign(int node, int l, int r, int position, long long value) {\n        if (l == r) {\n            tree[node] = value;\n            return;\n        }\n        int mid = l + (r - l) / 2;\n        if (position <= mid) {\n            assign(node * 2, l, mid, position, value);\n        } else {\n            assign(node * 2 + 1, mid + 1, r, position, value);\n        }\n        tree[node] = tree[node * 2] + tree[node * 2 + 1];\n    }\n    long long query_sum(int node, int l, int r, int ql, int qr) const {\n        if (qr < l || r < ql) {\n            return 0;\n        }\n        if (ql <= l && r <= qr) {\n            return tree[node];\n        }\n        int mid = l + (r - l) / 2;\n        return query_sum(node * 2, l, mid, ql, qr)\n             + query_sum(node * 2 + 1, mid + 1, r, ql, qr);\n    }\npublic:\n    explicit SegTree(const vector<long long>& a)\n        : n(static_cast<int>(a.size()) - 1), tree(4 * n) {\n        build(1, 1, n, a);\n    }\n    void assign(int position, long long value) {\n        assign(1, 1, n, position, value);\n    }\n    long long range_sum(int l, int r) const {\n        return query_sum(1, 1, n, l, r);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<long long> a(n + 1);\n    for (int i = 1; i <= n; ++i) {\n        cin >> a[i];\n    }\n    SegTree tree(a);\n    for (int query = 0; query < q; ++query) {\n        int type;\n        cin >> type;\n        if (type == 1) {\n            int position;\n            long long value;\n            cin >> position >> value;\n            tree.assign(position, value);\n        } else {\n            int l, r;\n            cin >> l >> r;\n            cout << tree.range_sum(l, r) << '\\n';\n        }\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "5 4\n2 1 3 4 5\n2 2 4\n1 3 6\n2 2 4\n2 1 5\n",
+            "type": "code",
+            "language": "Input"
+          },
+          {
+            "text": "8\n11\n18\n",
+            "type": "code",
+            "language": "Output"
+          }
+        ]
+      },
+      {
+        "key": "errors",
+        "title": "9. Хил ба саармаг утгаа нэг мөр болго",
+        "blocks": [
+          {
+            "text": "Манай хилүүд хаалттай $[l,r]$, суурь нь $l=r$. Баруун хүүхэд $m+1$-ээс эхэлнэ. Хагас нээлттэй хувилбарын дүрмийг дундаас нь хольж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Нийлбэрийн саармаг тэг сөрөг утгатай үед ч зөв. Харин minimum-ийн огтлолцохгүй хариу тэг байвал эерэг бүх хариуг буруу тэг болгоно; тэнд хангалттай их утга хэрэгтэй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "generalization",
+        "title": "10. Нийлбэрээс minimum руу",
+        "blocks": [
+          {
+            "text": "Нэгтгэх үйлдлийг minimum болгож, навч ижил утга, огтлолцохгүй хариуг INF болговол нэг утга солих ба завсрын minimum гарна. Нэгтгэх үйлдэл бүлэглэх дарааллаас үл хамаарах ёстой.",
+            "type": "p"
+          },
+          {
+            "text": "Бүх үйлдэл солих дарааллаас үл хамаарах шаардлагагүй: тэмдэгт мөр залгах зэрэгт зүүн хариуг баруунаас өмнө нэгтгэх хэрэгтэй. Сегментийн мод зөв дарааллыг хадгалж чадна; энэ код нийлбэр л хэрэгжүүлсэн.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "11. Нэгтгэлээр илэрхийлж болох уу?",
+        "blocks": [
+          {
+            "text": "Нэг хэсгийн хариуг хоёр хөрш хэсгийн мэдээллээс хурдан гаргаж болбол энэ бүтцийг бод. Зарим бодлогод ганц тоо биш нийлбэр, эхний хамгийн сайн, сүүлийн хамгийн сайн, нийт хамгийн сайн зэрэг олон мэдээлэл хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "text": "Фенвикийн мод нийлбэрт жижиг энгийн байж болно. Өөрчлөгдөхгүй minimum-д sparse table тохирох нөхцөл бий. Илүү ерөнхий бүтэц байлаа гээд үргэлж хамгийн зөв сонголт биш.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "extensions",
+        "title": "12. Завсар өөрчлөхөд шууд навч бүрд орохгүй",
+        "blocks": [
+          {
+            "text": "Завсрын бүх утгыг өөрчлөхийг энэ point-update кодоор нэг нэгээр хийвэл $O(k\\log n)$ болно. Lazy propagation нь бүтнээр хамарсан хэсэгт хойшлуулсан өөрчлөлт хадгалах нэмэлт арга; энэ хичээлд хэрэгжүүлээгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Hotel Queries-д maximum хадгалж хангалттай багтаамжтай зүүн хүүхдийг сонгоно. List Removals-д тоо хадгалж $k$-р амьд элементийг олно. Эдгээр хайлтанд оройн мэдээлэл ямар нөхцөл баталж байгааг шинээр гарга.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Нийлбэрээс өөр мэдээлэлтэй орой руу",
+        "blocks": [
+          {
+            "text": "Dynamic Range Sum Queries",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Гурван огтлолцлын нөхцөл ба навчийн оноолтыг хэрэгжүүл.",
+            "type": "p"
+          },
+          {
+            "text": "Dynamic Range Minimum Queries",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Нэгтгэл minimum, огтлолцохгүйд INF гэсэн өөрчлөлтөө батал.",
+            "type": "p"
+          },
+          {
+            "text": "Hotel Queries",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Maximum мэдээллээр боломжтой зүүн хүүхдийг сонгон хай.",
+            "type": "p"
+          },
+          {
+            "text": "List Removals",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Амьд элементийн тооноос $k$-р байршил хайх төлөв гарга.",
+            "type": "p"
+          },
+          {
+            "text": "Subarray Sum Queries",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Орой бүрд нийт, эхний, сүүлийн, хамгийн сайн нийлбэрийг хамт хадгал.",
+            "type": "p"
+          },
+          {
+            "text": "Pizzeria Queries",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Зай ба үнийн хувиргалтыг хоёр талын minimum асуулттай холбо.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "priority",
+        "title": "14. Гурван огтлолцлын нөхцөлийг тайлбарла",
+        "blocks": [
+          {
+            "text": "Өндөр ач холбогдолтой. Dynamic Range Sum ба Dynamic Range Minimum нь шууд үндсэн бүтэц. Hotel Queries болон бусад нь нэмэлт хайлт, олон талт мэдээллийн шат бөгөөд нэг кодыг хуулсан дасгал биш.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Мод бүрийн нийлбэр ба энгийн лавлах",
+        "blocks": [
+          {
+            "text": "Таван элементтэй модыг зурж, өөрчлөгдсөн гурван оройг тэмдэглэ. Хоёрын зэрэг биш хэмжээ, нэг элемент, захын өөрчлөлт, бүхэл болон ганц нүдний асуултыг шалга.",
+            "type": "p"
+          },
+          {
+            "text": "Энгийн массив дээр яг ижил оноолтыг хийж, асуулт бүрийн нийлбэрийг шууд гүйлгэн тулга. Хүүхдийн нийлбэр эцгийн утгатай таарч байгааг шалгах нь байгуулах болон буцах нэгтгэлийн алдааг илрүүлнэ.",
+            "type": "p"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Segment tree — split and combine intervals",
+        "summary": "Store single values at leaves and combine child sums to support point assignment and interval queries.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Dynamic sums and a more general goal",
+            "blocks": [
+              {
+                "text": "The shared example has range sum eight, then eleven after assigning six at position three. Fenwick handles it, but prefix subtraction does not handle general range minima.",
+                "type": "p"
+              },
+              {
+                "text": "Build a more general interval hierarchy whose answer combines child answers. Learn all operations on sums, then distinguish the minimum variant.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Avoid recomputing every queried interval",
+            "blocks": [
+              {
+                "text": "Storing every interval costs quadratic space and many repairs per assignment. Store only fixed hierarchical splits.",
+                "type": "p"
+              },
+              {
+                "text": "The root covers $[1,n]$, children cover its left/right halves and leaves cover singletons. An arbitrary query combines a few such blocks.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "3. Each node stores its own interval sum",
+            "blocks": [
+              {
+                "text": "For node interval $[l,r]$, split at $m=l+(r-l)/2$ into $[l,m]$ and $[m+1,r]$. Internal values sum children; leaves hold individual array values.",
+                "type": "p"
+              },
+              {
+                "text": "Children can be indexed $2v,2v+1$, but this is not a heap priority invariant: parent sums need not compare to child values.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. One update path and three query cases",
+            "blocks": [
+              {
+                "text": "An assignment descends one child path to its leaf and recomputes ancestor sums on return. Updating only the leaf is insufficient.",
+                "type": "p"
+              },
+              {
+                "text": "Queries return zero for no overlap, a stored answer for full coverage, or the sum of both child queries for partial overlap. Stop immediately on full coverage.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "5. Changing leaf three repairs its ancestors",
+            "blocks": [
+              {
+                "text": "The root sum is fifteen; children $[1,3]$ and $[4,5]$ sum to six and nine. Assigning six at leaf three changes $[1,3]$ to nine and the root to eighteen.",
+                "type": "p"
+              },
+              {
+                "text": "Query $[2,4]$ combines singleton blocks two, three and four for $1+6+4=11$, while outside leaves contribute zero.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "[3,3]",
+                    "3",
+                    "6"
+                  ],
+                  [
+                    "[1,3]",
+                    "6",
+                    "9"
+                  ],
+                  [
+                    "[1,5]",
+                    "15",
+                    "18"
+                  ],
+                  [
+                    "[4,5]",
+                    "9",
+                    "9"
+                  ],
+                  [
+                    "[2,4] query",
+                    "8",
+                    "11"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Interval",
+                  "Before",
+                  "After"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Correct child answers imply a correct parent",
+            "blocks": [
+              {
+                "text": "Leaves are correct. Child intervals partition the parent without overlap, so adding correct children gives the parent sum. Build induction follows, and assignments repair exactly affected ancestors.",
+                "type": "p"
+              },
+              {
+                "text": "No overlap correctly contributes zero, full coverage returns a correct stored answer, and partial child intersections partition exactly the requested intersection. Summing them proves query correctness.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Only boundary branches keep splitting",
+            "blocks": [
+              {
+                "text": "Build is $O(n)$ with $n$ leaves and $n-1$ internal nodes. Point updates are logarithmic. Queries split at most two partial boundary nodes per level; fully covered nodes stop, giving logarithmic work.",
+                "type": "p"
+              },
+              {
+                "text": "Space is linear; reserving $4n$ slots is a safe layout convention, not the actual node count. For up to $200000$ elements/queries and values within $\\pm10^9$, long long sums are safe and recursion depth is logarithmic.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Build, assign and query",
+            "blocks": [
+              {
+                "text": "8.1. State and setup",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Leaves store one value; recursively build both halves and sum child results.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass SegTree {\n    int n;\n    vector<long long> tree;\n    void build(int node, int l, int r, const vector<long long>& a) {\n        if (l == r) {\n            tree[node] = a[l];\n            return;\n        }\n        int mid = l + (r - l) / 2;\n        build(node * 2, l, mid, a);\n        build(node * 2 + 1, mid + 1, r, a);\n        tree[node] = tree[node * 2] + tree[node * 2 + 1];\n    }\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.2. Main operation",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Descend only toward the assigned position, then repair the parent on return.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    void assign(int node, int l, int r, int position, long long value) {\n        if (l == r) {\n            tree[node] = value;\n            return;\n        }\n        int mid = l + (r - l) / 2;\n        if (position <= mid) {\n            assign(node * 2, l, mid, position, value);\n        } else {\n            assign(node * 2 + 1, mid + 1, r, position, value);\n        }\n        tree[node] = tree[node * 2] + tree[node * 2 + 1];\n    }\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.3. Aggregation and processing",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Return zero outside, stored sum for full coverage and combined child answers otherwise. Public wrappers start at root $[1,n]$; the constructor builds it.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    long long query_sum(int node, int l, int r, int ql, int qr) const {\n        if (qr < l || r < ql) {\n            return 0;\n        }\n        if (ql <= l && r <= qr) {\n            return tree[node];\n        }\n        int mid = l + (r - l) / 2;\n        return query_sum(node * 2, l, mid, ql, qr)\n             + query_sum(node * 2 + 1, mid + 1, r, ql, qr);\n    }\npublic:\n    explicit SegTree(const vector<long long>& a)\n        : n(static_cast<int>(a.size()) - 1), tree(4 * n) {\n        build(1, 1, n, a);\n    }\n    void assign(int position, long long value) {\n        assign(1, 1, n, position, value);\n    }\n    long long range_sum(int l, int r) const {\n        return query_sum(1, 1, n, l, r);\n    }\n};\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.4. Input and output",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Use the same contract as Fenwick: type-one point assignment and type-two inclusive range sum, with valid indices and positive size.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<long long> a(n + 1);\n    for (int i = 1; i <= n; ++i) {\n        cin >> a[i];\n    }\n    SegTree tree(a);\n    for (int query = 0; query < q; ++query) {\n        int type;\n        cin >> type;\n        if (type == 1) {\n            int position;\n            long long value;\n            cin >> position >> value;\n            tree.assign(position, value);\n        } else {\n            int l, r;\n            cin >> l >> r;\n            cout << tree.range_sum(l, r) << '\\n';\n        }\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete compilable C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass SegTree {\n    int n;\n    vector<long long> tree;\n    void build(int node, int l, int r, const vector<long long>& a) {\n        if (l == r) {\n            tree[node] = a[l];\n            return;\n        }\n        int mid = l + (r - l) / 2;\n        build(node * 2, l, mid, a);\n        build(node * 2 + 1, mid + 1, r, a);\n        tree[node] = tree[node * 2] + tree[node * 2 + 1];\n    }\n    void assign(int node, int l, int r, int position, long long value) {\n        if (l == r) {\n            tree[node] = value;\n            return;\n        }\n        int mid = l + (r - l) / 2;\n        if (position <= mid) {\n            assign(node * 2, l, mid, position, value);\n        } else {\n            assign(node * 2 + 1, mid + 1, r, position, value);\n        }\n        tree[node] = tree[node * 2] + tree[node * 2 + 1];\n    }\n    long long query_sum(int node, int l, int r, int ql, int qr) const {\n        if (qr < l || r < ql) {\n            return 0;\n        }\n        if (ql <= l && r <= qr) {\n            return tree[node];\n        }\n        int mid = l + (r - l) / 2;\n        return query_sum(node * 2, l, mid, ql, qr)\n             + query_sum(node * 2 + 1, mid + 1, r, ql, qr);\n    }\npublic:\n    explicit SegTree(const vector<long long>& a)\n        : n(static_cast<int>(a.size()) - 1), tree(4 * n) {\n        build(1, 1, n, a);\n    }\n    void assign(int position, long long value) {\n        assign(1, 1, n, position, value);\n    }\n    long long range_sum(int l, int r) const {\n        return query_sum(1, 1, n, l, r);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<long long> a(n + 1);\n    for (int i = 1; i <= n; ++i) {\n        cin >> a[i];\n    }\n    SegTree tree(a);\n    for (int query = 0; query < q; ++query) {\n        int type;\n        cin >> type;\n        if (type == 1) {\n            int position;\n            long long value;\n            cin >> position >> value;\n            tree.assign(position, value);\n        } else {\n            int l, r;\n            cin >> l >> r;\n            cout << tree.range_sum(l, r) << '\\n';\n        }\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "5 4\n2 1 3 4 5\n2 2 4\n1 3 6\n2 2 4\n2 1 5\n",
+                "type": "code",
+                "language": "Input"
+              },
+              {
+                "text": "8\n11\n18\n",
+                "type": "code",
+                "language": "Output"
+              }
+            ]
+          },
+          {
+            "key": "errors",
+            "title": "9. Keep boundaries and neutral values consistent",
+            "blocks": [
+              {
+                "text": "These are inclusive ranges with leaf condition $l=r$ and right child starting $m+1$. Do not mix half-open conventions mid-implementation.",
+                "type": "p"
+              },
+              {
+                "text": "Zero is sum’s identity even with negatives. For minimum, returning zero outside an all-positive query would be wrong; use an appropriate infinity identity.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "generalization",
+            "title": "10. From sums to minimum",
+            "blocks": [
+              {
+                "text": "Replace combination by minimum and no-overlap identity by INF, retaining leaf assignments, for range minima. Combination must be associative.",
+                "type": "p"
+              },
+              {
+                "text": "It need not be commutative: concatenation requires combining left before right. Segment trees can preserve order, though this code implements sums only.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "11. Can answers be combined?",
+            "blocks": [
+              {
+                "text": "Use the structure when neighboring summaries combine efficiently. Some tasks need tuples such as total, best prefix, best suffix and best subarray, not just one number.",
+                "type": "p"
+              },
+              {
+                "text": "Fenwick may be simpler for sums; immutable minima may suit a sparse table. Greater generality does not make this structure the best choice everywhere.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "extensions",
+            "title": "12. Range updates need more than point descent",
+            "blocks": [
+              {
+                "text": "Updating every point in a range separately costs $O(k\\log n)$. Lazy propagation adds deferred whole-node updates; it is not implemented here.",
+                "type": "p"
+              },
+              {
+                "text": "Hotel Queries descends using maximum capacity, and List Removals using alive counts. Each tree search needs a justified summary predicate.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From sums to richer node summaries",
+            "blocks": [
+              {
+                "text": "Dynamic Range Sum Queries",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Implement overlap cases and leaf assignment.",
+                "type": "p"
+              },
+              {
+                "text": "Dynamic Range Minimum Queries",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Justify minimum combination and infinity identity.",
+                "type": "p"
+              },
+              {
+                "text": "Hotel Queries",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Descend by maximum-capacity information.",
+                "type": "p"
+              },
+              {
+                "text": "List Removals",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Derive rank-$k$-position search from alive counts.",
+                "type": "p"
+              },
+              {
+                "text": "Subarray Sum Queries",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Combine total, prefix, suffix and best-subarray summaries.",
+                "type": "p"
+              },
+              {
+                "text": "Pizzeria Queries",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Transform distance-plus-price into two directional minimum queries.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "priority",
+            "title": "14. Explain the three overlap cases",
+            "blocks": [
+              {
+                "text": "High priority. Dynamic Range Sum and Minimum directly exercise the structure. Hotel Queries and richer summaries add searches or state, rather than copying the same program.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Check node sums and a plain-array oracle",
+            "blocks": [
+              {
+                "text": "Draw the five-element tree and changed ancestors. Test non-power-of-two sizes, singleton, boundary updates, full ranges and singleton queries.",
+                "type": "p"
+              },
+              {
+                "text": "Apply identical assignments to a plain array and scan query ranges directly. Checking child sums against parent values exposes build and pull-up mistakes.",
+                "type": "p"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Prefix-sum limitations, recursion base cases and parent/child trees; ranges are one-based and inclusive."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Урьдчилсан нийлбэрийн хязгаар, рекурсийн суурь тохиолдол, модны хүүхэд ба эцгийн ойлголт. Завсрын хилүүд нэгээс эхэлж хоёул орно.",
+    "priorityLevel": "high",
+    "priorityReason": "Нэгтгэж болох төлөвөөр завсрын асуулт ба өөрчлөлтийг шийдэх ерөнхий суурь. Бүтэн, огтлолцохгүй, хэсэгчилсэн гурван нөхцөл, нэгтгэх үйлдэл ба саармаг утгыг ойлгох өндөр өгөөжтэй.",
+    "prerequisiteIds": [
+      "prefix-sums",
+      "recursion",
+      "tree-basics"
+    ],
+    "learningRelations": {
+      "next": "sparse-table",
+      "practice": [
+        {
+          "key": "397",
+          "stage": "Warm-up",
+          "reason": "Нэг утгын өөрчлөлт, хэсгийн нийлбэр эсвэл minimum-ийн нэгтгэл, саармаг утгыг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "398",
+          "stage": "Standard",
+          "reason": "Нэг утгын өөрчлөлт, хэсгийн нийлбэр эсвэл minimum-ийн нэгтгэл, саармаг утгыг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "402",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "403",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "409",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "406",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "lazy-segment-tree",
+          "description": "Range update-ийг бүрэн covered node дээр хойшлуулах.",
+          "descriptionEn": "Defer range updates at fully covered nodes."
+        },
+        {
+          "tutorialId": "fenwick-tree",
+          "description": "Prefix query-ийн жижиг бүтэц.",
+          "descriptionEn": "A smaller structure for prefix queries."
+        },
+        {
+          "tutorialId": "sparse-table",
+          "description": "Өөрчлөгдөхгүй array-ийн query.",
+          "descriptionEn": "Queries on an immutable array."
+        }
+      ]
+    }
+  },
+  "mapping": {
+    "query_count": "q",
+    "values": "a",
+    "middle": "mid",
+    "left": "l",
+    "right": "r",
+    "index": "i",
+    "count": "n",
+    "SegmentTree": "SegTree",
+    "query_left": "ql",
+    "query_right": "qr"
+  },
+  "changed": true,
+  "reviewed_body_sha256": "e37b623128a54a0bc7212c85bf6af174111ea36da5c4f731ac53ccb1ee398dc4",
+  "proposed_body_sha256": "e37b623128a54a0bc7212c85bf6af174111ea36da5c4f731ac53ccb1ee398dc4"
+}

@@ -1,0 +1,859 @@
+{
+  "id": "hash-compression",
+  "expected_revision": 6,
+  "expected_published": true,
+  "expected_body_md5": "9f1295676298f825409eb61b004ad37d",
+  "expected_body_sha256": "c203d351854391530330db46155d61fe019569809e5041981f69319bc48cfa6d",
+  "body": {
+    "id": "hash-compression",
+    "level": "Дунд шат",
+    "order": 22,
+    "title": "Координат шахалт — утга биш эрэмбийн байрлал хадгалах",
+    "aliases": "hash-compression Coordinate compression — утгыг index болгох Coordinate compression — values into indices hash map unordered_map map frequency coordinate compression шахалт давтамж",
+    "related": [
+      "sorting",
+      "binary-search",
+      "set-map",
+      "tree-basics"
+    ],
+    "summary": "Том, сөрөг, давтагдсан утгуудыг жижиг эрэмбийн дугаарт шилжүүлнэ. Тэнцүү ба их бага хамаарал хадгалагдах боловч зай, нийлбэр хадгалагдахгүйг жишээгээр ялгана.",
+    "category": "Array ба search",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Нэг тэрбум утгад нэг тэрбум нүд авахгүй",
+        "blocks": [
+          {
+            "text": "Дараалал $[100,-5,100,7]$ байг. Утгуудыг индекс болгож давтамж хадгалахыг хүсвэл сөрөг болон асар их утгад шууд массив тохирохгүй. Гэтэл ялгаатай гуравхан утга байна.",
+            "type": "p"
+          },
+          {
+            "text": "Бодлогод зөвхөн тэнцүү эсэх, их бага эрэмбэ хэрэгтэй бол эдгээрийг дараалсан жижиг дугаараар төлөөлж болно. Үүнийг координат шахалт гэнэ. Энэ нь зөвхөн таних дугаар өгөхөөс ялгаатай, эрэмбийг хадгалдаг.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Дугаарыг таарсан дарааллаар өгвөл эрэмбэ алдагдана",
+        "blocks": [
+          {
+            "text": "Утга бүрд анх таарсан дарааллаар шинэ дугаар өгвөл тэнцүүг ялгаж чадна. Харин эхний 100 нэг, дараах -5 хоёр болбол анхны их бага харьцаа урвана.",
+            "type": "p"
+          },
+          {
+            "text": "Зөвхөн таних дугаар хэрэгтэй үед энэ өөр загвар ашигтай байж болно. Координат шахалтад эрэмбэлэгдсэн дарааллын байрлалаар дугаарлах ёстой.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "observation",
+        "title": "3. Ялгаатай утгуудын эрэмбэ хангалттай",
+        "blocks": [
+          {
+            "text": "Ялгаатай утгуудыг $u_1<u_2<...<u_d$ гэж эрэмбэлбэл $u_i$-ийн дугаар $i$. Энд $d$ нь ялгаатай утгын тоо. Давтагдсан утгууд ижил байрлалтай байна.",
+            "type": "p"
+          },
+          {
+            "text": "Шахсан дугаараас анхны утга руу буцах хүснэгтийг хадгал. Кодын массив тэгээс эхэлдэг тул нэгээс эхэлсэн дугаар $i$ нь хүснэгтийн $i-1$ байрлалтай таарна.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Хуулбарлах, эрэмбэлэх, давхардлыг арилгах, хайх",
+        "blocks": [
+          {
+            "text": "Оролтын хуулбарыг эрэмбэлээд хөрш давхардлуудыг unique-аар нэгтгэнэ. Unique нь шинэ логик төгсгөлийг өгдөг тул тэндээс жинхэнэ төгсгөл хүртэл erase хийнэ.",
+            "type": "p"
+          },
+          {
+            "text": "Анхны дарааллаар утга бүрийн lower_bound байрлалыг олж нэг нэмнэ. Утга бүр энэ хүснэгтийг байгуулахад оролцсон тул хайсан утга заавал байна. Оролтын анхны дарааллыг эрэмбэлсэн хуулбартай андуурахгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "walkthrough",
+        "title": "5. [100,-5,100,7] гурван дугаартай болно",
+        "blocks": [
+          {
+            "text": "Эрэмбэлсэн хуулбар $[-5,7,100,100]$, давхардалгүй хүснэгт $[-5,7,100]$. Зуун нь гурав, хасах тав нэг, долоо хоёр гэсэн дугаартай.",
+            "type": "p"
+          },
+          {
+            "text": "Анхны дарааллаар дугаарууд $[3,1,3,2]$. Эхний ба гурав дахь тэнцүү хэвээр; хасах тав долоогоос бага хэвээр. Буцааж хүснэгтээс уншвал яг анхны дараалал гарна.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "Оролт",
+                "$[100,-5,100,7]$"
+              ],
+              [
+                "Ялгаатай утгууд",
+                "$[-5,7,100]$"
+              ],
+              [
+                "Дугаар",
+                "$[3,1,3,2]$"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Үзүүлэлт",
+              "Утга"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Тэнцүү ба их бага хамаарал яг хадгалагдана",
+        "blocks": [
+          {
+            "text": "Ялгаатай утгууд эрс өсөхөөр эрэмбэлэгдсэн тул хоёр өөр утга өөр байрлалтай. Ижил утга нэг байрлалтай. Тиймээс анхны утгууд тэнцүү байх нь дугаарууд тэнцүү байхтай адил.",
+            "type": "p"
+          },
+          {
+            "text": "Бага утга эрэмбэлэгдсэн хүснэгтэд заавал түрүүнд байна. Иймээс $a<b$ бол дугаар нь бага, эсрэгээр бага дугаарын анхны утга бага. lower_bound эрэмбэлэгдсэн хүснэгтээс яг тэр байрлалыг олно.",
+            "type": "p"
+          },
+          {
+            "text": "Дугаар бүр нэгээс $d$ хүртэл, урвуу хүснэгтээр ганц утгад буцна. Энэ нь зөвхөн харьцуулалтын баталгаа; тоон зайны баталгаа биш.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Бүх боломжит утгаар биш оролтын хэмжээгээр зай авна",
+        "blocks": [
+          {
+            "text": "Оролтын уртыг $n$ гэвэл эрэмбэлэхэд $O(n \\log(n+2))$, хайлт бүр $O(log(d+2))$ хугацаа орно. Нийт $O(n \\log(n+2))$, хуулбар, ялгаатай утга, дугааруудтайгаа $O(n)$ зайтай.",
+            "type": "p"
+          },
+          {
+            "text": "Утгуудын хэмжээ нэг тэрбум эсвэл сөрөг байлаа ч массивын хэмжээ түүгээр өсөхгүй. Хоосон оролтод хүснэгт ба дугаар хоёул хоосон; бага тогтмол ажил үлдэнэ.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. C++17: анхны дарааллыг хадгалсан дугаарлалт",
+        "blocks": [
+          {
+            "text": "Эхний мөрд утгын тоо 0–200000. Дараа нь хасах $10^{18}$-аас $10^{18}$ хүртэл бүхэл утгууд. Ялгаатай тоо, ялгаатай утгууд, нэгээс эхэлсэн дугаарыг тусдаа мөрд хэвлэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "8.1. Төлөв ба эхний үйлдэл",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Анхны дарааллыг өөрчлөхгүй хуулбарыг эрэмбэлж, давхардсан сүүлийг үнэхээр арилгана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <algorithm>\n#include <iostream>\n#include <vector>\nusing namespace std;\n\nstruct Compression {\n    vector<long long> a;\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.2. Үндсэн хувиргалт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Анхны утга бүрийн эхний тохирох байрлалыг олоод нэг нэмнэ. Хүснэгт ба дугаарыг хамт буцаана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    vector<int> ranks;\n};\n\nCompression compress(const vector<long long>& input) {\n    vector<long long> a = input;\n    sort(a.begin(), a.end());\n    a.erase(unique(a.begin(), a.end()), a.end());\n\n    vector<int> ranks;\n    ranks.reserve(input.size());\n    for (long long value : input) {\n        auto position = lower_bound(a.begin(), a.end(), value);\n        ranks.push_back(static_cast<int>(position - a.begin()) + 1);\n    }\n    return {a, ranks};\n}\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.3. Оролт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Утгуудыг long long төрлөөр уншина. Хоосон оролтыг зөвшөөрнө.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<long long> input(n);\n    for (long long& value : input) {\n        cin >> value;\n    }\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.4. Хариу хэвлэх",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Эхлээд ялгаатай тоо, дараа нь эрэмбэлэгдсэн утгууд, эцэст нь анхны дарааллаарх дугаарыг хэвлэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    Compression result = compress(input);\n    cout << result.a.size() << '\\n';\n    for (long long value : result.a) {\n        cout << value << ' ';\n    }\n    cout << '\\n';\n    for (int rank : result.ranks) {\n        cout << rank << ' ';\n    }\n    cout << '\\n';\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн ажиллах C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "#include <algorithm>\n#include <iostream>\n#include <vector>\nusing namespace std;\n\nstruct Compression {\n    vector<long long> a;\n    vector<int> ranks;\n};\n\nCompression compress(const vector<long long>& input) {\n    vector<long long> a = input;\n    sort(a.begin(), a.end());\n    a.erase(unique(a.begin(), a.end()), a.end());\n\n    vector<int> ranks;\n    ranks.reserve(input.size());\n    for (long long value : input) {\n        auto position = lower_bound(a.begin(), a.end(), value);\n        ranks.push_back(static_cast<int>(position - a.begin()) + 1);\n    }\n    return {a, ranks};\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<long long> input(n);\n    for (long long& value : input) {\n        cin >> value;\n    }\n\n    Compression result = compress(input);\n    cout << result.a.size() << '\\n';\n    for (long long value : result.a) {\n        cout << value << ' ';\n    }\n    cout << '\\n';\n    for (int rank : result.ranks) {\n        cout << rank << ' ';\n    }\n    cout << '\\n';\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "4\n100 -5 100 7\n",
+            "type": "code",
+            "language": "Input"
+          },
+          {
+            "text": "3\n-5 7 100\n3 1 3 2\n",
+            "type": "code",
+            "language": "Output"
+          }
+        ]
+      },
+      {
+        "key": "boundaries",
+        "title": "9. Давхардал, сөрөг утга, хоосон массив",
+        "blocks": [
+          {
+            "text": "Бүх утга ижил бол ялгаатай тоо нэг, дугаар бүр нэг. Хоосон массивт дугаар хайх давталтгүй. Сөрөг, тэг, эерэг утгууд нэг эрэмбэд зөв орно.",
+            "type": "p"
+          },
+          {
+            "text": "Код 200000 хүртэл утгатай, утга бүр хасах $10^{18}$-аас $10^{18}$ хүртэл гэж авна. Утгыг long long, дугаарыг int хадгална. Харьцуулахдаа хоёр утгыг хасаад тэмдгийг нь харах шаардлагагүй; шууд эрэмбийн харьцуулалт ашигла.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "mistakes",
+        "title": "10. Дугаарын зөрүү анхны зай биш",
+        "blocks": [
+          {
+            "text": "Хасах тав ба долоогийн бодит зөрүү 12, дугаарын зөрүү нэг. Долоо ба зуугийн бодит зөрүү 93 боловч дугаарын зөрүү мөн нэг. Шахсан дугааруудыг урт, талбай, цалингийн нийлбэр гэж нэмж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Unique-ийн буцаасан төгсгөлийг erase хийхгүй орхивол хүснэгтийн хэмжээ, дугаар буруу болно. Анх таарсан ID-г эрэмбийн байрлал гэж үзэх, нэгээс эхэлсэн дугаарыг тэгээс эхэлсэн массивт шууд ашиглах алдаанаас зайлсхий.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "connections",
+        "title": "11. Асуултын хил хүснэгтэд байх албагүй",
+        "blocks": [
+          {
+            "text": "Цалингийн $[a,b]$ завсарт хэдэн утга байгааг асуухад $a,b$ өөрсдөө цалинтай тэнцүү байх албагүй. Доод хилд lower_bound, дээд хилд upper_bound авч боломжит байрлалын муж гаргана.",
+            "type": "p"
+          },
+          {
+            "text": "Харин шинэ цалингийн шинэчлэх утгуудыг индексээр хадгалах бол урьдчилан мэдэгдсэн бүх шинэ утгыг шахалтын цуглуулгад оруулна. Хязгаарын хилийг заавал байгаа утгын яг дугаар хайхтай бүү холь. Давтамж шинэчлэх, завсарт тоолох нэмэлт бүтэц тусдаа хэрэгтэй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "12. Зөвхөн эрэмбэ хэрэгтэй юу, зай бас хэрэгтэй юу?",
+        "blocks": [
+          {
+            "text": "Том утгуудтай давтамж, их бага тооллого, завсрын индекс хэрэгтэй үед шахалтыг бод. Геометрийн урт хэрэгтэй бол анхны координат эсвэл хөрш координатын жинхэнэ зөрүүг бас хадгал.",
+            "type": "p"
+          },
+          {
+            "text": "Дараа нь урьдчилан мэдэгдээгүй шинэ утга орж ирвэл дундах эрэмбэ өөрчлөгдөж болно. Тогтсон дугааруудыг автоматаар тогтвортой гэж үзэхгүй; өөр бүтэц эсвэл дахин байгуулах арга хэрэгтэй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Ялгаатай тооноос завсрын тооллого руу",
+        "blocks": [
+          {
+            "text": "Distinct Numbers",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Эрэмбэлж давхардлыг нэгтгэн ялгаатай тоог ол.",
+            "type": "p"
+          },
+          {
+            "text": "Salary Queries",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Бүх шинэчлэх утгаа урьдчилан цуглуулж, хил ба давтамжийн асуултыг нэмэлт бүтэцтэй холбо.",
+            "type": "p"
+          },
+          {
+            "text": "Distinct Values Queries",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Утгын шахалт нь асуултын бүх завсрыг өөрөө бодохгүй; нэмэлт offline тооллого хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "text": "Nested Ranges Check",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Хос координатын эрэмбэ болон тэнцүү хилүүдийг зөв авч үз.",
+            "type": "p"
+          },
+          {
+            "text": "Nested Ranges Count",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Хэдэн завсар агуулж байгааг тоолоход эрэмбэлэлт, давтамжийн нэмэлт баталгаа хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "text": "IOI 2012 Ideal City",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Геометрийн графын загварт жинхэнэ зайг хадгалах нэмэлт санаа шаарддаг; зөвхөн шахсан дугаарын зөрүүг зай гэж үзэхгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "importance",
+        "title": "14. Хадгалсан шинжээ мэдэж хэрэглэ",
+        "blocks": [
+          {
+            "text": "High ач холбогдолтой: координат, цалин, давтамж, эрэмбэтэй асуултын олон шийдэлд хэрэглэгдэнэ. Анхны утга ба индексийн үүргийг ялгах нь аргыг зөв ашиглах гол чадвар.",
+            "type": "p"
+          },
+          {
+            "text": "Distinct Numbers нь давхардалгүй хүснэгтийн шууд цөм. Salary Queries болон бусад завсрын бодлого нэмэлт өгөгдлийн бүтэц шаарддаг учраас шахалт дангаараа шийднэ гэж үзэхгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Урвуу хүснэгтээр яг буцааж чаддаг эсэхийг шалга",
+        "blocks": [
+          {
+            "text": "Жишээний эрэмбэлсэн хуулбар, ялгаатай хүснэгт, анхны дарааллын дугаарыг тус тус бич. Дугаараас буцаж уншихад анхны утга бүр яг ижил гарч байгааг шалга.",
+            "type": "p"
+          },
+          {
+            "text": "Жижиг оролтод дугаарыг өөрөөс нь бага ялгаатай утгуудын тоо дээр нэг нэмсэн лавлахтай тулга. Зай хадгалагдахгүй эсрэг жишээг тайлбарлаж, шинэчлэх шинэ утга орвол юу өөрчлөгдөхийг хэл.",
+            "type": "p"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Coordinate compression — preserve rank rather than magnitude",
+        "summary": "Map large signed repeated values to small ordered ranks, preserving equality and order but not distances or sums.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Do not allocate one slot per possible value",
+            "blocks": [
+              {
+                "text": "For $[100,-5,100,7]$, using values directly as array indices fails for negatives and huge ranges, although only three distinct values occur.",
+                "type": "p"
+              },
+              {
+                "text": "If equality and order are what matter, replace values by consecutive small ranks. This is coordinate compression, preserving order rather than merely assigning identities.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. First-seen IDs do not preserve order",
+            "blocks": [
+              {
+                "text": "Assigning IDs in first-seen order preserves equality, but not order: mapping 100 to one and -5 to two reverses their comparison.",
+                "type": "p"
+              },
+              {
+                "text": "First-seen identity can be useful for a different goal. Ordered compression numbers distinct values by sorted position.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "observation",
+            "title": "3. Sorted distinct values determine the mapping",
+            "blocks": [
+              {
+                "text": "Sort distinct values as $u_1<u_2<...<u_d$ and assign rank $i$ to $u_i$. Here $d$ is distinct count; duplicates share one rank.",
+                "type": "p"
+              },
+              {
+                "text": "Retain the inverse table. With one-based ranks and a zero-based vector, rank $i$ maps back through position $i-1$.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Copy, sort, deduplicate and locate",
+            "blocks": [
+              {
+                "text": "Sort a copy, use unique to compact adjacent duplicates and erase from its returned logical end to the physical end.",
+                "type": "p"
+              },
+              {
+                "text": "For each value in original order, use lower_bound and add one to its zero-based position. Every queried value built the table, so it is present. Do not confuse original order with the sorted copy.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "walkthrough",
+            "title": "5. Compress [100,-5,100,7] into three ranks",
+            "blocks": [
+              {
+                "text": "The sorted copy is $[-5,7,100,100]$ and distinct table $[-5,7,100]$. Their ranks are one for -5, two for seven and three for 100.",
+                "type": "p"
+              },
+              {
+                "text": "In original order the ranks are $[3,1,3,2]$. Equal entries remain equal and -5 remains below seven. Inverse lookup reconstructs the exact input.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "Input",
+                    "$[100,-5,100,7]$"
+                  ],
+                  [
+                    "Sorted unique",
+                    "$[-5,7,100]$"
+                  ],
+                  [
+                    "Ranks",
+                    "$[3,1,3,2]$"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Item",
+                  "Value"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Equality and order are preserved exactly",
+            "blocks": [
+              {
+                "text": "Distinct values occupy strictly increasing unique positions; equal values use the same position. Thus equality holds exactly when ranks are equal.",
+                "type": "p"
+              },
+              {
+                "text": "A smaller value appears earlier, and conversely an earlier distinct position has a smaller value. Lower_bound finds that exact position in the ordered table.",
+                "type": "p"
+              },
+              {
+                "text": "Ranks are within one through $d$ and each inversely maps to one original value. This proves comparisons, not numerical distances.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Space follows input size, not value range",
+            "blocks": [
+              {
+                "text": "For input length $n$, sorting costs $O(n \\log(n+2))$ and each lookup $O(log(d+2))$, giving total $O(n \\log(n+2))$ time and $O(n)$ space.",
+                "type": "p"
+              },
+              {
+                "text": "Negative or billion-sized values do not enlarge the arrays. Empty input yields empty tables/ranks with only constant setup work.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. C++17: rank without losing original order",
+            "blocks": [
+              {
+                "text": "Read 0–200000 values within plus/minus $10^{18}$. Print distinct count, ordered distinct values and one-based original-order ranks on separate lines.",
+                "type": "p"
+              },
+              {
+                "text": "8.1. State and setup",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Sort a copy and physically erase the compacted duplicate tail.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <algorithm>\n#include <iostream>\n#include <vector>\nusing namespace std;\n\nstruct Compression {\n    vector<long long> a;\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.2. Main transformation",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Find each guaranteed-present value and add one; return both inverse table and ranks.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    vector<int> ranks;\n};\n\nCompression compress(const vector<long long>& input) {\n    vector<long long> a = input;\n    sort(a.begin(), a.end());\n    a.erase(unique(a.begin(), a.end()), a.end());\n\n    vector<int> ranks;\n    ranks.reserve(input.size());\n    for (long long value : input) {\n        auto position = lower_bound(a.begin(), a.end(), value);\n        ranks.push_back(static_cast<int>(position - a.begin()) + 1);\n    }\n    return {a, ranks};\n}\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.3. Input",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read long long values; an empty input is valid.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<long long> input(n);\n    for (long long& value : input) {\n        cin >> value;\n    }\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.4. Output",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Print distinct count, ordered values and original-order ranks.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    Compression result = compress(input);\n    cout << result.a.size() << '\\n';\n    for (long long value : result.a) {\n        cout << value << ' ';\n    }\n    cout << '\\n';\n    for (int rank : result.ranks) {\n        cout << rank << ' ';\n    }\n    cout << '\\n';\n    return 0;\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete compilable C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "#include <algorithm>\n#include <iostream>\n#include <vector>\nusing namespace std;\n\nstruct Compression {\n    vector<long long> a;\n    vector<int> ranks;\n};\n\nCompression compress(const vector<long long>& input) {\n    vector<long long> a = input;\n    sort(a.begin(), a.end());\n    a.erase(unique(a.begin(), a.end()), a.end());\n\n    vector<int> ranks;\n    ranks.reserve(input.size());\n    for (long long value : input) {\n        auto position = lower_bound(a.begin(), a.end(), value);\n        ranks.push_back(static_cast<int>(position - a.begin()) + 1);\n    }\n    return {a, ranks};\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<long long> input(n);\n    for (long long& value : input) {\n        cin >> value;\n    }\n\n    Compression result = compress(input);\n    cout << result.a.size() << '\\n';\n    for (long long value : result.a) {\n        cout << value << ' ';\n    }\n    cout << '\\n';\n    for (int rank : result.ranks) {\n        cout << rank << ' ';\n    }\n    cout << '\\n';\n    return 0;\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "4\n100 -5 100 7\n",
+                "type": "code",
+                "language": "Input"
+              },
+              {
+                "text": "3\n-5 7 100\n3 1 3 2\n",
+                "type": "code",
+                "language": "Output"
+              }
+            ]
+          },
+          {
+            "key": "boundaries",
+            "title": "9. Duplicates, negative values and empty input",
+            "blocks": [
+              {
+                "text": "All-equal input has one distinct value and rank one everywhere. Empty input performs no lookups. Negative, zero and positive values share one valid order.",
+                "type": "p"
+              },
+              {
+                "text": "The program accepts up to 200000 values within plus/minus $10^{18}$. Values use long long, ranks int. Compare values directly rather than subtracting them to infer order.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "mistakes",
+            "title": "10. Rank differences are not original distances",
+            "blocks": [
+              {
+                "text": "The original gap from -5 to seven is 12 while the rank gap is one. Seven to 100 has original gap 93 but the same rank gap. Do not sum ranks as lengths, areas or salary totals.",
+                "type": "p"
+              },
+              {
+                "text": "Failing to erase after unique leaves the wrong table size. Avoid treating first-seen IDs as ranks or using one-based ranks directly as zero-based indices.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "connections",
+            "title": "11. Query bounds need not themselves be stored",
+            "blocks": [
+              {
+                "text": "For a salary-count interval $[a,b]$, the bounds need not equal stored salaries. Lower_bound for the lower bound and upper_bound for the upper bound define the relevant index interval.",
+                "type": "p"
+              },
+              {
+                "text": "To store later update values by rank, collect all known future values before compression. Distinguish bound positions from exact lookup of guaranteed-present values. Dynamic frequency/range counting needs an additional structure.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "12. Do you need only order, or numerical distance too?",
+            "blocks": [
+              {
+                "text": "Use compression for frequency arrays, ordered counts and range indices over large values. Geometric lengths require original coordinates or true gaps as well.",
+                "type": "p"
+              },
+              {
+                "text": "An unknown future value may insert between existing ranks. Fixed ranks are not automatically stable under such arrivals; choose another structure or rebuild.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From distinct counts to range counting",
+            "blocks": [
+              {
+                "text": "Distinct Numbers",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Build the sorted distinct table and count it.",
+                "type": "p"
+              },
+              {
+                "text": "Salary Queries",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Collect update values and combine bound positions with a frequency-query structure.",
+                "type": "p"
+              },
+              {
+                "text": "Distinct Values Queries",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Compression does not itself answer all ranges; add offline counting.",
+                "type": "p"
+              },
+              {
+                "text": "Nested Ranges Check",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Reason about paired ordering and equal boundaries.",
+                "type": "p"
+              },
+              {
+                "text": "Nested Ranges Count",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Add ordered counting arguments for containment counts.",
+                "type": "p"
+              },
+              {
+                "text": "IOI 2012 Ideal City",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Geometric graph modelling requires additional distance reasoning; rank differences cannot replace original lengths.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "importance",
+            "title": "14. Know exactly what the encoding preserves",
+            "blocks": [
+              {
+                "text": "Priority is High across coordinates, salaries, frequencies and ordered queries. Distinguishing original magnitude from index is central.",
+                "type": "p"
+              },
+              {
+                "text": "Distinct Numbers directly practices the distinct table. Salary Queries and range tasks require extra data structures; compression alone is not a full solution.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Verify exact inverse reconstruction",
+            "blocks": [
+              {
+                "text": "Write the sorted copy, distinct table and original-order ranks separately. Reconstruct every original value through the inverse table.",
+                "type": "p"
+              },
+              {
+                "text": "For small inputs, compare ranks with one plus the number of distinct smaller values. Explain a distance counterexample and what changes when new update values arrive.",
+                "type": "p"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know sorted sequences, lower_bound and set/map keys."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Эрэмбэлэгдсэн дараалал, lower_bound хайлт, set/map-ийн түлхүүрийг мэддэг байна.",
+    "priorityLevel": "high",
+    "priorityReason": "Том утгыг жижиг индексээр төлөөлөх нь давтамж, завсрын асуулт, эрэмбэтэй тооллогын олон аргын суурь. Ямар хамаарал хадгалагдахыг баталж, анхны утгаа хэзээ хадгалахыг ялгах чадвар тогтмол хэрэгтэй.",
+    "prerequisiteIds": [
+      "sorting",
+      "binary-search",
+      "set-map"
+    ],
+    "learningRelations": {
+      "next": "monotonic-stack",
+      "practice": [
+        {
+          "key": "312",
+          "stage": "Warm-up",
+          "reason": "Хичээлийн үндсэн дүрслэл, баталгаа болон хэрэгжүүлэлтийг бие даан шалгах шууд цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "404",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "411",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "327",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "328",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "920",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "sorting",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "binary-search",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "set-map",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "tree-basics",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "mapping": {
+    "value_count": "n",
+    "values": "a"
+  },
+  "changed": true,
+  "reviewed_body_sha256": "63fd3df101dae1aaa2029961b58ffc17bea800e8fee387269c4c9fc5d2e9716d",
+  "proposed_body_sha256": "63fd3df101dae1aaa2029961b58ffc17bea800e8fee387269c4c9fc5d2e9716d"
+}

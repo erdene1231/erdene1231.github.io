@@ -1,0 +1,886 @@
+{
+  "id": "lazy-segment-tree",
+  "expected_revision": 6,
+  "expected_published": true,
+  "expected_body_md5": "3ed07d16c981fa76efbe5eaa054ce90e",
+  "expected_body_sha256": "6884db41656f23e1c7da8378a1d9f0c8a2aa1d8bd003e69102dcfaa9ff7eae19",
+  "body": {
+    "id": "lazy-segment-tree",
+    "level": "Ахисан шат",
+    "order": 43,
+    "title": "Хойшлуулсан шинэчлэлт — завсарт оноох ба нэмэх",
+    "aliases": "lazy-segment-tree Lazy segment tree — range нэмэлтийг хойшлуулах Lazy segment trees — deferring range additions lazy propagation segment tree range add range update sum pending",
+    "related": [
+      "segment-tree",
+      "difference-array"
+    ],
+    "summary": "Оройн нийлбэрийг шууд зөв болгож, хүүхдүүдэд хараахан дамжаагүй оноох ба нэмэх өөрчлөлтийг дарааллаар нь хадгална.",
+    "category": "Data structures",
+    "levelKey": "advanced",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Нэг утга бус бүх завсрыг өөрчлөх",
+        "blocks": [
+          {
+            "text": "$[2,1,3,4,5]$ массивт $[2,4]$ бүрд хоёр нэмбэл $[2,3,5,6,5]$. Дараа нь $[3,5]$-ийг нэг болгож оноовол $[2,3,1,1,1]$. Завсрын нийлбэрүүдийг өөрчлөлтүүдийн хооронд асууна.",
+            "type": "p"
+          },
+          {
+            "text": "Нэмэх ба оноох өөр: оноох нь хуучныг дарна, нэмэх нь хуучин дээр өсгөнө. Нэг бүтэц хоёуланг нь зөв дарааллаар хадгалах ёстой.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Навч бүрийг шинэчлэхээс зайлсхийх",
+        "blocks": [
+          {
+            "text": "$k$ элементэд нэг нэгээр point update хийвэл $O(k\\log n)$. Бүхэл завсрыг байнга өөрчлөхөд энэ нь удаан.",
+            "type": "p"
+          },
+          {
+            "text": "Бүтнээр хамарсан оройн бүх $len$ элементэд $x$ нэмэхэд нийлбэр $len\\cdot x$-ээр өснө. Бүгдийг $x$ болговол нийлбэр $len\\cdot x$ болно. Ийм хэсгийн нийлбэрийг навч руу буулгүй зөв болгож чадна.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "3. Нийлбэр зөв, хүүхдэд өгөх ажил үлдсэн",
+        "blocks": [
+          {
+            "text": "Оройн sum нь тухайн завсрын бүх логик өөрчлөлтийг аль хэдийн агуулна. Хойшлуулсан үйлдлийн тэмдэглэгээ (lazy tag) нь энэ өөрчлөлтийн хүүхдүүдэд хараахан дамжаагүй хувиргалт. Нийлбэрийг “дараа зөв болгоно” гэж хадгалахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Манай tag хэвийн хэлбэр: байвал эхлээд set утгаар онооно, дараа нь add утгыг нэмнэ. Оноох байгаа эсэхийг has_set гэсэн тусдаа тэмдэг хадгална; тэг ч хүчинтэй оноох утга.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "composition",
+        "title": "4. Дарааллыг соливол утга өөр",
+        "blocks": [
+          {
+            "text": "Эхлээд тав болгоод хоёр нэмбэл долоо. Эхлээд хоёр нэмээд тав болговол тав. Тиймээс tag-уудыг сольж нэгтгэж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Шинэ set нь өмнөх set, add хоёуланг дарж, add-ыг тэглэнэ. Шинэ add нь нийлбэрийг өсгөж pending_add дээр нэмэгдэнэ. Push хийхдээ set-ийг эхэлж, add-ыг дараа нь хүүхэд бүрд яг энэ дарааллаар өгнө.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "5. Нэмэх, оноох, сөрөг нэмэлтийг мөрдөх",
+        "blocks": [
+          {
+            "text": "Эхний нийлбэр арван тав. $[2,4]$-т хоёр нэмээд хорин нэг. $[3,5]$-ийг нэг болгоод найм. $[4,5]$-д хасах нэг нэмээд $[2,3,1,0,0]$, нийлбэр зургаа.",
+            "type": "p"
+          },
+          {
+            "text": "Эцсийн $[2,4]$ нийлбэр дөрөв. Дотоод tag-уудын яг байрлал асуултаар push хийгдсэн эсэхээс өөр байж болох ч логик массив ба бүх хариу ижил байх ёстой.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "initial",
+                "2,1,3,4,5",
+                "15"
+              ],
+              [
+                "add [2,4] +2",
+                "2,3,5,6,5",
+                "21"
+              ],
+              [
+                "set [3,5] =1",
+                "2,3,1,1,1",
+                "8"
+              ],
+              [
+                "add [4,5] -1",
+                "2,3,1,0,0",
+                "6"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Үйлдэл",
+              "Логик массив",
+              "Нийлбэр"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Apply, push, pull гурвын утга",
+        "blocks": [
+          {
+            "text": "Apply нь бүтэн оройн нийлбэрийг шууд зөв хувиргаад tag-ийн хэвийн хэлбэрийг шинэчилнэ. Push нь тэр хувиргалтыг хүүхдүүдэд тарааж, эцгийн tag-ийг цэвэрлэнэ; хүүхдийн нийлбэрүүдийн нийлбэр эцгийн одоогийн утгатай таарна.",
+            "type": "p"
+          },
+          {
+            "text": "Хэсэгчилсэн шинэчлэлтийн өмнө push хийж хүүхдийн хуучирсан төлөвийг сэргээнэ. Дараа нь хүүхдүүдийг засаж буцахдаа sum-уудыг нэмж pull хийнэ. Асуултын бүтэн хамралт шууд зөв sum авна, хэсэгчилсэн нь push-ийн дараа зөв хүүхдүүдийг нэгтгэнэ.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Хойшлуулсан ажил түвшин бүрд тогтмол",
+        "blocks": [
+          {
+            "text": "Бүтнээр орсон хэсэгт apply тогтмол; түвшин бүрд хоёр захын хэсэг л цааш задардаг. Нэмэх, оноох, асуулт тус бүр $O(\\log(n+1))$, байгуулах $O(n)$, санах ой $O(n)$.",
+            "type": "p"
+          },
+          {
+            "text": "$n,q\\le200000$, эхний болон шинэ утга, нэмэлтийн абсолют хэмжээ $10^6$-өөс ихгүй. Нэг элемент хамгийн муудаа $(q+1)10^6$, бүх нийлбэр $n(q+1)10^6<4.1\\cdot10^{16}$ тул long long-д багтана. Энэ bound нь олон нэмэлтийг тооцсон, зөвхөн эхний утгын нийлбэр биш.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. Рекурс ашигласан бүтэц ба дараалалтай tag",
+        "blocks": [
+          {
+            "text": "8.1. Эхлэл ба төлөв",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Нийлбэр ба хойшлуулсан хоёр утга, оноолт байгаа тэмдэг тусдаа. Байгуулах нь өмнөх recursive сегментийн модтой ижил.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass LazySum {\n    int n;\n    vector<long long> sum, set, pending_add;\n    vector<bool> has_set;\n    void build(int node, int l, int r, const vector<long long>& a) {\n        if (l == r) {\n            sum[node] = a[l];\n            return;\n        }\n        int mid = l + (r - l) / 2;\n        build(node * 2, l, mid, a);\n        build(node * 2 + 1, mid + 1, r, a);\n        sum[node] = sum[node * 2] + sum[node * 2 + 1];\n    }\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.2. Хураангуй ба хувиргалт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Apply set нь хуучин нэмэлтийг дарна. Apply add нь нэмэлтийг хуримтлуулна. Push хийхдээ эхлээд set, дараа add-ыг хүүхдийн уртад тааруулж өгөөд эцгийн тэмдэглэгээг цэвэрлэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    void apply_set(int node, int length, long long value) {\n        sum[node] = value * length;\n        has_set[node] = true;\n        set[node] = value;\n        pending_add[node] = 0;\n    }\n    void apply_add(int node, int length, long long value) {\n        sum[node] += value * length;\n        pending_add[node] += value;\n    }\n    void push(int node, int l, int r) {\n        if (l == r) {\n            return;\n        }\n        int mid = l + (r - l) / 2;\n        if (has_set[node]) {\n            apply_set(node * 2, mid - l + 1, set[node]);\n            apply_set(node * 2 + 1, r - mid, set[node]);\n            has_set[node] = false;\n        }\n        if (pending_add[node] != 0) {\n            apply_add(node * 2, mid - l + 1, pending_add[node]);\n            apply_add(node * 2 + 1, r - mid, pending_add[node]);\n            pending_add[node] = 0;\n        }\n    }\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.3. Үндсэн үйлдэл",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Огтлолцохгүй хэсгийг орхино. Бүтэн хэсэгт apply хийгээд зогсоно. Хэсэгчилсэн үед push, хоёр хүүхдийн update, дараа нь pull гэсэн дараалалтай.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    void update(int node, int l, int r, int ql, int qr,\n                long long value, bool assignment) {\n        if (qr < l || r < ql) {\n            return;\n        }\n        if (ql <= l && r <= qr) {\n            if (assignment) {\n                apply_set(node, r - l + 1, value);\n            } else {\n                apply_add(node, r - l + 1, value);\n            }\n            return;\n        }\n        push(node, l, r);\n        int mid = l + (r - l) / 2;\n        update(node * 2, l, mid, ql, qr, value, assignment);\n        update(node * 2 + 1, mid + 1, r, ql, qr, value, assignment);\n        sum[node] = sum[node * 2] + sum[node * 2 + 1];\n    }\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.4. Хариу ба нийтийн интерфейс",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Бүтэн асуултын sum зөв. Хэсэгчилсэнд push хийж хүүхдүүдийг асууна. Нийтийн add/assign wrapper нь нэг update функцэд үйлдлийн төрлийг өгнө.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    long long query(int node, int l, int r, int ql, int qr) {\n        if (qr < l || r < ql) {\n            return 0;\n        }\n        if (ql <= l && r <= qr) {\n            return sum[node];\n        }\n        push(node, l, r);\n        int mid = l + (r - l) / 2;\n        return query(node * 2, l, mid, ql, qr)\n             + query(node * 2 + 1, mid + 1, r, ql, qr);\n    }\npublic:\n    explicit LazySum(const vector<long long>& a)\n        : n(static_cast<int>(a.size()) - 1), sum(4 * n),\n          set(4 * n), pending_add(4 * n), has_set(4 * n) {\n        build(1, 1, n, a);\n    }\n    void add(int l, int r, long long value) {\n        update(1, 1, n, l, r, value, false);\n    }\n    void assign(int l, int r, long long value) {\n        update(1, 1, n, l, r, value, true);\n    }\n    long long range_sum(int l, int r) {\n        return query(1, 1, n, l, r);\n    }\n};\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.5. Оролт ба гаралт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт $1$–$200000$ элемент, $0$–$200000$ үйлдэл; эхний болон нэмэх/оноох утгын абсолют хэмжээ $10^6$-өөс ихгүй. Төрөл нэг: $l$ $r$ $x$ нэмэх; хоёр: $l$ $r$ $x$ оноох; гурав: $l$ $r$ нийлбэр хэвлэх. Хилүүд хаалттай, нэгээс эхэлнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<long long> a(n + 1);\n    for (int i = 1; i <= n; ++i) {\n        cin >> a[i];\n    }\n    LazySum tree(a);\n    for (int query = 0; query < q; ++query) {\n        int type, l, r;\n        cin >> type >> l >> r;\n        if (type == 3) {\n            cout << tree.range_sum(l, r) << '\\n';\n        } else {\n            long long value;\n            cin >> value;\n            if (type == 1) {\n                tree.add(l, r, value);\n            } else {\n                tree.assign(l, r, value);\n            }\n        }\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн ажиллах C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass LazySum {\n    int n;\n    vector<long long> sum, set, pending_add;\n    vector<bool> has_set;\n    void build(int node, int l, int r, const vector<long long>& a) {\n        if (l == r) {\n            sum[node] = a[l];\n            return;\n        }\n        int mid = l + (r - l) / 2;\n        build(node * 2, l, mid, a);\n        build(node * 2 + 1, mid + 1, r, a);\n        sum[node] = sum[node * 2] + sum[node * 2 + 1];\n    }\n    void apply_set(int node, int length, long long value) {\n        sum[node] = value * length;\n        has_set[node] = true;\n        set[node] = value;\n        pending_add[node] = 0;\n    }\n    void apply_add(int node, int length, long long value) {\n        sum[node] += value * length;\n        pending_add[node] += value;\n    }\n    void push(int node, int l, int r) {\n        if (l == r) {\n            return;\n        }\n        int mid = l + (r - l) / 2;\n        if (has_set[node]) {\n            apply_set(node * 2, mid - l + 1, set[node]);\n            apply_set(node * 2 + 1, r - mid, set[node]);\n            has_set[node] = false;\n        }\n        if (pending_add[node] != 0) {\n            apply_add(node * 2, mid - l + 1, pending_add[node]);\n            apply_add(node * 2 + 1, r - mid, pending_add[node]);\n            pending_add[node] = 0;\n        }\n    }\n    void update(int node, int l, int r, int ql, int qr,\n                long long value, bool assignment) {\n        if (qr < l || r < ql) {\n            return;\n        }\n        if (ql <= l && r <= qr) {\n            if (assignment) {\n                apply_set(node, r - l + 1, value);\n            } else {\n                apply_add(node, r - l + 1, value);\n            }\n            return;\n        }\n        push(node, l, r);\n        int mid = l + (r - l) / 2;\n        update(node * 2, l, mid, ql, qr, value, assignment);\n        update(node * 2 + 1, mid + 1, r, ql, qr, value, assignment);\n        sum[node] = sum[node * 2] + sum[node * 2 + 1];\n    }\n    long long query(int node, int l, int r, int ql, int qr) {\n        if (qr < l || r < ql) {\n            return 0;\n        }\n        if (ql <= l && r <= qr) {\n            return sum[node];\n        }\n        push(node, l, r);\n        int mid = l + (r - l) / 2;\n        return query(node * 2, l, mid, ql, qr)\n             + query(node * 2 + 1, mid + 1, r, ql, qr);\n    }\npublic:\n    explicit LazySum(const vector<long long>& a)\n        : n(static_cast<int>(a.size()) - 1), sum(4 * n),\n          set(4 * n), pending_add(4 * n), has_set(4 * n) {\n        build(1, 1, n, a);\n    }\n    void add(int l, int r, long long value) {\n        update(1, 1, n, l, r, value, false);\n    }\n    void assign(int l, int r, long long value) {\n        update(1, 1, n, l, r, value, true);\n    }\n    long long range_sum(int l, int r) {\n        return query(1, 1, n, l, r);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<long long> a(n + 1);\n    for (int i = 1; i <= n; ++i) {\n        cin >> a[i];\n    }\n    LazySum tree(a);\n    for (int query = 0; query < q; ++query) {\n        int type, l, r;\n        cin >> type >> l >> r;\n        if (type == 3) {\n            cout << tree.range_sum(l, r) << '\\n';\n        } else {\n            long long value;\n            cin >> value;\n            if (type == 1) {\n                tree.add(l, r, value);\n            } else {\n                tree.assign(l, r, value);\n            }\n        }\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "5 7\n2 1 3 4 5\n3 1 5\n1 2 4 2\n3 1 5\n2 3 5 1\n3 1 5\n1 4 5 -1\n3 2 4\n",
+            "type": "code",
+            "language": "Input"
+          },
+          {
+            "text": "15\n21\n8\n4\n",
+            "type": "code",
+            "language": "Output"
+          }
+        ]
+      },
+      {
+        "key": "errors",
+        "title": "9. Тэг оноохыг “өөрчлөлтгүй” гэж үзэхгүй",
+        "blocks": [
+          {
+            "text": "has_set тусдаа байхгүй, set утга тэг биш эсэхээр шалгавал бүхэл завсрыг тэглэх үйлдэл алга болно. Add tag харин тэг байвал хийх ажилгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Set ирэхэд өмнөх add-ыг арилгахгүй бол хуучин нэмэлт шинэ оноолт дээр буруу давтагдана. Push-д add-ыг set-ээс өмнө дамжуулбал шинэ оноолт тэр нэмэлтийг дарж буруу болно.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "partial",
+        "title": "10. Хүүхэд рүү буухаас өмнө дамжуул",
+        "blocks": [
+          {
+            "text": "Бүх $[1,n]$-ийг тав болгосон ч хүүхдүүдэд хуучин нийлбэр байж болно. Дараа нь ганц байрлал асуухад root-ийн tag-ийг буулгахгүй бол хуучин утга уншина.",
+            "type": "p"
+          },
+          {
+            "text": "Бүтэн асуултад push заавал хэрэггүй: sum аль хэдийн зөв. Манай query хэсэгчлэн орохдоо дотоод хадгалалтыг өөрчилдөг тул const биш, гэхдээ логик массивын утгыг өөрчилдөггүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "11. Бүтэн оройн мэдээлэлд хувиргалт хийж болох уу?",
+        "blocks": [
+          {
+            "text": "Lazy хэрэглэхийн тулд оройн хураангуйг шинэ өөрчлөлтөөр хурдан хувиргаж, олон өөрчлөлтийг тогтмол хэмжээтэй tag болгон зөв нийлүүлэх ёстой. Нийлбэрт урт мэдэгдсэн тул add, set ийм шинжтэй.",
+            "type": "p"
+          },
+          {
+            "text": "Өөр асуулт, өөр өөрчлөлт болгонд ижил tag тохирохгүй. Жишээ нь хамгийн бага утга, maximum хязгаарлах үйлдэлд өөр хураангуй болон нийлүүлэх хууль хэрэгтэй байж болно.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "variants",
+        "title": "12. Байрлалаас хамаарах нэмэлт бол шинэ загвар",
+        "blocks": [
+          {
+            "text": "Polynomial Queries-д нэмэх хэмжээ завсар доторх байрлалаас хамаарна. Тогтмол add tag хангалтгүй; шугаман функцийн нийлбэр ба түүний tag хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "text": "IOI Wall-д дээд, доод хязгаар тавих хувиргалтын нийлүүлэлт өөр. Энэ код зөвхөн тогтмол нэмэх, утга оноох, нийлбэр гурвыг хэрэгжүүлсэн гэдгийг баримтал.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Энгийн өөрчлөлтөөс нийлүүлэлтийн өөр хууль руу",
+        "blocks": [
+          {
+            "text": "Range Update Queries",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Завсар нэмэх ба нэг утга асуухад ялгавар/Fenwick илүү энгийн байж болохыг харьцуул.",
+            "type": "p"
+          },
+          {
+            "text": "Range Updates and Sums",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Set, add, sum гурвын tag-ийн дарааллыг хэрэгжүүл.",
+            "type": "p"
+          },
+          {
+            "text": "Polynomial Queries",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Байрлалын функцээр шинэ tag, нийлбэрийн томьёо гарга.",
+            "type": "p"
+          },
+          {
+            "text": "Dynamic Range Sum Queries",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Зөвхөн point update-д lazy хэрэггүйг ялга.",
+            "type": "p"
+          },
+          {
+            "text": "Range Queries and Copies",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Хувилбар хадгалах persistence нь lazy-гаас тусдаа санаа гэдгийг ялга.",
+            "type": "p"
+          },
+          {
+            "text": "IOI Wall",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Доод/дээд хязгаарын хувиргалтын нийлүүлэлтийг тусад нь батал.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "priority",
+        "title": "14. Tag бол үйлдлийн дарааллын хураангуй",
+        "blocks": [
+          {
+            "text": "Өндөр ач холбогдолтой. Range Updates and Sums нь set/add-ийн дараалал ба sum-ийн шууд цөм. Хурдан код хуулж бус, tag-ийн утга, хэзээ push/pull хийхээ тайлбарлаж чаддаг байх нь гол.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Нэгтгэлийн дарааллыг зориуд зөрүүлж шалга",
+        "blocks": [
+          {
+            "text": "Бүтэн set, дэд add, дахин бүтэн set, тэг set, сөрөг add, ганц нүдний асуултыг ээлжлүүл. Add дараа set ба set дараа add-ийн эсрэг жишээг заавал оруул.",
+            "type": "p"
+          },
+          {
+            "text": "Жижиг массивт үйлдэл бүрийг навчийн утгуудад шууд хийсэн лавлахтай тулга. Асуултын дараа дахин бүтэн эсвэл хэсэгчилсэн update хийж push хийсэн төлөвөөс ч зөв үргэлжлэхийг шалга.",
+            "type": "p"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Lazy propagation — deferred range updates",
+        "summary": "Keep node sums current while composing assignment/addition updates not yet propagated to children.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Update an entire interval, not just one point",
+            "blocks": [
+              {
+                "text": "Add two to $[2,4]$ in $[2,1,3,4,5]$ to get $[2,3,5,6,5]$; assign one to $[3,5]$ to get $[2,3,1,1,1]$. Interleave sum queries.",
+                "type": "p"
+              },
+              {
+                "text": "Assignment overwrites old values while addition accumulates. The structure must preserve their chronological order.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Avoid visiting every covered leaf",
+            "blocks": [
+              {
+                "text": "Point-updating every covered element costs $O(k\\log n)$.",
+                "type": "p"
+              },
+              {
+                "text": "For a whole node of length $len$, adding $x$ increases sum by $len\\cdot x$, while assigning $x$ sets sum to that product. Update its summary without descending to leaves.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "3. Current sums, deferred child work",
+            "blocks": [
+              {
+                "text": "A node sum already reflects all logical changes. Its lazy tag is the transformation not yet delivered to children, not a promise to fix the node sum later.",
+                "type": "p"
+              },
+              {
+                "text": "The tag normal form is optional assignment followed by addition. A separate has_set flag distinguishes absence from assigning zero.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "composition",
+            "title": "4. Composition order changes the result",
+            "blocks": [
+              {
+                "text": "Set to five then add two gives seven; add two then set five gives five. Order matters.",
+                "type": "p"
+              },
+              {
+                "text": "A new assignment replaces both old assignment/addition. A new addition accumulates pending_add. Push assignment before addition to each child.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "5. Trace addition, assignment and a negative addition",
+            "blocks": [
+              {
+                "text": "The total starts at fifteen, becomes twenty-one after add, eight after assignment and six after adding negative one to $[4,5]$, leaving $[2,3,1,0,0]$.",
+                "type": "p"
+              },
+              {
+                "text": "Final range $[2,4]$ sums to four. Physical tag placement may vary with pushes, but the logical array and answers must agree.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "initial",
+                    "2,1,3,4,5",
+                    "15"
+                  ],
+                  [
+                    "add [2,4] +2",
+                    "2,3,5,6,5",
+                    "21"
+                  ],
+                  [
+                    "set [3,5] =1",
+                    "2,3,1,1,1",
+                    "8"
+                  ],
+                  [
+                    "add [4,5] -1",
+                    "2,3,1,0,0",
+                    "6"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Action",
+                  "Logical array",
+                  "Total"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Meaning of apply, push and pull",
+            "blocks": [
+              {
+                "text": "Apply immediately transforms a full node sum and composes its tag. Push transfers that transformation to children and clears the parent tag, preserving the parent’s sum as the combined child sums.",
+                "type": "p"
+              },
+              {
+                "text": "Before partial updates, push makes children current; recurse, then pull their sums. Full queries return the current sum; partial queries combine children after push.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Constant deferred work per visited node",
+            "blocks": [
+              {
+                "text": "Apply is constant time on full nodes; only boundary nodes keep splitting. Add, assign and sum query each take $O(\\log(n+1))$, with linear build and memory.",
+                "type": "p"
+              },
+              {
+                "text": "For $n,q\\le200000$ and initial/set/add magnitudes at most $10^6$, each element is bounded by $(q+1)10^6$ and sums by $n(q+1)10^6<4.1\\cdot10^{16}$. Long long covers accumulated updates, not just initial sums.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Recursive structure and ordered tags",
+            "blocks": [
+              {
+                "text": "8.1. State and setup",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Keep sums, set/add values and assignment presence separately; build uses the previous recursive segment-tree pattern.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass LazySum {\n    int n;\n    vector<long long> sum, set, pending_add;\n    vector<bool> has_set;\n    void build(int node, int l, int r, const vector<long long>& a) {\n        if (l == r) {\n            sum[node] = a[l];\n            return;\n        }\n        int mid = l + (r - l) / 2;\n        build(node * 2, l, mid, a);\n        build(node * 2 + 1, mid + 1, r, a);\n        sum[node] = sum[node * 2] + sum[node * 2 + 1];\n    }\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.2. Summary and transformation",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Set clears old addition; add accumulates. Push applies assignment then addition using each child length and clears parent tags.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    void apply_set(int node, int length, long long value) {\n        sum[node] = value * length;\n        has_set[node] = true;\n        set[node] = value;\n        pending_add[node] = 0;\n    }\n    void apply_add(int node, int length, long long value) {\n        sum[node] += value * length;\n        pending_add[node] += value;\n    }\n    void push(int node, int l, int r) {\n        if (l == r) {\n            return;\n        }\n        int mid = l + (r - l) / 2;\n        if (has_set[node]) {\n            apply_set(node * 2, mid - l + 1, set[node]);\n            apply_set(node * 2 + 1, r - mid, set[node]);\n            has_set[node] = false;\n        }\n        if (pending_add[node] != 0) {\n            apply_add(node * 2, mid - l + 1, pending_add[node]);\n            apply_add(node * 2 + 1, r - mid, pending_add[node]);\n            pending_add[node] = 0;\n        }\n    }\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.3. Main operation",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Return outside, apply on full coverage, otherwise push, recurse into children and pull sums.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    void update(int node, int l, int r, int ql, int qr,\n                long long value, bool assignment) {\n        if (qr < l || r < ql) {\n            return;\n        }\n        if (ql <= l && r <= qr) {\n            if (assignment) {\n                apply_set(node, r - l + 1, value);\n            } else {\n                apply_add(node, r - l + 1, value);\n            }\n            return;\n        }\n        push(node, l, r);\n        int mid = l + (r - l) / 2;\n        update(node * 2, l, mid, ql, qr, value, assignment);\n        update(node * 2 + 1, mid + 1, r, ql, qr, value, assignment);\n        sum[node] = sum[node * 2] + sum[node * 2 + 1];\n    }\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.4. Result and public interface",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Full query sums are current; partial queries push and combine children. Public add/assign wrappers pass the action type into one update routine.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    long long query(int node, int l, int r, int ql, int qr) {\n        if (qr < l || r < ql) {\n            return 0;\n        }\n        if (ql <= l && r <= qr) {\n            return sum[node];\n        }\n        push(node, l, r);\n        int mid = l + (r - l) / 2;\n        return query(node * 2, l, mid, ql, qr)\n             + query(node * 2 + 1, mid + 1, r, ql, qr);\n    }\npublic:\n    explicit LazySum(const vector<long long>& a)\n        : n(static_cast<int>(a.size()) - 1), sum(4 * n),\n          set(4 * n), pending_add(4 * n), has_set(4 * n) {\n        build(1, 1, n, a);\n    }\n    void add(int l, int r, long long value) {\n        update(1, 1, n, l, r, value, false);\n    }\n    void assign(int l, int r, long long value) {\n        update(1, 1, n, l, r, value, true);\n    }\n    long long range_sum(int l, int r) {\n        return query(1, 1, n, l, r);\n    }\n};\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.5. Input and output",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read up to $200000$ elements/actions with initial/set/add magnitudes at most $10^6$. Type one adds on $l$ $r$, type two assigns on $l$ $r$, type three prints the range sum; endpoints are inclusive and one-based.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<long long> a(n + 1);\n    for (int i = 1; i <= n; ++i) {\n        cin >> a[i];\n    }\n    LazySum tree(a);\n    for (int query = 0; query < q; ++query) {\n        int type, l, r;\n        cin >> type >> l >> r;\n        if (type == 3) {\n            cout << tree.range_sum(l, r) << '\\n';\n        } else {\n            long long value;\n            cin >> value;\n            if (type == 1) {\n                tree.add(l, r, value);\n            } else {\n                tree.assign(l, r, value);\n            }\n        }\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete compilable C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass LazySum {\n    int n;\n    vector<long long> sum, set, pending_add;\n    vector<bool> has_set;\n    void build(int node, int l, int r, const vector<long long>& a) {\n        if (l == r) {\n            sum[node] = a[l];\n            return;\n        }\n        int mid = l + (r - l) / 2;\n        build(node * 2, l, mid, a);\n        build(node * 2 + 1, mid + 1, r, a);\n        sum[node] = sum[node * 2] + sum[node * 2 + 1];\n    }\n    void apply_set(int node, int length, long long value) {\n        sum[node] = value * length;\n        has_set[node] = true;\n        set[node] = value;\n        pending_add[node] = 0;\n    }\n    void apply_add(int node, int length, long long value) {\n        sum[node] += value * length;\n        pending_add[node] += value;\n    }\n    void push(int node, int l, int r) {\n        if (l == r) {\n            return;\n        }\n        int mid = l + (r - l) / 2;\n        if (has_set[node]) {\n            apply_set(node * 2, mid - l + 1, set[node]);\n            apply_set(node * 2 + 1, r - mid, set[node]);\n            has_set[node] = false;\n        }\n        if (pending_add[node] != 0) {\n            apply_add(node * 2, mid - l + 1, pending_add[node]);\n            apply_add(node * 2 + 1, r - mid, pending_add[node]);\n            pending_add[node] = 0;\n        }\n    }\n    void update(int node, int l, int r, int ql, int qr,\n                long long value, bool assignment) {\n        if (qr < l || r < ql) {\n            return;\n        }\n        if (ql <= l && r <= qr) {\n            if (assignment) {\n                apply_set(node, r - l + 1, value);\n            } else {\n                apply_add(node, r - l + 1, value);\n            }\n            return;\n        }\n        push(node, l, r);\n        int mid = l + (r - l) / 2;\n        update(node * 2, l, mid, ql, qr, value, assignment);\n        update(node * 2 + 1, mid + 1, r, ql, qr, value, assignment);\n        sum[node] = sum[node * 2] + sum[node * 2 + 1];\n    }\n    long long query(int node, int l, int r, int ql, int qr) {\n        if (qr < l || r < ql) {\n            return 0;\n        }\n        if (ql <= l && r <= qr) {\n            return sum[node];\n        }\n        push(node, l, r);\n        int mid = l + (r - l) / 2;\n        return query(node * 2, l, mid, ql, qr)\n             + query(node * 2 + 1, mid + 1, r, ql, qr);\n    }\npublic:\n    explicit LazySum(const vector<long long>& a)\n        : n(static_cast<int>(a.size()) - 1), sum(4 * n),\n          set(4 * n), pending_add(4 * n), has_set(4 * n) {\n        build(1, 1, n, a);\n    }\n    void add(int l, int r, long long value) {\n        update(1, 1, n, l, r, value, false);\n    }\n    void assign(int l, int r, long long value) {\n        update(1, 1, n, l, r, value, true);\n    }\n    long long range_sum(int l, int r) {\n        return query(1, 1, n, l, r);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<long long> a(n + 1);\n    for (int i = 1; i <= n; ++i) {\n        cin >> a[i];\n    }\n    LazySum tree(a);\n    for (int query = 0; query < q; ++query) {\n        int type, l, r;\n        cin >> type >> l >> r;\n        if (type == 3) {\n            cout << tree.range_sum(l, r) << '\\n';\n        } else {\n            long long value;\n            cin >> value;\n            if (type == 1) {\n                tree.add(l, r, value);\n            } else {\n                tree.assign(l, r, value);\n            }\n        }\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "5 7\n2 1 3 4 5\n3 1 5\n1 2 4 2\n3 1 5\n2 3 5 1\n3 1 5\n1 4 5 -1\n3 2 4\n",
+                "type": "code",
+                "language": "Input"
+              },
+              {
+                "text": "15\n21\n8\n4\n",
+                "type": "code",
+                "language": "Output"
+              }
+            ]
+          },
+          {
+            "key": "errors",
+            "title": "9. Assigning zero is not “no update”",
+            "blocks": [
+              {
+                "text": "Testing a set value against zero loses valid zero assignments; use a presence flag. A zero add genuinely does nothing.",
+                "type": "p"
+              },
+              {
+                "text": "Failing to clear an old add on a new set reapplies obsolete work. Pushing add before set incorrectly overwrites the addition.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "partial",
+            "title": "10. Push before descending",
+            "blocks": [
+              {
+                "text": "After assigning the entire array to five, children may still hold old summaries. A later singleton query must push before descending.",
+                "type": "p"
+              },
+              {
+                "text": "A full query needs no push because sum is current. Partial queries mutate internal representation and are not const here, while preserving the logical array.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "11. Can a full summary be transformed directly?",
+            "blocks": [
+              {
+                "text": "Lazy propagation needs efficient whole-summary transformation and compact correct composition. Sum with known length supports add and set.",
+                "type": "p"
+              },
+              {
+                "text": "Different queries/updates need different summaries and composition laws; do not reuse these tags for every transformation.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "variants",
+            "title": "12. Position-dependent updates need a new model",
+            "blocks": [
+              {
+                "text": "Polynomial Queries has position-dependent additions, needing linear-function summaries/tags rather than a constant add.",
+                "type": "p"
+              },
+              {
+                "text": "IOI Wall composes lower/upper clamping differently. This program implements only constant range add, assignment and sum.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From simple updates to new composition laws",
+            "blocks": [
+              {
+                "text": "Range Update Queries",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Compare simpler difference/Fenwick options for range-add point-query.",
+                "type": "p"
+              },
+              {
+                "text": "Range Updates and Sums",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Implement ordered set/add tags and sum queries.",
+                "type": "p"
+              },
+              {
+                "text": "Polynomial Queries",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Derive position-dependent tags and sum formulas.",
+                "type": "p"
+              },
+              {
+                "text": "Dynamic Range Sum Queries",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Recognize that point-only updates do not require lazy propagation.",
+                "type": "p"
+              },
+              {
+                "text": "Range Queries and Copies",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Distinguish persistent versions from deferred updates.",
+                "type": "p"
+              },
+              {
+                "text": "IOI Wall",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Prove clamp-transformation composition separately.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "priority",
+            "title": "14. A tag summarizes ordered actions",
+            "blocks": [
+              {
+                "text": "High priority. Range Updates and Sums directly exercises ordered set/add composition and sums. Understand tag meaning and push/pull timing rather than copying a template.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Test composition orders adversarially",
+            "blocks": [
+              {
+                "text": "Alternate whole sets, subrange adds, new whole sets, zero assignments, negative adds and point queries. Include add-then-set versus set-then-add explicitly.",
+                "type": "p"
+              },
+              {
+                "text": "Use a plain array performing every action directly. Interleave queries before later updates to test correctness after pushes as well.",
+                "type": "p"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Recursive segment-tree overlap cases, interval lengths and range-update ideas from difference arrays."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Рекурс ашигласан сегментийн модны гурван огтлолцол, завсрын урт, ялгаврын массивын өөрчлөлтийн санаа.",
+    "priorityLevel": "high",
+    "priorityReason": "Олон давтагдсан завсрын өөрчлөлт ба асуултыг логарифм болгох нийтлэг ахисан суурь. Төлөвийн утга, шинэчлэлтийн дараалал, тэг утгын ялгалтыг зөв батлах нь өргөн хэрэглээтэй өндөр ач холбогдолтой.",
+    "prerequisiteIds": [
+      "segment-tree",
+      "difference-array"
+    ],
+    "learningRelations": {
+      "next": "bitmask-dp",
+      "practice": [
+        {
+          "key": "400",
+          "stage": "Warm-up",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "416",
+          "stage": "Standard",
+          "reason": "Бүтцийн хадгалсан утга, үйлдлийн нөхцөл ба үндсэн шинэчлэлтийн дүрмийг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "417",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "397",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "418",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "133",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "segment-tree",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "difference-array",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "mapping": {
+    "query_count": "q",
+    "values": "a",
+    "middle": "mid",
+    "left": "l",
+    "right": "r",
+    "index": "i",
+    "count": "n",
+    "query_left": "ql",
+    "query_right": "qr",
+    "pending_set": "set"
+  },
+  "changed": true,
+  "reviewed_body_sha256": "063045e970176eba64324aed8e4ffc8c3bc9fca45e389aaef10984069dd80d2a",
+  "proposed_body_sha256": "063045e970176eba64324aed8e4ffc8c3bc9fca45e389aaef10984069dd80d2a"
+}
