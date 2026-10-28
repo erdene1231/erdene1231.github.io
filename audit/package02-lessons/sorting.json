@@ -1,0 +1,1531 @@
+{
+  "id": "sorting",
+  "expected_revision": 3,
+  "expected_published": true,
+  "expected_body_sha256": "cd150b3a13c51051aa595d165ea6fb4df2b0bc5e9938b9624cb425bbbba14abb",
+  "status": "Reviewed locally; targeted core-practice promotion and publication pending",
+  "body": {
+    "id": "sorting",
+    "level": "Анхан шат",
+    "order": 3,
+    "title": "Эрэмбэлэх — жижиг хэсгүүдээс зөв дараалал бүтээх",
+    "aliases": "sorting Sorting — эрэмбэлэх Sorting — putting values in order",
+    "related": [
+      "brute-force",
+      "recursion"
+    ],
+    "summary": "Ижил утгуудыг бүлэглэх хэрэгцээнээс эрэмбийн ач тусыг олъё. Хоёр эрэмбэтэй хэсгийг нэгтгэж, бүх өгөгдлөө хадгалан жагсаалтаа эрэмбэлээд өөр утгуудыг тоолно.",
+    "category": "Array ба search",
+    "levelKey": "beginner",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Ижил утгуудыг яаж таних вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$[5,2,5,1,2,-1,5]$ гэсэн жагсаалт байна. Хэдэн өөр утга байна вэ? $-1,1,2,5$ тул хариу $4$. Ижил тоо олон давтагдсан ч нэг өөр утга гэж тоолно."
+          },
+          {
+            "type": "p",
+            "text": "Жагсаалтын утгуудын байрыг өөрчлөхөд өөр утгуудын тоо өөрчлөгдөхгүй. Харин тохиромжтой дараалалд оруулбал өмнөх бүх утгыг санахгүйгээр давхардлыг таньж болох юм. Ямар дараалал ийм давуу тал өгөхийг олъё."
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Өмнөх бүх утгатай тулгаж үзвэл",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Байрлал $i$ бүрд түүний утга өмнөх $0,\\ldots,i-1$ байрлалын аль нэгэнд байсан эсэхийг шалга. Байгаагүй бол шинэ утга гэж тоол. Энэ арга зөв боловч хамгийн муу үед $0+1+\\cdots+(n-1)$ харьцуулалт хийнэ."
+          },
+          {
+            "type": "p",
+            "text": "Ингэхэд $O(n^2)$ хугацаа, тоолуураас өөр $O(1)$ нэмэлт зай хэрэгтэй. $n=200000$ үед ойролцоогоор $20$ тэрбум харьцуулалт гарч болно. Жижиг лавлах шийдэлд хэрэгтэй ч бүрэн хязгаарт тохирохгүй."
+          },
+          {
+            "type": "p",
+            "text": "Давхардлыг дахин дахин хайж байгааг ажигла. Ижил утгуудыг хажууд нь авчирвал зөвхөн нэг хөрштэй харьцуулахад хүрэлцэх үү?"
+          }
+        ]
+      },
+      {
+        "key": "observation",
+        "title": "3. Эрэмбэ ижил утгуудыг нэг хэсэг болгоно",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Утгуудыг буурахгүй дараалалд оруулбал $[-1,1,2,2,5,5,5]$. Үүнийг эрэмбэлэх гэдэг. Буурахгүй гэдэг нь дараагийн утга өмнөхөөс багагүй; тэнцүү байж болно."
+          },
+          {
+            "type": "p",
+            "text": "Ижил $x$ утгын хоёр байрлалын хооронд байгаа утга $x$-ээс бага ч, их ч байж чадахгүй: дараалал буурахгүй байх ёстой учраас тэр нь мөн $x$. Тиймээс ижил утгууд нэг тасралтгүй хэсэгт цугларна."
+          },
+          {
+            "type": "p",
+            "text": "Одоо эхний утгыг нэг удаа тоолоод, дараагийн утга өмнөхөөсөө өөр болох бүрд хариуг нэгээр нэмэхэд болно. Гол үлдсэн ажил нь утгуудыг үр ашигтай эрэмбэлэх юм."
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Эрэмбэтэй жижиг хэсгүүдийг нэгтгэе",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хамгийн бага утгыг бүх үлдсэн хэсгээс хайж дараалан сонговол бас квадрат ажил хийнэ. Өөр санаа хайя: хоёр хэсэг аль хэдийн эрэмбэтэй бол тэдгээрийн нийлсэн дарааллыг хурдан бүтээж болно."
+          },
+          {
+            "type": "p",
+            "text": "Жишээ нь $[1,2,5,5]$ ба $[-1,2,5]$ гэсэн хоёр хэсгийн урд байгаа утгуудаас багыг нь дараагийн гаралт болго. Сонгосон хэсгийн заагийг нэгээр урагшлуул. Нэг тал дуусвал нөгөө талын үлдсэнийг дарааллаар нь хуул."
+          },
+          {
+            "type": "ordered",
+            "items": [
+              "Ганц утгатай хэсэг бүр өөрөө эрэмбэтэй. Эхний хэсгийн уртыг нэг гэж ав.",
+              "Зэрэгцээ хоёр эрэмбэтэй хэсгийг өөр туслах дараалал руу нэгтгэ. Бүх байрлал шинэ дараалалд нэг удаа бичигдэнэ.",
+              "Бүтэн үе дуусахад шинэ дарааллаа үндсэн болгон сольж, хэсгийн уртыг хоёр дахин өсгө.",
+              "Нэг хэсэг бүх жагсаалтыг хамартал давт. Дараа нь ижил утгуудын хэсгийг нэг удаа тоол."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Энэ нь нэгтгэн эрэмбэлэх арга. Доороос дээш, жижиг хэсгээс том хэсэг рүү явж байгаа тул өөрийгөө дууддаг функц хэрэглэхгүй. Уншиж буй үндсэн дарааллаа нэгтгэх явцад шууд өөрчлөхгүй, өөр дараалалд бичнэ."
+          }
+        ]
+      },
+      {
+        "key": "walkthrough",
+        "title": "5. Бүх үе шатыг гараар хийе",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Хэсгийн урт",
+              "Нэгтгэсний дараах хэсгүүд"
+            ],
+            "rows": [
+              [
+                "$1$",
+                "$[2,5]$, $[1,5]$, $[-1,2]$, $[5]$"
+              ],
+              [
+                "$2$",
+                "$[1,2,5,5]$, $[-1,2,5]$"
+              ],
+              [
+                "$4$",
+                "$[-1,1,2,2,5,5,5]$"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Сүүлийн үеийн нэгтгэлд дараах сонголтууд хийгдэнэ. Тэнцсэн үед зүүн хэсгийн утгыг түрүүлж авч байна."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Зүүн урд утга",
+              "Баруун урд утга",
+              "Авсан утга"
+            ],
+            "rows": [
+              [
+                "$1$",
+                "$-1$",
+                "$-1$ — баруун"
+              ],
+              [
+                "$1$",
+                "$2$",
+                "$1$ — зүүн"
+              ],
+              [
+                "$2$",
+                "$2$",
+                "$2$ — зүүн"
+              ],
+              [
+                "$5$",
+                "$2$",
+                "$2$ — баруун"
+              ],
+              [
+                "$5$",
+                "$5$",
+                "$5$ — зүүн"
+              ],
+              [
+                "$5$",
+                "$5$",
+                "$5$ — зүүн"
+              ],
+              [
+                "Дууссан",
+                "$5$",
+                "$5$ — үлдэгдэл"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Одоо $-1,1,2,5$ гэсэн дөрвөн хэсгийн эхлэл байна. Хөршөөс өөр утга дээр тоолуур $1,2,3,4$ болно; давтагдсан $2$ ба $5$-ууд дээр өөрчлөгдөхгүй."
+          },
+          {
+            "type": "note",
+            "text": "Жагсаалтын урт хоёрын зэрэг байх албагүй. Хамгийн сүүлд богино эсвэл хоосон баруун хэсэг үлдсэн ч үлдэгдэл хуулах дүрмээр зөв боловсруулна."
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Дараалал ба бүх утга хадгалагдахыг баталъя",
+        "blocks": [
+          {
+            "type": "ordered",
+            "items": [
+              "Хоёр эрэмбэтэй хэсгийг нэгтгэхдээ тэдний эхний үлдсэн утгуудын бага нь бүх үлдсэн утгын хамгийн бага. Түүнийг авахад гарсан дараалал эрэмбэтэй хэвээр; эх утгыг яг нэг удаа хуулж, зөвхөн түүний заагийг урагшлуулна.",
+              "Нэг тал дуусвал нөгөө тал эрэмбэтэй үлдсэн тул шууд хуулж болно. Ингэснээр нэгтгэсэн хэсэг эрэмбэтэй бөгөөд хуучин бүх утга, түүний давталтын тоо хадгалагдана.",
+              "Үеийн эхэнд $w$ хүртэл урттай хэсгүүд эрэмбэтэй байна гэж үзье. Зэрэгцээ хоёр хэсгийг зөв нэгтгэхэд $2w$ хүртэл урттай хэсгүүд эрэмбэтэй болно. Эхний $w=1$ үед нөхцөл зөв. Ийнхүү бүх жагсаалтыг нэг хэсэг болгоход бүрэн эрэмбэлэгдэнэ.",
+              "Эрэмбэлсэн дараалалд ижил утгууд нэг хэсэгт орно гэдгийг гуравдугаар хэсэгт баталсан. Хэсэг бүрийн эхлэлийг нэг удаа тоолдог тул өөр утгуудын тоо зөв."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Ижил утгуудын тоо алдагдсан эсэхийг мөн шалгах ёстой. Зөвхөн гаралт өсөх дарааллаар харагдаж байгаа нь анхны бүх өгөгдөл хадгалагдсаны баталгаа биш."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Яагаад квадрат биш вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэг үеийн бүх нэгтгэл нийт $n$ утгыг нэг удаа хуулна. Хэсгийн урт $1,2,4,\\ldots$ гэж хоёр дахин өсөх тул $n\\ge2$ үед $\\lceil\\log_2 n\\rceil$ үе хэрэгтэй. Иймээс эрэмбэлэх хугацаа $O(n\\log n)$."
+          },
+          {
+            "type": "p",
+            "text": "Дараах ялгаатай утга тоолох нэг үзэлт $O(n)$, оролт унших ба туслах дараалал үүсгэх нь мөн $O(n)$. Нийт зардлыг нэмнэ; эрэмбэлэхтэй үржүүлэхгүй. $n=0,1$ үед нэгтгэх үе огт ажиллахгүй."
+          },
+          {
+            "type": "p",
+            "text": "Оролтын $n$ утгаас гадна $n$ утгатай туслах дараалал хэрэглэнэ: нэмэлт зай $O(n)$. Дарааллуудын агуулгыг солихдоо бүх утгыг дахин хуулахгүй, хоёр дарааллын санах ойн эзэмшлийг солино. Хийсвэрлэлийн энэ үйлдэл тогтмол зардалтай."
+          },
+          {
+            "type": "p",
+            "text": "$n=200000$ үед $18$ орчим үе, үе бүрд ойролцоогоор $n$ хуулалт байна. Машинаас хамаарах яг секунд амлахгүй. Энд 64 битийн утга харьцуулах, хуулахыг тогтмол ажил гэж үзсэн."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. C++17: нэгтгэхээс бүрэн хариу хүртэл",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэг бүхэл $n$, дараа нь $n$ бүхэл тоо уншина. Энэ сургалтын хувилбарт $0\\le n\\le200000$, утгууд тэмдэгтэй 64 битэд багтана. Өөр утгуудын тоог ганц мөрд хэвлэнэ. Distinct Numbers-ийн эерэг оролт үүнд багтана."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Хоёр хэсгийг нэгтгэх"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Хязгаарууд нь $[l,m)$ ба $[m,r)$. ",
+                "marks": []
+              },
+              {
+                "text": "first",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " ба ",
+                "marks": []
+              },
+              {
+                "text": "second",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь хоёр хэсгийн дараагийн унших байрлал; ",
+                "marks": []
+              },
+              {
+                "text": "output",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь туслах дарааллын бичих байрлал. Хоёр талд утга байхад багыг хуулна, дараа нь үлдсэн талыг дуусгана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <algorithm>\n#include <iostream>\n#include <vector>\nusing namespace std;\n\nvoid merge_runs(const vector<long long>& source, vector<long long>& destination,\n                int left, int middle, int right) {\n    int first = left;\n    int second = middle;\n    int output = left;\n\n    while (first < middle && second < right) {\n        if (source[first] <= source[second]) {\n            destination[output] = source[first];\n            first++;\n        } else {\n            destination[output] = source[second];\n            second++;\n        }\n        output++;\n    }\n    while (first < middle) {\n        destination[output] = source[first];\n        first++;\n        output++;\n    }\n    while (second < right) {\n        destination[output] = source[second];\n        second++;\n        output++;\n    }\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Хэсгийн уртыг хоёр дахин өсгөх"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "width",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь $w$. Хамгийн сүүлийн богино хэсгийн ",
+                "marks": []
+              },
+              {
+                "text": "middle",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", ",
+                "marks": []
+              },
+              {
+                "text": "right",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хязгаарыг $n$-ээс хэтрүүлэхгүй. Нэг үеийн бүх хэсэг ",
+                "marks": []
+              },
+              {
+                "text": "buffer",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-т бичигдсэний дараа л түүнийг үндсэн дараалалтай солино.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "void sort_values(vector<long long>& values) {\n    int n = static_cast<int>(values.size());\n    vector<long long> buffer(n);\n\n    for (int width = 1; width < n; width *= 2) {\n        for (int left = 0; left < n; left += 2 * width) {\n            int middle = min(left + width, n);\n            int right = min(left + 2 * width, n);\n            merge_runs(values, buffer, left, middle, right);\n        }\n        values.swap(buffer);\n    }\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Ижил утгуудын хэсгийг тоолох"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Эхний утга эсвэл өмнөхөөсөө өөр утга бүр шинэ хэсэг эхлүүлнэ. ",
+                "marks": []
+              },
+              {
+                "text": "i == 0",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нөхцөлийг түрүүлж шалгадаг тул эхний байрлал дээр ",
+                "marks": []
+              },
+              {
+                "text": "values[i - 1]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийг уншихгүй. Хоосон дараалалд давталт ажиллахгүй, тэг буцна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int count_distinct(const vector<long long>& values) {\n    int count = 0;\n    for (int i = 0; i < static_cast<int>(values.size()); i++) {\n        if (i == 0 || values[i] != values[i - 1]) {\n            count++;\n        }\n    }\n    return count;\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Оролт, эрэмбэлэлт, хариу"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Үндсэн ",
+                "marks": []
+              },
+              {
+                "text": "main",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " функц оролтыг уншаад ",
+                "marks": []
+              },
+              {
+                "text": "sort_values",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-аар өөрчилнө. Зөвхөн дараа нь ",
+                "marks": []
+              },
+              {
+                "text": "count_distinct",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийг дуудах ёстой; эрэмбэлээгүй дараалалд хөршүүдээр тоолох баталгаа байхгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<long long> values(n);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    sort_values(values);\n    cout << count_distinct(values) << '\\n';\n    return 0;\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах программ"
+          },
+          {
+            "type": "note",
+            "text": "Дөрвөн хэсэг нь энэ дарааллаар бүтэн программ үүсгэнэ. C++17-оор хөрвүүлж ажиллуулаарай. Хариунд эрэмбэлсэн бүх утгыг биш, өөр утгуудын тоог л хэвлэж байна."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <algorithm>\n#include <iostream>\n#include <vector>\nusing namespace std;\n\nvoid merge_runs(const vector<long long>& source, vector<long long>& destination,\n                int left, int middle, int right) {\n    int first = left;\n    int second = middle;\n    int output = left;\n\n    while (first < middle && second < right) {\n        if (source[first] <= source[second]) {\n            destination[output] = source[first];\n            first++;\n        } else {\n            destination[output] = source[second];\n            second++;\n        }\n        output++;\n    }\n    while (first < middle) {\n        destination[output] = source[first];\n        first++;\n        output++;\n    }\n    while (second < right) {\n        destination[output] = source[second];\n        second++;\n        output++;\n    }\n}\n\nvoid sort_values(vector<long long>& values) {\n    int n = static_cast<int>(values.size());\n    vector<long long> buffer(n);\n\n    for (int width = 1; width < n; width *= 2) {\n        for (int left = 0; left < n; left += 2 * width) {\n            int middle = min(left + width, n);\n            int right = min(left + 2 * width, n);\n            merge_runs(values, buffer, left, middle, right);\n        }\n        values.swap(buffer);\n    }\n}\n\nint count_distinct(const vector<long long>& values) {\n    int count = 0;\n    for (int i = 0; i < static_cast<int>(values.size()); i++) {\n        if (i == 0 || values[i] != values[i - 1]) {\n            count++;\n        }\n    }\n    return count;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<long long> values(n);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    sort_values(values);\n    cout << count_distinct(values) << '\\n';\n    return 0;\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Оролт ба гаралтын жишээ"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "7\n5 2 5 1 2 -1 5"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "4"
+          },
+          {
+            "type": "p",
+            "text": "Гаралт нь гараар нэгтгэсэн дарааллын дөрвөн өөр утгатай таарч байна."
+          }
+        ]
+      },
+      {
+        "key": "boundaries",
+        "title": "9. Богино хэсэг, давхардал, том утга",
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Хоосон дараалалд хариу тэг; нэг утгад нэг.",
+              "Бүх утга тэнцүү байвал нэг л хэсэг үүснэ.",
+              "Урвуу эрэмбэтэй оролтод ч үе бүрийн хэмжээ өөрчлөгдөхгүй.",
+              "Сондгой урттай үед хамгийн сүүлийн хэсэг богино байж болно.",
+              "Сөрөг болон хамгийн бага/их 64 битийн утгыг хасахгүй, зөвхөн харьцуулах тул хасалтын хэтрэлт үүсэхгүй."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Оролтын дээд хэмжээ $200000$ тул хэсгийн урт, хоёр дахин урт, байрлал нэмэх завсрын утгууд 32 битийн эерэг хүрээнд багтана. Дурын асар их уртад кодыг өөрчлөхгүй хэрэглэнэ гэж амлахгүй."
+          },
+          {
+            "type": "note",
+            "text": "Шалгахдаа зөвхөн өөр утгуудын тоог бус, эрэмбэлсэн бүтэн дарааллыг бие даасан эрэмбэтэй тулга. Ингэснээр нэг утгыг хаяад нөгөөг давхар хуулсан далд алдааг барина."
+          }
+        ]
+      },
+      {
+        "key": "mistakes",
+        "title": "10. Өгөгдөл алдах эсвэл буруу тоолох нь",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Нэгтгэж байхдаа эх дараалал дээрээ бичих"
+          },
+          {
+            "type": "p",
+            "text": "$[2,5]$ ба $[1,4]$-ийг нэгтгэхдээ эхний байрлалд $1$ бичвэл уншиж амжаагүй $2$-ыг дарж болно. Манай арга өөр туслах дараалалд бичиж үүнээс зайлсхийсэн."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Нэг тал дуусмагц бүх нэгтгэлийг зогсоох"
+          },
+          {
+            "type": "p",
+            "text": "$[1]$ ба $[2,3]$ дээр $1$-ийг авсны дараа баруун үлдэгдэл $2,3$-ыг заавал хуулна."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Дарааллаас өмнө хөршүүдийг тоолох"
+          },
+          {
+            "type": "p",
+            "text": "$[2,1,2]$-т хөрш бүр өөр тул шууд тоолбол $3$ гарна. Өөр утга нь зөвхөн $1,2$, нийт $2$."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Сүүлийн богино хэсгийг бүтэн гэж үзэх"
+          },
+          {
+            "type": "p",
+            "text": "Баруун хязгаарыг жагсаалтын төгсгөлөөр хязгаарлахгүй бол хүснэгтээс гадуур уншина. Үе бүрийн бүх байрлал туслах дараалалд бичигдсэн байх ёстой."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Анхны байрлалыг чухалчилсан бодлогод дугаарыг алдах"
+          },
+          {
+            "type": "p",
+            "text": "Эрэмбэлэхэд байрлал өөрчлөгдөнө. Эхний дугаар эсвэл өөр мэдээлэл хэрэгтэй бол утгатай нь хамт бичлэг болгож хадгал. Зөвхөн утгуудын байрлалыг сольж үлдсэн мэдээллээ хуучин байранд орхиж болохгүй."
+          }
+        ]
+      },
+      {
+        "key": "connections",
+        "title": "11. Хэрэгсэл, түлхүүр ба дараагийн сэдэв",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Бодит бодлогод стандарт сангийн эрэмбэлэх функцийг ашиглаж болно. Энэ хичээлийн өөрийн нэгтгэх хэрэгжүүлэлт нь ажлын хэмжээ, зөвийн баталгаа, өгөгдөл хадгалалтыг ил харахад зориулагдсан."
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Стандарт ",
+                "marks": []
+              },
+              {
+                "text": "std::sort",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ын харьцуулах дүрэмд “эхнийх хоёр дахьхаасаа хатуу бага уу?” гэдгийг өгнө. Тэнцүү утгууд дээр ",
+                "marks": []
+              },
+              {
+                "text": "<=",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " буцаахгүй. Энэ нь манай нэгтгэх дотор тэнцсэн үед зүүн талыг сонгож байгаа нөхцөлтэй өөр үүрэгтэй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Ижил түлхүүртэй бичлэгүүдийн анхны харьцангуй дарааллыг хадгалахыг тогтвортой эрэмбэ гэдэг. Нэгтгэхдээ тэнцсэн үед зүүн талынхыг авдаг дүрэм үүнд тустай. Стандарт хурдан эрэмбэ болгон энэ чанарыг амладаггүй."
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "brute-force",
+            "label": "Өмнөх бүх утгатай тулгах жижиг лавлах арга"
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "recursion",
+            "label": "Нэгтгэн эрэмбэлэхийг дээрээс нь хувааж бодох хувилбар"
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "binary-search",
+            "label": "Эрэмбэтэй дарааллаас зааг хайх"
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "prefix-sums",
+            "label": "Эрэмбэлсний дараах хэсгүүдийн нийлбэр"
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "two-pointers",
+            "label": "Эрэмбэтэй заагуудыг нэг чигт хөдөлгөх"
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "12. Эрэмбэ ямар мэдээллийг ил болгох вэ?",
+        "blocks": [
+          {
+            "type": "ordered",
+            "items": [
+              "Ижил утгуудыг бүлэглэх, хамгийн бага/ихийг дараалан авах, хөршүүдийг харьцуулах хэрэгтэй эсэхийг асуу.",
+              "Анхны дараалал чухал эсэхийг шалга. Байрлал хэрэгтэй бол дугаарыг нь хамт хадгал.",
+              "Ямар түлхүүрээр эрэмбэлэхээ зорилгоосоо гарга. Жингээр, хугацаагаар, дуусах мөчөөр эрэмбэлэх нь өөр өөр шийдвэрт хүргэнэ.",
+              "Эрэмбэлсний дараах сонголтын дүрмийг тусад нь батал. Эрэмбэ байгаа нь хамгийн сайн хариуг автоматаар олно гэсэн үг биш."
+            ]
+          },
+          {
+            "type": "note",
+            "text": "Өгөгдөл байнга өөрчлөгдөх бодлогод асуулт бүрд бүхнийг дахин эрэмбэлэх нь хэт үнэтэй байж болно. Тэр үед өөрчлөлтийг дэмждэг өгөгдлийн бүтэц хэрэгтэй эсэхийг дараагийн хичээлүүдтэй холбо."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Эрэмбийг ашиглах зургаан шат",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхлээд ижил утгуудын хэсгийг таних үндсэн дасгалаа хий. Бусад дасгалд эрэмбийн дараа шинэ баталгаа эсвэл нэмэлт арга шаардлагатайг ялга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Халаалт · Distinct Numbers"
+          },
+          {
+            "type": "p",
+            "text": "Эрэмбэлэх ба ижил утгуудын бүлгийг тоолохыг код харалгүй хэрэгжүүл. Ижил утга яагаад тасралтгүй нэг хэсэг болдгийг баталж, нийт санах ой ба хугацаагаа тайлбарла. Энэ нь эхэлж бие даан хийх үндсэн дасгал."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Үндсэн дасгал · Stick Lengths"
+          },
+          {
+            "type": "p",
+            "text": "Эрэмбэлсний дараа дундах утгыг сонгох нь яагаад нийт өөрчлөлтийг багасгахыг батал. Зөвхөн “эрэмбэлсэн учраас зөв” гэж үзэхгүй; нэг нэгжээр зорилтот утгаа хөдөлгөхөд зардал хэрхэн өөрчлөгдөхийг бод. Энэ нь нэмэлт баталгааны дасгал, эхний эрэмбэлэх хэрэгжүүлэлтийн заавал нөхцөл биш."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Ажиглалтаа өөрчлөх · Apartments"
+          },
+          {
+            "type": "p",
+            "text": "Хоёр эрэмбэлсэн дарааллын аль заагийг хөдөлгөвөл боломжит тохирлыг алдахгүйг тайлбарла. Энэ нь нэгтгэх хоёр заагтай төстэй боловч шалгах нөхцөл өөр. Хоёр заагтай аргын хичээлийн дараа оролд."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Өөр нөхцөлд хэрэглэх · Ferris Wheel"
+          },
+          {
+            "type": "p",
+            "text": "Хамгийн хүнд үлдсэн хүүхэд болон хамгийн хөнгөн үлдсэн хүүхдээр шийдвэр гаргах шалтгааныг солих аргаар батал. Зөвхөн жижигээс том руу эрэмбэлэх нь өөрөө хамгийн бага хослолын тоог батлахгүй. Шуналтай арга, хоёр заагийн сууриа ашигла."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Сорилт · Tasks and Deadlines"
+          },
+          {
+            "type": "p",
+            "text": "Хөрш хоёр ажлын байрыг солиход дуусах хугацааны нийлбэр хэрхэн өөрчлөгдөхийг тооц. Түүнээс эрэмбэлэх түлхүүрээ гарга; эцсийн хугацаагаар тааж эрэмбэлэхгүй. Шуналтай аргын хичээлтэй холбо."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Олимпиадын өргөтгөл · JOI 2018 Stove"
+          },
+          {
+            "type": "p",
+            "text": "Бүх таслах сонголтыг шалгадаг жижиг аргаа санаж, аль завсруудыг тусад нь үлдээвэл түлшний хугацаа хамгийн их хэмнэгдэхийг хар. Завсруудын уртаар эрэмбэлэх дүрмийг солих аргаар батал. Ирэх цагууд эрэмбэтэй өгөгдсөн ч шийдвэрт хэрэгтэй хэмжигдэхүүнийг шинээр эрэмбэлж болохыг ажигла."
+          },
+          {
+            "type": "note",
+            "text": "Өмнө холбогдсон Movie Festival нэмэлт дасгал хэвээр байна. Эрэмбэлэх түлхүүрийг зөв сонгоод, хамгийн эрт дуусах киног авах баталгааг шуналтай аргын хичээлийн дараа хий."
+          }
+        ]
+      },
+      {
+        "key": "importance",
+        "title": "14. Суурь хэрэгсэл ба хичээлийн цөм дасгал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эрэмбэлэх нь хайлт, бүлэглэлт, хоёр зааг, шуналтай сонголт болон бусад олон аргын суурь тул сургалтын ач холбогдол өндөр. Нэг стандарт функц дуудахтай адилтгалгүй, эрэмбэ өгөгдлийн ямар чанарыг өөрчилж байгааг ойлгох хэрэгтэй."
+          },
+          {
+            "type": "p",
+            "text": "Distinct Numbers нь энэ хичээлийн шууд бие даасан дадлага. Stick Lengths-ийн дундах утгын баталгаа, Apartments-ийн хоёр заагтай сонголт нь нэмэлт суурь шаарддаг тул дараагийн шатанд үргэлжлүүлэх дасгалууд. Тэдгээрийн нийт сан дахь ач холбогдлын үнэлгээг энд автоматаар өөрчлөхгүй."
+          },
+          {
+            "type": "note",
+            "text": "Одтой үндсэн дасгал, нийт сан дахь ач холбогдол болон хүндрэл тусдаа. Нэг хичээлд хэрэгтэй нэмэлт холбоос бүрийг High болгохгүй."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Эрэмбэ үүсгэж, ашиглаж чадсан эсэхээ шалгая",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хоёр эрэмбэтэй хэсгийн урд утгуудыг харьцуулж, бүх өгөгдлөө хадгалан том хэсэг үүсгэлээ. Үе бүрд хэсгийн урт хоёр дахин өссөнөөр квадрат ажлыг багасгав. Дараа нь эрэмбийн шинжээр давхардлыг нэг хөршөөс танилаа."
+          },
+          {
+            "type": "list",
+            "items": [
+              "Хоёр хэсгийг нэгтгэх бүх сонголтыг гараар дагаж чадна.",
+              "Эрэмбэтэй байдал болон бүх утгын тоо хадгалагдсаныг хоёуланг баталж чадна.",
+              "Үеийн тоо, үе бүрийн ажил, туслах зайнаас зардлаа гаргаж чадна.",
+              "Богино баруун хэсэг болон бүх утга ижил тохиолдлыг зөв хэрэгжүүлж чадна.",
+              "Үндсэн дасгалыг бие даан бодож, өөр бодлогод эрэмбэлэх түлхүүрээ үндэслэн сонгож чадна."
+            ]
+          },
+          {
+            "type": "note",
+            "text": "Уншсан гэдэг нь эрэмбэлэлтийн зөвийг баталсан эсвэл бие даан хэрэглэсэн гэсэн үг биш. Доорх өөрийн үнэлгээг чадвар бүрээр тусад нь хэрэглэ."
+          },
+          {
+            "type": "links",
+            "items": [
+              {
+                "label": "Нэмэлт унших: Competitive Programmer’s Handbook — эрэмбэлэх",
+                "url": "https://cses.fi/book/book.pdf"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Sorting — build order from smaller runs",
+        "summary": "Discover why order helps group equal values. Merge sorted runs without losing occurrences, build a fully sorted vector and count distinct values.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. How can we recognize equal values?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "The list $[5,2,5,1,2,-1,5]$ contains four different values: $-1,1,2,5$. Repeated occurrences of one value count only once."
+              },
+              {
+                "type": "p",
+                "text": "Rearranging positions does not change the number of different values. A useful order might make repetition recognizable without remembering every earlier value. Which order gives that advantage?"
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Compare against all earlier positions",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For each position $i$, check whether its value occurred among positions $0,\\ldots,i-1$. Count it only if it did not. This is correct, but may perform $0+1+\\cdots+(n-1)$ comparisons."
+              },
+              {
+                "type": "p",
+                "text": "The worst time is $O(n^2)$ with $O(1)$ auxiliary space beyond the stored input. At $n=200000$, that is about twenty billion comparisons: a small reference method, not a full-limit solution."
+              },
+              {
+                "type": "p",
+                "text": "We repeatedly search for duplicates. If equal values became neighbors, could one neighboring comparison suffice?"
+              }
+            ]
+          },
+          {
+            "key": "observation",
+            "title": "3. Sorted order groups equal values",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Arrange the values in nondecreasing order: $[-1,1,2,2,5,5,5]$. This is sorting. Nondecreasing permits equality; each next value is at least the previous one."
+              },
+              {
+                "type": "p",
+                "text": "Between two occurrences of the same value $x$, every value must be at least the left $x$ and at most the right $x$. Thus every intermediate value equals $x$, and equal values form one consecutive block."
+              },
+              {
+                "type": "p",
+                "text": "Count the first value and then each change from the preceding value. The remaining task is to create that order efficiently."
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Merge small sorted runs",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Repeatedly searching the remainder for its minimum also costs quadratically. Instead, observe that two already sorted pieces can be combined cheaply."
+              },
+              {
+                "type": "p",
+                "text": "For $[1,2,5,5]$ and $[-1,2,5]$, output the smaller front value and advance only its source pointer. Once one side is empty, copy the other side’s remainder in order."
+              },
+              {
+                "type": "ordered",
+                "items": [
+                  "Each singleton is sorted, so start with run width one.",
+                  "Merge adjacent sorted runs into a separate buffer, writing every position once.",
+                  "After the entire pass, swap the new data into the main vector and double the run width.",
+                  "Repeat until a run covers the whole list, then count the blocks of equal values."
+                ]
+              },
+              {
+                "type": "p",
+                "text": "This is bottom-up merge sort. It builds larger runs from smaller ones without recursive calls. During a merge, write into separate storage rather than overwriting unread source values."
+              }
+            ]
+          },
+          {
+            "key": "walkthrough",
+            "title": "5. Trace all passes",
+            "blocks": [
+              {
+                "type": "table",
+                "headers": [
+                  "Run width",
+                  "Runs after merging"
+                ],
+                "rows": [
+                  [
+                    "$1$",
+                    "$[2,5]$, $[1,5]$, $[-1,2]$, $[5]$"
+                  ],
+                  [
+                    "$2$",
+                    "$[1,2,5,5]$, $[-1,2,5]$"
+                  ],
+                  [
+                    "$4$",
+                    "$[-1,1,2,2,5,5,5]$"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "The final pass makes these choices, taking from the left run when values tie."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Left front",
+                  "Right front",
+                  "Chosen value"
+                ],
+                "rows": [
+                  [
+                    "$1$",
+                    "$-1$",
+                    "$-1$ — right"
+                  ],
+                  [
+                    "$1$",
+                    "$2$",
+                    "$1$ — left"
+                  ],
+                  [
+                    "$2$",
+                    "$2$",
+                    "$2$ — left"
+                  ],
+                  [
+                    "$5$",
+                    "$2$",
+                    "$2$ — right"
+                  ],
+                  [
+                    "$5$",
+                    "$5$",
+                    "$5$ — left"
+                  ],
+                  [
+                    "$5$",
+                    "$5$",
+                    "$5$ — left"
+                  ],
+                  [
+                    "Exhausted",
+                    "$5$",
+                    "$5$ — remainder"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "The four block starts are $-1,1,2,5$. The counter becomes one, two, three, four at those starts and does not change on repeated twos or fives."
+              },
+              {
+                "type": "note",
+                "text": "The input length need not be a power of two. A short final run or an empty right run is handled by the remainder-copy rules."
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Prove order and preservation",
+            "blocks": [
+              {
+                "type": "ordered",
+                "items": [
+                  "The smaller of the two remaining front values is smallest among all remaining values. Appending it preserves sorted output. Exactly that occurrence is copied and its pointer advances once.",
+                  "When one side ends, the other is already sorted and can be copied directly. The result is sorted and preserves every original occurrence, including repetitions.",
+                  "Assume runs of width at most $w$ are sorted at the start of a pass. Merging neighboring runs gives sorted runs of width at most $2w$. Singletons establish the base $w=1$, so eventually the whole list is sorted.",
+                  "Equal values form consecutive blocks as proved earlier. Counting the start of every block therefore gives exactly the number of distinct values."
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Check multiplicities too. An output that looks sorted does not prove that the algorithm preserved every input occurrence."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Why does this avoid quadratic work?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "All merges in one pass copy a total of $n$ values. Run widths are $1,2,4,\\ldots$, giving $\\lceil\\log_2 n\\rceil$ passes for $n\\ge2$. Sorting therefore takes $O(n\\log n)$ time."
+              },
+              {
+                "type": "p",
+                "text": "The distinct-count scan, input and buffer initialization each cost $O(n)$. Add these phases; do not multiply them by sorting cost. At $n=0,1$, no merge pass runs."
+              },
+              {
+                "type": "p",
+                "text": "The buffer stores $n$ values beyond the input, giving $O(n)$ auxiliary space. Swapping the two vectors exchanges their storage instead of copying every element; that operation is constant time."
+              },
+              {
+                "type": "p",
+                "text": "At $n=200000$, about eighteen passes each copy roughly $n$ values. This estimates work, not a machine-independent runtime. Fixed-width comparisons and copies are treated as constant-time operations."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Build the C++17 solution from merging",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Read $n$ and its values. The teaching variant permits $0\\le n\\le200000$ and signed 64-bit values. Print only the number of different values. Distinct Numbers’ positive inputs are included."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. Merge two runs"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The runs are $[l,m)$ and $[m,r)$. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "first",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " and ",
+                    "marks": []
+                  },
+                  {
+                    "text": "second",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " locate their next source values; ",
+                    "marks": []
+                  },
+                  {
+                    "text": "output",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " is the destination position. Choose the smaller front while both exist, then copy the remaining side.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <algorithm>\n#include <iostream>\n#include <vector>\nusing namespace std;\n\nvoid merge_runs(const vector<long long>& source, vector<long long>& destination,\n                int left, int middle, int right) {\n    int first = left;\n    int second = middle;\n    int output = left;\n\n    while (first < middle && second < right) {\n        if (source[first] <= source[second]) {\n            destination[output] = source[first];\n            first++;\n        } else {\n            destination[output] = source[second];\n            second++;\n        }\n        output++;\n    }\n    while (first < middle) {\n        destination[output] = source[first];\n        first++;\n        output++;\n    }\n    while (second < right) {\n        destination[output] = source[second];\n        second++;\n        output++;\n    }\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. Double the run width"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "width",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " is $w$. Clamp ",
+                    "marks": []
+                  },
+                  {
+                    "text": "middle",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " and ",
+                    "marks": []
+                  },
+                  {
+                    "text": "right",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " to $n$ for the final short runs. Swap ",
+                    "marks": []
+                  },
+                  {
+                    "text": "buffer",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " into the main vector only after all merges in the pass have finished.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "void sort_values(vector<long long>& values) {\n    int n = static_cast<int>(values.size());\n    vector<long long> buffer(n);\n\n    for (int width = 1; width < n; width *= 2) {\n        for (int left = 0; left < n; left += 2 * width) {\n            int middle = min(left + width, n);\n            int right = min(left + 2 * width, n);\n            merge_runs(values, buffer, left, middle, right);\n        }\n        values.swap(buffer);\n    }\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. Count equal-value blocks"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The first value or a change from the preceding value starts a new block. Testing ",
+                    "marks": []
+                  },
+                  {
+                    "text": "i == 0",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " first avoids reading ",
+                    "marks": []
+                  },
+                  {
+                    "text": "values[i - 1]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " at the first position. An empty vector skips the loop and returns zero.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int count_distinct(const vector<long long>& values) {\n    int count = 0;\n    for (int i = 0; i < static_cast<int>(values.size()); i++) {\n        if (i == 0 || values[i] != values[i - 1]) {\n            count++;\n        }\n    }\n    return count;\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Input, sorting and output"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "main",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " reads the values, calls ",
+                    "marks": []
+                  },
+                  {
+                    "text": "sort_values",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", and only then calls ",
+                    "marks": []
+                  },
+                  {
+                    "text": "count_distinct",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". The neighbor-count proof does not apply to an unsorted vector.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<long long> values(n);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    sort_values(values);\n    cout << count_distinct(values) << '\\n';\n    return 0;\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete compilable program"
+              },
+              {
+                "type": "note",
+                "text": "The four fragments concatenate in order into this C++17 program. It prints the distinct count, not the entire sorted list."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <algorithm>\n#include <iostream>\n#include <vector>\nusing namespace std;\n\nvoid merge_runs(const vector<long long>& source, vector<long long>& destination,\n                int left, int middle, int right) {\n    int first = left;\n    int second = middle;\n    int output = left;\n\n    while (first < middle && second < right) {\n        if (source[first] <= source[second]) {\n            destination[output] = source[first];\n            first++;\n        } else {\n            destination[output] = source[second];\n            second++;\n        }\n        output++;\n    }\n    while (first < middle) {\n        destination[output] = source[first];\n        first++;\n        output++;\n    }\n    while (second < right) {\n        destination[output] = source[second];\n        second++;\n        output++;\n    }\n}\n\nvoid sort_values(vector<long long>& values) {\n    int n = static_cast<int>(values.size());\n    vector<long long> buffer(n);\n\n    for (int width = 1; width < n; width *= 2) {\n        for (int left = 0; left < n; left += 2 * width) {\n            int middle = min(left + width, n);\n            int right = min(left + 2 * width, n);\n            merge_runs(values, buffer, left, middle, right);\n        }\n        values.swap(buffer);\n    }\n}\n\nint count_distinct(const vector<long long>& values) {\n    int count = 0;\n    for (int i = 0; i < static_cast<int>(values.size()); i++) {\n        if (i == 0 || values[i] != values[i - 1]) {\n            count++;\n        }\n    }\n    return count;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<long long> values(n);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    sort_values(values);\n    cout << count_distinct(values) << '\\n';\n    return 0;\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Sample input and output"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "7\n5 2 5 1 2 -1 5"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "4"
+              },
+              {
+                "type": "p",
+                "text": "This matches the four different values found in the manual trace."
+              }
+            ]
+          },
+          {
+            "key": "boundaries",
+            "title": "9. Short runs, repetitions and extreme values",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "An empty list has count zero; a singleton has count one.",
+                  "All-equal input forms one block.",
+                  "Reverse order does not change pass sizes.",
+                  "Odd lengths leave a shorter final run.",
+                  "Negative and extreme signed values are compared directly, not subtracted, avoiding subtraction overflow."
+                ]
+              },
+              {
+                "type": "p",
+                "text": "The declared size limit $200000$ keeps run widths, doubled widths and index additions inside ordinary signed integer range. This is not a promise that unchanged indexing works for arbitrarily large vectors."
+              },
+              {
+                "type": "note",
+                "text": "Test the entire sorted vector against an independent sort, not only the final count. Otherwise dropping one value while duplicating another could remain hidden."
+              }
+            ]
+          },
+          {
+            "key": "mistakes",
+            "title": "10. Losing data or counting incorrectly",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Overwriting the source during a merge"
+              },
+              {
+                "type": "p",
+                "text": "When merging $[2,5]$ with $[1,4]$, writing one into the first source position may destroy an unread two. Separate destination storage prevents this."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Stopping when one side ends"
+              },
+              {
+                "type": "p",
+                "text": "After choosing one from $[1]$ and $[2,3]$, the right remainder two and three must still be copied."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Counting neighbors before sorting"
+              },
+              {
+                "type": "p",
+                "text": "Every neighbor changes in $[2,1,2]$, suggesting three blocks. There are only two distinct values. Sort before using the block argument."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Treating a short final run as full"
+              },
+              {
+                "type": "p",
+                "text": "Clamp endpoints to the vector length to avoid out-of-bounds reads. Every valid destination position must be written during each pass."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Losing original positions"
+              },
+              {
+                "type": "p",
+                "text": "Sorting changes positions. Keep original indices or other associated fields together with their values when the task needs them; do not reorder one field independently of the rest."
+              }
+            ]
+          },
+          {
+            "key": "connections",
+            "title": "11. Tools, keys and later topics",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Standard-library sorting is useful in ordinary contest code. Implementing merging here makes work, correctness and preservation visible rather than hiding them behind a call."
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "A ",
+                    "marks": []
+                  },
+                  {
+                    "text": "std::sort",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " comparison answers whether its first argument is strictly less than its second. Do not return ",
+                    "marks": []
+                  },
+                  {
+                    "text": "<=",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " on equality. This is a different role from choosing the left run on equality inside our merge.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "p",
+                "text": "A stable order preserves the original relative order of equal-key records. Taking the left run on a tie supports that property. Not every standard fast sorting function promises stability."
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "brute-force",
+                "label": "A small compare-against-earlier-values reference"
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "recursion",
+                "label": "Top-down splitting as another merge-sort form"
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "binary-search",
+                "label": "Finding a boundary in sorted data"
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "prefix-sums",
+                "label": "Summing parts after sorting"
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "two-pointers",
+                "label": "Moving boundaries monotonically"
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "12. What information will ordering reveal?",
+            "blocks": [
+              {
+                "type": "ordered",
+                "items": [
+                  "Ask whether grouping equal values, repeatedly selecting extremes or comparing neighbors will help.",
+                  "Check whether original order matters; retain indices when needed.",
+                  "Derive the key from the objective. Sorting by weight, start time or finish time leads to different choices.",
+                  "Prove decisions made after sorting separately. Having an order does not automatically give an optimal solution."
+                ]
+              },
+              {
+                "type": "note",
+                "text": "If data changes continually, sorting everything again for every query may be too expensive. Later data structures can maintain the information needed under updates."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. Six stages of using order",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Start with the core block-counting exercise. Distinguish later tasks that require an additional proof or technique after sorting."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Warm-up · Distinct Numbers"
+              },
+              {
+                "type": "p",
+                "text": "Implement sorting and block counting without copying. Prove that equal values form one consecutive block, then derive total time and memory. This is core independent practice."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Standard · Stick Lengths"
+              },
+              {
+                "type": "p",
+                "text": "After sorting, prove why a median minimizes total adjustment. Sorting alone is not the proof; analyze how moving the target changes cost. This is additional proof practice rather than a prerequisite for the initial implementation."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Observation · Apartments"
+              },
+              {
+                "type": "p",
+                "text": "Explain which pointer can move without losing a match in two sorted sequences. It resembles merging but has a different feasibility condition. Study two pointers first."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Application · Ferris Wheel"
+              },
+              {
+                "type": "p",
+                "text": "Justify choices involving the heaviest and lightest remaining children by exchange. Sorting alone does not prove the minimum number of rides. Use greedy and two-pointer prerequisites."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Challenge · Tasks and Deadlines"
+              },
+              {
+                "type": "p",
+                "text": "Compare adjacent job orders to derive the sorting key from the completion-time objective. Do not guess earliest deadline. Connect the exchange to greedy reasoning."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Olympiad extension · JOI 2018 Stove"
+              },
+              {
+                "type": "p",
+                "text": "Improve the small cut-enumeration reference by identifying which gaps save the most heating time. Prove the gap-order choice by exchange. Already sorted arrival times do not mean that the derived decision values are in the needed order."
+              },
+              {
+                "type": "note",
+                "text": "The previous Movie Festival link remains as additional practice. Derive its key and earliest-finish exchange argument after studying greedy methods."
+              }
+            ]
+          },
+          {
+            "key": "importance",
+            "title": "14. A foundation and its core exercise",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Sorting has high educational priority because it supports searching, grouping, two pointers, greedy choices and many other techniques. Understand what ordering reveals rather than equating the topic with one library call."
+              },
+              {
+                "type": "p",
+                "text": "Distinct Numbers is direct independent practice. Median reasoning in Stick Lengths and pointer choices in Apartments need additional foundations, so they remain later extensions. Their bank-wide priorities are not automatically changed here."
+              },
+              {
+                "type": "note",
+                "text": "Core practice, bank-wide educational priority and difficulty are separate. Do not promote every linked extension merely because it is attached to this lesson."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Create order and justify its use",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "We merged sorted fronts while preserving every occurrence, doubling run width each pass to avoid quadratic work. Sorted order then made duplicates recognizable from one neighbor."
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Trace every choice in a two-run merge.",
+                  "Prove both sortedness and preservation of all occurrences.",
+                  "Derive time and auxiliary space from passes and their work.",
+                  "Implement short right runs and all-equal input correctly.",
+                  "Solve the core task independently and justify a sorting key in another application."
+                ]
+              },
+              {
+                "type": "note",
+                "text": "Assess reading, proof, implementation and independent use separately through the checks below."
+              },
+              {
+                "type": "links",
+                "items": [
+                  {
+                    "label": "Further reading: Competitive Programmer’s Handbook — sorting",
+                    "url": "https://cses.fi/book/book.pdf"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know arrays, loops, comparisons and complete-search foundations."
+      }
+    },
+    "prerequisites": "Дараалал, давталт, утгуудыг харьцуулах болон бүх боломжийг шалгах суурийг мэддэг байна.",
+    "prerequisiteIds": [
+      "brute-force"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "brute-force",
+          "description": "Өмнөх бүх утгатай тулгах аргыг жижиг лавлах шийдэл болгон ашигла.",
+          "descriptionEn": "Use earlier-value comparisons as a small independent reference."
+        },
+        {
+          "tutorialId": "recursion",
+          "description": "Нэгтгэн эрэмбэлэхийг дээрээс нь жижиг хэсэгт хуваах хувилбартай холбо.",
+          "descriptionEn": "Connect merging with the top-down recursive version."
+        }
+      ],
+      "next": "prefix-sums",
+      "practice": [
+        {
+          "key": "312",
+          "stage": "Warm-up",
+          "priority": true,
+          "reason": "Ижил утгууд нэг хэсэгт цуглардгийг баталж, эрэмбэлэх болон нэг удаагийн үзэлтийн нийлсэн зардлыг бие даан хэрэгжүүлэх хичээлийн цөм дасгал."
+        },
+        {
+          "key": "320",
+          "stage": "Standard",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "313",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "314",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "330",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "317",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "892",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false,
+    "priorityLevel": "high",
+    "priorityReason": "Эрэмбэ ашиглан ижил утгыг бүлэглэх, хөрш ба заагийг таних, дараагийн хайлт болон сонголтын аргуудад суурь тавих нь өргөн хэрэглээтэй тул сургалтын ач холбогдол өндөр."
+  },
+  "reviewed_body_sha256": "b6dcc4fb7c3da51eab96bd36b134eca89c0b287968a821f65d85ec8776754d85"
+}

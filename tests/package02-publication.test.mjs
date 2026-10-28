@@ -197,3 +197,17 @@ test('small reviewed lesson publication freezes exact scope/review hashes and pr
         await assert.rejects(db.exec(sql),/CAS\/body\/status drift/);assert.deepEqual(await snapshot(),after);
     } finally {await db.close();}
 });
+
+test('two finished prerequisite lessons publish atomically with exact separate draft guards and native lifecycle checks',async()=>{
+ const {ownerReviewedLessonsSql}=await import('../tools/package02_reviewed_publication.mjs'),{bodyHash}=await import('../tools/package02_tutorial_proposals.mjs');
+ const {db}=await foundationDatabase();try{
+  const targets=[];for(const id of ['brute-force','sorting']){const d=JSON.parse(fs.readFileSync(`audit/package02-lessons/${id}.json`)),old=(await db.query('select *,md5(body::text) body_md5 from tutorial_catalog where id=$1',[id])).rows[0];assert.equal(old.revision,d.expected_revision);assert.equal(bodyHash(old.body),d.expected_body_sha256);targets.push({...d,expected_body_md5:old.body_md5,proposed_body_sha256:bodyHash(d.body),reviewed_body_sha256:bodyHash(d.body)});}
+  await db.query("insert into tutorial_drafts(tutorial_id,editor_id,body,revision,base_revision) select id,'00000000-0000-0000-0000-000000000002',body,1,revision from tutorial_catalog where id='brute-force'");
+  const snapshot=async()=>({catalog:(await db.query('select * from tutorial_catalog order by id')).rows,drafts:(await db.query('select * from tutorial_drafts order by tutorial_id')).rows,history:(await db.query('select * from tutorial_changes order by change_id')).rows,progress:(await db.query('select * from progress')).rows,learning:(await db.query('select * from learning_records')).rows});
+  const before=await snapshot(),guard=await localOwnerGuard(db,['brute-force','sorting']),sql=ownerReviewedLessonsSql({targets},guard);
+  await assert.rejects(db.exec(sql.replace('-- Atomic boundary: one target and its history are complete.',"raise exception 'Injected paired lesson failure';")),/Injected paired lesson failure/);assert.deepEqual(await snapshot(),before);
+  await db.exec(sql);const after=await snapshot();for(const k of ['drafts','progress','learning'])assert.deepEqual(after[k],before[k]);assert.deepEqual(after.catalog.filter(r=>!['brute-force','sorting'].includes(r.id)),before.catalog.filter(r=>!['brute-force','sorting'].includes(r.id)));
+  for(const t of targets){const r=after.catalog.find(r=>r.id===t.id);assert.equal(r.revision,t.expected_revision+1);assert.deepEqual(r.body,t.body);}assert.equal(after.history.length,2);
+  await assert.rejects(db.exec(sql),/CAS\/body\/status drift/);assert.deepEqual(await snapshot(),after);
+ }finally{await db.close();}
+});
