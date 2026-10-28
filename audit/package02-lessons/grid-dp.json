@@ -1,0 +1,861 @@
+{
+  "id": "grid-dp",
+  "expected_revision": 3,
+  "expected_published": true,
+  "expected_body_sha256": "45d73ec7edf304cf26e718ecfb3d27ee5c563cb6ced2a9c4522499066f70a093",
+  "status": "Authored; semantic/code/native editor review pending",
+  "body": {
+    "id": "grid-dp",
+    "level": "Дунд шат",
+    "order": 25,
+    "title": "Хүснэгтэн динамик программчлал — замын тоо",
+    "aliases": "grid-dp Grid DP — замын тоо Grid DP — counting paths",
+    "related": [
+      "dynamic-programming",
+      "flood-fill",
+      "knapsack"
+    ],
+    "summary": "Баруун, доош шилжих замуудыг сүүлийн алхмаар нь салгаж, саадтай хүснэгтийн төлөв, эхлэл, боловсруулах дарааллыг гаргана.",
+    "category": "Dynamic programming",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Саадыг тойроод хэдэн замаар хүрэх вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Гурван мөр, дөрвөн баганатай хүснэгтийн хоёр дахь мөрийн хоёр дахь нүд хаалттай байг. Зүүн дээд нүднээс баруун доод нүд рүү зөвхөн баруун эсвэл доош нэг нүд алхана. Хэдэн ялгаатай зам байна вэ?"
+          },
+          {
+            "type": "p",
+            "text": "“Хүрч болох уу?” гэдэг асуулт ганц боломж олмогц дуусна. Харин замын тоо олоход нэг нүдэнд олон өөр өмнөх замаар хүрч болдгийг хадгалах хэрэгтэй."
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Зам бүрийг тусад нь сунгавал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Баруун эсвэл доош хоёр сонголтоор бүх замыг салаалуулж болно. Саадгүй үед замын тоо хосолмол тоогоор өсөх тул том хүснэгтэд бүх замыг жагсаах боломжгүй."
+          },
+          {
+            "type": "p",
+            "text": "Өөр өөр өмнөх замууд нэг нүдэнд нийлсний дараа үлдсэн боломжууд нь ижил. Ижил нүднээс үргэлжлэх дэд бодлогыг дахин бодохын оронд тэр нүдэнд хүрсэн тоог нэгтгэнэ."
+          }
+        ]
+      },
+      {
+        "key": "observation",
+        "title": "3. Сүүлийн алхам хоёрхон газраас ирнэ",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нүд $(r,c)$-д ирэх сүүлийн алхам дээрээс $(r-1,c)$ эсвэл зүүнээс $(r,c-1)$ байна. Энэ хоёр бүлэг давхцахгүй: нэг замын сүүлийн алхам нэг л чиглэлтэй."
+          },
+          {
+            "type": "p",
+            "text": "$ways[r][c]$-г эхлэлээс тухайн нүдэнд хүрэх зөв замын тоо гэж тодорхойлъё. Нүд нээлттэй бол дээрх хоёр тоог нэмнэ. Саадтай бол тэг. Энэ тодорхойлолт нь хөршүүдэд хүрч болох эсэх бус бүх замын тоог хадгална."
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Эхлэл нэг, гаднах хөрш тэг",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхлэл нээлттэй бол тэнд үлдэх тэг алхамтай ганц зам бий: $ways[0][0]=1$. Эхлэл хаалттай бол тэг. Эхний мөрд дээрээс ирэх зам байхгүй, эхний баганад зүүнээс ирэх зам байхгүй тул байхгүй хөршийн тоог тэг авна."
+          },
+          {
+            "type": "p",
+            "text": "Мөрийг дээрээс доош, мөр дотор баганыг зүүнээс баруун тийш яв. Тэгвэл хэрэгтэй хоёр төлөв аль хэдийн бэлэн. Тоо асар том болох тул $M=10^9+7$-д хуваасан үлдэгдлийг хадгална; энэ нь яг тоо биш, асуусан үлдэгдэл юм."
+          }
+        ]
+      },
+      {
+        "key": "walkthrough",
+        "title": "5. Гурван мөрийг гараар бөглөе",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Саадын зураг нь “....”, “.#..”, “....”. Эхний мөрийн бүх нүдэнд ганцхан замаар ирнэ. Дараагийн мөрийн эхний нүд нэг, саад тэг. Гурав дахь нүд дээрээс нэг, зүүнээс тэг авч нэг болно. Сүүлийн нүд нэг дээр нэг нэмээд хоёр."
+          },
+          {
+            "type": "p",
+            "text": "Сүүлийн мөрийн эхний хоёр утга нэг, нэг. Гурав дахь нь дээрх нэг ба зүүн нэгийг нэмж хоёр. Баруун доод нь дээрх хоёр ба зүүн хоёрын нийлбэр дөрөв. Саадын өмнөх тоог саад дундуур дамжуулж болохгүй."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Мөр",
+              "Багана 1",
+              "Багана 2",
+              "Багана 3",
+              "Багана 4"
+            ],
+            "rows": [
+              [
+                "1",
+                "1",
+                "1",
+                "1",
+                "1"
+              ],
+              [
+                "2",
+                "1",
+                "0 (#)",
+                "1",
+                "2"
+              ],
+              [
+                "3",
+                "1",
+                "1",
+                "2",
+                "4"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Мөр баганын дарааллаар индукц хийх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхлэлд нэг тэг алхамтай зам, хаалттай нүдэнд зам байхгүй нь зөв. Бусад нээлттэй нүдэнд орох бүх замыг сүүлийн алхмаар дээрх хоёр давхцахгүй бүлэгт хуваана. Бүлэг бүрийн тоо өмнөх төлөвт зөв байвал нийлбэр нь одоогийн зөв тоо болно."
+          },
+          {
+            "type": "p",
+            "text": "Дээрх нүд өмнөх мөрд, зүүн нүд одоогийн мөрийн өмнөх баганад байгаа тул индукцийн таамаг хэрэгжинэ. Нэмэх бүрд үлдэгдэл авах нь нийлбэрийн үлдэгдлийг хадгалдаг. Иймээс эцсийн нүдэнд зөв үлдэгдэл гарна."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Нүд бүрийг нэг удаа бодно",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$n$ мөр, $m$ баганад хугацаа $O(nm)$, хоёр хэмжээст хүснэгт ба оролт нийлээд санах ой $O(nm)$. $1000$ мөр, $1000$ баганад нэг сая төлөв; ердийн дөрвөн байтын int хүснэгт ойролцоогоор дөрвөн мегабайт, vector-ийн нэмэлт зардал тусдаа."
+          },
+          {
+            "type": "p",
+            "text": "Хоёр хөршийн үлдэгдэл тус бүр $M$-ээс бага тул нийлбэр хамгийн ихдээ $2000000012$, 32 битийн signed int-д багтана. Гурав, дөрвөн хөршийг ийм төрлөөр шууд нэмж болохыг үүнээс дүгнэхгүй."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. Саад, эхлэл, шилжилтийг энэ дарааллаар",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Сургалтын оролт: $1\\le n,m\\le1000$, дараа нь “.” ба “#”-ээс тогтох $n$ мөр. Гаралт: баруун доод нүдэнд хүрэх замын тооны $10^9+7$-д хуваасан үлдэгдэл."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Төлөв ба эхлэл"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Модулийг тогтмол тодорхойлж, мөр баганын хэмжээг оролтоос авна. Хоёр хэмжээст хүснэгтийн бүх утга анх тэг. Хоосон бус тэгш өнцөгт хүснэгт гэсэн гэрээтэй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr int MOD = 1000000007;\n\nint count_paths(const vector<string>& grid) {\n    int rows = static_cast<int>(grid.size());\n    int columns = static_cast<int>(grid[0].size());\n    vector<vector<int>> ways(rows, vector<int>(columns));\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Үндсэн боловсруулалт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Нүд бүрд эхлээд саадыг шалгаж тэгийг хэвээр үлдээнэ. Дараа нь нээлттэй эхлэлд нэг өгнө. Бусад нүдэнд байгаа хоёр хөршийн үлдэгдлийг нэмж модуль авна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    for (int row = 0; row < rows; ++row) {\n        for (int column = 0; column < columns; ++column) {\n            if (grid[row][column] == '#') {\n                continue;\n            }\n            if (row == 0 && column == 0) {\n                ways[row][column] = 1;\n                continue;\n            }\n            int from_above = row > 0 ? ways[row - 1][column] : 0;\n            int from_left = column > 0 ? ways[row][column - 1] : 0;\n            ways[row][column] = (from_above + from_left) % MOD;\n        }\n    }\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Хариуг нэгтгэх"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Баруун доод нүдний үлдэгдлийг буцаана. Энэ утга бүх замыг хадгалсан тоо болохоос сонгосон нэг замын урт биш.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    return ways[rows - 1][columns - 1];\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Оролт ба гаралт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Мөр бүрийн “.” нь нээлттэй, “#” нь хаалттай. Нэг мөрийн урт баганын тоотой тэнцүү байх ёстой. Хариуг нэг мөрд хэвлэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int rows, columns;\n    cin >> rows >> columns;\n    vector<string> grid(rows);\n    for (string& line : grid) {\n        cin >> line;\n    }\n    cout << count_paths(grid) << '\\n';\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах C++17 программ"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr int MOD = 1000000007;\n\nint count_paths(const vector<string>& grid) {\n    int rows = static_cast<int>(grid.size());\n    int columns = static_cast<int>(grid[0].size());\n    vector<vector<int>> ways(rows, vector<int>(columns));\n    for (int row = 0; row < rows; ++row) {\n        for (int column = 0; column < columns; ++column) {\n            if (grid[row][column] == '#') {\n                continue;\n            }\n            if (row == 0 && column == 0) {\n                ways[row][column] = 1;\n                continue;\n            }\n            int from_above = row > 0 ? ways[row - 1][column] : 0;\n            int from_left = column > 0 ? ways[row][column - 1] : 0;\n            ways[row][column] = (from_above + from_left) % MOD;\n        }\n    }\n    return ways[rows - 1][columns - 1];\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int rows, columns;\n    cin >> rows >> columns;\n    vector<string> grid(rows);\n    for (string& line : grid) {\n        cin >> line;\n    }\n    cout << count_paths(grid) << '\\n';\n}\n"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "3 4\n....\n.#..\n....\n"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "4\n"
+          }
+        ]
+      },
+      {
+        "key": "mistakes",
+        "title": "9. Эхлэлийг саадаас өмнө нэг болгохгүй",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхлээд саад эсэхийг шалгана. Хаалттай эхлэлд нэг оноовол байхгүй зам бүх хүснэгтэд тархана. Эхний мөр, баганад сөрөг индекс бүү унш. Манай код “#” тэмдэгт саад; CSES-ийн зам тоолох бодлого-д “*” байдаг тул эх бодлогын оролтод тааруулж солино."
+          },
+          {
+            "type": "p",
+            "text": "Тойролтоор үзсэн нүдийг дахин нэмэхгүй гэж visited тэмдэг тавих нь өөр өөр замыг алдана. Харин дөрвөн чиглэлд явж болох, циклтэй замыг энэ шилжилтээр шууд тоолж болохгүй."
+          }
+        ]
+      },
+      {
+        "key": "connections",
+        "title": "10. Тоо, хамгийн бага өртөг хоёрын ялгаа",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хэрэв замын тоо бус хамгийн бага өртөг асуувал төлөвийн утга, үйлдэл өөр болно: хөршийн хамгийн бага утгыг сонгоод нүдний өртгийг нэмнэ. Хүрэх боломжгүйг тэгээр бус тусгай их утгаар тэмдэглэх хэрэгтэй."
+          },
+          {
+            "type": "p",
+            "text": "Зам сэргээхэд сонгосон өмнөх нүдийг хадгалж болно. Зам тоолж байгаа энэ код аль нэг замын эцгийг хадгалахгүй. Ямар хариу хүсэж байгаагаас төлөв ба нэмэх эсвэл минимум авах үйлдэл гарна."
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "11. Хамаарал нь өмнөх нүдэнд очиж байна уу?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хоёр хэмжээс харагдлаа гээд заавал энэ DP биш. Одоогийн хариу өмнөх бэлэн төлөвүүдээс бүтэж, ижил төлөвт ирсэн замуудын ирээдүй ижил эсэхийг шалга. Зөвхөн баруун, доош алхвал $r+c$ өсдөг тул цикл байхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Засварлах зайд мөр багана нь хоёр тэмдэгт мөрийн эхний хэсгүүдийг заана. Хавтан өрөхөд бүхэл захын төлөв хэрэгтэй байж болно. Эдгээр нь хүснэгттэй ч энэ хоёр хөршийг зүгээр нэмэх бодлого биш."
+          }
+        ]
+      },
+      {
+        "key": "extensions",
+        "title": "12. Нэг мөрийн санах ойд шилжүүлж болох уу?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Мөрөө зүүнээс баруун шинэчлэхэд нэг хэмжээст массивын одоогийн байрлал хуучин мөрийн дээрх утга, өмнөх байрлал шинэ мөрийн зүүн утга байна. Саадтай байрлалыг заавал тэглэнэ. Ингэж DP санах ойг $O(m)$ болгож болно."
+          },
+          {
+            "type": "p",
+            "text": "Энэ хичээлд төлөвийг бүрэн харах хоёр хэмжээст хувилбар үлдээв. Нэг мөр хадгаллаа гээд бүх замыг сэргээх мэдээлэл автоматаар үлдэхгүй. Мөн асар том хэмжээс, цөөн саадтай бодлогод бүх нүдийг үзэх $O(nm)$ өөрөө боломжгүй тул өөр тооллогын санаа хэрэгтэй."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Шууд зам тоолохоос шинэ төлөв гаргах руу",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Grid Paths I"
+          },
+          {
+            "type": "p",
+            "text": "Саадын тэмдэг “*” гэдгийг анхаарч төлөв, эхлэл, модулийн тооллогоо хэрэгжүүл."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "AtCoder DP H — Grid 1"
+          },
+          {
+            "type": "p",
+            "text": "Тэгш өнцөгт хүснэгтэд ижил баталгаагаа хэрэглэж нэг мөр, нэг баганын заагийг шалга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Edit Distance"
+          },
+          {
+            "type": "p",
+            "text": "Төлөв нь хоёр мөрийн эхний хэсэг; тоо нэмэх бус хамгийн бага засвар сонгоно."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "AtCoder DP Y — Grid 2"
+          },
+          {
+            "type": "p",
+            "text": "Хэмжээс хэт том тул бүх нүдээр явж болохгүй; хосолмол тооллого, саадуудын дараалал нэмэгдэнэ."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Counting Tilings"
+          },
+          {
+            "type": "p",
+            "text": "Зөвхөн нүдний координат хангалтгүй; захын дүүрэлтийг төлөвт оруулах шинэ санаа хэрэгтэй."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "AtCoder DP G — Longest Path"
+          },
+          {
+            "type": "p",
+            "text": "Хүснэгтээс гарч циклгүй чиглэсэн граф дээр хамаарлын зөв дараалал олно. Замын тоо бус хамгийн урт замын утга хадгална."
+          }
+        ]
+      },
+      {
+        "key": "importance",
+        "title": "14. Шилжилтийг тайлбарлаж чаддаг болох",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өндөр ач холбогдолтой суурь хичээл. Төлөв, эхлэл, хамаарлын дараалал, давхцахгүй бүлгүүд гэсэн дөрвөн санааг нэг жижиг зураг дээр баталж сурна."
+          },
+          {
+            "type": "p",
+            "text": "CSES-ийн зам тоолох бодлого ба AtCoder Grid 1 нь шууд дасгалууд. Дараагийн засварлах зай, том хүснэгт, хавтан өрөлт нь өөр шилжилт эсвэл нэмэлт арга шаарддаг тул тэднийг үндсэн кодоо хуулж шийдэх дасгал гэж үзэхгүй."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Бүх жижиг саадын байрлалаар шалга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Жишээний хүснэгтийг өөрөө бөглөж хариу дөрөв болохыг гарга. Нэг нээлттэй нүд нэг, нэг хаалттай нүд тэг; эхлэл эсвэл төгсгөл хаалттай бол тэг. Нэг мөр эсвэл баганад зам дээрх ганц саад хариуг тэг болгоно."
+          },
+          {
+            "type": "p",
+            "text": "Жижиг хүснэгтэд бүх баруун, доош замыг тусдаа рекурсээр жагсаасан лавлахтай тулга. Саадгүй том хүснэгтэд хосолмол тооны үлдэгдэлтэй харьцуул. Аль ч нүдэнд хоёр бүлэг яагаад давхцахгүйг тайлбарлаад, дөрвөн чиглэлийн хөдөлгөөнд яагаад энэ баталгаа үйлчлэхгүйг хэл."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Grid dynamic programming — counting paths",
+        "summary": "Partition right/down paths by their last step to derive states, base cases and a dependency-respecting grid order.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. How many paths avoid the blocked cell?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "In a three-row, four-column grid, block the second cell of the second row. Move one cell right or down from top-left to bottom-right. How many distinct paths remain?"
+              },
+              {
+                "type": "p",
+                "text": "Reachability may stop after finding one route. Counting must retain all distinct prefixes that can reach the same cell."
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Extending every path separately",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Branch into right and down at every step. Even an unobstructed grid has a combinatorially growing path count, making enumeration impractical."
+              },
+              {
+                "type": "p",
+                "text": "Different prefixes reaching one cell face identical remaining choices. Aggregate the number reaching that cell instead of recomputing identical subproblems."
+              }
+            ]
+          },
+          {
+            "key": "observation",
+            "title": "3. The final step comes from only two places",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "A path enters $(r,c)$ either from above $(r-1,c)$ or from the left $(r,c-1)$. The groups are disjoint because a path has exactly one final step."
+              },
+              {
+                "type": "p",
+                "text": "Define $ways[r][c]$ as the number of valid paths from the start to that cell. For an open cell, add the two predecessor counts; a blocked cell has zero. This stores counts, not mere reachability."
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. One starting path, zero outside predecessors",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "An open start has one zero-step path: $ways[0][0]=1$. A blocked start has zero. Missing predecessors above the first row or left of the first column contribute zero."
+              },
+              {
+                "type": "p",
+                "text": "Process rows top to bottom and columns left to right, so both predecessors are ready. Store residues modulo $M=10^9+7$ because counts can be huge; the program returns the residue, not the exact integer count."
+              }
+            ]
+          },
+          {
+            "key": "walkthrough",
+            "title": "5. Fill three rows by hand",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Use rows “....”, “.#..”, “....”. The first row has one path to every cell. The second row starts with one, then zero at the obstacle. Its third cell receives one from above and zero from the left; its last receives one plus one, giving two."
+              },
+              {
+                "type": "p",
+                "text": "The final row starts one, one; then one plus one gives two; finally two plus two gives four. Counts must not flow through an obstacle."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Row",
+                  "Column 1",
+                  "Column 2",
+                  "Column 3",
+                  "Column 4"
+                ],
+                "rows": [
+                  [
+                    "1",
+                    "1",
+                    "1",
+                    "1",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "1",
+                    "0 (#)",
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "3",
+                    "1",
+                    "1",
+                    "2",
+                    "4"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Induct in row-major order",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "The open start’s zero-step path and blocked cells’ zero counts are correct. Every other valid path belongs to exactly one of the two last-step groups, so adding correct predecessor counts gives the correct current count."
+              },
+              {
+                "type": "p",
+                "text": "The predecessor above is in an earlier row; the predecessor left is in an earlier column of this row. Induction applies. Reducing after additions preserves the residue of the sum, so the final residue is correct."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Compute every cell once",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For $n$ rows and $m$ columns, time and stored grid/DP space are $O(nm)$. A $1000$ by $1000$ table has one million states, about four MB for ordinary four-byte ints plus vector overhead."
+              },
+              {
+                "type": "p",
+                "text": "Two residues sum to at most $2000000012$, within signed 32-bit range. This argument does not automatically justify adding three or four residues in the same type."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Check obstacle, start, then transition",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Teaching input: $1\\le n,m\\le1000$, followed by $n$ rows of “.” and “#”. Output the bottom-right path count modulo $10^9+7$."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. State and setup"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Define the modulus and dimensions; initialize the two-dimensional table to zero. The contract is a nonempty rectangular grid.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr int MOD = 1000000007;\n\nint count_paths(const vector<string>& grid) {\n    int rows = static_cast<int>(grid.size());\n    int columns = static_cast<int>(grid[0].size());\n    vector<vector<int>> ways(rows, vector<int>(columns));\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. Main processing"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Check obstacles first, leaving zero. Then set an open start to one. Other cells add the available above/left residues and reduce modulo the constant.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    for (int row = 0; row < rows; ++row) {\n        for (int column = 0; column < columns; ++column) {\n            if (grid[row][column] == '#') {\n                continue;\n            }\n            if (row == 0 && column == 0) {\n                ways[row][column] = 1;\n                continue;\n            }\n            int from_above = row > 0 ? ways[row - 1][column] : 0;\n            int from_left = column > 0 ? ways[row][column - 1] : 0;\n            ways[row][column] = (from_above + from_left) % MOD;\n        }\n    }\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. Finish the result"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Return the bottom-right residue. It represents all valid paths modulo the constant, not the length of one selected route.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    return ways[rows - 1][columns - 1];\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Input and output"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read rows with “.” open and “#” blocked, each of the declared width. Print the answer on one line.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int rows, columns;\n    cin >> rows >> columns;\n    vector<string> grid(rows);\n    for (string& line : grid) {\n        cin >> line;\n    }\n    cout << count_paths(grid) << '\\n';\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete compilable C++17 program"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr int MOD = 1000000007;\n\nint count_paths(const vector<string>& grid) {\n    int rows = static_cast<int>(grid.size());\n    int columns = static_cast<int>(grid[0].size());\n    vector<vector<int>> ways(rows, vector<int>(columns));\n    for (int row = 0; row < rows; ++row) {\n        for (int column = 0; column < columns; ++column) {\n            if (grid[row][column] == '#') {\n                continue;\n            }\n            if (row == 0 && column == 0) {\n                ways[row][column] = 1;\n                continue;\n            }\n            int from_above = row > 0 ? ways[row - 1][column] : 0;\n            int from_left = column > 0 ? ways[row][column - 1] : 0;\n            ways[row][column] = (from_above + from_left) % MOD;\n        }\n    }\n    return ways[rows - 1][columns - 1];\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int rows, columns;\n    cin >> rows >> columns;\n    vector<string> grid(rows);\n    for (string& line : grid) {\n        cin >> line;\n    }\n    cout << count_paths(grid) << '\\n';\n}\n"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "3 4\n....\n.#..\n....\n"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "4\n"
+              }
+            ]
+          },
+          {
+            "key": "mistakes",
+            "title": "9. Do not initialize a blocked start to one",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Check blockage before assigning one to the start; otherwise a nonexistent path spreads. Guard first-row/column indices. This example uses “#”; the CSES path-counting task uses “*”, so adapt the input convention."
+              },
+              {
+                "type": "p",
+                "text": "A visited flag that suppresses repeated arrivals loses distinct paths. Conversely, unrestricted four-direction movement introduces cycles and cannot use this recurrence unchanged."
+              }
+            ]
+          },
+          {
+            "key": "connections",
+            "title": "10. Counts and minimum costs use different meanings",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Minimum-cost paths change the state meaning and operation: choose a predecessor minimum and add the cell cost. Unreachable states need an infinity sentinel rather than zero."
+              },
+              {
+                "type": "p",
+                "text": "Reconstruction may store a chosen predecessor, but this counting program does not retain a representative path. Derive the state and combination operation from the requested answer."
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "11. Do dependencies point to earlier states?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Two dimensions alone do not imply this DP. Check that answers combine already-ready states and that paths reaching the same state have equivalent futures. Right/down moves increase $r+c$, preventing cycles."
+              },
+              {
+                "type": "p",
+                "text": "Edit distance indexes prefixes of two strings. Tiling may need an entire frontier state. Their tables do not make them simple two-predecessor path sums."
+              }
+            ]
+          },
+          {
+            "key": "extensions",
+            "title": "12. Can the DP use one row of memory?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Updating a one-dimensional array left to right leaves the old above value at the current position and the new left value at the previous position. Reset blocked positions to zero. This reduces DP storage to $O(m)$."
+              },
+              {
+                "type": "p",
+                "text": "The complete implementation keeps two dimensions for visibility. One-row storage does not automatically retain reconstruction information. Huge sparse-obstacle grids may make even $O(nm)$ time impossible and need different combinatorial ideas."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From direct path counts to new state meanings",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Grid Paths I"
+              },
+              {
+                "type": "p",
+                "text": "Adapt the obstacle symbol to “*” and implement states, base case and modular counts."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "AtCoder DP H — Grid 1"
+              },
+              {
+                "type": "p",
+                "text": "Apply the same proof to rectangular grids and test single-row/column boundaries."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Edit Distance"
+              },
+              {
+                "type": "p",
+                "text": "States represent string prefixes and select a minimum edit cost, not path sums."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "AtCoder DP Y — Grid 2"
+              },
+              {
+                "type": "p",
+                "text": "Huge dimensions require combinatorial counting and obstacle ordering."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Counting Tilings"
+              },
+              {
+                "type": "p",
+                "text": "Coordinates alone are insufficient; a frontier-occupancy state is needed."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "AtCoder DP G — Longest Path"
+              },
+              {
+                "type": "p",
+                "text": "Generalize dependency order to a DAG and store longest-path length instead of counts."
+              }
+            ]
+          },
+          {
+            "key": "importance",
+            "title": "14. Learn to justify the transition",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "High foundational priority: one small diagram teaches state meaning, base case, dependency order and disjoint counting."
+              },
+              {
+                "type": "p",
+                "text": "The CSES path-counting task and AtCoder Grid 1 are direct exercises. Edit distance, huge grids and tilings require new transitions or additional techniques rather than copying this program."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Test every small obstacle pattern",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Fill the example to obtain four. One open cell yields one, one blocked cell zero; blocked start or finish yields zero. In a single row or column, any obstacle cuts the only path."
+              },
+              {
+                "type": "p",
+                "text": "Compare small grids with independent recursive path enumeration, and a large unobstructed grid with a binomial coefficient modulo $M$. Explain disjoint final-step groups and why unrestricted four-direction motion breaks this proof."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "DP states and transitions, row/column indexing. Distinguish connected-cell search from counting different paths."
+      }
+    },
+    "prerequisites": "Динамик программчлалын төлөв ба шилжилтийн санаа, хүснэгтийн мөр баганын индекс. Холбоост нүд тоолох хайлт ба замын тоо олохыг ялгана.",
+    "prerequisiteIds": [
+      "dynamic-programming",
+      "flood-fill"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "dynamic-programming",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "flood-fill",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "knapsack",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ],
+      "next": "knapsack",
+      "practice": [
+        {
+          "key": "345",
+          "stage": "Warm-up",
+          "priority": true,
+          "reason": "Төлөвийн утга, боловсруулах дараалал ба баталгааг нэмэлт ахисан арга шаардахгүйгээр хэрэгжүүлэх шууд цөм дасгал."
+        },
+        {
+          "key": "684",
+          "stage": "Standard",
+          "priority": true,
+          "reason": "Төлөвийн утга, боловсруулах дараалал ба баталгааг нэмэлт ахисан арга шаардахгүйгээр хэрэгжүүлэх шууд цөм дасгал."
+        },
+        {
+          "key": "348",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "701",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "357",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "683",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false,
+    "priorityLevel": "high",
+    "priorityReason": "Хоёр хэмжээсийн төлөв, давтагдах дэд бодлого, сүүлийн алхмаар салгах баталгаа, заагийн нөхцөл ба модулийн тооллогыг харагдахуйц жишээн дээр сургана. Дараагийн олон динамик программчлалын төлөвийг гаргах шууд суурь."
+  }
+}

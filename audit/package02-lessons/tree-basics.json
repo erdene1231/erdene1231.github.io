@@ -1,0 +1,870 @@
+{
+  "id": "tree-basics",
+  "expected_revision": 3,
+  "expected_published": true,
+  "expected_body_sha256": "d315030e2130f1243f50ec1cbe1a5c665bdda9c400a9752dbb752f605d4c0b08",
+  "status": "Authored; semantic/code/native editor review pending",
+  "body": {
+    "id": "tree-basics",
+    "level": "Дунд шат",
+    "order": 23,
+    "title": "Модны суурь — үндэс, эцэг, гүн, дэд мод",
+    "aliases": "tree-basics Tree-ийн суурь — parent, depth, subtree Tree basics — parent, depth and subtree",
+    "related": [
+      "dfs",
+      "dynamic-programming"
+    ],
+    "summary": "Циклгүй холбоост графыг үндэстэй болгож, орой бүрийн эцэг, гүн, дэд модны хэмжээг хоёр дарааллаар тооцно.",
+    "category": "Trees",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Байгууллагын доорх хүмүүсийг хэрхэн тоолох вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Холбоосууд $1–2$, $1–3$, $2–4$, $2–5$ байг. $1$-ийг удирдагч гэж үзвэл $2$-ын доор $4,5$ байна. Харин $3$-ын доор хүн алга. Орой бүрийн доорх хүмүүсийг дахин дахин хайлгүй тоолж болох уу?"
+          },
+          {
+            "type": "p",
+            "text": "Эхлээд бүх оройг үндэс $1$-ээс харна. Ингэснээр нэг ирмэгийн хоёр төгсгөлөөс аль нь дээш, аль нь доош болох нь тодорхой болно. Энэ нь зөвхөн тооллого бус олон модны бодлогын нийтлэг эхлэл."
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Орой бүрээс тусад нь хайвал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Орой бүрээс доош бүх үр удмыг тойрч тоолбол урт гинжин модонд эхний орой $n$, дараагийнх $n-1$ орчим орой үзнэ. Нийт ажил $1+2+\\cdots+n$, өөрөөр хэлбэл $O(n^2)$ хүрнэ."
+          },
+          {
+            "type": "p",
+            "text": "Бид нэг жижиг дэд модны хариуг олон өвөгт дахин бодож байна. Хүүхдийн хариуг нэг удаа гаргаад эцэгт нь өгвөл энэ давталтыг арилгана."
+          }
+        ]
+      },
+      {
+        "key": "observation",
+        "title": "3. Модонд хоёр оройн хооронд ганц зам бий",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Мод гэдэг нь чиглэлгүй, холбоост, циклгүй граф. $n$ оройтой мод $n-1$ ирмэгтэй. Зөвхөн ирмэгийн тоо $n-1$ байлаа гээд мод гэж дүгнэхгүй: холбоост эсэх бас чухал."
+          },
+          {
+            "type": "p",
+            "text": "Хоёр ялгаатай энгийн зам байсан бол нийлээд цикл үүсгэнэ; холбоост тул ядаж нэг зам байна. Иймээс үндэс рүү очих замд орой бүрийн яг нэг эцэг бий. Үндэст эцэг байхгүй, кодод түүнийг тэгээр тэмдэглэнэ."
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Дээшээс доош гүн, доороос дээш хэмжээ",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Оройн гүн $depth[v]$ нь үндсээс хүрэх замын ирмэгийн тоо. Үндэс тэг гүнтэй, хүүхдийн гүн эцгийнхээс нэгээр их. Дэд мод $v$ өөрөө болон бүх үр удмыг агуулна."
+          },
+          {
+            "type": "p",
+            "text": "Эхлээд стекээр тойрч эцэг, гүн, үзсэн дарааллыг хадгал. Энэ дараалалд эцэг хүүхдээсээ өмнө орно. Дараа нь дарааллыг урвуулж, эхэндээ нэг байсан $size[v]$-г эцгийн хэмжээнд нэм. Хүүхдүүд бүрэн дууссан үед эцэгт бүхэл хариу нь очно."
+          }
+        ]
+      },
+      {
+        "key": "walkthrough",
+        "title": "5. Таван орой дээр хоёр дарааллыг мөрдөх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хөршүүдийг оролтын дарааллаар стек рүү нэмбэл жишээний үзэх дараалал $1,3,2,5,4$. Стек сүүлд нэмснийг түрүүлж авдгаас $3$ нь $2$-оос өмнө гарна. Ижил хөршийн дараалал заавал хэрэггүй, харин эцэг хүүхдээс өмнө байх ёстой."
+          },
+          {
+            "type": "p",
+            "text": "Урвуугаар $4$-ийн нэгийг $2$-т өгч хэмжээ нь хоёр болно. Дараа нь $5$-ын нэгийг өгч гурав. $2$-ын гурвыг $1$-т өгч дөрөв. $3$-ын нэгийг өгч тав болно. Үндсийг өөрийн эцэг тэг рүү нэмэхгүй."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Орой",
+              "Эцэг",
+              "Гүн",
+              "Дэд модны хэмжээ"
+            ],
+            "rows": [
+              [
+                "1",
+                "0",
+                "0",
+                "5"
+              ],
+              [
+                "2",
+                "1",
+                "1",
+                "3"
+              ],
+              [
+                "3",
+                "1",
+                "1",
+                "1"
+              ],
+              [
+                "4",
+                "2",
+                "2",
+                "1"
+              ],
+              [
+                "5",
+                "2",
+                "2",
+                "1"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Хүүхдийн дэд моднууд давхцахгүй",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Тойрох үед эцгээс өөр хөрш бүр хүүхэд болно. Өөр газраас давтан хүрч болох байсан бол цикл үүсэх тул баталгаатай модонд эцгийг алгасахад хангалттай. Үндэс холбоостой модны бүх оройд хүрнэ."
+          },
+          {
+            "type": "p",
+            "text": "Навчны хэмжээ нэг. Өндрөөр нь индукц хийе: хүүхдийн хэмжээ зөв бол $size[v]=1+\\sum size[c]$ зөв. Учир нь хүүхдүүдийн дэд моднууд тусдаа, нийлээд $v$-ийн бүх үр удмыг хамарна. Урвуу дараалал бүх хүүхдийг эцгээс өмнө боловсруулдаг тул индукц кодын дараалалтай таарна."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Ирмэг бүрийг хоёр удаа үзнэ",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хөршийн жагсаалт нийт $2(n-1)$ бичлэгтэй. Эхний тойролт $O(n)$, урвуу нэгтгэл бас $O(n)$. Хөршүүд, эцэг, гүн, хэмжээ, стек, дараалал нийлээд $O(n)$ санах ой авна."
+          },
+          {
+            "type": "p",
+            "text": "$n=200000$ гинжин модонд рекурс дуудлагын гүн мөн ийм болно. Доорх код дуудлагын стек дүүрэх эрсдэлийг зайлсхийж өөрийн vector стек ашиглана. Өөрийн стек ч санах ой авдаг; түүнийг үнэгүй гэж тооцохгүй."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. Мэдээллээ олоод урвуугаар нэгтгэх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Сургалтын оролт: эхний мөрд $1\\le n\\le200000$, дараа нь холбоост циклгүй модны $n-1$ ирмэг. Оройн дугаар $1$-ээс $n$. Үндэс $1$. Гаралт: эцэг, гүн, хэмжээний гурван мөр."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Төлөв ба эхлэл"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Эцэг, гүн, хэмжээг нэг бүтцэд хадгална. Хэмжээ бүр эхэндээ нэг. Стект үндэс $1$-ийг хийж, эцэг ба гүнийг анх тэг авна. $n$ нь нэгээс багагүй гэсэн гэрээтэй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct RootedTree {\n    vector<int> parent, depth, subtree;\n};\n\nRootedTree analyze_tree(const vector<vector<int>>& graph) {\n    int vertex_count = static_cast<int>(graph.size()) - 1;\n    RootedTree result{vector<int>(vertex_count + 1),\n                      vector<int>(vertex_count + 1),\n                      vector<int>(vertex_count + 1, 1)};\n    vector<int> order, pending{1};\n    order.reserve(vertex_count);\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Үндсэн боловсруулалт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Стекээс нэг орой авч дараалалд бүртгэнэ. Эцгийг алгасаад хүүхдийн эцэг, гүнийг оноож стект нэмнэ. Циклгүй холбоост гэсэн нөхцөлөөс хүүхэд бүр ганц удаа нэмэгдэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    while (!pending.empty()) {\n        int vertex = pending.back();\n        pending.pop_back();\n        order.push_back(vertex);\n        for (int neighbor : graph[vertex]) {\n            if (neighbor == result.parent[vertex]) {\n                continue;\n            }\n            result.parent[neighbor] = vertex;\n            result.depth[neighbor] = result.depth[vertex] + 1;\n            pending.push_back(neighbor);\n        }\n    }\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Хариуг нэгтгэх"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Үзсэн дарааллыг сүүлээс нь эх рүү явна. Үндэсний индекс тэгийг алгасаж, хүүхдийн бүрэн хэмжээг эцэгт нэмнэ. Хэмжээ хамгийн ихдээ $n$, int-д багтана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    for (int index = vertex_count - 1; index > 0; --index) {\n        int vertex = order[index];\n        result.subtree[result.parent[vertex]] += result.subtree[vertex];\n    }\n    return result;\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Оролт ба гаралт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Нэгээс эхэлсэн оройтой модны $n-1$ ирмэгийг хоёр чиглэлд нэмнэ. Эцэг, гүн, хэмжээг орой $1$-ээс $n$ хүртэл тус бүр нэг мөрөөр хэвлэнэ. Энэ нь Subordinates-ийн гаралтыг шууд хуулсан программ биш; тэр бодлогод хэмжээ бүрээс нэг хасаж хэвлэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count;\n    cin >> vertex_count;\n    vector<vector<int>> graph(vertex_count + 1);\n    for (int edge = 0; edge < vertex_count - 1; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        graph[first].push_back(second);\n        graph[second].push_back(first);\n    }\n    RootedTree result = analyze_tree(graph);\n    for (const vector<int>* values : {&result.parent, &result.depth, &result.subtree}) {\n        for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n            cout << (*values)[vertex] << (vertex == vertex_count ? '\\n' : ' ');\n        }\n    }\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах C++17 программ"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct RootedTree {\n    vector<int> parent, depth, subtree;\n};\n\nRootedTree analyze_tree(const vector<vector<int>>& graph) {\n    int vertex_count = static_cast<int>(graph.size()) - 1;\n    RootedTree result{vector<int>(vertex_count + 1),\n                      vector<int>(vertex_count + 1),\n                      vector<int>(vertex_count + 1, 1)};\n    vector<int> order, pending{1};\n    order.reserve(vertex_count);\n    while (!pending.empty()) {\n        int vertex = pending.back();\n        pending.pop_back();\n        order.push_back(vertex);\n        for (int neighbor : graph[vertex]) {\n            if (neighbor == result.parent[vertex]) {\n                continue;\n            }\n            result.parent[neighbor] = vertex;\n            result.depth[neighbor] = result.depth[vertex] + 1;\n            pending.push_back(neighbor);\n        }\n    }\n    for (int index = vertex_count - 1; index > 0; --index) {\n        int vertex = order[index];\n        result.subtree[result.parent[vertex]] += result.subtree[vertex];\n    }\n    return result;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count;\n    cin >> vertex_count;\n    vector<vector<int>> graph(vertex_count + 1);\n    for (int edge = 0; edge < vertex_count - 1; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        graph[first].push_back(second);\n        graph[second].push_back(first);\n    }\n    RootedTree result = analyze_tree(graph);\n    for (const vector<int>* values : {&result.parent, &result.depth, &result.subtree}) {\n        for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n            cout << (*values)[vertex] << (vertex == vertex_count ? '\\n' : ' ');\n        }\n    }\n}\n"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "5\n1 2\n1 3\n2 4\n2 5\n"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "0 1 1 2 2\n0 1 1 2 2\n5 3 1 1 1\n"
+          }
+        ]
+      },
+      {
+        "key": "mistakes",
+        "title": "9. Эцэг, өвөг, үр удам гурвыг ялга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эцэг нь нэг ирмэгээр дээш орших орой; өвөг нь дээшлэх замын аль ч орой. Дэд модны хэмжээ өөрийг нь агуулна, зөвхөн доорх хүний тоо бол $size[v]-1$. Гүнийг оройн тоогоор бус ирмэгийн тоогоор хэмжиж байна."
+          },
+          {
+            "type": "p",
+            "text": "Энэ кодыг циклтэй граф дээр шууд хэрэглэхгүй: зөвхөн эцгийг алгасах нь давтан үзэхээс хамгаалахгүй. Мөн хүүхдийн эцэслээгүй хэмжээг эрт нэмбэл үр удмыг дутуу тоолно."
+          }
+        ]
+      },
+      {
+        "key": "connections",
+        "title": "10. Нэг үндэс олон төрлийн хариу өгнө",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эцгээр дээш явж үндэс хүрэх замыг сэргээж болно. Гүн нь үндэс хүртэлх зай боловч дурын хоёр оройн зайг зөвхөн хоёр гүний зөрүүгээр олохгүй. Жишээнд $4,5$ ижил гүнтэй ч хоорондоо хоёр ирмэгтэй."
+          },
+          {
+            "type": "p",
+            "text": "Дэд модны хэмжээг нийлбэр, хамгийн их утга зэрэг өөр нэгтгэлээр сольж болно. Харин бүх оройг үндэс болгосон хариу, диаметр, хослол олоход нэмэлт санаа шаардлагатай; энэ хичээлийн код дангаараа тэднийг бодохгүй."
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "11. Хэзээ мод болгон харах вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Холбоосууд циклгүй бөгөөд бүх зүйл нэг системд багтвал эхлээд үндэс сонгохыг бод. “Доорх”, “өвөг”, “хүүхдийн хариу” гэсэн хамаарал гарвал эцэг ба боловсруулах дараалал хэрэг болж магадгүй."
+          },
+          {
+            "type": "p",
+            "text": "Чиглэсэн байгууллагын эцэг нь өгөгдвөл хүүхдийн жагсаалт шууд байгуулж болно. Холбоогүй ой бол бүрэлдэхүүн бүрт үндэс хэрэгтэй; энэ программ зөвхөн нэг холбоост мод авдаг. Үндэс солигдоход эцэг, гүн, дэд мод өөрчлөгдөх ч чиглэлгүй модны зам өөрчлөгдөхгүй."
+          }
+        ]
+      },
+      {
+        "key": "extensions",
+        "title": "12. Үндэс солиход юу хадгалагдах вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Жишээний үндсийг $2$ болговол $1$ нь $2$-ын хүүхэд болж, $1$-ийн дэд мод $1,3$ гэсэн хоёр оройтой болно. Харин нийт орой тав, ирмэг дөрөв хэвээр."
+          },
+          {
+            "type": "p",
+            "text": "Дараагийн түвшинд модон дээрх динамик программчлал, нийтлэг өвөг, орох гарах хугацаа хэрэглэнэ. Эдгээрийг эхлэхийн өмнө эцгийн чиглэл ба хүүхэд түрүүлж дуусах дарааллаа тайлбарлаж чаддаг байх нь чухал."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Дэд модноос модны нийт хариу руу",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Subordinates"
+          },
+          {
+            "type": "p",
+            "text": "Өөрийг нь багтаасан дэд модны хэмжээнээс нэг хасаж доорх хүний тоог ол."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Tree Diameter"
+          },
+          {
+            "type": "p",
+            "text": "Нэг үндсийн гүн хангалтгүй; хамгийн хол төгсгөлүүдийг олох нэмэлт баталгаа хэрэгтэй."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Tree Distances I"
+          },
+          {
+            "type": "p",
+            "text": "Орой бүрийн хамгийн хол зайд дэд модны гаднах зам бас нөлөөлнө."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Tree Distances II"
+          },
+          {
+            "type": "p",
+            "text": "Үндэс шилжихэд зайны нийлбэр хэрхэн өөрчлөгдөхийг дэд модны хэмжээгээр гарга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Tree Matching"
+          },
+          {
+            "type": "p",
+            "text": "Хүүхдийн хариуг нийлүүлэхээс гадна оройг хослолд ашигласан эсэх төлөв шаардлагатай."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Company Queries I"
+          },
+          {
+            "type": "p",
+            "text": "Эцгээр нэг нэг алхах нь олон асуултад удаан. Хоёрын зэрэг алхмаар өвөг хадгалах нэмэлт арга хэрэгтэй."
+          }
+        ]
+      },
+      {
+        "key": "importance",
+        "title": "14. Суурь төлөвөө зөв байгуулах нь чухал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өндөр ач холбогдолтой хичээл. Модны олон арга эцэг, гүн эсвэл доороос дээш дарааллаас эхэлдэг тул эдгээрийг цээжлэхээс илүү утга ба баталгааг ойлго."
+          },
+          {
+            "type": "p",
+            "text": "Subordinates нь дэд модны шууд цөм дасгал. Диаметр болон хоёр талд тархах хариуг дараагийн шатанд үзнэ; илүү хэцүү бодлого бүрийг зөвхөн энэ тойролтоор бодно гэж үзэхгүй."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Өөр үндэс, урт гинж, нэг оройгоор шалга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Жишээг зурж орой бүрийн эцэг, гүн, хэмжээг өөрөө ол. Навчны хэмжээ нэг, үндэсний хэмжээ $n$, хүүхдийн гүн эцгийнхээс нэгээр их эсэхийг шалга. Нэг оройтой үед эцэг тэг, гүн тэг, хэмжээ нэг байна."
+          },
+          {
+            "type": "p",
+            "text": "Жижиг модонд орой бүрийн эцгээр дээш алхаж тухайн өвөг хэдэн удаа таарахыг тоолсон тусдаа лавлахтай хэмжээг тулга. Дараа нь урт гинж, од хэлбэртэй модыг шалга. Яагаад ердийн циклтэй графт энэ код тохирохгүйг тайлбарлаж чадвал үндсэн нөхцөлөө ойлгосон байна."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Tree foundations — roots, parents, depths and subtrees",
+        "summary": "Root a connected acyclic graph and derive every parent, depth and subtree size using forward and reverse traversal order.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. How many people lie below each manager?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Take edges $1–2$, $1–3$, $2–4$, $2–5$. Rooting at manager $1$ puts $4,5$ below $2$ and nobody below $3$. Can every vertex obtain its descendant count without repeating a search?"
+              },
+              {
+                "type": "p",
+                "text": "View all vertices from root $1$. Each edge now has a nearer and a farther endpoint relative to the root. This orientation is a common foundation beyond counting."
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Searching separately from every vertex",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "A separate descendant traversal per vertex visits about $n$, then $n-1$, and so on along a chain. The sum is $O(n^2)$."
+              },
+              {
+                "type": "p",
+                "text": "The same small subtree is repeatedly recomputed for its ancestors. Compute a child’s result once and pass it to its parent."
+              }
+            ]
+          },
+          {
+            "key": "observation",
+            "title": "3. A tree has one simple path between any two vertices",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "A tree is an undirected connected acyclic graph. A tree with $n$ vertices has $n-1$ edges; the edge count alone does not prove that an arbitrary graph is a tree."
+              },
+              {
+                "type": "p",
+                "text": "Two distinct simple paths would form a cycle, while connectivity supplies at least one path. Thus each non-root vertex has exactly one parent on its root path. The root has none; the program uses zero as its sentinel."
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Depths forward, sizes backward",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Depth counts edges on the root path: the root has depth zero and a child has parent depth plus one. The subtree of $v$ includes $v$ and all descendants."
+              },
+              {
+                "type": "p",
+                "text": "Use an explicit stack to record parents, depths and visit order. Parents appear before children. Reverse that order and add each initially-one $size[v]$ into its parent. Every child contributes its complete answer."
+              }
+            ]
+          },
+          {
+            "key": "walkthrough",
+            "title": "5. Trace both orders on five vertices",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Pushing neighbors in input order gives visit order $1,3,2,5,4$: the stack removes the last inserted vertex first. The exact sibling order is irrelevant; parents must precede children."
+              },
+              {
+                "type": "p",
+                "text": "Reverse processing adds vertex $4$ into $2$, making two; then $5$ makes three. Adding subtree $2$ into $1$ makes four, and $3$ makes five. Do not add the root to sentinel zero."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Vertex",
+                  "Parent",
+                  "Depth",
+                  "Subtree size"
+                ],
+                "rows": [
+                  [
+                    "1",
+                    "0",
+                    "0",
+                    "5"
+                  ],
+                  [
+                    "2",
+                    "1",
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "1",
+                    "1",
+                    "1"
+                  ],
+                  [
+                    "4",
+                    "2",
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "5",
+                    "2",
+                    "2",
+                    "1"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Child subtrees do not overlap",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "In a guaranteed tree, every neighbor except the parent is a child. Reaching it from another branch would create a cycle, so skipping the parent suffices. Connectivity ensures all vertices are reached."
+              },
+              {
+                "type": "p",
+                "text": "A leaf has size one. Induct on subtree height: with correct child sizes, $size[v]=1+\\sum size[c]$ is correct because child subtrees are disjoint and cover all descendants. Reverse order processes every child first, matching the induction."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Each edge is inspected twice",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Adjacency lists contain $2(n-1)$ entries. Traversal and reverse aggregation each take $O(n)$; all arrays, adjacency, order and explicit stack use $O(n)$ memory."
+              },
+              {
+                "type": "p",
+                "text": "A chain of $200000$ vertices would create that many recursive calls. The implementation uses its own vector stack to avoid call-stack exhaustion, while still accounting for its memory."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Discover information, then aggregate in reverse",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Teaching input: $1\\le n\\le200000$, followed by $n-1$ edges of a connected acyclic tree on vertices $1$ through $n$. Root is $1$. Output three lines: parents, depths and sizes."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. State and setup"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Store parents, depths and sizes together. Sizes start at one; root $1$ enters the stack with parent and depth zero. The contract requires at least one vertex.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct RootedTree {\n    vector<int> parent, depth, subtree;\n};\n\nRootedTree analyze_tree(const vector<vector<int>>& graph) {\n    int vertex_count = static_cast<int>(graph.size()) - 1;\n    RootedTree result{vector<int>(vertex_count + 1),\n                      vector<int>(vertex_count + 1),\n                      vector<int>(vertex_count + 1, 1)};\n    vector<int> order, pending{1};\n    order.reserve(vertex_count);\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. Main processing"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Pop one vertex, record its order, skip its parent and assign every child’s parent/depth before pushing it. The connected acyclic contract guarantees one discovery per child.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    while (!pending.empty()) {\n        int vertex = pending.back();\n        pending.pop_back();\n        order.push_back(vertex);\n        for (int neighbor : graph[vertex]) {\n            if (neighbor == result.parent[vertex]) {\n                continue;\n            }\n            result.parent[neighbor] = vertex;\n            result.depth[neighbor] = result.depth[vertex] + 1;\n            pending.push_back(neighbor);\n        }\n    }\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. Finish the result"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Process visit order backward, stopping before root index zero. Add each complete child size into its parent; sizes are at most $n$, within int range.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    for (int index = vertex_count - 1; index > 0; --index) {\n        int vertex = order[index];\n        result.subtree[result.parent[vertex]] += result.subtree[vertex];\n    }\n    return result;\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Input and output"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read the tree’s $n-1$ edges in both directions. Print parent, depth and size arrays in vertex order on three lines. This teaching contract differs from Subordinates, which prints sizes minus one.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count;\n    cin >> vertex_count;\n    vector<vector<int>> graph(vertex_count + 1);\n    for (int edge = 0; edge < vertex_count - 1; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        graph[first].push_back(second);\n        graph[second].push_back(first);\n    }\n    RootedTree result = analyze_tree(graph);\n    for (const vector<int>* values : {&result.parent, &result.depth, &result.subtree}) {\n        for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n            cout << (*values)[vertex] << (vertex == vertex_count ? '\\n' : ' ');\n        }\n    }\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete compilable C++17 program"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct RootedTree {\n    vector<int> parent, depth, subtree;\n};\n\nRootedTree analyze_tree(const vector<vector<int>>& graph) {\n    int vertex_count = static_cast<int>(graph.size()) - 1;\n    RootedTree result{vector<int>(vertex_count + 1),\n                      vector<int>(vertex_count + 1),\n                      vector<int>(vertex_count + 1, 1)};\n    vector<int> order, pending{1};\n    order.reserve(vertex_count);\n    while (!pending.empty()) {\n        int vertex = pending.back();\n        pending.pop_back();\n        order.push_back(vertex);\n        for (int neighbor : graph[vertex]) {\n            if (neighbor == result.parent[vertex]) {\n                continue;\n            }\n            result.parent[neighbor] = vertex;\n            result.depth[neighbor] = result.depth[vertex] + 1;\n            pending.push_back(neighbor);\n        }\n    }\n    for (int index = vertex_count - 1; index > 0; --index) {\n        int vertex = order[index];\n        result.subtree[result.parent[vertex]] += result.subtree[vertex];\n    }\n    return result;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count;\n    cin >> vertex_count;\n    vector<vector<int>> graph(vertex_count + 1);\n    for (int edge = 0; edge < vertex_count - 1; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        graph[first].push_back(second);\n        graph[second].push_back(first);\n    }\n    RootedTree result = analyze_tree(graph);\n    for (const vector<int>* values : {&result.parent, &result.depth, &result.subtree}) {\n        for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n            cout << (*values)[vertex] << (vertex == vertex_count ? '\\n' : ' ');\n        }\n    }\n}\n"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "5\n1 2\n1 3\n2 4\n2 5\n"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "0 1 1 2 2\n0 1 1 2 2\n5 3 1 1 1\n"
+              }
+            ]
+          },
+          {
+            "key": "mistakes",
+            "title": "9. Distinguish parents, ancestors and descendants",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "A parent is one edge up; ancestors lie anywhere on the upward path. Subtree size includes the vertex itself; the subordinate count is $size[v]-1$. Depth here counts edges, not vertices."
+              },
+              {
+                "type": "p",
+                "text": "Do not apply this code unchanged to a cyclic graph: skipping just the parent cannot prevent revisits. Adding incomplete child sizes too early also loses descendants."
+              }
+            ]
+          },
+          {
+            "key": "connections",
+            "title": "10. One rooting supports many later questions",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Parents reconstruct the path to the root. Depth is distance to the root, but depth difference is not arbitrary pair distance: vertices $4,5$ have equal depth and distance two."
+              },
+              {
+                "type": "p",
+                "text": "Replace subtree size with sums or maxima for other bottom-up aggregates. All-root answers, diameters and matchings require further ideas beyond this program."
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "11. When should you use this viewpoint?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For connected acyclic relationships, try choosing a root. Descendants, ancestors and child answers suggest parent arrays and processing order."
+              },
+              {
+                "type": "p",
+                "text": "Given manager links, build child lists directly. A disconnected forest needs a root per component; this program accepts one connected tree. Changing the root changes parents, depths and subtrees, not the underlying undirected paths."
+              }
+            ]
+          },
+          {
+            "key": "extensions",
+            "title": "12. What survives changing the root?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Rooting the example at $2$ makes $1$ its child, with subtree $1,3$ of size two. Total vertices and edges remain five and four."
+              },
+              {
+                "type": "p",
+                "text": "Later topics include tree DP, common ancestors and entry/exit times. First be able to explain the parent direction and why children finish before aggregation."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From subtrees toward global tree answers",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Subordinates"
+              },
+              {
+                "type": "p",
+                "text": "Subtract one from subtree size to count subordinates."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Tree Diameter"
+              },
+              {
+                "type": "p",
+                "text": "A single root depth is insufficient; justify finding diameter endpoints."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Tree Distances I"
+              },
+              {
+                "type": "p",
+                "text": "Distances outside the current subtree also matter."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Tree Distances II"
+              },
+              {
+                "type": "p",
+                "text": "Derive changes in distance sums using subtree sizes."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Tree Matching"
+              },
+              {
+                "type": "p",
+                "text": "Additional state records whether a vertex participates in the matching."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Company Queries I"
+              },
+              {
+                "type": "p",
+                "text": "Walking parents one at a time is too slow for many queries; ancestor doubling is an additional technique."
+              }
+            ]
+          },
+          {
+            "key": "importance",
+            "title": "14. Build reliable foundational state",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "High educational priority: many tree methods start from parents, depths or bottom-up order. Understand their meaning and proof instead of memorizing arrays."
+              },
+              {
+                "type": "p",
+                "text": "Subordinates directly practices subtree aggregation. Diameter and answers extending outside a subtree are later steps, not consequences of this traversal alone."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Test a different root, a chain and a singleton",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Draw the example and derive each parent, depth and size. Leaves have size one, root size is $n$, and child depths increase by one. A singleton has parent zero, depth zero and size one."
+              },
+              {
+                "type": "p",
+                "text": "For small trees, independently count each ancestor by walking parent chains. Test a long chain and a star. Explain why a general cyclic graph violates this implementation’s assumptions."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Adjacency lists and depth-first traversal. Choosing a root changes the viewpoint, not the undirected edges."
+      }
+    },
+    "prerequisites": "Графын хөршийн жагсаалт, гүнд түрүүлж хайх аргын дараалал. Модны үндэс сонгох нь графын ирмэгийг өөрчлөхгүй.",
+    "prerequisiteIds": [
+      "dfs"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "dfs",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "dynamic-programming",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ],
+      "next": "dsu",
+      "practice": [
+        {
+          "key": "420",
+          "stage": "Warm-up",
+          "priority": true,
+          "reason": "Төлөвийн утга, боловсруулах дараалал ба баталгааг нэмэлт ахисан арга шаардахгүйгээр хэрэгжүүлэх шууд цөм дасгал."
+        },
+        {
+          "key": "422",
+          "stage": "Standard",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "423",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "424",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "421",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "425",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false,
+    "priorityLevel": "high",
+    "priorityReason": "Модны зам, дэд мод, доороос дээш нэгтгэх зарчим нь модон дээрх динамик программчлал, өвөг хайх, замын асуултын урьдчилсан суурь. Эцэг ба гүнийг утгаар нь ялгаж, боловсруулах дарааллыг батлах нь олон бодлогод шилжин хэрэглэгдэнэ."
+  }
+}
