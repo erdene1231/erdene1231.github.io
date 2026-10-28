@@ -3,6 +3,7 @@ import {bodyHash} from './package02_tutorial_proposals.mjs';
 const literal=v=>"E'"+String(v).replace(/\\/g,'\\\\').replace(/'/g,"''")+"'";
 const json=v=>literal(JSON.stringify(v))+'::jsonb';
 export function complexityPrioritySql(plan,guard){return buildPrioritySql(plan,guard,['cses-1083','cses-1094']);}
+export function windowPrioritySql(plan,guard){return buildPrioritySql(plan,guard,['cses-1660']);}
 export function differencePointersPrioritySql(plan,guard){return buildPrioritySql(plan,guard,['cses-1619','cses-1640']);}
 export function recursionPrioritySql(plan,guard){return buildPrioritySql(plan,guard,['cses-2165']);}
 export function searchSortPrioritySql(plan,guard){return buildPrioritySql(plan,guard,['cses-1621','cses-1623']);}
