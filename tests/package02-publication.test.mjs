@@ -87,7 +87,7 @@ test('finished foundation documents save, publish and reload through native 031 
     } finally { await db.close(); }
 });
 
-async function localOwnerGuard(db) {
+async function localOwnerGuard(db,scope_ids=['binary-search','dynamic-programming','greedy']) {
     const names=['admin_save_tutorial','admin_store_learning_tutorial','admin_publish_tutorial_draft',
         'validate_tutorial_body','validate_tutorial_publication','refresh_tutorial_media_references','check_tutorial_media_exists'];
     const functions=(await db.query(`select p.oid::regprocedure::text signature,md5(pg_get_functiondef(p.oid)) definition_md5,proacl::text acl
@@ -95,8 +95,8 @@ async function localOwnerGuard(db) {
     const catalog_triggers=(await db.query(`select jsonb_agg(pg_get_triggerdef(oid) order by tgname) value from pg_trigger
         where tgrelid='public.tutorial_catalog'::regclass and not tgisinternal`)).rows[0].value;
     const draft_fingerprint=(await db.query(`select md5(coalesce(jsonb_agg(to_jsonb(d) order by tutorial_id,editor_id)::text,'[]')) value
-        from tutorial_drafts d where tutorial_id in ('binary-search','dynamic-programming','greedy')`)).rows[0].value;
-    return {functions,catalog_triggers,draft_fingerprint};
+        from tutorial_drafts d where tutorial_id=any($1)` ,[scope_ids])).rows[0].value;
+    return {functions,catalog_triggers,draft_fingerprint,scope_ids};
 }
 
 test('separately proposed owner publication is atomic, guarded and leaves drafts, Mongolia, bank and progress untouched', async()=>{
@@ -164,6 +164,36 @@ test('rewritten revision-6 replacements validate through native lifecycle, prese
         assert.deepEqual(after.catalog.filter(t=>!wanted.has(t.id)),before.catalog.filter(t=>!wanted.has(t.id)));
         assert.deepEqual(after.history.slice(0,3),before.history);assert.equal(after.history.length,6);
         for(const target of targets){const row=after.catalog.find(t=>t.id===target.id);assert.equal(row.revision,7);assert.deepEqual(row.body,target.body);}
+        await assert.rejects(db.exec(sql),/CAS\/body\/status drift/);assert.deepEqual(await snapshot(),after);
+    } finally {await db.close();}
+});
+
+test('small reviewed lesson publication freezes exact scope/review hashes and preserves existing private work', async()=>{
+    const {ownerReviewedLessonsSql}=await import('../tools/package02_reviewed_publication.mjs');
+    const {bodyHash}=await import('../tools/package02_tutorial_proposals.mjs');
+    const {db,problems}=await foundationDatabase();
+    try {
+        const candidate=JSON.parse(fs.readFileSync('audit/package02-lessons/complexity.json'));
+        const initial=(await db.query("select *,md5(body::text) body_md5 from tutorial_catalog where id='complexity'")).rows[0];
+        assert.equal(initial.revision,candidate.expected_revision);assert.equal(bodyHash(initial.body),candidate.expected_body_sha256);
+        await db.query(`insert into tutorial_drafts(tutorial_id,editor_id,body,revision,base_revision)
+            select id,'00000000-0000-0000-0000-000000000002',body,1,revision from tutorial_catalog where id in ('complexity','binary-search')`);
+        const topics=(await db.query('select body from tutorial_catalog')).rows.map(r=>r.body.id==='complexity'?candidate.body:r.body);
+        assert.deepEqual(publicationBody(candidate.body,topics,problems),candidate.body);
+        const target={...candidate,expected_body_md5:initial.body_md5,proposed_body_sha256:bodyHash(candidate.body),reviewed_body_sha256:bodyHash(candidate.body)};
+        const guard=await localOwnerGuard(db,['complexity']),batch={targets:[target]},sql=ownerReviewedLessonsSql(batch,guard);
+        assert.throws(()=>ownerReviewedLessonsSql(batch,{...guard,scope_ids:['binary-search']}),/exact reviewed scope/);
+        assert.throws(()=>ownerReviewedLessonsSql({targets:[{...target,reviewed_body_sha256:'0'.repeat(64)}]},guard),/payload guard/);
+        assert.throws(()=>ownerReviewedLessonsSql({targets:[target,target]},guard),/unique allowlist/);
+        assert.throws(()=>ownerReviewedLessonsSql({targets:[{...target,id:'mongolia'}]},guard),/unique allowlist/);
+        const snapshot=async()=>({catalog:(await db.query('select * from tutorial_catalog order by id')).rows,drafts:(await db.query('select * from tutorial_drafts order by tutorial_id')).rows,history:(await db.query('select * from tutorial_changes order by change_id')).rows,progress:(await db.query('select * from progress')).rows,learning:(await db.query('select * from learning_records')).rows});
+        const before=await snapshot();
+        await assert.rejects(db.exec(sql.replace('-- Atomic boundary: one target and its history are complete.',"RAISE EXCEPTION 'Injected lesson failure';")),/Injected lesson failure/);assert.deepEqual(await snapshot(),before);
+        await db.query("update tutorial_drafts set revision=revision+1 where tutorial_id='complexity'");await assert.rejects(db.exec(sql),/Private draft changed/);await db.query("update tutorial_drafts set revision=revision-1 where tutorial_id='complexity'");
+        await db.exec(sql);const after=await snapshot();
+        for(const key of ['drafts','progress','learning'])assert.deepEqual(after[key],before[key]);
+        assert.deepEqual(after.catalog.filter(t=>t.id!=='complexity'),before.catalog.filter(t=>t.id!=='complexity'));
+        const current=after.catalog.find(t=>t.id==='complexity');assert.equal(current.revision,initial.revision+1);assert.deepEqual(current.body,candidate.body);assert.equal(after.history.length,1);
         await assert.rejects(db.exec(sql),/CAS\/body\/status drift/);assert.deepEqual(await snapshot(),after);
     } finally {await db.close();}
 });
