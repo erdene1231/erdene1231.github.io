@@ -1,0 +1,849 @@
+{
+  "id": "topological-sort",
+  "expected_revision": 5,
+  "expected_published": true,
+  "expected_body_sha256": "26f0ba2486dee6b3feb70b68b9ad3f4cf67f85c39496622af337e51914d420a9",
+  "status": "Authored; semantic/code/native editor review pending",
+  "body": {
+    "id": "topological-sort",
+    "level": "Дунд шат",
+    "order": 34,
+    "title": "Топологийн эрэмбэлэлт — хамаарлыг зөрчихгүй дараалал",
+    "aliases": "topological-sort Topological sort — dependency-ийн дараалал Topological sorting — dependency order topological sort dag indegree kahn dependency cycle чиглэсэн cycle",
+    "related": [
+      "graph-basics",
+      "bfs",
+      "fenwick-tree"
+    ],
+    "summary": "Орох ирмэггүй оройг авч үлдсэн хамаарлын тоог бууруулна. Каны аргаар зөв дараалал болон циклтэй эсэхийг батална.",
+    "category": "Graphs",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Урьдчилсан хичээлүүдээ эхэлж үзэх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Таван ажилд $1\\to2$, $1\\to3$, $2\\to4$, $3\\to4$, $4\\to5$ хамаарал байг. Ажил бүрийг нэг удаа гүйцэтгэхэд бүх сумны эхлэл төгсгөлөөс өмнө орсон дараалал хэрэгтэй."
+          },
+          {
+            "type": "p",
+            "text": "$1,2,3,4,5$ зөв, мөн $1,3,2,4,5$ зөв. Утга эсвэл дугаараар эрэмбэлэх бус хамаарлыг хангахыг асууж байна."
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Бүх сэлгэмлийг шалгахгүй",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Бүх $n!$ дарааллыг шалгаад ирмэг бүрийн нөхцөлийг үзэж болно. Том графт боломжгүй. Харин яг одоо өөр ажлаас хамаарахгүй оройг сонгож болно."
+          },
+          {
+            "type": "p",
+            "text": "Одоогоор дуусаагүй урьдчилсан ажлын тоог хадгалбал тэг болсон оройнууд бэлэн байна. Аль нэг бэлэн ажлыг авах нь бусдын өмнөх нөхцөлийг зөрчихгүй."
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "3. Үлдсэн графын орох зэргийг хадгалах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$incoming[v]$ нь одоо үлдсэн оройнуудаас $v$ рүү ирэх ирмэгийн тоо. Эхэндээ бүх ирмэгийг тоолно. Тэг орой бүрийг FIFO дараалалд оруулна."
+          },
+          {
+            "type": "p",
+            "text": "Давхар ижил ирмэг байвал хоёр удаа тоолж, эхлэлийг авахдаа хоёр удаа бууруулна. Өөртэйгөө холбогдсон ирмэг өөрөө цикл тул тухайн оройг шууд бэлэн болгохгүй."
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Бэлэн ажлыг аваад гарах ирмэгүүдийг арилгах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Дарааллаас нэг орой авч хариунд нэмнэ. Түүний гарах ирмэг бүрийн төгсгөлийн тоог нэгээр бууруулж, яг тэг болсон мөчид дараалалд нэм."
+          },
+          {
+            "type": "p",
+            "text": "Үүнийг Каны арга гэдэг. Дараалал хоосроход бүх орой авсан бол зөв дараалал; дутуу бол чиглэсэн цикл байгаа тул боломжгүй. Зөвхөн эхлэл нэгээс хайхгүй, бүх тэг оройгоос эхэлнэ."
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "5. Дөрөв зөвхөн хоёр хамаарал дуусахад бэлэн",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхний орох тоо $0,1,1,2,1$, бэлэн нь нэг. Нэгийг авмагц хоёр, гурав тэг болно. Хоёрыг авбал дөрвийн тоо хоёр байснаас нэг, хараахан бэлэн биш."
+          },
+          {
+            "type": "p",
+            "text": "Гуравыг авсны дараа дөрөв тэг болж нэмэгдэнэ. Дөрөв нь тавыг бэлэн болгоно. FIFO дараалал $1,2,3,4,5$ гаргана. Дөрвийг эхний удаа харсан даруйд нэмбэл гуравын шаардлагыг зөрчинө."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Авсан орой",
+              "Бэлэн дараалал",
+              "4-ийн үлдсэн хамаарал"
+            ],
+            "rows": [
+              [
+                "1",
+                "2,3",
+                "2"
+              ],
+              [
+                "2",
+                "3",
+                "1"
+              ],
+              [
+                "3",
+                "4",
+                "0"
+              ],
+              [
+                "4",
+                "5",
+                "0"
+              ],
+              [
+                "5",
+                "—",
+                "0"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Тэг оройг сонгох нь яагаад аюулгүй вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хариунд нэмэх орой руу үлдсэн оройгоос ирэх сум байхгүй. Тиймээс бүх өмнөх шаардлага аль хэдийн хариунд орсон. Энэ чанар алхам бүрд хадгалагддаг тул гарсан дараалал ирмэг бүрийг зөв чиглэлд байрлуулна."
+          },
+          {
+            "type": "p",
+            "text": "Циклгүй хоосон бус чиглэсэн графт ядаж нэг тэг орох зэрэгтэй орой бий: үгүй бол өмнөх оройг тасралтгүй дагахдаа хязгаартай оройн аль нэгийг давтаж цикл үүсгэнэ. Иймээс циклгүй бол арга дуусна. Үлдсэн циклд орой бүр дотроосоо өмнөх сумтай тул бүгдийг авч чадахгүй."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Орой ба ирмэг бүр нэг удаа",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Орох тоо байгуулахад бүх ирмэгийг нэг үзнэ. Орой бүр дараалалд ихдээ нэг орно, боловсруулахдаа гарах ирмэг бүрийг нэг бууруулна. Нийт $O(n+m)$ хугацаа, граф ба массивуудад $O(n+m)$ санах ой."
+          },
+          {
+            "type": "p",
+            "text": "$n,m\\le200000$ үед рекурсгүй FIFO хувилбар урт гинжинд дуудлагын стек шаардахгүй. Дараалал гэдэг нь энд энгийн FIFO; priority queue биш."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. Орох тоо, бэлэн дараалал, нийт авсан тоо",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Эхлэл ба төлөв"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Орох ирмэгийг давхардалтай нь тоолоод тэг бүрийг энгийн FIFO дараалалд оруулна. Бүх оройг эхлүүлэхэд хамруулна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\noptional<vector<int>> topological_order(const vector<vector<int>>& graph) {\n    int vertex_count = static_cast<int>(graph.size()) - 1;\n    vector<int> incoming(vertex_count + 1);\n    for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n        for (int next : graph[vertex]) {\n            ++incoming[next];\n        }\n    }\n    queue<int> ready;\n    for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n        if (incoming[vertex] == 0) {\n            ready.push(vertex);\n        }\n    }\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Үндсэн үйлдэл"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Бэлэн оройг хариунд оруулж, гарах ирмэг бүрийг бууруулна. Яг тэг болсон үед нэмэх нь давтан оруулахаас хамгаална.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    vector<int> order;\n    while (!ready.empty()) {\n        int vertex = ready.front();\n        ready.pop();\n        order.push_back(vertex);\n        for (int next : graph[vertex]) {\n            if (--incoming[next] == 0) {\n                ready.push(next);\n            }\n        }\n    }\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Хариу авах"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Нийт орой хүрээгүй бол хоосон optional; энэ нь циклтэй гэсэн дохио. Бүтэн бол олсон дарааллыг буцаана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    if (static_cast<int>(order.size()) != vertex_count) {\n        return nullopt;\n    }\n    return order;\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Оролт ба гаралт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт $1$–$200000$ орой, $0$–$200000$ чиглэсэн хамаарал. Аль ч зөв дараалал эсвэл IMPOSSIBLE хэвлэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    vector<vector<int>> graph(vertex_count + 1);\n    for (int index = 0; index < edge_count; ++index) {\n        int first, second;\n        cin >> first >> second;\n        graph[first].push_back(second);\n    }\n    auto order = topological_order(graph);\n    if (!order.has_value()) {\n        cout << \"IMPOSSIBLE\\n\";\n        return 0;\n    }\n    for (int index = 0; index < vertex_count; ++index) {\n        cout << (*order)[index] << (index + 1 == vertex_count ? '\\n' : ' ');\n    }\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах C++17 программ"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\noptional<vector<int>> topological_order(const vector<vector<int>>& graph) {\n    int vertex_count = static_cast<int>(graph.size()) - 1;\n    vector<int> incoming(vertex_count + 1);\n    for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n        for (int next : graph[vertex]) {\n            ++incoming[next];\n        }\n    }\n    queue<int> ready;\n    for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n        if (incoming[vertex] == 0) {\n            ready.push(vertex);\n        }\n    }\n    vector<int> order;\n    while (!ready.empty()) {\n        int vertex = ready.front();\n        ready.pop();\n        order.push_back(vertex);\n        for (int next : graph[vertex]) {\n            if (--incoming[next] == 0) {\n                ready.push(next);\n            }\n        }\n    }\n    if (static_cast<int>(order.size()) != vertex_count) {\n        return nullopt;\n    }\n    return order;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    vector<vector<int>> graph(vertex_count + 1);\n    for (int index = 0; index < edge_count; ++index) {\n        int first, second;\n        cin >> first >> second;\n        graph[first].push_back(second);\n    }\n    auto order = topological_order(graph);\n    if (!order.has_value()) {\n        cout << \"IMPOSSIBLE\\n\";\n        return 0;\n    }\n    for (int index = 0; index < vertex_count; ++index) {\n        cout << (*order)[index] << (index + 1 == vertex_count ? '\\n' : ' ');\n    }\n}\n"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "5 5\n1 2\n1 3\n2 4\n3 4\n4 5\n"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "1 2 3 4 5\n"
+          }
+        ]
+      },
+      {
+        "key": "errors",
+        "title": "9. Чиглэлийг эсрэгээр хадгалахгүй",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Урьдчилсан $u$ дараах $v$-ээс өмнө гэвэл $u\\to v$ нэмээд $v$-ийн орох тоог өсгөнө. Эсрэгээр нэмбэл утга нь солигдоно."
+          },
+          {
+            "type": "p",
+            "text": "Циклтэй үед гарсан хэсэг жагсаалт нь бүх ажлын шийдэл биш. Өөр бүрэлдэхүүний зөв оройнуудыг авч болох ч нийт тоо $n$ болоогүйг заавал шалга. BFS-ийн visited төдий төлөв орох бүх шаардлага дууссаныг хэлэхгүй."
+          }
+        ]
+      },
+      {
+        "key": "cycles",
+        "title": "10. Үлдсэн бүх орой заавал цикл дээр биш",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$1\\to2$, $2\\to1$, $2\\to3$ үед гурав өөрөө цикл дээр биш боловч хамаарал нь хаагдаж үлдэнэ. Энэ арга цикл байна гэдгийг илрүүлдэг, яг циклд орсон оройнуудыг дангаар нь нэрлэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Тодорхой цикл сэргээхэд DFS-ийн өнгө эсвэл хүчтэй холбоост бүрэлдэхүүний нэмэлт арга хэрэгтэй. Каны үлдэгдлийг тэр чигт нь “цикл” гэж хэвлэх нь буруу."
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "11. Хамааралтай DP-ийн боловсруулах дараалал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Циклгүй графын оройд хүрэх замын тоо эсвэл хамгийн урт замыг өмнөх оройн хариунаас бодож болно. Топологийн дараалалд бүх өмнөх хариу бэлэн болсон байдаг."
+          },
+          {
+            "type": "p",
+            "text": "Гэхдээ DP-ийн эхлэл, хүрэхгүй төлөв, нийлбэр эсвэл maximum үйлдэл өөрөө тусдаа тодорхойлолттой. Эрэмбэлэлт л гаргасан нь бүх графын бодлогыг шийдсэн гэсэн үг биш."
+          }
+        ]
+      },
+      {
+        "key": "variants",
+        "title": "12. Хамгийн бага дугаартай дараалал хэрэгтэй бол",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Олон бэлэн орой байхад FIFO аль нэг зөв дараалал өгнө. Үргэлж хамгийн бага дугаарыг авахыг хүсвэл minimum priority queue хэрэглэж болно; хугацаа $O((n+m)\\log(n+1))$ дээд хязгаартай болно."
+          },
+          {
+            "type": "p",
+            "text": "Нэг мөчид хоёр буюу олон бэлэн орой байвал сонголтын олон боломж байна. Гэхдээ энгийн хичээлийн гаралт аль ч зөв дарааллыг зөвшөөрдөг тул яг жишээний дугаарын дараалалтай таарахыг шаардахгүй."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Хамаарлаас замын DP рүү",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Course Schedule"
+          },
+          {
+            "type": "p",
+            "text": "Орох тоо, FIFO, нийт авсан оройн тоогоор цикл илрүүл."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Game Routes"
+          },
+          {
+            "type": "p",
+            "text": "Циклгүй графын дарааллаар замын тоог зөв эхлэлтэй нэгтгэ."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Longest Path"
+          },
+          {
+            "type": "p",
+            "text": "Хамгийн урт замын төлөвийг өмнөх оройн maximum-аас гарга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Longest Flight Route"
+          },
+          {
+            "type": "p",
+            "text": "Хүрэхгүй төлөв ба эцэг хадгалж зам сэргээхийг нэм."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Course Schedule II"
+          },
+          {
+            "type": "p",
+            "text": "Тусгай дарааллын зорилгод FIFO хангалттай эсэхийг шалга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "High Score"
+          },
+          {
+            "type": "p",
+            "text": "Ерөнхий циклтэй графыг DAG гэж үзэж болохгүйг ялга; өөр аргын нөхцөл хэрэгтэй."
+          }
+        ]
+      },
+      {
+        "key": "priority",
+        "title": "14. Бэлэн болох нөхцөлийг батал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өндөр ач холбогдолтой. Course Schedule нь бүх шаардлага дууссан үед л оройг боловсруулах цөм. Замын тоо, урт, хамгийн бага дугаартай дараалал нь дараагийн нэмэлт зорилгууд."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Дарааллын бүх ирмэгийг шалга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Гарсан дараалалд орой бүр яг нэг удаа байгаа эсэхийг шалгаад байрлалын массив байгуул. Ирмэг бүрд эхлэлийн байрлал төгсгөлийнхөөс бага байх ёстой."
+          },
+          {
+            "type": "p",
+            "text": "Жижиг графын бүх сэлгэмлээр зөв дараалал байгаа эсэхийг тусдаа шалга. Өөртэйгөө цикл, хоёр оройн цикл, салангид бүрэлдэхүүн, давхар ирмэг, урт гинжийг хамруул."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Topological sorting — an order respecting dependencies",
+        "summary": "Repeatedly remove zero-indegree vertices with Kahn’s algorithm, proving dependency order and cycle detection.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Take prerequisites before their dependants",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Dependencies are $1\\to2$, $1\\to3$, $2\\to4$, $3\\to4$, $4\\to5$. Order all jobs once so every edge’s start precedes its end."
+              },
+              {
+                "type": "p",
+                "text": "Both $1,2,3,4,5$ and $1,3,2,4,5$ are valid. This is a dependency order, not sorting values or IDs."
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Avoid trying every permutation",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Trying all $n!$ permutations is infeasible. Instead choose a vertex with no unfinished prerequisites."
+              },
+              {
+                "type": "p",
+                "text": "Maintain the count of unfinished incoming dependencies; zero-count vertices are ready, and choosing one violates no prerequisite."
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "3. Track indegree in the remaining graph",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "$incoming[v]$ counts edges into $v$ from remaining vertices. Count all edges initially and enqueue every zero-indegree vertex."
+              },
+              {
+                "type": "p",
+                "text": "Parallel edges are counted and decremented with the same multiplicity. A self-loop is a cycle and prevents that vertex from being initially ready."
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Remove a ready vertex and its outgoing edges",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Pop one ready vertex into the answer. Decrement each outgoing neighbor’s count and enqueue exactly when it reaches zero."
+              },
+              {
+                "type": "p",
+                "text": "This is Kahn’s algorithm. If all vertices are removed, the order is valid; otherwise a directed cycle prevents completion. Initialize all zero-indegree vertices, not just vertex one."
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "5. Vertex four waits for both prerequisites",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Initial counts are $0,1,1,2,1$, with only one ready. Removing one readies two and three. Removing two reduces four from two to one, still not ready."
+              },
+              {
+                "type": "p",
+                "text": "Removing three readies four, which later readies five. FIFO gives $1,2,3,4,5$. Enqueuing four on first encounter would violate the dependency from three."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Removed",
+                  "Ready queue",
+                  "Remaining indegree of 4"
+                ],
+                "rows": [
+                  [
+                    "1",
+                    "2,3",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3",
+                    "1"
+                  ],
+                  [
+                    "3",
+                    "4",
+                    "0"
+                  ],
+                  [
+                    "4",
+                    "5",
+                    "0"
+                  ],
+                  [
+                    "5",
+                    "—",
+                    "0"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Why is choosing zero indegree safe?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "A removed zero-indegree vertex has no predecessor remaining, so all its prerequisites already appear in the answer. Maintaining this invariant makes every edge point forward."
+              },
+              {
+                "type": "p",
+                "text": "Every nonempty finite DAG has a zero-indegree vertex: otherwise repeatedly following a predecessor eventually repeats a vertex and forms a cycle. Thus a DAG is fully removed. Vertices on a remaining cycle retain an incoming cycle edge, preventing full removal."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Each vertex and edge is processed once",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Initialization scans every edge once; each vertex is enqueued at most once and each outgoing edge decremented once. Total time and memory are $O(n+m)$."
+              },
+              {
+                "type": "p",
+                "text": "For up to $200000$ vertices/edges, iterative FIFO processing avoids deep recursion on chains. This queue is FIFO, not a priority queue."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Indegrees, ready queue and processed count",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. State and setup"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Count incoming edges with multiplicity and enqueue all zero counts in a FIFO queue.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\noptional<vector<int>> topological_order(const vector<vector<int>>& graph) {\n    int vertex_count = static_cast<int>(graph.size()) - 1;\n    vector<int> incoming(vertex_count + 1);\n    for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n        for (int next : graph[vertex]) {\n            ++incoming[next];\n        }\n    }\n    queue<int> ready;\n    for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n        if (incoming[vertex] == 0) {\n            ready.push(vertex);\n        }\n    }\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. Main operation"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Append each ready vertex and decrement outgoing targets, enqueueing exactly when counts reach zero.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    vector<int> order;\n    while (!ready.empty()) {\n        int vertex = ready.front();\n        ready.pop();\n        order.push_back(vertex);\n        for (int next : graph[vertex]) {\n            if (--incoming[next] == 0) {\n                ready.push(next);\n            }\n        }\n    }\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. Obtain result"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Return an empty optional if processing is incomplete, signaling a cycle; otherwise return the full order.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    if (static_cast<int>(order.size()) != vertex_count) {\n        return nullopt;\n    }\n    return order;\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Input and output"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read up to $200000$ vertices and directed dependencies. Print any valid order, or IMPOSSIBLE.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    vector<vector<int>> graph(vertex_count + 1);\n    for (int index = 0; index < edge_count; ++index) {\n        int first, second;\n        cin >> first >> second;\n        graph[first].push_back(second);\n    }\n    auto order = topological_order(graph);\n    if (!order.has_value()) {\n        cout << \"IMPOSSIBLE\\n\";\n        return 0;\n    }\n    for (int index = 0; index < vertex_count; ++index) {\n        cout << (*order)[index] << (index + 1 == vertex_count ? '\\n' : ' ');\n    }\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete compilable C++17 program"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\noptional<vector<int>> topological_order(const vector<vector<int>>& graph) {\n    int vertex_count = static_cast<int>(graph.size()) - 1;\n    vector<int> incoming(vertex_count + 1);\n    for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n        for (int next : graph[vertex]) {\n            ++incoming[next];\n        }\n    }\n    queue<int> ready;\n    for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n        if (incoming[vertex] == 0) {\n            ready.push(vertex);\n        }\n    }\n    vector<int> order;\n    while (!ready.empty()) {\n        int vertex = ready.front();\n        ready.pop();\n        order.push_back(vertex);\n        for (int next : graph[vertex]) {\n            if (--incoming[next] == 0) {\n                ready.push(next);\n            }\n        }\n    }\n    if (static_cast<int>(order.size()) != vertex_count) {\n        return nullopt;\n    }\n    return order;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    vector<vector<int>> graph(vertex_count + 1);\n    for (int index = 0; index < edge_count; ++index) {\n        int first, second;\n        cin >> first >> second;\n        graph[first].push_back(second);\n    }\n    auto order = topological_order(graph);\n    if (!order.has_value()) {\n        cout << \"IMPOSSIBLE\\n\";\n        return 0;\n    }\n    for (int index = 0; index < vertex_count; ++index) {\n        cout << (*order)[index] << (index + 1 == vertex_count ? '\\n' : ' ');\n    }\n}\n"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "5 5\n1 2\n1 3\n2 4\n3 4\n4 5\n"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "1 2 3 4 5\n"
+              }
+            ]
+          },
+          {
+            "key": "errors",
+            "title": "9. Do not reverse dependency meaning",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "If prerequisite $u$ must precede $v$, add $u\\to v$ and increment $v$’s count. Reversing the edge reverses the meaning."
+              },
+              {
+                "type": "p",
+                "text": "A partial output in a cyclic graph is not a full solution. Other components may be processed, so check total count against $n$. A BFS visited flag alone does not certify all prerequisites are finished."
+              }
+            ]
+          },
+          {
+            "key": "cycles",
+            "title": "10. Not every remaining vertex lies on a cycle",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For $1\\to2$, $2\\to1$, $2\\to3$, vertex three is not on a cycle but remains blocked by one. Kahn detects a cycle’s existence, not precisely which vertices lie on cycles."
+              },
+              {
+                "type": "p",
+                "text": "Recovering a cycle requires additional methods such as DFS colors or strongly connected components. Do not report the whole remainder as a cycle."
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "11. A processing order for dependency DP",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "In a DAG, path counts or longest paths can depend on predecessor answers. A topological order guarantees predecessors are ready."
+              },
+              {
+                "type": "p",
+                "text": "The DP still needs its own base cases, unreachable meaning and combination rule. Producing an order alone does not solve every graph problem."
+              }
+            ]
+          },
+          {
+            "key": "variants",
+            "title": "12. When the smallest lexicographic order is required",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "FIFO chooses any valid ready order. For the lexicographically smallest order, choose the smallest ready ID with a min-priority queue, within $O((n+m)\\log(n+1))$ time."
+              },
+              {
+                "type": "p",
+                "text": "Multiple ready choices allow different valid orders. This program permits any valid order, so tests must not require only the sample’s labeling."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From dependencies to path DP",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Course Schedule"
+              },
+              {
+                "type": "p",
+                "text": "Use indegrees, FIFO and processed count for cycle detection."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Game Routes"
+              },
+              {
+                "type": "p",
+                "text": "Count paths in DAG order with correct initialization."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Longest Path"
+              },
+              {
+                "type": "p",
+                "text": "Derive longest-path DP from predecessor maxima."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Longest Flight Route"
+              },
+              {
+                "type": "p",
+                "text": "Add unreachable-state handling and route reconstruction."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Course Schedule II"
+              },
+              {
+                "type": "p",
+                "text": "Determine the ready-choice rule required by the ordering objective."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "High Score"
+              },
+              {
+                "type": "p",
+                "text": "Distinguish general cyclic maximum-score graphs from DAG DP."
+              }
+            ]
+          },
+          {
+            "key": "priority",
+            "title": "14. Prove when a state is ready",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "High priority. Course Schedule directly practices processing only after every prerequisite is satisfied. Counts, lengths and lexicographic order add further objectives."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Validate every edge against the output",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Check each vertex appears exactly once, then build positions and require every edge’s start position to precede its end."
+              },
+              {
+                "type": "p",
+                "text": "Independently enumerate permutations for tiny graphs to establish whether an order exists. Cover self-loops, two-cycles, disconnected components, parallel edges and long chains."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Directed graphs, adjacency lists and FIFO queues. An edge $u\\to v$ requires $u$ before $v$."
+      }
+    },
+    "prerequisites": "Чиглэсэн граф, хөршийн жагсаалт, FIFO дараалал. Ирмэг $u\\to v$ бол $u$ нь $v$-ээс өмнө.",
+    "prerequisiteIds": [
+      "graph-basics",
+      "bfs"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "graph-basics",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "bfs",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "fenwick-tree",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ],
+      "next": "fenwick-tree",
+      "practice": [
+        {
+          "key": "373",
+          "stage": "Warm-up",
+          "priority": true,
+          "reason": "Үндсэн төлөв, боловсруулах дараалал ба зөв ажиллагааны нөхцөлийг шууд хэрэгжүүлэх цөм дасгал."
+        },
+        {
+          "key": "375",
+          "stage": "Standard",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "683",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "374",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "574",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "369",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false,
+    "priorityLevel": "high",
+    "priorityReason": "Хамааралтай ажлуудын боловсруулах дараалал, чиглэсэн цикл илрүүлэх, циклгүй графын DP-ийн суурь. Жингийн эрэмбэ ба хамаарлын эрэмбэ өөр гэдгийг ойлгох өндөр ач холбогдолтой."
+  }
+}
