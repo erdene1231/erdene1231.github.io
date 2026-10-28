@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {editorialDatabase} from './problem-editorial-fixture.mjs';
 import {proposalProblems} from '../tools/package02_tutorial_proposals.mjs';
-import {complexityPrioritySql,searchSortPrioritySql,recursionPrioritySql,differencePointersPrioritySql,windowPrioritySql,stackPrioritySql,bitsPrioritySql,powerPrioritySql,answerPrioritySql} from '../tools/package02_priority_promotions.mjs';
+import {complexityPrioritySql,searchSortPrioritySql,recursionPrioritySql,differencePointersPrioritySql,windowPrioritySql,stackPrioritySql,bitsPrioritySql,powerPrioritySql,answerPrioritySql,treeGridPrioritySql} from '../tools/package02_priority_promotions.mjs';
 const plan=JSON.parse(fs.readFileSync('audit/PACKAGE02-COMPLEXITY-PRIORITY-PROMOTIONS.json'));
 async function setup(){
  const db=await editorialDatabase({installPriority:false});
@@ -158,5 +158,23 @@ test('one answer-search core promotion is atomic and cannot spill into previous 
   const old=before.find(r=>r.number===95),now=after.find(r=>r.number===95);assert.deepEqual(now.body,{...old.body,...p.patches[0].changes});assert.equal(now.revision,2);
   assert.equal((await db.query('select count(*) n from problem_changes')).rows[0].n,1);assert.equal((await db.query('select last_value from problem_number_seq')).rows[0].last_value,993);
   await assert.rejects(db.exec(sql),/Problem history drift|Priority CAS\/body drift/);
+ }finally{await db.close();}
+});
+
+
+test('tree/grid core promotions are atomic, scoped, CAS guarded and non-replayable',async()=>{
+ const db=await setup();try{
+  const p=JSON.parse(fs.readFileSync('audit/PACKAGE02-TREE-GRID-PRIORITY.json')),g=await guard(db);
+  g.problems=(await db.query("select *,md5(body::text) body_md5 from problem_catalog where number in(345,420,684) order by number")).rows;
+  g.non_target_fingerprint=(await db.query("select md5(jsonb_agg(to_jsonb(p) order by problem_id)::text) h from problem_catalog p where problem_id not in('cses-1638','cses-1674')")).rows[0].h;
+  assert.throws(()=>treeGridPrioritySql({...p,patches:[p.patches[0]]},g),/Only the reviewed/);
+  assert.throws(()=>treeGridPrioritySql({...p,patches:p.patches.map((x,i)=>i?x:{...x,changes:{...x.changes,rating:3000}})},g),/Only justified/);
+  const snap=async()=>({rows:(await db.query('select * from problem_catalog order by number')).rows,history:(await db.query('select * from problem_changes')).rows,progress:(await db.query('select * from progress')).rows,sequence:(await db.query('select last_value,is_called from problem_number_seq')).rows});
+  const before=await snap(),sql=treeGridPrioritySql(p,g);
+  await assert.rejects(db.exec(sql.replace('-- Atomic priority target and edit history complete.',"raise exception 'Injected tree-grid failure';")),/Injected tree-grid failure/);assert.deepEqual(await snap(),before);
+  await db.query('update problem_catalog set revision=revision+1 where number=420');await assert.rejects(db.exec(sql),/CAS\/body drift/);await db.query('update problem_catalog set revision=revision-1 where number=420');
+  await db.exec(sql);const after=await snap();assert.deepEqual(after.rows.filter(r=>![345,420].includes(r.number)),before.rows.filter(r=>![345,420].includes(r.number)));assert.deepEqual(after.progress,before.progress);assert.deepEqual(after.sequence,before.sequence);assert.equal(after.history.length,before.history.length+2);
+  for(const patch of p.patches){const old=before.rows.find(r=>r.problem_id===patch.id),now=after.rows.find(r=>r.problem_id===patch.id);assert.deepEqual(now.body,{...old.body,...patch.changes});assert.equal(now.revision,old.revision+1);}
+  await assert.rejects(db.exec(sql),/history drift|CAS\/body drift/);
  }finally{await db.close();}
 });
