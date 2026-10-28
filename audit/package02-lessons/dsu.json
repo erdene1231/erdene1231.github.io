@@ -1,0 +1,842 @@
+{
+  "id": "dsu",
+  "expected_revision": 5,
+  "expected_published": true,
+  "expected_body_sha256": "ef91a8dffada176da71921f6864ae7001ae5bfe6884dd2a61b8a166a9dc2c203",
+  "status": "Authored; semantic/code/native editor review pending",
+  "body": {
+    "id": "dsu",
+    "level": "Дунд шат",
+    "order": 29,
+    "title": "Үл давхцах олонлогууд — холбоос нэмэхэд нэгтгэх",
+    "aliases": "dsu DSU — бүлгүүдийг нэгтгэх DSU — merging groups dsu union find холбоост компонент disjoint set path compression",
+    "related": [
+      "tree-basics",
+      "kruskal"
+    ],
+    "summary": "Оройнуудыг үл давхцах бүлэгт хадгалж, төлөөлөгчөөр холбогдсон эсэхийг шалгана. Хэмжээгээр нэгтгэх ба зам богиносгох аргаар олон шинэ холбоосыг боловсруулна.",
+    "category": "Data structures",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Зам нэмэгдэх бүрд хотууд хэрхэн нэгдэх вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Таван хот эхэндээ тусдаа. $1–2$, $3–4$, $2–3$, $1–4$, $5–4$ зам дараалан нэмье. Зам бүрийн дараа хэдэн холбоост бүлэг, хамгийн том бүлэгт хэдэн хот байгааг асууна."
+          },
+          {
+            "type": "p",
+            "text": "Хуучин холбоос хэзээ ч хасагдахгүй. Шинэ зам хоёр өөр бүлгийг нэгтгэнэ, эсвэл нэгэнт холбогдсон бүлгийн дотор орно. Энэ хоёр тохиолдлыг хурдан ялгах хэрэгтэй."
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Холбоос бүрийн дараа дахин хайвал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Шинэ зам бүрийн дараа бүх графт DFS эсвэл BFS хийж бүрэлдэхүүнүүдийг олж болно. Гэхдээ $q$ удаа $O(n+q)$ хэмжээний ажил давтагдана."
+          },
+          {
+            "type": "p",
+            "text": "Зөвхөн нэмэгдэж байгаа холбоосонд хуучин бүлгүүд задардаггүй. Нэгтгэхэд шаардлагатай бүлгийн мэдээллээ хадгалбал бүх графыг дахин тойрохгүй."
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "3. Нэг бүлэг нэг төлөөлөгчтэй",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Үл давхцах олонлогуудын бүтэц буюу DSU нь орой бүрийг яг нэг бүлэгт хамааруулна. Бүлэг бүрийг эцгийн заагчтай модоор хадгалж, үндсийг нь төлөөлөгч болгоно. Үндэс өөрийгөө эцэг гэж заана."
+          },
+          {
+            "type": "p",
+            "text": "Энэ нь эх графын мод биш. $parent[v]$ заагч хоёр оройн хооронд бодит зам байна гэсэн ирмэгийн мэдээлэл хадгалахгүй; зөвхөн нэг бүлэгт хүргэх дотоод холбоос."
+          }
+        ]
+      },
+      {
+        "key": "operations",
+        "title": "4. Төлөөлөгч олоод жижиг модыг залга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "find үйлдэл эцгийн заагчаар үндэст хүрнэ. unite нь хоёр төгсгөлийн төлөөлөгчийг олно. Тэнцүү бол шинэ нэгтгэл байхгүй; өөр бол жижиг бүлгийн үндсийг томын үндэст холбоно."
+          },
+          {
+            "type": "p",
+            "text": "Хэмжээ зөвхөн үндэст хүчинтэй. Төлөөлөгч өөрчлөгдөж болох тул оройн дугаарыг шууд бүлгийн мөнхийн нэр гэж үзэхгүй. Нэгтгэл амжилттай үед л бүлгийн тоог нэгээр хасна."
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "5. Давхардсан холболт бүлгийн тоог бууруулахгүй",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхэндээ таван бүлэг, хамгийн том хэмжээ нэг. $1–2$ нэмээд дөрвөн бүлэг, хэмжээ хоёр. $3–4$ нэмээд гурван бүлэг, хэмжээ хоёр. $2–3$ нь хоёр хоёроос тогтсон бүлгүүдийг нэгтгэн хоёр бүлэг, хэмжээ дөрөв болгоно."
+          },
+          {
+            "type": "p",
+            "text": "$1–4$ нэг бүлгийн дотор тул хариу хоёр, дөрөв хэвээр. $5–4$ сүүлийн хотыг нийлүүлж нэг бүлэг, хэмжээ тав болно. Өөртэйгөө холбосон ирмэг бас шинэ нэгтгэл биш."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Ирмэг",
+              "Бүлгийн тоо",
+              "Том хэмжээ"
+            ],
+            "rows": [
+              [
+                "1–2",
+                "4",
+                "2"
+              ],
+              [
+                "3–4",
+                "3",
+                "2"
+              ],
+              [
+                "2–3",
+                "2",
+                "4"
+              ],
+              [
+                "1–4",
+                "2",
+                "4"
+              ],
+              [
+                "5–4",
+                "1",
+                "5"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Хуваалтыг хадгалдаг хоёр үйлдэл",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхэндээ орой бүр тусдаа нь ирмэггүй графтай таарна. Шинэ ирмэг өөр бүлгүүдийн хооронд бол яг тэр хоёр бүрэлдэхүүн нийлнэ. Нэг бүлгийн дотор бол холбогдол өөрчлөгдөхгүй. Үндсүүдийг л холбодог тул дотоод заагч цикл үүсэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Зам богиносгохдоо оройн эцгийг өвөг рүү нь шилжүүлнэ. Өмнөх үндэс хэвээр учраас бүлгийн гишүүнчлэл өөрчлөгдөхгүй. Хоёр үндэсний хэмжээг нэмэх нь үл давхцах бүлгүүдийн хэмжээг зөв олно."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Модыг нам байлгах хоёр санаа",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хэмжээгээр нэгтгэхэд эцэг нь солигдсон жижиг бүлгийн оройнуудын шинэ бүлэг ядаж хоёр дахин том болно. Ийм өсөлт $O(\\log n)$ удаа л боломжтой тул зам богиносголгүй ч гүн логарифм байна."
+          },
+          {
+            "type": "p",
+            "text": "Хэмжээгээр нэгтгэх ба зам богиносгохыг хамтатгахад олон үйлдлийн дундаж өртөг $O(\\alpha(n))$ болдог; энэ нь маш удаан өсөх урвуу Аккерманы функц. Нэг үйлдэл бүрийг яг $O(1)$ гэж бүү нэрлэ. Нийт санах ой $O(n)$, бүх ирмэгийг хадгалах шаардлагагүй."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. Үндэс, хэмжээ, амжилттай нэгтгэл",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Эхлэл ба төлөв"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Орой бүр өөрийн эцэг, хэмжээ нэгтэй. find давталтаар явж, эцгийг өвөг рүү нь шилжүүлэн замыг богиносгоно.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass DisjointSets {\n    vector<int> parent, size;\npublic:\n    explicit DisjointSets(int count) : parent(count + 1), size(count + 1, 1) {\n        iota(parent.begin(), parent.end(), 0);\n    }\n    int find(int vertex) {\n        while (parent[vertex] != vertex) {\n            parent[vertex] = parent[parent[vertex]];\n            vertex = parent[vertex];\n        }\n        return vertex;\n    }\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Үндсэн үйлдэл"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Төлөөлөгчид тэнцүү бол худал буцаана. Үгүй бол бага хэмжээтэй үндсийг томд залгаж хэмжээг нэмээд амжилттай гэж буцаана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    bool unite(int first, int second) {\n        first = find(first);\n        second = find(second);\n        if (first == second) {\n            return false;\n        }\n        if (size[first] < size[second]) {\n            swap(first, second);\n        }\n        parent[second] = first;\n        size[first] += size[second];\n        return true;\n    }\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Хариу авах"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Хэмжээ асуухад эхлээд өнөөгийн үндсийг олно. Хуучин үндэсний хуучирсан хэмжээг шууд уншихгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    int component_size(int vertex) {\n        return size[find(vertex)];\n    }\n};\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Оролт ба гаралт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт $1\\le n\\le200000$, $0\\le q\\le200000$, дараа нь $1$-ээс $n$ дугаартай хосууд. Эхэндээ бүлэг $n$, том хэмжээ нэг. Ирмэг бүрийн дараа бүлгийн тоо ба хамгийн том хэмжээг хэвлэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    DisjointSets sets(vertex_count);\n    int components = vertex_count, largest = 1;\n    for (int edge = 0; edge < edge_count; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        if (sets.unite(first, second)) {\n            --components;\n            largest = max(largest, sets.component_size(first));\n        }\n        cout << components << ' ' << largest << '\\n';\n    }\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах C++17 программ"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass DisjointSets {\n    vector<int> parent, size;\npublic:\n    explicit DisjointSets(int count) : parent(count + 1), size(count + 1, 1) {\n        iota(parent.begin(), parent.end(), 0);\n    }\n    int find(int vertex) {\n        while (parent[vertex] != vertex) {\n            parent[vertex] = parent[parent[vertex]];\n            vertex = parent[vertex];\n        }\n        return vertex;\n    }\n    bool unite(int first, int second) {\n        first = find(first);\n        second = find(second);\n        if (first == second) {\n            return false;\n        }\n        if (size[first] < size[second]) {\n            swap(first, second);\n        }\n        parent[second] = first;\n        size[first] += size[second];\n        return true;\n    }\n    int component_size(int vertex) {\n        return size[find(vertex)];\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    DisjointSets sets(vertex_count);\n    int components = vertex_count, largest = 1;\n    for (int edge = 0; edge < edge_count; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        if (sets.unite(first, second)) {\n            --components;\n            largest = max(largest, sets.component_size(first));\n        }\n        cout << components << ' ' << largest << '\\n';\n    }\n}\n"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "5 5\n1 2\n3 4\n2 3\n1 4\n5 4\n"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "4 2\n3 2\n2 4\n2 4\n1 5\n"
+          }
+        ]
+      },
+      {
+        "key": "errors",
+        "title": "9. Оройн эцэг бус үндсийг холбо",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "find хийлгүй эхний оройн эцгийг хоёр дахь орой болговол хуучин бүлгийн хэсгийг салгах эсвэл цикл үүсгэж болно. Хэмжээгээр харьцуулахдаа ч төлөөлөгчийн хэмжээг уншина."
+          },
+          {
+            "type": "p",
+            "text": "Давхардсан ирмэгт бүлгийн тоог дахин хасахгүй. Нэгтгэсэн жижиг үндэсний size утга хуучин хэвээр үлдэж болох ч түүнийг шууд уншихгүй; component_size эхлээд үндсийг олдог."
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "10. Устгах болон зам сэргээхийг дэмжихгүй",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Энэ бүтэц холбогдсон эсэх, бүлгийн хэмжээ, бүлгийн тоог хэлнэ. Хоёр хотын бодит зам, хамгийн богино зайг хадгалахгүй. Эцгийн дотоод модоор хэвлэсэн зам нь эх графт байх албагүй."
+          },
+          {
+            "type": "p",
+            "text": "Ирмэг устахад нэг бүлэг салж болох тул ердийн DSU буцааж салгахгүй. Устгалтай бодлогод урвуу дараалал, буцаалттай бүтэц зэрэг нэмэлт арга хэрэгтэй; энэ код шууд шийдэхгүй."
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "11. Бүлгүүд зөвхөн нийлж байна уу?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Адил бүлэгт хамаарах холбоосууд нэмэгдэж, буцааж салгахгүй үед DSU-г бод. Статик графын бүх бүрэлдэхүүнийг ганц удаа олох бол DFS/BFS бас шугаман, илүү хэрэгтэй мэдээлэл өгч болно."
+          },
+          {
+            "type": "p",
+            "text": "Ирмэгүүдийг жингээр эрэмбэлээд өөр бүлгүүдийг холбохыг сонговол хамгийн бага холбох модны Крускалын аргад хүрнэ. Харин сонголт яагаад оновчтойг DSU өөрөө батлахгүй; тусдаа баталгаа хэрэгтэй."
+          }
+        ]
+      },
+      {
+        "key": "variants",
+        "title": "12. Бүлгийн нэмэлт мэдээлэл",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Бүлэг бүрийн нийлбэр, хамгийн бага утга зэргийг үндэст хадгалж хоёр бүлэг нийлэхэд нэгтгэж болно. Нэгтгэх үйлдэл тэр утгын утгатай нийцэж байгаа эсэхийг тайлбарла."
+          },
+          {
+            "type": "p",
+            "text": "Зөрүү, өнгөний хамаарал зэрэг орой хоорондын нөхцөлд нэмэлт төлөв, зам богиносгоход тэр төлөвийг шинэчлэх дүрэм хэрэгтэй. Энгийн хэмжээний код бүх төрлийн нөхцөлийг хадгална гэж үзэхгүй."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Шууд нэгтгэлээс шинэ загварчлал руу",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Building Roads"
+          },
+          {
+            "type": "p",
+            "text": "Статик бүрэлдэхүүнийг DSU-гаар олж, төлөөлөгчдийг холбохыг өмнөх DFS шийдэлтэй харьцуул."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Road Construction"
+          },
+          {
+            "type": "p",
+            "text": "Нэгтгэл амжилттай үед л тоог бууруулж, хамгийн том хэмжээг шинэчил."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Road Reparation"
+          },
+          {
+            "type": "p",
+            "text": "Жингээр эрэмбэлэх сонголтын баталгаа болон холбогдол шалгалтыг ялга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Little Alawn’s Puzzle"
+          },
+          {
+            "type": "p",
+            "text": "Пермутацийн холбоосын бүлгүүдийг тоолох нэмэлт загварчлал гарга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Red Painting"
+          },
+          {
+            "type": "p",
+            "text": "Зөвхөн будсан нүдүүдийн хөршүүдийг нэгтгэж, идэвхтэй эсэх төлөв нэм."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "MooTube"
+          },
+          {
+            "type": "p",
+            "text": "Босгоор асуулт ба ирмэгийг эрэмбэлж бүлэг зөвхөн томрох дараалал үүсгэ."
+          }
+        ]
+      },
+      {
+        "key": "priority",
+        "title": "14. Бүтэц юуг хадгалахыг мэд",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өндөр ач холбогдолтой. Road Construction нь шууд нэгтгэл, тоо, хэмжээний цөм. Building Roads-д хуучин DFS аргаа DSU-тай харьцуулж болно. Шинэ асуудал бүрд DSU сонгохын өмнө бүлэг задардаг эсэхийг шалга."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Ирмэг бүрийн дараа тусдаа хайлттай тулга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Таван хотын жишээгээр бүлгүүдийг гараар бич. Давхардсан ирмэг, өөртэйгөө холбосон ирмэг, анхнаасаа нэг орой, бүх орой холбогдсоны дараах нэмэлт холбоосыг шалга."
+          },
+          {
+            "type": "p",
+            "text": "Жижиг графт ирмэг бүрийн дараа BFS-ээр бүрэлдэхүүнүүдийг шинээр тооцсон лавлахтай бүлгийн тоо, хамгийн том хэмжээг тулга. Дотоод эцгийн дугаар яг ижил байх албагүй; бүлгийн утга ижил байх ёстой."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Disjoint sets — merging components as edges arrive",
+        "summary": "Maintain a partition of vertices using representatives, union by size and path halving as new connections arrive.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. How do components change as roads arrive?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Start with five isolated cities and add roads $1–2$, $3–4$, $2–3$, $1–4$, $5–4$. After each, report component count and largest size."
+              },
+              {
+                "type": "p",
+                "text": "Edges are never removed. An edge merges two different groups or stays inside one existing group. Distinguish those cases efficiently."
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Recomputing components after every edge",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Running DFS/BFS after every edge recomputes components in repeated $O(n+q)$ work."
+              },
+              {
+                "type": "p",
+                "text": "With additions only, old groups never split. Store the current partition instead of retraversing the graph."
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "3. Each group has one representative",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "A disjoint-set union structure (DSU) partitions vertices into exactly one group each. Represent each group by a parent-pointer tree; its root is the representative and points to itself."
+              },
+              {
+                "type": "p",
+                "text": "This is not the original graph. A parent pointer is internal bookkeeping, not a stored original edge or a reconstructed graph path."
+              }
+            ]
+          },
+          {
+            "key": "operations",
+            "title": "4. Find representatives and attach the smaller tree",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Find follows parents to a root. Unite first finds both representatives: equal roots mean no merge; otherwise attach the smaller group’s root under the larger."
+              },
+              {
+                "type": "p",
+                "text": "Sizes are authoritative at roots only. Representatives may change. Decrement component count only after a successful merge."
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "5. A redundant edge does not reduce component count",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Initially there are five components with maximum size one. Edges $1–2$ and $3–4$ give counts four then three, with maximum two. Edge $2–3$ merges the two size-two groups, giving two components and maximum four."
+              },
+              {
+                "type": "p",
+                "text": "Edge $1–4$ is redundant, so two and four remain. Edge $5–4$ gives one component of five. A self-loop also causes no merge."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Edge",
+                  "Components",
+                  "Maximum size"
+                ],
+                "rows": [
+                  [
+                    "1–2",
+                    "4",
+                    "2"
+                  ],
+                  [
+                    "3–4",
+                    "3",
+                    "2"
+                  ],
+                  [
+                    "2–3",
+                    "2",
+                    "4"
+                  ],
+                  [
+                    "1–4",
+                    "2",
+                    "4"
+                  ],
+                  [
+                    "5–4",
+                    "1",
+                    "5"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Both operations preserve the partition",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Singletons match the edgeless graph. An edge between distinct components merges exactly those two; an internal edge changes no connectivity. Linking roots only cannot create a parent-pointer cycle."
+              },
+              {
+                "type": "p",
+                "text": "Path halving redirects a pointer to an ancestor, preserving the root and group membership. Adding root sizes correctly counts the union of two disjoint groups."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Two ways to keep the forest shallow",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Under union by size, any vertex whose root is attached enters a group at least twice as large. This can happen only $O(\\log n)$ times, bounding depth even without compression."
+              },
+              {
+                "type": "p",
+                "text": "Union by size plus path halving gives amortized $O(\\alpha(n))$ per operation, where inverse Ackermann grows extremely slowly. Do not claim worst-case constant time for every individual operation. Space is $O(n)$; edges need not be stored."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Roots, sizes and successful merges",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. State and setup"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Each vertex starts as its own parent with size one. Iterative find uses path halving to shorten the route.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass DisjointSets {\n    vector<int> parent, size;\npublic:\n    explicit DisjointSets(int count) : parent(count + 1), size(count + 1, 1) {\n        iota(parent.begin(), parent.end(), 0);\n    }\n    int find(int vertex) {\n        while (parent[vertex] != vertex) {\n            parent[vertex] = parent[parent[vertex]];\n            vertex = parent[vertex];\n        }\n        return vertex;\n    }\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. Main operation"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Equal roots return false; otherwise attach the smaller root under the larger and update size.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    bool unite(int first, int second) {\n        first = find(first);\n        second = find(second);\n        if (first == second) {\n            return false;\n        }\n        if (size[first] < size[second]) {\n            swap(first, second);\n        }\n        parent[second] = first;\n        size[first] += size[second];\n        return true;\n    }\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. Obtain result"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Find the current root before reading size, avoiding stale sizes at former roots.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    int component_size(int vertex) {\n        return size[find(vertex)];\n    }\n};\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Input and output"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read $1\\le n\\le200000$, $0\\le q\\le200000$, then vertex pairs. Start with $n$ components and maximum one; print updated statistics after every edge.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    DisjointSets sets(vertex_count);\n    int components = vertex_count, largest = 1;\n    for (int edge = 0; edge < edge_count; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        if (sets.unite(first, second)) {\n            --components;\n            largest = max(largest, sets.component_size(first));\n        }\n        cout << components << ' ' << largest << '\\n';\n    }\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete compilable C++17 program"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass DisjointSets {\n    vector<int> parent, size;\npublic:\n    explicit DisjointSets(int count) : parent(count + 1), size(count + 1, 1) {\n        iota(parent.begin(), parent.end(), 0);\n    }\n    int find(int vertex) {\n        while (parent[vertex] != vertex) {\n            parent[vertex] = parent[parent[vertex]];\n            vertex = parent[vertex];\n        }\n        return vertex;\n    }\n    bool unite(int first, int second) {\n        first = find(first);\n        second = find(second);\n        if (first == second) {\n            return false;\n        }\n        if (size[first] < size[second]) {\n            swap(first, second);\n        }\n        parent[second] = first;\n        size[first] += size[second];\n        return true;\n    }\n    int component_size(int vertex) {\n        return size[find(vertex)];\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    DisjointSets sets(vertex_count);\n    int components = vertex_count, largest = 1;\n    for (int edge = 0; edge < edge_count; ++edge) {\n        int first, second;\n        cin >> first >> second;\n        if (sets.unite(first, second)) {\n            --components;\n            largest = max(largest, sets.component_size(first));\n        }\n        cout << components << ' ' << largest << '\\n';\n    }\n}\n"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "5 5\n1 2\n3 4\n2 3\n1 4\n5 4\n"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "4 2\n3 2\n2 4\n2 4\n1 5\n"
+              }
+            ]
+          },
+          {
+            "key": "errors",
+            "title": "9. Link roots, not arbitrary vertices",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Linking arbitrary vertices without finding roots may detach structure or create a cycle. Compare sizes at roots."
+              },
+              {
+                "type": "p",
+                "text": "Do not decrement for redundant edges. A former root’s size may remain stale; component_size finds the current root before reading it."
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "10. Deletions and path reconstruction are different",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "The structure answers connectivity, component sizes and counts, not actual graph routes or shortest distances. Its internal parent path need not exist as graph edges."
+              },
+              {
+                "type": "p",
+                "text": "Deleting an edge may split a component; ordinary DSU cannot split it. Reverse processing or rollback techniques are additional methods for deletion settings."
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "11. Do groups only merge?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Use DSU when equivalence connections arrive and groups only merge. For one static component computation, DFS/BFS is already linear and may provide more information."
+              },
+              {
+                "type": "p",
+                "text": "Sorting weighted edges and selecting those joining different components leads to Kruskal’s MST algorithm. DSU handles connectivity, not the separate proof of optimality."
+              }
+            ]
+          },
+          {
+            "key": "variants",
+            "title": "12. Additional component information",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Root metadata can store sums or minima and combine them on merge, provided the update matches the metadata meaning."
+              },
+              {
+                "type": "p",
+                "text": "Relative differences or parity require extra state and compression rules. The size-only implementation does not automatically maintain every relation."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From direct unions to modelling",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Building Roads"
+              },
+              {
+                "type": "p",
+                "text": "Compare representative linking with the earlier static DFS solution."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Road Construction"
+              },
+              {
+                "type": "p",
+                "text": "Update count and maximum only after successful unions."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Road Reparation"
+              },
+              {
+                "type": "p",
+                "text": "Separate the MST greedy proof from connectivity bookkeeping."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Little Alawn’s Puzzle"
+              },
+              {
+                "type": "p",
+                "text": "Model permutation relationships as connected groups."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Red Painting"
+              },
+              {
+                "type": "p",
+                "text": "Union adjacent active cells, with a separate active flag."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "MooTube"
+              },
+              {
+                "type": "p",
+                "text": "Order thresholds and edges offline so components only grow."
+              }
+            ]
+          },
+          {
+            "key": "priority",
+            "title": "14. Know what the structure preserves",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "High priority. Road Construction directly practices union, count and size. Compare DSU with the earlier DFS solution for Building Roads. Check whether groups can split before choosing DSU."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Compare against a fresh search after each edge",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Write the five-city groups by hand. Cover duplicate edges, self-loops, one vertex and extra edges after full connectivity."
+              },
+              {
+                "type": "p",
+                "text": "For small graphs, recompute components with BFS after every insertion and compare count and maximum size. Parent IDs need not match an oracle; partitions must."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Rooted trees, parent pointers and connected components. DSU parent links are not paths in the original graph."
+      }
+    },
+    "prerequisites": "Үндэстэй мод, эцгийн заагч, холбоост бүрэлдэхүүн. Эндхийн эцгийн холбоос нь эх графын зам биш.",
+    "prerequisiteIds": [
+      "tree-basics"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "tree-basics",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "kruskal",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ],
+      "next": "kruskal",
+      "practice": [
+        {
+          "key": "362",
+          "stage": "Warm-up",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "381",
+          "stage": "Standard",
+          "priority": true,
+          "reason": "Үндсэн төлөв ба шинэчлэлтийн дарааллыг бие даан хэрэгжүүлэх шууд цөм дасгал."
+        },
+        {
+          "key": "380",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "65",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "757",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "741",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false,
+    "priorityLevel": "high",
+    "priorityReason": "Холбоос нэмэгдэх үеийн холбогдол, бүрэлдэхүүний хэмжээ, хамгийн бага холбох мод зэрэг олон бодлогын суурь. Төлөөлөгчийн мод ба эх графыг ялгах нь аргыг аюулгүй хэрэглэхэд чухал."
+  }
+}

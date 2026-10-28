@@ -1,0 +1,915 @@
+{
+  "id": "knapsack",
+  "expected_revision": 5,
+  "expected_published": true,
+  "expected_body_sha256": "a8bbeebc774f896a8c9a1b618c0e168bbd1e990079ec078e4d4618d8d963e6c0",
+  "status": "Authored; semantic/code/native editor review pending",
+  "body": {
+    "id": "knapsack",
+    "level": "Дунд шат",
+    "order": 26,
+    "title": "Үүргэвчийн DP — зүйл бүрийг нэг удаа сонгох",
+    "aliases": "knapsack 0/1 knapsack — авах эсвэл авахгүй 0/1 knapsack — take it or leave it knapsack үүргэвч багтаамж 0/1 dp capacity descending",
+    "related": [
+      "dynamic-programming",
+      "grid-dp",
+      "lis"
+    ],
+    "summary": "Багтаамжтай сонголтыг төлөв болгон, авах ба авахгүй хоёр хувилбараас хамгийн их үнэ цэнийг олно. Нэг мөрийн шинэчлэлтийг яагаад бууруулж хийхийг батална.",
+    "category": "Dynamic programming",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Хамгийн ашигтай сонголт аль вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Багтаамж $7$ үүргэвчид жин, үнэ цэнэ нь $(3,4),(4,5),(2,3)$ гэсэн гурван зүйлээс сонгоё. Зүйл бүрийг ихдээ нэг удаа авна. Нийт жин багтаамжаас хэтрэхгүй үед нийт үнэ цэнийг хамгийн их болгоно."
+          },
+          {
+            "type": "p",
+            "text": "Хамгийн үнэтэй ганц зүйлийг авахад тав, харин эхний хоёрыг хамтад нь авахад жин долоо, үнэ цэнэ ес. Нэг сонголтыг орон нутагт сайн гэж үзээд бусдыг хаях нь баталгаагүй."
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Бүх дэд олонлогийг шалгавал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Зүйл бүрд авах, авахгүй хоёр шийдвэр гаргавал $n$ зүйлд $2^n$ хувилбар үүснэ. Жижиг оролтод лавлах болж болох ч $n$ мянга байхад боломжгүй."
+          },
+          {
+            "type": "p",
+            "text": "Ижил тооны эхний зүйлсийг үзээд ижил багтаамжтай үлдсэн сонголтуудын дундаас зөвхөн хамгийн сайн үнэ цэнийг хадгалж болно. Чухал нь “аль үеийн зүйлсийг ашигласан бэ?” гэдгийг төлөвийн утгад оруулах."
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "3. Эхний зүйлс ба зөвшөөрсөн багтаамж",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$F(i,c)$ нь эхний $i$ зүйлээс нийт жин $c$-ээс ихгүй сонгох хамгийн их үнэ цэнэ. Яг $c$ жин хүргэх шаардлагагүй. $F(0,c)=0$: зүйлгүй үед хоосон сонголт зөв."
+          },
+          {
+            "type": "p",
+            "text": "Үнэ цэнийг эерэг, жинг нэгээс багагүй гэж үзнэ. “Яг жин” гэсэн өөр бодлогод хүрэх боломжгүй төлөвийг тэгээр эхлүүлэх нь буруу; энэ хичээлийн төлөв дээд хязгаартай жинг илэрхийлж байна."
+          }
+        ]
+      },
+      {
+        "key": "transition",
+        "title": "4. Сүүлийн зүйлийг авах уу, авахгүй юу?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$i$-р зүйлийг авахгүй бол өмнөх мөрийн $F(i-1,c)$. Жин $w_i$ багтвал авсан хувилбар $F(i-1,c-w_i)+v_i$. Хоёрын ихийг сонгоно."
+          },
+          {
+            "type": "p",
+            "text": "Авсан хувилбарт өмнөх мөр хэрэглэснээр тухайн зүйлийг дахин авахгүй. Багтаамж хүрэхгүй бол авах хувилбар байхгүй. Энэ хоёр салгалт бүх зөв сонголтыг хамарна."
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "5. Гурван зүйлийн хүснэгт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхний зүйлээс хойш багтаамж $0,1,2$-т тэг, $3$-аас $7$ хүртэл дөрөв. Хоёр дахь зүйлийг нэмэхэд $4,5,6$ багтаамжид тав, $7$-д эхний зүйлтэй хослоод ес болно."
+          },
+          {
+            "type": "p",
+            "text": "Сүүлийн $(2,3)$ зүйлийг нэмэхэд $5$-д долоо, $6$-д найм болно. Харин $7$-д есийг хадгална. Бүх зүйлийг авахад жин ес тул болохгүй; хамгийн сайн хариу эхний хоёрын ес."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Багтаамж",
+              "0",
+              "1",
+              "2",
+              "3"
+            ],
+            "rows": [
+              [
+                "0",
+                "0",
+                "0",
+                "0",
+                "0"
+              ],
+              [
+                "1",
+                "0",
+                "0",
+                "0",
+                "0"
+              ],
+              [
+                "2",
+                "0",
+                "0",
+                "0",
+                "3"
+              ],
+              [
+                "3",
+                "0",
+                "4",
+                "4",
+                "4"
+              ],
+              [
+                "4",
+                "0",
+                "4",
+                "5",
+                "5"
+              ],
+              [
+                "5",
+                "0",
+                "4",
+                "5",
+                "7"
+              ],
+              [
+                "6",
+                "0",
+                "4",
+                "5",
+                "8"
+              ],
+              [
+                "7",
+                "0",
+                "4",
+                "9",
+                "9"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Сонголтын хоёр салгалтаар батлах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Зүйлгүй үе зөв. Эхний $i-1$ зүйлийн бүх багтаамжийн хариу зөв гэж үзье. Оновчтой сонголт $i$-р зүйлийг авахгүй бол эхний салгалтаас их байж чадахгүй. Авбал түүнийг салгахад үлдсэн зүйлс $c-w_i$-д багтаж хоёр дахь салгалтаас их байж чадахгүй."
+          },
+          {
+            "type": "p",
+            "text": "Харин хоёр салгалтын бүтээсэн сонголтууд өөрсдөө зөвшөөрөгдөнө. Иймээс их нь яг оновчтой. Нэг мөрөөр хадгалахад багтаамжийг бууруулж явбал $c-w_i<c$ байрлал энэ зүйлийн үед хараахан шинэчлэгдээгүй тул өмнөх мөрийн утгыг уншина."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Тооны хэмжээнээс хамаарах хугацаа",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Багтаамжийг $W$ гэвэл хугацаа $O(nW)$, нэг мөрийн санах ой $O(W)$, оролтын массивууд $O(n)$. Энэ нь $W$-ийн тоон утгаас хамаарна; $W=10^9$ үед хүснэгт байгуулах арга биш."
+          },
+          {
+            "type": "p",
+            "text": "Доорх гэрээнд $n\\le1000$, $W\\le100000$, үнэ цэнэ бүр $10^9$-ээс ихгүй тул нийт үнэ цэнэ $10^{12}$-оос ихгүй. long long хэрэглэнэ. Бүх жин багтах тохиолдолд ойролцоогоор зуун сая шинэчлэлт гарч болохыг хугацааны хязгаартай харьцуул."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. Багтаамжийг бууруулж шинэчлэх",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Эхлэл ба төлөв"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Зөвшөөрсөн багтаамж бүрт хоосон сонголтын тэгээс эхэлнэ. Ашгийн нийлбэр $10^{12}$ хүрч болох тул long long массивтай.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nlong long best_value(const vector<int>& weight, const vector<int>& value, int capacity) {\n    vector<long long> best(capacity + 1);\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Үндсэн үйлдэл"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Зүйлээ гадна, багтаамжаа дотроо бууруулж явна. Жинг хассан жижиг байрлал өмнөх үеийнх хэвээр тул зүйл нэг л удаа нэмэгдэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    for (int item = 0; item < static_cast<int>(weight.size()); ++item) {\n        for (int limit = capacity; limit >= weight[item]; --limit) {\n            best[limit] = max(best[limit], best[limit - weight[item]] + value[item]);\n        }\n    }\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Хариу авах"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Багтаамжийн дээд хязгаар дахь хамгийн их утгыг буцаана. Яг тэр жин хүрсэн байх албагүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    return best[capacity];\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Оролт ба гаралт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Эхний мөрд зүйлийн тоо $0$–$1000$, багтаамж $0$–$100000$. Дараах мөр бүрд эерэг жин ба үнэ цэнэ, тус бүр $10^9$-ээс ихгүй. Нэг мөрд хамгийн их үнэ цэнийг хэвлэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int item_count, capacity;\n    cin >> item_count >> capacity;\n    vector<int> weight(item_count), value(item_count);\n    for (int item = 0; item < item_count; ++item) {\n        cin >> weight[item] >> value[item];\n    }\n    cout << best_value(weight, value, capacity) << '\\n';\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах C++17 программ"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nlong long best_value(const vector<int>& weight, const vector<int>& value, int capacity) {\n    vector<long long> best(capacity + 1);\n    for (int item = 0; item < static_cast<int>(weight.size()); ++item) {\n        for (int limit = capacity; limit >= weight[item]; --limit) {\n            best[limit] = max(best[limit], best[limit - weight[item]] + value[item]);\n        }\n    }\n    return best[capacity];\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int item_count, capacity;\n    cin >> item_count >> capacity;\n    vector<int> weight(item_count), value(item_count);\n    for (int item = 0; item < item_count; ++item) {\n        cin >> weight[item] >> value[item];\n    }\n    cout << best_value(weight, value, capacity) << '\\n';\n}\n"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "3 7\n3 4\n4 5\n2 3\n"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "9\n"
+          }
+        ]
+      },
+      {
+        "key": "errors",
+        "title": "9. Өсөх давталт нэг зүйлийг дахин ашиглана",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Ганц $(2,3)$ зүйл, багтаамж дөрөв байг. Өсөхөөр явбал хоёрт гурав өгөөд, дөрөвт тэр шинэ гурвыг ашиглан зургаа болгоно. Энэ нь ганц зүйлийг хоёр авсан буруу хариу."
+          },
+          {
+            "type": "p",
+            "text": "Бууруулахад дөрвийн шинэчлэлт хоёрын хуучин тэгийг уншаад гурав авна. Мөн жин багтаамжаас их үед давталт орохгүй, багтаамж тэгт хоосон сонголтын тэг хэвээр байна."
+          }
+        ]
+      },
+      {
+        "key": "variants",
+        "title": "10. Тоолох, хүрэх, хамгийн сайн утга өөр",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Money Sums-д боломжтой нийлбэрийг үнэн/худлаар хадгална. Two Sets-д хуваалтын тоо тоолох бөгөөд ижил хоёр хуваалтыг давхар тоолох эсэхийг тусад нь шийднэ. Minimizing Coins-д зоосоо давтаж ашиглах нөхцөлтэй тул энэ нэг удаагийн давталтыг шууд хуулж болохгүй."
+          },
+          {
+            "type": "p",
+            "text": "Багтаамж асар том ч үнэ цэнийн нийлбэр бага бол төлөвийг үнэ цэнээр сольж, түүнд хүрэх хамгийн бага жинг хадгалж болно. Энэ нь Knapsack 2 руу орох шинэчилсэн төлөв."
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "11. Зүйл тус бүр нэг удаа юу?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Сонголт бүр жин ба ашигтай, нийт жин хязгаартай, зүйл тус бүр нэг удаа бол энэ загварыг бод. Жижиг багтаамж эсвэл жижиг үнэ цэнийн нийлбэр байх хэрэгтэй."
+          },
+          {
+            "type": "p",
+            "text": "Заавал авах зүйл, хоорондоо хамааралтай сонголт, хэдэн ширхэг авах нэмэлт хязгаар байвал төлөв эсвэл шилжилт өөрчлөгдөнө. Үнэ цэнэ/жин харьцаагаар эрэмбэлэх нь хувааж болох зүйлд өөр асуудал шийддэг, бүхэл нэг удаагийн сонголтод ерөнхий баталгаа биш."
+          }
+        ]
+      },
+      {
+        "key": "reconstruction",
+        "title": "12. Сонгосон зүйлсийг буцааж олох",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Энэ код зөвхөн хамгийн их үнэ цэнийг буцаана. Нэг мөрийн массиваас шууд эцэг зааж хадгалбал дараагийн шинэчлэлт хуучин мөрийн тайлбарыг эвдэж болох тул зөв сэргээх баталгаа хэрэгтэй."
+          },
+          {
+            "type": "p",
+            "text": "Хялбар ойлгомжтой хувилбар нь бүтэн хоёр хэмжээст хүснэгт эсвэл үе тус бүрийн шийдвэрийг хадгалаад сүүлийн мөрөөс ухрах. Санах ой нэмэгдэнэ. Зөвхөн хариуны утга асуувал нэг мөр хангалттай."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Нэг удаагийн сонголтоос өөр төлөв рүү",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Book Shop"
+          },
+          {
+            "type": "p",
+            "text": "Үнэ ба хуудсыг жин, үнэ цэнэ болгон нэг удаа сонго. Оролтын массивын бүтэц сургалтын кодоос өөр."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Money Sums"
+          },
+          {
+            "type": "p",
+            "text": "Үнэ хамгийн их болгох бус хүрэх нийлбэрийг хадгал; буурах дарааллаа батал."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Two Sets II"
+          },
+          {
+            "type": "p",
+            "text": "Хуваалтын тооллогод тэгш хуваалтыг давхар тоолох асуудлыг шийд."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Knapsack 1"
+          },
+          {
+            "type": "p",
+            "text": "Жинт сонголт, том үнэ цэнэ, нэг мөрийн төлөвөө нэгтгэ."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Knapsack 2"
+          },
+          {
+            "type": "p",
+            "text": "Үнэ цэнээр индексэлж хамгийн бага жин хадгалах шинэ төлөв гарга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Minimizing Coins"
+          },
+          {
+            "type": "p",
+            "text": "Зоос давтагдах үед давталтын утга яагаад өөрчлөгдөхийг тайлбарла. Энэ нь нэг удаагийн үүргэвч биш."
+          }
+        ]
+      },
+      {
+        "key": "priority",
+        "title": "14. Шинэчлэлтийн утгаа хамгаал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өндөр ач холбогдолтой. Хамгийн чухал нь томьёо цээжлэх бус аль үеийн утгыг уншиж байгаагаа тайлбарлах. Book Shop, Money Sums хоёр нь үндсэн шилжилт ба нэг удаагийн хэрэглээг шууд дадуулна."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Жижиг дэд олонлогуудтай тулга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Гурван зүйлийн бүх найман сонголтыг гараар шалгаж есийг ол. Ганц зүйл хоёр удаа орж болох эсрэг жишээгээр өсөх давталтын алдааг үзүүл."
+          },
+          {
+            "type": "p",
+            "text": "Жижиг оролтод бүх дэд олонлогийн жин ба үнийг тооцсон тусдаа лавлахтай тулга. Багтаамж тэг, бүх зүйл хэт хүнд, ижил зүйлс, үнэ цэнийн нийлбэр int-ээс их тохиолдлуудыг шалга."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "0/1 knapsack — each item at most once",
+        "summary": "Derive take/skip states for capacity-constrained choice and prove why an in-place 0/1 transition runs downward.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Which selection is most valuable?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Capacity is $7$ and items have (weight,value) pairs $(3,4),(4,5),(2,3)$. Choose each at most once, keeping total weight within capacity and maximizing total value."
+              },
+              {
+                "type": "p",
+                "text": "The most valuable single item gives five, while the first two together weigh seven and give nine. A locally attractive choice does not by itself justify discarding alternatives."
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Trying every subset",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Two choices per item generate $2^n$ subsets, useful as a small oracle but infeasible for a thousand items."
+              },
+              {
+                "type": "p",
+                "text": "Among choices using the same initial items under the same capacity limit, retain only the maximum value. The state must specify which item prefix has been considered."
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "3. An item prefix and an allowed capacity",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "$F(i,c)$ is the maximum value from the first $i$ items with weight at most $c$, not necessarily exactly $c$. With no items, the empty selection gives $F(0,c)=0$."
+              },
+              {
+                "type": "p",
+                "text": "Assume positive values and weights at least one. Exact-weight variants need unreachable-state sentinels rather than initializing every state to zero; this lesson uses an upper weight limit."
+              }
+            ]
+          },
+          {
+            "key": "transition",
+            "title": "4. Take or skip the final item?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Skipping item $i$ gives $F(i-1,c)$. If weight $w_i$ fits, taking it gives $F(i-1,c-w_i)+v_i$. Choose the maximum."
+              },
+              {
+                "type": "p",
+                "text": "Using the previous row in the take case prevents reusing this item. If it does not fit, taking is impossible. These cases cover every valid selection."
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "5. The three-item table",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "After the first item, capacities $0,1,2$ have zero and $3$ through $7$ have four. After the second, capacities $4,5,6$ have five and capacity $7$ combines the first two for nine."
+              },
+              {
+                "type": "p",
+                "text": "Adding $(2,3)$ improves capacity $5$ to seven and $6$ to eight, while $7$ stays nine. All three weigh nine and do not fit."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Capacity",
+                  "0",
+                  "1",
+                  "2",
+                  "3"
+                ],
+                "rows": [
+                  [
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0"
+                  ],
+                  [
+                    "1",
+                    "0",
+                    "0",
+                    "0",
+                    "0"
+                  ],
+                  [
+                    "2",
+                    "0",
+                    "0",
+                    "0",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "0",
+                    "4",
+                    "4",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "0",
+                    "4",
+                    "5",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "0",
+                    "4",
+                    "5",
+                    "7"
+                  ],
+                  [
+                    "6",
+                    "0",
+                    "4",
+                    "5",
+                    "8"
+                  ],
+                  [
+                    "7",
+                    "0",
+                    "4",
+                    "9",
+                    "9"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Prove correctness by the two cases",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "The no-item base is correct. Assume all states for the first $i-1$ items are correct. An optimum skipping item $i$ cannot exceed the skip case; an optimum taking it leaves a valid solution under $c-w_i$, bounded by the take case."
+              },
+              {
+                "type": "p",
+                "text": "Both constructed cases are feasible, so their maximum is exactly optimal. In one-row storage, downward capacities keep the smaller index $c-w_i$ unmodified for this item, preserving previous-row semantics."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Time depends on the numeric capacity",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "With capacity $W$, time is $O(nW)$ and DP storage $O(W)$, plus $O(n)$ inputs. This depends on numeric $W$, so a billion-sized capacity is not suitable for this table."
+              },
+              {
+                "type": "p",
+                "text": "For the teaching bounds $n\\le1000$, $W\\le100000$ and values at most $10^9$, total value is at most $10^{12}$; use long long. Up to about a hundred million updates must still fit the time limit."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Update capacities downward",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. State and setup"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Initialize each allowed capacity with the empty value zero; long long holds totals up to $10^{12}$.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nlong long best_value(const vector<int>& weight, const vector<int>& value, int capacity) {\n    vector<long long> best(capacity + 1);\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. Main operation"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Process items outside and capacities downward inside; the smaller source index still belongs to the previous item stage.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    for (int item = 0; item < static_cast<int>(weight.size()); ++item) {\n        for (int limit = capacity; limit >= weight[item]; --limit) {\n            best[limit] = max(best[limit], best[limit - weight[item]] + value[item]);\n        }\n    }\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. Obtain result"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Return the best value under the capacity limit, not necessarily at exactly that total weight.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    return best[capacity];\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Input and output"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read $0$–$1000$ items, capacity $0$–$100000$, then positive weight/value pairs at most $10^9$. Print the maximum value.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int item_count, capacity;\n    cin >> item_count >> capacity;\n    vector<int> weight(item_count), value(item_count);\n    for (int item = 0; item < item_count; ++item) {\n        cin >> weight[item] >> value[item];\n    }\n    cout << best_value(weight, value, capacity) << '\\n';\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete compilable C++17 program"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nlong long best_value(const vector<int>& weight, const vector<int>& value, int capacity) {\n    vector<long long> best(capacity + 1);\n    for (int item = 0; item < static_cast<int>(weight.size()); ++item) {\n        for (int limit = capacity; limit >= weight[item]; --limit) {\n            best[limit] = max(best[limit], best[limit - weight[item]] + value[item]);\n        }\n    }\n    return best[capacity];\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int item_count, capacity;\n    cin >> item_count >> capacity;\n    vector<int> weight(item_count), value(item_count);\n    for (int item = 0; item < item_count; ++item) {\n        cin >> weight[item] >> value[item];\n    }\n    cout << best_value(weight, value, capacity) << '\\n';\n}\n"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "3 7\n3 4\n4 5\n2 3\n"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "9\n"
+              }
+            ]
+          },
+          {
+            "key": "errors",
+            "title": "9. An upward loop can reuse an item",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "With just item $(2,3)$ and capacity four, an upward loop writes three at two, then reuses it to write six at four, incorrectly taking the same item twice."
+              },
+              {
+                "type": "p",
+                "text": "A downward loop reads the old zero at two and writes only three at four. Overweight items make no updates; capacity zero keeps the empty selection."
+              }
+            ]
+          },
+          {
+            "key": "variants",
+            "title": "10. Counts, reachability and maxima differ",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Money Sums stores boolean reachability. Partition counting needs counts and careful treatment of symmetric duplicates. Unlimited-coin minimization permits reuse, so this 0/1 update cannot simply be copied."
+              },
+              {
+                "type": "p",
+                "text": "If capacity is huge but total value is small, index by value and store minimum required weight instead: a new state for Knapsack 2."
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "11. Is each item available only once?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Use this model for one-time choices with weight, value and a shared capacity limit. Capacity or total value must be small enough for a table."
+              },
+              {
+                "type": "p",
+                "text": "Mandatory items, dependencies or extra cardinality limits change the state. Sorting by value/weight solves a different divisible-item setting, not general 0/1 choice."
+              }
+            ]
+          },
+          {
+            "key": "reconstruction",
+            "title": "12. Recovering the actual selected items",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "This program returns only the optimum value. Naively storing parent links in one mutable row can corrupt historical item-stage meaning; reconstruction needs its own proof."
+              },
+              {
+                "type": "p",
+                "text": "A straightforward method stores the full table or stage-specific decisions and backtracks from the final row, using more memory. One row suffices when only the value is requested."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From one-time choice to changed states",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Book Shop"
+              },
+              {
+                "type": "p",
+                "text": "Map price/pages to weight/value; adapt its array-based input."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Money Sums"
+              },
+              {
+                "type": "p",
+                "text": "Use boolean reachability and justify downward updates."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Two Sets II"
+              },
+              {
+                "type": "p",
+                "text": "Handle symmetric duplicate partitions in counting."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Knapsack 1"
+              },
+              {
+                "type": "p",
+                "text": "Combine weighted choice, large values and one-row DP."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Knapsack 2"
+              },
+              {
+                "type": "p",
+                "text": "Index by value and store minimum weight."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Minimizing Coins"
+              },
+              {
+                "type": "p",
+                "text": "Explain how unlimited reuse changes update semantics; not 0/1 knapsack."
+              }
+            ]
+          },
+          {
+            "key": "priority",
+            "title": "14. Preserve the meaning of each update",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "High priority: understand which item stage is being read rather than memorizing a formula. Book Shop and Money Sums directly practice transitions and one-time use."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Compare with every small subset",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Enumerate the eight subsets in the example and obtain nine. Demonstrate the upward-loop error with one item."
+              },
+              {
+                "type": "p",
+                "text": "Check small inputs against independent subset enumeration. Cover zero capacity, all overweight, equal items and values exceeding int totals."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "DP states, transitions and dependencies on a previous row; understanding grid DP processing order."
+      }
+    },
+    "prerequisites": "Динамик программчлалын төлөв, шилжилт, өмнөх мөрийн хамаарал. Хүснэгтэн DP-ийн боловсруулах дарааллыг тайлбарлаж чаддаг байх.",
+    "prerequisiteIds": [
+      "dynamic-programming",
+      "grid-dp"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "dynamic-programming",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "grid-dp",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "lis",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ],
+      "next": "lis",
+      "practice": [
+        {
+          "key": "346",
+          "stage": "Warm-up",
+          "priority": true,
+          "reason": "Үндсэн төлөв ба шинэчлэлтийн дарааллыг бие даан хэрэгжүүлэх шууд цөм дасгал."
+        },
+        {
+          "key": "352",
+          "stage": "Standard",
+          "priority": true,
+          "reason": "Үндсэн төлөв ба шинэчлэлтийн дарааллыг бие даан хэрэгжүүлэх шууд цөм дасгал."
+        },
+        {
+          "key": "353",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "680",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "681",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "341",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false,
+    "priorityLevel": "high",
+    "priorityReason": "Хязгаартай сонголт, авах/авахгүй салгалт, өмнөх ба одоогийн үеийг ялгах чадвар нь олон динамик программчлалын суурь. Нэг удаагийн ба давтаж болох хэрэглээг давталтын дарааллаар ялгах нь өндөр өгөөжтэй."
+  }
+}
