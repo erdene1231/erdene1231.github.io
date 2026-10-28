@@ -1,4 +1,4 @@
-import {normalizeUsername} from './community.js?v=6';
+import {normalizeUsername} from './community.js?v=52';
 export const AVATAR_BUCKET='think-cp-avatars';
 export function cleanProfile(values) {
  const first_name=String(values.first_name||'').trim(),last_name=String(values.last_name||'').trim();

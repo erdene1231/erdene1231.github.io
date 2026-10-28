@@ -1,4 +1,4 @@
-import {validDate, weekday} from './group-export.js?v=18';
+import {validDate, weekday} from './group-export.js?v=52';
 
 function text(value) {
     return String(value ?? '').replace(/\r\n?/g, '\n').replace(/\t/g, '    ')

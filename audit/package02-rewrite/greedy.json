@@ -1,0 +1,1304 @@
+{
+  "id": "greedy",
+  "expected_revision": 6,
+  "expected_body_sha256": "f37022c246c4629901a0b9f4359f1d5da3d4e460a63058983b54bd3d4dd08d5c",
+  "status": "Locally reviewed corrected replacement; publication and user acceptance pending",
+  "body": {
+    "id": "greedy",
+    "level": "Дунд шат",
+    "order": 20,
+    "title": "Шуналтай арга — нэг сонголтын зөвийг батлах нь",
+    "aliases": "greedy Greedy — зөв сонголтыг алхам бүрт хийх Greedy — making a safe choice at each step greedy шуналтай эрэмбэлэлт sorting interval exchange argument",
+    "related": [
+      "sorting",
+      "brute-force",
+      "binary-search-answer"
+    ],
+    "summary": "Нэг өрөөнд хамгийн олон сургалт багтаах жишээнээс аюулгүй сонголтыг олъё. Хамгийн сайн хариунд сонголтоо сольж оруулах баталгаа гаргаж, буруу дүрмүүдийг жижиг жишээгээр няцаана.",
+    "category": "Problem solving",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Хязгаартай цагт аль хичээлүүдийг сонгох вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэг өрөөнд явуулах богино сургалтуудын цагийг урьдчилан тогтоожээ: $[0,8)$, $[1,3)$, $[3,5)$, $[5,7)$, $[7,9)$. Нэг өрөөнд давхцсан хоёр сургалт зэрэг явж болохгүй. Хамгийн олон сургалт сонгоё."
+          },
+          {
+            "type": "p",
+            "text": "$[l,r)$ гэдэг нь $l$ цагт эхэлж, $r$ цагт дуусахыг илэрхийлнэ. Дууссан мөчид дараагийн сургалт эхэлж болно. Урт сургалт $[0,8)$-ийг авбал бусад нь түүнтэй давхцана. Харин үлдсэн дөрвийг залгуулж сонговол $4$ сургалт болно."
+          },
+          {
+            "type": "p",
+            "text": "Энд нийт хичээллэх хугацааг биш, сургалтын тоог хамгийн их болгоно. Нэг сургалтын ач холбогдол эсвэл төлбөр өөр байвал өөр зорилготой бодлого болно. Зөв сонголтын дүрэм нь энэ зорилгоос хамаарна."
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Бүх сонголтыг шалгавал яах вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Сургалт бүрийг авах эсвэл авахгүй гэсэн хоёр сонголттой. Иймээс нийт $2^n$ дэд олонлог бий. Сонгосон сургалтууд давхцахгүй эсэхийг шалгаад, хамгийн олон сургалттай зөв хувилбарыг авч болно."
+          },
+          {
+            "type": "p",
+            "text": "Эхлээд дуусах цагаар нэг удаа эрэмбэлбэл дэд олонлог бүрийг дарааллаар нь $O(n)$ хугацаанд шалгаж болно. Нийт $O(n2^n)$ хугацаа хэрэгтэй. Энэ нь жижиг оролтод зөв хариу гаргах лавлах арга боловч $n=200000$ үед боломжгүй."
+          },
+          {
+            "type": "note",
+            "text": "Илүү хурдан шийдэл хайхдаа бүх хувилбарыг үүсгэхийн оронд нэг сонголтыг аюулгүй хийж болох эсэхийг асуу. Хурдан дүрэм олдох нь өөрөө түүнийг зөв гэж батлахгүй."
+          }
+        ]
+      },
+      {
+        "key": "observation",
+        "title": "3. Ямар сонголт дараагийн боломжийг илүү үлдээх вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхний сургалтыг дуусгасны дараа дараагийн сургалтад орох боломжтой болно. Тиймээс боломжит сургалтуудаас хамгийн эрт дуусахыг сонговол дараагийн сонголтуудад хамгийн их хугацаа үлдээнэ гэсэн таамаг гарна."
+          },
+          {
+            "type": "p",
+            "text": "Жишээнд хамгийн эрт дуусах нь $[1,3)$. Үүнийг авсны дараа $3$-аас эхэлсэн сургалтуудыг үргэлжлүүлж үзнэ. “Хамгийн эрт эхлэх” гэвэл $[0,8)$-ийг сонгож, дөрвийн оронд ганц сургалттай үлдэх тул энэ дүрэм буруу."
+          },
+          {
+            "type": "p",
+            "text": "Алхам бүрд тухайн мөчид хамгийн ашигтай гэж үзсэн нэг сонголтыг хийгээд эргэж өөрчлөхгүй явдаг аргыг шуналтай арга гэдэг. Англи нэр нь greedy. Ийм аргын гол ажил нь дүрмийг таах биш, тэр сонголтоор эхэлсэн хамгийн сайн хариу заавал байдгийг батлах юм."
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Сонголтын дүрэм ба хадгалах төлөв",
+        "blocks": [
+          {
+            "type": "ordered",
+            "items": [
+              "Бүх сургалтыг дуусах цагаар өсөхөөр эрэмбэл.",
+              "Сонгосон сүүлчийн сургалтын дуусах цагийг хадгал. Эхэндээ юу ч сонгоогүй байна.",
+              "Сургалтуудыг эрэмбэлсэн дарааллаар нэг нэгээр үз. Өмнөх сонголт дууссан үед эсвэл түүнээс хойш эхэлж байвал ав.",
+              "Авсан тохиолдолд сонгосон тоо болон сүүлийн дуусах цагийг шинэчил. Авч болохгүй сургалтыг алгасахдаа төлөвөө өөрчлөхгүй."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Сонголт бүрийн дараа сонгосон сургалтууд хоорондоо давхцахгүй байна. Дараагийн сургалт өмнөхийн дуусах цагаас багагүй үед эхэлбэл энэ нөхцөл хадгалагдана. Иймээс өмнөх бүх сургалтын жагсаалтыг дахин шалгах шаардлагагүй; сүүлийн дуусах цаг л хэрэгтэй."
+          },
+          {
+            "type": "note",
+            "text": "Яг ижил цагт дуусах сургалтууд дараагийн сонголтод ижил зааг үлдээнэ. Тэнцсэн үед эхлэх цагаар нь эрэмбэлэх нь зөвхөн тогтвортой, тодорхой дараалал үүсгэхэд хэрэглэгдэнэ."
+          }
+        ]
+      },
+      {
+        "key": "walkthrough",
+        "title": "5. Жишээний бүх шийдвэрийг дагая",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхний жишээг дуусах цагаар эрэмбэлбэл $[1,3)$, $[3,5)$, $[5,7)$, $[0,8)$, $[7,9)$ болно. Одоо сургалт бүрийн эхлэх цагийг өмнө сонгосон сүүлийн дуусах цагтай харьцуулна."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Үзэж буй сургалт",
+              "Шийдвэрийн учир",
+              "Сонгосон тоо",
+              "Сүүлийн дуусах цаг"
+            ],
+            "rows": [
+              [
+                "$[1,3)$",
+                "Өмнө нь сонголтгүй тул авна.",
+                "$1$",
+                "$3$"
+              ],
+              [
+                "$[3,5)$",
+                "Яг өмнөх дуусах мөчид эхэлнэ.",
+                "$2$",
+                "$5$"
+              ],
+              [
+                "$[5,7)$",
+                "Дахин залгуулан авч болно.",
+                "$3$",
+                "$7$"
+              ],
+              [
+                "$[0,8)$",
+                "$0<7$ тул алгасана.",
+                "$3$",
+                "$7$"
+              ],
+              [
+                "$[7,9)$",
+                "Өмнөх сонголт дууссан тул авна.",
+                "$4$",
+                "$9$"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Урт сургалтыг алгассан ч сүүлийн дуусах цаг өөрчлөгдөөгүйг анзаар. Түүнийг шинэчилсэн бол дараагийн зөв сонголтыг санамсаргүй хаах байв. Хариу нь дөрвөн сургалт."
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Хамгийн эрт дуусахыг сонгох нь яагаад зөв вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Одоо өмнөх сонголтуудтай давхцахгүй үлдсэн сургалтуудын бодлогыг харъя. Тэдгээрээс хамгийн эрт дуусах сургалтыг $G$, хамгийн олон сургалттай нэг зөв хуваарийн эхний сургалтыг $O$ гэе. Сургалт $S$-ийн дуусах цагийг $f(S)$ гэж тэмдэглэе."
+          },
+          {
+            "type": "ordered",
+            "items": [
+              "$G$ хамгийн эрт дуусах тул $f(G)\\le f(O)$.",
+              "Тэр хамгийн сайн хуваарийн эхний $O$-г $G$-ээр сольё. $O$-гийн дараах сургалт бүр $O$ дууссаны дараа эхэлнэ. $G$ түүнээс оройтож дуусахгүй тул тэдгээр сургалт $G$-гийн дараа ч багтана.",
+              "Ингэж солиход нэг сургалтыг нөгөөгөөр сольсон учраас тоо буурахгүй. Тэгэхээр $G$-ээр эхэлсэн хамгийн сайн хуваарь заавал байна.",
+              "Дараа нь $G$ дууссанаас хойш эхлэх сургалтууд дээр яг ижил жижиг бодлого үлдэнэ. Сонголтгүй үед хариу $0$ гэдэг суурь тохиолдлоос эхлэн энэ аргументыг давтаж хэрэглэвэл алгоритм бүхэлдээ зөв."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Энэ нь эхний сонголтыг хамгийн сайн хариунд оруулж болохыг харуулсан солих баталгаа юм. Сургалт бүрийг ижил нэг нэгжээр тоолж байгаа нь шийдвэрлэх нөхцөл: өөр өөр ашигтай бол солиход нийт ашиг буурч болно."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Хугацаа, санах ой ба тоон хязгаар",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Дуусах цагаар эрэмбэлэхэд $O(n\\log n)$ хугацаа орно. Дараах давталт сургалт бүрийг ганц удаа үзэж, тогтмол тооны харьцуулалт ба шинэчлэлт хийнэ: $O(n)$. Иймээс нийт хугацаа $O(n\\log n)$. Шийдвэр бүрийн дараа эхнээс нь дахин хайхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Доорх функц оролтын жагсаалтаа хуулж авдаг тул нэмэлт санах ой $O(n)$. Эрэмбэлэхийн туслах санах ойн $O(\\log n)$ зардал нь энэ хуулбараас бага. Хэрэв жагсаалтыг газар дээр нь өөрчилж болох өөр хэрэгжүүлэлт сонговол хуулбарын зардал өөр байж болно."
+          },
+          {
+            "type": "p",
+            "text": "$0\\le n\\le200000$ гэж үзэхэд сонгосон тоо энгийн бүхэл тоонд багтана. Эхлэх, дуусах цагуудыг тэмдэгтэй 64 битийн бүхэл тоогоор хадгална. Харьцуулахдаа хоёр цагийг хасахгүй, шууд бага эсэхийг шалгах тул том утгын хасалтын хэтрэлт үүсгэхгүй."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. C++17 кодыг хэсэг бүрээр нь байгуулъя",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Оролтод $n$, дараа нь $n$ мөр бүрд эхлэх ба дуусах цаг орно. Сургалт бүрийн эхлэх цаг дуусах цагаасаа бага байна. Гаралт нь давхцахгүй сонгож болох сургалтын хамгийн их тоо. Хуваарийг өөрийг нь хэвлэх шаардлагагүй."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Нэг сургалтын өгөгдөл ба эрэмбэлэх дүрэм"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Session",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " бүтэц эхлэх ба дуусах хоёр цагийг нэртэй талбаруудаар хадгална. ",
+                "marks": []
+              },
+              {
+                "text": "ends_earlier",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь эхлээд дуусах цагийг, тэнцвэл эхлэх цагийг харьцуулна. Тэнцүү хоёр утгыг “бага” гэж буцаахгүй байх нь стандарт эрэмбэлэлтийн шаардлага.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <algorithm>\n#include <iostream>\n#include <limits>\n#include <vector>\nusing namespace std;\n\nstruct Session {\n    long long start;\n    long long finish;\n};\n\nbool ends_earlier(const Session& left, const Session& right) {\n    if (left.finish != right.finish) {\n        return left.finish < right.finish;\n    }\n    return left.start < right.start;\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Эрэмбэлж, эхний төлөвийг бэлтгэх"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "max_sessions",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " жагсаалтыг хуулж аваад эрэмбэлнэ. ",
+                "marks": []
+              },
+              {
+                "text": "last_finish",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " эхэндээ хамгийн бага боломжит цагтай тул ямар ч хүчинтэй эхний сургалтыг сонгож болно. ",
+                "marks": []
+              },
+              {
+                "text": "selected",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь сонгосон сургалтын тоо.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int max_sessions(vector<Session> sessions) {\n    sort(sessions.begin(), sessions.end(), ends_earlier);\n    long long last_finish = numeric_limits<long long>::min();\n    int selected = 0;\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Давхцахгүй сургалтуудыг сонгох"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Дараагийн эхлэх цаг ",
+                "marks": []
+              },
+              {
+                "text": "last_finish",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ээс бага биш бол сургалтыг авна. Зөвхөн энэ үед тоог нэмж, дуусах цагийг солино. Алгассан сургалтын цагийг төлөвт бичихгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    for (const Session& session : sessions) {\n        if (session.start >= last_finish) {\n            selected++;\n            last_finish = session.finish;\n        }\n    }\n\n    return selected;\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Оролт ба хариуг холбох"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Үндсэн ",
+                "marks": []
+              },
+              {
+                "text": "main",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " функц сургалтуудын цагийг уншиж, ",
+                "marks": []
+              },
+              {
+                "text": "max_sessions",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийг дуудаад тоог хэвлэнэ. Цагуудыг ямар ч дарааллаар оруулж болно; функц өөрөө эрэмбэлдэг.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<Session> sessions(n);\n    for (Session& session : sessions) {\n        cin >> session.start >> session.finish;\n    }\n\n    cout << max_sessions(sessions) << '\\n';\n    return 0;\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах программ"
+          },
+          {
+            "type": "note",
+            "text": "Дээрх дөрвөн хэсгийг яг энэ дарааллаар залгавал доорх программ болно. Тус тусын тасархайг биш, бүтэн хувилбарыг нэг файлд хуулж C++17-оор ажиллуул."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <algorithm>\n#include <iostream>\n#include <limits>\n#include <vector>\nusing namespace std;\n\nstruct Session {\n    long long start;\n    long long finish;\n};\n\nbool ends_earlier(const Session& left, const Session& right) {\n    if (left.finish != right.finish) {\n        return left.finish < right.finish;\n    }\n    return left.start < right.start;\n}\n\nint max_sessions(vector<Session> sessions) {\n    sort(sessions.begin(), sessions.end(), ends_earlier);\n    long long last_finish = numeric_limits<long long>::min();\n    int selected = 0;\n\n    for (const Session& session : sessions) {\n        if (session.start >= last_finish) {\n            selected++;\n            last_finish = session.finish;\n        }\n    }\n\n    return selected;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<Session> sessions(n);\n    for (Session& session : sessions) {\n        cin >> session.start >> session.finish;\n    }\n\n    cout << max_sessions(sessions) << '\\n';\n    return 0;\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Оролт ба гаралтын жишээ"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "5\n0 8\n1 3\n3 5\n5 7\n7 9"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "4"
+          },
+          {
+            "type": "p",
+            "text": "Гаралт нь тавдугаар хэсэгт гараар байгуулсан дөрвөн сургалттай хуваарийн тоотой таарч байна."
+          }
+        ]
+      },
+      {
+        "key": "boundaries",
+        "title": "9. Заагийн тохиолдлууд",
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "$n=0$ бол сонголт хийхгүй, хариу $0$.",
+              "Ганц сургалт байвал түүнийг сонгож болно.",
+              "Бүгд хоорондоо давхцвал нэгийг л сонгоно.",
+              "Нэг сургалт дуусах яг мөчид дараагийнх эхэлбэл хоёуланг сонгож болно.",
+              "Ижил цагтай хоёр сургалт тусдаа бичигдсэн ч хоёуланг нь зэрэг сонгож болохгүй.",
+              "Сөрөг болон маш том цагтай оролтод ч зөвхөн дарааллын харьцуулалт хэрэгтэй."
+            ]
+          },
+          {
+            "type": "note",
+            "text": "Тэг урттай $l=r$ сургалт энэ программын оролтын нөхцөлд орохгүй. Ийм үйл явдал зөвшөөрсөн өөр бодлого таарвал нийцтэй эсэхийн тодорхойлолт болон баталгаагаа шинээр шалгана."
+          }
+        ]
+      },
+      {
+        "key": "mistakes",
+        "title": "10. Сонирхолтой боловч буруу дүрмүүд",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Хамгийн эрт эхлэхийг авах"
+          },
+          {
+            "type": "p",
+            "text": "Эхний жишээний $[0,8)$-ийг сонговол ганц сургалт үлдэнэ; бусад дөрвийг сонговол дөрөв. Эрт эхлэх нь эрт чөлөөлөгдөхтэй адил биш."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Хамгийн богино хугацаатайг авах"
+          },
+          {
+            "type": "p",
+            "text": "$[0,4)$, $[4,8)$, $[3,5)$-ийг хар. Хамгийн богино $[3,5)$ нь бусад хоёулантай давхцана: ганц сургалт. Харин эхний хоёрыг авбал хоёр. Богино үргэлжлэх нь ч бас эрт дуусахтай адил биш."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Өөр өөр ашигтай бодлогод дүрмийг хуулж хэрэглэх"
+          },
+          {
+            "type": "p",
+            "text": "$[0,2)$ сургалтын ашиг $1$, $[0,3)$-ын ашиг $10$ байг. Хамгийн эрт дуусахыг авбал тоо нь адил нэг боловч нийт ашиг хамгийн их биш. Зургаадугаар хэсгийн “нэгийг нөгөөгөөр солиод тоо буурахгүй” гэсэн баталгаа ашиг хадгалах тухай юу ч хэлээгүй."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Алгассан сургалтаар төлөвөө шинэчлэх"
+          },
+          {
+            "type": "p",
+            "text": "Тавдугаар хэсэгт $[0,8)$-ийг алгасахдаа сүүлийн дуусах цагийг $8$ болгож өөрчилбөл $[7,9)$-ийг үндэслэлгүй алдана. Төлөв нь хамгийн сүүлд үзсэн биш, хамгийн сүүлд сонгосон сургалтыг илэрхийлнэ."
+          }
+        ]
+      },
+      {
+        "key": "connections",
+        "title": "11. Ямар суурь ба холбоотой аргууд хэрэгтэй вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эрэмбэлэх, бүх боломжийг шалгах энгийн арга, жижиг эсрэг жишээ байгуулах чадвар энэ хичээлийн суурь. Шуналтай арга нь нэг алгоритмын нэр биш; олон бодлогод өөр өөр аюулгүй сонголтыг батлах арга юм."
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "invariant",
+            "label": "Давталтын турш хадгалах нөхцөл"
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "debugging",
+            "label": "Буруу дүрэмд эсрэг жишээ олох"
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "kruskal",
+            "label": "Графт аюулгүй холбоос сонгох Kruskal арга"
+          },
+          {
+            "type": "p",
+            "text": "Дараагийн хариун дээрх хоёртын хайлтын хичээлд нэг утга боломжтой эсэхийг шуналтайгаар шалгах тохиолдол гарна. Тэр шалгалтын зөвийг хайлтын давталтаас тусад нь батлах шаардлагатай."
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "12. Шуналтай аргыг хэзээ турших вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхлээд юуг хамгийн их эсвэл бага болгохоо нэг өгүүлбэрээр бич. Дараа нь “миний эхний сонголтыг хамгийн сайн хариунд оруулж болох уу?” гэж асуу. Солиход үлдсэн сонголтуудын боломж болон зорилтот тоо алдагдахгүйг харуулж чадвал баталгааны үндэс олдож байна."
+          },
+          {
+            "type": "p",
+            "text": "Өөр зорилгын жишээ авъя. Хоёр ажлын хугацаа $p\\le q$, эхлэх цаг $0$ байг. Богиныг түрүүлж хийвэл дуусах хугацааны нийлбэр $p+(p+q)=2p+q$, урвуу дарааллаар $q+(q+p)=p+2q$. Эхнийх $p-q\\le0$-ээр бага буюу тэнцүү. Энэ нь ажлуудын дуусах хугацааны нийлбэрийг багасгах өөр дүрмийн солих баталгаа; манай сургалтын дуусах цагаар сонгох дүрэм биш."
+          },
+          {
+            "type": "list",
+            "items": [
+              "Түргэн ажиллаж байгааг зөвийн баталгаа гэж үзэхгүй.",
+              "Сонголтоо солиход ашиг эсвэл өөр хязгаар алдагдаж байвал ижил дүрмийг зүтгүүлэхгүй.",
+              "Өөр төлөвүүдийг зэрэг хадгалах шаардлагатай бол динамик програмчлал зэрэг өөр аргыг бодолц."
+            ]
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Зургаан шаттай дасгал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхлээд үндсэн сонголтын баталгааг бие даан хий. Дараах бодлого бүрд дуусах цагийн дүрмийг шууд хуулалгүй, яг ямар сонголт аюулгүй байгааг дахин тайлбарлана. Бодлогын картууд доорх нэгдсэн жагсаалтад байна."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Халаалт · Increasing Array"
+          },
+          {
+            "type": "p",
+            "text": "Дараагийн тоог өмнөхөөс багагүй болгоход хамгийн багадаа ямар нэмэлт зайлшгүй хэрэгтэйг тайлбарла. Зөвхөн нэмэх үйлдэл зөвшөөрсөн тул эрт хийсэн хэрэггүй их нэмэлт яагаад ашиггүйг бод. “Буурахгүй” нь “заавал ихэсдэг” гэсэн үг биш."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Үндсэн дасгал · Movie Festival"
+          },
+          {
+            "type": "p",
+            "text": "Энэ хичээлийн сонголтын дүрмийг өөрөө хэрэгжүүл. Зөв код гаргахаас гадна хамгийн сайн хуваарийн эхний киног сонгосон киногоор солиход дараагийн кинонууд яагаад багтахыг батал. Энэ нь эхэлж бие даан дуусгах үндсэн дасгал."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Ажиглалтаа өөрчлөх · Ferris Wheel"
+          },
+          {
+            "type": "p",
+            "text": "Дуусах цагаар эрэмбэлэх дүрмийг хуулж болохгүй. Хамгийн хүнд үлдсэн хүүхдийг авч үзээд, хамгийн хөнгөнтэй хослуулж болох эсэхээс шийдвэр гаргах шалтгааныг солих аргаар тайлбарла. Хоёр заагтай аргын хичээлээ эхэлж үз."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Өөр нөхцөлд хэрэглэх · Tasks and Deadlines"
+          },
+          {
+            "type": "p",
+            "text": "Бүх ажлыг хийх ёстойг ашиглан нийт шагнал ба дуусах хугацааны нийлбэрийг холбо. Хөрш хоёр ажлын дарааллыг солиход юу өөрчлөгдөхийг тооцоолж, эрэмбэлэх дүрмээ гарга. Дуусгах эцсийн хугацаагаар нь тааж эрэмбэлэхгүй."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Сорилт · Movie Festival II"
+          },
+          {
+            "type": "p",
+            "text": "Олон үзэгчийн чөлөөлөгдөх цагийг тус тусад нь хадгал. Сонгосон киног хүлээн авч чадах үзэгчдээс алийг ашиглавал бусдын боломжийг илүү үлдээхийг тайлбарла. Давхардсан цагууд болон тохирох үзэгч байхгүй тохиолдлыг ялга. Эхлээд олонлог, дээд заагийн хичээлүүдээ үз."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Олимпиадын өргөтгөл · IOI 2019 Arranging Shoes"
+          },
+          {
+            "type": "p",
+            "text": "Зүүнээс боловсруулахад аль тохирох гутлыг хослуулах нь солих тоог нэмэхгүйг тайлбарла. Зүүн, баруун гутлын чиглэл болон өмнө нь арилсан байрлалуудын тоог тусад нь тооцох хэрэгтэй. Fenwick мод ба олонлогийн хичээлүүдийн дараах нэмэлт өргөтгөл; суурь хичээлийг эзэмших заавал нөхцөл биш."
+          }
+        ]
+      },
+      {
+        "key": "importance",
+        "title": "14. Эхэлж юуг эзэмших вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Энэ сэдвийн сургалтын ач холбогдол өндөр. Гол өгөөж нь олон сонголтын дундаас нэгийг нь баталгаатай хийж, үлдсэн бодлогыг хялбарчлах сэтгэлгээ. Хэдхэн мөр кодтой байлаа гээд баталгаа нь аяндаа амар болдоггүй."
+          },
+          {
+            "type": "p",
+            "text": "Эхлээд Movie Festival-ийг бие даан хэрэгжүүлж, эхний сонголтыг солих баталгааг өөрийн үгээр хэл. Дараа нь өөр зорилготой бодлогод дүрмээ шинээр гаргаж сур. Нэмэлт өгөгдлийн бүтэц шаардсан олимпиадын өргөтгөлийг одоохондоо дуусгах албагүй."
+          },
+          {
+            "type": "note",
+            "text": "Одтой бодлого нь энэ хичээлийн үндсэн бие даасан дадлага. Нийт сан дахь ач холбогдол ба нэг хичээлд заавал бодох эсэх нь тусдаа үнэлгээ юм."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Дүгнэлт ба өөрийгөө шалгах нь",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Зөв шуналтай арга нь таамагласан дүрэм, түүнийг батлах солих санаа, үлдсэн жижиг бодлого гэсэн холбоотой хэсгүүдтэй. Эдгээрийн аль нэг нь алга байвал богино код зөв болох баталгаа байхгүй."
+          },
+          {
+            "type": "list",
+            "items": [
+              "Сургалтын тоо, нийт хугацаа, нийт ашгийг ялгаж чадна.",
+              "Хамгийн эрт дуусах сургалтаар эхэлсэн хамгийн сайн хуваарь байдгийг баталж чадна.",
+              "Хамгийн эрт эхлэх болон хамгийн богино хугацаатайг авах дүрмүүдэд эсрэг жишээ өгч чадна.",
+              "Сүүлийн сонгосон дуусах цагийн утгыг тайлбарлаж, кодыг харалгүй бичиж чадна.",
+              "Өөр нэг дасгалд сонголтын дүрэм ба баталгааг шинээр гаргаж чадна."
+            ]
+          },
+          {
+            "type": "note",
+            "text": "Уншсан эсэх, баталж чадах эсэх, хэрэгжүүлж чадах эсэх, бие даан бодсон эсэхээ тус тусад нь үнэл. Доорх өөрийн үнэлгээ болон үндсэн дасгалын тэмдэглэлээр ахицаа шалгана."
+          },
+          {
+            "type": "links",
+            "items": [
+              {
+                "label": "Нэмэлт унших: Competitive Programmer’s Handbook — шуналтай аргууд",
+                "url": "https://cses.fi/book/book.pdf"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Greedy methods — proving one safe choice",
+        "summary": "Discover a safe choice through scheduling the most sessions in one room. Exchange it into an optimum, refute tempting alternatives, and build the implementation.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Which sessions fit in one room?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "A room has proposed sessions at $[0,8)$, $[1,3)$, $[3,5)$, $[5,7)$ and $[7,9)$. Overlapping sessions cannot both use it. Select as many sessions as possible."
+              },
+              {
+                "type": "p",
+                "text": "Interval $[l,r)$ starts at $l$ and finishes at $r$. Another session may start at that exact finish. Taking $[0,8)$ leaves only one session; taking the other four gives four."
+              },
+              {
+                "type": "p",
+                "text": "The objective is the number of sessions, not total duration or profit. Different values would define a different problem and may need a different rule."
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. What if we try every selection?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Each session is selected or skipped, giving $2^n$ subsets. Check compatibility and take a largest feasible subset."
+              },
+              {
+                "type": "p",
+                "text": "After sorting once by finish, check each subset in $O(n)$ time. Total work is $O(n2^n)$: a useful small oracle, but infeasible for $n=200000$."
+              },
+              {
+                "type": "note",
+                "text": "Seek a choice that can safely be fixed without exploring all alternatives. Finding a fast rule does not prove it correct."
+              }
+            ]
+          },
+          {
+            "key": "observation",
+            "title": "3. Which choice leaves the most room later?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "After the first session finishes, another can begin. This suggests selecting an earliest-finishing compatible session to leave the most time for future choices."
+              },
+              {
+                "type": "p",
+                "text": "In the example this is $[1,3)$. Continue with sessions starting at or after $3$. Choosing earliest start would instead take $[0,8)$ and lose the four-session schedule."
+              },
+              {
+                "type": "p",
+                "text": "Greedy methods commit to a locally preferred choice without revisiting it. The central task is not guessing the rule, but proving that some optimum begins with that choice."
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Selection rule and maintained state",
+            "blocks": [
+              {
+                "type": "ordered",
+                "items": [
+                  "Sort all sessions by increasing finish.",
+                  "Remember the finish of the last selected session; initially none is selected.",
+                  "Inspect sessions in sorted order. Accept one if its start is at least the last selected finish.",
+                  "Only on acceptance, increment the count and replace the last finish. A skipped session changes neither."
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Selected sessions remain nonoverlapping. Testing against the latest selected finish preserves that property, so every earlier selected session need not be checked again."
+              },
+              {
+                "type": "note",
+                "text": "Equal finishes leave the same future boundary. A start-time tie-break only gives a deterministic strict ordering."
+              }
+            ]
+          },
+          {
+            "key": "walkthrough",
+            "title": "5. Trace every decision",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Finish order is $[1,3)$, $[3,5)$, $[5,7)$, $[0,8)$, $[7,9)$. Compare each start with the last selected finish."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Session",
+                  "Reason",
+                  "Selected count",
+                  "Last finish"
+                ],
+                "rows": [
+                  [
+                    "$[1,3)$",
+                    "No earlier selection; accept.",
+                    "$1$",
+                    "$3$"
+                  ],
+                  [
+                    "$[3,5)$",
+                    "Starts exactly at the last finish.",
+                    "$2$",
+                    "$5$"
+                  ],
+                  [
+                    "$[5,7)$",
+                    "Compatible; accept.",
+                    "$3$",
+                    "$7$"
+                  ],
+                  [
+                    "$[0,8)$",
+                    "$0<7$; skip.",
+                    "$3$",
+                    "$7$"
+                  ],
+                  [
+                    "$[7,9)$",
+                    "Compatible; accept.",
+                    "$4$",
+                    "$9$"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Skipping the long session leaves the state unchanged. Replacing the last finish with that skipped finish would wrongly reject the final compatible session. The answer is four."
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Why is earliest finish correct?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Consider the remaining sessions compatible with earlier selections. Let $G$ finish earliest, and let $O$ be the first session in an optimal maximum-count schedule. Write $f(S)$ for the finish time of session $S$."
+              },
+              {
+                "type": "ordered",
+                "items": [
+                  "By choice of $G$, $f(G)\\le f(O)$.",
+                  "Replace $O$ by $G$. Every later session starts at or after the finish of $O$, hence also fits after $G$.",
+                  "Replacing one session with one session does not reduce the count. Therefore an optimum beginning with $G$ exists.",
+                  "The remaining problem consists of sessions starting at or after the finish of $G$. Apply the same argument inductively, with the empty instance returning zero."
+                ]
+              },
+              {
+                "type": "p",
+                "text": "This exchange relies on equal unit value per session. With unequal profits, replacing one session by another can reduce the objective."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Time, memory and numeric limits",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Sorting costs $O(n\\log n)$. The subsequent scan checks each session once with constant work, costing $O(n)$. Sorting dominates total time; the scan never restarts from the beginning."
+              },
+              {
+                "type": "p",
+                "text": "The function receives its vector by value, so the input copy uses $O(n)$ auxiliary memory. Sorting adds a smaller $O(\\log n)$ stack. An in-place variant would have a different copying cost."
+              },
+              {
+                "type": "p",
+                "text": "For $0\\le n\\le200000$, the count fits in an ordinary integer. Signed 64-bit timestamps are compared directly, avoiding overflow from subtracting endpoints."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Build the C++17 program in sections",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Read $n$, then $n$ start/finish pairs with start strictly below finish. Output the maximum compatible count; reconstructing the selected schedule is not required."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. Session data and strict ordering"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Session",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " gives the two timestamps named fields. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ends_earlier",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " orders by finish, then start. Equal objects must not compare less than each other.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <algorithm>\n#include <iostream>\n#include <limits>\n#include <vector>\nusing namespace std;\n\nstruct Session {\n    long long start;\n    long long finish;\n};\n\nbool ends_earlier(const Session& left, const Session& right) {\n    if (left.finish != right.finish) {\n        return left.finish < right.finish;\n    }\n    return left.start < right.start;\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. Sort and initialize the state"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "max_sessions",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " sorts a copy. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "last_finish",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " starts at the minimum signed value, allowing any valid first session. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "selected",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " counts accepted sessions.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int max_sessions(vector<Session> sessions) {\n    sort(sessions.begin(), sessions.end(), ends_earlier);\n    long long last_finish = numeric_limits<long long>::min();\n    int selected = 0;\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. Accept compatible sessions"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Accept a session whose start is at least ",
+                    "marks": []
+                  },
+                  {
+                    "text": "last_finish",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Update the count and finish only on acceptance, never on a skip.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    for (const Session& session : sessions) {\n        if (session.start >= last_finish) {\n            selected++;\n            last_finish = session.finish;\n        }\n    }\n\n    return selected;\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Connect input and output"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "main",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " reads timestamps in any order and prints the result of ",
+                    "marks": []
+                  },
+                  {
+                    "text": "max_sessions",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", which performs the sorting.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<Session> sessions(n);\n    for (Session& session : sessions) {\n        cin >> session.start >> session.finish;\n    }\n\n    cout << max_sessions(sessions) << '\\n';\n    return 0;\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete program"
+              },
+              {
+                "type": "note",
+                "text": "Concatenate the four fragments in order to obtain this exact program. Copy the complete version, not an isolated fragment, into one C++17 file."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <algorithm>\n#include <iostream>\n#include <limits>\n#include <vector>\nusing namespace std;\n\nstruct Session {\n    long long start;\n    long long finish;\n};\n\nbool ends_earlier(const Session& left, const Session& right) {\n    if (left.finish != right.finish) {\n        return left.finish < right.finish;\n    }\n    return left.start < right.start;\n}\n\nint max_sessions(vector<Session> sessions) {\n    sort(sessions.begin(), sessions.end(), ends_earlier);\n    long long last_finish = numeric_limits<long long>::min();\n    int selected = 0;\n\n    for (const Session& session : sessions) {\n        if (session.start >= last_finish) {\n            selected++;\n            last_finish = session.finish;\n        }\n    }\n\n    return selected;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<Session> sessions(n);\n    for (Session& session : sessions) {\n        cin >> session.start >> session.finish;\n    }\n\n    cout << max_sessions(sessions) << '\\n';\n    return 0;\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Sample input and output"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "5\n0 8\n1 3\n3 5\n5 7\n7 9"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "4"
+              },
+              {
+                "type": "p",
+                "text": "The output matches the four-session schedule constructed in the trace."
+              }
+            ]
+          },
+          {
+            "key": "boundaries",
+            "title": "9. Boundary cases",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "With $n=0$, select nothing and return zero.",
+                  "One session is always selectable.",
+                  "If every pair overlaps, only one may be selected.",
+                  "Touching endpoints are compatible.",
+                  "Two identical intervals remain distinct input entries but cannot both be selected.",
+                  "Negative and extreme timestamps still require only ordering comparisons."
+                ]
+              },
+              {
+                "type": "note",
+                "text": "Zero-length intervals $l=r$ are outside this program’s contract. Revisit compatibility and the proof if another task permits them."
+              }
+            ]
+          },
+          {
+            "key": "mistakes",
+            "title": "10. Tempting but incorrect rules",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Earliest start"
+              },
+              {
+                "type": "p",
+                "text": "Selecting $[0,8)$ in the main example gives one session instead of four. Starting early is not the same as releasing the room early."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Shortest duration"
+              },
+              {
+                "type": "p",
+                "text": "For $[0,4)$, $[4,8)$, $[3,5)$, the uniquely shortest interval overlaps both others and yields one session. The first two yield two."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Copying the rule into weighted profit"
+              },
+              {
+                "type": "p",
+                "text": "If $[0,2)$ earns $1$ and $[0,3)$ earns $10$, earliest finish preserves count but not maximum profit. The proof says replacing one item by one item preserves count, not value."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Updating from a skipped session"
+              },
+              {
+                "type": "p",
+                "text": "Changing the last finish to $8$ when skipping $[0,8)$ would wrongly reject $[7,9)$. State describes the last accepted session, not the last inspected one."
+              }
+            ]
+          },
+          {
+            "key": "connections",
+            "title": "11. Prerequisites and related techniques",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Sorting, a direct exhaustive method and counterexample construction are prerequisites. Greedy is a family of proved safe choices, not one universal algorithm."
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "invariant",
+                "label": "Loop invariants"
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "debugging",
+                "label": "Constructing counterexamples"
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "kruskal",
+                "label": "Safe edge choices in Kruskal"
+              },
+              {
+                "type": "p",
+                "text": "Answer-space binary search can use a greedy feasibility checker. Prove that checker separately from the search loop."
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "12. When should you try greedy?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "State the objective precisely, then ask whether the proposed first choice can be exchanged into an optimum without damaging later options or the objective."
+              },
+              {
+                "type": "p",
+                "text": "For another objective, let two job lengths satisfy $p\\le q$. Short-first gives completion sum $p+(p+q)=2p+q$; the reverse gives $q+(q+p)=p+2q$. The difference $p-q\\le0$ supports adjacent exchanges for minimizing completion-time sum. This is a different rule and proof from selecting earliest-finishing fixed sessions."
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Do not equate fast execution with correctness.",
+                  "If exchange loses value or violates a constraint, do not force the same rule.",
+                  "Consider DP or another method when several alternatives must remain represented."
+                ]
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. Six-stage practice",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "First prove and implement the basic selection independently. For each new task derive its safe choice rather than copying the finish-time rule. Practice cards are in the consolidated list below."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Warm-up · Increasing Array"
+              },
+              {
+                "type": "p",
+                "text": "Explain the minimum forced increase needed to make the next value no smaller than the previous one. Since only increments are allowed, explain why increasing more than necessary is unhelpful. Nondecreasing does not mean strictly increasing."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Standard · Movie Festival"
+              },
+              {
+                "type": "p",
+                "text": "Implement the rule independently and prove why exchanging the first film of an optimum for the greedy film preserves all later films. This is the core independent exercise."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Observation · Ferris Wheel"
+              },
+              {
+                "type": "p",
+                "text": "Do not copy finish-time sorting. Consider the heaviest remaining child and justify pairing with the lightest when feasible by an exchange. Study two pointers first."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Application · Tasks and Deadlines"
+              },
+              {
+                "type": "p",
+                "text": "Use the requirement to complete every job to relate total reward to total completion time. Compare adjacent job orders to derive the sort key, rather than guessing earliest deadline."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Challenge · Movie Festival II"
+              },
+              {
+                "type": "p",
+                "text": "Maintain each viewer’s availability. Decide which compatible viewer to use to leave the others flexible, preserving duplicate times and handling absence of a compatible viewer. Study ordered sets and upper bound first."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Olympiad extension · IOI 2019 Arranging Shoes"
+              },
+              {
+                "type": "p",
+                "text": "Explain the matching choice when processing from the left, separating shoe orientation from the number of removed positions. This optional extension needs Fenwick and ordered-occurrence prerequisites."
+              }
+            ]
+          },
+          {
+            "key": "importance",
+            "title": "14. What should you master first?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "This topic has high educational importance because it teaches how a safe choice simplifies the remaining problem. A short implementation does not imply an automatic or easy proof."
+              },
+              {
+                "type": "p",
+                "text": "First solve Movie Festival independently and explain its exchange in your own words. Then derive a new rule for a different objective. Data-structure-heavy olympiad extensions can wait."
+              },
+              {
+                "type": "note",
+                "text": "The star marks core independent practice for this lesson. Bank-wide problem priority and necessity for one lesson are separate judgments."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Synthesis and self-check",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "A sound greedy method connects a proposed rule, an exchange that justifies it, and a smaller remaining problem. A short program alone establishes none of these."
+              },
+              {
+                "type": "list",
+                "items": [
+                  "Distinguish count, total duration and profit objectives.",
+                  "Prove that an optimum can begin with earliest finish.",
+                  "Construct counterexamples to earliest start and shortest duration.",
+                  "Explain the state and implement without copying.",
+                  "Derive and prove a fresh rule for a different exercise."
+                ]
+              },
+              {
+                "type": "note",
+                "text": "Assess reading, proof, implementation and independent solving separately. Use the checks and core practice records below to judge mastery."
+              },
+              {
+                "type": "links",
+                "items": [
+                  {
+                    "label": "Further reading: Competitive Programmer’s Handbook — greedy algorithms",
+                    "url": "https://cses.fi/book/book.pdf"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know sorting, direct exhaustive search, loops and conditionals."
+      }
+    },
+    "prerequisites": "Эрэмбэлэх, энгийн бүх боломжийг шалгах арга, давталт ба нөхцөлт салааллыг мэддэг байна.",
+    "prerequisiteIds": [
+      "sorting",
+      "brute-force"
+    ],
+    "priorityLevel": "high",
+    "priorityReason": "Нэг аюулгүй сонголтоор үлдсэн бодлогыг хялбарчлах, хамгийн сайн хариунд солих баталгаа хийх, буруу дүрмийг эсрэг жишээгээр няцаах суурь сэтгэлгээг өгдөг тул сургалтын ач холбогдол өндөр.",
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "invariant",
+          "description": "Сонголт бүрийн дараа үнэн хэвээр үлдэх нөхцөлийг тодорхойлох.",
+          "descriptionEn": "Properties preserved by a choice."
+        },
+        {
+          "tutorialId": "kruskal",
+          "description": "Графт аюулгүй холбоос сонгож, бүлгүүдийг нэгтгэх.",
+          "descriptionEn": "Greedy graph choices using DSU."
+        },
+        {
+          "tutorialId": "debugging",
+          "description": "Таамагласан дүрмийг няцаах жижиг эсрэг жишээ байгуулах.",
+          "descriptionEn": "Find counterexamples to incorrect rules."
+        }
+      ],
+      "next": "binary-search-answer",
+      "practice": [
+        {
+          "key": "301",
+          "stage": "Warm-up",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "317",
+          "stage": "Standard",
+          "priority": true,
+          "reason": "Хамгийн эрт дуусах сургалтыг сонгох дүрмийг бие даан хэрэгжүүлж, солих баталгаагаар зөвийг тайлбарлах үндсэн дасгал."
+        },
+        {
+          "key": "314",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "330",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "338",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "712",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "320",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "107",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "329",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "331",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false
+  }
+}

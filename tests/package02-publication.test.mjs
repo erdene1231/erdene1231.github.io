@@ -131,3 +131,39 @@ test('separately proposed owner publication is atomic, guarded and leaves drafts
         assert.deepEqual(await snapshot(),after);
     } finally { await db.close(); }
 });
+
+test('rewritten revision-6 replacements validate through native lifecycle, preserve unrelated data and reject replay/drift atomically', async()=>{
+    const {ownerPublicationSql,ownerReplacementSql}=await import('../tools/package02_owner_publication.mjs');
+    const {bodyHash}=await import('../tools/package02_tutorial_proposals.mjs');
+    const {db}=await foundationDatabase();
+    try {
+        await db.query(`insert into tutorial_drafts(tutorial_id,editor_id,body,revision,base_revision)
+            select id,'00000000-0000-0000-0000-000000000002',body,1,5 from tutorial_catalog where id='binary-search'`);
+        await db.exec(ownerPublicationSql(JSON.parse(fs.readFileSync('audit/PACKAGE02-FOUNDATION-PUBLISH-BATCH01.json')),await localOwnerGuard(db)));
+        const snapshot=async()=>({catalog:(await db.query('select * from tutorial_catalog order by id')).rows,
+            drafts:(await db.query('select * from tutorial_drafts')).rows,history:(await db.query('select * from tutorial_changes order by change_id')).rows,
+            progress:(await db.query('select * from progress')).rows,learning:(await db.query('select * from learning_records')).rows,
+            problems:(await db.query('select * from problem_catalog order by number')).rows});
+        const before=await snapshot(),targets=[];
+        for(const id of ['binary-search','greedy','dynamic-programming']){
+            const candidate=JSON.parse(fs.readFileSync(`audit/package02-rewrite/${id}.json`));
+            const live=(await db.query('select md5(body::text) hash from tutorial_catalog where id=$1',[id])).rows[0];
+            targets.push({...candidate,expected_body_md5:live.hash,expected_published:true,proposed_body_sha256:bodyHash(candidate.body)});
+        }
+        const batch={targets},guard=await localOwnerGuard(db),sql=ownerReplacementSql(batch,guard);
+        assert.throws(()=>ownerPublicationSql(batch,guard),/payload guard/);
+        await assert.rejects(db.exec(sql.replace('-- Atomic boundary: one target and its history are complete.',"RAISE EXCEPTION 'Injected replacement failure';")),/Injected replacement failure/);
+        assert.deepEqual(await snapshot(),before);
+        await db.query("update tutorial_catalog set revision=revision+1 where id='greedy'");
+        await assert.rejects(db.exec(sql),/CAS\/body\/status drift/);
+        assert.deepEqual((await snapshot()).catalog.find(t=>t.id==='binary-search'),before.catalog.find(t=>t.id==='binary-search'));
+        await db.query("update tutorial_catalog set revision=revision-1 where id='greedy'");
+        await db.exec(sql);
+        const after=await snapshot(),wanted=new Set(targets.map(t=>t.id));
+        for(const key of ['drafts','progress','learning','problems'])assert.deepEqual(after[key],before[key]);
+        assert.deepEqual(after.catalog.filter(t=>!wanted.has(t.id)),before.catalog.filter(t=>!wanted.has(t.id)));
+        assert.deepEqual(after.history.slice(0,3),before.history);assert.equal(after.history.length,6);
+        for(const target of targets){const row=after.catalog.find(t=>t.id===target.id);assert.equal(row.revision,7);assert.deepEqual(row.body,target.body);}
+        await assert.rejects(db.exec(sql),/CAS\/body\/status drift/);assert.deepEqual(await snapshot(),after);
+    } finally {await db.close();}
+});

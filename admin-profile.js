@@ -1,5 +1,5 @@
-import {normalizeUsername}from'./community.js?v=6';
-import {AVATAR_BUCKET,resizeAvatar,validateAvatar,avatarUrl,rpc}from'./accounts.js?v=48';
+import {normalizeUsername}from'./community.js?v=52';
+import {AVATAR_BUCKET,resizeAvatar,validateAvatar,avatarUrl,rpc}from'./accounts.js?v=52';
 const reserved=new Set(['admin','administrator','root','system','support','moderator','erdeneclub','api','auth','null','undefined','constructor','prototype']);
 export function validateAdminProfileChanges(values,existing){
  if(!values||typeof values!=='object'||Object.keys(values).some(k=>!['first_name','last_name','username'].includes(k)))throw Error('Зөвхөн овог, нэр, username засна.');

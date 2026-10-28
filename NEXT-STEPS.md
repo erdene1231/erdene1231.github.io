@@ -1,3 +1,9 @@
+# Package 2 correction: first three REOPENED, accepted completion 0/55
+
+The user rejected revision 6 Binary Search, Greedy and DP for old organization with appended duplicate complexity/practice and unnecessarily English-heavy Mongolian. They remain live; do not delete or unpublish them. Previous whole-lesson completion claims are superseded. Rebuild all three from scratch in coherent 15-chapter teaching order, natural Mongolian, fragments/explanations before full C++17. Inspect the full reader/TOC on real responsive layouts, not an isolated article fixture. See `audit/PACKAGE02-FOUNDATION-REWRITE-PLAN.md` and the screenshot inspected from Library. Do not advance the other 52 using the rejected template.
+
+Preserve IDs, relationships, learner records, private drafts and Mongolia. Fresh revision 6 snapshots are under `/workspace/package02-rewrite-live`. Corrected finished content may be published through the standing guarded operator workflow after genuine quality review; no partial publication or security expansion. Published count is still 3, accepted count is 0. Old receipts record successful transport only.
+
 # Package 2: first three complete lessons are LIVE
 
 PR #25 merged as `6e61f2286cf932084dc2b210aca541a113516af4`. The user explicitly confirmed publication through the existing Supabase SQL operator; the exact tested owner statement ran once after fresh recovery/guards. Binary Search, Greedy and DP are published at revision 6 with exact reviewed bodies, 15 sections and complete practice relationships. Real history records are 141, 142 and 143. Anonymous public RPC retrieval and rendering of those retrieved bodies passed. See `audit/PACKAGE02-PUBLICATION-RECEIPT01.json`.

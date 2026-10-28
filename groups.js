@@ -1,6 +1,6 @@
-import {createReportLatex, createReportPdf} from './group-document.js?v=19';
-import {rpc} from './accounts.js?v=48';
-import {createReportWorkbook, todayInMongolia, validDate, weekday, shiftDate, dateRange, filterWeekdays, selectReportRows} from './group-export.js?v=20';
+import {createReportLatex, createReportPdf} from './group-document.js?v=52';
+import {rpc} from './accounts.js?v=52';
+import {createReportWorkbook, todayInMongolia, validDate, weekday, shiftDate, dateRange, filterWeekdays, selectReportRows} from './group-export.js?v=52';
 
 const MARKUP = `
 <div class="section-head"><div><p class="eyebrow">ХАМТДАА СУРЪЯ</p><h2>Групп ба өдрийн тэмдэглэл</h2></div><button id="group-create" class="primary" type="button" hidden>+ Групп үүсгэх</button></div>

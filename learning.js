@@ -1,16 +1,17 @@
-import {priorityLevel,priorityLabel} from './priority.js?v=48';
-import {CHECKS,canonicalKey,problemIndex,resolvePractice,tutorialMastery,dayCompletion,buildStatistics,weekStatistics,dateKey,addDays,monday,loadLearningContent,validateRelations,withArchivedProblems} from './learning-model.js?v=48';
-import {createLearningStore} from './learning-store.js?v=23';
-import {ratingLabel,difficultyLabel} from './catalog.js?v=48';
-import {avatarUrl} from './accounts.js?v=48';
-import {typeset} from './tutorials.js?v=48';
-import {view} from './tutorial-model.js?v=48';
+import {priorityLevel,priorityLabel} from './priority.js?v=52';
+import {CHECKS,canonicalKey,problemIndex,resolvePractice,tutorialMastery,dayCompletion,buildStatistics,weekStatistics,dateKey,addDays,monday,loadLearningContent,validateRelations,withArchivedProblems} from './learning-model.js?v=52';
+import {createLearningStore} from './learning-store.js?v=52';
+import {ratingLabel,difficultyLabel} from './catalog.js?v=52';
+import {avatarUrl} from './accounts.js?v=52';
+import {typeset} from './tutorials.js?v=52';
+import {view} from './tutorial-model.js?v=52';
 const $=id=>document.getElementById(id);
 const el=(tag,text,cls)=>{const x=document.createElement(tag);if(text!==undefined)x.textContent=text;if(cls)x.className=cls;return x;};
 const button=(text,action,cls)=>{const x=el('button',text,cls);x.type='button';x.onclick=action;return x;};
 const link=(text,href)=>{const x=el('a',text);x.href=href;return x;};
-const checkMN=['Яагаад хэрэгтэйг тайлбарлаж чадна.','Зөв ажиллах шалтгааныг баталж чадна.','Time/space complexity-г гаргаж чадна.','Implementation-ийг харалгүй бичиж чадна.','Түгээмэл алдааг counterexample-аар ялгаж чадна.'];
+const checkMN=['Яагаад хэрэгтэйг тайлбарлаж чадна.','Зөв ажиллах шалтгааныг баталж чадна.','Хугацаа ба санах ойн зардлыг тооцоолж чадна.','Бэлэн код харалгүй хэрэгжүүлж чадна.','Түгээмэл алдааг эсрэг жишээгээр тайлбарлаж чадна.'];
 const checkEN=['I can explain why it is useful.','I can justify its correctness.','I can derive time and space complexity.','I can implement it without the reference.','I can identify common mistakes with counterexamples.'];
+const stageMN={'Warm-up':'Халаалт','Standard':'Үндсэн дасгал','Observation':'Ажиглалтаа өөрчлөх','Application':'Хэрэглээ','Challenge':'Сорилт','Olympiad extension':'Олимпиадын өргөтгөл'};
 const statusText=(status,en=false)=>status==='solved'?(en?'✓ Solved':'✓ Бодсон'):status==='trying'?(en?'◷ Attempting':'◷ Оролдож байгаа'):(en?'○ Not started':'○ Эхлээгүй');
 export async function setupLearning(ctx) {
  const content=await loadLearningContent();let topics=[],admin=ctx.isAdmin?.()===true,scheduled=false,importBusy=false,accountId,profileToken=0,profileData=null,viewed=null,profileLoading=false,weekOffset=0,tutorialStatusRefresh,lastTutorial;
@@ -35,7 +36,7 @@ export async function setupLearning(ctx) {
   const en=lang==='en',p=item.problem,card=el('article',undefined,'learning-problem');
   if(!p){const seed=content.catalog.problems.find(p=>canonicalKey(p)===item.key);if(!seed)return null;card.append(el('strong',seed.title),el('small',en?'Available after the teacher updates the library.':'Багш санг шинэчилсний дараа progress тэмдэглэх боломжтой.','muted'));const a=link(en?'Read on source ↗':'Эх сурвалжаас унших ↗',seed.url);a.target='_blank';a.rel='noopener noreferrer';card.append(a);return card;}
   card.dataset.problemId=p.id;card.dataset.lang=lang;
-  const title=button('',()=>open(p),'learning-problem-open');title.append(el('strong',(item.priority?'★ ':'')+p.title),el('small',p.source+' · '+ratingLabel(p)+' · '+difficultyLabel(p,lang)+(item.stage?' · '+item.stage:'')));card.append(title,el('span',priorityLabel(p),'priority-badge priority-'+priorityLevel(p)));
+  const title=button('',()=>open(p),'learning-problem-open');title.append(el('strong',(item.priority?'★ ':'')+p.title),el('small',p.source+' · '+ratingLabel(p)+' · '+difficultyLabel(p,lang)+(item.stage?' · '+(en?item.stage:(stageMN[item.stage]||item.stage)):'')));card.append(title,el('span',en?priorityLabel(p):'Ач холбогдол: '+({low:'бага',medium:'дунд',high:'өндөр'}[priorityLevel(p)]),'priority-badge priority-'+priorityLevel(p)));
   const status=ctx.progress()[p.id]?.status||'new';card.append(el('span',statusText(status,en),'badge '+status));
   const save=button('',()=>{const saved=!store.get('bookmark',p.id).saved;store.set('bookmark',p.id,{saved});updateBookmark();});save.dataset.bookmark=p.id;
   function updateBookmark(){save.textContent=store.get('bookmark',p.id).saved?(en?'Saved ✓':'Хадгалсан ✓'):(en?'Save for later':'Дараа бодох');}updateBookmark();card.append(save);return card;
@@ -45,11 +46,11 @@ export async function setupLearning(ctx) {
   const variants=el('section',undefined,'learning-extras');variants.append(el('h3',en?'Variants and related techniques':'Хувилбарууд ба холбогдох аргууд'));
   for(const v of rel.variants){const other=topics.find(t=>t.id===v.tutorialId);if(!other)continue;const row=el('div',undefined,'learning-variant');row.append(link(view(other,lang).title,'#tutorial/'+other.id),el('p',en?v.descriptionEn:v.description));variants.append(row);}
   if(!rel.variants.length)variants.append(el('p',en?'Continue with the prerequisite and next-lesson links.':'Урьдчилсан болон дараагийн хичээлийн холбоосоор үргэлжлүүлээрэй.'));parent.append(variants);
-  const practice=resolvePractice(rel.practice,ctx.problems()),section=el('section',undefined,'learning-extras');section.append(el('h3',en?'Problems to master this topic':'Энэ сэдвийг эзэмших бодлогууд'),el('p',en?'Try before opening hints. Stars mark high-value practice for this lesson.':'Hint нээхээс өмнө өөрөө оролд. ★ нь энэ сэдэвт өгөөжтэй priority дадлага.','muted'));
+  const practice=resolvePractice(rel.practice,ctx.problems()),section=el('section',undefined,'learning-extras');section.append(el('h3',en?'Problems to master this topic':'Энэ сэдвийг эзэмших бодлогууд'),el('p',en?'Try before opening hints. Stars mark high-value practice for this lesson.':'Санамж нээхээс өмнө өөрөө оролд. ★ нь энэ хичээлд эхэлж бие даан бодох үндсэн дасгал.','muted'));
   for(const item of practice){const card=problemCard(item,lang);if(card)section.append(card);}
-  if(admin){const detail=el('details');detail.dataset.adminReasons='true';detail.append(el('summary','Editor · Priority сонголтын үндэслэл'));for(const item of practice.filter(x=>x.priority))detail.append(el('p',(item.problem?.title||item.key)+': '+item.reason));section.append(detail);}parent.append(section);
+  if(admin){const detail=el('details');detail.dataset.adminReasons='true';detail.append(el('summary','Багшид · Дасгал сонгосон үндэслэл'));for(const item of practice.filter(x=>x.priority))detail.append(el('p',(item.problem?.title||item.key)+': '+item.reason));section.append(detail);}parent.append(section);
   const box=el('section',undefined,'learning-extras learning-checklist');box.append(el('h3',en?'Reading and understanding are different':'Унших ба эзэмших нь өөр'));box.dataset.tutorialId=t.id;const status=el('p',undefined,'muted');
-  function refresh(){status.textContent=tutorialMastery(t.id,recordFor(t.id),practice,ctx.progress()).mastered?(en?'Self-check and priority practice completed.':'Өөрийн үнэлгээ ба priority дадлага бүрдсэн.'):(en?'Reading alone does not complete mastery. Confirm understanding and solve the priority practice.':'Уншсан төдийд эзэмшсэн гэж тооцохгүй. Өөрийн үнэлгээ болон priority бодлогын progress хамт шаардлагатай.');}
+  function refresh(){status.textContent=tutorialMastery(t.id,recordFor(t.id),practice,ctx.progress()).mastered?(en?'Self-check and priority practice completed.':'Өөрийн үнэлгээ ба үндсэн дасгалууд бүрдсэн.'):(en?'Reading alone does not complete mastery. Confirm understanding and solve the priority practice.':'Уншсан төдийд эзэмшсэн гэж тооцохгүй. Өөрийн үнэлгээ болон үндсэн дасгалуудаа бодсон тэмдэглэл хамт шаардлагатай.');}
   tutorialStatusRefresh=refresh;refresh();box.append(status,button(en?'Mark this lesson as read':'Энэ хичээлийг уншсан гэж тэмдэглэх',()=>{store.set('tutorial',t.id,{...recordFor(t.id),readSections:t.sections.map((_,i)=>i)});refresh();}));
   CHECKS.forEach((key,i)=>{const label=el('label'),input=el('input');input.type='checkbox';input.dataset.tutorialCheck=key;input.checked=(recordFor(t.id).checks||[]).includes(key);input.onchange=()=>{const previous=recordFor(t.id),checks=new Set(previous.checks||[]);input.checked?checks.add(key):checks.delete(key);store.set('tutorial',t.id,{...previous,checks:[...checks]});refresh();};label.append(input,el('span',(en?checkEN:checkMN)[i]));box.append(label);});parent.append(box);
  }
