@@ -1,0 +1,906 @@
+{
+  "id": "fast-power",
+  "expected_revision": 3,
+  "expected_published": true,
+  "expected_body_sha256": "6f9dfeea95eec4fdfb86719c8e2049d9c29316bae4463669ce5be616c6d61275",
+  "status": "Full semantic/code/native reader/editor review passed; fresh live revision and private-draft guards required before publication",
+  "body": {
+    "id": "fast-power",
+    "level": "Анхан шат",
+    "order": 14,
+    "title": "Хурдан зэрэг — хоёртын битээр үржүүлэлтээ цөөлөх",
+    "aliases": "fast-power Fast power — хурдан зэрэгт дэвшүүлэх Fast power — binary exponentiation",
+    "related": [
+      "gcd",
+      "sieve"
+    ],
+    "summary": "Тэгш ба сондгой зэргийн хувиргалтаас логарифм давталт гаргана. Хариу хадгалах баталгаа, модультай тооцооны нөхцөл, тэг зэрэг болон үржвэрийн багтах хязгаарыг кодтой нь хамт шалгана.",
+    "category": "Mathematics",
+    "levelKey": "beginner",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Маш их зэргийг бүтнээр нь байгуулах хэрэгтэй юу?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$3^{13}$-ыг $17$-д хуваахад ямар үлдэгдэл гарах вэ? Хариунд бүх цифр нь хэрэггүй, зөвхөн $0$-ээс $16$ хүртэл нэг утга хэрэгтэй. Харин зэрэг нь $10^{18}$ байвал нэг нэгээр нь үржүүлэх хугацаа ч хүрэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Энэ хичээлд эерэг $m$ тоогоор үлдэгдэл авч $a^e$-г олно. Үлдэгдэл авах тоог модуль гэж нэрлэдэг. Зэрэг дэвшүүлэгчийг хоёртын хэлбэрээр задлахад шаардлагатай үржүүлэлтийн тоо эрс багасна."
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Үржүүлэлт бүрийн дараа үлдэгдэл авах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэгээс эхлээд $a$-гаар $e$ удаа үржүүлж болно. Үржүүлэх бүрдээ $m$-д хуваасан үлдэгдлийг хадгалбал эцсийн хариу зөв: ижил үлдэгдэлтэй тоонуудыг үржүүлэхэд үлдэгдэл нь мөн ижил байна. Гэвч хугацаа $O(e)$ хэвээр."
+          },
+          {
+            "type": "p",
+            "text": "Энэ нь аварга бүхэл тоог хадгалах хэрэггүйг шийдсэн ч хэт олон алхмыг шийдээгүй. Нэг алхамд хэд хэдэн үржүүлэлтийг орлуулж болохыг тэгш, сондгой зэргээс харъя."
+          }
+        ]
+      },
+      {
+        "key": "observation",
+        "title": "3. Тэгш зэргийг квадрат болгон хуваах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$a^{2k}=(a^2)^k$, харин $a^{2k+1}=a(a^2)^k$. Сондгой үед нэг $a$-г тусад нь авч үлдээд, хоёр тохиолдолд хоёуланд нь сууриа квадратлаж, зэргээ бүхэл хуваалтаар хоёр дахин багасгаж болно."
+          },
+          {
+            "type": "p",
+            "text": "$13=8+4+1=1101_2$. Иймээс $a^{13}=a^8a^4a$. Квадратлах бүр дараагийн хоёртын орны жинг бэлдэнэ; сондгой эсэхийг шалгах нь одоогийн доод бит нэг эсэхийг шийдэж байгаа хэрэг."
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Хураасан хариу, одоогийн суурь, үлдсэн зэрэг",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Гурван төлөв хадгална. Хариуг нэгийн үлдэгдлээр, суурийг өгсөн тооны үлдэгдлээр эхлүүлнэ. Үлдсэн зэрэг сондгой бол одоогийн суурийг хариунд үржүүлнэ. Дараа нь сууриа квадратлаад зэргээ хоёрт бүхэл хуваана."
+          },
+          {
+            "type": "p",
+            "text": "Үржүүлэлт бүрийн дараа үлдэгдэл авна. Үлдсэн зэрэг тэг болоход хариу бэлэн. Хариуг сууриар эхлүүлэхгүй: тэг зэрэгт нэг, мөн сонгогдоогүй битүүдэд нэмэлт үржүүлэлт хэрэггүй."
+          }
+        ]
+      },
+      {
+        "key": "walkthrough",
+        "title": "5. 3-ын 13 зэрэг, модуль 17",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхэнд хариу $1$, суурь $3$, үлдсэн зэрэг $13$. Сондгой тул хариу $3$. Суурийн квадратын үлдэгдэл $9$, үлдсэн зэрэг $6$. Одоо тэгш тул хариу хэвээр; суурь $9^2\\bmod17=13$, зэрэг $3$."
+          },
+          {
+            "type": "p",
+            "text": "Дараа нь хариу $3\\cdot13\\bmod17=5$, суурь $13^2\\bmod17=16$, зэрэг $1$. Сүүлийн сондгой алхамд хариу $5\\cdot16\\bmod17=12$. Зэрэг тэг болж дуусна. Дөрөвхөн давталт хийсэн нь $13$-ын хоёртын бичлэг дөрвөн оронтой байгаатай таарна."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Алхамын өмнө",
+              "Хариу",
+              "Суурь",
+              "Үлдсэн зэрэг"
+            ],
+            "rows": [
+              [
+                "$0$",
+                "$1$",
+                "$3$",
+                "$13$"
+              ],
+              [
+                "$1$",
+                "$3$",
+                "$9$",
+                "$6$"
+              ],
+              [
+                "$2$",
+                "$3$",
+                "$13$",
+                "$3$"
+              ],
+              [
+                "$3$",
+                "$5$",
+                "$16$",
+                "$1$"
+              ],
+              [
+                "$4$",
+                "$12$",
+                "$1$",
+                "$0$"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Үлдсэн үржвэр анхны зэрэгтэй тэнцүү хэвээр",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Анхны суурь, зэргийг $A,E$ гэе. Давталтын эхэнд $\\text{result}\\cdot\\text{base}^{\\text{exponent}}\\equiv A^E\\pmod m$ байна. Эхлүүлэхэд энэ нь шууд зөв. Тэгш зэрэгт хариуг хэвээр үлдээн квадратлаж хагаслах нь үржвэрийг өөрчлөхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Сондгой зэрэгт хариунд нэг суурь үржүүлээд үлдсэн тэгш хэсгийг квадратын зэрэг болгосон тул мөн ижил үржвэр үлдэнэ. Үлдэгдэл авах нь тэнцэтгэлийг биш, модуль дахь ижил үлдэгдлийг хадгална."
+          },
+          {
+            "type": "p",
+            "text": "Эерэг үлдсэн зэрэг хоёрт бүхэл хуваагдах бүрд эрс багасна. Дуусахад үлдсэн зэрэг тэг, суурийн тэг зэрэг нэг тул хадгалсан хариу л үлдэнэ. Энэ бодлогын гэрээнд $0^0=1$ гэсэн хоосон үржвэрийн тохиролцоог хэрэглэнэ."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Зэргийн утгаар биш, битийн тоогоор ажиллана",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэг давталт зэргийг хоёрт хуваана. Иймээс $O(\\log(e+2))$ удаа ажиллаж, тогтмол тооны бүхэл хувьсагчаар $O(1)$ нэмэлт зай хэрэглэнэ. Тэг зэрэгт ч эхлүүлэх ажил байгаа тул хоёр нэмсэн бичлэг хоосон давталтыг хамарна."
+          },
+          {
+            "type": "p",
+            "text": "Энд хязгаартай машины бүхэл үржүүлэлт, үлдэгдлийг нэг үйлдэл гэж тооцсон. Аварга бүхэл тоо эсвэл матрицын зэрэгт нэг үржүүлэлтийн зардал өөр. Тэнд давталтын тоо логарифм хэвээр ч нийт хугацаанд тэр өртгийг үржүүлнэ."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. C++17: нормчилсон үлдэгдлүүдийг л үржүүл",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхний мөрд асуултын тоо 0–200000. Мөр бүрд суурь ба зэрэг тус бүр 0–$10^{18}$, модуль 1–$10^9+7$ байна. Мөр бүрд зэргийн үлдэгдлийг хэвлэнэ. Сөрөг тоо, тэг модуль зөвшөөрөхгүй; $0^0=1$ гэж авна."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Нормчлох ба нэгж хариу"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролтын суурийг эхлээд модулиар багасгана. Хариуг нэгийн үлдэгдлээр эхлүүлэхэд модуль нэг болон тэг зэрэг хоёул зөв болно.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <iostream>\nusing namespace std;\nusing Integer = unsigned long long;\n\nInteger modular_power(Integer base, Integer exponent, Integer modulus) {\n    base %= modulus;\n    Integer result = Integer{1} % modulus;\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Битийн алхмууд"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Одоогийн зэрэг сондгой бол хуучин сууриа хариунд хэрэглэнэ. Дараа нь квадратлаж хагаслахад хадгалсан үржвэр ижил хэвээр. Бүх үржвэрийн багтах баталгаа доорх оролтын хязгаартай холбоотой.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    while (exponent != 0) {\n        if (exponent % 2 == 1) {\n            result = (result * base) % modulus;\n        }\n        base = (base * base) % modulus;\n        exponent /= 2;\n    }\n    return result;\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Оролтын бэлтгэл"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Асуултын тоог уншаад, өгөгдлийг бүхэл массиваар хадгалахгүйгээр боловсруулахад бэлтгэнэ. Integer нь тэмдэггүй урт бүхэл төрөл.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int query_count;\n    cin >> query_count;\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Асуултын хариу"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Энд асуулт бүр өөрийн суурь, зэрэг, модулиар өгөгдөнө. Функцийн дотоод төлөв асуулт хооронд үлдэхгүй. CSES-ийн тогтмол модультай хувилбарт оролтыг нь тэр гэрээнд тохируулна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    for (int query = 0; query < query_count; ++query) {\n        Integer base, exponent, modulus;\n        cin >> base >> exponent >> modulus;\n        cout << modular_power(base, exponent, modulus) << '\\n';\n    }\n    return 0;\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах C++17 программ"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <iostream>\nusing namespace std;\nusing Integer = unsigned long long;\n\nInteger modular_power(Integer base, Integer exponent, Integer modulus) {\n    base %= modulus;\n    Integer result = Integer{1} % modulus;\n\n    while (exponent != 0) {\n        if (exponent % 2 == 1) {\n            result = (result * base) % modulus;\n        }\n        base = (base * base) % modulus;\n        exponent /= 2;\n    }\n    return result;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int query_count;\n    cin >> query_count;\n\n    for (int query = 0; query < query_count; ++query) {\n        Integer base, exponent, modulus;\n        cin >> base >> exponent >> modulus;\n        cout << modular_power(base, exponent, modulus) << '\\n';\n    }\n    return 0;\n}\n"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "4\n3 13 17\n0 0 7\n8 0 1\n2 10 1000\n"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "12\n1\n0\n24\n"
+          }
+        ]
+      },
+      {
+        "key": "boundaries",
+        "title": "9. Тэг зэрэг, модуль нэг, үржвэрийн бодит хязгаар",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Зэрэг тэг үед давталтгүйгээр $1\\bmod m$ буцаана. Модуль нэг бол бүх тооны үлдэгдэл тэг; тэг зэрэгт ч тэг гарна. Суурь тэг, зэрэг эерэг бол тэг. Модуль тэгийг хэзээ ч зөвшөөрөхгүй: тэгээр үлдэгдэл авах боломжгүй."
+          },
+          {
+            "type": "p",
+            "text": "Кодод $1\\le m\\le10^9+7$. Нормчилсон хоёр үлдэгдэл тус бүр $m$-ээс бага тул үржвэр нь $(10^9+6)^2<2^{64}$, сонгосон тэмдэггүй урт бүхэлд багтана. Анхны суурь $10^{18}$ байж болох ч эхлээд үлдэгдэл авсан тул аварга суурийг өөрөөр нь үржүүлэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Илүү том модульд энэ үржүүлэх кодыг шууд хэрэглэж болохгүй. Үржүүлсний дараа % хийсэн ч өмнө болсон халилтыг засахгүй. Сөрөг суурь эсвэл сөрөг зэрэг мөн энэ программын гэрээнд орохгүй."
+          }
+        ]
+      },
+      {
+        "key": "mistakes",
+        "title": "10. Квадратлахгүй эсвэл халилтыг орхивол",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Зэргээ хагаслаад сууриа квадратлахгүй бол өөр зэргийг бодно. Сондгой алхамд хариуг шинэчилснээс өмнө суурийг квадратлавал мөн өөр битийн жин ашиглана. Кодын дараалал баталгааныхаа алхамтай таарах ёстой."
+          },
+          {
+            "type": "p",
+            "text": "C++-ийн ^ нь XOR, зэрэг биш. Бодит тоон pow функцийн ойролцооллыг бүхэл модультай хариунд орлуулахгүй. Модультай үржүүлэлтэд ч төрөл, үржвэрийн хязгаарыг шалга; модульд хуваасан үлдэгдэл нь анхны бүхэл зэргийн хэмжээ биш."
+          }
+        ]
+      },
+      {
+        "key": "connections",
+        "title": "11. Ижил үржүүлэх дүрмийг өөр төлөвт хэрэглэх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэгж элементтэй, бүлэглэхээс үр дүн өөрчлөгддөггүй үржүүлэх дүрэм байвал ижил хагаслах санаа хэрэглэгдэнэ. Матрицын хувьд нэгж матрицаар эхлүүлж квадратлана. Харин матриц үржүүлэхийн өртөг ба дарааллыг тусад нь тооцно."
+          },
+          {
+            "type": "p",
+            "text": "Exponentiation II-д зэрэг нь өөрөө зэрэг. Түүнийг дурын модульд автоматаар бууруулж болохгүй: анхны модуль ба суурийн харилцан анхны байх нөхцөл зэрэг нэмэлт теорем шаарддаг. Суурь тэг үед жинхэнэ зэрэг тэг үү, эерэг үү гэдгийг ялгах нь чухал. Энэ нь суурь давталтаас цаашдын сонголтот шат."
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "gcd",
+            "label": "ХИЕХ"
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "bit-operations",
+            "label": "Битийн үйлдлүүд"
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "12. Ижил хувиргалтыг олон дахин давтах үед",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Маш том зэрэг, олон ижил шилжилт, дахин дахин үржүүлэх гэсэн хэлбэрийг тань. Нэг алхамын үржүүлэх дүрэм юу вэ, нэгж төлөв нь юу вэ, бүлэглэж болох уу гэдгийг эхлээд тогтоо."
+          },
+          {
+            "type": "p",
+            "text": "Үржүүлэх дүрэм өөрчлөгдөж байгаа эсвэл бүлэглэл үр дүнг өөрчилдөг бол энэ давталтыг хүчээр хэрэглэхгүй. Мөн нэгж элементгүй үед тэг зэргийн хариуг сохроор нэг гэж тавихгүй."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Шууд зэрэг, давхар зэрэг, матриц",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Bit Strings"
+          },
+          {
+            "type": "p",
+            "text": "Бит бүрийн хоёр сонголтоос хоёрын зэрэг гарга. Маш урт битийн мөрүүдийг үүсгэхгүй, зөвхөн тоог модульд ол."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Exponentiation"
+          },
+          {
+            "type": "p",
+            "text": "Модуль нь тогтмол бодлогын оролтод функцээ тохируул. Тэг зэрэг болон өгсөн 0-ын 0 зэрэг нэг гэсэн тохиролцоог шалга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Exponentiation II"
+          },
+          {
+            "type": "p",
+            "text": "Зэргийн үлдэгдэл ба хариуны үлдэгдэл өөр модультай байж болохыг нэмэлт теоремтой нь сур. Суурь тэгийн тохиолдлыг тусад нь ялга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Fibonacci Numbers"
+          },
+          {
+            "type": "p",
+            "text": "Матрицын шилжилт, нэгж матриц, үржүүлэх дарааллыг нэмж сур. Логарифм алхам тутамд матриц үржүүлж байгааг тооц."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Graph Paths I"
+          },
+          {
+            "type": "p",
+            "text": "Тогтмол урттай замын тоог матрицын үржвэртэй холбох баталгаа гарга. Замын тоо ба хүрч болох эсэхийг бүү холь."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "IOI 2014 Gondola"
+          },
+          {
+            "type": "p",
+            "text": "Сэлгэлт, хүчинтэй байдлын шалгалт, боломж тоолох нэмэлт санаатай олимпиадын өргөтгөл. Тооллогын үржигдэхүүн дэх том зэргийг хурдан бодох нь нэг хэрэгсэл болохоос бүх шийдэл биш."
+          }
+        ]
+      },
+      {
+        "key": "importance",
+        "title": "14. Хагаслах баталгааг бусад аргаар дамжуулах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "High ач холбогдолтой: модультай зэрэг, комбинаторик, матрицын шилжилт болон олон удаагийн хувиргалтын суурь. Хариу хадгалах төлөв ба тоон аюулгүй гэрээг хамтад нь тайлбарлах нь богино код цээжлэхээс чухал."
+          },
+          {
+            "type": "p",
+            "text": "Exponentiation нь энэ давталтын шууд цөм дасгал. Давхар зэрэг ба матрицын бодлогууд нэмэлт математик, өгөгдлийн дүрслэлтэй тул сонголтот. Холбосон бүх бодлогыг автоматаар High болгож болохгүй."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Давталтын мөр бүрт ижил үржвэр байгаа эсэхийг шалга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$3^{13}\\bmod17$ жишээг кодгүйгээр дагаад хариу, суурь, үлдсэн зэргийг тус тус бич. Тэгш ба сондгой алхмын баталгааг өөрөө гарга. Тэг зэрэг, модуль нэгийг тайлбарла."
+          },
+          {
+            "type": "p",
+            "text": "Программыг бие даан бичээд жижиг зэрэгт шууд үржүүлдэг лавлахтай тулга. Дараа нь их суурь, их зэрэг, хамгийн их модульд яг ямар үржвэр багтаж байгааг шалга. Ердийн зэрэг ба модультай зэргийн утгыг бүү холь."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Fast exponentiation — fewer products through binary bits",
+        "summary": "Derive a logarithmic loop from even and odd exponents, prove its invariant and check zero exponents, modular contracts and intermediate product bounds.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Must an enormous power be constructed?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "What is the remainder of $3^{13}$ modulo $17$? We only need a value from zero to sixteen, not every digit of the power. With exponent $10^{18}$, even multiplying one step at a time is infeasible."
+              },
+              {
+                "type": "p",
+                "text": "We compute $a^e$ modulo a positive modulus $m$. Decomposing the exponent in binary drastically reduces the number of multiplications."
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Reduce after every multiplication",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Start at one and multiply by $a$ exactly $e$ times, reducing modulo $m$ after each multiplication. Congruent values have congruent products, so the result is correct but still costs $O(e)$ steps."
+              },
+              {
+                "type": "p",
+                "text": "Reduction removes the need to store an enormous integer, but not the excessive number of steps. Even and odd exponents reveal how to replace many multiplications at once."
+              }
+            ]
+          },
+          {
+            "key": "observation",
+            "title": "3. Halve even exponents by squaring",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "$a^{2k}=(a^2)^k$ and $a^{2k+1}=a(a^2)^k$. For an odd exponent keep one copy of $a$, then in both cases square the base and halve the exponent using integer division."
+              },
+              {
+                "type": "p",
+                "text": "Since $13=8+4+1=1101_2$, we have $a^{13}=a^8a^4a$. Each squaring prepares the next binary weight; testing oddness reads the current lowest exponent bit."
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Accumulated answer, current base and remaining exponent",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Keep three states. Initialize the answer to the residue of one and the base to the input residue. When the remaining exponent is odd, multiply the current base into the answer. Then square the base and halve the exponent."
+              },
+              {
+                "type": "p",
+                "text": "Reduce after every multiplication. Return the answer when the remaining exponent reaches zero. Do not initialize the answer to the base: exponent zero represents an empty product, and unselected bits contribute no extra multiplication."
+              }
+            ]
+          },
+          {
+            "key": "walkthrough",
+            "title": "5. Trace 3 to the power 13 modulo 17",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Initially the answer is $1$, base $3$ and exponent $13$. Oddness gives answer $3$; squaring gives base $9$ and halving exponent $6$. The next exponent is even, so retain the answer, square to $9^2\\bmod17=13$, and halve to $3$."
+              },
+              {
+                "type": "p",
+                "text": "Next the answer becomes $3\\cdot13\\bmod17=5$, the base $13^2\\bmod17=16$ and exponent $1$. The last odd step gives $5\\cdot16\\bmod17=12$. Four iterations match the four binary digits of thirteen."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Before step",
+                  "Answer",
+                  "Base",
+                  "Remaining exponent"
+                ],
+                "rows": [
+                  [
+                    "$0$",
+                    "$1$",
+                    "$3$",
+                    "$13$"
+                  ],
+                  [
+                    "$1$",
+                    "$3$",
+                    "$9$",
+                    "$6$"
+                  ],
+                  [
+                    "$2$",
+                    "$3$",
+                    "$13$",
+                    "$3$"
+                  ],
+                  [
+                    "$3$",
+                    "$5$",
+                    "$16$",
+                    "$1$"
+                  ],
+                  [
+                    "$4$",
+                    "$12$",
+                    "$1$",
+                    "$0$"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. The remaining product preserves the original power",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Let the original inputs be $A,E$. At loop entry, $\\text{result}\\cdot\\text{base}^{\\text{exponent}}\\equiv A^E\\pmod m$. Initialization satisfies this invariant. For even exponents, squaring and halving preserve the remaining product."
+              },
+              {
+                "type": "p",
+                "text": "For odd exponents, multiplying one base into the answer leaves an even exponent handled by squaring. Modular reduction preserves congruence rather than literal integer equality."
+              },
+              {
+                "type": "p",
+                "text": "Every positive exponent strictly decreases under integer halving. At zero, the base contributes its zeroth power, one, leaving the accumulated answer. The contract adopts the empty-product convention $0^0=1$."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Work depends on exponent bits, not exponent value",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Each iteration halves the exponent, giving $O(\\log(e+2))$ iterations and $O(1)$ auxiliary space. Adding two in the logarithm includes initialization for exponent zero."
+              },
+              {
+                "type": "p",
+                "text": "This counts bounded machine multiplication and remainder as constant-time operations. For arbitrary-precision integers or matrices, each multiplication has an additional cost even though the number of exponent steps remains logarithmic."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. C++17: multiply normalized residues",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Read 0–200000 queries, each with base and exponent from zero to $10^{18}$ and modulus from one to $10^9+7$. Print one modular result per query. Negative inputs and modulus zero are forbidden; adopt $0^0=1$."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. Normalize and initialize"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Reduce the input base first. Initializing to one modulo the modulus handles both modulus one and exponent zero.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <iostream>\nusing namespace std;\nusing Integer = unsigned long long;\n\nInteger modular_power(Integer base, Integer exponent, Integer modulus) {\n    base %= modulus;\n    Integer result = Integer{1} % modulus;\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. Binary steps"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Use the old base in the odd-step answer update, then square and halve. Every product fits because of the explicit input bounds.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    while (exponent != 0) {\n        if (exponent % 2 == 1) {\n            result = (result * base) % modulus;\n        }\n        base = (base * base) % modulus;\n        exponent /= 2;\n    }\n    return result;\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. Input setup"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read the number of queries and process them without retaining an input array. Integer denotes an unsigned long long.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int query_count;\n    cin >> query_count;\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Answer queries"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Each query here supplies its own base, exponent and modulus. State is local to the call. Adapt input separately for CSES’s fixed-modulus format.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    for (int query = 0; query < query_count; ++query) {\n        Integer base, exponent, modulus;\n        cin >> base >> exponent >> modulus;\n        cout << modular_power(base, exponent, modulus) << '\\n';\n    }\n    return 0;\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete compilable C++17 program"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <iostream>\nusing namespace std;\nusing Integer = unsigned long long;\n\nInteger modular_power(Integer base, Integer exponent, Integer modulus) {\n    base %= modulus;\n    Integer result = Integer{1} % modulus;\n\n    while (exponent != 0) {\n        if (exponent % 2 == 1) {\n            result = (result * base) % modulus;\n        }\n        base = (base * base) % modulus;\n        exponent /= 2;\n    }\n    return result;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int query_count;\n    cin >> query_count;\n\n    for (int query = 0; query < query_count; ++query) {\n        Integer base, exponent, modulus;\n        cin >> base >> exponent >> modulus;\n        cout << modular_power(base, exponent, modulus) << '\\n';\n    }\n    return 0;\n}\n"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "4\n3 13 17\n0 0 7\n8 0 1\n2 10 1000\n"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "12\n1\n0\n24\n"
+              }
+            ]
+          },
+          {
+            "key": "boundaries",
+            "title": "9. Zero exponent, modulus one and product bounds",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Exponent zero returns $1\\bmod m$ without looping. Modulus one makes every residue zero, including the zeroth-power result. A zero base with positive exponent returns zero. Modulus zero is forbidden."
+              },
+              {
+                "type": "p",
+                "text": "The code requires $1\\le m\\le10^9+7$. Every normalized residue is below $m$, so a product is bounded by $(10^9+6)^2<2^{64}$ and fits unsigned long long. An original base up to $10^{18}$ is reduced before any squaring."
+              },
+              {
+                "type": "p",
+                "text": "Do not reuse this multiplication for arbitrary larger moduli. Taking % afterward cannot repair earlier overflow. Negative bases and exponents are outside this program’s contract."
+              }
+            ]
+          },
+          {
+            "key": "mistakes",
+            "title": "10. Missing squaring and ignoring overflow",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Halving without squaring computes the wrong power. Squaring before the odd-step answer update also selects the wrong binary weight. Code order must follow the proof."
+              },
+              {
+                "type": "p",
+                "text": "C++ ^ means XOR, not exponentiation. Floating-point pow approximations do not replace exact modular arithmetic. Check type and intermediate product bounds even in modular code; a residue does not reveal the full integer power’s magnitude."
+              }
+            ]
+          },
+          {
+            "key": "connections",
+            "title": "11. Reuse the exponent pattern with other products",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "The same halving idea applies to an associative multiplication with an identity. For matrices, start with the identity matrix and square, accounting separately for multiplication cost and order."
+              },
+              {
+                "type": "p",
+                "text": "Exponentiation II has an exponent that is itself a power. It cannot simply be reduced under an arbitrary modulus; additional prime/coprimality conditions and theorems are needed. A zero base requires distinguishing a truly zero exponent from a positive one. This is optional progression beyond the basic loop."
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "gcd",
+                "label": "GCD"
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "bit-operations",
+                "label": "Bit operations"
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "12. Repeated application of one transformation",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Recognize huge exponents and repeated identical transitions. Identify the product, identity state and associativity before using the pattern."
+              },
+              {
+                "type": "p",
+                "text": "Do not force this loop onto changing transformations or a non-associative operation. Nor should an operation without an identity blindly use numerical one for exponent zero."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. Direct powers, power towers and matrices",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Bit Strings"
+              },
+              {
+                "type": "p",
+                "text": "Derive a power of two from independent choices; count modulo the required value without enumerating bit strings."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Exponentiation"
+              },
+              {
+                "type": "p",
+                "text": "Adapt the function to the fixed-modulus input format and test the task’s zero-exponent convention."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Exponentiation II"
+              },
+              {
+                "type": "p",
+                "text": "Study the additional theorem governing exponent reduction under a different modulus and handle a zero base separately."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Fibonacci Numbers"
+              },
+              {
+                "type": "p",
+                "text": "Add transition matrices, identity and multiplication order; charge for a matrix product at every exponent step."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Graph Paths I"
+              },
+              {
+                "type": "p",
+                "text": "Prove how matrix multiplication counts fixed-length walks; distinguish counts from reachability."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "IOI 2014 Gondola"
+              },
+              {
+                "type": "p",
+                "text": "An olympiad extension with permutation validity and combinatorial counting. Fast powers evaluate large factors within a larger argument, not the entire solution."
+              }
+            ]
+          },
+          {
+            "key": "importance",
+            "title": "14. Transfer the halving invariant",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Priority is High as a foundation for modular powers, combinatorics, matrix transitions and repeated transformations. The state invariant and numeric contract matter more than memorizing a short loop."
+              },
+              {
+                "type": "p",
+                "text": "Exponentiation directly practices this loop and is core. Power towers and matrix tasks add mathematics or representations and remain optional; linked problems are not automatically promoted to High."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Check the preserved product at each trace row",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Trace $3^{13}\\bmod17$ without code, recording answer, base and remaining exponent. Derive both parity cases and explain exponent zero and modulus one."
+              },
+              {
+                "type": "p",
+                "text": "Implement independently and compare small exponents with repeated multiplication. Then test large inputs while justifying intermediate bounds. Keep ordinary powers distinct from their modular residues."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know integer division, remainders, binary representation and loop invariants from gcd."
+      }
+    },
+    "prerequisites": "Бүхэл хуваалт, үлдэгдэл, хоёртын дүрслэл болон ХИЕХ-ийн давталтын баталгааг мэддэг байна.",
+    "prerequisiteIds": [
+      "gcd"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "gcd",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "sieve",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ],
+      "next": "prefix-sums-2d",
+      "practice": [
+        {
+          "key": "302",
+          "stage": "Warm-up",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "437",
+          "stage": "Standard",
+          "priority": true,
+          "reason": "Зэргийн хоёртын алхам, хариу хадгалах төлөв, тэг зэрэг болон модультай үржвэрийн хязгаарыг бие даан хэрэгжүүлэх шууд цөм дасгал."
+        },
+        {
+          "key": "438",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "456",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "458",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "706",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false,
+    "priorityLevel": "high",
+    "priorityReason": "Зэргийн битээр давталтаа багасгаж, нэгж элемент ба хариу хадгалах төлөвийг тайлбарлах нь модультай тооцоо, матриц, давтагдах шилжилтийн нийтлэг суурь. Тоон хязгаар ба үржвэрийн багтах нөхцөлийг зөв удирдах чадвар байнга хэрэглэгдэнэ."
+  }
+}
