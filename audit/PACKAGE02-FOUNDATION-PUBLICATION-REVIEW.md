@@ -1,3 +1,11 @@
+# Publication completed
+
+The user subsequently explicitly confirmed the existing SQL operator route. The exact statement below was executed once on 2026-10-28 at 01:03:41 UTC, after fresh scoped recovery and matching guards. PR #25 was merged first as `6e61f2286cf932084dc2b210aca541a113516af4`.
+
+**Binary Search, Greedy and DP are now published at revision 6.** Exact bodies and practice relationships match the reviewed candidates. Anonymous public retrieval returned all three, and live-retrieved bodies passed 12 native renderer views and three editor roundtrips locally. All non-target tutorials, Mongolia, private draft, bank, profiles, learner records and checked ACL/RLS/function metadata remained unchanged. History is 140 → 143 with actual records 141–143. No migration or permission change was applied.
+
+See `PACKAGE02-PUBLICATION-RECEIPT01.json`. Do not replay the old statement. The text below is the historical pre-execution review, not an outstanding request for an app-admin login or another approval.
+
 # Three completed tutorial candidates: publication review
 
 Binary Search, Greedy and DP now have complete local MN/EN candidates against all 15 content criteria and 20 semantic review items. This is **3 content-ready candidates, 0 production publications, 52 other curriculum lessons remaining**. Mongolia is excluded and completely unchanged.
