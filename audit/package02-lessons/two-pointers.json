@@ -1,0 +1,937 @@
+{
+  "id": "two-pointers",
+  "expected_revision": 5,
+  "expected_published": true,
+  "expected_body_sha256": "fbbb21f9a56771049ded2a2393f1b98a9f63b21a95b879a04d68a42098a03edf",
+  "status": "Substantive/code/native MN+EN review passed; guarded publication pending",
+  "body": {
+    "id": "two-pointers",
+    "level": "Анхан шат",
+    "order": 11,
+    "title": "Хоёр зааг — боломжгүй хосуудыг бүхлээр нь хасах",
+    "aliases": "two-pointers Two pointers ба sliding window Two pointers and sliding windows хоёр зааг sliding window two pointers subarray window",
+    "related": [
+      "prefix-sums",
+      "binary-search",
+      "bit-operations"
+    ],
+    "summary": "Эрэмбэлэгдсэн дарааллын хоёр захын нийлбэрээс аль хосууд боломжгүйг баталъя. Анхны дугаарыг хадгалан нэг хос олж, бусад хоёр заагийн хувилбарт шинэ баталгаа хэрэгтэйг ялгана.",
+    "category": "Array ба search",
+    "levelKey": "beginner",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Хос утгын нийлбэрийг хайя",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Танд $[8,1,4,6]$ утгатай дөрвөн тасалбар байна. Ялгаатай хоёр тасалбар сонгоод нийлбэрийг $10$ болгох хэрэгтэй. $4$ ба $6$ тохирно; хариунд анхны жагсаалтын гурав, дөрөвдүгээр байрлалыг өгнө."
+          },
+          {
+            "type": "p",
+            "text": "Эрэмбэлэхэд утгуудын байрлал өөрчлөгдөнө. Тиймээс хайлтаа хурдан болгохын зэрэгцээ анхны дугаарыг алдахгүй хадгалах ёстой. Ижил утгатай хоёр өөр тасалбар байж болно, харин нэг тасалбарыг хоёр удаа хэрэглэхгүй."
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Бүх хосыг шалгавал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$i<j$ гэсэн бүх хосыг шалгахад $n(n-1)/2$ нийлбэр бодно. Энэ нь $O(n^2)$ хугацаа, давталтын цөөн хувьсагчаас өөр нэмэлт зайгүй арга. Жижиг оролтод ойлгомжтой лавлах болно."
+          },
+          {
+            "type": "p",
+            "text": "$n=200000$ үед бараг $2\\cdot10^{10}$ хос байна. Хос бүрийг тус тусад нь үзэхгүйгээр нэг утгатай холбоотой олон хос боломжгүйг нэг дор тогтоох хэрэгтэй."
+          }
+        ]
+      },
+      {
+        "key": "observation",
+        "title": "3. Эрэмбэлэгдсэн дараалалд хасах чиглэл харагдана",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Утгуудыг үл буурах дараалалд эрэмбэл. Үлдсэн хэсгийн хамгийн бага утгыг хамгийн ихтэй нь нэмье. Нийлбэр зорилтоос бага бол хамгийн бага утгыг өөр ямар ч үлдсэн утгатай хослуулсан хүрэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Нийлбэр зорилтоос эрс их бол хамгийн их утгыг өөр ямар ч үлдсэн утгатай хослуулсан хэтэрнэ. Тэгэхээр нэг хосын шалгалтаар бүтэн нэг захын бүх боломжийг хасаж байна. Энэ нь таамагласан чиглэл биш, эрэмбийн шинжээс гарсан дүгнэлт."
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Хоёр заагийн хооронд боломжит хос үлдээнэ",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$l=0$, $r=n-1$ гэж эхэлнэ. $l<r$ байх хугацаанд хоёр утгыг нэм. Тэнцвэл анхны хоёр дугаарыг буцаа. Бага бол $l$-ийг нэгээр нэм; их бол $r$-ийг нэгээр хас."
+          },
+          {
+            "type": "p",
+            "text": "Давталтын эхэнд өмнө хассан байрлалтай ямар ч хос хариу байж чадахгүй гэсэн нөхцөл хадгалагдана. Тиймээс одоо боломжтой хос байвал хоёр байрлал нь хоёулаа $[l,r]$ дотор байна."
+          },
+          {
+            "type": "p",
+            "text": "Захуудыг дотогшлуулдаг хоёр заагийн энэ хувилбар нь олон янзын two pointers аргын нэг. Хоёр заагтай харагдсан бүх код ижил баталгаатай гэсэн үг биш."
+          }
+        ]
+      },
+      {
+        "key": "walkthrough",
+        "title": "5. Анхны дугаартай бүтэн явц",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эрэмбэлсний дараа утга, анхны дугаарыг хосоор бичвэл $(1,2),(4,3),(6,4),(8,1)$. Эхлээд $1+8=9<10$: $1$-ийг $4$ эсвэл $6$-тай хослуулсан ч бага тул зүүн байрлалыг хасна."
+          },
+          {
+            "type": "p",
+            "text": "Одоо $4+8=12>10$: үлдсэн бусад түнш нь $4$-өөс багагүй тул $8$-ыг хасна. Дараа нь $4+6=10$ болсон учраас анхны $3,4$ дугаарыг буцаана."
+          },
+          {
+            "type": "p",
+            "text": "Хариугүй жижиг жишээ $[1,2,4]$, зорилт $8$. $1+4=5$ учраас зүүнийг хасна; дараа нь $2+4=6$ учраас дахин хасна. Хоёр зааг нэг байрлал дээр уулзаж, ялгаатай хоёр байрлал үлдэхгүй тул IMPOSSIBLE."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Зүүн утга",
+              "Баруун утга",
+              "Нийлбэр",
+              "Үйлдэл"
+            ],
+            "rows": [
+              [
+                "$1$",
+                "$8$",
+                "$9$",
+                "Зүүнийг хас"
+              ],
+              [
+                "$4$",
+                "$8$",
+                "$12$",
+                "Барууныг хас"
+              ],
+              [
+                "$4$",
+                "$6$",
+                "$10$",
+                "Анхны 3,4 дугаар"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Хариутай хосыг хасахгүйг баталъя",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхэнд бүх байрлал үлдсэн тул давталтын нөхцөл зөв. Одоогийн нийлбэр $a[l]+a[r]<x$ бол дурын $l<j\\le r$-д $a[l]+a[j]\\le a[l]+a[r]<x$. Иймээс $l$ оролцсон хос бүр боломжгүй."
+          },
+          {
+            "type": "p",
+            "text": "Харин $a[l]+a[r]>x$ бол дурын $l\\le i<r$-д $a[i]+a[r]\\ge a[l]+a[r]>x$. Тэгэхээр $r$ оролцсон хос бүр боломжгүй. Хоёр тохиолдолд нэг заагийг хасахад нөхцөл хадгалагдана."
+          },
+          {
+            "type": "p",
+            "text": "Тэнцсэн үед $l<r$ учраас хоёр өөр элемент сонгосон бөгөөд нийлбэр зөв. Заагууд уулзвал боломжит хос байхгүй. Алхам бүрд $r-l$ нэгээр багасдаг тул давталт заавал дуусна. Сөрөг утга байлаа ч баталгаанд хэрэглэсэн эрэмбийн тэнцэтгэлүүд хэвээр."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Давталт шугаман, бүтэн ажил эрэмбэлэлттэй",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Зүүн зааг зөвхөн өсөж, баруун зааг зөвхөн буурна. Хоёрыг хөдөлгөсөн нийт алхам $n-1$-ээс ихгүй тул хайлт $O(n)$. Эрэмбэлэлт $O(n\\log n)$ харьцуулалттай, оролт ба хуулалт $O(n)$; бүтэн хугацаа $O(n\\log n)$ болно."
+          },
+          {
+            "type": "p",
+            "text": "Бичлэгүүд $O(n)$ зайтай. Энэ код хайх функцэд хүснэгтийг утгаар дамжуулж хуулдаг тул эх жагсаалтыг өөрчлөхгүй, харин нэмэлт $O(n)$ хуулалттай. Заагийн давталт өөрөө $O(1)$ хувьсагчтай. Стандарт sort-ын туслах санах ойн нарийн хэмжээг C++ стандарт тогтоодоггүй; “бүтэн арга тогтмол зайтай” гэж дүгнэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Энэ программд $|a[i]|\\le10^9$, $|x|\\le2\\cdot10^9$; нийлбэрийн хэмжээ $2\\cdot10^9$-өөс ихгүй. Утга ба нийлбэрийг 64 битээр авсан. Дурын 64 битийн хоёр утгыг нэмэхэд хэтрэхгүй гэж амлахгүй."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. C++17: утга ба анхны дугаарыг хамт авч явъя",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхний мөрд $n,x$, дараа нь $n$ утга өгнө. $0\\le n\\le200000$, $|a[i]|\\le10^9$, $|x|\\le2\\cdot10^9$. Хариу байвал нэгээс эхэлсэн ялгаатай хоёр дугаар; байхгүй бол IMPOSSIBLE хэвлэнэ. Албан ёсны CSES бодлого зөвхөн эерэг утгатай, энэ сургалтын хувилбар сөрөг ба хоосон оролтыг мөн зөвшөөрсөн."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Бичлэг"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Утга ба анхны дугаарыг нэг бичлэгт хадгална. Эрэмбэлэхэд хоёулаа хамт шилжинэ. pair төрлийг utility толгой файлаас авна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <algorithm>\n#include <iostream>\n#include <utility>\n#include <vector>\nusing namespace std;\n\nstruct Entry {\n    long long value;\n    int original_index;\n};\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Хос хайх"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Хүснэгтийн хуулбарыг үл буурахаар эрэмбэлнэ. Lambda нь зөвхөн эрс бага утгад үнэн буцаана. Дараа нь баталсан хоёр заагийн дүрмээр боломжгүй захыг хасна; утга тэнцвэл эх дугааруудыг буцаана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "pair<int, int> find_pair(vector<Entry> entries, long long target) {\n    sort(entries.begin(), entries.end(), [](const Entry& first, const Entry& second) {\n        return first.value < second.value;\n    });\n    int left = 0;\n    int right = static_cast<int>(entries.size()) - 1;\n    while (left < right) {\n        long long sum = entries[left].value + entries[right].value;\n        if (sum == target) {\n            return {entries[left].original_index, entries[right].original_index};\n        }\n        if (sum < target) {\n            ++left;\n        } else {\n            --right;\n        }\n    }\n    return {-1, -1};\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Оролт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Элементүүдэд нэгээс эхэлсэн анхны дугаар өгч, хайх функцэд зорилтот нийлбэрийг дамжуулна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int size;\n    long long target;\n    cin >> size >> target;\n    vector<Entry> entries(size);\n    for (int index = 0; index < size; ++index) {\n        cin >> entries[index].value;\n        entries[index].original_index = index + 1;\n    }\n    pair<int, int> answer = find_pair(entries, target);\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Гаралт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Олдохгүй гэсэн тэмдэглэгээ нь хоёр дугаар хоёулаа хасах нэг байх. Бодит дугаарууд эерэг тул андуурахгүй; тэнцсэн хоёр утга биш, тэдгээрийн дугаарыг хэвлэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    if (answer.first == -1) {\n        cout << \"IMPOSSIBLE\\n\";\n    } else {\n        cout << answer.first << ' ' << answer.second << '\\n';\n    }\n    return 0;\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах C++17 программ"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <algorithm>\n#include <iostream>\n#include <utility>\n#include <vector>\nusing namespace std;\n\nstruct Entry {\n    long long value;\n    int original_index;\n};\n\npair<int, int> find_pair(vector<Entry> entries, long long target) {\n    sort(entries.begin(), entries.end(), [](const Entry& first, const Entry& second) {\n        return first.value < second.value;\n    });\n    int left = 0;\n    int right = static_cast<int>(entries.size()) - 1;\n    while (left < right) {\n        long long sum = entries[left].value + entries[right].value;\n        if (sum == target) {\n            return {entries[left].original_index, entries[right].original_index};\n        }\n        if (sum < target) {\n            ++left;\n        } else {\n            --right;\n        }\n    }\n    return {-1, -1};\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int size;\n    long long target;\n    cin >> size >> target;\n    vector<Entry> entries(size);\n    for (int index = 0; index < size; ++index) {\n        cin >> entries[index].value;\n        entries[index].original_index = index + 1;\n    }\n    pair<int, int> answer = find_pair(entries, target);\n    if (answer.first == -1) {\n        cout << \"IMPOSSIBLE\\n\";\n    } else {\n        cout << answer.first << ' ' << answer.second << '\\n';\n    }\n    return 0;\n}\n"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "4 10\n8 1 4 6\n"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "3 4\n"
+          }
+        ]
+      },
+      {
+        "key": "boundaries",
+        "title": "9. Ижил утга бол ижил байрлал биш",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$[3,3]$ ба зорилт $6$ дээр хоёр өөр байрлал зөв хариу. Харин ганц $3$ дээр өөрийг нь хоёр удаа сонгож болохгүй. Тиймээс $l\\le r$ бус $l<r$ хэрэглэнэ."
+          },
+          {
+            "type": "p",
+            "text": "Хоосон массивт баруун зааг $-1$ болно; тэмдэгтэй индекс авсан тул давталт ажиллахгүй. Нэг элемент, бүх утга ижил, сөрөг нийлбэр, хоёр захад байх хариу болон огт хариугүй оролтыг тус тус шалга."
+          }
+        ]
+      },
+      {
+        "key": "mistakes",
+        "title": "10. Чиглэлээ эсрэг хөдөлгөхөөс болгоомжил",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нийлбэр бага байхад барууныг багасгавал нийлбэр улам багасна. Жишээ $[1,4,6,8]$, зорилт $10$ дээр зөв $4+6$ хосыг алдаж болно. Дүрмийг цээжлэхийн оронд хасаж байгаа бүх хосын тэнцэтгэлээ бич."
+          },
+          {
+            "type": "p",
+            "text": "Эрэмбэлсний дараах байрлалыг хариунд хэвлэвэл анхны оролтын дугаар биш болно. Утга болон дугаарыг нэг бичлэгт хадгал. Тэнцүү утгын дотоод эрэмбэ ямар ч байсан ялгаатай бичлэг сонгох дүрэм хэвээр."
+          },
+          {
+            "type": "p",
+            "text": "Бүх тохирох хосын тоог олох нь нэг хос олохоос өөр бодлого. Энд тэнцмэгц буцаж байгаа тул бүх хосыг тоолно гэж үзэхгүй. Давхардлын давтамжийг тусад нь тооцох нэмэлт баталгаа хэрэгтэй."
+          }
+        ]
+      },
+      {
+        "key": "connections",
+        "title": "11. Хоёр заагийн өөр хувилбарууд",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хоёр эрэмбэлэгдсэн жагсаалтыг тааруулахад хоёр зааг хоёулаа урагш явж болно. Apartments дээр хэт жижиг байрны хэмжээг цааш том хүслүүдтэй тааруулах боломжгүй учраас хасдаг; энэ нь нэг массивын нийлбэрийн нөхцөлөөс өөр."
+          },
+          {
+            "type": "p",
+            "text": "Эерэг утгатай дарааллын завсрын нийлбэрт барууныг нэмэхэд нийлбэр өсөж, зүүнийг хасахад буурна. Тэр шинж нь дараагийн гулсах цонхны аргын суурь. Сөрөг тоо ороход энэ өсөх/буурах дүрэм эвдэрнэ; харин өнөөдрийн эрэмбэлэгдсэн хосын хайлт сөрөг тоонд зөв хэвээр."
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "sorting",
+            "label": "Эрэмбэлэх"
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "binary-search",
+            "label": "Хоёртын хайлт"
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "prefix-sums",
+            "label": "Хуримтлагдсан нийлбэр"
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "12. Хасах зааг бүрийг үндэслэж чаддаг уу?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхлээд эрэмбэлж болох эсэх, анхны байрлал хэрэгтэй эсэхийг асуу. Дараа нь хоёр захын шалгалтаар аль нэг захтай бүх шийдэл боломжгүйг баталж чадах уу? Чадахгүй бол хоёр заагтай код бичих нь хурдан зөв арга болсны баталгаа биш."
+          },
+          {
+            "type": "p",
+            "text": "Нэг элементийг тогтоогоод үлдсэн хосыг хайх нь гурван утгын бодлогод хүргэнэ. Гэхдээ гаднах $n$ давталттай учраас нийт хугацаа $O(n^2)$; “дотор нь хоёр заагтай” гэдгээр бүх ажил шугаман болохгүй."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Нэг хосоос тохируулга ба цонх руу",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Sum of Two Values"
+          },
+          {
+            "type": "p",
+            "text": "Эрэмбийн шинжээр хассан хосуудын тэнцэтгэлийг гаргаад, анхны хоёр дугаарыг буцаа."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Apartments"
+          },
+          {
+            "type": "p",
+            "text": "Хоёр өөр жагсаалтыг эрэмбэл. Хэт жижиг байр, хэт жижиг хүсэл тус бүрийг яагаад хасаж болохыг шинээр батал."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Ferris Wheel"
+          },
+          {
+            "type": "p",
+            "text": "Хамгийн хүнд үлдсэн хүнийг хамгийн хөнгөнтэй хослох боломж, боломжгүй хоёр тохиолдлыг солих аргаар батал."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Subarray Sums I"
+          },
+          {
+            "type": "p",
+            "text": "Эерэг утга цонхны нийлбэрийн чиглэлийг тогтоодгийг ашигла. Сөрөг тоонд энэ дүрэм яагаад болохгүйг жишээгээр ялга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Playlist"
+          },
+          {
+            "type": "p",
+            "text": "Цонхонд давхардсан утга байгаа эсэхийг давтамжаар хадгал. Зүүн заагийг хангалттай хөдөлгөх шаардлагатайг тайлбарла."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "IOI 2011 Rice Hub"
+          },
+          {
+            "type": "p",
+            "text": "Эрэмбэлэгдсэн талбайн нэг цонхны будааг дундах талбайд хүргэх зардлыг хуримтлагдсан нийлбэрээр ол. Цонх өргөжихөд хамгийн бага зардал буурахгүйг батал; дундах утгын баталгаа нэмэлтээр хэрэгтэй."
+          },
+          {
+            "type": "p",
+            "text": "Өмнөх Sum of Three Values холбоосыг нэмэлт дасгал хэвээр хадгалсан. Нэг элементийг тогтоогоод зөвхөн бусад байрлалаас хос хай; нэг байрлал давтан сонгохгүй байхыг шалга."
+          }
+        ]
+      },
+      {
+        "key": "importance",
+        "title": "14. Суурь хосын хайлт ба нэмэлт нөхцөл",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хичээлийн ач холбогдол High. Боломжгүй шийдлүүдийн бүтэн бүлгийг эрэмбийн шинжээр хасах, заагийн нийт хөдөлгөөнийг тооцох чадвар олон бодлогод хэрэгтэй. Энэ нь хүндийн rating биш."
+          },
+          {
+            "type": "p",
+            "text": "Цөм дасгал нь Sum of Two Values. Apartments-ийн холбоосыг хадгалсан ч хоёр жагсаалтын тохируулгын нэмэлт баталгаа шаарддаг тул энэ удаа сонголтот шат болгосон. Бодлогын сан дахь түүний ач холбогдлыг автоматаар өөрчлөхгүй."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Нэг алхмаар ямар хосууд хасагдсаныг хэл",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Зүүн эсвэл баруун захыг хасах бүрд яг ямар хосууд боломжгүйг тэнцэтгэлээр тайлбарлаж чад. Анхны дугаарыг хадгалан кодоо бие даан бичиж, жижиг бүх хосын лавлахтай тулга."
+          },
+          {
+            "type": "p",
+            "text": "Нэг хос олох, бүх хос тоолох, эерэг цонхны нийлбэр, гурван утга гэсэн хувилбаруудын ялгааг мэд. Уншсан, ойлгосон, хэрэгжүүлсэн, бие даан бодсон түвшнээ тусад нь үнэл."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Two pointers — eliminate whole families of impossible pairs",
+        "summary": "Derive safe inward movements from sorted endpoint sums. Preserve original indices and distinguish other pointer patterns that need separate proofs.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Find two values with a target sum",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Four tickets have values $[8,1,4,6]$. Choose two distinct tickets totaling $10$: values $4$ and $6$, at original positions three and four."
+              },
+              {
+                "type": "p",
+                "text": "Sorting changes positions, so retain original indices. Two different tickets may have the same value; a single ticket cannot be reused."
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Enumerate every pair",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Checking all $i<j$ evaluates $n(n-1)/2$ sums in $O(n^2)$ time, with only a few loop variables. It is a useful small-input oracle."
+              },
+              {
+                "type": "p",
+                "text": "For $n=200000$, nearly $2\\cdot10^{10}$ pairs remain. We need to exclude whole families of impossible pairs at once."
+              }
+            ]
+          },
+          {
+            "key": "observation",
+            "title": "3. Sorted order reveals a safe direction",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Sort values in non-decreasing order. Pair the smallest remaining value with the largest. If their sum is too small, the smallest cannot reach the target with any remaining value."
+              },
+              {
+                "type": "p",
+                "text": "If the sum is too large, the largest exceeds the target with every remaining partner. One comparison eliminates all pairs involving one boundary, using order rather than a heuristic."
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Keep possible pairs between two boundaries",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Start with $l=0$ and $r=n-1$. While $l<r$, add the two values. Return original indices on equality; increment $l$ if too small, otherwise decrement $r$."
+              },
+              {
+                "type": "p",
+                "text": "At loop entry no pair involving an already discarded position can be an answer. Any surviving answer has both positions inside $[l,r]$."
+              },
+              {
+                "type": "p",
+                "text": "This inward-moving pair search is one two-pointer pattern. Other two-pointer algorithms need their own invariants and movement arguments."
+              }
+            ]
+          },
+          {
+            "key": "walkthrough",
+            "title": "5. Trace values and original indices",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "After sorting, (value, original index) is $(1,2),(4,3),(6,4),(8,1)$. First $1+8=9<10$: pairing $1$ with $4$ or $6$ is even smaller, so discard the left position."
+              },
+              {
+                "type": "p",
+                "text": "Now $4+8=12>10$. Every remaining partner is at least $4$, so discard $8$. Next $4+6=10$ returns original indices $3,4$."
+              },
+              {
+                "type": "p",
+                "text": "For no-solution input $[1,2,4]$ and target $8$, sums $1+4=5$ and $2+4=6$ both discard the left position. The boundaries meet, leaving no distinct pair: IMPOSSIBLE."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Left value",
+                  "Right value",
+                  "Sum",
+                  "Action"
+                ],
+                "rows": [
+                  [
+                    "$1$",
+                    "$8$",
+                    "$9$",
+                    "Discard left"
+                  ],
+                  [
+                    "$4$",
+                    "$8$",
+                    "$12$",
+                    "Discard right"
+                  ],
+                  [
+                    "$4$",
+                    "$6$",
+                    "$10$",
+                    "Original indices 3,4"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Prove that no answer is discarded",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Initially all positions remain. If $a[l]+a[r]<x$, then for every $l<j\\le r$, $a[l]+a[j]\\le a[l]+a[r]<x$. Every pair containing $l$ is impossible."
+              },
+              {
+                "type": "p",
+                "text": "If $a[l]+a[r]>x$, then for every $l\\le i<r$, $a[i]+a[r]\\ge a[l]+a[r]>x$. Every pair containing $r$ is impossible. Either deletion preserves the invariant."
+              },
+              {
+                "type": "p",
+                "text": "Equality with $l<r$ produces a valid distinct pair. Meeting boundaries leave no possible pair. Each iteration reduces $r-l$, proving termination. Negative values do not invalidate these ordering inequalities."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Linear scan, plus sorting",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "The left index only increases and the right only decreases. Their total moves are at most $n-1$, so search is $O(n)$. Sorting costs $O(n\\log n)$ comparisons; input and copying add $O(n)$; total time is $O(n\\log n)$."
+              },
+              {
+                "type": "p",
+                "text": "Records occupy $O(n)$. Passing the vector by value deliberately preserves the caller’s order and adds an $O(n)$ copy. The scan itself uses $O(1)$ variables. C++ does not mandate a precise auxiliary-space bound for standard sort; do not call the complete method constant-space."
+              },
+              {
+                "type": "p",
+                "text": "This program assumes $|a[i]|\\le10^9$ and $|x|\\le2\\cdot10^9$; sums have magnitude at most $2\\cdot10^9$. Values/sums use 64-bit integers. Arbitrary signed-64-bit inputs would need additional overflow handling."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. C++17: keep original indices attached",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Read $n,x$ then $n$ values. Bounds: $0\\le n\\le200000$, $|a[i]|\\le10^9$, $|x|\\le2\\cdot10^9$. Print two distinct one-based indices or IMPOSSIBLE. The official CSES task uses positive values; this teaching contract additionally supports signed and empty inputs."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. Records"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "A record keeps value and original index together during sorting. Include utility explicitly for pair.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <algorithm>\n#include <iostream>\n#include <utility>\n#include <vector>\nusing namespace std;\n\nstruct Entry {\n    long long value;\n    int original_index;\n};\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. Pair search"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Sort a copy using a strict less-than lambda, then apply the proved inward movement rule and return stored indices on equality.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "pair<int, int> find_pair(vector<Entry> entries, long long target) {\n    sort(entries.begin(), entries.end(), [](const Entry& first, const Entry& second) {\n        return first.value < second.value;\n    });\n    int left = 0;\n    int right = static_cast<int>(entries.size()) - 1;\n    while (left < right) {\n        long long sum = entries[left].value + entries[right].value;\n        if (sum == target) {\n            return {entries[left].original_index, entries[right].original_index};\n        }\n        if (sum < target) {\n            ++left;\n        } else {\n            --right;\n        }\n    }\n    return {-1, -1};\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. Input"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Assign one-based original indices and pass the target to the search.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int size;\n    long long target;\n    cin >> size >> target;\n    vector<Entry> entries(size);\n    for (int index = 0; index < size; ++index) {\n        cin >> entries[index].value;\n        entries[index].original_index = index + 1;\n    }\n    pair<int, int> answer = find_pair(entries, target);\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Output"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The missing marker is a pair of negative ones, distinct from valid positive indices. Print indices, not the matched values.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    if (answer.first == -1) {\n        cout << \"IMPOSSIBLE\\n\";\n    } else {\n        cout << answer.first << ' ' << answer.second << '\\n';\n    }\n    return 0;\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete compilable C++17 program"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <algorithm>\n#include <iostream>\n#include <utility>\n#include <vector>\nusing namespace std;\n\nstruct Entry {\n    long long value;\n    int original_index;\n};\n\npair<int, int> find_pair(vector<Entry> entries, long long target) {\n    sort(entries.begin(), entries.end(), [](const Entry& first, const Entry& second) {\n        return first.value < second.value;\n    });\n    int left = 0;\n    int right = static_cast<int>(entries.size()) - 1;\n    while (left < right) {\n        long long sum = entries[left].value + entries[right].value;\n        if (sum == target) {\n            return {entries[left].original_index, entries[right].original_index};\n        }\n        if (sum < target) {\n            ++left;\n        } else {\n            --right;\n        }\n    }\n    return {-1, -1};\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int size;\n    long long target;\n    cin >> size >> target;\n    vector<Entry> entries(size);\n    for (int index = 0; index < size; ++index) {\n        cin >> entries[index].value;\n        entries[index].original_index = index + 1;\n    }\n    pair<int, int> answer = find_pair(entries, target);\n    if (answer.first == -1) {\n        cout << \"IMPOSSIBLE\\n\";\n    } else {\n        cout << answer.first << ' ' << answer.second << '\\n';\n    }\n    return 0;\n}\n"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "4 10\n8 1 4 6\n"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "3 4\n"
+              }
+            ]
+          },
+          {
+            "key": "boundaries",
+            "title": "9. Equal values are not identical positions",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "$[3,3]$ with target $6$ is valid because the positions differ. A single $3$ cannot be reused. Use $l<r$, not $l\\le r$."
+              },
+              {
+                "type": "p",
+                "text": "An empty vector gives right index $-1$; signed indexing makes the loop skip safely. Test singletons, equal values, negative targets, endpoint answers and no solution."
+              }
+            ]
+          },
+          {
+            "key": "mistakes",
+            "title": "10. Avoid invalid movements and lost identities",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Moving the right boundary inward when the sum is too small reduces it further and may lose a valid pair. Derive the inequality for every eliminated pair instead of memorizing directions."
+              },
+              {
+                "type": "p",
+                "text": "Printing sorted positions loses original identities. Store value and index in one record. Equal-value ordering may vary, but the distinct-record rule remains."
+              },
+              {
+                "type": "p",
+                "text": "Counting all matching pairs is different from finding one. This program returns at the first equality; duplicate-frequency counting requires a separate argument."
+              }
+            ]
+          },
+          {
+            "key": "connections",
+            "title": "11. Related patterns require different proofs",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Two pointers may both move forward when matching two sorted lists. In Apartments, an apartment that is too small cannot serve later larger requests; that proof differs from a pair-sum rule."
+              },
+              {
+                "type": "p",
+                "text": "For positive interval values, extending right increases the sum and removing left decreases it: a later sliding-window pattern. Negatives break that monotonicity, although today’s sorted pair search remains valid for signed values."
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "sorting",
+                "label": "Sorting"
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "binary-search",
+                "label": "Binary search"
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "prefix-sums",
+                "label": "Prefix sums"
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "12. Can you justify every discarded boundary?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Ask whether sorting is allowed and original positions are needed. Can one boundary comparison rule out every candidate involving that boundary? Without this proof, pointer-shaped code is not a correct optimization."
+              },
+              {
+                "type": "p",
+                "text": "Fixing one element and searching the remaining pair extends to three values. An outer $n$ loop gives $O(n^2)$ total time, not linear time merely because the inner search uses two pointers."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From one pair to matching and windows",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Sum of Two Values"
+              },
+              {
+                "type": "p",
+                "text": "Derive the eliminated-pair inequalities and return original indices."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Apartments"
+              },
+              {
+                "type": "p",
+                "text": "Sort both lists and separately justify discarding a too-small apartment or request."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Ferris Wheel"
+              },
+              {
+                "type": "p",
+                "text": "Use exchange reasoning for pairing the heaviest remaining person with the lightest or sending them alone."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Subarray Sums I"
+              },
+              {
+                "type": "p",
+                "text": "Use positivity for window-sum monotonicity; distinguish a negative-value counterexample."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Playlist"
+              },
+              {
+                "type": "p",
+                "text": "Maintain frequencies and move the left boundary enough to remove duplicates."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "IOI 2011 Rice Hub"
+              },
+              {
+                "type": "p",
+                "text": "Use prefix sums for transport cost to a median in a sorted window. Prove minimum cost cannot decrease on extension; the median argument is an additional prerequisite."
+              },
+              {
+                "type": "p",
+                "text": "The existing Sum of Three Values link remains optional: fix one element, search only the remaining positions and avoid index reuse."
+              }
+            ]
+          },
+          {
+            "key": "importance",
+            "title": "14. Core pair search versus extensions",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Priority is High: eliminating whole groups by order and bounding total pointer movement are widely useful skills. Educational importance is not a difficulty rating."
+              },
+              {
+                "type": "p",
+                "text": "Sum of Two Values is core. Apartments remains linked but is optional here because it needs a separate two-list matching proof. Its bank-wide priority is not automatically changed."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Explain the whole family eliminated by a move",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For each deletion, explain exactly which pairs are impossible using inequalities. Implement with original indices and compare against a small all-pairs oracle."
+              },
+              {
+                "type": "p",
+                "text": "Distinguish finding one pair, counting all pairs, positive-sum windows and three-value search. Assess reading, understanding, implementation and independent solving separately."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know arrays, sorting, loops and records retaining original positions."
+      }
+    },
+    "prerequisites": "Массив, эрэмбэлэх, давталт болон анхны байрлалыг хадгалах бичлэгийг мэддэг байна.",
+    "prerequisiteIds": [
+      "prefix-sums",
+      "binary-search"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "prefix-sums",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "binary-search",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "bit-operations",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ],
+      "next": "sliding-window",
+      "practice": [
+        {
+          "key": "318",
+          "stage": "Warm-up",
+          "priority": true,
+          "reason": "Эрэмбийн тэнцэтгэлээр хоёр захын хосуудыг хасах, анхны дугаар ба ялгаатай байрлалыг хадгалах хичээлийн цөм бие даасан дасгал."
+        },
+        {
+          "key": "313",
+          "stage": "Standard",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "314",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "334",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "23",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "841",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "332",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false,
+    "priorityLevel": "high",
+    "priorityReason": "Эрэмбийн шинжээр боломжгүй хосуудын бүтэн бүлгийг хасах, давталтын нөхцөл хадгалах, нийт заагийн хөдөлгөөнийг тооцох нь хайлт ба цонхны олон дараагийн аргын суурь."
+  }
+}
