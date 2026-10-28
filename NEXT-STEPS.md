@@ -743,3 +743,10 @@ PR #51 merged as bc9549ba2a2e9a399c052f00bd08de98b587051d; Pages 40652896720 suc
 PR #53 merged as e5774904b90cf74ff6faba89f0bf5de571ac4b31; Pages 40654145208 succeeded. Knapsack and DSU are public revision 6, histories 175–176. Exact anonymous MN/EN native bodies verified. 140 Node tests, 242 subset-oracle knapsack cases and 179 BFS-oracle DSU streams/boundaries, 16 reader cases and four native editor round trips passed. All 993 problem rows, eight private drafts, sorting revision 7, Mongolia, learner/profile state and checked authority fingerprints unchanged. No migration/access changes. See audit/PACKAGE02-KNAPSACK-DSU-PUBLICATION-RECEIPT.json. NEVER replay the two successful SQL jobs.
 
 28/55 published; 27 remain, no user acceptance or signed-in production editor fixture claim. Next existing lessons: lis and kruskal with fresh captures. Keep standing tested PR/merge and guarded publication authority, private drafts without auto-rebase, and separate unapplied contest proposals/APIO evidence gaps. No deferred problem statements/editorials or package 3.
+
+
+## Package 2: LIS and Kruskal published
+
+PR #55 merged as be604f6ecb6ffc5f96bdf7b87af97ae702e54ea3; Pages 40655335593 succeeded. LIS revision 6/history 177 and Kruskal revision 4/history 178 exact anonymous MN/EN native bodies verified. 142 Node tests, 325 LIS quadratic-oracle cases, 222 Kruskal exhaustive-tree/boundary cases, 16 reader cases and four native editor round trips passed. All 993 problem rows, eight private drafts, sorting revision 7, Mongolia, learner/profile state and checked authority fingerprints unchanged. No migration/access changes. See audit/PACKAGE02-LIS-KRUSKAL-PUBLICATION-RECEIPT.json. NEVER replay the two successful SQL jobs.
+
+30/55 published; 25 remain, no user acceptance or real-account editor fixture claim. Next existing lessons interval-dp and priority-queue with fresh captures. Standing tested PR/merge and guarded publication authority retained; preserve private drafts without auto-rebase. Contest proposals remain separate and unapplied; no denied-source retries, deferred problem statements/editorials or package 3.
