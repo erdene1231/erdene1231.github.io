@@ -1,0 +1,649 @@
+{
+  "applied": false,
+  "patches": [
+    {
+      "id": "binary-search",
+      "expected_revision": 5,
+      "expected_body_sha256": "697819af97c530d8181c6d896d429ae2a814212b19a78990105ce2b87e32f842",
+      "operations": [
+        {
+          "language": "mn",
+          "section": 6,
+          "block": 0,
+          "expected": {
+            "text": "Хассан зүүн талд qualifying элемент байхгүй; хассан баруун талд mid-ээс эрт qualifying элемент байхгүй. Хүрээ үргэлж багасаж, эхний зөв байрлал үлдэнэ.",
+            "type": "p",
+            "detailKey": "base-6-0"
+          },
+          "value": {
+            "type": "ordered",
+            "detailKey": "base-6-0",
+            "items": [
+              "Эхлэхэд $0\\le l\\le r\\le n$. $l$-ээс өмнөх index бүрийн утга $x$-ээс бага, $r$-ээс эхэлсэн хүчинтэй index бүрийн утга $x$-ээс бага биш байна. $l=0,r=n$ үед хоёр мэдэгдэл хоосон муж дээр үнэн тул invariant эхэлнэ.",
+              "Хэрэв $a[\\mathrm{mid}]<x$ бол sorted дарааллаас $i\\le\\mathrm{mid}$ бүх index false. Тиймээс $l=\\mathrm{mid}+1$ нь хариуг алдахгүй. Үгүй бол $a[\\mathrm{mid}]\\ge x$, улмаар түүнээс баруун бүх утга qualifying тул $r=\\mathrm{mid}$ тавихад invariant хадгалагдана.",
+              "Алхам бүрт $r-l$ багасна. Төгсөхөд $l=r$: түүнээс өмнөх бүх утга false, хэрэв $l<n$ бол $a[l]\\ge x$. Иймээс энэ нь эхний qualifying index; $l=n$ бол тийм утга байхгүй. Хариуг шалгалгүйгээр $a[n]$ уншихгүй.",
+              "Кодын low/high нь баталгааны $l,r$, middle нь $\\mathrm{mid}$, values/target нь $a,x$ гэсэн тэмдэглэгээтэй таарна."
+            ]
+          }
+        },
+        {
+          "language": "mn",
+          "section": 12,
+          "block": 0,
+          "expected": {
+            "text": "Input: $n$, өсөхөөр эрэмбэлсэн array, дараа $q$ ба $q$ утга $x$. Query бүрт $x$-ээс бага биш эхний index, байхгүй бол $n$ гарна.",
+            "type": "p",
+            "detailKey": "depth-input-contract"
+          },
+          "value": {
+            "text": "Энэ reference program-ийн оролтын хүрээ: $0\\le n,q\\le200000$, array ба query утгууд signed 64-bit integer. Array нь буурахгүй эрэмбэтэй. Query бүрд $x$-ээс бага биш эхний zero-based index, байхгүй бол $n$ хэвлэнэ. $n=0$ үед array-ийн утга уншихгүй; дараа нь $q$ орно.",
+            "type": "p",
+            "detailKey": "depth-input-contract"
+          }
+        },
+        {
+          "language": "en",
+          "section": 6,
+          "block": 0,
+          "expected": {
+            "text": "Discarded left values cannot qualify, while discarded right values cannot improve on the kept candidate. The range shrinks until the first qualifying position remains.",
+            "type": "p",
+            "detailKey": "base-6-0"
+          },
+          "value": {
+            "type": "ordered",
+            "detailKey": "base-6-0",
+            "items": [
+              "Initially $0\\le l\\le r\\le n$. Every index before $l$ has value below $x$, and every valid index at or after $r$ has value at least $x$. Both claims hold vacuously for $l=0,r=n$.",
+              "If $a[\\mathrm{mid}]<x$, sorted order makes every index $i\\le\\mathrm{mid}$ false, so moving $l$ to $\\mathrm{mid}+1$ loses no answer. Otherwise $a[\\mathrm{mid}]\\ge x$ and every index to its right qualifies, so setting $r=\\mathrm{mid}$ preserves the invariant.",
+              "Each iteration decreases $r-l$. At termination $l=r$: every earlier index is false, and if $l<n$, then $a[l]\\ge x$. Thus this is the first qualifying index; $l=n$ means none exists. Never read $a[n]$ without checking the returned boundary.",
+              "The code names low/high correspond to $l,r$, middle to $\\mathrm{mid}$, and values/target to $a,x$ in the proof."
+            ]
+          }
+        },
+        {
+          "language": "en",
+          "section": 12,
+          "block": 0,
+          "expected": {
+            "text": "Input: $n$, a sorted array, then $q$ and $q$ query values $x$. Output the first index with value at least $x$, or $n$ if none exists.",
+            "type": "p",
+            "detailKey": "depth-input-contract"
+          },
+          "value": {
+            "text": "Reference program domain: $0\\le n,q\\le200000$, with signed 64-bit array and query values. The array is nondecreasing. Each query prints the first zero-based index with value at least $x$, or $n$. When $n=0$, there are no array values; $q$ follows immediately.",
+            "type": "p",
+            "detailKey": "depth-input-contract"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 0,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_at_least(const vector<long long>& values, long long target) {\n    int n = values.size();\n    int low = 0;\n    int high = n;\n\n    while (low < high) {\n        int middle = low + (high - low) / 2;\n\n        if (values[middle] >= target) {\n            high = middle;\n        } else {\n            low = middle + 1;\n        }\n    }\n\n    return low;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          },
+          "value": {
+            "type": "note",
+            "text": "Доорх хэсгүүдийг яг энэ дарааллаар нийлүүлэхэд 13-р хэсгийн бүтэн program үүснэ. Зарим хэсэг function-ийн дундаас эхэлдэг тул дангаар нь compile хийхгүй.",
+            "detailKey": "base-5-0"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 5,
+          "expected_length": 4,
+          "append_blocks": [
+            {
+              "type": "p",
+              "text": "1. Төлөв: values нь эрэмбэлсэн array, target нь query. low/high-ийг $0,n$ гэж эхлүүлснээр шийдээгүй муж $[0,n)$ болно.",
+              "detailKey": "p02-fragment-explanation-0"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_at_least(const vector<long long>& values, long long target) {\n    int n = values.size();\n    int low = 0;\n    int high = n;\n\n",
+              "detailKey": "p02-fragment-0"
+            },
+            {
+              "type": "p",
+              "text": "2. Transition: middle дээр qualifying утга байвал high-ийг middle болгож тэр candidate-ийг хадгална; үгүй бол low-ийг middle+1 болгож false хэсгийг хасна. Дээрх partition invariant хадгалагдана.",
+              "detailKey": "p02-fragment-explanation-1"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "    while (low < high) {\n        int middle = low + (high - low) / 2;\n\n        if (values[middle] >= target) {\n            high = middle;\n        } else {\n            low = middle + 1;\n        }\n    }\n\n",
+              "detailKey": "p02-fragment-1"
+            },
+            {
+              "type": "p",
+              "text": "3. Төгсгөл: low ба high тэнцэхэд low нь эхний qualifying байрлал, эсвэл $n$ sentinel. Function array-ийн энэ байрлалыг уншихгүй.",
+              "detailKey": "p02-fragment-explanation-2"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "    return low;\n}\n\n",
+              "detailKey": "p02-fragment-2"
+            },
+            {
+              "type": "p",
+              "text": "4. Driver: $n$ утга, array, $q$ ба query-уудыг уншина. Оролт эрэмбэтэй гэсэн contract-тай; main өөрөө sort хийхгүй. Query бүрд function-ийн index-ийг хэвлэнэ.",
+              "detailKey": "p02-fragment-explanation-3"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<long long> values(n);\n    for (int i = 0; i < n; i++) {\n        cin >> values[i];\n    }\n    int queryCount;\n    cin >> queryCount;\n    for (int i = 0; i < queryCount; i++) {\n        long long target;\n        cin >> target;\n        cout << first_at_least(values, target) << '\\n';\n    }\n\n    return 0;\n}\n",
+              "detailKey": "p02-fragment-3"
+            }
+          ]
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 0,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_at_least(const vector<long long>& values, long long target) {\n    int n = values.size();\n    int low = 0;\n    int high = n;\n\n    while (low < high) {\n        int middle = low + (high - low) / 2;\n\n        if (values[middle] >= target) {\n            high = middle;\n        } else {\n            low = middle + 1;\n        }\n    }\n\n    return low;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          },
+          "value": {
+            "type": "note",
+            "text": "Concatenating the following fragments in order gives exactly the complete program in section 13. Some fragments start inside a function and are not standalone compilation units.",
+            "detailKey": "base-5-0"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "expected_length": 4,
+          "append_blocks": [
+            {
+              "type": "p",
+              "text": "1. State: values is the sorted array and target is the query. Initializing low/high to $0,n$ makes $[0,n)$ the unknown interval.",
+              "detailKey": "p02-fragment-explanation-0"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_at_least(const vector<long long>& values, long long target) {\n    int n = values.size();\n    int low = 0;\n    int high = n;\n\n",
+              "detailKey": "p02-fragment-0"
+            },
+            {
+              "type": "p",
+              "text": "2. Transition: a qualifying middle moves high to middle, retaining that candidate; otherwise low becomes middle+1, discarding the false prefix. This preserves the partition invariant proved above.",
+              "detailKey": "p02-fragment-explanation-1"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "    while (low < high) {\n        int middle = low + (high - low) / 2;\n\n        if (values[middle] >= target) {\n            high = middle;\n        } else {\n            low = middle + 1;\n        }\n    }\n\n",
+              "detailKey": "p02-fragment-1"
+            },
+            {
+              "type": "p",
+              "text": "3. Termination: when low equals high, low is the first qualifying index or the sentinel $n$. The function does not dereference that returned position.",
+              "detailKey": "p02-fragment-explanation-2"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "    return low;\n}\n\n",
+              "detailKey": "p02-fragment-2"
+            },
+            {
+              "type": "p",
+              "text": "4. Driver: read $n$, the array, then $q$ queries and print each returned index. Sorted input is a precondition; main does not sort it.",
+              "detailKey": "p02-fragment-explanation-3"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<long long> values(n);\n    for (int i = 0; i < n; i++) {\n        cin >> values[i];\n    }\n    int queryCount;\n    cin >> queryCount;\n    for (int i = 0; i < queryCount; i++) {\n        long long target;\n        cin >> target;\n        cout << first_at_least(values, target) << '\\n';\n    }\n\n    return 0;\n}\n",
+              "detailKey": "p02-fragment-3"
+            }
+          ]
+        }
+      ],
+      "review_scope": "Correctness proof and finite reference-program domain only;practice/full-rubric/render pending",
+      "field_updates": {
+        "priorityLevel": "high",
+        "priorityReason": "Эрэмбэлсэн lookup, lower/upper bound ба monotone predicate нь олон алгоритмын суурь; давхардал, sentinel, заагийн invariant-ийг зөв эзэмших өгөөж өндөр. Difficulty-гаас тусдаа High."
+      }
+    },
+    {
+      "id": "greedy",
+      "expected_revision": 5,
+      "expected_body_sha256": "75c2542622fa80bed355c75def88e04f0ab413581c3e880f9de400b15590b163",
+      "operations": [
+        {
+          "language": "mn",
+          "section": 6,
+          "block": 0,
+          "expected": {
+            "text": "Оптимал төлөвлөгөөний эхний киног хамгийн эрт дуусах киногоор солиход дараагийн кинонуудыг үзэх боломж алдагдахгүй. Дараа үлдсэн цаг дээр мөн адил бодно.",
+            "type": "p",
+            "detailKey": "base-6-0"
+          },
+          "value": {
+            "type": "ordered",
+            "detailKey": "base-6-0",
+            "items": [
+              "Өгөгдсөн үлдсэн кинонуудаас хамгийн эрт дуусахыг $G$, хамгийн олон кинотой оптимал төлөвлөгөөний эхний киног $O$ гэе. Тэгвэл $f(G)\\le f(O)$. $O$-гийн дараа үзэх кино бүр $f(O)$-оос эрт эхлэхгүй тул $G$-гийн дараа ч багтана.",
+              "Иймээс $O$-г $G$-ээр солиход киноны тоо буурахгүй: greedy сонголтоор эхэлсэн оптимал хариу оршино. Дараа нь $G$-гийн дуусах цагаас хойш эхлэх кинонуудын яг ижил жижиг бодлогод induction хэрэглэнэ.",
+              "Энэ баталгаа нь кино бүр ижил нэгж ашигтай, ганц үзэгчтэй, $[l,r)$ ба $l<r$ гэсэн нөхцөлд хамаарна. Жинтэй ашиг өгвөл “хамгийн эрт дуусах” дүрэм дангаараа баталгаагүй: $[0,2)$ ашиг $1$, $[0,3)$ ашиг $100$ үед дүрэм бага ашигтайг сонгоно."
+            ]
+          }
+        },
+        {
+          "language": "mn",
+          "section": 12,
+          "block": 0,
+          "expected": {
+            "text": "Input: $n$ ба $n$ киноны эхлэх, дуусах цаг. Интервал $[l,r)$ тул нэг нь дууссан цагт дараагийнх эхэлж болно. Хамгийн олон киноны тоо гарна.",
+            "type": "p",
+            "detailKey": "depth-input-contract"
+          },
+          "value": {
+            "text": "Энэ reference program-д $0\\le n\\le200000$. Эхлэх/дуусах цаг signed 64-bit integer бөгөөд кино бүр $l<r$ байна. Интервал $[l,r)$ тул өмнөх кино дуусахад дараагийнх эхэлж болно. Давхцахгүй сонгох киноны хамгийн их тоог хэвлэнэ; $n=0$ бол $0$.",
+            "type": "p",
+            "detailKey": "depth-input-contract"
+          }
+        },
+        {
+          "language": "en",
+          "section": 6,
+          "block": 0,
+          "expected": {
+            "text": "Replace the first movie in an optimal schedule with the earliest-finishing one. This cannot block its later movies. Repeat the argument on the remaining time.",
+            "type": "p",
+            "detailKey": "base-6-0"
+          },
+          "value": {
+            "type": "ordered",
+            "detailKey": "base-6-0",
+            "items": [
+              "Let $G$ be an earliest-finishing available film and $O$ the first film in an optimal maximum-cardinality schedule. Then $f(G)\\le f(O)$. Every film scheduled after $O$ starts no earlier than $f(O)$, so it also fits after $G$.",
+              "Replacing $O$ with $G$ therefore does not reduce the number of films: an optimal schedule beginning with the greedy choice exists. Apply induction to the same problem restricted to films starting at or after the finish of $G$.",
+              "The argument assumes equal unit value per film, one viewer, and intervals $[l,r)$ with $l<r$. It does not solve arbitrary weighted profit: for $[0,2)$ worth $1$ and $[0,3)$ worth $100$, earliest finish chooses the lower profit."
+            ]
+          }
+        },
+        {
+          "language": "en",
+          "section": 12,
+          "block": 0,
+          "expected": {
+            "text": "Input: $n$ and $n$ start/finish pairs. Intervals are $[l,r)$, so a film may start when another ends. Print the maximum number of nonoverlapping films.",
+            "type": "p",
+            "detailKey": "depth-input-contract"
+          },
+          "value": {
+            "text": "Reference program domain: $0\\le n\\le200000$, signed 64-bit start/finish times, and $l<r$ for every film. Intervals are $[l,r)$, so touching endpoints are compatible. Print the maximum number of nonoverlapping films; for $n=0$, print $0$.",
+            "type": "p",
+            "detailKey": "depth-input-contract"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 0,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nbool compare_intervals(const pair<long long, long long>& a,\n                       const pair<long long, long long>& b) {\n    if (a.second != b.second) {\n        return a.second < b.second;\n    }\n\n    return a.first < b.first;\n}\n\nint max_intervals(vector<pair<long long, long long>> intervals) {\n    sort(intervals.begin(), intervals.end(), compare_intervals);\n\n    long long last_end = LLONG_MIN;\n    int ans = 0;\n\n    for (const auto& interval : intervals) {\n        long long l = interval.first;\n        long long r = interval.second;\n\n        if (l >= last_end) {\n            ans++;\n            last_end = r;\n        }\n    }\n\n    return ans;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          },
+          "value": {
+            "type": "note",
+            "text": "Доорх хэсгүүдийг яг энэ дарааллаар нийлүүлэхэд 13-р хэсгийн бүтэн program үүснэ. Зарим хэсэг function-ийн дундаас эхэлдэг тул дангаар нь compile хийхгүй.",
+            "detailKey": "base-5-0"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 5,
+          "expected_length": 4,
+          "append_blocks": [
+            {
+              "type": "p",
+              "text": "1. Comparator: дуусах цаг, тэнцвэл эхлэх цагаар strict дараалал тогтооно. Хугацааг хасаж харьцуулахгүй тул subtraction overflow үүсгэхгүй.",
+              "detailKey": "p02-fragment-explanation-0"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nbool compare_intervals(const pair<long long, long long>& a,\n                       const pair<long long, long long>& b) {\n    if (a.second != b.second) {\n        return a.second < b.second;\n    }\n\n    return a.first < b.first;\n}\n\n",
+              "detailKey": "p02-fragment-0"
+            },
+            {
+              "type": "p",
+              "text": "2. Эхлүүлэлт: дуусах цагаар sort хийж, өмнөх төгсгөлийг хамгийн бага signed утга, сонгосон тоог тэг болгоно.",
+              "detailKey": "p02-fragment-explanation-1"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int max_intervals(vector<pair<long long, long long>> intervals) {\n    sort(intervals.begin(), intervals.end(), compare_intervals);\n\n    long long last_end = LLONG_MIN;\n    int ans = 0;\n\n",
+              "detailKey": "p02-fragment-1"
+            },
+            {
+              "type": "p",
+              "text": "3. Scan: эхлэх цаг өмнөх төгсгөлөөс бага биш бол сонгоно. Зөвхөн сонгосон киноны төгсгөлөөр төлөвөө шинэчилнэ.",
+              "detailKey": "p02-fragment-explanation-2"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "    for (const auto& interval : intervals) {\n        long long l = interval.first;\n        long long r = interval.second;\n\n        if (l >= last_end) {\n            ans++;\n            last_end = r;\n        }\n    }\n\n    return ans;\n}\n\n",
+              "detailKey": "p02-fragment-2"
+            },
+            {
+              "type": "p",
+              "text": "4. Input/output driver: оролтыг уншиж, function дуудаад үр дүнг хэвлэнэ.",
+              "detailKey": "p02-fragment-explanation-3"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<pair<long long, long long>> intervals(n);\n    for (int i = 0; i < n; i++) {\n        cin >> intervals[i].first >> intervals[i].second;\n    }\n    cout << max_intervals(intervals) << '\\n';\n\n    return 0;\n}\n",
+              "detailKey": "p02-fragment-3"
+            }
+          ]
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 0,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nbool compare_intervals(const pair<long long, long long>& a,\n                       const pair<long long, long long>& b) {\n    if (a.second != b.second) {\n        return a.second < b.second;\n    }\n\n    return a.first < b.first;\n}\n\nint max_intervals(vector<pair<long long, long long>> intervals) {\n    sort(intervals.begin(), intervals.end(), compare_intervals);\n\n    long long last_end = LLONG_MIN;\n    int ans = 0;\n\n    for (const auto& interval : intervals) {\n        long long l = interval.first;\n        long long r = interval.second;\n\n        if (l >= last_end) {\n            ans++;\n            last_end = r;\n        }\n    }\n\n    return ans;\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          },
+          "value": {
+            "type": "note",
+            "text": "Concatenating the following fragments in order gives exactly the complete program in section 13. Some fragments start inside a function and are not standalone compilation units.",
+            "detailKey": "base-5-0"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "expected_length": 4,
+          "append_blocks": [
+            {
+              "type": "p",
+              "text": "1. Comparator: order by finish time, then start time. Comparing directly avoids overflow from subtracting timestamps.",
+              "detailKey": "p02-fragment-explanation-0"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nbool compare_intervals(const pair<long long, long long>& a,\n                       const pair<long long, long long>& b) {\n    if (a.second != b.second) {\n        return a.second < b.second;\n    }\n\n    return a.first < b.first;\n}\n\n",
+              "detailKey": "p02-fragment-0"
+            },
+            {
+              "type": "p",
+              "text": "2. Initialization: sort by finish, initialize the last finish to the minimum signed value and the selected count to zero.",
+              "detailKey": "p02-fragment-explanation-1"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int max_intervals(vector<pair<long long, long long>> intervals) {\n    sort(intervals.begin(), intervals.end(), compare_intervals);\n\n    long long last_end = LLONG_MIN;\n    int ans = 0;\n\n",
+              "detailKey": "p02-fragment-1"
+            },
+            {
+              "type": "p",
+              "text": "3. Scan: select a film only if it starts at or after the last selected finish. Update the state only for selected films.",
+              "detailKey": "p02-fragment-explanation-2"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "    for (const auto& interval : intervals) {\n        long long l = interval.first;\n        long long r = interval.second;\n\n        if (l >= last_end) {\n            ans++;\n            last_end = r;\n        }\n    }\n\n    return ans;\n}\n\n",
+              "detailKey": "p02-fragment-2"
+            },
+            {
+              "type": "p",
+              "text": "4. Input/output driver: read the input, call the function and print the result.",
+              "detailKey": "p02-fragment-explanation-3"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<pair<long long, long long>> intervals(n);\n    for (int i = 0; i < n; i++) {\n        cin >> intervals[i].first >> intervals[i].second;\n    }\n    cout << max_intervals(intervals) << '\\n';\n\n    return 0;\n}\n",
+              "detailKey": "p02-fragment-3"
+            }
+          ]
+        }
+      ],
+      "review_scope": "Correctness proof and finite reference-program domain only;practice/full-rubric/render pending",
+      "field_updates": {
+        "priorityLevel": "high",
+        "priorityReason": "Өргөн хэрэглэгддэг solution strategy. Interval scheduling-ийн exchange proof ба weighted counterexample нь зөв greedy-г таамгаас ялгахад суурь болно. Difficulty-гаас тусдаа High."
+      }
+    },
+    {
+      "id": "dynamic-programming",
+      "expected_revision": 5,
+      "expected_body_sha256": "20ac3bef7985d740e423e21fe77a2e7249e5044c040a45f19f6ec397ce8c5391",
+      "operations": [
+        {
+          "language": "mn",
+          "section": 6,
+          "block": 0,
+          "expected": {
+            "text": "Бүх замыг сүүлийн алхмаар нь хоёр бүлэгт хувааж болно. Нэг ч зам орхигдохгүй, нэг зам хоёр бүлэгт давхар орохгүй.",
+            "type": "p",
+            "detailKey": "base-6-0"
+          },
+          "value": {
+            "type": "ordered",
+            "detailKey": "base-6-0",
+            "items": [
+              "$dp[i]$ нь яг $i$-р гишгүүрт хүрэх алхмын дарааллын тоо гэж тодорхойлъё. $dp[0]=1$ нь нэг хоосон дараалал; үүнийг $0$ болговол дараагийн бүх state буруу $0$ болно.",
+              "$i>0$ үед сүүлийн алхам $1$ эсвэл $2$ байна. Эхний бүлгийн сүүлийн алхмыг хасахад $i-1$-д хүрэх дарааллуудтай bijection үүснэ. $i\\ge2$ үед хоёр дахь бүлэг мөн $i-2$-той bijection үүсгэнэ. Хоёр бүлэг давхцахгүй тул $dp[i]=dp[i-1]+dp[i-2]$; $i=1$ үед зөвхөн эхний бүлэг бий.",
+              "Жижиг index-ээс том руу бодоход transition-д хэрэгтэй state-ууд аль хэдийн зөв байна. Base case болон энэ induction-оор бүх state зөв. Нэмэх бүрд modulo авах нь нийлбэрийн үлдэгдлийг хадгалдаг; хоёр нэмэгдэхүүн тус бүр $10^9+7$-оос бага тул signed 64-bit дээр нийлбэр аюулгүй."
+            ]
+          }
+        },
+        {
+          "language": "mn",
+          "section": 12,
+          "block": 0,
+          "expected": {
+            "text": "Input: $n\\ge0$. $1$ эсвэл $2$ гишгүүрээр өгсөх замын тоог $10^9+7$-оор хэвлэнэ. $n=0$ үед хоосон замыг нэг гэж тоолно.",
+            "type": "p",
+            "detailKey": "depth-input-contract"
+          },
+          "value": {
+            "text": "Энэ reference program-д $0\\le n\\le1000000$. $1$ эсвэл $2$ гишгүүрээр өгсөх дарааллын тоог $10^9+7$ modulo хэвлэнэ. $n=0$ үед хоосон дарааллыг нэг гэж тоолно. Энэ дээд хязгаар нь бүтэн $n+1$ элементтэй array болон loop-ийн memory/time хүрээг тодорхойлно.",
+            "type": "p",
+            "detailKey": "depth-input-contract"
+          }
+        },
+        {
+          "language": "en",
+          "section": 6,
+          "block": 0,
+          "expected": {
+            "text": "Every route belongs to exactly one group determined by its last step. No route is omitted or counted twice.",
+            "type": "p",
+            "detailKey": "base-6-0"
+          },
+          "value": {
+            "type": "ordered",
+            "detailKey": "base-6-0",
+            "items": [
+              "Define $dp[i]$ as the number of step sequences reaching exactly stair $i$. The base $dp[0]=1$ represents one empty sequence. Setting it to zero would incorrectly make every later state zero.",
+              "For $i>0$, the last step has size $1$ or $2$. Removing the final step gives a bijection between the first group and sequences reaching $i-1$. For $i\\ge2$, the second group similarly corresponds to $i-2$. These groups are disjoint, so $dp[i]=dp[i-1]+dp[i-2]$; at $i=1$ only the first group exists.",
+              "Processing indices in increasing order means every predecessor is already correct. The base case and this induction prove all states correct. Taking the modulus after addition preserves the required remainder; each addend is below $10^9+7$, so their sum is safe in signed 64-bit arithmetic."
+            ]
+          }
+        },
+        {
+          "language": "en",
+          "section": 12,
+          "block": 0,
+          "expected": {
+            "text": "Input: $n\\ge0$. Print the number of ways to climb using steps of size $1$ or $2$, modulo $10^9+7$. At $n=0$, the empty path counts as one.",
+            "type": "p",
+            "detailKey": "depth-input-contract"
+          },
+          "value": {
+            "text": "Reference program domain: $0\\le n\\le1000000$. Print the number of sequences using steps of size $1$ or $2$, modulo $10^9+7$. At $n=0$, count the empty sequence once. This upper bound makes the full $n+1$ element array and loop time/memory contract explicit.",
+            "type": "p",
+            "detailKey": "depth-input-contract"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 5,
+          "block": 0,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nlong long stair_ways(int n) {\n    const long long MOD = 1000000007;\n    vector<long long> dp(n + 1, 0);\n    dp[0] = 1;\n\n    for (int i = 1; i <= n; i++) {\n        dp[i] = dp[i - 1];\n\n        if (i >= 2) {\n            dp[i] = (dp[i] + dp[i - 2]) % MOD;\n        }\n    }\n\n    return dp[n];\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          },
+          "value": {
+            "type": "note",
+            "text": "Доорх хэсгүүдийг яг энэ дарааллаар нийлүүлэхэд 13-р хэсгийн бүтэн program үүснэ. Зарим хэсэг function-ийн дундаас эхэлдэг тул дангаар нь compile хийхгүй.",
+            "detailKey": "base-5-0"
+          }
+        },
+        {
+          "language": "mn",
+          "section": 5,
+          "expected_length": 10,
+          "append_blocks": [
+            {
+              "type": "p",
+              "text": "1. Төлөв: $dp[i]$ нь яг $i$-д хүрэх дарааллын тоо. Array-г тэглээд $dp[0]=1$ гэж хоосон дарааллыг эхлүүлнэ; MOD нь $10^9+7$.",
+              "detailKey": "p02-fragment-explanation-0"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nlong long stair_ways(int n) {\n    const long long MOD = 1000000007;\n    vector<long long> dp(n + 1, 0);\n    dp[0] = 1;\n\n",
+              "detailKey": "p02-fragment-0"
+            },
+            {
+              "type": "p",
+              "text": "2. Transition: өмнөх нэг гишгүүрийн тоог авна. $i\\ge2$ үед хоёр гишгүүрийн бүлгийг нэмж modulo авна. Зүүн талын state-ууд аль хэдийн зөв гэсэн invariant-ийг хадгална.",
+              "detailKey": "p02-fragment-explanation-1"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "    for (int i = 1; i <= n; i++) {\n        dp[i] = dp[i - 1];\n\n        if (i >= 2) {\n            dp[i] = (dp[i] + dp[i - 2]) % MOD;\n        }\n    }\n\n",
+              "detailKey": "p02-fragment-1"
+            },
+            {
+              "type": "p",
+              "text": "3. Хариу: loop дуусахад $dp[n]$ бодогдсон байна. $n=0$ үед loop ажиллахгүй ч зөв base case нэгийг буцаана.",
+              "detailKey": "p02-fragment-explanation-2"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "    return dp[n];\n}\n\n",
+              "detailKey": "p02-fragment-2"
+            },
+            {
+              "type": "p",
+              "text": "4. Driver: contract-д багтах $n$-ийг уншиж stair_ways дуудаад үлдэгдлийг хэвлэнэ. Замуудыг өөрсдийг нь үүсгэхгүй.",
+              "detailKey": "p02-fragment-explanation-3"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    cout << stair_ways(n) << '\\n';\n\n    return 0;\n}\n",
+              "detailKey": "p02-fragment-3"
+            }
+          ]
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "block": 0,
+          "expected": {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nlong long stair_ways(int n) {\n    const long long MOD = 1000000007;\n    vector<long long> dp(n + 1, 0);\n    dp[0] = 1;\n\n    for (int i = 1; i <= n; i++) {\n        dp[i] = dp[i - 1];\n\n        if (i >= 2) {\n            dp[i] = (dp[i] + dp[i - 2]) % MOD;\n        }\n    }\n\n    return dp[n];\n}\n",
+            "type": "code",
+            "language": "C++17",
+            "detailKey": "base-5-0"
+          },
+          "value": {
+            "type": "note",
+            "text": "Concatenating the following fragments in order gives exactly the complete program in section 13. Some fragments start inside a function and are not standalone compilation units.",
+            "detailKey": "base-5-0"
+          }
+        },
+        {
+          "language": "en",
+          "section": 5,
+          "expected_length": 10,
+          "append_blocks": [
+            {
+              "type": "p",
+              "text": "1. State: $dp[i]$ counts sequences reaching exactly $i$. Zero-initialize the array and set $dp[0]=1$ for the empty sequence; MOD is $10^9+7$.",
+              "detailKey": "p02-fragment-explanation-0"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nlong long stair_ways(int n) {\n    const long long MOD = 1000000007;\n    vector<long long> dp(n + 1, 0);\n    dp[0] = 1;\n\n",
+              "detailKey": "p02-fragment-0"
+            },
+            {
+              "type": "p",
+              "text": "2. Transition: take the one-step predecessor; when $i\\ge2$, add the disjoint two-step group modulo MOD. Previously processed states remain correct by the induction above.",
+              "detailKey": "p02-fragment-explanation-1"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "    for (int i = 1; i <= n; i++) {\n        dp[i] = dp[i - 1];\n\n        if (i >= 2) {\n            dp[i] = (dp[i] + dp[i - 2]) % MOD;\n        }\n    }\n\n",
+              "detailKey": "p02-fragment-1"
+            },
+            {
+              "type": "p",
+              "text": "3. Result: after the loop, $dp[n]$ is computed. For $n=0$ the loop is skipped and the base value one is returned.",
+              "detailKey": "p02-fragment-explanation-2"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "    return dp[n];\n}\n\n",
+              "detailKey": "p02-fragment-2"
+            },
+            {
+              "type": "p",
+              "text": "4. Driver: read $n$ within the stated contract, call stair_ways and print the remainder. It never enumerates the paths themselves.",
+              "detailKey": "p02-fragment-explanation-3"
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    cout << stair_ways(n) << '\\n';\n\n    return 0;\n}\n",
+              "detailKey": "p02-fragment-3"
+            }
+          ]
+        }
+      ],
+      "review_scope": "Correctness proof and finite reference-program domain only;practice/full-rubric/render pending",
+      "field_updates": {
+        "priorityLevel": "high",
+        "priorityReason": "State, base case, transition ба induction нь knapsack, grid, subsequence зэрэг олон үндсэн сэдвийн dependency; хэрэглээ болон суралцах өгөөж өндөр. Difficulty-гаас тусдаа High."
+      }
+    }
+  ]
+}
