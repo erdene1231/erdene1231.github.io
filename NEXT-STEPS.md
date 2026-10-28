@@ -641,3 +641,14 @@ Workspace shared client/Start mirrors do not prove reusable image registration.
 Every step: scoped diff → tests → audit/checklist → commit → feature push + verified
 remote SHA → create and attach PR → downloadable ZIP + CRC/checksums + handoff.
 Do not omit the PR. Main merge/deploy is a separate action.
+
+
+## Package 2 pending delivery: recursion, prefix sums and requested sorting revision
+
+Branch `codex/package02-recursion-prefix` contains two new complete reviewed native MN/EN lessons and three reviewed revisions (recursive sorting with standard-library/lambda teaching, Binary Search/Greedy terminology). See `audit/PACKAGE02-PENDING-PUBLICATION-JOBS.json` and the corresponding review/code/browser reports. Full Node suite: 111 passed. No production publication or Hanoi priority promotion was submitted in this batch. Current published count remains six; the latest sorting requirement is not live.
+
+GitHub PR creation was rejected twice by automatic approval review because it did not accept assistant-quoted standing user PR authority as a direct trusted user authorization for this PR. Both calls were known not executed; no alternate route, PR retry, merge, deployment or dependent production publication was attempted. Preserve the branch and wait for materially new trusted action evidence before resolving the blocked supported operation. Do not ask for Supabase credentials or replay historical jobs.
+
+After the PR gate is resolved: recheck main/head/tests; merge through the authorized supported route. Refresh all private-draft and body/revision/function guards before any publication. The six private prepared SQL files are **not executed** and must not be blindly replayed: one core Hanoi priority edit plus five individually scoped tutorial jobs. Keep exact allowlists, history/lifecycle and all private drafts unchanged. No migrations are needed.
+
+Interactive/communication coverage now includes all six IOI 2021 interfaces: none qualify. Four held editions classified, EGOI 2020 verified not held, sixteen source/year outcomes remain. Two missing metadata records and two tag patches remain proposals only, zero follow-up bank writes. Problem statement/editorial authoring remains deferred; no package 3 work.

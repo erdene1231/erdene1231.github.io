@@ -38,3 +38,23 @@ test('search/sort rewrites preserve old references, justify only their core flag
   for(const doc of [b,b.translations.en]){assert.equal(doc.sections.length,15);const blocks=doc.sections[7].blocks,pieces=blocks.filter(p=>p.language==='C++17');assert.equal(pieces.length,5);assert.equal(pieces.slice(0,4).map(p=>p.text).join(''),pieces[4].text);for(const p of pieces.slice(0,4))assert.equal(blocks[blocks.indexOf(p)-1].type,'rich');assert.equal(doc.sections[12].blocks.filter(p=>p.type==='heading').length,6);}
  }
 });
+
+test('recursion/prefix lessons preserve metadata and previous references; core and extensions stay distinct',()=>{
+ const baseline=JSON.parse(fs.readFileSync('audit/PART04-BASELINE.json')).tutorials,problems=proposalProblems(),curriculum=JSON.parse(fs.readFileSync('curriculum.json')).lessons;
+ const docs=['recursion','prefix-sums'].map(id=>JSON.parse(fs.readFileSync(`audit/package02-lessons/${id}.json`))),topics=baseline.map(r=>docs.find(d=>d.id===r.id)?.body||r.body);
+ for(const d of docs){const before=baseline.find(r=>r.id===d.id),b=d.body;assert.equal(d.expected_body_sha256,bodyHash(before.body));assert.equal(d.expected_revision,before.revision);validateTutorial(b);assert.deepEqual(mathProseWarnings(b),[]);assert.deepEqual(publicationBody(b,topics,problems),b);
+ for(const key of ['id','aliases','order','level','levelKey','category','related','prerequisiteIds'])assert.deepEqual(b[key],before.body[key],key);
+ for(const old of curriculum[d.id].practice){const task=problems.find(p=>p.source.toLowerCase()+'|'+p.ref.toLowerCase()===old.key);assert.ok(task,old.key);assert.ok(b.learningRelations.practice.some(p=>p.key===String(task.number)));}
+ assert.deepEqual(b.learningRelations.practice.filter(p=>p.priority).map(p=>p.key),[d.id==='recursion'?'22':'395']);assert.ok(b.learningRelations.practice.some(p=>p.key==='915'&&!p.priority));
+ for(const lang of [b,b.translations.en]){assert.equal(lang.sections.length,15);const blocks=lang.sections[7].blocks,codes=blocks.filter(p=>p.language==='C++17');assert.equal(codes.length,5);assert.equal(codes.slice(0,4).map(p=>p.text).join(''),codes[4].text);for(const code of codes.slice(0,4))assert.equal(blocks[blocks.indexOf(code)-1].type,'rich');assert.equal(lang.sections[12].blocks.filter(p=>p.type==='heading').length,6);}
+ }
+});
+
+test('sorting recursive revision preserves identity/relations and teaches strict library comparators; terminology edits preserve meaning and code',()=>{
+ const previous=JSON.parse(fs.readFileSync('audit/package02-lessons/sorting.json')).body,d=JSON.parse(fs.readFileSync('audit/package02-revisions/sorting-recursive.json')),b=d.body;
+ assert.equal(d.expected_revision,4);assert.equal(d.expected_body_sha256,bodyHash(previous));
+ for(const k of ['id','aliases','order','level','levelKey','category','related','prerequisiteIds','learningRelations'])assert.deepEqual(b[k],previous[k],k);
+ const baseline=JSON.parse(fs.readFileSync('audit/PART04-BASELINE.json')).tutorials,topics=baseline.map(r=>r.id==='sorting'?b:r.body);validateTutorial(b);assert.deepEqual(mathProseWarnings(b),[]);assert.deepEqual(publicationBody(b,topics,proposalProblems()),b);
+ for(const lang of [b,b.translations.en]){assert.equal(lang.sections.length,15);const code=lang.sections[7].blocks.filter(b=>b.language==='C++17').map(b=>b.text);assert.equal(code.length,10);assert.equal(code.slice(0,4).join(''),code[4]);assert.equal(code[7]+code[8],code[9]);assert.match(code[1],/merge_sort\(values, buffer, left, middle\)/);assert.match(code[1],/merge_sort\(values, buffer, middle, right\)/);assert.ok(code[1].indexOf('merge_parts')>code[1].indexOf('merge_sort(values, buffer, middle, right)'));}
+ for(const id of ['binary-search','greedy']){const d=JSON.parse(fs.readFileSync(`audit/package02-revisions/${id}-terminology.json`)),old=JSON.parse(fs.readFileSync(`audit/package02-rewrite/${id}.json`)).body;assert.equal(d.expected_body_sha256,bodyHash(old));assert.deepEqual(d.body.translations,old.translations);assert.deepEqual(d.body.learningRelations,old.learningRelations);const patched=structuredClone(old);for(const change of d.changes){const path=JSON.parse(change.path);let parent=patched;for(const k of path.slice(0,-1))parent=parent[k];assert.equal(parent[path.at(-1)],change.before);parent[path.at(-1)]=change.after;}assert.deepEqual(patched,d.body);validateTutorial(d.body);assert.deepEqual(mathProseWarnings(d.body),[]);}
+});

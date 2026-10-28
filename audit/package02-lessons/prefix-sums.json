@@ -1,0 +1,1308 @@
+{
+  "id": "prefix-sums",
+  "expected_revision": 5,
+  "expected_published": true,
+  "expected_body_sha256": "69dba5dcd0b724d883d4470841cb1e2227739ba71eef9700ef33a89e985e65c6",
+  "status": "Semantic/code/native MN+EN editor review passed; fresh-guarded publication pending",
+  "body": {
+    "id": "prefix-sums",
+    "level": "Анхан шат",
+    "order": 7,
+    "title": "Хуримтлагдсан нийлбэр — нийтлэг эхлэлийг хасах",
+    "aliases": "prefix-sums Prefix sum — хэсгийн нийлбэр Prefix sums — sums of subarrays prefix sum угтвар нийлбэр difference array ялгаврын массив range sum",
+    "related": [
+      "complexity",
+      "difference-array"
+    ],
+    "summary": "Олон давтагдсан завсрын нийлбэрийг эхнээс тооцсон хоёр утгын ялгавраар олъё. Хоосон эхлэл, хоёр дугаарлалт, сөрөг утга болон тогтмол массивын шаардлагыг жишээгээр шалгана.",
+    "category": "Array ба search",
+    "levelKey": "beginner",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Нэг массивын олон хэсгийг нэмэх хэрэгтэй бол",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өдөр бүрийн орлого, зарлагыг нэг жагсаалтад хадгалжээ. Хоёр өдрийн хооронд нийт хэд өөрчлөгдсөнийг олон удаа асуух боловч жагсаалт асуултуудын хооронд өөрчлөгдөхгүй. Асуулт бүрд бүх өдрийг дахин нэмэхээс зайлсхийж болох уу?"
+          },
+          {
+            "type": "p",
+            "text": "Жишээнд $[4,-2,7,0,3]$ гэсэн таван утга авъя. Хоёрдугаараас дөрөвдүгээр байрлалын нийлбэр $-2+7+0=5$. Сөрөг тоо байсан ч нийлбэрийн ердийн дүрэм хэвээр."
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Асуулт бүрийг эхнээс нь бодох өртөг",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Шууд арга нь $L$-ээс $R$ хүртэл алхаж, утгуудыг нэг нэгээр нэмнэ. Нэг асуулт $O(R-L+1)$, хамгийн уртдаа $O(n)$ ажилтай. $q$ удаа бүтэн массив асуувал $O(nq)$ болно."
+          },
+          {
+            "type": "p",
+            "text": "$n=q=200000$ үед $4\\cdot10^{10}$ хүртэл элемент нэмэх нь их. Асуултууд ижил өдрүүдийг дахин хамарч байгаа учраас давтагдсан нийлбэрийг урьдчилан хадгалах боломж хайя."
+          }
+        ]
+      },
+      {
+        "key": "observation",
+        "title": "3. Эхнээс тоолсон хоёр нийлбэрийн нийтлэг хэсэг",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$P[k]$-г эхний $k$ элементийн нийлбэр гэж нэрлэе. Тэг элемент авсан $P[0]=0$. Нэгдүгээрээс дөрөвдүгээр хүртэлх нийлбэрээс нэгдүгээр элементийн нийлбэрийг хасвал хоёрдугаараас дөрөвдүгээр хүртэл үлдэнэ."
+          },
+          {
+            "type": "p",
+            "text": "Тиймээс нэгээс эхэлсэн, хоёр үзүүрээ багтаасан асуултын хариу $P[R]-P[L-1]$. Хасагдаж буй хэсэг нь яг ижил элементүүд тул сөрөг тоо, тэг байсан ч энэ тэнцэтгэл зөв."
+          },
+          {
+            "type": "note",
+            "text": "Хуримтлагдсан нийлбэр гэдэг нь бүх асуултын хариуг хадгалах биш. Эхнээс эхэлсэн цөөн нийлбэр хадгалж, дурын нэг завсрын хариуг тэдгээрээс гаргах арга."
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Хоосон эхлэлтэй хүснэгт байгуулъя",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Кодын массивын байрлал тэгээс эхэлнэ. $a[i]$ нь $i$-р байрлалын утга, $P[k]$ эхний $k$ утгын нийлбэр хэвээр. $n+1$ хэмжээтэй хүснэгт байгуулж $P[0]=0$, дараа нь $P[i+1]=P[i]+a[i]$ гэж бөглөнө."
+          },
+          {
+            "type": "p",
+            "text": "Дотоод туслах функц $[l,r)$ завсрыг хэрэглэнэ: $l$ багтана, $r$ багтахгүй. Хариу $P[r]-P[l]$. Гаднах нэгээс эхэлсэн $[L,R]$ асуултыг яг нэг удаа $l=L-1$, $r=R$ болгон хөрвүүлнэ."
+          },
+          {
+            "type": "p",
+            "text": "Энд хоёр өөр дугаарлалт давхцаж харагддаг. Уншсан асуултын хоёр үзүүрийг хоёуланг нь нэгээр бууруулахгүй: баруун тал нь дотоод завсрын багтаахгүй хязгаар болохоор хэвээр үлдэнэ."
+          }
+        ]
+      },
+      {
+        "key": "walkthrough",
+        "title": "5. Бэлтгэлийн бүх мөр, асуултын хоёр утга",
+        "blocks": [
+          {
+            "type": "table",
+            "headers": [
+              "Авсан элемент",
+              "Өмнөх нийлбэр",
+              "Нэмэх утга",
+              "Шинэ нийлбэр"
+            ],
+            "rows": [
+              [
+                "Элементгүй",
+                "—",
+                "—",
+                "$P[0]=0$"
+              ],
+              [
+                "$a[0]$",
+                "$0$",
+                "$4$",
+                "$P[1]=4$"
+              ],
+              [
+                "$a[1]$",
+                "$4$",
+                "$-2$",
+                "$P[2]=2$"
+              ],
+              [
+                "$a[2]$",
+                "$2$",
+                "$7$",
+                "$P[3]=9$"
+              ],
+              [
+                "$a[3]$",
+                "$9$",
+                "$0$",
+                "$P[4]=9$"
+              ],
+              [
+                "$a[4]$",
+                "$9$",
+                "$3$",
+                "$P[5]=12$"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Хоёрдугаараас дөрөвдүгээр хүртэл: гаднах $[2,4]$ нь дотроо $[1,4)$. $P[4]-P[1]=9-4=5$. Эхний нийлбэрт $4,-2,7,0$, хасах нийлбэрт зөвхөн $4$ орсон тул хэрэгтэй гурван утга үлдлээ."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Гаднах асуулт",
+              "Дотоод завсар",
+              "Хоёр утга",
+              "Хариу"
+            ],
+            "rows": [
+              [
+                "$[1,5]$",
+                "$[0,5)$",
+                "$12-0$",
+                "$12$"
+              ],
+              [
+                "$[3,3]$",
+                "$[2,3)$",
+                "$9-2$",
+                "$7$"
+              ],
+              [
+                "$[4,5]$",
+                "$[3,5)$",
+                "$12-9$",
+                "$3$"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Тэг утгыг нэмэхэд хоёр дараалсан нийлбэр ижил байж болно. Энэ нь хүснэгт буруу гэсэн үг биш; дараалсан утгууд заавал өсөх шаардлагагүй."
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Хүснэгт ба асуулт яагаад зөв вэ?",
+        "blocks": [
+          {
+            "type": "ordered",
+            "items": [
+              "Эхэнд $P[0]=0$ нь эхний тэг элементийн зөв нийлбэр.",
+              "Эхний $i$ элементийн нийлбэр зөв байвал дараагийн $a[i]$-г нэмэхэд эхний $i+1$ элементийн нийлбэр зөв болно. Иймээс давталтын дараа бүх $P[k]$ зөв.",
+              "$P[r]$ нь эхний $r$ элемент, $P[l]$ нь тэдгээрийн эхний $l$ элементийн нийлбэр. Хасахад $l$-ээс $r-1$ хүртэлх утгууд л үлдэнэ.",
+              "Хөрвүүлэлт нь гаднах $L$-р элементийг дотоод $L-1$-р байрлалтай, гаднах $R$-р элементийг дотоод $R-1$-р байрлалтай тааруулна. Тэгэхээр яг асуусан элементүүд багтана."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Бэлтгэлийн давталт төгсгөлтэй бөгөөд асуулт бүр хоёр хүснэгтийн утга уншиж нэг хасалт хийнэ. Өмнөх асуултын үр дүн дараагийн асуултад нөлөөлөхгүй."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Нэг удаагийн бэлтгэл, тогтмол асуулт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Бэлтгэлд $n$ удаа нэмэх тул $O(n)$ хугацаа, $n+1$ утгад $O(n)$ зай орно. Асуулт бүр $O(1)$, бүх ажил оролт ба гаралтыг оруулаад $O(n+q)$. Энэ код эх массивыг бас хадгалдаг ч нийт зай $O(n)$ хэвээр."
+          },
+          {
+            "type": "p",
+            "text": "$|a[i]|\\le10^9$, $n\\le200000$ үед хуримтлагдсан нийлбэрийн хэмжээ $2\\cdot10^{14}$-өөс ихгүй. Хоёр нийлбэрийн зөрөөг тус тусын хязгаараар үнэлсэн ч $4\\cdot10^{14}$-д багтана. 32 битийн бүхэл төрөл хүрэлцэхгүй; 64 битийн бүхэл төрөл хэрэглэнэ."
+          },
+          {
+            "type": "p",
+            "text": "Хэдхэн богино асуулттай бол шууд нэмэх нь хангалттай байж болно. Аргаа сонгохдоо бэлтгэлийн зардлыг бүх асуултын хэмнэлттэй харьцуул."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. C++17: дугаарлалтын заагийг ил байлгая",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхний мөрд $n,q$, дараа нь $n$ бүхэл утга, дараах $q$ мөр бүрд нэгээс эхэлсэн хоёр үзүүрээ багтаасан $L,R$ өгнө. Энэ сургалтын код $0\\le n,q\\le200000$, $|a[i]|\\le10^9$ нөхцөлийг авна; $n=0$ бол $q=0$. Бусад асуултад $1\\le L\\le R\\le n$. Хариу бүрийг тусдаа мөрд хэвлэнэ."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Эхний тэг утгыг үлдээн бөглөх"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "prefix",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хүснэгтийн эхний утга тэг. Давталтын эхэнд эхний ",
+                "marks": []
+              },
+              {
+                "text": "index",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " элементийн нийлбэр бэлэн тул дараагийн утгыг залгана. Эх массивыг тогтмол холбоосоор авч өөрчлөхгүй; үр дүнг шинэ хүснэгтээр буцаана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nvector<long long> build_prefix(const vector<long long>& values) {\n    int size = static_cast<int>(values.size());\n    vector<long long> prefix(size + 1, 0);\n    for (int index = 0; index < size; ++index) {\n        prefix[index + 1] = prefix[index] + values[index];\n    }\n    return prefix;\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Нэг утгатай завсрын дүрэм"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "range_sum",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь зөвхөн тэгээс эхэлсэн, баруун үзүүрээ багтаахгүй завсар авна. Түүнд гаднах дугаарлалтын засвар хийхгүй. Хоёр үзүүр тэнцүү бол хоосон завсрын нийлбэр тэг болно.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "long long range_sum(const vector<long long>& prefix, int left, int right) {\n    return prefix[right] - prefix[left];\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Уншаад нэг удаа бэлтгэх"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "size",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь элементийн тоо, ",
+                "marks": []
+              },
+              {
+                "text": "query_count",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь асуултын тоо. Утгуудыг уншиж дуусаад ",
+                "marks": []
+              },
+              {
+                "text": "build_prefix",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийг асуултын давталтаас гадна нэг удаа дуудна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int size, query_count;\n    cin >> size >> query_count;\n    vector<long long> values(size);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    vector<long long> prefix = build_prefix(values);\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Зөвхөн оролтын зааг дээр хөрвүүлэх"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Уншсан ",
+                "marks": []
+              },
+              {
+                "text": "left",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ээс нэгийг хасаж, ",
+                "marks": []
+              },
+              {
+                "text": "right",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийг хэвээр өгнө. Функцийн өмнө хөрвүүлсэн болохоор дотор нь дахин нэг хасахгүй. Асуулт бүр шинэ оролт уншиж шууд хариулна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    for (int query = 0; query < query_count; ++query) {\n        int left, right;\n        cin >> left >> right;\n        cout << range_sum(prefix, left - 1, right) << '\\n';\n    }\n    return 0;\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах программ"
+          },
+          {
+            "type": "note",
+            "text": "Өмнөх дөрвөн хэсгийг дарааллаар нь нэгтгэсэн C++17 программ. Хэсгүүдийн зарим нь үндсэн функцийн дундаас үргэлжилнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nvector<long long> build_prefix(const vector<long long>& values) {\n    int size = static_cast<int>(values.size());\n    vector<long long> prefix(size + 1, 0);\n    for (int index = 0; index < size; ++index) {\n        prefix[index + 1] = prefix[index] + values[index];\n    }\n    return prefix;\n}\n\nlong long range_sum(const vector<long long>& prefix, int left, int right) {\n    return prefix[right] - prefix[left];\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int size, query_count;\n    cin >> size >> query_count;\n    vector<long long> values(size);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    vector<long long> prefix = build_prefix(values);\n\n    for (int query = 0; query < query_count; ++query) {\n        int left, right;\n        cin >> left >> right;\n        cout << range_sum(prefix, left - 1, right) << '\\n';\n    }\n    return 0;\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Оролт ба гаралт"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "5 4\n4 -2 7 0 3\n2 4\n1 5\n3 3\n4 5\n"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "5\n12\n7\n3\n"
+          },
+          {
+            "type": "p",
+            "text": "Энэ жишээ нь өмнөх хүснэгтийн бүх асуултыг, мөн сөрөг ба тэг утгыг хамарна."
+          }
+        ]
+      },
+      {
+        "key": "boundaries",
+        "title": "9. Эхлэл, төгсгөл, том нийлбэр",
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "$L=1$ үед $P[0]$-г хэрэглэнэ; сөрөг байрлал руу хандахгүй.",
+              "$L=R$ бол ганц элемент; гаднаа хоосон завсар биш.",
+              "$[1,n]$ асуултын хариу $P[n]-P[0]$.",
+              "Дотоод $[l,l)$ хоосон завсарт хоёр ижил утга хасагдаж тэг болно.",
+              "$n=q=0$ үед хүснэгт ганц тэгтэй, гаралтгүй.",
+              "Олон $10^9$ болон $-10^9$ утгаар 64 битийн хадгалалтаа шалга."
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Дурын жижиг массивын бүх зөв завсрыг шууд нэмээд кодын хариутай тулгаж болно. Энэ нь зөвхөн нэг бэлэн жишээ харснаас илүү олон дугаарлалтын алдааг илрүүлнэ."
+          }
+        ]
+      },
+      {
+        "key": "mistakes",
+        "title": "10. Нэгээр зөрөхөөс гадна юуг андуурдаг вэ?",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Хоёр өөр дугаарлалтыг холих"
+          },
+          {
+            "type": "p",
+            "text": "Нэгээс эхэлсэн асуултад $P[R]-P[L]$ гэвэл эхний хэрэгтэй элементийг хасчихна. Ганц элементийн асуулт тэг гарч байгаа нь хурдан илрүүлэх дохио."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бэлтгэлийг асуулт бүрд дахин хийх"
+          },
+          {
+            "type": "p",
+            "text": "Хүснэгтээ давталтын дотор шинээр байгуулбал давтагдсан ажлаа хэмнээгүй. Массив өөрчлөгдөөгүй үед нэг бэлтгэл хангалттай."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Хариуг өргөн төрөлд, бэлтгэлийг нарийн төрөлд хадгалах"
+          },
+          {
+            "type": "p",
+            "text": "Хэтэрсэн нийлбэрийг дараа нь өргөн төрөлд шилжүүлээд засах боломжгүй. Утга, хуримтлагдсан нийлбэр, буцаах хариуг бүгдийг 64 битээр хадгал."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Өөрчлөгдсөн массивын хуучин хүснэгт ашиглах"
+          },
+          {
+            "type": "p",
+            "text": "Нэг утга өөрчлөгдвөл түүнээс хойших нийлбэрүүд өөрчлөгдөнө. Хуучин хүснэгтээр шинэ асуултад хариулах нь буруу. Энэ аргын үндсэн гэрээ нь асуултуудын хооронд массив тогтмол байх."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Нийлбэрийн дүрмийг хамгийн бага утгад шууд хуулбарлах"
+          },
+          {
+            "type": "p",
+            "text": "$[1,9,2]$ ба $[1,5,4]$ массивуудын эхнээс авсан хамгийн бага утгууд бүгд $1$. Гэвч хоёрдугаараас гуравдугаар элементийн хамгийн бага нь тус тус $2$, $4$. Ижил бэлтгэлээс ялгаатай хариуг ялгаж болохгүй; нийлбэрийг хасах боломж энд байхгүй."
+          }
+        ]
+      },
+      {
+        "key": "connections",
+        "title": "11. Юуг ойлгосны дараа хаашаа өргөжүүлэх вэ?",
+        "blocks": [
+          {
+            "type": "tutorial",
+            "tutorialId": "complexity",
+            "label": "Зардлын үнэлгээ — бэлтгэл ба олон асуултыг хамтад нь тооц"
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "difference-array",
+            "label": "Ялгаврын массив — нийлбэр байгуулах үйлдлийг эсрэг чиглэлд хар"
+          },
+          {
+            "type": "p",
+            "text": "Хуримтлагдсан нийлбэрээс хөрш хоёр утгыг хасахад анхны массив буцаж гарна. Энэ холбоо ялгаврын массивын суурь болно. Харин өөрчлөлт ба асуулт хоёулаа олон бол Фенвикийн мод зэрэг бүтэц дараа үзнэ."
+          },
+          {
+            "type": "p",
+            "text": "Хоёр хэмжээст хувилбарт нийтлэг хэсгийг хоёр талаас хасахад нэг булан давхар хасагддаг. Түүнийг буцааж нэмэхийг зурагтай батал. Үлдэгдэл, давтамжтай бодлогууд нь нийлбэрийн хүснэгт дээр өөр ажиглалт нэмдэг."
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "12. Энэ аргыг хэзээ таних вэ?",
+        "blocks": [
+          {
+            "type": "ordered",
+            "items": [
+              "Өгөгдөл олон асуултын хооронд өөрчлөгдөх үү?",
+              "Асуулт дараалсан хэсгийн нийлбэрийг асууж байна уу?",
+              "Эхнээс тооцсон хоёр утгын нийтлэг хэсгийг хасаж болох уу?",
+              "Оролтын үзүүрүүдийг нэг л дотоод дүрэмд хэрхэн хөрвүүлэх вэ?",
+              "Нийлбэр болон бэлтгэлд ямар тоон төрөл хүрэлцэх вэ?"
+            ]
+          },
+          {
+            "type": "note",
+            "text": "Нийлбэрийг хурдан авах нь бүх завсрыг хурдан хайна гэсэн үг биш. Бүх боломжит хос үзүүрийг туршвал асуулт бүр тогтмол байсан ч нийт ажил квадрат хэвээр байж болно."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Нийлбэрээс давтамж ба тэгш өнцөгт рүү",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхний дасгалыг бие даан хийсний дараа дараах нэмэлт нөхцөлүүдийг тус тус ялга. Дараагийн бүх өргөтгөлийг бодсон байх нь суурь хичээлийг ойлгосны заавал нөхцөл биш."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Халаалт · Static Range Sum Queries"
+          },
+          {
+            "type": "p",
+            "text": "Бэлтгэлээ нэг удаа хийж, асуулт бүрд хоёр хуримтлагдсан нийлбэр ашигла. Эхний элемент, ганц элемент, бүх массивын асуултыг гараар шалга. Энэ нь хичээлийн заавал бие даан бодох цөм дасгал."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Үндсэн дасгал · Subarray Sums I"
+          },
+          {
+            "type": "p",
+            "text": "Эерэг тоонуудтай үед хоёр захыг урагшлуулахад нийлбэр хэрхэн өөрчлөгдөхийг тайлбарла. Хуримтлагдсан нийлбэр бол нийлбэр олох хэрэгсэл; тохирох завсруудыг хурдан олоход нэмэлт ажиглалт хэрэгтэй."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Ажиглалтаа өөрчлөх · Subarray Sums II"
+          },
+          {
+            "type": "p",
+            "text": "Сөрөг тоо орвол хоёр захын өмнөх дүрэм яагаад эвдрэх жишээ гарга. Шаардсан нийлбэрийг хоёр хуримтлагдсан утгын ялгавар болгон хувиргаж, өмнөх утга хэд давтагдсаныг хадгалах санаанд хүр. Давтамж хадгалах бүтцийг үзсэний дараах нэмэлт дасгал."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Өөр нөхцөлд хэрэглэх · Subarray Divisibility"
+          },
+          {
+            "type": "p",
+            "text": "Хоёр хуримтлагдсан нийлбэр ижил үлдэгдэлтэй байвал ялгавар нь хуваагдана. Сөрөг утгын үлдэгдлийг нэг хэлбэрт оруулах, хоосон эхлэлээ тоолох, хосын тоонд өргөн төрөл хэрэглэхийг тусад нь шалга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Сорилт · Forest Queries"
+          },
+          {
+            "type": "p",
+            "text": "Нэг хэмжээст нийтлэг хэсгийг хасах санааг хүснэгтэд шилжүүл. Хоёр удаа хассан булангаа буцааж нэмэхийг жижиг зураг дээр тайлбарлаж байж дөрвөн булангийн томьёог бич."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Олимпиадын өргөтгөл · IOI 2009 Raisins"
+          },
+          {
+            "type": "p",
+            "text": "Тэгш өнцөгтийн жинг хурдан олох хэрэгсэл болгон хоёр хэмжээст хуримтлагдсан нийлбэр ашигла. Зүсэх дарааллын хамгийн бага өртгийг олоход завсрын динамик програмчлал нэмж хэрэгтэй; зөвхөн нийлбэрийн томьёо бодлогыг шийдэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Өмнөх Maximum Subarray Sum холбоосыг мөн нэмэлт дасгал хэвээр хадгалсан. Нэг төгсгөлд хамгийн их нийлбэр авахын тулд өмнөх ямар хуримтлагдсан утгыг сонгохыг тайлбарла; бүх хосыг турших шаардлагагүй."
+          }
+        ]
+      },
+      {
+        "key": "importance",
+        "title": "14. Чухлыг хүндтэй андуурахгүй",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Энэ хичээл High буюу сургалтын ач холбогдол өндөр. Нийтлэг хэсгийг хасах санаа олон асуулттай бодлого, хүснэгт, тооллого болон дараагийн өгөгдлийн бүтцэд давтагдана. Суурь хэрэгжүүлэлт богино байлаа ч холбоог өөрөө гаргаж сурах нь үнэтэй."
+          },
+          {
+            "type": "p",
+            "text": "Static Range Sum Queries нь цөм дасгал. Subarray Sums II нь давтамж хадгалах нэмэлт мэдлэгтэй тул энэ хичээлд сонголтот холбоос болгосон; бодлогын сан дахь өөрийн ач холбогдол, хүндийг өөрчлөөгүй."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Томьёог цээжлэхээс цааш",
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "$P[k]$ ямар элементүүдийг багтаадгийг үгээр тайлбарла.",
+              "$P[R]-P[L-1]$-д яг ямар хэсэг хасагдаж байгааг зур.",
+              "Хоёр дугаарлалтыг нэг удаа зөв хөрвүүлж кодоо өөрөө бич.",
+              "Сөрөг, тэг, ганц элемент, бүтэн завсар, том нийлбэрийг шалга.",
+              "Яагаад тогтмол массив шаардлагатай, хамгийн бага утгад яагаад шууд хуулж болохгүйг тайлбарла."
+            ]
+          },
+          {
+            "type": "note",
+            "text": "Уншсан, ойлгосон, хэрэгжүүлсэн, бие даан бодсон гэсэн түвшнүүдээ доорх шалгалтаар тусад нь үнэл."
+          },
+          {
+            "type": "links",
+            "items": [
+              {
+                "label": "Нэмэлт унших: Competitive Programmer’s Handbook — prefix sums",
+                "url": "https://cses.fi/book/book.pdf"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Prefix sums — cancel a shared beginning",
+        "summary": "Answer repeated interval sums using two stored totals. Trace the empty prefix, indexing conversion, signed values and static-array requirement.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Many sums over an unchanged array",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Store daily income and expenses in one list. Many questions ask for the total change between two days, but the list does not change between questions. Can we avoid adding the same days repeatedly?"
+              },
+              {
+                "type": "p",
+                "text": "Use $[4,-2,7,0,3]$. The sum from the second through fourth position is $-2+7+0=5$. Negative values still obey ordinary addition."
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. The cost of answering each question directly",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Walk from $L$ through $R$, adding each value. One query takes $O(R-L+1)$, at worst $O(n)$. With $q$ full-array queries the cost is $O(nq)$."
+              },
+              {
+                "type": "p",
+                "text": "For $n=q=200000$, this may mean $4\\cdot10^{10}$ additions. Overlapping questions repeatedly include the same days, suggesting reusable sums."
+              }
+            ]
+          },
+          {
+            "key": "observation",
+            "title": "3. Cancel the common beginning",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Define $P[k]$ as the sum of the first $k$ elements, with $P[0]=0$. Subtract the first element’s sum from the first four elements’ sum to retain positions two through four."
+              },
+              {
+                "type": "p",
+                "text": "For a one-based inclusive query, the answer is $P[R]-P[L-1]$. The removed elements are identical in both sums, so negatives and zeros do not invalidate cancellation."
+              },
+              {
+                "type": "note",
+                "text": "We do not store an answer for every possible interval. A small collection of sums beginning at the start is enough to reconstruct any one interval sum."
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Keep an explicit empty prefix",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Code positions start at zero: $a[i]$ is the value at position $i$, while $P[k]$ still sums the first $k$ values. Allocate $n+1$ entries, set $P[0]=0$, and fill $P[i+1]=P[i]+a[i]$."
+              },
+              {
+                "type": "p",
+                "text": "The internal helper uses $[l,r)$: include $l$, exclude $r$. Its answer is $P[r]-P[l]$. Convert an external one-based inclusive $[L,R]$ exactly once, using $l=L-1$ and $r=R$."
+              },
+              {
+                "type": "p",
+                "text": "Do not decrement both input endpoints. The unchanged external right endpoint becomes the excluded internal boundary."
+              }
+            ]
+          },
+          {
+            "key": "walkthrough",
+            "title": "5. Every preprocessing step and both query values",
+            "blocks": [
+              {
+                "type": "table",
+                "headers": [
+                  "Added element",
+                  "Previous sum",
+                  "Added value",
+                  "New sum"
+                ],
+                "rows": [
+                  [
+                    "None",
+                    "—",
+                    "—",
+                    "$P[0]=0$"
+                  ],
+                  [
+                    "$a[0]$",
+                    "$0$",
+                    "$4$",
+                    "$P[1]=4$"
+                  ],
+                  [
+                    "$a[1]$",
+                    "$4$",
+                    "$-2$",
+                    "$P[2]=2$"
+                  ],
+                  [
+                    "$a[2]$",
+                    "$2$",
+                    "$7$",
+                    "$P[3]=9$"
+                  ],
+                  [
+                    "$a[3]$",
+                    "$9$",
+                    "$0$",
+                    "$P[4]=9$"
+                  ],
+                  [
+                    "$a[4]$",
+                    "$9$",
+                    "$3$",
+                    "$P[5]=12$"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "External $[2,4]$ becomes internal $[1,4)$. Compute $P[4]-P[1]=9-4=5$. The first sum includes $4,-2,7,0$ and the removed sum includes only $4$, leaving exactly the requested values."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "External query",
+                  "Internal interval",
+                  "Values used",
+                  "Answer"
+                ],
+                "rows": [
+                  [
+                    "$[1,5]$",
+                    "$[0,5)$",
+                    "$12-0$",
+                    "$12$"
+                  ],
+                  [
+                    "$[3,3]$",
+                    "$[2,3)$",
+                    "$9-2$",
+                    "$7$"
+                  ],
+                  [
+                    "$[4,5]$",
+                    "$[3,5)$",
+                    "$12-9$",
+                    "$3$"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Adding zero may leave adjacent prefix entries equal. Prefix sums are not required to increase."
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Why preprocessing and each answer are correct",
+            "blocks": [
+              {
+                "type": "ordered",
+                "items": [
+                  "Initially $P[0]=0$ correctly sums zero elements.",
+                  "If $P[i]$ sums the first $i$ elements correctly, adding $a[i]$ produces the sum of the first $i+1$. Thus all completed entries are correct.",
+                  "$P[r]$ includes the first $r$ elements, and $P[l]$ includes their first $l$. Subtraction leaves precisely positions $l$ through $r-1$.",
+                  "The conversion maps external position $L$ to internal position $L-1$, and external position $R$ to internal position $R-1$. These are exactly the included endpoints."
+                ]
+              },
+              {
+                "type": "p",
+                "text": "The preprocessing loop terminates. Each query reads two entries and subtracts once; one query does not change another query’s result."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. One preparation, constant work per query",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Preprocessing performs $n$ additions in $O(n)$ time and stores $n+1$ entries in $O(n)$ space. Each query costs $O(1)$; including input/output, total time is $O(n+q)$. Keeping the original array too still uses $O(n)$ space."
+              },
+              {
+                "type": "p",
+                "text": "With $|a[i]|\\le10^9$ and $n\\le200000$, each prefix has magnitude at most $2\\cdot10^{14}$. Even bounding the difference by both magnitudes gives at most $4\\cdot10^{14}$. A 32-bit integer is insufficient; use a 64-bit integer."
+              },
+              {
+                "type": "p",
+                "text": "For only a few short queries, direct addition may suffice. Compare preparation cost with the work saved over all queries."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. C++17: make the indexing boundary explicit",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Read $n,q$, then $n$ integer values and $q$ one-based inclusive queries $L,R$. This teaching program supports $0\\le n,q\\le200000$, $|a[i]|\\le10^9$; if $n=0$, then $q=0$. Every query satisfies $1\\le L\\le R\\le n$. Print one answer per line."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. Fill after the empty prefix"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "prefix",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " starts with zero. At each loop entry the sum of the first ",
+                    "marks": []
+                  },
+                  {
+                    "text": "index",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " elements is ready. Append one value to obtain the next entry. The constant reference leaves the original array unchanged; return a new table.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nvector<long long> build_prefix(const vector<long long>& values) {\n    int size = static_cast<int>(values.size());\n    vector<long long> prefix(size + 1, 0);\n    for (int index = 0; index < size; ++index) {\n        prefix[index + 1] = prefix[index] + values[index];\n    }\n    return prefix;\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. One internal interval convention"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "range_sum",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " accepts only zero-based half-open endpoints. It performs no external indexing conversion. Equal endpoints give an empty interval with sum zero.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "long long range_sum(const vector<long long>& prefix, int left, int right) {\n    return prefix[right] - prefix[left];\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. Read and prepare once"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "size",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " counts elements; ",
+                    "marks": []
+                  },
+                  {
+                    "text": "query_count",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " counts queries. Read all values, then call ",
+                    "marks": []
+                  },
+                  {
+                    "text": "build_prefix",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " once outside the query loop.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int size, query_count;\n    cin >> size >> query_count;\n    vector<long long> values(size);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    vector<long long> prefix = build_prefix(values);\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Convert at the input boundary only"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Subtract one from input ",
+                    "marks": []
+                  },
+                  {
+                    "text": "left",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " and leave ",
+                    "marks": []
+                  },
+                  {
+                    "text": "right",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " unchanged. The helper must not convert again. Each loop iteration reads and answers one new query.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    for (int query = 0; query < query_count; ++query) {\n        int left, right;\n        cin >> left >> right;\n        cout << range_sum(prefix, left - 1, right) << '\\n';\n    }\n    return 0;\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete compilable program"
+              },
+              {
+                "type": "note",
+                "text": "The preceding four fragments concatenate exactly into this C++17 program. Some fragments continue inside main."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nvector<long long> build_prefix(const vector<long long>& values) {\n    int size = static_cast<int>(values.size());\n    vector<long long> prefix(size + 1, 0);\n    for (int index = 0; index < size; ++index) {\n        prefix[index + 1] = prefix[index] + values[index];\n    }\n    return prefix;\n}\n\nlong long range_sum(const vector<long long>& prefix, int left, int right) {\n    return prefix[right] - prefix[left];\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int size, query_count;\n    cin >> size >> query_count;\n    vector<long long> values(size);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    vector<long long> prefix = build_prefix(values);\n\n    for (int query = 0; query < query_count; ++query) {\n        int left, right;\n        cin >> left >> right;\n        cout << range_sum(prefix, left - 1, right) << '\\n';\n    }\n    return 0;\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Example input and output"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "5 4\n4 -2 7 0 3\n2 4\n1 5\n3 3\n4 5\n"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "5\n12\n7\n3\n"
+              },
+              {
+                "type": "p",
+                "text": "The sample matches every query in the walkthrough and includes negative and zero values."
+              }
+            ]
+          },
+          {
+            "key": "boundaries",
+            "title": "9. Start, end and large totals",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "For $L=1$, use $P[0]$ rather than a negative position.",
+                  "$L=R$ denotes one element, not an empty external query.",
+                  "The full-array answer is $P[n]-P[0]$.",
+                  "Internal $[l,l)$ subtracts an entry from itself and returns zero.",
+                  "With $n=q=0$, the table contains one zero and output is empty.",
+                  "Test many $10^9$ and $-10^9$ values to check 64-bit storage."
+                ]
+              },
+              {
+                "type": "p",
+                "text": "For small arrays, compare every valid interval with direct addition. This catches more indexing mistakes than checking only one prepared sample."
+              }
+            ]
+          },
+          {
+            "key": "mistakes",
+            "title": "10. More than an off-by-one error",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Mixing the two conventions"
+              },
+              {
+                "type": "p",
+                "text": "Using $P[R]-P[L]$ for an external query removes the first desired element. A single-element query incorrectly returning zero is a useful warning."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Rebuilding for every query"
+              },
+              {
+                "type": "p",
+                "text": "Constructing the table inside the query loop loses the preprocessing benefit. An unchanged array needs only one preparation."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Widening only the final answer"
+              },
+              {
+                "type": "p",
+                "text": "Converting an already overflowed sum does not repair it. Store values, prefix entries and the returned result as 64-bit integers."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Using stale prefixes after an update"
+              },
+              {
+                "type": "p",
+                "text": "Changing one element changes all later prefixes. The unchanged-table method requires a static array between queries."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Copying the subtraction rule to minimum queries"
+              },
+              {
+                "type": "p",
+                "text": "Arrays $[1,9,2]$ and $[1,5,4]$ have identical prefix minima $[1,1,1]$, but their minima over positions two through three are $2$ and $4$. Identical preparation cannot distinguish these answers; minimum lacks the cancellation available for sums."
+              }
+            ]
+          },
+          {
+            "key": "connections",
+            "title": "11. Extensions and their extra requirements",
+            "blocks": [
+              {
+                "type": "tutorial",
+                "tutorialId": "complexity",
+                "label": "Complexity — count preparation and all queries together"
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "difference-array",
+                "label": "Difference arrays — reverse the accumulation viewpoint"
+              },
+              {
+                "type": "p",
+                "text": "Subtracting neighboring prefix entries recovers an original element. This leads to difference arrays. If both updates and queries are frequent, later structures such as Fenwick trees are useful."
+              },
+              {
+                "type": "p",
+                "text": "In two dimensions, subtracting two overlapping regions removes one corner twice; restore it once. Prove this on a diagram. Remainder/frequency tasks add separate observations on top of prefix sums."
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "12. When should you consider this method?",
+            "blocks": [
+              {
+                "type": "ordered",
+                "items": [
+                  "Does the array change between queries?",
+                  "Are queries sums of consecutive elements?",
+                  "Can two sums from the beginning cancel a common prefix?",
+                  "How will external endpoints map to one internal convention?",
+                  "Which numeric type safely stores intermediate sums?"
+                ]
+              },
+              {
+                "type": "note",
+                "text": "Fast evaluation of one interval does not automatically locate good intervals quickly. Trying every pair of endpoints still takes quadratic work."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From sums to frequencies and rectangles",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "First solve the core task independently. Each extension below adds a separate condition; solving every extension is not a prerequisite for introductory mastery."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Warm-up · Static Range Sum Queries"
+              },
+              {
+                "type": "p",
+                "text": "Precompute once and use two prefix values per query. Check first-element, single-element and full-array queries manually. This is the core independent task."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Standard · Subarray Sums I"
+              },
+              {
+                "type": "p",
+                "text": "Explain how moving either endpoint changes a sum of positive values. Prefix sums obtain a sum; locating matching ranges efficiently needs another observation."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Observation · Subarray Sums II"
+              },
+              {
+                "type": "p",
+                "text": "Give a negative-value counterexample to the two-endpoint rule. Rewrite the target as a difference of prefix values and count earlier occurrences. Optional after learning frequency storage."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Application · Subarray Divisibility"
+              },
+              {
+                "type": "p",
+                "text": "Equal prefix remainders give a divisible difference. Separately handle normalized negative remainders, the empty prefix and a wide pair counter."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Challenge · Forest Queries"
+              },
+              {
+                "type": "p",
+                "text": "Extend cancellation to a grid. Explain on a small diagram why the doubly subtracted corner must be restored before writing the four-corner formula."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Olympiad extension · IOI 2009 Raisins"
+              },
+              {
+                "type": "p",
+                "text": "Use 2D prefix sums for rectangle weights. Optimizing the sequence of cuts additionally needs interval DP; the sum formula alone does not solve the task."
+              },
+              {
+                "type": "p",
+                "text": "The existing Maximum Subarray Sum link is retained as additional optional practice. For each right endpoint, explain which earlier prefix should be chosen instead of trying every pair."
+              }
+            ]
+          },
+          {
+            "key": "importance",
+            "title": "14. Importance is distinct from difficulty",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Educational priority is High. Cancellation of a common prefix recurs in repeated queries, grids, counting and later data structures. A short implementation does not diminish the value of deriving the relationship independently."
+              },
+              {
+                "type": "p",
+                "text": "Static Range Sum Queries is core practice. Subarray Sums II additionally needs frequency storage, so its link is optional for this introduction. Its bank-wide priority and difficulty are unchanged."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Beyond memorizing the formula",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "Explain precisely which elements $P[k]$ includes.",
+                  "Draw the region removed by $P[R]-P[L-1]$.",
+                  "Convert endpoints exactly once and implement independently.",
+                  "Check negative/zero values, single elements, full ranges and large sums.",
+                  "Explain the static-array requirement and why prefix minima cannot use the same subtraction rule."
+                ]
+              },
+              {
+                "type": "note",
+                "text": "Assess reading, understanding, implementation and independent solving separately using the checks below."
+              },
+              {
+                "type": "links",
+                "items": [
+                  {
+                    "label": "Further reading: Competitive Programmer’s Handbook — prefix sums",
+                    "url": "https://cses.fi/book/book.pdf"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know arrays, loops, integer types and basic time/space analysis."
+      }
+    },
+    "prerequisites": "Массив, давталт, бүхэл тоон төрөл болон хугацаа, зайны суурь үнэлгээг мэддэг байна.",
+    "prerequisiteIds": [
+      "complexity"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "complexity",
+          "description": "Бэлтгэлийг бүх асуултын хэмнэлттэй харьцуул.",
+          "descriptionEn": "Compare preparation cost with savings over all queries."
+        },
+        {
+          "tutorialId": "difference-array",
+          "description": "Хөрш нийлбэрийн ялгавар анхны утгыг сэргээдэг холбоог хар.",
+          "descriptionEn": "Recover original values by subtracting neighboring prefixes."
+        }
+      ],
+      "next": "difference-array",
+      "practice": [
+        {
+          "key": "395",
+          "stage": "Warm-up",
+          "priority": true,
+          "reason": "Тогтмол массивын олон завсрын асуултад нэг бэлтгэл, хоёр нийлбэрийн ялгавар, үзүүрийн зөв хөрвүүлэлтийг бие даан хэрэгжүүлэх цөм дасгал."
+        },
+        {
+          "key": "334",
+          "stage": "Standard",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "335",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "106",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "401",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "319",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "915",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false,
+    "priorityLevel": "high",
+    "priorityReason": "Нийтлэг эхлэлийг хасах санаа олон асуулт, тооллого, хүснэгт болон дараагийн өгөгдлийн бүтцэд түгээмэл хэрэглэгддэг суурь. Богино кодоос илүү дугаарлалт ба хадгалах утгын утгыг зөв гаргаж сурах нь чухал."
+  }
+}

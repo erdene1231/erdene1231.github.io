@@ -1,12 +1,13 @@
-// Generates SQL only for two explicitly named, reviewed core-practice promotions per batch; no imports/access changes.
+// Generates SQL only for explicitly named, reviewed core-practice promotions per batch; no imports/access changes.
 import {bodyHash} from './package02_tutorial_proposals.mjs';
 const literal=v=>"E'"+String(v).replace(/\\/g,'\\\\').replace(/'/g,"''")+"'";
 const json=v=>literal(JSON.stringify(v))+'::jsonb';
 export function complexityPrioritySql(plan,guard){return buildPrioritySql(plan,guard,['cses-1083','cses-1094']);}
+export function recursionPrioritySql(plan,guard){return buildPrioritySql(plan,guard,['cses-2165']);}
 export function searchSortPrioritySql(plan,guard){return buildPrioritySql(plan,guard,['cses-1621','cses-1623']);}
 function buildPrioritySql(plan,guard,allowedIds){
  const ids=plan.patches.map(p=>p.id).sort();
- if(JSON.stringify(ids)!==JSON.stringify(allowedIds))throw Error('Only the two reviewed core practice problems are allowed');
+ if(JSON.stringify(ids)!==JSON.stringify(allowedIds))throw Error('Only the reviewed core practice allowlist is allowed');
  const scope='('+ids.map(literal).join(',')+')';
  const rows=plan.patches.map(p=>{
   const old=guard.problems.find(r=>r.problem_id===p.id);
@@ -16,7 +17,7 @@ function buildPrioritySql(plan,guard,allowedIds){
  });
  if(guard.problem_count!==993||guard.sequence.last_value!==993||guard.sequence.is_called!==true||guard.functions.length!==2||guard.catalog_triggers!==null||!/^[a-f0-9]{32}$/.test(guard.non_target_fingerprint)||!/^[a-f0-9]{32}$/.test(guard.history_fingerprint))throw Error('Fresh scoped priority guards required');
  if(JSON.stringify(guard.functions.map(f=>f.signature).sort())!==JSON.stringify(['validate_learning_problem(jsonb)','validate_priority_metadata(jsonb)']))throw Error('Exact installed metadata validators required');
- const sql=`-- Package 2 C13/C14: two existing core-practice priority promotions only.
+ const sql=`-- Package 2 C13/C14: ${ids.length} existing core-practice priority promotion(s) only.
 DO $package02_complexity_priority$
 DECLARE
  targets jsonb := ${json(rows)};
@@ -57,7 +58,7 @@ BEGIN
  IF (SELECT count(*) FROM public.problem_catalog)<>993
   OR (SELECT md5(jsonb_agg(to_jsonb(p) ORDER BY problem_id)::text) FROM public.problem_catalog p WHERE problem_id NOT IN${scope}) IS DISTINCT FROM ${literal(guard.non_target_fingerprint)}
   OR (SELECT last_value FROM public.problem_number_seq)<>old_sequence OR (SELECT is_called FROM public.problem_number_seq) IS DISTINCT FROM old_called
-  OR (SELECT count(*) FROM public.problem_changes)<>history_count+2
+  OR (SELECT count(*) FROM public.problem_changes)<>history_count+${ids.length}
   OR (SELECT md5(coalesce(jsonb_agg(to_jsonb(h) ORDER BY change_id::text)::text,'[]')) FROM public.problem_changes h WHERE change_id::text<>ALL(new_ids)) IS DISTINCT FROM history_before THEN RAISE EXCEPTION 'Priority preservation failed'; END IF;
  FOR item IN SELECT value FROM jsonb_array_elements(targets) LOOP
   IF NOT EXISTS(SELECT 1 FROM public.problem_catalog WHERE problem_id=item->>'id' AND number=(item->>'number')::bigint AND revision=(item->>'expected_revision')::integer+1 AND NOT archived AND body->>'priorityLevel'='high' AND body->'priority'='true'::jsonb AND body->>'priorityReason'=item->'changes'->>'priorityReason') THEN RAISE EXCEPTION 'Priority verification failed'; END IF;
