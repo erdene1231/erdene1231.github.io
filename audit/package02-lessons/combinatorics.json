@@ -1,0 +1,838 @@
+{
+  "id": "combinatorics",
+  "expected_revision": 5,
+  "expected_published": true,
+  "expected_body_sha256": "662eb34a01383be2934a348f69d44c52d5cd0d54559a6fd05b48bc74f91d2633",
+  "status": "Complete substantive bilingual/code review; native checks recorded separately; guarded publication pending",
+  "body": {
+    "id": "combinatorics",
+    "level": "Дунд шат",
+    "order": 39,
+    "title": "Комбинаторик — сонголтын тоо ба модулийн хуваалт",
+    "aliases": "combinatorics Combinatorics — сонголтын тоо ба Pascal DP Combinatorics — combinations and Pascal DP combination permutation factorial ncr binomial томъёо хослол сэлгэмэл геометр арифметик",
+    "related": [
+      "dynamic-programming",
+      "kmp"
+    ],
+    "summary": "Дараалал хамаарахгүй сонголтыг хоёр үл давхцах бүлгээр тоолж, факториал ба зөв урвуугаар олон асуултад хурдан хариулъя.",
+    "category": "Mathematics",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Дөрвөн хүнээс хоёр сонгоход зургаа",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Дөрвөн ялгаатай хүнээс хоёрын баг сонгоё. Нэг ба хоёрыг сонгосон нь хоёр ба нэгийг сонгосонтой ижил баг. Иймээс дараалалтай хосын арван хоёр сонголтыг шууд хариу болгож болохгүй."
+          },
+          {
+            "type": "p",
+            "text": "Багуудын дугаар $12,13,14,23,24,34$: нийт зургаа. Энд хоёр цифр нь хоёр хүний дугаарыг залгаж бичсэн тэмдэглэгээ, үржвэр биш. Бүх багийг жагсаахгүйгээр энэ тоог яаж бодох вэ?"
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Бүх дэд олонлогийг үүсгэхээс зайлсхийх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$n$ ялгаатай зүйлээс яг $k$-г сонгох тоог $\\binom nk$ гэе. Бүх $2^n$ дэд олонлогийг үүсгээд хэмжээ нь зөв эсэхийг шалгаж болно. Гэвч тоо л хэрэгтэй үед ижил жижиг асуултыг олон удаа бодож байна."
+          },
+          {
+            "type": "p",
+            "text": "Нэг тодорхой зүйл сонгоод авсан, аваагүй гэж хоёр бүлэглэ. Авсан бүлэг үлдсэнээс нэгээр цөөн сонгоно. Энэ нь динамик программчлалын жижиг төлөвүүд рүү хөтөлнө."
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "3. Юу ялгаатай, юуны дараалал хамаарах вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Сонголтод зүйл бүр ялгаатай, нэгийг давтаж авахгүй, сонгосон дараалал хамаарахгүй гэсэн гэрээтэй. Дараалал хамаарвал энэ нь өөр тоолол. $k=0$ үед хоосон сонголт нэг, $k=n$ үед бүгдийг авах нэг арга. $k<0$ эсвэл $k>n$ бол тэг."
+          },
+          {
+            "type": "p",
+            "text": "$0!=1$ гэж тодорхойлно. $k$ ялгаатай зүйлийг байрлуулах $k!$ арга бий: эхний байранд $k$, дараагийнхад $k-1$ гэх мэт сонголттой. Энэ факториал нь дараа нь дарааллын давхар тооллыг арилгана."
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Авсан ба аваагүй хоёр бүлэг",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэг сонгосон зүйлийг аваагүй бол $\\binom{n-1}k$ арга. Авсан бол үлдсэнээс $k-1$ сонгох $\\binom{n-1}{k-1}$ арга. Хоёр бүлэг давхцахгүй, бүх сонголтыг хамарна. Тиймээс $\\binom nk=\\binom{n-1}k+\\binom{n-1}{k-1}$."
+          },
+          {
+            "type": "p",
+            "text": "Үүнийг Паскалийн хүснэгтэд жижиг мөрөөс том руу бодож болно. Зөвхөн нэмэх тул ямар ч эерэг модулийн хувьд ажиллана. Олон том асуултад энэ квадрат бэлтгэлийг илүү хурдан аргаар солих боловч энэ хамаарал утгын эхний баталгаа болно."
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "5. Паскалийн таван мөрийг гараар байгуулах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Тэг дэх мөр ганц нэг. Мөрийн хоёр зах нэг, доторх утга өмнөх мөрийн хөрш хоёрыг нэмсэн дүн. Дөрөв дэх мөр $1,4,6,4,1$ болно. Тиймээс дөрвөөс хоёрыг сонгох зургаа."
+          },
+          {
+            "type": "p",
+            "text": "Үүнтэй ижил тоог дараалалтай сонголтоор гаргая: эхний хүнд дөрөв, хоёр дахьд гурав, нийт арван хоёр. Нэг баг хоёр дарааллаар гарсан тул хоёрт хуваагаад зургаа. Ерөнхий тохиолдолд дарааллын давхардал $k!$."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Мөр",
+              "Утгууд"
+            ],
+            "rows": [
+              [
+                "0",
+                "1"
+              ],
+              [
+                "1",
+                "1,1"
+              ],
+              [
+                "2",
+                "1,2,1"
+              ],
+              [
+                "3",
+                "1,3,3,1"
+              ],
+              [
+                "4",
+                "1,4,6,4,1"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Факториалын томьёо ба урвууны нөхцөл",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Дараалалтай $k$ сонголтын тоо $n!/(n-k)!$. Баг бүр $k!$ удаа тоологдсон тул $\\binom nk=n!/(k!(n-k)!)$. Энэ нь энгийн бүхэл тоон дээрх хуваалт. Факториалуудын үлдэгдлийг аваад энгийн бүхэл хуваалт хийвэл буруу."
+          },
+          {
+            "type": "p",
+            "text": "$a$-гийн модулийн урвуу гэдэг нь $ab\\equiv1\\pmod P$ болгох $b$ утга. Ийм урвуу орших нь $\\gcd(a,P)=1$ байхтай адил. Анхны модульд тэг биш үлдэгдэл бүр энэ нөхцөлийг хангана; тэгийн урвуу гэж байхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Модуль $P=10^9+7$ анхны. Түүнд хуваагдахгүй $a$-гаар нэгээс $P-1$ хүртэлх үлдэгдлүүдийг үржүүлэхэд дараалал нь л солигдоно: үржвэрүүдийг тэнцүүлж, урвуугаар хураавал $a^{P-1}\\equiv1\\pmod P$. Иймээс $a^{P-2}$ нь модулийн урвуу. Бэлтгэх хамгийн их $N<P$ үед бүх факториал тэг биш тул хуваахын оронд эдгээр урвуугаар үржүүлж болно."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Нэг урвуунаас бүх урвуу факториал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Тэгээс $N$ хүртэлх факториалуудыг урагш үржүүлж байгуулна. Зөвхөн $N!$-ийн урвууг хурдан зэрэг дэвшүүлэх аргаар бодно. Дараа нь $(i-1)!^{-1}\\equiv i\\cdot i!^{-1}\\pmod P$ тул арагш нэг давталтаар бусдыг гаргана."
+          },
+          {
+            "type": "p",
+            "text": "Бэлтгэл $O(N+\\log P)$ хугацаа, $O(N)$ зай; нэг асуулт $O(1)$, нийт $O(N+q+\\log P)$. Харин Паскалийн бүтэн хүснэгт $O(N^2)$ хугацаа ба зай. Нэг мөр хэрэгтэй бол түүнийг нэг массивт баруунаас зүүн шинэчилж зайг бууруулж болно, гэхдээ энэ нь факториалын аргын хугацааны үнэлгээтэй адил биш."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. Зэрэг, бэлтгэл, нэг сонголтын хариу",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Хурдан зэрэг"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Тогтмол анхны модультай хурдан зэрэг дэвшүүлнэ. Үржүүлэх бүрд үлдэгдэл авч, зэргийг хоёрт хуваана. Энэ функц урвууг зөвхөн өмнө баталсан нөхцөлд гаргана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long MOD = 1000000007;\n\nlong long power_mod(long long base, long long exponent) {\n    long long result = 1;\n    while (exponent > 0) {\n        if (exponent & 1) {\n            result = result * base % MOD;\n        }\n        base = base * base % MOD;\n        exponent >>= 1;\n    }\n    return result;\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Хоёр хүснэгтийн бэлтгэл"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Факториалуудыг урагш, урвуу факториалуудыг арагш байгуулна. Хамгийн их индекс тэг үед ч хоёр массивын тэг дэх утга нэг байна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "struct Combinations {\n    vector<long long> factorial;\n    vector<long long> inverse_factorial;\n\n    explicit Combinations(int maximum) : factorial(maximum + 1, 1), inverse_factorial(maximum + 1, 1) {\n        for (int value = 1; value <= maximum; ++value) {\n            factorial[value] = factorial[value - 1] * value % MOD;\n        }\n        inverse_factorial[maximum] = power_mod(factorial[maximum], MOD - 2);\n        for (int value = maximum; value >= 1; --value) {\n            inverse_factorial[value - 1] = inverse_factorial[value] * value % MOD;\n        }\n    }\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Нэг асуултын хариу"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Сонгох тоо сөрөг эсвэл элементийн тооноос их бол индексжүүлэхээс өмнө тэг буцаана. Үгүй бол хоёр урвуу факториалаар үржүүлж хариулна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    long long choose(int count, int selected) const {\n        if (selected < 0 || selected > count) {\n            return 0;\n        }\n        return factorial[count] * inverse_factorial[selected] % MOD * inverse_factorial[count - selected] % MOD;\n    }\n};\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Оролт ба гаралт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Эхний мөр бэлтгэх хамгийн их индекс ба асуултын тоо. Дараа нь асуулт бүрд нийт ба сонгох тоо. Мөр бүрд сонголтын тооны модулийн үлдэгдэл хэвлэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int maximum, query_count;\n    cin >> maximum >> query_count;\n    Combinations combinations(maximum);\n    for (int query = 0; query < query_count; ++query) {\n        int count, selected;\n        cin >> count >> selected;\n        cout << combinations.choose(count, selected) << '\\n';\n    }\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах C++17 программ"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long MOD = 1000000007;\n\nlong long power_mod(long long base, long long exponent) {\n    long long result = 1;\n    while (exponent > 0) {\n        if (exponent & 1) {\n            result = result * base % MOD;\n        }\n        base = base * base % MOD;\n        exponent >>= 1;\n    }\n    return result;\n}\n\nstruct Combinations {\n    vector<long long> factorial;\n    vector<long long> inverse_factorial;\n\n    explicit Combinations(int maximum) : factorial(maximum + 1, 1), inverse_factorial(maximum + 1, 1) {\n        for (int value = 1; value <= maximum; ++value) {\n            factorial[value] = factorial[value - 1] * value % MOD;\n        }\n        inverse_factorial[maximum] = power_mod(factorial[maximum], MOD - 2);\n        for (int value = maximum; value >= 1; --value) {\n            inverse_factorial[value - 1] = inverse_factorial[value] * value % MOD;\n        }\n    }\n\n    long long choose(int count, int selected) const {\n        if (selected < 0 || selected > count) {\n            return 0;\n        }\n        return factorial[count] * inverse_factorial[selected] % MOD * inverse_factorial[count - selected] % MOD;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int maximum, query_count;\n    cin >> maximum >> query_count;\n    Combinations combinations(maximum);\n    for (int query = 0; query < query_count; ++query) {\n        int count, selected;\n        cin >> count >> selected;\n        cout << combinations.choose(count, selected) << '\\n';\n    }\n}\n"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "6 6\n4 2\n5 0\n5 6\n0 0\n6 3\n6 -1\n"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "6\n1\n0\n1\n20\n0\n"
+          }
+        ]
+      },
+      {
+        "key": "errors",
+        "title": "9. Модулиар хуваах нь бүхэл хуваалт биш",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Жишээ нь модуль долоо дээр $\\binom42=24/(2\\cdot2)=6$. Гэтэл үлдэгдэл факториалаар энгийн хуваалт хийвэл гуравыг дөрөвт хуваагаад тэг болно. Дөрвийн модулийн урвуу хоёр тул $3\\cdot2\\bmod7=6$ зөв."
+          },
+          {
+            "type": "p",
+            "text": "Код үржүүлэх бүрийн дараа үлдэгдэл авдаг. Хоёр үржигдэхүүн тус бүр $P$-ээс бага тул үржвэр нь signed 64 битэд багтана. Гурван факториалыг дунд нь үлдэгдэл авахгүй үржүүлбэл энэ баталгаа алдагдана."
+          }
+        ]
+      },
+      {
+        "key": "repeated",
+        "title": "10. Ижил тэмдэгтүүдийг ялгаатай гэж давхар тоолохгүй",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хоёр ижил үсэг, хоёр өөр үсэгтэй дөрвөн тэмдэгт байг. Бүгдийг түр ялгаатай гэж тэмдэглэвэл $4!$ байрлал. Ижил хоёрын шошгыг солих бүрд харагдах мөр өөрчлөгдөхгүй тул хоёрт хуваагаад арван хоёр өөр мөр болно."
+          },
+          {
+            "type": "p",
+            "text": "Ерөнхийдөө тэмдэгт бүрийн давтамж $c_i$, нийлбэр нь $n$ бол ялгаатай мөрийн тоо $n!/\\prod_i c_i!$. Кодын факториал ба урвууны бэлтгэлийг дахин ашиглаж болно. Энэ нь $\\binom nk$-г ганц удаа дуудахтай адил биш; бүх давтамжийн урвуу факториалыг үржүүлнэ."
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "11. Анхны модуль ба хүрээний хязгаар",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Программ $0\\le N\\le10^6$, $0\\le q\\le200000$, асуултын $0\\le n\\le N$, $-10^9\\le k\\le10^9$ гэсэн гэрээтэй. Сонгох хэмжээ хүрээнээс гадуур бол тэгийг буцааж, массивын индекс болгон хэрэглэхгүй. $N=0$, $n=k=0$ үед хариу нэг."
+          },
+          {
+            "type": "p",
+            "text": "$N\\ge P$ бол факториал тэг болж урвуу байхгүй; энэ аргыг шууд сунгаж болохгүй. Нийлмэл модульд ч урвууны оршин байх нөхцөл тусдаа, Фермагийн зэргийг сохроор ашиглахгүй. Том тохиолдлын өөр аргууд энэ программын хүрээнээс гадуур."
+          }
+        ]
+      },
+      {
+        "key": "variants",
+        "title": "12. Нөхцөлийг өөрчилбөл тоолол бас өөр",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Ялгаатай $m$ зүйлийг давталттай байрлуулах, ижил $m$ алимыг $r$ ялгаатай хүүхдэд тараах нь өөр бодлого. Сүүлийнхэд $r\\ge1$ үед тусгаарлагчийн аргаар $\\binom{m+r-1}{r-1}$ гарна; тэг хүүхэд гэсэн захын тохиолдлыг энэ томьёонд шууд оруулахгүй."
+          },
+          {
+            "type": "p",
+            "text": "Зөв хаалтын дараалалд зөвхөн нээх байрлал сонгоход хангалтгүй: угтвар бүрд хаах тоо нээхээс ихгүй байх нөхцөл бий. Бүгд өөр хүнд бэлэг өгөхөд тогтсон цэггүй сэлгэмлийн нэмэлт хамаарал хэрэгтэй. Эхлээд ямар сонголтууд зөв болохыг тогтоогоод дараа нь томьёогоо сонго."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Сонголтоос давхардал ба хязгаарлалт руу",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Binomial Coefficients"
+          },
+          {
+            "type": "p",
+            "text": "Факториал ба урвуу факториалын бэлтгэл, хүрээ ба модулийн нөхцөлийг шууд хэрэглэ."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Creating Strings II"
+          },
+          {
+            "type": "p",
+            "text": "Ижил тэмдэгтийн давтамж бүрийн факториалаар давхар тооллыг арилга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Distributing Apples"
+          },
+          {
+            "type": "p",
+            "text": "Ижил зүйл ба ялгаатай хүлээн авагчийг ялгаад тусгаарлагчийн сонголт болгон хувирга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Christmas Party"
+          },
+          {
+            "type": "p",
+            "text": "Тогтсон цэггүй сэлгэмлийн нөхцөлийг нэмэлт үл давхцах тохиолдлуудад хувааж бод."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Bracket Sequences I"
+          },
+          {
+            "type": "p",
+            "text": "Бүх сонголтоос угтварын нөхцөл зөрчсөн дарааллыг хасах тусдаа баталгаа хэрэгтэй."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Bracket Sequences II"
+          },
+          {
+            "type": "p",
+            "text": "Өгөгдсөн угтварын тэнцэл ба үлдсэн уртын боломжгүй тохиолдлыг тооллоос өмнө шалга."
+          }
+        ]
+      },
+      {
+        "key": "priority",
+        "title": "14. Тоолол бүрийн давхардлыг тайлбарлах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өндөр ач холбогдолтой. Binomial Coefficients нь бэлтгэл ба урвууны шууд хэрэглээ, Creating Strings II нь ижил тэмдэгтийн давхар тооллыг арилгах цөм хэрэглээ. Томьёо бүрийг объект, нөхцөл, давхардлын тайлбартай хэрэглэж сур."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Жижиг сонголтыг шууд тоолж шалгах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Жижиг олонлогийн бүх дэд олонлогоос хэмжээ бүрийг тоолоод хариутай тулга. Хоосон, бүтэн, хүрээнээс гадуур сонголтуудыг шалга. Дараа нь $\\binom nk=\\binom n{n-k}$ ба нэг мөрийн нийлбэр $2^n$ болохыг бие даасан шалгалт болго."
+          },
+          {
+            "type": "p",
+            "text": "Модулийн урвуу байгаа гэдгийг зөвхөн код тэг биш буцааснаар батлахгүй. Яагаад анхны модуль, яагаад хамгийн их индекс түүнээс бага байх ёстойг тайлбарла. Жижиг модулийн бүхэл хуваалтын эсрэг жишээг өөрөө дахин гарга."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Combinatorics — choosing subsets and modular division",
+        "summary": "Count unordered selections by disjoint cases, then answer many queries using factorials and valid modular inverses.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Choose two people from four",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Choose a two-person team from four distinct people. Selecting one then two gives the same team as selecting two then one, so twelve ordered selections overcount."
+              },
+              {
+                "type": "p",
+                "text": "The teams are pairs $12,13,14,23,24,34$, where juxtaposed digits denote the two labels, not multiplication. There are six. We want this count without listing all teams."
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Avoid enumerating all subsets",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Let $\\binom nk$ count size-$k$ subsets of $n$ distinct items. Enumerating all $2^n$ subsets is excessive when only the count is needed."
+              },
+              {
+                "type": "p",
+                "text": "Separate subsets by whether one designated item is included. Included subsets choose one fewer item from the rest, leading to smaller dynamic-programming states."
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "3. What is distinct, and does order matter?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "The contract is distinct items, no repetition and unordered selection. Ordered or repeated selections require a different count. Empty and full subsets each give one; $k<0$ or $k>n$ gives zero."
+              },
+              {
+                "type": "p",
+                "text": "Define $0!=1$. There are $k!$ orders of $k$ distinct items, by multiplying the successive choices. This factorial will remove ordering overcount."
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Included and excluded cases",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Excluding a designated item gives $\\binom{n-1}k$ subsets; including it gives $\\binom{n-1}{k-1}$. These disjoint exhaustive cases prove Pascal’s recurrence."
+              },
+              {
+                "type": "p",
+                "text": "Compute rows from small to large using addition alone, valid under any positive modulus. We will replace quadratic preprocessing for many large queries, but this recurrence first establishes the count’s meaning."
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "5. Build five Pascal rows by hand",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Start with a single one. Each row has ones at its edges, with interior entries adding two neighbors from the preceding row. Row four is $1,4,6,4,1$."
+              },
+              {
+                "type": "p",
+                "text": "Alternatively, four choices then three give twelve ordered pairs. Every team appears in two orders, so division by two gives six. In general that ordering multiplicity is $k!$."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Row",
+                  "Entries"
+                ],
+                "rows": [
+                  [
+                    "0",
+                    "1"
+                  ],
+                  [
+                    "1",
+                    "1,1"
+                  ],
+                  [
+                    "2",
+                    "1,2,1"
+                  ],
+                  [
+                    "3",
+                    "1,3,3,1"
+                  ],
+                  [
+                    "4",
+                    "1,4,6,4,1"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Factorials and the inverse condition",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "There are $n!/(n-k)!$ ordered selections and each subset appears $k!$ times, giving $\\binom nk=n!/(k!(n-k)!)$ over integers. Dividing factorial residues with ordinary integer division is invalid."
+              },
+              {
+                "type": "p",
+                "text": "A modular inverse of $a$ is a value $b$ with $ab\\equiv1\\pmod P$. It exists exactly when $\\gcd(a,P)=1$. Every nonzero residue modulo a prime meets this condition; zero has no inverse."
+              },
+              {
+                "type": "p",
+                "text": "For prime $P=10^9+7$ and $a$ not divisible by $P$, multiplication by $a$ permutes the nonzero residues. Equating products and cancelling invertible factors yields $a^{P-1}\\equiv1\\pmod P$, so $a^{P-2}$ is an inverse. With maximum $N<P$, all required factorials are nonzero and division can be replaced by multiplication by their inverses."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. One inverse produces all inverse factorials",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Build factorials forward and compute only the inverse of $N!$ by fast exponentiation. Then $(i-1)!^{-1}\\equiv i\\cdot i!^{-1}\\pmod P$ supplies all earlier inverse factorials in one backward pass."
+              },
+              {
+                "type": "p",
+                "text": "Preprocessing costs $O(N+\\log P)$ time and linear memory, then constant time per query. Pascal’s full table is quadratic; a single-row right-to-left update reduces memory but is still a different time tradeoff."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Powers, preprocessing and one-query answers",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. Fast powers"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Use repeated squaring with a fixed prime modulus, reducing every product. Its inverse use relies on the previously established conditions.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long MOD = 1000000007;\n\nlong long power_mod(long long base, long long exponent) {\n    long long result = 1;\n    while (exponent > 0) {\n        if (exponent & 1) {\n            result = result * base % MOD;\n        }\n        base = base * base % MOD;\n        exponent >>= 1;\n    }\n    return result;\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. Two preprocessing tables"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Build factorials forward and inverse factorials backward; maximum zero still leaves both zero entries equal to one.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "struct Combinations {\n    vector<long long> factorial;\n    vector<long long> inverse_factorial;\n\n    explicit Combinations(int maximum) : factorial(maximum + 1, 1), inverse_factorial(maximum + 1, 1) {\n        for (int value = 1; value <= maximum; ++value) {\n            factorial[value] = factorial[value - 1] * value % MOD;\n        }\n        inverse_factorial[maximum] = power_mod(factorial[maximum], MOD - 2);\n        for (int value = maximum; value >= 1; --value) {\n            inverse_factorial[value - 1] = inverse_factorial[value] * value % MOD;\n        }\n    }\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. One-query answer"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Return zero before indexing when the selection count is invalid; otherwise multiply the factorial by the two inverse factorials.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    long long choose(int count, int selected) const {\n        if (selected < 0 || selected > count) {\n            return 0;\n        }\n        return factorial[count] * inverse_factorial[selected] % MOD * inverse_factorial[count - selected] % MOD;\n    }\n};\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Input and output"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read the preprocessing maximum and query count, followed by total/selected pairs, and print one residue per line.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int maximum, query_count;\n    cin >> maximum >> query_count;\n    Combinations combinations(maximum);\n    for (int query = 0; query < query_count; ++query) {\n        int count, selected;\n        cin >> count >> selected;\n        cout << combinations.choose(count, selected) << '\\n';\n    }\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete compilable C++17 program"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long MOD = 1000000007;\n\nlong long power_mod(long long base, long long exponent) {\n    long long result = 1;\n    while (exponent > 0) {\n        if (exponent & 1) {\n            result = result * base % MOD;\n        }\n        base = base * base % MOD;\n        exponent >>= 1;\n    }\n    return result;\n}\n\nstruct Combinations {\n    vector<long long> factorial;\n    vector<long long> inverse_factorial;\n\n    explicit Combinations(int maximum) : factorial(maximum + 1, 1), inverse_factorial(maximum + 1, 1) {\n        for (int value = 1; value <= maximum; ++value) {\n            factorial[value] = factorial[value - 1] * value % MOD;\n        }\n        inverse_factorial[maximum] = power_mod(factorial[maximum], MOD - 2);\n        for (int value = maximum; value >= 1; --value) {\n            inverse_factorial[value - 1] = inverse_factorial[value] * value % MOD;\n        }\n    }\n\n    long long choose(int count, int selected) const {\n        if (selected < 0 || selected > count) {\n            return 0;\n        }\n        return factorial[count] * inverse_factorial[selected] % MOD * inverse_factorial[count - selected] % MOD;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int maximum, query_count;\n    cin >> maximum >> query_count;\n    Combinations combinations(maximum);\n    for (int query = 0; query < query_count; ++query) {\n        int count, selected;\n        cin >> count >> selected;\n        cout << combinations.choose(count, selected) << '\\n';\n    }\n}\n"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "6 6\n4 2\n5 0\n5 6\n0 0\n6 3\n6 -1\n"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "6\n1\n0\n1\n20\n0\n"
+              }
+            ]
+          },
+          {
+            "key": "errors",
+            "title": "9. Modular division is not integer division",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Modulo seven, $\\binom42=24/(2\\cdot2)=6$, but dividing the factorial residues as integers gives three divided by four, or zero. The inverse of four is two, so $3\\cdot2\\bmod7=6$."
+              },
+              {
+                "type": "p",
+                "text": "Reduce after every multiplication. Each pair of operands is below $P$, making the product fit signed 64-bit. Multiplying three residues before reduction would lose that bound."
+              }
+            ]
+          },
+          {
+            "key": "repeated",
+            "title": "10. Remove artificial labels on repeated symbols",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For four symbols containing one repeated pair and two other distinct symbols, artificially labeling all copies gives $4!$ orders. Swapping the two identical copies changes no visible string, leaving twelve distinct strings."
+              },
+              {
+                "type": "p",
+                "text": "For frequencies $c_i$ summing to $n$, the count is $n!/\\prod_i c_i!$. Reuse factorials and inverse factorials, multiplying every frequency term; this is not simply one call to the binomial function."
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "11. Prime modulus and range limits",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "The contract is $0\\le N\\le10^6$, $0\\le q\\le200000$, query $0\\le n\\le N$, and $-10^9\\le k\\le10^9$. Out-of-range selection counts return zero before indexing. At $N=0$ and $n=k=0$, the answer is one."
+              },
+              {
+                "type": "p",
+                "text": "For $N\\ge P$, factorials become zero and lack inverses. Composite moduli also require separate invertibility conditions; blindly using the Fermat exponent is invalid. Larger-domain methods are outside this program."
+              }
+            ]
+          },
+          {
+            "key": "variants",
+            "title": "12. Changed assumptions change the count",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Distinguish repeated selections of distinct objects from distributing $m$ identical apples to $r$ distinct recipients. For $r\\ge1$, separators give $\\binom{m+r-1}{r-1}$; zero recipients require separate handling."
+              },
+              {
+                "type": "p",
+                "text": "Balanced brackets need a prefix constraint beyond choosing opening positions. Derangements need an additional recurrence for avoiding fixed points. Define valid outcomes before selecting a formula."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From choices to repetition and constraints",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Binomial Coefficients"
+              },
+              {
+                "type": "p",
+                "text": "Apply factorial/inverse-factorial preprocessing with its domain conditions."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Creating Strings II"
+              },
+              {
+                "type": "p",
+                "text": "Remove each repeated-symbol frequency factorial from labeled permutations."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Distributing Apples"
+              },
+              {
+                "type": "p",
+                "text": "Distinguish identical items and distinct recipients, then derive the separator choice."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Christmas Party"
+              },
+              {
+                "type": "p",
+                "text": "Add disjoint-case reasoning for permutations with no fixed points."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Bracket Sequences I"
+              },
+              {
+                "type": "p",
+                "text": "Add a proof excluding bracket orders that violate the prefix condition."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Bracket Sequences II"
+              },
+              {
+                "type": "p",
+                "text": "Check the fixed prefix balance and remaining-length feasibility before counting."
+              }
+            ]
+          },
+          {
+            "key": "priority",
+            "title": "14. Explain every counting multiplicity",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "High educational priority. Binomial Coefficients directly applies preprocessing and inverses; Creating Strings II removes the multiplicity of identical copies. Always state the objects, constraints and overcount being corrected."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Check small selections directly",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Enumerate all subsets of small sets and compare counts by size, including empty, full and out-of-range choices. Independently check symmetry and row sum $2^n$."
+              },
+              {
+                "type": "p",
+                "text": "A nonzero-looking output does not prove an inverse exists. Explain the prime-modulus and maximum-index conditions and reconstruct the small-modulus counterexample to integer division."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Disjoint-case addition, dynamic programming, factorials and fast powers."
+      }
+    },
+    "prerequisites": "Үл давхцах тохиолдлын нийлбэр, динамик программчлал, факториал, хурдан зэрэг.",
+    "prerequisiteIds": [
+      "dynamic-programming"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "dynamic-programming",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "kmp",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ],
+      "next": "debugging",
+      "practice": [
+        {
+          "key": "446",
+          "stage": "Warm-up",
+          "priority": true,
+          "reason": "Сонголт ба давхардлын тооллыг факториал, хүчинтэй модулийн урвуугаар хэрэгжүүлэх цөм дасгал."
+        },
+        {
+          "key": "447",
+          "stage": "Standard",
+          "priority": true,
+          "reason": "Сонголт ба давхардлын тооллыг факториал, хүчинтэй модулийн урвуугаар хэрэгжүүлэх цөм дасгал."
+        },
+        {
+          "key": "448",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "449",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "452",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "453",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false,
+    "priorityLevel": "high",
+    "priorityReason": "Сонголтын тоо, давхардсан тэмдэгтийн тоолол, үл давхцах тохиолдлууд ба модулийн урвуу нь олон тооллын бодлогын суурь. Хэрэглэх нөхцөлийг баталж сурах ач холбогдлоор High; хүндрэлийн зэрэгтэй адил биш."
+  }
+}
