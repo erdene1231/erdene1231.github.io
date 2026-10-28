@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {editorialDatabase} from './problem-editorial-fixture.mjs';
 import {proposalProblems} from '../tools/package02_tutorial_proposals.mjs';
-import {complexityPrioritySql,searchSortPrioritySql,recursionPrioritySql,differencePointersPrioritySql,windowPrioritySql,stackPrioritySql,bitsPrioritySql,powerPrioritySql} from '../tools/package02_priority_promotions.mjs';
+import {complexityPrioritySql,searchSortPrioritySql,recursionPrioritySql,differencePointersPrioritySql,windowPrioritySql,stackPrioritySql,bitsPrioritySql,powerPrioritySql,answerPrioritySql} from '../tools/package02_priority_promotions.mjs';
 const plan=JSON.parse(fs.readFileSync('audit/PACKAGE02-COMPLEXITY-PRIORITY-PROMOTIONS.json'));
 async function setup(){
  const db=await editorialDatabase({installPriority:false});
@@ -139,6 +139,23 @@ test('one modular-power core promotion is atomic and cannot spill into previous 
   await db.exec(sql);const after=(await db.query('select * from problem_catalog order by number')).rows;
   assert.deepEqual(after.filter(r=>r.number!==437),before.filter(r=>r.number!==437));
   const old=before.find(r=>r.number===437),now=after.find(r=>r.number===437);assert.deepEqual(now.body,{...old.body,...p.patches[0].changes});assert.equal(now.revision,2);
+  assert.equal((await db.query('select count(*) n from problem_changes')).rows[0].n,1);assert.equal((await db.query('select last_value from problem_number_seq')).rows[0].last_value,993);
+  await assert.rejects(db.exec(sql),/Problem history drift|Priority CAS\/body drift/);
+ }finally{await db.close();}
+});
+
+test('one answer-search core promotion is atomic and cannot spill into previous two-target scopes',async()=>{
+ const db=await setup();try{
+  const p=JSON.parse(fs.readFileSync('audit/PACKAGE02-ANSWER-PRIORITY.json')),g=await guard(db);
+  g.problems=(await db.query("select *,md5(body::text) body_md5 from problem_catalog where number=95")).rows;
+  g.non_target_fingerprint=(await db.query("select md5(jsonb_agg(to_jsonb(p) order by problem_id)::text) h from problem_catalog p where problem_id<>'task-95'")).rows[0].h;
+  assert.throws(()=>complexityPrioritySql(p,g),/Only the reviewed/);assert.throws(()=>windowPrioritySql(plan,g),/Only the reviewed/);
+  const before=(await db.query('select * from problem_catalog order by number')).rows,sql=answerPrioritySql(p,g);
+  await assert.rejects(db.exec(sql.replace('-- Atomic priority target and edit history complete.',"raise exception 'Injected power failure';")),/Injected power failure/);
+  assert.deepEqual((await db.query('select * from problem_catalog order by number')).rows,before);
+  await db.exec(sql);const after=(await db.query('select * from problem_catalog order by number')).rows;
+  assert.deepEqual(after.filter(r=>r.number!==95),before.filter(r=>r.number!==95));
+  const old=before.find(r=>r.number===95),now=after.find(r=>r.number===95);assert.deepEqual(now.body,{...old.body,...p.patches[0].changes});assert.equal(now.revision,2);
   assert.equal((await db.query('select count(*) n from problem_changes')).rows[0].n,1);assert.equal((await db.query('select last_value from problem_number_seq')).rows[0].last_value,993);
   await assert.rejects(db.exec(sql),/Problem history drift|Priority CAS\/body drift/);
  }finally{await db.close();}
