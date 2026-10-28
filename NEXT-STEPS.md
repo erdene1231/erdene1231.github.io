@@ -1,3 +1,9 @@
+## Corrected foundation publication — 2026-10-28 02:00 UTC
+
+PR #27 merged as `5f1a0a83fce52deab10c82dd4f5de20c37f67669`; Pages deployment succeeded and public index/styles/tutorials/learning assets match the tested version-52 files. The three wholly new MN/EN foundation lessons were then published atomically at revision 7, history records 144–146, and anonymously retrieved with exact body hashes. See `audit/PACKAGE02-REWRITE-PUBLICATION-RECEIPT.json`. Never replay the pinned SQL or old revision-5 job.
+
+The rejected revision-6 structure has been replaced, not appended to. Native reader/editor, code and preservation evidence is in the rewrite reports. Existing private Binary Search draft, Mongolia revision 2/unpublished, the other 53 catalog rows, 993 problems, profiles and learner records are unchanged. No schema/access migration occurred. Three corrected lessons are live; user acceptance is not claimed. The other 52 curriculum lessons were paused during this correction and remain unfinished. This does not complete package 2 or authorize package 3/problem editorial authoring.
+
 # Package 2 correction: first three REOPENED, accepted completion 0/55
 
 The user rejected revision 6 Binary Search, Greedy and DP for old organization with appended duplicate complexity/practice and unnecessarily English-heavy Mongolian. They remain live; do not delete or unpublish them. Previous whole-lesson completion claims are superseded. Rebuild all three from scratch in coherent 15-chapter teaching order, natural Mongolian, fragments/explanations before full C++17. Inspect the full reader/TOC on real responsive layouts, not an isolated article fixture. See `audit/PACKAGE02-FOUNDATION-REWRITE-PLAN.md` and the screenshot inspected from Library. Do not advance the other 52 using the rejected template.
