@@ -4,6 +4,7 @@ const literal=v=>"E'"+String(v).replace(/\\/g,'\\\\').replace(/'/g,"''")+"'";
 const json=v=>literal(JSON.stringify(v))+'::jsonb';
 export function complexityPrioritySql(plan,guard){return buildPrioritySql(plan,guard,['cses-1083','cses-1094']);}
 export function maskPrioritySql(plan,guard){return buildPrioritySql(plan,guard,['atcoder-dp_o']);}
+export function monotonicPrioritySql(plan,guard){return buildPrioritySql(plan,guard,['cses-1142']);}
 export function boundsPrioritySql(plan,guard){return buildPrioritySql(plan,guard,['cses-1073']);}
 export function sparsePrioritySql(plan,guard){return buildPrioritySql(plan,guard,['cses-1647']);}
 export function intervalHeapPrioritySql(plan,guard){return buildPrioritySql(plan,guard,['atcoder-dp_n','cses-1164']);}
