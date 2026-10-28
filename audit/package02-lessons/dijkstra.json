@@ -1,0 +1,868 @@
+{
+  "id": "dijkstra",
+  "expected_revision": 5,
+  "expected_published": true,
+  "expected_body_sha256": "f16a966c4cfc5be2ee259120fa09edf57281bfbb9a414a21b1f0e60c92c1ea4a",
+  "status": "Authored; semantic/code/native editor review pending",
+  "body": {
+    "id": "dijkstra",
+    "level": "Дунд шат",
+    "order": 32,
+    "title": "Дейкстра — сөрөг бус жинтэй графын хамгийн богино зам",
+    "aliases": "dijkstra Dijkstra — жинтэй graph-ийн богино зам Dijkstra — shortest paths in weighted graphs dijkstra shortest path жинтэй graph хамгийн богино зам heap priority queue",
+    "related": [
+      "bfs",
+      "priority-queue",
+      "floyd-warshall"
+    ],
+    "summary": "Бодитоор олдсон замын дээд хязгаарыг сайжруулж, хамгийн бага түр зайтай оройн хариу яагаад эцэслэхийг батална.",
+    "category": "Graphs",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Цөөн ирмэгтэй нь заавал богино биш",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Чиглэсэн замууд $1\\to2:4$, $1\\to3:1$, $3\\to2:2$, $2\\to4:1$, $3\\to4:7$, $4\\to5:3$ байг. Орой нэгээс бүх орой хүртэл нийт жингийн хамгийн бага нийлбэрийг олно."
+          },
+          {
+            "type": "p",
+            "text": "Хоёр руу шууд очвол дөрөв, харин гурав дайрвал гурав. Иймээс BFS-ийн ирмэгийн тоогоор түрүүлж үзсэн замыг эцсийн хариу гэж болохгүй."
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Бүх замыг туршихын оронд зай сайжруулах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Зам бүрийг салаалан туршихад цикл ба олон давхардсан маршруттай тул ажил асар өснө. Харин орой бүрд одоогоор олсон хамгийн бага замын уртыг хадгалж болно."
+          },
+          {
+            "type": "p",
+            "text": "Эхлэлд тэг, бусдад хүрээгүй гэсэн их утга өгнө. $u$ хүртэл олсон замыг $u\\to v$ ирмэгээр сунгаад богино бол $v$-ийн зайг сайжруулна. Энэ үйлдлийг сулруулалт гэж нэрлэж болно."
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "3. Түр зай бол бодит замын урт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хязгааргүй биш $dist[v]$ бүр эхлэлээс $v$ хүрэх бодит замын урт тул жинхэнэ хамгийн богино зайнаас бага болохгүй. Гэхдээ эхэндээ оновчтой биш байж болно."
+          },
+          {
+            "type": "p",
+            "text": "Дараагийн боловсруулах оройг хамгийн бага одоогийн зайгаар сонгоно. Бичлэг $(зай,орой)$ хос хэлбэртэй хамгийн бага зайтайг нь түрүүлж авдаг бүтцэд (priority queue) хадгалагдана. Сөрөг бус жин гэсэн нөхцөл л энэ сонголтыг баталдаг."
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Сайжирсан зайг нэмээд хуучныг алгас",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхлэл $(0,1)$ бичлэгтэй. Хамгийн бага зайтай бичлэгийг авч одоогийн $dist$-тай нь тулгана. Зай өөр бол өмнөх сайжруулалтаас үлдсэн хуучирсан бичлэг тул хөршүүдийг үзэлгүй алгас."
+          },
+          {
+            "type": "p",
+            "text": "Шинэ, зөв бичлэг бол бүх гарах ирмэгийг сулруулна. Сайжирсан зай бүрийг шинээр нэмнэ. Нэг орой хэд хэдэн бичлэгтэй байж болно; стандарт queue доторх хуучныг хайж хасах шаардлагагүй."
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "5. Түр дөрөв дараа нь гурав болж сайжрах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхлэл нэгийг авмагц хоёрын зай дөрөв, гуравынх нэг. Гуравыг түрүүлж авч хоёрын зайг гурав, дөрвийн зайг найм болгоно. Дараа нь хоёрын гуравтай бичлэг дөрвийн зайг дөрөв болгож сайжруулна."
+          },
+          {
+            "type": "p",
+            "text": "Хоёрын хуучин дөрөвтэй бичлэгийг алгасна. Дөрвийн зөв дөрөвтэй бичлэг тавын зайг долоо болгоно. Дөрвийн хуучин наймтай бичлэг ч алгасагдана. Эцсийн зай $0,3,1,4,7$."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Боловсруулсан орой",
+              "2-ын зай",
+              "3-ын зай",
+              "4-ийн зай",
+              "5-ын зай"
+            ],
+            "rows": [
+              [
+                "1",
+                "4",
+                "1",
+                "—",
+                "—"
+              ],
+              [
+                "3",
+                "3",
+                "1",
+                "8",
+                "—"
+              ],
+              [
+                "2",
+                "3",
+                "1",
+                "4",
+                "—"
+              ],
+              [
+                "4",
+                "3",
+                "1",
+                "4",
+                "7"
+              ],
+              [
+                "5",
+                "3",
+                "1",
+                "4",
+                "7"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Хамгийн бага түр зай яагаад эцсийнх вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өмнө эцэслэсэн бүх зай зөв гэж үзье. Дараагийн хамгийн бага түр зайтай $u$-д түүнээс богино зам байна гэж зөрчилд хүргэе. Тэр замын эцэслээгүй анхны оройг $y$, өмнөхийг $x$ гэе. $x$ боловсруулагдахдаа $y$-г зөв замын эхний хэсгийн үнээс ихгүй зайтай болгосон."
+          },
+          {
+            "type": "p",
+            "text": "Үлдсэн ирмэгүүд сөрөг бус тул тэр эхний хэсэг бүх богино замаас ихгүй. Иймээс $dist[y]<dist[u]$ болох ёстой нь $u$ хамгийн бага түр зайтай байсантай зөрчилдөнө. Эхлэл тэгээр зөв тул индукц үйлчилнэ. Сөрөг ирмэг байвал үлдсэн зам үнээ бууруулж болох учир энэ баталгаа нурна."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Хуучирсан бичлэгүүдийг бас тооц",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Амжилттай сайжруулалт ирмэгийн тооноос хэтрэхгүй. Энэ залхуутай heap хувилбарт $O(n+m\\log(m+1))$ хугацаа, граф, зай, бичлэгүүдэд $O(n+m)$ санах ой. Бичлэгийн тоог дан $n$ гэж тооцохгүй."
+          },
+          {
+            "type": "p",
+            "text": "$n,m\\le200000$, жин $0$–$10^9$ гэж авна. Хамгийн богино энгийн замын жин $2\\cdot10^{14}$-өөс бага; сулруулалтын нэмэлт нэг ирмэг ч long long-д аюулгүй. INF нь үүнээс их LLONG_MAX/4. Хүрээгүй оройг тэргүүлэх утгын бүтцэд оруулахгүй."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. Хамгийн бага зайтай бичлэг, сулруулалт, үл хүрэх орой",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Эхлэл ба төлөв"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Зайг INF-ээр эхлүүлж, эхлэлийг тэг болгоно. Хосын эхний зайгаар хамгийн багыг авах бүтэц ашиглана. Эхлэлээс олдсон ганц бичлэг эхэлж орно.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long INF = numeric_limits<long long>::max() / 4;\nstruct Edge {\n    int destination;\n    long long weight;\n};\n\nvector<long long> shortest_distances(const vector<vector<Edge>>& graph, int source) {\n    vector<long long> distance(graph.size(), INF);\n    using Entry = pair<long long, int>;\n    priority_queue<Entry, vector<Entry>, greater<Entry>> pending;\n    distance[source] = 0;\n    pending.push({0, source});\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Үндсэн үйлдэл"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Бичлэгийг утгаар нь хуулж аваад pop хийнэ. Хуучирсныг алгасаж, шинэ бичлэгийн хөрш бүрд зөвхөн эрс бага зайг оноон дахин нэмнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    while (!pending.empty()) {\n        auto [current_distance, vertex] = pending.top();\n        pending.pop();\n        if (current_distance != distance[vertex]) {\n            continue;\n        }\n        for (const Edge& edge : graph[vertex]) {\n            long long candidate = current_distance + edge.weight;\n            if (candidate < distance[edge.destination]) {\n                distance[edge.destination] = candidate;\n                pending.push({candidate, edge.destination});\n            }\n        }\n    }\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Хариу авах"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Зайн массивыг буцаана. Хүрээгүй орой INF хэвээр; эхлэлээс хүрсэн утгууд бодит замын нийлбэр.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    return distance;\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Оролт ба гаралт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт $1$–$200000$ орой, $0$–$200000$ чиглэсэн ирмэг, жин $0$–$10^9$. Эхлэл нэг. Нэг мөрд оройн дугаараар зай, хүрэхгүйд -1 хэвлэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    vector<vector<Edge>> graph(vertex_count + 1);\n    for (int index = 0; index < edge_count; ++index) {\n        int first, second;\n        long long weight;\n        cin >> first >> second >> weight;\n        graph[first].push_back({second, weight});\n    }\n    vector<long long> distance = shortest_distances(graph, 1);\n    for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n        cout << (distance[vertex] == INF ? -1 : distance[vertex])\n             << (vertex == vertex_count ? '\\n' : ' ');\n    }\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах C++17 программ"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long INF = numeric_limits<long long>::max() / 4;\nstruct Edge {\n    int destination;\n    long long weight;\n};\n\nvector<long long> shortest_distances(const vector<vector<Edge>>& graph, int source) {\n    vector<long long> distance(graph.size(), INF);\n    using Entry = pair<long long, int>;\n    priority_queue<Entry, vector<Entry>, greater<Entry>> pending;\n    distance[source] = 0;\n    pending.push({0, source});\n    while (!pending.empty()) {\n        auto [current_distance, vertex] = pending.top();\n        pending.pop();\n        if (current_distance != distance[vertex]) {\n            continue;\n        }\n        for (const Edge& edge : graph[vertex]) {\n            long long candidate = current_distance + edge.weight;\n            if (candidate < distance[edge.destination]) {\n                distance[edge.destination] = candidate;\n                pending.push({candidate, edge.destination});\n            }\n        }\n    }\n    return distance;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    vector<vector<Edge>> graph(vertex_count + 1);\n    for (int index = 0; index < edge_count; ++index) {\n        int first, second;\n        long long weight;\n        cin >> first >> second >> weight;\n        graph[first].push_back({second, weight});\n    }\n    vector<long long> distance = shortest_distances(graph, 1);\n    for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n        cout << (distance[vertex] == INF ? -1 : distance[vertex])\n             << (vertex == vertex_count ? '\\n' : ' ');\n    }\n}\n"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "5 6\n1 2 4\n1 3 1\n3 2 2\n2 4 1\n3 4 7\n4 5 3\n"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "0 3 1 4 7\n"
+          }
+        ]
+      },
+      {
+        "key": "errors",
+        "title": "9. Анх олсон үед нь visited болгож болохгүй",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Жишээнд хоёрын анхны зай дөрөв боловч гурав болж сайжирна. Тэргүүлэх утгын бүтцэд нэмсэн даруйд visited болгож хаавал энэ боломжийг алдана. Зөв эцэслэлт хамгийн бага зайтай одоогийн бичлэгийг авах үед л баталгаатай."
+          },
+          {
+            "type": "p",
+            "text": "Сайжруулалтыг зөвхөн эрс бага үед хий. Тэг жинтэй циклд тэнцүү зайг дахин дахин нэмбэл дуусахгүй байж болно. Энэ код сөрөг жинг шалган засахгүй; оролтын гэрээ нь сөрөг бус."
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "10. Чиглэл ба үл хүрэх утга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Код чиглэсэн граф авна. Чиглэлгүй бодлогод ирмэгийг хоёр чиглэлд нэмэх хэрэгтэй. Замгүй оройд сургалтын гаралт -1; эх бодлого өөр баталгаа эсвэл тэмдэглэгээ өгсөн бол түүнийг дагана."
+          },
+          {
+            "type": "p",
+            "text": "Зөвхөн зай хэвлэнэ. Зам сэргээхэд сайжруулалт бүрд өмнөх оройг хадгална. Хамгийн богино замын тоо, хамгийн цөөн ирмэг зэрэг нэмэлт асуултанд өөр төлөв болон тэнцүү зайн боловсруулалт хэрэгтэй."
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "11. Жингийн нөхцөлөөс арга сонго",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Бүх жин нэг бол BFS хангалттай. Зөвхөн тэг ба нэг жинд тусгай 0–1 BFS байж болно. Ерөнхий сөрөг бус жинд Дейкстра тохирно."
+          },
+          {
+            "type": "p",
+            "text": "Сөрөг жин зөвшөөрвөл Беллман–Форд зэрэг өөр арга эсвэл циклгүй графын эрэмбийн DP хэрэгтэй. Нэг сөрөг ирмэгийг үл тоох эсвэл абсолют утга авах нь бодлогыг өөрчилнө."
+          }
+        ]
+      },
+      {
+        "key": "extensions",
+        "title": "12. Өөр төлөв дээр мөн зай хайж болно",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэг удаагийн хямдрал хэрэглэсэн эсэхээр $(орой,төлөв)$ үүсгэж болно. Ирмэгийн шинэ өртөг сөрөг бус, төлөв ирээдүйн бүх хэрэгтэй мэдээллийг хадгалж байвал ижил зайны арга хэрэглэгдэнэ."
+          },
+          {
+            "type": "p",
+            "text": "Харин хамгийн богино олон замын жагсаалт бол орой бүрд ганц $dist$ хангалтгүй. Нэмэлт нөхцөл бүрд төлөвийн утга болон тэргүүлэх утгын бүтцэд юу орохыг шинээр гарга."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Энгийн зайнаас нэмэлт нөхцөл рүү",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Shortest Routes"
+          },
+          {
+            "type": "p",
+            "text": "Сөрөг бус жин, хуучирсан бичлэг, long long зайн гэрээг хэрэгжүүл."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Flight Discount"
+          },
+          {
+            "type": "p",
+            "text": "Хямдралын төлөв эсвэл урагш хойш хоёр зайны санаа нэмж гарга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Flight Routes"
+          },
+          {
+            "type": "p",
+            "text": "Орой бүрд хэд хэдэн зам хадгалах шинэ дүрэм гарга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Investigation"
+          },
+          {
+            "type": "p",
+            "text": "Тэнцүү богино замын тоо, ирмэгийн хязгаарын нэмэлт төлөвийг батал."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "High Score"
+          },
+          {
+            "type": "p",
+            "text": "Хамгийн их оноо ба ашигтай циклтэй бодлого тул энгийн Дейкстра тохирохгүйг ялга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Shortest Routes II"
+          },
+          {
+            "type": "p",
+            "text": "Бүх хосын асуултад хэмжээний нөхцөлийг харж өөр арга сонго."
+          }
+        ]
+      },
+      {
+        "key": "priority",
+        "title": "14. Өгөгдлийн бүтэц баталгааг орлохгүй",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өндөр ач холбогдолтой. Shortest Routes нь шууд цөм. Тэргүүлэх утгын бүтэц нь хамгийн багыг авахыг хурдасгадаг боловч сөрөг бус жингүйгээр алгоритмыг зөв болгохгүй."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Бүх хосын жижиг лавлахтай тулга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Жишээний хуучирсан бичлэг бүрийг гараар тэмдэглэ. Тэг жин, давхар ирмэг, өөртэйгөө холболт, эхлэлээс хүрэхгүй орой, том зайг шалга."
+          },
+          {
+            "type": "p",
+            "text": "Жижиг графт Флойд–Уоршеллоор бүх хосын зайг олсон тусдаа лавлахын эхлэл нэгийн мөртэй тулга. Зөвхөн жишээ таарсан нь сөрөг бус жингийн баталгааг орлохгүй."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Dijkstra — shortest paths with nonnegative weights",
+        "summary": "Improve actual-path distance upper bounds and prove why the smallest current tentative distance becomes final.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Fewer edges need not mean shorter distance",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Directed edges are $1\\to2:4$, $1\\to3:1$, $3\\to2:2$, $2\\to4:1$, $3\\to4:7$, $4\\to5:3$. Find minimum total weight from vertex one to every vertex."
+              },
+              {
+                "type": "p",
+                "text": "Directly reaching two costs four, but going through three costs three. BFS’s first discovery by edge count is not a final weighted distance."
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Improve distances instead of enumerating paths",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Path enumeration repeats huge numbers of routes and encounters cycles. Store the best known path length per vertex instead."
+              },
+              {
+                "type": "p",
+                "text": "Initialize the source to zero and others to an unreachable sentinel. Extend a known path along $u\\to v$ and improve $v$ if shorter; this is relaxation."
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "3. A tentative distance is an actual discovered path length",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Every finite $dist[v]$ is the length of an actual discovered path and therefore an upper bound on the optimum, though initially possibly loose."
+              },
+              {
+                "type": "p",
+                "text": "Choose the next vertex with smallest current distance, storing (distance,vertex) in a minimum-priority queue. Nonnegative weights justify this selection."
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Push improvements and skip obsolete entries",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Start with $(0,1)$. Pop the minimum entry and compare its distance to the current array. If different, it is obsolete and should not scan neighbors."
+              },
+              {
+                "type": "p",
+                "text": "For a current entry, relax outgoing edges and push each improvement. Multiple entries per vertex are allowed; no arbitrary deletion of older entries is needed."
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "5. A tentative four improves to three",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "After processing one, distances to two and three are four and one. Processing three improves two to three and discovers four at eight. Processing two at three improves four to four."
+              },
+              {
+                "type": "p",
+                "text": "The old entry for two at four is skipped. Four at four sets five to seven; four’s old eight is later skipped. Final distances are $0,3,1,4,7$."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Processed",
+                  "Distance 2",
+                  "Distance 3",
+                  "Distance 4",
+                  "Distance 5"
+                ],
+                "rows": [
+                  [
+                    "1",
+                    "4",
+                    "1",
+                    "—",
+                    "—"
+                  ],
+                  [
+                    "3",
+                    "3",
+                    "1",
+                    "8",
+                    "—"
+                  ],
+                  [
+                    "2",
+                    "3",
+                    "1",
+                    "4",
+                    "—"
+                  ],
+                  [
+                    "4",
+                    "3",
+                    "1",
+                    "4",
+                    "7"
+                  ],
+                  [
+                    "5",
+                    "3",
+                    "1",
+                    "4",
+                    "7"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Why is the smallest current distance final?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Assume finalized vertices have correct distances. Suppose the next minimum tentative vertex $u$ has a shorter path. Let $y$ be the first unfinalized vertex on that path and $x$ its finalized predecessor. Processing $x$ would set $y$ no higher than that path prefix."
+              },
+              {
+                "type": "p",
+                "text": "Nonnegative remaining edges make the prefix no longer than the whole supposedly shorter path, forcing $dist[y]<dist[u]$, contradicting minimum selection. The source supplies the base. Negative edges invalidate the nonnegative-suffix argument."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Account for obsolete queue entries",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "At most one successful improvement per scanned edge gives $O(n+m\\log(m+1))$ time for the lazy heap version and $O(n+m)$ memory. Queue entries are not bounded by $n$ alone."
+              },
+              {
+                "type": "p",
+                "text": "With $n,m\\le200000$ and weights up to $10^9$, shortest simple paths and one-edge relaxation candidates fit long long. LLONG_MAX/4 exceeds all valid distances. Unreachable vertices are never queued."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Minimum entries, relaxation and unreachable vertices",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. State and setup"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Initialize INF distances except source zero; use a minimum queue ordered by distance first and seed the source entry.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long INF = numeric_limits<long long>::max() / 4;\nstruct Edge {\n    int destination;\n    long long weight;\n};\n\nvector<long long> shortest_distances(const vector<vector<Edge>>& graph, int source) {\n    vector<long long> distance(graph.size(), INF);\n    using Entry = pair<long long, int>;\n    priority_queue<Entry, vector<Entry>, greater<Entry>> pending;\n    distance[source] = 0;\n    pending.push({0, source});\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. Main operation"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Copy the entry before popping, discard obsolete entries and enqueue only strict improvements from current entries.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    while (!pending.empty()) {\n        auto [current_distance, vertex] = pending.top();\n        pending.pop();\n        if (current_distance != distance[vertex]) {\n            continue;\n        }\n        for (const Edge& edge : graph[vertex]) {\n            long long candidate = current_distance + edge.weight;\n            if (candidate < distance[edge.destination]) {\n                distance[edge.destination] = candidate;\n                pending.push({candidate, edge.destination});\n            }\n        }\n    }\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. Obtain result"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Return distances, retaining INF for unreachable vertices and actual path sums elsewhere.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    return distance;\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Input and output"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read up to $200000$ vertices and directed edges with weights $0$–$10^9$, source one. Print distances in vertex order, using -1 for unreachable.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    vector<vector<Edge>> graph(vertex_count + 1);\n    for (int index = 0; index < edge_count; ++index) {\n        int first, second;\n        long long weight;\n        cin >> first >> second >> weight;\n        graph[first].push_back({second, weight});\n    }\n    vector<long long> distance = shortest_distances(graph, 1);\n    for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n        cout << (distance[vertex] == INF ? -1 : distance[vertex])\n             << (vertex == vertex_count ? '\\n' : ' ');\n    }\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete compilable C++17 program"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long INF = numeric_limits<long long>::max() / 4;\nstruct Edge {\n    int destination;\n    long long weight;\n};\n\nvector<long long> shortest_distances(const vector<vector<Edge>>& graph, int source) {\n    vector<long long> distance(graph.size(), INF);\n    using Entry = pair<long long, int>;\n    priority_queue<Entry, vector<Entry>, greater<Entry>> pending;\n    distance[source] = 0;\n    pending.push({0, source});\n    while (!pending.empty()) {\n        auto [current_distance, vertex] = pending.top();\n        pending.pop();\n        if (current_distance != distance[vertex]) {\n            continue;\n        }\n        for (const Edge& edge : graph[vertex]) {\n            long long candidate = current_distance + edge.weight;\n            if (candidate < distance[edge.destination]) {\n                distance[edge.destination] = candidate;\n                pending.push({candidate, edge.destination});\n            }\n        }\n    }\n    return distance;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int vertex_count, edge_count;\n    cin >> vertex_count >> edge_count;\n    vector<vector<Edge>> graph(vertex_count + 1);\n    for (int index = 0; index < edge_count; ++index) {\n        int first, second;\n        long long weight;\n        cin >> first >> second >> weight;\n        graph[first].push_back({second, weight});\n    }\n    vector<long long> distance = shortest_distances(graph, 1);\n    for (int vertex = 1; vertex <= vertex_count; ++vertex) {\n        cout << (distance[vertex] == INF ? -1 : distance[vertex])\n             << (vertex == vertex_count ? '\\n' : ' ');\n    }\n}\n"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "5 6\n1 2 4\n1 3 1\n3 2 2\n2 4 1\n3 4 7\n4 5 3\n"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "0 3 1 4 7\n"
+              }
+            ]
+          },
+          {
+            "key": "errors",
+            "title": "9. Do not finalize on first discovery",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Vertex two is first discovered at four but improves to three. Marking it final on insertion loses that improvement; finality is justified on minimum current extraction."
+              },
+              {
+                "type": "p",
+                "text": "Push only strict improvements. Repeated equal pushes can loop on zero-weight cycles. This program assumes nonnegative input rather than repairing negative edges."
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "10. Direction and unreachable output",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "The program is directed; add both directions for undirected tasks. Teaching output uses -1 for unreachable vertices, adapting to an original task’s guarantees or convention."
+              },
+              {
+                "type": "p",
+                "text": "It returns distances only. Reconstruction needs predecessor tracking. Counting shortest paths or minimizing edge count requires extra state and equal-distance reasoning."
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "11. Choose by weight assumptions",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "BFS suffices for unit weights; 0–1 BFS handles binary weights; general nonnegative weights suit Dijkstra."
+              },
+              {
+                "type": "p",
+                "text": "Negative edges require another justified method, such as Bellman–Ford or DAG-order DP. Ignoring negatives or taking absolute values changes the problem."
+              }
+            ]
+          },
+          {
+            "key": "extensions",
+            "title": "12. Distances can live on expanded states",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "A one-use discount can create (vertex,used-discount) states. Dijkstra still applies if transitions are nonnegative and the state captures all future-relevant information."
+              },
+              {
+                "type": "p",
+                "text": "Several shortest routes require more than one distance per vertex. Re-derive state and queue semantics for each extension."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From plain distances to constrained variants",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Shortest Routes"
+              },
+              {
+                "type": "p",
+                "text": "Implement nonnegative weights, stale filtering and long long distances."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Flight Discount"
+              },
+              {
+                "type": "p",
+                "text": "Add discount-state or forward/reverse distances."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Flight Routes"
+              },
+              {
+                "type": "p",
+                "text": "Derive multiple-route state handling."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Investigation"
+              },
+              {
+                "type": "p",
+                "text": "Prove equal-distance counting and edge-count state updates."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "High Score"
+              },
+              {
+                "type": "p",
+                "text": "Distinguish maximum score and beneficial cycles from nonnegative shortest paths."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Shortest Routes II"
+              },
+              {
+                "type": "p",
+                "text": "Choose an all-pairs method based on graph bounds."
+              }
+            ]
+          },
+          {
+            "key": "priority",
+            "title": "14. A heap does not replace the proof",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "High priority. Shortest Routes is direct core practice. A minimum-priority queue speeds selection but does not remove the nonnegative-weight requirement."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Check with a small all-pairs oracle",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Trace every obsolete entry. Cover zero weights, parallel edges, self-loops, unreachable vertices and large totals."
+              },
+              {
+                "type": "p",
+                "text": "Compare small graphs against the source-one row of an independent Floyd–Warshall oracle; matching examples does not replace the proof assumptions."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Unweighted BFS, adjacency lists and a minimum-priority queue, which need not store a fully sorted list."
+      }
+    },
+    "prerequisites": "Жингүй графын BFS, хөршийн жагсаалт, тэргүүлэх утгаар сонгох дарааллын хамгийн бага утгыг авах хувилбар. Энэ нь бүхэл эрэмбэлэгдсэн жагсаалт биш.",
+    "prerequisiteIds": [
+      "bfs",
+      "priority-queue"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "bellman-ford",
+          "description": "Negative edge-ийг зөвшөөрөх хувилбар.",
+          "descriptionEn": "An alternative supporting negative edges."
+        },
+        {
+          "tutorialId": "floyd-warshall",
+          "description": "Бүх хосын зайг DP-ээр олох.",
+          "descriptionEn": "All-pairs distances using DP."
+        }
+      ],
+      "next": "bellman-ford",
+      "practice": [
+        {
+          "key": "367",
+          "stage": "Warm-up",
+          "priority": true,
+          "reason": "Үндсэн төлөв, боловсруулах дараалал ба зөв ажиллагааны нөхцөлийг шууд хэрэгжүүлэх цөм дасгал."
+        },
+        {
+          "key": "370",
+          "stage": "Standard",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "371",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "376",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "369",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "368",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false,
+    "priorityLevel": "high",
+    "priorityReason": "Сөрөг бус жинтэй замын үндсэн арга. Зам сунгаж сайжруулах, шунахай эцэслэлт, өгөгдлийн бүтцийн хуучирсан бичлэг ба тоон хязгаарыг хамтад нь ойлгох өндөр өгөөжтэй."
+  }
+}
