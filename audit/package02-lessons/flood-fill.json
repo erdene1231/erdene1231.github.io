@@ -1,0 +1,953 @@
+{
+  "id": "flood-fill",
+  "expected_revision": 5,
+  "expected_published": true,
+  "expected_body_sha256": "2e9796d5c7f7c2bd2af121cbdf588dd0f95f2adbee6e511a60f89daa0498a7a9",
+  "status": "Full semantic/code review passed; native reader/editor results and fresh live publication guards tracked separately",
+  "body": {
+    "id": "flood-fill",
+    "level": "Анхан шат",
+    "order": 19,
+    "title": "Торны хэсгүүдийг дүүргэн хайх — талбай ба хүрээ",
+    "aliases": "flood-fill Flood fill — grid доторх холбоотой хэсэг Flood fill — connected regions in a grid",
+    "related": [
+      "bfs",
+      "dfs",
+      "greedy"
+    ],
+    "summary": "Торны зөв хөрш, хана, үзсэн төлөвийг ялгаж бүх нээлттэй хэсгийг нэг удаа олно. Талбай болон доторх нүхийг багтаасан хүрээг баталж, том зурагт аюулгүй давталт хэрэгжүүлнэ.",
+    "category": "Graphs",
+    "levelKey": "beginner",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Торны нээлттэй хэсэг бүрийг нэг бүхэл гэж үзэх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$R$ мөр, $C$ баганатай газрын зурагт цэг нь нээлттэй нүд, # нь хана байг. Нүд бүр нэгж квадрат. Дээш, доош, зүүн, баруун тийш нээлттэй нүдээр явж хүрэх бүх нүд нэг хэсэг болно. Диагональ хүрэхийг энд зөвшөөрөхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Хэсэг бүрийн талбай $A$ нь нүдний тоо, хүрээний урт $P$ нь хана эсвэл зургийн гаднах орон зайтай нийлсэн талуудын тоо. Хэсгийг дүүргэн хайх буюу flood fill аргаар нүд бүрийг нэг удаа үзээд хэсгийн тоо, талбай, хүрээг хамт олъё."
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Нүд бүрээс дахин хайвал нэг хэсгийг олон дахин үзнэ",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нээлттэй нүд бүрээс хүрэх бүх нүдийг шинээр хайвал том ганц хэсгийг нүд бүрийн тоогоор дахин үзнэ. Нийт $K=RC$ нүдтэй үед хамгийн муу ажил $O(K^2)$ хүрч болно."
+          },
+          {
+            "type": "p",
+            "text": "Нэг эхлэлээс олсон бүх нүдийг үзсэн гэж хадгалбал дараа нь тэр хэсгээс дахин хайхгүй. Харин ханыг болон өмнө үзсэн нээлттэй нүдийг нэг утгатай болгож болохгүй: хүрээ бодоход хоёрын утга өөр."
+          }
+        ]
+      },
+      {
+        "key": "observation",
+        "title": "3. Тор бол хөршөө координатаар өгдөг граф",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нүдний мөрийг $r$, баганыг $c$ гэж тэгээс дугаарлая. Нээлттэй нүд бүр орой, тал нийлсэн нээлттэй хоёр нүдний хооронд ирмэг байна. Хөршийн жагсаалт бүх нүдэнд байгуулахын оронд $(r-1,c),(r+1,c),(r,c-1),(r,c+1)$ гэсэн дөрвөн боломжийг хэрэгтэй үед гаргана."
+          },
+          {
+            "type": "p",
+            "text": "Нээлттэй хоёр нүдний дундах тал хүрээ биш. Харин нээлттэй нүдний хажууд хана эсвэл зургийн гадна байвал яг нэг нэгж хүрээ. Үзсэн эсэх нь нүдний физик төрөл өөрчлөгдсөн гэсэн үг биш."
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Эхлээд хил, дараа нь хана, тэгээд үзсэн эсэх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Мөрөөр, мөр дотор баганаар бүх нүдийг шалгана. Үзээгүй нээлттэй нүд шинэ хэсэг эхлүүлнэ: тэмдэглээд дараалалд хийнэ. Дарааллын нүдийг авах бүр талбайг нэгээр нэмнэ."
+          },
+          {
+            "type": "p",
+            "text": "Дөрвөн тал бүрд хөршийн координат гадна байвал хүрээг нэмнэ. Дотор боловч хана бол мөн хүрээг нэмнэ. Бусад нь нээлттэй хөрш: хүрээнд нэмэхгүй, үзээгүй бол тэмдэглээд дараалалд хийнэ. Координатыг шалгахаас өмнө массивт хандахгүй."
+          },
+          {
+            "type": "p",
+            "text": "Дараалал хоосроход нэг хэсгийн талбай, хүрээ бэлэн. Гаднах шалгалт дараагийн үзээгүй нээлттэй нүднээс үргэлжилнэ. Газрын зургийг өөрчлөхгүй, үзсэн эсэхийг тусдаа хүснэгтэд хадгална."
+          }
+        ]
+      },
+      {
+        "key": "walkthrough",
+        "title": "5. Гурван хэсгийн талбай ба хүрээ",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Доорх дөрвөн мөр, таван баганатай зурагт зүүн дээд булангийн хэсэг гурван нүдтэй. Тэдний хоёр хос нь тал нийлсэн тул талбай гурав, хүрээ найм. Баруун талын хэсэг зургаан нүдтэй, хүрээ арван хоёр."
+          },
+          {
+            "type": "p",
+            "text": "Үлдсэн хэсэг нь тэгээс эхэлсэн $(2,2)$ нүд болон доод мөрийн эхний гурван нүд: талбай дөрөв, хүрээ арав. Тэд диагоналиар зүүн дээдтэй ойр харагдавч хажуугийн алхмаар холбогдохгүй."
+          },
+          {
+            "type": "p",
+            "text": "Нийт гурван хэсгийн талбай $3+6+4=13$, хүрээнүүд $8,12,10$. Нэг нүдийг дараалалд нэмэхдээ тэмдэглэсэн тул хоёр өөр хөрш түүнийг хоёр удаа тоолуулахгүй."
+          },
+          {
+            "type": "code",
+            "language": "Text",
+            "text": "..#..\n.##..\n##.#.\n...#.\n"
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Эхлэх нүд (тэгээс)",
+              "Талбай",
+              "Хүрээ"
+            ],
+            "rows": [
+              [
+                "$(0,0)$",
+                "$3$",
+                "$8$"
+              ],
+              [
+                "$(0,3)$",
+                "$6$",
+                "$12$"
+              ],
+              [
+                "$(2,2)$",
+                "$4$",
+                "$10$"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Нүд бүр нэг удаа, хил бүр яг нэг удаа тоологдоно",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэмсэн нүд бүр эхлэлээс зөв нээлттэй алхмаар хүрсэн байна. Хэрэв нэг хэсгийн нүд үзэгдээгүй үлдвэл түүнд хүрэх замналын анхны үзээгүй нүдийг өмнөх үзэгдсэн нүд нь хөршөөр олно. Зөрчил. Тэмдэглэхийг нэмэхтэй хамт хийсэн тул бүх нүд яг нэг удаа тоологдоно."
+          },
+          {
+            "type": "p",
+            "text": "Нэг нүдний дөрвөн талаас нээлттэй хөрштэй талууд дотоод холбоос тул тэг хувь нэмэртэй. Хана эсвэл гаднатай тал бол энэ хэсгийн яг нэг нүдэнд харгалзах хил; нэг удаа нэмэгдэнэ. Иймээс хүрээ нь доторх нүхнүүдийн хилтэйгээ хамт зөв гарна."
+          },
+          {
+            "type": "p",
+            "text": "Хэсэг бүрийг бүрэн тэмдэглэсний дараа гаднах давталт түүнээс дахин эхлэхгүй. Бүх нүдийг үзсэнээр бүх хэсэг яг нэг үр дүнтэй болно."
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Дөрвөн хөрштэй учраас нийт ажил торны хэмжээтэй тэнцүү",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Гаднах давталт $RC$ нүд шалгана. Нээлттэй нүд бүр хамгийн ихдээ нэг удаа дараалалд орж, дөрвөн тал үзнэ. Иймээс нийт хугацаа $O(RC)$, зөвхөн нэг хэсгийн хайлт бус бүх газрын зургийн нийт ажил."
+          },
+          {
+            "type": "p",
+            "text": "Газрын зураг, үзсэн тэмдэг, дараалал, үр дүнгийн хэсгүүд нийлээд $O(RC)$ зайтай. Хэсгийн тоо хүртэл нээлттэй нүдний тооноос ихгүй. Ил жагсаалт ашигласан нь тогтмол зай гэсэн үг биш; харин сая нүдтэй хэсэгт рекурсийн дуудлагын гүнд найдахгүй."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. C++17: нэг хэсэг, бүх хэсэг, дараа нь тайлан",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхний мөрд мөр, баганын тоо тус бүр 1–1000. Дараа нь яг тэр хэмжээтэй, зөвхөн цэг ба # тэмдэгтэй зураг өгөгдөнө. Дөрвөн талын хөдөлгөөнтэй хэсгүүдийн тоо, дараа нь хэсэг бүрийн талбай ба бүх хүрээний уртыг хэвлэнэ."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.1. Хэсгийн төлөв ба эхлэл"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Хэсгийн хоёр хэмжигдэхүүнийг тусдаа хадгална. Газрын зургийг тогтмол холбоосоор, үзсэн хүснэгтийг өөрчилж болох холбоосоор авна. Эхлэл нээлттэй, өмнө үзээгүй байх нөхцөлийг гаднах функц хангана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <iostream>\n#include <queue>\n#include <string>\n#include <utility>\n#include <vector>\nusing namespace std;\n\nstruct Region {\n    int area = 0;\n    int perimeter = 0;\n};\n\nRegion explore_region(const vector<string>& grid,\n                      vector<vector<bool>>& visited,\n                      int start_row, int start_column) {\n    int rows = static_cast<int>(grid.size());\n    int columns = static_cast<int>(grid[0].size());\n    const int row_step[4] = {-1, 1, 0, 0};\n    const int column_step[4] = {0, 0, -1, 1};\n    queue<pair<int, int>> pending;\n    visited[start_row][start_column] = true;\n    pending.push({start_row, start_column});\n    Region region;\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.2. Нэг хэсгийг үзэх"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Дарааллын нүд бүрийг нэг удаа тоолно. Эхлээд координатын хил, дараа нь ханын төрлийг шалгаж хүрээг нэмнэ. Нээлттэй үзээгүй хөршийг тэмдэглээд нэмнэ; үзсэн нээлттэй хөрш хүрээнд орохгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    while (!pending.empty()) {\n        int row = pending.front().first;\n        int column = pending.front().second;\n        pending.pop();\n        ++region.area;\n        for (int direction = 0; direction < 4; ++direction) {\n            int next_row = row + row_step[direction];\n            int next_column = column + column_step[direction];\n            if (next_row < 0 || next_row >= rows ||\n                next_column < 0 || next_column >= columns) {\n                ++region.perimeter;\n                continue;\n            }\n            if (grid[next_row][next_column] == '#') {\n                ++region.perimeter;\n                continue;\n            }\n            if (!visited[next_row][next_column]) {\n                visited[next_row][next_column] = true;\n                pending.push({next_row, next_column});\n            }\n        }\n    }\n    return region;\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.3. Бүх хэсгийн гаднах шалгалт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Бүх нүдийг мөрөөр шалгаж, үзээгүй нээлттэй нүд бүрд нэг хэсгийн хайлт дуудна. Үзсэн хүснэгт бүх хэсгийн хооронд хадгалагдана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "vector<Region> find_regions(const vector<string>& grid) {\n    int rows = static_cast<int>(grid.size());\n    int columns = static_cast<int>(grid[0].size());\n    vector<vector<bool>> visited(rows, vector<bool>(columns, false));\n    vector<Region> regions;\n    for (int row = 0; row < rows; ++row) {\n        for (int column = 0; column < columns; ++column) {\n            if (grid[row][column] == '.' && !visited[row][column]) {\n                regions.push_back(explore_region(grid, visited, row, column));\n            }\n        }\n    }\n    return regions;\n}\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.4. Газрын зургийн оролт"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Мөр, баганы тоог уншаад өгсөн урттай газрын зургийг авна. Оролт тэгш өнцөгт, хоосон биш байх гэрээтэй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int rows, columns;\n    cin >> rows >> columns;\n    vector<string> grid(rows);\n    for (string& line : grid) {\n        cin >> line;\n    }\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "8.5. Хэсгүүдийн тайлан"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Эхлээд хэсгийн тоо, дараа нь анх таарсан дарааллаар хэсэг бүрийн талбай, хүрээг хэвлэнэ. Энэ нь зөвхөн өрөөний тоо асуудаг бодлогын гаралтаас өргөн сургалтын жишээ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    vector<Region> regions = find_regions(grid);\n    cout << regions.size() << '\\n';\n    for (const Region& region : regions) {\n        cout << region.area << ' ' << region.perimeter << '\\n';\n    }\n    return 0;\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн ажиллах C++17 программ"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <iostream>\n#include <queue>\n#include <string>\n#include <utility>\n#include <vector>\nusing namespace std;\n\nstruct Region {\n    int area = 0;\n    int perimeter = 0;\n};\n\nRegion explore_region(const vector<string>& grid,\n                      vector<vector<bool>>& visited,\n                      int start_row, int start_column) {\n    int rows = static_cast<int>(grid.size());\n    int columns = static_cast<int>(grid[0].size());\n    const int row_step[4] = {-1, 1, 0, 0};\n    const int column_step[4] = {0, 0, -1, 1};\n    queue<pair<int, int>> pending;\n    visited[start_row][start_column] = true;\n    pending.push({start_row, start_column});\n    Region region;\n\n    while (!pending.empty()) {\n        int row = pending.front().first;\n        int column = pending.front().second;\n        pending.pop();\n        ++region.area;\n        for (int direction = 0; direction < 4; ++direction) {\n            int next_row = row + row_step[direction];\n            int next_column = column + column_step[direction];\n            if (next_row < 0 || next_row >= rows ||\n                next_column < 0 || next_column >= columns) {\n                ++region.perimeter;\n                continue;\n            }\n            if (grid[next_row][next_column] == '#') {\n                ++region.perimeter;\n                continue;\n            }\n            if (!visited[next_row][next_column]) {\n                visited[next_row][next_column] = true;\n                pending.push({next_row, next_column});\n            }\n        }\n    }\n    return region;\n}\n\nvector<Region> find_regions(const vector<string>& grid) {\n    int rows = static_cast<int>(grid.size());\n    int columns = static_cast<int>(grid[0].size());\n    vector<vector<bool>> visited(rows, vector<bool>(columns, false));\n    vector<Region> regions;\n    for (int row = 0; row < rows; ++row) {\n        for (int column = 0; column < columns; ++column) {\n            if (grid[row][column] == '.' && !visited[row][column]) {\n                regions.push_back(explore_region(grid, visited, row, column));\n            }\n        }\n    }\n    return regions;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int rows, columns;\n    cin >> rows >> columns;\n    vector<string> grid(rows);\n    for (string& line : grid) {\n        cin >> line;\n    }\n\n    vector<Region> regions = find_regions(grid);\n    cout << regions.size() << '\\n';\n    for (const Region& region : regions) {\n        cout << region.area << ' ' << region.perimeter << '\\n';\n    }\n    return 0;\n}\n"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "4 5\n..#..\n.##..\n##.#.\n...#.\n"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "3\n3 8\n6 12\n4 10\n"
+          }
+        ]
+      },
+      {
+        "key": "boundaries",
+        "title": "9. Бүх хана, ганц нүд, доторх нүх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Бүх нүд хана бол хэсэг тэг. Ганц нээлттэй нүд талбай нэг, хүрээ дөрөв. Дүүрэн $R$ мөр, $C$ баганатай тэгш өнцөгт нэг хэсэг, талбай $RC$, хүрээ $2R+2C$."
+          },
+          {
+            "type": "p",
+            "text": "Гурван мөр, гурван баганын гол нүд хана, бусад нь нээлттэй бол нэг хэсгийн талбай найм, хүрээ арван зургаа: гаднах арван хоёр дээр доторх дөрөв нэмэгдэнэ. Зөвхөн гаднах тойм тоолсон бол дутуу гарна."
+          },
+          {
+            "type": "p",
+            "text": "Код мөр, багана хоёул нэгээс багагүй тэгш өнцөгт зураг авна. Координатыг сөрөг утгыг шалгаж болох int төрлөөр авсан. Нийт нүд хамгийн ихдээ нэг сая, хүрээ хамгийн ихдээ дөрвөн сая тул тоолуурууд int-д багтана."
+          }
+        ]
+      },
+      {
+        "key": "mistakes",
+        "title": "10. Үзсэн нээлттэй хөрш хана биш",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хоёр зэрэгцээ нээлттэй нүдийг бодъё. Нэгийг нь үзсэн болгосныхоо дараа нөгөөгөөс нь харахдаа түүнийг хана гэж тооцвол дотоод талыг хүрээнд нэмж буруу болно. Жинхэнэ газрын зураг ба үзсэн тэмдгийг тусад нь хадгалсан шалтгаан энэ."
+          },
+          {
+            "type": "p",
+            "text": "Хил шалгахаас өмнө хөршийн нүд унших, диагональ хөдөлгөөнийг санамсаргүй нэмэх, дараалалд хийхдээ тэмдэглэхгүй орхих нь буруу. Мөн Counting Rooms бодлого зөвхөн хэсгийн тоо асуудаг тул энэ сургалтын талбай, хүрээний нэмэлт мөрүүдийг түүнд шууд хэвлэж болохгүй."
+          }
+        ]
+      },
+      {
+        "key": "connections",
+        "title": "11. Хөдөлгөөний хөрш ба геометрийн тал хоёр өөр",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Найман чигийн хөдөлгөөн зөвшөөрвөл зөвхөн диагоналиар нийлсэн нүднүүд нэг хэсэг болно. Харин нэгж квадратын хүрээ дөрвөн талтай хэвээр. Хөдөлгөөний хөршийн тоог сольсноор диагональд шинэ геометрийн тал үүсэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Хэсгийн тоо, талбайд DFS эсвэл BFS хоёулаа хүрэлтийг бүрэн үзвэл болно; хамгийн бага зайны баталгаа хэрэггүй. Харин торны хамгийн богино замд өмнөх BFS-ийн зай ба өмнөх холбоосыг хэрэглэнэ."
+          },
+          {
+            "type": "p",
+            "text": "Нүднүүд дараалан нээгдэж, завсар бүрд хүрэлтийг асуувал зураг тогтмол биш болно. Асуулт бүрд бүх торыг дахин дүүргэх нь үнэтэй тул DSU зэрэг дараагийн нэмэлт бүтэц тусална. Энэ хичээл тогтмол зурагт зориулагдсан."
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "dfs",
+            "label": "Гүний хайлт"
+          },
+          {
+            "type": "tutorial",
+            "tutorialId": "bfs",
+            "label": "Өргөнөөр хайх"
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "12. Нэг төрлийн нүднүүдийн холбоост хэсэг үү?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өрөө, арал, ижил өнгийн толбо, хүрч болох талбай зэрэг асуултад нүд бүрийн зөв төрөл ба хөдөлгөөний дүрмийг тодорхойл. Дараа нь нэг хэсэгт хуримтлуулах мэдээллээ сонго: тоо, талбай, хүрээ эсвэл өөр хэмжигдэхүүн."
+          },
+          {
+            "type": "p",
+            "text": "Ижил өнгөтэй бүх нүд заавал нэг хэсэг биш. Нэг хэсэгт хүрч болох нь зайлшгүй. Дүрэм нь босго утга, өндөр эсвэл цаг хугацаанаас хамаарвал ирмэг үүсэх нөхцөлийг дахин батал."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Өрөөнөөс зам, аюул, өөрчлөгдөх зураг руу",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Counting Rooms"
+          },
+          {
+            "type": "p",
+            "text": "Дөрвөн чигийн нээлттэй нүдний хэсгүүдийг бүрэн үз. Бодлого зөвхөн хэсгийн тоо хэвлүүлэхийг ялга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Building Roads"
+          },
+          {
+            "type": "p",
+            "text": "Далд тор ба ил хөршийн жагсаалт нэг холбоост хэсгийн санаатайг харьцуул. Шинэ холбоос байгуулах нэмэлт зорилгыг ялга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Labyrinth"
+          },
+          {
+            "type": "p",
+            "text": "Хэсгийн тооллогоос нэг эхлэл, нэг зорилтын хамгийн богино зам руу шилжиж зай ба өмнөх хөдөлгөөнийг хадгал."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Monsters"
+          },
+          {
+            "type": "p",
+            "text": "Аюулын ирэх хугацааг эхлээд тооцоод хүний зөвшөөрсөн шилжилт бүрийг цагтай нь шалга."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Red Painting"
+          },
+          {
+            "type": "p",
+            "text": "Нүд нэмэгддэг өөрчлөгдөх зурагт олон хүрэлтийн асуултыг хэрхэн хурдан хариулахыг DSU сурсны дараа судал."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "IOI 2009 Mecho"
+          },
+          {
+            "type": "p",
+            "text": "Торны хөрш дээр зөгий ба баавгайн өөр хугацаа, хүлээлтийн нөхцөл нэмэгдэнэ. Олон эхлэлийн BFS, боломж шалгах ба хоёртын хайлтын нэмэлт баталгаа хэрэгтэй."
+          }
+        ]
+      },
+      {
+        "key": "importance",
+        "title": "14. Далд графын дүрмийг зөв гаргах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "High ач холбогдолтой: торны олон бодлого нүдний төрөл, хөрш, холбоост хэсгийн энгийн загвараас эхэлдэг. Хил шалгах дараалал, үзсэн төлөв, нэг хэсгийн хуримтлал нь байнга хэрэглэгдэх чадвар."
+          },
+          {
+            "type": "p",
+            "text": "Counting Rooms нь энэ загварын шууд цөм дасгал, сан дахь High нь хэвээр. Зам сэргээх, аюулын хугацаа болон өөрчлөгдөх зураг нэмэлт төлөв шаарддаг учраас сонголтот ахиц."
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Нийт талбай ба бүх хилийг бие даан шалга",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Жишээний хэсгүүдийг гараар будаад талбайн нийлбэр бүх нээлттэй нүдний тоотой тэнцүүг шалга. Нээлттэй хоёр нүдний дундах тал яагаад хүрээ биш, доторх нүх яагаад хүрээнд ордгийг тайлбарла."
+          },
+          {
+            "type": "p",
+            "text": "Кодоо бие даан бичээд жижиг бүх зурагт өөр холбоост хэсгийн лавлах болон геометрийн талын тооллоготой тулга. Бүх хана, нэг мөр, нэг багана, диагональ, нүх, хамгийн их зургийг тус тус шалга. Дараа нь хөдөлгөөний дүрэм өөрчлөгдвөл юуг дахин батлахыг хэл."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Flood fill — grid regions, areas and perimeters",
+        "summary": "Separate open cells, walls and visited state while discovering every region once. Prove area and full perimeter including holes, with iterative large-grid safety.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Treat each connected open region as one object",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "An $R$-row, $C$-column map uses dots for open cells and # for walls. Cells are unit squares. Open cells connected by up/down/left/right moves form one region; diagonals do not connect here."
+              },
+              {
+                "type": "p",
+                "text": "A region’s area $A$ is its number of cells. Its perimeter $P$ counts sides facing walls or the map exterior. Flood fill visits each open cell once to find region counts, areas and perimeters together."
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Restarting from every cell repeats the same region",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Independently exploring from every open cell repeatedly traverses a large region. With $K=RC$ cells this can cost $O(K^2)$ in the worst case."
+              },
+              {
+                "type": "p",
+                "text": "Mark every discovered cell so later scans skip its whole region. But keep walls distinct from previously visited open cells: perimeter calculations treat them differently."
+              }
+            ]
+          },
+          {
+            "key": "observation",
+            "title": "3. A grid is a graph with generated neighbours",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Use zero-based row $r$ and column $c$. Every open cell is a vertex, with an edge between side-adjacent open cells. Generate neighbours $(r-1,c),(r+1,c),(r,c-1),(r,c+1)$ rather than storing every adjacency list."
+              },
+              {
+                "type": "p",
+                "text": "A side shared by two open cells is not boundary. A side facing a wall or the map exterior contributes one unit. Visiting a cell does not change its physical type."
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Check bounds, then walls, then discovery",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Scan rows and columns. An unseen open cell starts a new region: mark it and enqueue it. Each removed cell adds one to area."
+              },
+              {
+                "type": "p",
+                "text": "For each side, an outside neighbour adds perimeter. An inside wall adds perimeter too. An open neighbour adds no perimeter; if unseen, mark and enqueue it. Never index before validating coordinates."
+              },
+              {
+                "type": "p",
+                "text": "An empty queue completes one region. Continue the outer scan at the next unseen open cell. Preserve the map and maintain visited state separately."
+              }
+            ]
+          },
+          {
+            "key": "walkthrough",
+            "title": "5. Areas and perimeters of three regions",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "In the four-row, five-column map below, the upper-left corner region has three cells and two shared sides: area three, perimeter eight. The right region has six cells and perimeter twelve."
+              },
+              {
+                "type": "p",
+                "text": "The remaining region contains zero-based cell $(2,2)$ and the first three cells of the bottom row: area four, perimeter ten. Diagonal visual proximity does not connect it to the upper-left region."
+              },
+              {
+                "type": "p",
+                "text": "The three areas total $3+6+4=13$, with perimeters $8,12,10$. Marking at enqueue time prevents two neighbours from causing a cell to be counted twice."
+              },
+              {
+                "type": "code",
+                "language": "Text",
+                "text": "..#..\n.##..\n##.#.\n...#.\n"
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Start cell (zero-based)",
+                  "Area",
+                  "Perimeter"
+                ],
+                "rows": [
+                  [
+                    "$(0,0)$",
+                    "$3$",
+                    "$8$"
+                  ],
+                  [
+                    "$(0,3)$",
+                    "$6$",
+                    "$12$"
+                  ],
+                  [
+                    "$(2,2)$",
+                    "$4$",
+                    "$10$"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Count every cell and boundary side exactly once",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Every enqueued cell is reachable by legal open-cell moves. If a region cell stayed unseen, the seen predecessor of the first unseen cell on a route would discover it, a contradiction. Discovery marking counts each cell once."
+              },
+              {
+                "type": "p",
+                "text": "An open-to-open side is internal and contributes zero. A side facing a wall or exterior belongs to exactly one cell of the region and contributes once. The resulting perimeter includes boundaries of interior holes."
+              },
+              {
+                "type": "p",
+                "text": "After a complete region is marked, the outer scan cannot restart it. Scanning every cell yields exactly one result per region."
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Four neighbours give linear total grid work",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "The outer scan checks $RC$ cells. Each open cell is enqueued at most once and inspects four sides, so total work across all regions is $O(RC)$."
+              },
+              {
+                "type": "p",
+                "text": "The map, visited state, queue and region results together use $O(RC)$ space. Region count cannot exceed open-cell count. Iteration is not constant-space; it avoids depending on recursive-call depth for million-cell regions."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. C++17: one region, all regions, then reporting",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Read 1–1000 rows and columns, then exactly that rectangular map using only dots and #. Under four-side connectivity print the number of regions, then each area and total perimeter."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.1. Region state and start"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Separate area and perimeter. The map is a constant reference and visited state mutable. The outer function guarantees an open, unseen start.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <iostream>\n#include <queue>\n#include <string>\n#include <utility>\n#include <vector>\nusing namespace std;\n\nstruct Region {\n    int area = 0;\n    int perimeter = 0;\n};\n\nRegion explore_region(const vector<string>& grid,\n                      vector<vector<bool>>& visited,\n                      int start_row, int start_column) {\n    int rows = static_cast<int>(grid.size());\n    int columns = static_cast<int>(grid[0].size());\n    const int row_step[4] = {-1, 1, 0, 0};\n    const int column_step[4] = {0, 0, -1, 1};\n    queue<pair<int, int>> pending;\n    visited[start_row][start_column] = true;\n    pending.push({start_row, start_column});\n    Region region;\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.2. Explore one region"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Count each removed cell once. Check bounds, then wall type for perimeter; enqueue only unseen open neighbours. Already visited open neighbours are not boundary.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    while (!pending.empty()) {\n        int row = pending.front().first;\n        int column = pending.front().second;\n        pending.pop();\n        ++region.area;\n        for (int direction = 0; direction < 4; ++direction) {\n            int next_row = row + row_step[direction];\n            int next_column = column + column_step[direction];\n            if (next_row < 0 || next_row >= rows ||\n                next_column < 0 || next_column >= columns) {\n                ++region.perimeter;\n                continue;\n            }\n            if (grid[next_row][next_column] == '#') {\n                ++region.perimeter;\n                continue;\n            }\n            if (!visited[next_row][next_column]) {\n                visited[next_row][next_column] = true;\n                pending.push({next_row, next_column});\n            }\n        }\n    }\n    return region;\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.3. Scan all regions"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Scan all cells row-major and call one-region exploration only for unseen open cells. Visited state persists across all components.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "vector<Region> find_regions(const vector<string>& grid) {\n    int rows = static_cast<int>(grid.size());\n    int columns = static_cast<int>(grid[0].size());\n    vector<vector<bool>> visited(rows, vector<bool>(columns, false));\n    vector<Region> regions;\n    for (int row = 0; row < rows; ++row) {\n        for (int column = 0; column < columns; ++column) {\n            if (grid[row][column] == '.' && !visited[row][column]) {\n                regions.push_back(explore_region(grid, visited, row, column));\n            }\n        }\n    }\n    return regions;\n}\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.4. Read the map"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read dimensions and the rectangular nonempty map. Input rows must have the stated length.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int rows, columns;\n    cin >> rows >> columns;\n    vector<string> grid(rows);\n    for (string& line : grid) {\n        cin >> line;\n    }\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "8.5. Report regions"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Print region count then area/perimeter in first-discovery order. This educational output extends a task asking only for room count.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    vector<Region> regions = find_regions(grid);\n    cout << regions.size() << '\\n';\n    for (const Region& region : regions) {\n        cout << region.area << ' ' << region.perimeter << '\\n';\n    }\n    return 0;\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete compilable C++17 program"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <iostream>\n#include <queue>\n#include <string>\n#include <utility>\n#include <vector>\nusing namespace std;\n\nstruct Region {\n    int area = 0;\n    int perimeter = 0;\n};\n\nRegion explore_region(const vector<string>& grid,\n                      vector<vector<bool>>& visited,\n                      int start_row, int start_column) {\n    int rows = static_cast<int>(grid.size());\n    int columns = static_cast<int>(grid[0].size());\n    const int row_step[4] = {-1, 1, 0, 0};\n    const int column_step[4] = {0, 0, -1, 1};\n    queue<pair<int, int>> pending;\n    visited[start_row][start_column] = true;\n    pending.push({start_row, start_column});\n    Region region;\n\n    while (!pending.empty()) {\n        int row = pending.front().first;\n        int column = pending.front().second;\n        pending.pop();\n        ++region.area;\n        for (int direction = 0; direction < 4; ++direction) {\n            int next_row = row + row_step[direction];\n            int next_column = column + column_step[direction];\n            if (next_row < 0 || next_row >= rows ||\n                next_column < 0 || next_column >= columns) {\n                ++region.perimeter;\n                continue;\n            }\n            if (grid[next_row][next_column] == '#') {\n                ++region.perimeter;\n                continue;\n            }\n            if (!visited[next_row][next_column]) {\n                visited[next_row][next_column] = true;\n                pending.push({next_row, next_column});\n            }\n        }\n    }\n    return region;\n}\n\nvector<Region> find_regions(const vector<string>& grid) {\n    int rows = static_cast<int>(grid.size());\n    int columns = static_cast<int>(grid[0].size());\n    vector<vector<bool>> visited(rows, vector<bool>(columns, false));\n    vector<Region> regions;\n    for (int row = 0; row < rows; ++row) {\n        for (int column = 0; column < columns; ++column) {\n            if (grid[row][column] == '.' && !visited[row][column]) {\n                regions.push_back(explore_region(grid, visited, row, column));\n            }\n        }\n    }\n    return regions;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int rows, columns;\n    cin >> rows >> columns;\n    vector<string> grid(rows);\n    for (string& line : grid) {\n        cin >> line;\n    }\n\n    vector<Region> regions = find_regions(grid);\n    cout << regions.size() << '\\n';\n    for (const Region& region : regions) {\n        cout << region.area << ' ' << region.perimeter << '\\n';\n    }\n    return 0;\n}\n"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "4 5\n..#..\n.##..\n##.#.\n...#.\n"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "3\n3 8\n6 12\n4 10\n"
+              }
+            ]
+          },
+          {
+            "key": "boundaries",
+            "title": "9. All walls, a singleton and an interior hole",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "All walls give zero regions. One open cell has area one and perimeter four. A full $R$ by $C$ rectangle has one region with area $RC$ and perimeter $2R+2C$."
+              },
+              {
+                "type": "p",
+                "text": "A three-by-three open ring with a wall at the centre has area eight and perimeter sixteen: twelve exterior sides plus four around the hole. Counting only the outer outline is insufficient."
+              },
+              {
+                "type": "p",
+                "text": "The code requires a nonempty rectangular grid. Signed int coordinates allow negative-bound checks. At most one million cells and four million boundary sides keep counts within int."
+              }
+            ]
+          },
+          {
+            "key": "mistakes",
+            "title": "10. A visited open neighbour is not a wall",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For two adjacent open cells, treating the first visited cell as a wall when seen from the second falsely counts an internal side. This is why map type and visited state are separate."
+              },
+              {
+                "type": "p",
+                "text": "Other errors include indexing before bounds checks, accidentally adding diagonals and omitting discovery marking. Counting Rooms asks only the number of regions; do not submit this lesson’s extra area/perimeter output unchanged."
+              }
+            ]
+          },
+          {
+            "key": "connections",
+            "title": "11. Movement neighbours and geometric sides differ",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Eight-direction movement merges diagonally touching cells. But unit-square perimeter still has four sides; diagonal movement does not create extra geometric sides."
+              },
+              {
+                "type": "p",
+                "text": "For component counts and areas, either DFS or BFS can explore reachability; minimum-distance proofs are unnecessary. Shortest grid routes instead need BFS distances and parents."
+              },
+              {
+                "type": "p",
+                "text": "If cells open over time with intermediate connectivity queries, the grid is dynamic. Repeating a whole flood fill can be expensive; later structures such as DSU help. This lesson handles a static map."
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "dfs",
+                "label": "Depth-first search"
+              },
+              {
+                "type": "tutorial",
+                "tutorialId": "bfs",
+                "label": "Breadth-first search"
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "12. Are you grouping connected cells of one type?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For rooms, islands, colour blobs or reachable area, define eligible cell types and allowed moves first. Then choose the per-region aggregate: count, area, perimeter or another quantity."
+              },
+              {
+                "type": "p",
+                "text": "Equal colour does not make disconnected cells one region. Reachability is essential. Threshold, height or time-dependent rules require a fresh transition model."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From rooms to routes, hazards and dynamic maps",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Counting Rooms"
+              },
+              {
+                "type": "p",
+                "text": "Explore four-neighbour open regions and print only the task’s requested region count."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Building Roads"
+              },
+              {
+                "type": "p",
+                "text": "Compare implicit grids with explicit adjacency lists, distinguishing the additional edge-construction objective."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Labyrinth"
+              },
+              {
+                "type": "p",
+                "text": "Switch from counting regions to one-source routing with distances and predecessor moves."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Monsters"
+              },
+              {
+                "type": "p",
+                "text": "Precompute hazard arrival and validate each allowed human transition against time."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Red Painting"
+              },
+              {
+                "type": "p",
+                "text": "After learning DSU, handle connectivity queries as cells are painted instead of rerunning a full fill."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "IOI 2009 Mecho"
+              },
+              {
+                "type": "p",
+                "text": "Add separate bee/bear timing and waiting conditions to grid transitions, with multisource BFS and feasibility/binary-search arguments."
+              }
+            ]
+          },
+          {
+            "key": "importance",
+            "title": "14. Derive the implicit graph correctly",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Priority is High: many grid problems begin with cell type, neighbour rules and components. Bounds checking, visited state and per-region aggregation are recurring skills."
+              },
+              {
+                "type": "p",
+                "text": "Counting Rooms is the direct core and remains High in the bank. Route reconstruction, hazard timing and dynamic updates add state and remain optional progression."
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Independently check total area and every boundary",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Colour the example regions by hand and check that their areas sum to all open cells. Explain internal open sides and hole boundaries."
+              },
+              {
+                "type": "p",
+                "text": "Implement independently and compare small maps against another component oracle and geometric-side counting. Test all walls, one row/column, diagonals, holes and maximum maps, then explain what changes under new movement rules."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know BFS/DFS, components, row/column indices and bounds checks."
+      }
+    },
+    "prerequisites": "BFS, DFS, холбоост хэсэг, мөр-баганын индекс болон координатын хил шалгахыг мэддэг байна.",
+    "prerequisiteIds": [
+      "bfs",
+      "dfs"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "bfs",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "dfs",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "greedy",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ],
+      "next": "bit-operations",
+      "practice": [
+        {
+          "key": "360",
+          "stage": "Warm-up",
+          "priority": true,
+          "reason": "Дөрвөн чигийн далд граф, зөв нээлттэй нүдний нөхцөл, тэмдэглэх үе болон бүх хэсгийг бүрэн тоолохыг бие даан хэрэгжүүлэх шууд цөм дасгал."
+        },
+        {
+          "key": "362",
+          "stage": "Standard",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "361",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "366",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "757",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "132",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    },
+    "automaticDemo": false,
+    "priorityLevel": "high",
+    "priorityReason": "Торны олон бодлогын суурь нь нүдний төрөл, зөв хөрш, холбоост хэсгийг бүрэн үзэх болон нэг хэсгийн мэдээллийг хуримтлуулах. Хил шалгалт, үзсэн төлөв, нийт ажлын тооцоог зөв хэрэглэх чадвар тогтмол шаардлагатай."
+  }
+}
