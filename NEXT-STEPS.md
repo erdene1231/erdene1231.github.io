@@ -1,3 +1,13 @@
+## Package 2: complexity lesson published — 2026-10-28 02:31 UTC
+
+PR #29 merged as `7e05ad741330ec2a80c6287eb19d5ae1b453db05`; Pages deployment succeeded. The existing complexity lesson was rebuilt from scratch and published at revision 8, tutorial history 147. Anonymous `get_tutorials` returns its exact reviewed MN/EN body. All five previous practice IDs remain, with optional Rice Hub added; tutorial priority is High. Missing Number #299 and Increasing Array #301 were individually promoted to explicit High under package-2 C13/C14, revision 2/history 914–915. Only their three priority body fields changed; other 991 problem rows and the number sequence are unchanged. Anonymous `get_catalog` confirms both values and count 993.
+
+See `audit/PACKAGE02-COMPLEXITY-PUBLICATION-RECEIPT.json`. Exact already-executed SQL hashes: priority `03c2cadef350354f5399716d96f5f46619368bf6d68f2febdc8b167e86ed414d`; lesson `8866416578d157dd41a91e8acdd8600f91623d239faa1ae8bf0f7cbe966435e8`. Never replay either job. No migration, security grant, credential or real-user fixture change occurred. Mongolia, non-target tutorial rows, private complexity draft revision 9/base 7, profiles and learner records were verified unchanged. The draft is preserved; native conflict/rebase handling applies to the new published revision.
+
+Before continuing, the three revision-7 foundations were substantively reread from fresh actual public content, with no material new issue found. Reviewed/published curriculum count is now 4/55; 51 remain, and no user acceptance is claimed. Next prerequisite order: brute-force, sorting, then dependent topics. Do not apply historical whole-bank tutorial proposals over fresh published revisions.
+
+The separate bank substream now has complete official interface classification for IOI 2020 and IOI 2024. Proposals 01/02 together contain two missing records (Sphinx/Mushrooms) and two additive tag patches (Message/Stations); none executed. Remaining APIO/IOI/EGOI editions are still unverified as recorded. Do not reuse the old 245 maintenance allowlist or these two core-practice promotions to execute bank additions/tag changes. No deferred problem statement/editorial authoring or package 3 work.
+
 ## Corrected foundation publication — 2026-10-28 02:00 UTC
 
 PR #27 merged as `5f1a0a83fce52deab10c82dd4f5de20c37f67669`; Pages deployment succeeded and public index/styles/tutorials/learning assets match the tested version-52 files. The three wholly new MN/EN foundation lessons were then published atomically at revision 7, history records 144–146, and anonymously retrieved with exact body hashes. See `audit/PACKAGE02-REWRITE-PUBLICATION-RECEIPT.json`. Never replay the pinned SQL or old revision-5 job.
