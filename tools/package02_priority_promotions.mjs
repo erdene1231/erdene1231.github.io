@@ -1,10 +1,13 @@
-// Generates SQL only. Two reviewed existing core-practice metadata promotions, no import/access changes.
+// Generates SQL only for two explicitly named, reviewed core-practice promotions per batch; no imports/access changes.
 import {bodyHash} from './package02_tutorial_proposals.mjs';
 const literal=v=>"E'"+String(v).replace(/\\/g,'\\\\').replace(/'/g,"''")+"'";
 const json=v=>literal(JSON.stringify(v))+'::jsonb';
-export function complexityPrioritySql(plan,guard){
+export function complexityPrioritySql(plan,guard){return buildPrioritySql(plan,guard,['cses-1083','cses-1094']);}
+export function searchSortPrioritySql(plan,guard){return buildPrioritySql(plan,guard,['cses-1621','cses-1623']);}
+function buildPrioritySql(plan,guard,allowedIds){
  const ids=plan.patches.map(p=>p.id).sort();
- if(JSON.stringify(ids)!==JSON.stringify(['cses-1083','cses-1094']))throw Error('Only the two reviewed core practice problems are allowed');
+ if(JSON.stringify(ids)!==JSON.stringify(allowedIds))throw Error('Only the two reviewed core practice problems are allowed');
+ const scope='('+ids.map(literal).join(',')+')';
  const rows=plan.patches.map(p=>{
   const old=guard.problems.find(r=>r.problem_id===p.id);
   if(!old||old.archived||old.number!==p.number||old.revision!==p.expected_revision||bodyHash(old.body)!==p.expected_body_sha256||!/^[a-f0-9]{32}$/.test(old.body_md5))throw Error('Fresh priority body/revision guard mismatch');
@@ -32,7 +35,7 @@ BEGIN
  END LOOP;
  IF (SELECT count(*) FROM public.problem_catalog)<>993
   OR (SELECT jsonb_agg(pg_get_triggerdef(oid) ORDER BY tgname) FROM pg_trigger WHERE tgrelid='public.problem_catalog'::regclass AND NOT tgisinternal) IS NOT NULL
-  OR (SELECT md5(jsonb_agg(to_jsonb(p) ORDER BY problem_id)::text) FROM public.problem_catalog p WHERE problem_id NOT IN('cses-1083','cses-1094')) IS DISTINCT FROM ${literal(guard.non_target_fingerprint)} THEN RAISE EXCEPTION 'Catalog drift'; END IF;
+  OR (SELECT md5(jsonb_agg(to_jsonb(p) ORDER BY problem_id)::text) FROM public.problem_catalog p WHERE problem_id NOT IN${scope}) IS DISTINCT FROM ${literal(guard.non_target_fingerprint)} THEN RAISE EXCEPTION 'Catalog drift'; END IF;
  SELECT last_value,is_called INTO old_sequence,old_called FROM public.problem_number_seq;
  IF old_sequence<>993 OR NOT old_called THEN RAISE EXCEPTION 'Problem sequence drift'; END IF;
  SELECT count(*),md5(coalesce(jsonb_agg(to_jsonb(h) ORDER BY change_id::text)::text,'[]')) INTO history_count,history_before FROM public.problem_changes h;
@@ -52,7 +55,7 @@ BEGIN
   -- Atomic priority target and edit history complete.
  END LOOP;
  IF (SELECT count(*) FROM public.problem_catalog)<>993
-  OR (SELECT md5(jsonb_agg(to_jsonb(p) ORDER BY problem_id)::text) FROM public.problem_catalog p WHERE problem_id NOT IN('cses-1083','cses-1094')) IS DISTINCT FROM ${literal(guard.non_target_fingerprint)}
+  OR (SELECT md5(jsonb_agg(to_jsonb(p) ORDER BY problem_id)::text) FROM public.problem_catalog p WHERE problem_id NOT IN${scope}) IS DISTINCT FROM ${literal(guard.non_target_fingerprint)}
   OR (SELECT last_value FROM public.problem_number_seq)<>old_sequence OR (SELECT is_called FROM public.problem_number_seq) IS DISTINCT FROM old_called
   OR (SELECT count(*) FROM public.problem_changes)<>history_count+2
   OR (SELECT md5(coalesce(jsonb_agg(to_jsonb(h) ORDER BY change_id::text)::text,'[]')) FROM public.problem_changes h WHERE change_id::text<>ALL(new_ids)) IS DISTINCT FROM history_before THEN RAISE EXCEPTION 'Priority preservation failed'; END IF;

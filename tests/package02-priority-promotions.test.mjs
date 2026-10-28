@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {editorialDatabase} from './problem-editorial-fixture.mjs';
 import {proposalProblems} from '../tools/package02_tutorial_proposals.mjs';
-import {complexityPrioritySql} from '../tools/package02_priority_promotions.mjs';
+import {complexityPrioritySql,searchSortPrioritySql} from '../tools/package02_priority_promotions.mjs';
 const plan=JSON.parse(fs.readFileSync('audit/PACKAGE02-COMPLEXITY-PRIORITY-PROMOTIONS.json'));
 async function setup(){
  const db=await editorialDatabase({installPriority:false});
@@ -32,5 +32,21 @@ test('two core-practice promotions preserve every unrelated field/record, progre
   for(const patch of plan.patches){const old=before.catalog.find(r=>r.problem_id===patch.id),now=after.catalog.find(r=>r.problem_id===patch.id);assert.deepEqual(now.body,{...old.body,...patch.changes});assert.equal(now.revision,old.revision+1);assert.equal(now.archived,old.archived);assert.equal(now.number,old.number);}
   assert.equal((await db.query('select is_admin() value')).rows[0].value,false);
   await assert.rejects(db.exec(sql),/Problem history drift|Priority CAS\/body drift/);assert.deepEqual(await snapshot(),after);
+ }finally{await db.close();}
+});
+
+
+test('search/sort promotion scope is separate, justified and preserves all other tasks',async()=>{
+ const db=await setup();try{
+  const nextPlan=JSON.parse(fs.readFileSync('audit/PACKAGE02-SEARCH-SORT-PRIORITY-PROMOTIONS.json'));
+  const g=await guard(db);g.problems=(await db.query("select *,md5(body::text) body_md5 from problem_catalog where number in(85,312) order by number")).rows;g.non_target_fingerprint=(await db.query("select md5(jsonb_agg(to_jsonb(p) order by problem_id)::text) h from problem_catalog p where problem_id not in('cses-1623','cses-1621')")).rows[0].h;
+  assert.throws(()=>complexityPrioritySql(nextPlan,g),/Only the two/);assert.throws(()=>searchSortPrioritySql(plan,g),/Only the two/);
+  const before=(await db.query('select * from problem_catalog order by number')).rows,sql=searchSortPrioritySql(nextPlan,g);
+  await assert.rejects(db.exec(sql.replace('-- Atomic priority target and edit history complete.',"raise exception 'Injected search/sort priority failure';")),/Injected search\/sort priority failure/);assert.deepEqual((await db.query('select * from problem_catalog order by number')).rows,before);
+  await db.exec(sql);const after=(await db.query('select * from problem_catalog order by number')).rows;
+  assert.deepEqual(after.filter(r=>![85,312].includes(r.number)),before.filter(r=>![85,312].includes(r.number)));
+  for(const patch of nextPlan.patches){const old=before.find(r=>r.problem_id===patch.id),now=after.find(r=>r.problem_id===patch.id);assert.deepEqual(now.body,{...old.body,...patch.changes});assert.equal(now.revision,old.revision+1);}
+  assert.equal((await db.query('select last_value from problem_number_seq')).rows[0].last_value,993);
+  await assert.rejects(db.exec(sql),/Problem history drift|Priority CAS\/body drift/);
  }finally{await db.close();}
 });

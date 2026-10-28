@@ -24,3 +24,17 @@ test('complexity rewrite retains stable metadata, prior practice and native rich
   assert.ok(!code[4].text.includes('\t'));assert.equal(language.sections[12].blocks.filter(b=>b.type==='heading').length,6);
  }
 });
+
+test('search/sort rewrites preserve old references, justify only their core flags and round-trip native publication',()=>{
+ const baseline=JSON.parse(fs.readFileSync('audit/PART04-BASELINE.json')).tutorials,curriculum=JSON.parse(fs.readFileSync('curriculum.json')).lessons;
+ const docs=['brute-force','sorting'].map(id=>JSON.parse(fs.readFileSync(`audit/package02-lessons/${id}.json`)));
+ const problems=proposalProblems(),topics=baseline.map(r=>docs.find(d=>d.id===r.id)?.body||r.body);
+ for(const d of docs){const before=baseline.find(r=>r.id===d.id),b=d.body;assert.equal(d.expected_body_sha256,bodyHash(before.body));assert.equal(d.expected_revision,before.revision);
+  validateTutorial(b);assert.deepEqual(mathProseWarnings(b),[]);assert.deepEqual(publicationBody(b,topics,problems),b);
+  for(const key of ['id','aliases','order','level','levelKey','category','related','prerequisiteIds'])assert.deepEqual(b[key],before.body[key],key);
+  const keyOf=p=>String(p.number);for(const old of curriculum[d.id].practice){const problem=problems.find(p=>p.source.toLowerCase()+'|'+p.ref.toLowerCase()===old.key);assert.ok(problem,old.key);assert.ok(b.learningRelations.practice.some(p=>p.key===keyOf(problem)),d.id+' retained '+old.key);}
+  assert.deepEqual(b.learningRelations.practice.filter(p=>p.priority).map(p=>p.key),[d.id==='brute-force'?'85':'312']);
+  assert.ok(b.learningRelations.practice.some(p=>p.key==='892'&&!p.priority&&p.stage==='Olympiad extension'));
+  for(const doc of [b,b.translations.en]){assert.equal(doc.sections.length,15);const blocks=doc.sections[7].blocks,pieces=blocks.filter(p=>p.language==='C++17');assert.equal(pieces.length,5);assert.equal(pieces.slice(0,4).map(p=>p.text).join(''),pieces[4].text);for(const p of pieces.slice(0,4))assert.equal(blocks[blocks.indexOf(p)-1].type,'rich');assert.equal(doc.sections[12].blocks.filter(p=>p.type==='heading').length,6);}
+ }
+});
