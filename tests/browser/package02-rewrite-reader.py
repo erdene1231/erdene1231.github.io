@@ -27,7 +27,8 @@ try:
      result=page.evaluate('''()=>{const a=document.getElementById('tutorial-content'),panel=document.getElementById('tutorial-contents-panel'),g=document.querySelector('.tutorial-reading-layout'),cards=[...document.querySelectorAll('#tutorial-learning-extras .learning-problem[data-problem-id]')];let openedAll=true;for(const card of cards){card.querySelector('button')?.click();openedAll&&=p02LastOpened===card.dataset.problemId;}return{sections:a.querySelectorAll(':scope>section').length,math:a.querySelectorAll('mjx-container').length,mathErrors:a.querySelectorAll('mjx-merror,[data-mjx-error],mjx-mtext[data-mjx-error]').length,unknownMath:[...a.querySelectorAll('mjx-mtext')].filter(x=>x.textContent.includes('\\\\le')).length,code:a.querySelectorAll('pre code.language-cpp').length,practice:cards.length,openedAll,overflow:document.documentElement.scrollWidth>innerWidth,articleWidth:a.getBoundingClientRect().width,grid:getComputedStyle(g).gridTemplateColumns,contentsOpen:panel.open,toc:document.querySelectorAll('#tutorial-toc a').length,legacyDemo:a.querySelectorAll('.algorithm-demo').length}}''')
      assert result['sections']==15 and result['toc']==15,result
      assert result['math']>0 and result['mathErrors']==0,result
-     assert result['code']==5 and result['practice']>=6 and result['openedAll'],result
+     expected_code=sum(1 for section in doc['sections'] for block in section['blocks'] if block.get('type')=='code' and block.get('language','').lower() in ['c++','c++17','cpp'])
+     assert expected_code>=5 and result['code']==expected_code and result['practice']>=6 and result['openedAll'],result
      assert not result['overflow'],result
      if mobile:assert result['articleWidth']>=width-70 and not result['contentsOpen'],result
      cases.append({'lesson':doc['id'],'lang':lang,'width':width,'mobile':mobile,'theme':theme,**result})

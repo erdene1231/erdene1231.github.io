@@ -225,3 +225,20 @@ test('recursion and prefix sums each publish as an individually guarded native d
   }
  }finally{await db.close();}
 });
+
+test('sorting replacement and contextual terminology corrections retain private drafts and other live documents',async()=>{
+ const{ownerReviewedLessonsSql}=await import('../tools/package02_reviewed_publication.mjs'),{bodyHash}=await import('../tools/package02_tutorial_proposals.mjs');const{db}=await foundationDatabase();try{
+ for(const id of ['sorting','binary-search','greedy']){
+  const initial=JSON.parse(fs.readFileSync(id==='sorting'?'audit/package02-lessons/sorting.json':`audit/package02-rewrite/${id}.json`)).body;
+  const d=JSON.parse(fs.readFileSync(`audit/package02-revisions/${id==='sorting'?'sorting-recursive':id+'-terminology'}.json`));assert.equal(bodyHash(initial),d.expected_body_sha256);
+  await db.query('update tutorial_catalog set body=$2,revision=$3 where id=$1',[id,initial,d.expected_revision]);
+ }
+ await db.query("insert into tutorial_drafts(tutorial_id,editor_id,body,revision,base_revision) select id,'00000000-0000-0000-0000-000000000002',body,3,5 from tutorial_catalog where id='binary-search'");
+ for(const id of ['sorting','binary-search','greedy']){
+  const d=JSON.parse(fs.readFileSync(`audit/package02-revisions/${id==='sorting'?'sorting-recursive':id+'-terminology'}.json`)),old=(await db.query('select *,md5(body::text) body_md5 from tutorial_catalog where id=$1',[id])).rows[0],g=await localOwnerGuard(db,[id]);
+  const t={...d,expected_body_md5:old.body_md5,reviewed_body_sha256:bodyHash(d.body),proposed_body_sha256:bodyHash(d.body)},sql=ownerReviewedLessonsSql({targets:[t]},g),before=(await db.query('select * from tutorial_catalog order by id')).rows,drafts=(await db.query('select * from tutorial_drafts')).rows;
+  await assert.rejects(db.exec(sql.replace('-- Atomic boundary: one target and its history are complete.',"raise exception 'Injected revised content failure';")),/Injected revised content/);assert.deepEqual((await db.query('select * from tutorial_catalog order by id')).rows,before);
+  await db.exec(sql);assert.deepEqual((await db.query('select * from tutorial_drafts')).rows,drafts);const after=(await db.query('select * from tutorial_catalog order by id')).rows;assert.deepEqual(after.filter(t=>t.id!==id),before.filter(t=>t.id!==id));assert.deepEqual(after.find(t=>t.id===id).body,d.body);await assert.rejects(db.exec(sql),/CAS\/body\/status drift/);
+ }
+ }finally{await db.close();}
+});
