@@ -736,3 +736,10 @@ Validation: 135 Node tests, 411 unchanged independently checked C++ cases reused
 PR #51 merged as bc9549ba2a2e9a399c052f00bd08de98b587051d; Pages 40652896720 succeeded. Tree basics and grid DP are public revision 4, histories 173–174. Exact anonymous MN/EN native bodies verified. 138 Node tests, 183 tree and 766 grid oracle cases, 16 reader cases and four native editor round trips passed. Only core #345/#420 priority fields promoted, histories 926–927; other 991 problem rows and sequence unchanged. All eight private drafts, sorting revision 7, Mongolia, learner/profile state and authority fingerprints preserved. No migration/access changes. See audit/PACKAGE02-TREE-GRID-PUBLICATION-RECEIPT.json. NEVER replay the three successful SQL jobs.
 
 26/55 published; 29 remain, no user acceptance claim. Next existing lessons: knapsack and dsu, with fresh capture. Standing tested PR/merge and guarded publication authority retained. Contest proposals remain separate/unapplied; unresolved APIO evidence must not be bypassed. No deferred problem statements/editorials or package 3.
+
+
+## Package 2: knapsack and DSU published
+
+PR #53 merged as e5774904b90cf74ff6faba89f0bf5de571ac4b31; Pages 40654145208 succeeded. Knapsack and DSU are public revision 6, histories 175–176. Exact anonymous MN/EN native bodies verified. 140 Node tests, 242 subset-oracle knapsack cases and 179 BFS-oracle DSU streams/boundaries, 16 reader cases and four native editor round trips passed. All 993 problem rows, eight private drafts, sorting revision 7, Mongolia, learner/profile state and checked authority fingerprints unchanged. No migration/access changes. See audit/PACKAGE02-KNAPSACK-DSU-PUBLICATION-RECEIPT.json. NEVER replay the two successful SQL jobs.
+
+28/55 published; 27 remain, no user acceptance or signed-in production editor fixture claim. Next existing lessons: lis and kruskal with fresh captures. Keep standing tested PR/merge and guarded publication authority, private drafts without auto-rebase, and separate unapplied contest proposals/APIO evidence gaps. No deferred problem statements/editorials or package 3.
