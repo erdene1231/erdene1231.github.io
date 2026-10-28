@@ -22,7 +22,7 @@ def check_order(tokens,n,edges,possible):
 def graph_input(n,edges):return f'{n} {len(edges)}\n'+'\n'.join(f'{a} {b}'for a,b in edges)+'\n'
 with tempfile.TemporaryDirectory(prefix='part04-tutorial-cpp03-')as tmp:
  def build(topic):
-  doc=next(r['body']for r in rows if r['body']['id']==topic);codes=lambda d:[b['text']for s in d['sections']for b in s['blocks']if b['type']=='code'and b.get('language')=='C++17'];mn,en=codes(doc),codes(doc['translations']['en']);assert mn==en and len(mn)==2,topic;helper,program=mn
+  doc=next(r['body']for r in rows if r['body']['id']==topic);codes=lambda d:[b['text']for s in d['sections']for b in s['blocks']if b['type']=='code'and b.get('language')=='C++17'and not b.get('detailKey','').startswith('p02-fragment-')];mn,en=codes(doc),codes(doc['translations']['en']);assert mn==en and len(mn)in(1,2),topic;program=mn[-1];helper=mn[0]if len(mn)==2 else program[:program.index('int main(')]
   assert program[:program.index('int main(')].strip()==helper.strip();assert '\t'not in program;assert all(not line.startswith(' ')or(len(line)-len(line.lstrip()))%4==0 for line in program.splitlines())
   exe=Path(tmp)/topic;compile_code(program,Path(tmp)/(topic+'.cpp'),exe)
   blocks=[b for s in doc['sections']for b in s['blocks']];sample_input=next(b['text']for b in blocks if b['type']=='code'and b.get('language')=='Input');sample_output=next(b['text']for b in blocks if b['type']=='code'and b.get('language')=='Output');assert run(exe,sample_input)==sample_output.split()

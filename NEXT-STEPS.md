@@ -1,3 +1,13 @@
+# Package 2: first semantic batch and unified bank follow-up
+
+PR #23 contains local guarded proposals. Binary Search, Greedy and DP now have MN/EN correctness arguments, bounded reference-program contracts, four explained code fragments first and the complete C++17 program last. Fragments concatenate exactly to that program. Three individual High tutorial-priority proposals are ready; 52 remain. Mongolia is entirely unchanged, including revision 2 and unpublished status.
+
+Verification: 93 Node tests, 199 independent C++ cases across three programs, 12 MathJax browser views and three actual native editor edit/serialize/reload checks pass. Media/practice references and opaque legacy metadata are preservation fixtures only. Full lesson rubric and six-stage practice work remain incomplete. No tutorial has been published.
+
+The consolidated checklist also covers every APIO/IOI/EGOI 2020–2026 interactive/communication task. All 21 edition slots are tracked; EGOI 2020 was not held. Task-format classification remains unverified where evidence is absent. Do not confuse API graders with interaction.
+
+Standing authority permits safe fetch/push, tested PR merges and routine minimal migrations. New security access, destructive actions and new owner-maintenance jobs retain specific approval boundaries. No problem statement/editorial authoring or package 3 work.
+
 # Package4coreclosed;package2started same task
 
 Userconfirmedliveadminchecks;agreedreducedpackage4corecomplete.See `audit/PACKAGE04-CLOSURE.json`;remainingcaveatsarenotrevivedrequirements. Package2branchcodex/package02-existing-tutorialsfrommain1a2be82. Freshlive993problems/56tutorials;all56bodyhashesmatchoriginalsnapshot;mongoliaunpublishedrevision2preservedasjokeeditor-testexception. Deferred26proposalsisolatedfromea0ef8f;20matchingearliercode/mathproposalsactiveLOCALONLY,6unfinishedheld. RecoveredcurrentC++harnessesrerun;quality/mastery/translation/browsercompletionnotclaimed. StartBinarySearch→Greedy→DPthenrest,15criteria/20semanticrubric/C01–14. No productionpublication/migration/rights/realuserfixtures;no problemstatement/editorialauthoring or package3+. See PACKAGE02-CHECKLIST/inventory/recoverymanifest/initialBinarySearchreview.

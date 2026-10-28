@@ -1,0 +1,28 @@
+import functools,http.server,json,threading,subprocess
+from pathlib import Path
+from playwright.sync_api import sync_playwright
+ROOT=Path(__file__).resolve().parents[2]
+docs=json.loads(subprocess.check_output(['node','--input-type=module','-e',"import fs from'node:fs';import{proposedTutorialRows}from'./tools/package02_tutorial_proposals.mjs';console.log(JSON.stringify(proposedTutorialRows(JSON.parse(fs.readFileSync('audit/PART04-BASELINE.json')).tutorials).filter(r=>['binary-search','greedy','dynamic-programming'].includes(r.id)).map(r=>r.body)))"],cwd=ROOT,text=True))
+class Quiet(http.server.SimpleHTTPRequestHandler):
+ def log_message(self,*a):pass
+server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(Quiet,directory=str(ROOT)));threading.Thread(target=server.serve_forever,daemon=True).start();base=f'http://127.0.0.1:{server.server_port}';cases=[]
+try:
+ with sync_playwright()as pw:
+  b=pw.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox']);page=b.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+  def route(r):
+   if not r.request.url.startswith(base):r.abort()
+   elif'/app.js?'in r.request.url or'/navigation.js?'in r.request.url:r.fulfill(status=200,content_type='text/javascript',body='')
+   else:r.continue_()
+  page.route('**/*',route);page.goto(base+'/index.html',wait_until='networkidle');page.evaluate("()=>{for(const e of document.body.children)e.hidden=true;window.fixture=document.createElement('article');fixture.className='tutorial-content';fixture.style.cssText='max-width:900px;margin:auto;padding:12px;min-width:0';document.body.append(fixture)}")
+  for doc in docs:
+   for lang in['mn','en']:
+    for width,theme in[(375,'light'),(1200,'dark')]:
+     page.set_viewport_size({'width':width,'height':950});page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
+     result=page.evaluate('''async({doc,lang})=>{const{drawArticle,typeset}=await import('/tutorials.js?v=48');window.MathJax?.typesetClear?.([fixture]);await typeset([fixture],()=>drawArticle(doc,fixture,lang));return{sections:fixture.querySelectorAll(':scope>section').length,code:fixture.querySelectorAll('pre code').length,math:fixture.querySelectorAll('mjx-container').length,errors:fixture.querySelectorAll('mjx-merror,[data-mjx-error]').length}}''',{'doc':doc,'lang':lang});assert result['sections']==14;assert result['code']>=7;assert result['math']>0 and result['errors']==0;assert page.evaluate('document.documentElement.scrollWidth<=innerWidth');cases.append({'lesson':doc['id'],'language':lang,'width':width,'theme':theme,**result})
+  roundtrips=[]
+  for doc in docs:
+   result=page.evaluate('''async doc=>{const{validateTutorial}=await import('/tutorial-model.js?v=48'),{mountBlockEditor}=await import('/tutorial-block-editor.js?v=48'),{drawArticle,typeset}=await import('/tutorials.js?v=48');const copy=structuredClone(doc);copy.fixtureLegacyMetadata={opaque:'preserve-only',array:[1,2]};copy.sections[0].blocks[0].fixtureLegacyMetadata={keep:true};const image={type:'image',path:doc.id+'/00000000-0000-0000-0000-000000000001/11111111-1111-1111-1111-111111111111.webp',alt:'Round-trip fixture only',width:50,align:'center',detailKey:'fixture-image'};const practice={type:'problem',problemKey:'939',detailKey:'fixture-practice'};copy.sections[13].blocks.push(image,practice);validateTutorial(copy);const keep=structuredClone(copy);const editor=document.createElement('div');fixture.replaceChildren(editor);let changed=0;const mounted=mountBlockEditor(editor,copy.sections,{changed:()=>changed++,locked:()=>false,imageUrl:async()=>{throw Error('No live media requested in round-trip fixture')}});const input=editor.querySelector('.block-rich-input');input.textContent+=' Нэмэлт $n$ / extra $n$.';input.dispatchEvent(new Event('input',{bubbles:true}));const saved=JSON.stringify(copy);mounted.destroy();const loaded=JSON.parse(saved);validateTutorial(loaded);const reload=mountBlockEditor(editor,loaded.sections,{changed:()=>{},locked:()=>false,imageUrl:async()=>{throw Error('No live media')}});reload.destroy();const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);if(!same(loaded.fixtureLegacyMetadata,keep.fixtureLegacyMetadata)||!same(loaded.sections[0].blocks[0].fixtureLegacyMetadata,keep.sections[0].blocks[0].fixtureLegacyMetadata))throw Error('Legacy metadata lost');for(const k of['id','aliases','related','prerequisiteIds','prerequisites'])if(!same(loaded[k],keep[k]))throw Error('Identity/relationships lost:'+k);if(!same(loaded.translations,keep.translations))throw Error('Unedited translation lost');if(!same(loaded.sections[13],keep.sections[13]))throw Error('Image/practice reference lost');for(const sec of[5,12])if(!same(loaded.sections[sec],keep.sections[sec]))throw Error('Code fragment/program changed');const article=document.createElement('article');article.className='tutorial-content';fixture.replaceChildren(article);await typeset([article],()=>drawArticle(loaded,article,'mn'));return{lesson:doc.id,edited:changed>0,roundtrip:true,math:article.querySelectorAll('mjx-container').length,mathErrors:article.querySelectorAll('mjx-merror,[data-mjx-error]').length};}''',doc)
+   assert result['edited']and result['roundtrip']and result['math']>0 and result['mathErrors']==0;roundtrips.append(result)
+  assert not errors,errors;b.close()
+finally:server.shutdown()
+report={'status':'passed','cases':cases,'native_editor_roundtrips':roundtrips,'production_writes':0,'scope':'Actual renderer/MathJax and local proposal documents;not full semantic/practice completion'};(ROOT/'audit/PACKAGE02-FOUNDATIONS-BROWSER.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({'status':'passed','cases':len(cases)}))
