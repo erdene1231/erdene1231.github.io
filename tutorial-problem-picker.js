@@ -1,4 +1,4 @@
-import {canonicalKey} from './learning-model.js?v=58';
+import {canonicalKey} from './learning-model.js?v=59';
 
 // Block references use canonical keys; search also accepts the site's stable IDs
 // and visible problem numbers. Keep every catalog entry searchable without a cap.

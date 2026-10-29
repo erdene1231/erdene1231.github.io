@@ -7,6 +7,8 @@ const json = value => literal(JSON.stringify(value)) + '::jsonb';
 // Small, explicitly reviewed batches of existing published curriculum lessons only.
 export function ownerReviewedLessonsSql(batch, guard) {
     const ids = batch.targets.map(row=>row.id).sort();
+    const expectedCatalogCount = guard.catalog_count ?? 56; // Historical fixtures predate Introduction.
+    if (!Number.isSafeInteger(expectedCatalogCount) || expectedCatalogCount < 1) throw Error('Fresh catalog count required');
     if (!ids.length || ids.length>3 || new Set(ids).size!==ids.length ||
         ids.some(id=>id==='mongolia'||!/^[a-z][a-z0-9-]*$/.test(id))) {
         throw Error('A unique allowlist of one to three curriculum lessons is required');
@@ -53,7 +55,7 @@ BEGIN
       FROM pg_catalog.pg_trigger WHERE tgrelid='public.tutorial_catalog'::regclass AND NOT tgisinternal;
     IF actual_triggers IS DISTINCT FROM triggers THEN RAISE EXCEPTION 'Publication trigger drift'; END IF;
     SELECT count(*) INTO catalog_count FROM public.tutorial_catalog;
-    IF catalog_count<>56 THEN RAISE EXCEPTION 'Tutorial inventory drift'; END IF;
+    IF catalog_count<>${expectedCatalogCount} THEN RAISE EXCEPTION 'Tutorial inventory drift'; END IF;
     SELECT md5(coalesce(jsonb_agg(to_jsonb(d) ORDER BY tutorial_id,editor_id)::text,'[]')) INTO drafts_before
       FROM public.tutorial_drafts d WHERE tutorial_id IN ${scope};
     IF drafts_before IS DISTINCT FROM ${literal(guard.draft_fingerprint)} THEN RAISE EXCEPTION 'Private draft changed; reconcile before publication'; END IF;

@@ -1,5 +1,5 @@
 import {graphControls} from './tutorial-graph.js?v=57';
-import {openProblemSelection} from './problem-selection-dialog.js?v=58';
+import {openProblemSelection} from './problem-selection-dialog.js?v=59';
 import {BLOCK_TYPES,TONES,createBlock,safeLink,validateExtendedBlock} from './tutorial-blocks.js?v=57';
 import {appendInline} from './tutorial-block-renderer.js?v=57';
 const make=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};

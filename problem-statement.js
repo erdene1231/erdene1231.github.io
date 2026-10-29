@@ -1,7 +1,7 @@
 import {assertProblemStatementReady,STATEMENT_CHECKS} from './problem-statement-policy.js?v=57';
 import {validateTutorial} from './tutorial-model.js?v=57';
-import {drawArticle,typeset} from './tutorials.js?v=58';
-import {mountBlockEditor} from './tutorial-block-editor.js?v=58';
+import {drawArticle,typeset} from './tutorials.js?v=59';
+import {mountBlockEditor} from './tutorial-block-editor.js?v=59';
 import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=57';
 const node=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const clearMath=root=>{try{window.MathJax?.typesetClear?.([root]);}catch{}};
