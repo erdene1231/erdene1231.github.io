@@ -15,7 +15,7 @@ import {createDraftSession} from './tutorial-drafts.js?v=52';
 import {editableVersion} from './tutorial-editor-compat.js?v=52';
 import {validateRelations} from './learning-model.js?v=52';
 import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=52';
-import {node,drawArticle,typeset} from './tutorials.js?v=52';
+import {node,drawArticle,typeset} from './tutorials.js?v=56';
 const $=id=>document.getElementById(id);
 export function setupTutorialEditor(ctx){
  let allowed=false,token=0,draft=null,revision=0,lang='mn',busy=false,accountId,blockEditor,workspace=[],catalogCurrent=null;
