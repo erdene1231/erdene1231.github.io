@@ -1,0 +1,52 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    bitset<10> s;
+    s[1] = s[3] = s[4] = s[7] = 1;
+    cout << s[4] << " " << s[5] << "\n";
+    bitset<10> same(string("0010011010"));
+    cout << same[4] << " " << same[5] << " " << same.count() << "\n";
+    bitset<10> a(string("0010110110"));
+    bitset<10> b(string("1011011000"));
+    cout << (a & b) << "\n";
+    cout << (a | b) << "\n";
+    cout << (a ^ b) << "\n";
+    deque<int> d;
+    d.push_back(5);
+    d.push_back(2);
+    d.push_front(3);
+    d.pop_back();
+    d.pop_front();
+    cout << d.front() << "\n";
+    stack<int> st;
+    st.push(3);
+    st.push(2);
+    st.push(5);
+    cout << st.top() << " ";
+    st.pop();
+    cout << st.top() << "\n";
+    queue<int> q;
+    q.push(3);
+    q.push(2);
+    q.push(5);
+    cout << q.front() << " ";
+    q.pop();
+    cout << q.front() << "\n";
+    priority_queue<int> pq;
+    pq.push(3);
+    pq.push(5);
+    pq.push(7);
+    pq.push(2);
+    cout << pq.top() << "\n";
+    pq.pop();
+    cout << pq.top() << "\n";
+    pq.pop();
+    pq.push(6);
+    cout << pq.top() << "\n";
+    pq.pop();
+    priority_queue<int, vector<int>, greater<int>> small;
+    for (int x : {3, 5, 7, 2}) small.push(x);
+    cout << small.top() << "\n";
+    return 0;
+}
