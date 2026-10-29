@@ -1,0 +1,3030 @@
+{
+  "binary-search": {
+    "id": "binary-search",
+    "body": {
+      "id": "binary-search",
+      "level": "Анхан шат",
+      "order": 10,
+      "title": "Хоёртын хайлт — эрэмбэлсэн дарааллаас зааг олох",
+      "aliases": "binary-search Binary search — sorted array дотор хайх Binary search — searching a sorted array хоёртын хайлт binary search lower bound upper bound answer monotonic",
+      "related": [
+        "sorting",
+        "two-pointers"
+      ],
+      "summary": "Утгуудын эрэмбийг ашиглан боломжгүй талыг бүхэлд нь хасъя. Хайлтын хоёр хязгаарыг зөв тайлбарлаж, хамгийн эхний тохирох байрлалыг алдалгүй олох аргыг баталж, хэрэгжүүлнэ.",
+      "category": "Array ба search",
+      "levelKey": "beginner",
+      "sections": [
+        {
+          "key": "need",
+          "title": "1. Ямар асуултад хариулах вэ?",
+          "blocks": [
+            {
+              "text": "Дэлгүүрийн төхөөрөмжүүдийн санах ойн багтаамж $[1,3,3,8,12]$ ГБ гэж үл буурах дарааллаар өгөгджээ. Дор хаяж $6$ ГБ хэрэгтэй хүнд хамгийн багадаа хэдэн ГБ-тай төхөөрөмж тохирох вэ? Хариу нь $8$ ГБ. Харин бид тэр утгын байрлалыг буцаахыг хүснэ.",
+              "type": "p"
+            },
+            {
+              "text": "Байрлалыг тэгээс дугаарлавал $8$ нь $3$ дугаар байрлалд байна. Байрлалын ийм дугаарыг индекс гэдэг. Ерөнхийдөө $n$ утгатай эрэмбэлсэн дараалал болон $x$ гэсэн шаардлага өгөгдөхөд $a[i]\\ge x$ болох хамгийн эхний $i$-г олно. Хэрэв тийм утга байхгүй бол $n$-ийг буцаана; $n$ нь уншиж болох байрлал биш, “олдсонгүй” гэсэн тэмдэглэгээ.",
+              "type": "p"
+            },
+            {
+              "text": "Ижил дараалалд олон шаардлага ирж болно. Утга бүрийг дахин дахин үзэхийн оронд эрэмбэлэгдсэн байгааг ашиглан асуулт бүрт цөөн шалгалтаар хариулах нь энэ хичээлийн зорилго.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "direct",
+          "title": "2. Шууд шалгах арга юугаараа удаан бэ?",
+          "blocks": [
+            {
+              "text": "Хамгийн ойлгомжтой арга нь зүүнээс баруун тийш нэг нэгээр шалгах. Эхний $a[i]\\ge x$ утгад хүрвэл тухайн байрлалыг буцаана. Төгсгөлд хүрсэн ч олдохгүй бол $n$-ийг буцаана. Энэ арга эрэмбэлэгдсэн дараалалд зөв боловч хамгийн муу үед бүх $n$ утгыг үзнэ.",
+              "type": "p"
+            },
+            {
+              "text": "Нэг асуултын хугацаа $O(n)$. $q$ удаа асуувал $O(nq)$ болно. Жишээ нь $n=q=200000$ байхад ойролцоогоор $4\\cdot10^{10}$ харьцуулалт шаардаж болох тул илүү сайн арга хайх хэрэгтэй.",
+              "type": "p"
+            },
+            {
+              "text": "Ганцхан асуулттай, дараалал эрэмбэлэгдээгүй бол шууд шалгах нь хангалттай байж болно. Эрэмбэлэх өөрөө зардалтай. Хоёртын хайлт гэдэг нэр харагдлаа гээд ямар ч өгөгдлийг заавал эрэмбэлэх хэрэггүй.",
+              "type": "note"
+            }
+          ]
+        },
+        {
+          "key": "observation",
+          "title": "3. Эрэмбээс ямар мэдээлэл олж авч болох вэ?",
+          "blocks": [
+            {
+              "text": "Дундах утгыг харъя. Хэрэв тэр нь $x$-ээс бага байвал түүний өмнөх бүх утга ч бас $x$-ээс бага байна. Тэдгээрийг нэг нэгээр нь шалгах шаардлагагүй. Харин дундах утга $x$-ээс бага биш бол хариу түүн дээр эсвэл түүнээс зүүн талд байна.",
+              "type": "p"
+            },
+            {
+              "text": "$x=6$ үед $[1,3,3,8,12]$ дарааллын “энэ утга шаардлагыг хангах уу?” гэсэн хариунууд нь “үгүй, үгүй, үгүй, тийм, тийм” болно. Өөрөөр хэлбэл нэг заагийн өмнө нөхцөл биелэхгүй, түүнээс хойш биелнэ. Бид тэр заагийг л хайж байна.",
+              "type": "p"
+            },
+            {
+              "text": "Эрэмбэлэгдсэн мужийн дунд хэсгийг шалгаад, хариу агуулах боломжгүй талыг бүхэлд нь хасдаг аргыг хоёртын хайлт гэдэг. Англиар binary search гэж нэрлэдэг. Энд ашиглаж буй хувилбарыг доод зааг буюу lower bound гэдэг: $x$-ээс бага биш эхний байрлал.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "method",
+          "title": "4. Хайлтын мужийг яаж хадгалах вэ?",
+          "blocks": [
+            {
+              "text": "Шийдээгүй байрлалуудыг $[l,r)$ гэж тэмдэглэе. Зүүн хязгаар багтана, баруун хязгаар багтахгүй. Эхэндээ $l=0$, $r=n$ тул бүх байрлал шийдээгүй байна.",
+              "type": "p"
+            },
+            {
+              "type": "list",
+              "items": [
+                "$l$-ээс өмнөх бүх байрлалын утга $x$-ээс бага гэдгийг мэднэ.",
+                "$r$-ээс эхэлсэн хүчинтэй байрлалуудын утга $x$-ээс бага биш гэдгийг мэднэ. $r=n$ үед тийм байрлал одоохондоо байхгүй.",
+                "Хариуны зааг $l$-ээс $r$-ийн хооронд, хоёр төгсгөлийг оролцуулсан байрлалд байна."
+              ]
+            },
+            {
+              "text": "Давталтын турш үнэн хэвээр хадгалах эдгээр мэдэгдлийг хадгалагдах нөхцөл гэе. $l<r$ байхад дундах байрлалыг $m=l+\\lfloor(r-l)/2\\rfloor$ гэж авна. $a[m]<x$ бол $l=m+1$; үгүй бол $r=m$. Сүүлийн тохиолдолд $m$ өөрөө хариу байж болох тул түүнийг хаяхгүй.",
+              "type": "p"
+            },
+            {
+              "type": "ordered",
+              "items": [
+                "$l=0$, $r=n$ гэж эхлүүл.",
+                "$l<r$ үед дундах байрлалыг шалгаад дээрх хоёр дүрмийн аль нэгээр мужийг багасга.",
+                "$l=r$ болоход шийдээгүй байрлал үлдэхгүй. Заагийн байрлал $l$-ийг буцаа."
+              ]
+            }
+          ]
+        },
+        {
+          "key": "walkthrough",
+          "title": "5. Нэг хайлтыг гараар дагаж бодъё",
+          "blocks": [
+            {
+              "text": "$a=[1,3,3,8,12]$, $x=6$ гэе. Хүснэгтийн мөр бүрийн эхний хязгааруудыг ашиглан дундах байрлалыг бодож, дараа нь шинэ хязгааруудыг тогтооно.",
+              "type": "p"
+            },
+            {
+              "rows": [
+                [
+                  "1",
+                  "$[0,5)$",
+                  "$m=2$, $a[2]=3<6$",
+                  "$[3,5)$"
+                ],
+                [
+                  "2",
+                  "$[3,5)$",
+                  "$m=4$, $a[4]=12\\ge6$",
+                  "$[3,4)$"
+                ],
+                [
+                  "3",
+                  "$[3,4)$",
+                  "$m=3$, $a[3]=8\\ge6$",
+                  "$[3,3)$"
+                ]
+              ],
+              "type": "table",
+              "headers": [
+                "Алхам",
+                "Эхний муж",
+                "Дундах шалгалт",
+                "Шинэ муж"
+              ]
+            },
+            {
+              "text": "Одоо $l=r=3$. Хариу нь байрлал $3$, тэндэх утга нь $8$. Хайсан $6$ гэсэн утга дараалалд байхгүй ч түүнээс бага биш эхний утга олдож байна.",
+              "type": "p"
+            },
+            {
+              "text": "$x=3$ гэж өөрчилж үз. Тэнцүү утгад хүрмэгц шууд зогсвол хоёр дахь $3$-ын байрлалыг буцааж болзошгүй. Баруун хязгаарыг дундах байрлал дээр үлдээж үргэлжлүүлэх нь хамгийн эхний $3$-ыг олоход хэрэгтэй.",
+              "type": "note"
+            }
+          ]
+        },
+        {
+          "key": "proof",
+          "title": "6. Зөв хариуг яагаад алдахгүй вэ?",
+          "blocks": [
+            {
+              "text": "Зөвийн баталгаа нь эхлэл, нэг алхам, төгсгөл гэсэн гурван хэсэгтэй. $0\\le l\\le r\\le n$ гэдгийг мөн бүх хугацаанд хадгална.",
+              "type": "p"
+            },
+            {
+              "type": "ordered",
+              "items": [
+                "Эхлэхэд $l=0$, $r=n$. Зүүнээс хассан байрлал байхгүй, баруунаас баталгаатай болсон байрлал ч байхгүй тул хадгалагдах хоёр мэдэгдэл хоосон муж дээр үнэн.",
+                "$a[m]<x$ бол эрэмбээс $i\\le m$ бүх байрлалын утга $x$-ээс бага. Тиймээс тэдгээрийг хасаад $l=m+1$ болгоход хариу алдагдахгүй. Баруун талын мэдэгдэл өөрчлөгдөхгүй.",
+                "$a[m]\\ge x$ бол $m$ болон түүнээс хойших хүчинтэй байрлал бүр шаардлагыг хангана. $r=m$ болгож болно. Ингэхдээ $m$ гэсэн боломжит хариуг зааг болгон хадгалж, түүнээс өмнө илүү эрт хариу байгаа эсэхийг үргэлжлүүлэн хайна.",
+                "Хоёр тохиолдолд хоёуланд нь $r-l$ эрс багасна. Иймээс давталт заавал дуусна. Дуусахад $l=r$: түүнээс өмнөх бүх утга бага, хэрэв $l<n$ бол тэндэх утга шаардлагыг хангана. Тэгэхээр $l$ нь яг эхний зөв байрлал. $l=n$ бол шаардлагыг хангах утга байхгүй."
+              ]
+            },
+            {
+              "text": "Баталгаа нь ижил утга давхардсан эсэхээс хамаарахгүй. Гол шаардлага нь шалгах нөхцөл нэг л удаа “үгүй”-гээс “тийм” рүү шилждэг байх явдал.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "cost",
+          "title": "7. Хугацаа ба санах ойн зардал",
+          "blocks": [
+            {
+              "text": "Нэг алхамд үлдсэн байрлалын тоо ойролцоогоор хоёр дахин багасна. $n,n/2,n/4,\\ldots$ гэсэн хэмжээг тэг болгоход $O(\\log(n+1))$ алхам хэрэгтэй. $n=0$ үед ч энэ тэмдэглэгээ утгатай: давталт огт ажиллахгүй.",
+              "type": "p"
+            },
+            {
+              "text": "$200000$ орчим байрлалд нэг асуулт ойролцоогоор $18$ харьцуулалт л шаарддаг. Энэ нь бодит ажиллах хугацааны амлалт биш, хийх ажлын хэмжээг төсөөлөхөд зориулсан тооцоо. Дундах утгыг авах болон харьцуулах үйлдэл тогтмол хугацаатай гэж үзэж байна.",
+              "type": "p"
+            },
+            {
+              "text": "Нэг хайлт зөвхөн $l,r,m$ хязгааруудыг хадгалдаг тул нэмэлт зай $O(1)$. Харин бүтэн программ оролтын дарааллаа хадгалах учраас нийт санах ой нь $O(n)$. $q$ асуултын нийт хайлт $O(q\\log(n+1))$; оролт унших, хариу хэвлэх зардал үүн дээр нэмэгдэнэ.",
+              "type": "p"
+            },
+            {
+              "text": "Эхлээд эрэмбэлэх шаардлагатай бол $O(n\\log n)$ хугацааг тусад нь тооц. Өөр бодлогод дундах байрлалын нөхцөлийг шалгах өөрөө удаан байвал тэр зардлыг хайлтын алхмын тоогоор үржүүлнэ.",
+              "type": "note"
+            }
+          ]
+        },
+        {
+          "key": "implementation",
+          "title": "8. C++17 хэрэгжүүлэлтийг хэсэгчлэн бүтээе",
+          "blocks": [
+            {
+              "text": "Оролтод $n$, дараа нь үл буурах дарааллаар эрэмбэлэгдсэн $n$ бүхэл тоо, дараа нь $q$ ба $q$ асуултын утга орно. $0\\le n,q\\le200000$ гэж үзнэ. Дарааллын болон асуултын утгууд тэмдэгтэй 64 битийн бүхэл тоонд багтана. Асуулт бүрт тэгээс дугаарласан байрлал, олдохгүй бол $n$ хэвлэнэ.",
+              "type": "p"
+            },
+            {
+              "text": "8.1. Өгөгдөл ба эхний хязгаарууд",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Дараах функцийн ",
+                  "marks": []
+                },
+                {
+                  "text": "values",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь эрэмбэлсэн дараалал, ",
+                  "marks": []
+                },
+                {
+                  "text": "target",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь шаардаж буй доод утга. ",
+                  "marks": []
+                },
+                {
+                  "text": "low",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " ба ",
+                  "marks": []
+                },
+                {
+                  "text": "high",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь дээрх $l,r$ хязгаарууд юм. Эхэндээ бүх байрлалыг хайх тул тэдгээрийг $0,n$ болгоно.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_at_least(const vector<long long>& values, long long target) {\n    int n = values.size();\n    int low = 0;\n    int high = n;\n\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "8.2. Нэг алхмаар боломжгүй талыг хасах",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Дундах байрлалыг ",
+                  "marks": []
+                },
+                {
+                  "text": "middle",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " хувьсагчид олно. Утга нь шаардлагыг хангавал баруун хязгаарыг тэр байрлалд үлдээнэ; хангахгүй бол зүүн хязгаарыг түүний дараа шилжүүлнэ. Хязгааруудын нийлбэрийг шууд нэмэхгүйгээр дундажлах нь их утгад нэмэлтийн хэтрэлтээс сэргийлэх ердийн арга.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "    while (low < high) {\n        int middle = low + (high - low) / 2;\n\n        if (values[middle] >= target) {\n            high = middle;\n        } else {\n            low = middle + 1;\n        }\n    }\n\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "8.3. Олсон заагийг буцаах",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Давталт дуусахад хоёр хязгаар тэнцэнэ. ",
+                  "marks": []
+                },
+                {
+                  "text": "low",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-г буцаахад хангалттай. Функц хариуны байрлал дахь элементийг уншихгүй; $n$ буцаж болох учраас энэ ялгаа чухал.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "    return low;\n}\n\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "8.4. Оролт уншиж, асуултуудад хариулах",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Үндсэн ",
+                  "marks": []
+                },
+                {
+                  "text": "main",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " функц дарааллыг нэг удаа уншина. Дараа нь асуулт бүрд ",
+                  "marks": []
+                },
+                {
+                  "text": "first_at_least",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийг дуудаж байрлалыг хэвлэнэ. Оролт аль хэдийн эрэмбэлэгдсэн гэсэн нөхцөлтэй тул энд дахин эрэмбэлэхгүй.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<long long> values(n);\n    for (int i = 0; i < n; i++) {\n        cin >> values[i];\n    }\n    int queryCount;\n    cin >> queryCount;\n    for (int i = 0; i < queryCount; i++) {\n        long long target;\n        cin >> target;\n        cout << first_at_least(values, target) << '\\n';\n    }\n\n    return 0;\n}\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "Бүтэн ажиллах программ",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Дээрх дөрвөн кодын хэсгийг яг энэ дарааллаар залгахад доорх программ үүснэ. Зарим хэсэг функцийн дундаас эхэлдэг тул тэдгээрийг тус тусад нь ажиллуулахгүй. Бүтэн хувилбарыг нэг файлд хуулж C++17-оор ажиллуул.",
+              "type": "note"
+            },
+            {
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_at_least(const vector<long long>& values, long long target) {\n    int n = values.size();\n    int low = 0;\n    int high = n;\n\n    while (low < high) {\n        int middle = low + (high - low) / 2;\n\n        if (values[middle] >= target) {\n            high = middle;\n        } else {\n            low = middle + 1;\n        }\n    }\n\n    return low;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<long long> values(n);\n    for (int i = 0; i < n; i++) {\n        cin >> values[i];\n    }\n    int queryCount;\n    cin >> queryCount;\n    for (int i = 0; i < queryCount; i++) {\n        long long target;\n        cin >> target;\n        cout << first_at_least(values, target) << '\\n';\n    }\n\n    return 0;\n}\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "Оролт ба гаралтын жишээ",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "5\n1 3 3 8 12\n5\n3 6 0 13 12",
+              "type": "code",
+              "language": "Input"
+            },
+            {
+              "text": "1\n3\n0\n5\n4",
+              "type": "code",
+              "language": "Output"
+            },
+            {
+              "text": "Эхний асуултад эхний $3$-ын байрлал $1$ гарна. $6$-д $8$ гэсэн утгын байрлал $3$; $0$-д эхний байрлал $0$; $13$-д утга олдохгүй тул $5=n$; $12$-д сүүлийн байрлал $4$ гарна.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "boundaries",
+          "title": "9. Заагийн тохиолдлуудыг шалгах нь",
+          "blocks": [
+            {
+              "rows": [
+                [
+                  "Хоосон дараалал, $n=0$",
+                  "$0=n$",
+                  "Эхнээсээ хоёр хязгаар тэнцүү."
+                ],
+                [
+                  "Бүх утга $x$-ээс бага",
+                  "$n$",
+                  "Тохирох утга байхгүй."
+                ],
+                [
+                  "Бүх утга $x$-ээс бага биш",
+                  "$0$",
+                  "Эхний байрлал л хариу."
+                ],
+                [
+                  "Ижил утга олон давтагдсан",
+                  "Эхний тохирох байрлал",
+                  "Тэнцүү утгыг олсон ч зүүн талыг үргэлжлүүлэн хайна."
+                ],
+                [
+                  "Ганц элементтэй",
+                  "$0$ эсвэл $1$",
+                  "Нөхцөл биелэх эсэхээс хамаарна."
+                ]
+              ],
+              "type": "table",
+              "headers": [
+                "Тохиолдол",
+                "Буцах хариу",
+                "Учир"
+              ]
+            },
+            {
+              "text": "Буцсан байрлал $n$ биш гэдгийг шалгаагүй байж дарааллын тэр элементийг уншиж болохгүй. Мөн яг $x$ гэсэн утгыг хайж байгаа бол байрлал хүчинтэйгээс гадна тэндэх утга $x$-тэй тэнцүү эсэхийг шалгана.",
+              "type": "p"
+            },
+            {
+              "text": "Кодоо шалгахдаа жижиг санамсаргүй эрэмбэлсэн дараалал үүсгээд, хариуг зүүнээс нэг нэгээр шалгасан энгийн аргатай тулга. Ингэхэд давхардал, хоосон дараалал, хамгийн бага ба их тоонуудыг зориуд оруул.",
+              "type": "note"
+            }
+          ]
+        },
+        {
+          "key": "mistakes",
+          "title": "10. Түгээмэл алдааг жижиг жишээгээр олъё",
+          "blocks": [
+            {
+              "type": "ordered",
+              "items": [
+                "Тэнцүү утгад хүрмэгц зогсох. $[1,3,3,8,12]$ дээр эхлээд $m=2$ гэж таарах боловч эхний $3$ байрлал $1$-д байна.",
+                "Энэ хувилбарт $r=m-1$ гэж өөр дүрэм холих. $[2,5]$ дээр $x=4$ байхад эхний шалгалтаар $r=0$ болгож зөв зааг $1$-ийг алдана.",
+                "Нөхцөл биелэхгүй үед $l=m$ болгох. $[1]$, $x=2$ дээр $m=0$ хэвээр тул муж багасахгүй. Зөв шинэ хязгаар нь $m+1$.",
+                "Эрэмбэлээгүй $[9,1,2]$-т шууд хэрэглэх. $x=2$-ын нөхцөл “тийм, үгүй, тийм” болж нэг зааггүй болно. Энэ үед нэг талыг хасах баталгаа ажиллахгүй.",
+                "Байрлал болон утгыг андуурах. Жишээний $x=6$ асуултад байрлал $3$ хэвлэнэ; $8$ гэсэн утгыг хэвлэх нь өөр даалгавар."
+              ]
+            },
+            {
+              "text": "Алдаа гарвал хариуг дараа нь хүчээр өөрчлөхийн оронд аль хадгалагдах нөхцөл зөрчигдсөнийг олоорой. Нэг элементийн жишээ хүртэл давталт дуусахгүй алдааг илрүүлж чадна.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "connections",
+          "title": "11. Холбоотой аргууд ба дараагийн хичээл",
+          "blocks": [
+            {
+              "text": "Эхлээд эрэмбэлэхийн утга, дарааллын байрлал, нөхцөлт салаалал ба давталтыг мэддэг байх хэрэгтэй. Эрэмбэлэхэд анхны байрлал өөрчлөгдөнө: анхны дугаар хэрэгтэй бодлогод утгатай нь хамт хадгалж үлдээнэ.",
+              "type": "p"
+            },
+            {
+              "text": "Доод зааг нь $a[i]\\ge x$ гэсэн эхний байрлал, дээд зааг нь $a[i]>x$ гэсэн эхний байрлал. Жишээний $x=3$ үед доод зааг $1$, дээд зааг $3$ тул давтамж нь $3-1=2$. Ижил утгуудын тоог энэ хоёр заагийн ялгавраар олж болно.",
+              "type": "p"
+            },
+            {
+              "type": "tutorial",
+              "label": "Доод зааг ба утгын мужийн тоолол",
+              "tutorialId": "lower-bound"
+            },
+            {
+              "type": "tutorial",
+              "label": "Дээд зааг ба давтамж",
+              "tutorialId": "upper-bound"
+            },
+            {
+              "type": "tutorial",
+              "label": "Хариуны утган дээр хоёртын хайлт хийх",
+              "tutorialId": "binary-search-answer"
+            },
+            {
+              "text": "Эдгээр нь тусдаа шинэ жор биш. Аль нөхцөл хэзээ биелж эхлэхийг тогтоох ижил санааны хэрэглээнүүд юм. Хариун дээр хайхдаа нөхцөл шалгах алгоритмаа өөрөө гаргаж, түүний зөвийг хайлтын давталтаас тусад нь батална.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "recognition",
+          "title": "12. Ямар үед энэ аргыг сонгох вэ?",
+          "blocks": [
+            {
+              "type": "list",
+              "items": [
+                "Эрэмбэлсэн өгөгдөлд ижил төрлийн олон асуулт ирж байвал хайлтын заагийг ашиглах боломжийг хар.",
+                "Дараалал харагдахгүй байсан ч “энэ утгаас эхлээд боломжтой болно” гэсэн нэг чиглэлтэй нөхцөл байгаа эсэхийг асуу.",
+                "Нөхцөл нь ээлжилж биелээд, биелэхгүй болж байвал шууд хоёртын хайлт хэрэглэхгүй. Эхлээд яагаад нэг заагтай болохыг батал.",
+                "Өгөгдөл байнга өөрчлөгдвөл нэг удаа эрэмбэлсэн энгийн дараалал хангалтгүй байж болно. Тохирох өгөгдлийн бүтцийг нэмж сонгоно."
+              ]
+            },
+            {
+              "text": "Нэг асуултын өмнө “хариуны зааг ямар мужид байна?”, “дундах шалгалт юуг бүхэлд нь хасах вэ?”, “олдсонгүй үед юу буцаах вэ?” гэсэн гурван асуултад хариул. Эдгээр нь тодорхой болсны дараа кодоо бич.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "practice",
+          "title": "13. Зургаан шаттай дасгал",
+          "blocks": [
+            {
+              "text": "Дасгалуудыг дорх дарааллаар сонгон оролдоорой. Шинэ хичээл шаардсан нэмэлт бодлогыг тэр сууриа үзсэний дараа бодно. Энд зорилгыг нь тайлбарласан; бодлогоо нээх картууд доорх нэгдсэн жагсаалтад бий.",
+              "type": "p"
+            },
+            {
+              "text": "Халаалт · CP Classes",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Эрэмбэлсэн тоонууд дундаас сурагчийн оноонд хамгийн ойр утгыг ол. Доод заагийн хоёр талын аль утга хариу байж болохыг тайлбарлаж, эхлэл ба төгсгөлийн тохиолдлыг шалга. Ангийг сонголоо гээд дараагийн сурагчид ашиглах боломж нь алга болохгүй. Энэ бол эхэлж бие даан бодох үндсэн дасгал.",
+              "type": "p"
+            },
+            {
+              "text": "Үндсэн дасгал · Concert Tickets",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Хүн бүрт төсвөөс нь хэтрээгүй хамгийн өндөр үнэтэй үлдсэн тасалбарыг олно. Нэгэнт зарагдсан тасалбарыг дахин ашиглахгүй учраас өөрчлөгдөх өгөгдөлтэй ажиллана. Доод зааг ба түүнээс өмнөх байрлалын ялгааг ойлгосны дараа олон давхардсан утгыг хадгалдаг бүтэц хэрэгтэйг ажигла. Эхлээд олонлог ба толь, дээд заагийн хичээлүүдээ үз.",
+              "type": "p"
+            },
+            {
+              "text": "Ажиглалтаа өөрчлөх · Yokan Party",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Хайх зүйл нь дарааллын байрлал биш, хамгийн богино хэсгийн боломжит урт болно. Нэг урт боломжтой эсэхийг яаж шалгах, урт өсөхөд боломж хэрхэн өөрчлөгдөхийг тайлбарла. Өгөгдсөн огтлолуудаас яг $K$-г сонгох болон төгсгөлийн хэсгийг мартаж болохгүй. Эхлээд хариун дээрх хоёртын хайлт, шуналтай аргын хичээлээ үз.",
+              "type": "p"
+            },
+            {
+              "text": "Өөр нөхцөлд хэрэглэх · Factory Machines",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Хугацаа нэмэгдэхэд хийж чадах бүтээгдэхүүний тоо буурахгүйг ашигла. Шалгах нөхцөлийн нийлбэр томорч болох тул зорилтод хүрмэгц зогсоох болон хайлтын дээд хязгаарыг аюулгүй сонгохыг тайлбарла. Энэ нь ижил хайлтын санааг тоон хариунд хэрэглэх нэмэлт дасгал.",
+              "type": "p"
+            },
+            {
+              "text": "Сорилт · Array Division",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Нэг хэсгийн нийлбэрийн дээд хязгаарыг тогтоогоод, хамгийн цөөн хэдэн хэсэг хэрэгтэйг шалга. Бүх тоо эерэг гэдэг нь яагаад чухлыг батал. Хамгийн ихдээ $k$ хэсэг олдсон бол яг $k$ болгохын тулд хувааж болох шалтгааныг тайлбарла. Эхлээд шуналтай шалгалт ба хариун дээрх хайлтаа эзэмш.",
+              "type": "p"
+            },
+            {
+              "text": "Олимпиадын өргөтгөл · IOI 2009 — Mecho",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Эхлээд өргөнөөр хайх аргаар аюул хүрэх хугацааг олж, дараа нь өгсөн хугацаагаар хүлээсэн ч гэртээ хүрч болох эсэхийг шалгах загвар руу өргөжүүл. Минут дотор баавгай хөдөлж, зөгий тархах дарааллыг эх бодлогоос анхааралтай унш. Графын хайлтын хичээлүүдийн дараах энэ өргөтгөл нь суурь хичээлийг эзэмших заавал нөхцөл биш.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "importance",
+          "title": "14. Эхэлж эзэмших чухал чадварууд",
+          "blocks": [
+            {
+              "text": "Энэ сэдэв өндөр сургалтын ач холбогдолтой. Зөвхөн нэг төрлийн дарааллаас утга хайхаас гадна боломжит хариуны мужийг аюулгүй багасгах, заагийг тодорхойлох, давталтын зөвийг батлах чадвар өгдөг. Энэ нь дасгал бүр амархан гэсэн үг биш.",
+              "type": "p"
+            },
+            {
+              "text": "Эхлээд доод заагийн кодыг харалгүй бичиж, хоосон дараалал ба давхардсан утгыг зөв боловсруулахыг эзэмш. Дараа нь CP Classes-ийг бие даан бодож, хоёр талын хөршөөс зөв утга сонгох шалтгаанаа тайлбарла. Энэ үндсэн чадварыг шалгахын тулд одоохондоо олимпиадын өргөтгөлийг дуусгах шаардлагагүй.",
+              "type": "p"
+            },
+            {
+              "text": "Нэгдсэн жагсаалт дахь од нь энэ хичээлд эхэлж бие даан бодох үндсэн дасгалыг тэмдэглэнэ. Нэг бодлогын нийт сан дахь ач холбогдол өндөр байлаа гээд энэ хичээлийг үзэхэд заавал бодох ёстой болдоггүй.",
+              "type": "note"
+            }
+          ]
+        },
+        {
+          "key": "mastery",
+          "title": "15. Дүгнэлт ба эзэмшлийн шалгалт",
+          "blocks": [
+            {
+              "text": "Хоёртын хайлтын гол нь дундах утгыг харах төдий биш. Эрэмбэ эсвэл нэг чиглэлтэй нөхцөлөөр хариу байхгүй талыг баталгаатай хасаж, үлдсэн мужийн утгыг зөв хадгалах явдал юм.",
+              "type": "p"
+            },
+            {
+              "type": "list",
+              "items": [
+                "Зүүнээс нэг нэгээр шалгах арга яагаад удаан болохыг тооцоолж чадна.",
+                "Хоёр хязгаар ямар мэдээлэл хадгалдгийг код харалгүй тайлбарлаж чадна.",
+                "Жижиг жишээгээр хоёр салааны шинэчлэлтийг гараар дагаж, төгсгөлд зөв зааг үлддэгийг баталж чадна.",
+                "Давхардсан утга, хоосон дараалал, олдохгүй тохиолдлыг багтаасан кодыг өөрөө бичиж чадна.",
+                "Үндсэн дасгалыг санамж эсвэл бэлэн код хуулалгүй бодож, шийдлийнхээ хугацаа ба санах ойг тайлбарлаж чадна."
+              ]
+            },
+            {
+              "text": "Уншсан тэмдэглэгээ нь эзэмшсэн гэсэн дүгнэлт биш. Ойлголтоо тайлбарлах, хэрэгжүүлэх, алдаагаа олох, бие даан бодох гэсэн тусдаа чадваруудаа доорх өөрийн үнэлгээгээр шалга.",
+              "type": "note"
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "url": "https://cses.fi/book/book.pdf",
+                  "label": "Нэмэлт унших: Competitive Programmer’s Handbook — хоёртын хайлтын тайлбар"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Binary search — finding a boundary in sorted data",
+          "summary": "Use sorted order to discard a whole impossible region. Define the two bounds precisely, prove that the first qualifying position is retained, and implement the search.",
+          "sections": [
+            {
+              "key": "need",
+              "title": "1. What question are we answering?",
+              "blocks": [
+                {
+                  "text": "A shop lists device capacities in nondecreasing order: $[1,3,3,8,12]$ GB. A customer needs at least $6$ GB. The smallest sufficient capacity is $8$ GB, but our program will return its position.",
+                  "type": "p"
+                },
+                {
+                  "text": "Numbering positions from zero, that position is $3$. Such a position number is an index. In general, given $n$ sorted values and a requirement $x$, find the first index $i$ with $a[i]\\ge x$. Return $n$ if none exists. That return value is a not-found marker, not an index that may be read.",
+                  "type": "p"
+                },
+                {
+                  "text": "Many requirements may refer to the same data. The aim is to use its order to answer each query with few comparisons instead of inspecting every value again.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "direct",
+              "title": "2. Why is the direct method too slow?",
+              "blocks": [
+                {
+                  "text": "Scan from left to right and return the first position with $a[i]\\ge x$. Return $n$ if the scan reaches the end. The method is correct, but may inspect all $n$ values.",
+                  "type": "p"
+                },
+                {
+                  "text": "One query costs $O(n)$, and $q$ queries cost $O(nq)$. With $n=q=200000$, that can mean about $4\\cdot10^{10}$ comparisons, motivating a better method.",
+                  "type": "p"
+                },
+                {
+                  "text": "For one query on unsorted data, a direct scan can be appropriate. Sorting also has a cost; the existence of binary search does not mean every input should be sorted.",
+                  "type": "note"
+                }
+              ]
+            },
+            {
+              "key": "observation",
+              "title": "3. What can sorted order tell us?",
+              "blocks": [
+                {
+                  "text": "Inspect the middle value. If it is below $x$, every value before it is also too small, so they need not be checked individually. If it is at least $x$, the first answer is there or further left.",
+                  "type": "p"
+                },
+                {
+                  "text": "For $x=6$ in $[1,3,3,8,12]$, the answers to “is this value sufficient?” are no, no, no, yes, yes. A single boundary separates insufficient and sufficient positions. We seek that boundary.",
+                  "type": "p"
+                },
+                {
+                  "text": "Binary search inspects a middle position and removes a region proved unable to contain the required answer. This first-at-least variant is lower bound: the first position with value at least $x$.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "method",
+              "title": "4. How should we maintain the search interval?",
+              "blocks": [
+                {
+                  "text": "Let $[l,r)$ contain the undecided positions: include $l$, exclude $r$. Initially $l=0$, $r=n$, so every array position is undecided.",
+                  "type": "p"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "Every position before $l$ has value below $x$.",
+                    "Every valid position at or after $r$ has value at least $x$. When $r=n$, this region is empty.",
+                    "The answer boundary lies between $l$ and $r$, inclusive."
+                  ]
+                },
+                {
+                  "text": "These statements are the loop invariant. While $l<r$, choose $m=l+\\lfloor(r-l)/2\\rfloor$. If $a[m]<x$, set $l=m+1$; otherwise set $r=m$. In the latter case, preserve $m$ because it may itself be the answer.",
+                  "type": "p"
+                },
+                {
+                  "type": "ordered",
+                  "items": [
+                    "Initialize $l=0$, $r=n$.",
+                    "While $l<r$, inspect the middle and shrink the interval using one of the two rules.",
+                    "When $l=r$, no positions remain undecided. Return the boundary $l$."
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "walkthrough",
+              "title": "5. Trace one complete search",
+              "blocks": [
+                {
+                  "text": "Use $a=[1,3,3,8,12]$, $x=6$. Each row computes the middle from its initial bounds, then updates those bounds.",
+                  "type": "p"
+                },
+                {
+                  "rows": [
+                    [
+                      "1",
+                      "$[0,5)$",
+                      "$m=2$, $a[2]=3<6$",
+                      "$[3,5)$"
+                    ],
+                    [
+                      "2",
+                      "$[3,5)$",
+                      "$m=4$, $a[4]=12\\ge6$",
+                      "$[3,4)$"
+                    ],
+                    [
+                      "3",
+                      "$[3,4)$",
+                      "$m=3$, $a[3]=8\\ge6$",
+                      "$[3,3)$"
+                    ]
+                  ],
+                  "type": "table",
+                  "headers": [
+                    "Step",
+                    "Initial interval",
+                    "Middle comparison",
+                    "New interval"
+                  ]
+                },
+                {
+                  "text": "Now $l=r=3$. Return index $3$, whose value is $8$. The value $6$ is absent, but a lower bound still exists.",
+                  "type": "p"
+                },
+                {
+                  "text": "Try $x=3$. Stopping at the first equal value encountered could return the second $3$. Retaining the middle as the right boundary lets the search continue toward the first one.",
+                  "type": "note"
+                }
+              ]
+            },
+            {
+              "key": "proof",
+              "title": "6. Why can the correct answer not be lost?",
+              "blocks": [
+                {
+                  "text": "Prove initialization, preservation and termination, also maintaining $0\\le l\\le r\\le n$.",
+                  "type": "p"
+                },
+                {
+                  "type": "ordered",
+                  "items": [
+                    "Initially $l=0$, $r=n$. Neither discarded region contains any positions, so both invariant statements hold vacuously.",
+                    "If $a[m]<x$, sorted order implies that every $i\\le m$ is too small. Setting $l=m+1$ loses no answer and leaves the right-hand statement unchanged.",
+                    "If $a[m]\\ge x$, the middle and every valid position to its right qualify. Set $r=m$, retaining that position as a possible boundary while searching for an earlier one.",
+                    "Both branches strictly decrease $r-l$, so the loop terminates. At $l=r$, every earlier position is too small and, if $l<n$, that position qualifies. Thus $l$ is exactly the first qualifying index. If $l=n$, none qualifies."
+                  ]
+                },
+                {
+                  "text": "Duplicates do not invalidate the argument. What matters is the single transition from insufficient to sufficient positions.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "cost",
+              "title": "7. Time, memory and practical limits",
+              "blocks": [
+                {
+                  "text": "Each step approximately halves the undecided interval. Reducing $n,n/2,n/4,\\ldots$ to zero takes $O(\\log(n+1))$ steps. This notation also handles $n=0$, when the loop does not run.",
+                  "type": "p"
+                },
+                {
+                  "text": "Around $200000$ positions require only about $18$ comparisons per query. This estimates work, not a wall-clock guarantee. It assumes constant-time access and comparison at the middle.",
+                  "type": "p"
+                },
+                {
+                  "text": "A search keeps only $l,r,m$, so its auxiliary space is $O(1)$. The complete program stores an $O(n)$ input array. Across $q$ queries, search work is $O(q\\log(n+1))$, with input/output work accounted for separately.",
+                  "type": "p"
+                },
+                {
+                  "text": "If sorting is required, add $O(n\\log n)$. In another application, multiply the number of search steps by the cost of evaluating its middle predicate.",
+                  "type": "note"
+                }
+              ]
+            },
+            {
+              "key": "implementation",
+              "title": "8. Build the C++17 implementation",
+              "blocks": [
+                {
+                  "text": "Read $n$, a nondecreasing array of $n$ integers, then $q$ and its query values. Assume $0\\le n,q\\le200000$ and signed 64-bit array/query values. Print a zero-based index per query, or $n$ when none qualifies.",
+                  "type": "p"
+                },
+                {
+                  "text": "8.1. Data and initial bounds",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "values",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " is the sorted array and ",
+                      "marks": []
+                    },
+                    {
+                      "text": "target",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " is the required minimum value. ",
+                      "marks": []
+                    },
+                    {
+                      "text": "low",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " and ",
+                      "marks": []
+                    },
+                    {
+                      "text": "high",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " correspond to $l,r$, initialized to $0,n$.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_at_least(const vector<long long>& values, long long target) {\n    int n = values.size();\n    int low = 0;\n    int high = n;\n\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "8.2. Discard a proved-impossible side",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Compute ",
+                      "marks": []
+                    },
+                    {
+                      "text": "middle",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ". A sufficient value becomes the right boundary; an insufficient value moves the left boundary past it. Computing the midpoint from the difference avoids overflowing the sum of the bounds.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "    while (low < high) {\n        int middle = low + (high - low) / 2;\n\n        if (values[middle] >= target) {\n            high = middle;\n        } else {\n            low = middle + 1;\n        }\n    }\n\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "8.3. Return the boundary",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "When the bounds meet, return ",
+                      "marks": []
+                    },
+                    {
+                      "text": "low",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ". The function does not read the array at the returned position, which may be the sentinel $n$.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "    return low;\n}\n\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "8.4. Read input and answer queries",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "main",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " reads the array once, calls ",
+                      "marks": []
+                    },
+                    {
+                      "text": "first_at_least",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " for each query, and prints the returned index. It relies on sorted input rather than sorting again.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<long long> values(n);\n    for (int i = 0; i < n; i++) {\n        cin >> values[i];\n    }\n    int queryCount;\n    cin >> queryCount;\n    for (int i = 0; i < queryCount; i++) {\n        long long target;\n        cin >> target;\n        cout << first_at_least(values, target) << '\\n';\n    }\n\n    return 0;\n}\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "Complete program",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Concatenating the four fragments in order gives this exact complete program. Some fragments begin inside a function and are not standalone programs. Copy the complete version into one file and compile as C++17.",
+                  "type": "note"
+                },
+                {
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_at_least(const vector<long long>& values, long long target) {\n    int n = values.size();\n    int low = 0;\n    int high = n;\n\n    while (low < high) {\n        int middle = low + (high - low) / 2;\n\n        if (values[middle] >= target) {\n            high = middle;\n        } else {\n            low = middle + 1;\n        }\n    }\n\n    return low;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<long long> values(n);\n    for (int i = 0; i < n; i++) {\n        cin >> values[i];\n    }\n    int queryCount;\n    cin >> queryCount;\n    for (int i = 0; i < queryCount; i++) {\n        long long target;\n        cin >> target;\n        cout << first_at_least(values, target) << '\\n';\n    }\n\n    return 0;\n}\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "Sample input and output",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "5\n1 3 3 8 12\n5\n3 6 0 13 12",
+                  "type": "code",
+                  "language": "Input"
+                },
+                {
+                  "text": "1\n3\n0\n5\n4",
+                  "type": "code",
+                  "language": "Output"
+                },
+                {
+                  "text": "The first $3$ is at index $1$; requirement $6$ returns index $3$ with value $8$; $0$ returns index $0$; $13$ has no sufficient value and returns $5=n$; $12$ returns index $4$.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "boundaries",
+              "title": "9. Boundary cases",
+              "blocks": [
+                {
+                  "rows": [
+                    [
+                      "Empty array, $n=0$",
+                      "$0=n$",
+                      "The bounds meet immediately."
+                    ],
+                    [
+                      "All values below $x$",
+                      "$n$",
+                      "None qualifies."
+                    ],
+                    [
+                      "Every value qualifies",
+                      "$0$",
+                      "The first position suffices."
+                    ],
+                    [
+                      "Many duplicates",
+                      "First qualifying position",
+                      "Continue left after finding an equal value."
+                    ],
+                    [
+                      "One element",
+                      "$0$ or $1$",
+                      "Depends on whether it qualifies."
+                    ]
+                  ],
+                  "type": "table",
+                  "headers": [
+                    "Case",
+                    "Return value",
+                    "Reason"
+                  ]
+                },
+                {
+                  "text": "Do not dereference a result until checking that it is below $n$. Exact-value lookup also needs to test whether that value equals $x$.",
+                  "type": "p"
+                },
+                {
+                  "text": "Compare your code with a direct linear scan on small generated sorted arrays. Deliberately include duplicates, empty inputs and extreme integer values.",
+                  "type": "note"
+                }
+              ]
+            },
+            {
+              "key": "mistakes",
+              "title": "10. Find common errors with counterexamples",
+              "blocks": [
+                {
+                  "type": "ordered",
+                  "items": [
+                    "Stopping at equality: the first middle in $[1,3,3,8,12]$ may be index $2$, but the first $3$ is at index $1$.",
+                    "Mixing in $r=m-1$: for $[2,5]$, $x=4$, the first update sets $r=0$ and loses the correct boundary $1$.",
+                    "Using $l=m$ after failure: for $[1]$, $x=2$, the middle remains $0$ forever. Move to $m+1$.",
+                    "Searching unsorted $[9,1,2]$ for $x=2$: the answers yes, no, yes have no single boundary, so eliminating a side is unjustified.",
+                    "Confusing index and value: the sample query $x=6$ asks for index $3$, not value $8$."
+                  ]
+                },
+                {
+                  "text": "Diagnose which invariant or progress condition fails instead of patching the final output. A one-element example can expose a nonterminating loop.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "connections",
+              "title": "11. Prerequisites, variants and next lessons",
+              "blocks": [
+                {
+                  "text": "Know sorted order, array positions, conditionals and loops first. Sorting changes positions, so preserve original indices alongside values when an application needs them.",
+                  "type": "p"
+                },
+                {
+                  "text": "Lower bound finds the first $a[i]\\ge x$; upper bound finds the first $a[i]>x$. For $x=3$ in the example, their indices are $1$ and $3$, giving frequency $3-1=2$.",
+                  "type": "p"
+                },
+                {
+                  "type": "tutorial",
+                  "label": "Lower bound and range counts",
+                  "tutorialId": "lower-bound"
+                },
+                {
+                  "type": "tutorial",
+                  "label": "Upper bound and frequency",
+                  "tutorialId": "upper-bound"
+                },
+                {
+                  "type": "tutorial",
+                  "label": "Binary search over an answer domain",
+                  "tutorialId": "binary-search-answer"
+                },
+                {
+                  "text": "These are applications of the same boundary idea. Answer-space search additionally requires constructing and separately proving the feasibility checker.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "recognition",
+              "title": "12. When should you choose this method?",
+              "blocks": [
+                {
+                  "type": "list",
+                  "items": [
+                    "Look for repeated queries on sorted data.",
+                    "Even without an array, ask whether feasibility begins at a single threshold.",
+                    "Do not search an alternating true/false predicate without first proving a valid monotone model.",
+                    "If data changes, a static sorted array may need to be replaced by an appropriate data structure."
+                  ]
+                },
+                {
+                  "text": "Before coding, state the answer domain, what the middle comparison proves impossible, and the not-found convention.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "practice",
+              "title": "13. Six-stage practice",
+              "blocks": [
+                {
+                  "text": "Use the following sequence selectively. Complete later prerequisites before their optional extensions. The consolidated practice cards below the lesson open each problem.",
+                  "type": "p"
+                },
+                {
+                  "text": "Warm-up · CP Classes",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Find a nearest class rating by comparing the lower-bound position and its predecessor. Guard the start and end cases; queries are independent and do not remove classes. This is the core independent exercise.",
+                  "type": "p"
+                },
+                {
+                  "text": "Standard · Concert Tickets",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Find the greatest remaining ticket price within a budget. A sold ticket disappears, so the data changes. Connect upper bound and its predecessor to a structure that preserves duplicates. Study ordered sets/maps and upper bound first.",
+                  "type": "p"
+                },
+                {
+                  "text": "Observation · Yokan Party",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Search a possible minimum piece length instead of an array position. Derive the feasibility test and explain how feasibility changes as length grows. Account for exactly $K$ permitted cuts and the final piece. Study answer-space search and greedy reasoning first.",
+                  "type": "p"
+                },
+                {
+                  "text": "Application · Factory Machines",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Use the fact that achievable production cannot decrease with time. Explain safe search bounds and how to stop accumulating once the target is reached. This optional task transfers the same search idea to a numerical answer.",
+                  "type": "p"
+                },
+                {
+                  "text": "Challenge · Array Division",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Fix an upper bound for a piece sum and determine the minimum number of pieces needed. Explain why positivity matters, and why a split into at most $k$ pieces can be refined to exactly $k$. Study greedy feasibility and answer-space search first.",
+                  "type": "p"
+                },
+                {
+                  "text": "Olympiad extension · IOI 2009 — Mecho",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "First compute hazard arrival times with BFS, then test whether a chosen waiting time still permits reaching home. Read the exact within-minute movement order in the source. This graph-based extension is not required for basic mastery.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "importance",
+              "title": "14. What should you master first?",
+              "blocks": [
+                {
+                  "text": "This topic has high educational importance because it teaches safe candidate elimination, precise boundaries and loop proofs beyond one lookup task. That does not make every application easy.",
+                  "type": "p"
+                },
+                {
+                  "text": "First implement lower bound without copying and handle empty arrays and duplicates. Then solve CP Classes independently and explain the two neighboring candidates. The olympiad extension is not a prerequisite for basic mastery.",
+                  "type": "p"
+                },
+                {
+                  "text": "Stars in the consolidated list mark core practice for this lesson. A problem can have high bank-wide educational priority while remaining optional for this introduction.",
+                  "type": "note"
+                }
+              ]
+            },
+            {
+              "key": "mastery",
+              "title": "15. Synthesis and mastery self-check",
+              "blocks": [
+                {
+                  "text": "Binary search is not merely inspecting a middle value. Its power comes from proving that one entire side cannot improve the answer while maintaining the exact meaning of the remaining bounds.",
+                  "type": "p"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "Derive the cost of repeated linear scans.",
+                    "Explain both bounds without looking at the implementation.",
+                    "Trace both branches and prove that the correct boundary remains at termination.",
+                    "Write code handling duplicates, empty arrays and absent answers.",
+                    "Solve the core practice without copying, then explain its time and space costs."
+                  ]
+                },
+                {
+                  "text": "Marking the lesson read does not establish mastery. Assess explanation, implementation, error diagnosis and independent problem solving separately.",
+                  "type": "note"
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "url": "https://cses.fi/book/book.pdf",
+                      "label": "Further reading: Competitive Programmer’s Handbook — binary search"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "prerequisites": "Know nondecreasing order, zero-based array positions, conditionals and loops. Study sorting first."
+        }
+      },
+      "automaticDemo": false,
+      "prerequisites": "Үл буурах дараалал, тэгээс дугаарласан байрлал, нөхцөлт салаалал ба давталтыг мэддэг байна. Эхлээд эрэмбэлэх хичээлээ үзээрэй.",
+      "priorityLevel": "high",
+      "priorityReason": "Эрэмбэлэгдсэн өгөгдөлд зааг олох, боломжит хариуны мужийг алдалгүй багасгах, давталтын зөвийг батлах суурь чадварыг өгдөг тул сургалтын ач холбогдол өндөр. Энэ үнэлгээ нь бодлогын хүндрэлээс тусдаа.",
+      "prerequisiteIds": [
+        "sorting"
+      ],
+      "learningRelations": {
+        "next": "lower-bound",
+        "practice": [
+          {
+            "key": "751",
+            "stage": "Warm-up",
+            "reason": "Доод заагийн хоёр талын хөршөөс хамгийн ойр утгыг олох, эхлэл ба төгсгөлийг аюулгүй шалгах үндсэн дадлага.",
+            "priority": true
+          },
+          {
+            "key": "315",
+            "stage": "Standard",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "749",
+            "stage": "Observation",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "95",
+            "stage": "Application",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "337",
+            "stage": "Challenge",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "132",
+            "stage": "Olympiad extension",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "313",
+            "stage": "Warm-up",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "26",
+            "stage": "Standard",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "322",
+            "stage": "Observation",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "96",
+            "stage": "Challenge",
+            "reason": "",
+            "priority": false
+          }
+        ],
+        "variants": [
+          {
+            "tutorialId": "lower-bound",
+            "description": "Шаардлагыг хангах эхний байрлал болон утгын муж дахь тоог олох.",
+            "descriptionEn": "First qualifying boundary and value-range counts."
+          },
+          {
+            "tutorialId": "upper-bound",
+            "description": "Өгсөн утгаас их эхний байрлалаар давтамж тоолох.",
+            "descriptionEn": "The boundary after equal values and frequency."
+          },
+          {
+            "tutorialId": "binary-search-answer",
+            "description": "Боломжит хариуны мужид нэг чиглэлтэй шалгах нөхцөл байгуулах.",
+            "descriptionEn": "Monotonic feasibility over an answer domain."
+          }
+        ]
+      }
+    },
+    "revision": 8,
+    "published": true,
+    "body_md5": "0d29718aa76a2f9d283d7ce33be9f07d"
+  },
+  "lower-bound": {
+    "id": "lower-bound",
+    "body": {
+      "id": "lower-bound",
+      "level": "Анхан шат",
+      "order": 44,
+      "title": "Lower bound — бага биш эхний утгын зааг",
+      "aliases": "lower-bound Lower bound ба утгын муж Lower bound and value ranges",
+      "related": [
+        "upper-bound",
+        "binary-search-answer"
+      ],
+      "summary": "Үл буурах дарааллаас бага биш эхний утгын заагийг олж, олдоогүй болон давхардсан утгыг зөв боловсруулъя.",
+      "category": "Array ба search",
+      "levelKey": "beginner",
+      "sections": [
+        {
+          "key": "need",
+          "title": "1. Утгыг олох уу, эхний байрлалыг олох уу?",
+          "blocks": [
+            {
+              "text": "Тавиурт $[1,2,2,2,5]$ гэсэн үл буурах дарааллаар үнэ бичжээ. Хоёроос багагүй үнэтэй эхний барааны индекс хэд вэ? Индексийг тэгээс тоолбол хариу нэг. Зүгээр хоёр гэсэн утга олсон нь хангалтгүй: хоёр, гурав гэсэн индексүүд ч ижил утгатай.",
+              "type": "p"
+            },
+            {
+              "text": "Гурваас багагүй эхнийх нь тав гэсэн үнэ, индекс дөрөв. Зургаагаас багагүй бараа алга. Энэ сүүлийн тохиолдлыг тусгай хоосон утгаар бус, дарааллын урттай тэнцүү индексээр тэмдэглэвэл бүх хайлт нэг дүрэмтэй болно.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "direct",
+          "title": "2. Зүүнээс нэг нэгээр шалгах арга",
+          "blocks": [
+            {
+              "text": "Элементийн тоог $n$, асуултын тоог $q$, хайх утгыг $x$ гэе. Зүүнээс шалгаж $a_i\\ge x$ болсон эхний индексийг буцааж болно. Бүгд бага бол $n$ буцаана. Нэг асуултад $O(n)$, нийт $O(nq)$ хугацаа авна.",
+              "type": "p"
+            },
+            {
+              "text": "$n=q=200000$ үед дөчин тэрбум хүртэл шалгалт шаардана. Гэтэл дараалал үл буурах тул нэг элементийн үр дүнгээс бүхэл хэсгийг хасаж болно. Энэ нь дурын эрэмбэлэгдээгүй массивт боломжгүй.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "state",
+          "title": "3. Хариу нь элемент бус заагийн индекс",
+          "blocks": [
+            {
+              "text": "Lower bound гэдэг нь $a_i\\ge x$ нөхцөлийг хангах эхний индекс. Ийм элемент байхгүй бол $n$. Боломжит хариуны муж $[0,n]$; харин бодит элементийн индекс $[0,n)$ байна. $n$ индексийн утгыг уншиж болохгүй.",
+              "type": "p"
+            },
+            {
+              "text": "Үл буурах дараалалд $a_i<x$ элементүүд эхэндээ, үлдсэн $a_i\\ge x$ элементүүд араас нь залгана. Хоёр хэсгийн заагийг л олно. Тэнцүү утга байж болно; эрс өсөх дараалал шаардахгүй.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "method",
+          "title": "4. Хагаст нээлттэй үлдсэн хэсгийг багасгах",
+          "blocks": [
+            {
+              "text": "Эхлээд $L=0,R=n$. Элементийн хараахан шийдээгүй хэсэг $[L,R)$; хайж буй зааг $[L,R]$ дотор байна. $L<R$ үед дундах $M=L+\\lfloor(R-L)/2\\rfloor$-ийг авна.",
+              "type": "p"
+            },
+            {
+              "text": "Хэрэв $a_M<x$ бол түүнээс өмнөх бүх утга ч бага тул $L=M+1$. Үгүй бол дундах элемент нөхцөлийг хангана, гэхдээ түүнээс зүүнд эхнийх байж болох учир $R=M$. Тэнцүү үед зүүн хэсгийг хадгалдгийг анзаар. $L=R$ болоход тэр индексийг буцаана.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "trace",
+          "title": "5. Гурван давхардсан хоёрын эхнийх",
+          "blocks": [
+            {
+              "text": "Жишээний дараалалд $x=2$. Эхний дундах индекс хоёр, утга хоёр тул баруун заагийг хоёр болгоно. Дараа нь нэг гэсэн индексийн хоёр мөн хангана. Эцэст тэг гэсэн индексийн нэг бага тул зүүн зааг нэг болно.",
+              "type": "p"
+            },
+            {
+              "text": "Ингээд хоёр зааг нэг дээр уулзав. Харин $x=6$ үед харьцуулалт бүр зүүн заагийг урагшлуулж хариу тав буюу $n$ болно. Төгсгөлийн зааг зөв хариу болохоос санах ойн бодит элемент биш.",
+              "type": "p"
+            },
+            {
+              "rows": [
+                [
+                  "0",
+                  "5",
+                  "2",
+                  "2",
+                  "$R=2$"
+                ],
+                [
+                  "0",
+                  "2",
+                  "1",
+                  "2",
+                  "$R=1$"
+                ],
+                [
+                  "0",
+                  "1",
+                  "0",
+                  "1",
+                  "$L=1$"
+                ]
+              ],
+              "type": "table",
+              "headers": [
+                "Зүүн",
+                "Баруун",
+                "Дундах",
+                "Утга",
+                "Шинэ зааг"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "proof",
+          "title": "6. Хассан хэсэг яагаад буцаж хэрэггүй вэ?",
+          "blocks": [
+            {
+              "text": "Давталтын эхэнд $L$-ээс өмнөх бүх утга $x$-ээс бага, $R$-ээс эхэлсэн бүх бодит утга $x$-ээс багагүй байна гэсэн нөхцөлийг хадгална. Эхэнд хоёр хэсэг хоосон тул үнэн.",
+              "type": "p"
+            },
+            {
+              "text": "$a_M<x$ бол үл буурах чанараар түүний өмнөх утга ч бага: зүүн заагийг урагшлуулахад эхний нөхцөл хадгалагдана. Эсрэг тохиолдолд түүний дараах утга бүгд багагүй тул баруун заагийг татаж болно. Шинэ алхам бүр $R-L$-ийг эрс багасгана. Дуусахад $L=R$ тул өмнөх бүх утга бага, эндээс цааш бүгд багагүй: яг хүссэн эхний зааг.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "cost",
+          "title": "7. Эрэмбэлэх зардал хайлтаас тусдаа",
+          "blocks": [
+            {
+              "text": "Нэг алхамд үлдсэн урт ойролцоогоор тал болно: нэг хайлт $O(\\log(n+1))$ хугацаа, нэмэлт $O(1)$ санах ой. Кодын бүх асуулт $O(n+q\\log(n+1))$; массив хадгалахад $O(n)$ зай.",
+              "type": "p"
+            },
+            {
+              "text": "Оролт аль хэдийн үл буурах. Хэрэв эхлээд эрэмбэлэх хэрэгтэй бол $O(n\\log n)$ зардал нэмэгдэж, анхны индексүүд өөрчлөгдөнө. Массивт олсон байрлалд утга оруулах нь ерөнхийдөө $O(n)$: заагийг хурдан олсон нь шилжүүлэх зардлыг арилгадаггүй.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "implementation",
+          "title": "8. Зааг олох ба олдсон эсэхийг тусгаарлах",
+          "blocks": [
+            {
+              "text": "8.1. Оролт ба зааг",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Утгуудыг хуулбарлахгүй тогтмол лавлагаагаар авна. Зүүн зааг тэг, баруун зааг элементийн тоо. Хоёр зааг нь боломжит хариуг хүрээлэхээс биш хоёулаа массивын хүчинтэй индекс гэсэн үг биш.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_not_less(const vector<long long>& values, long long target) {\n    int left = 0;\n    int right = static_cast<int>(values.size());\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "8.2. Хэсгийг хуваах",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Дундах утга бага үед зүүн заагийг нэгээр давуулна, бусад үед барууныг дундах дээр авчирна. Тэнцүү үед зүүн хэсгийг үргэлжлүүлэн хайна.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "    while (left < right) {\n        int middle = left + (right - left) / 2;\n        if (values[middle] < target) {\n            left = middle + 1;\n        } else {\n            right = middle;\n        }\n    }\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "8.3. Зааг буцаах",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Заагууд уулзахад нэг индекс буцаана. Утга уншихгүй тул төгсгөлийн зааг болон хоосон массивт аюулгүй.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "    return left;\n}\n\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "8.4. Асуултууд ба гаралт",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхний мөрд элементийн тоо, асуултын тоо. Дараа нь үл буурах утгууд, асуултууд. Асуулт бүрд зааг ба яг утга байгаа эсэхийг тэг эсвэл нэгээр хэвлэнэ. Индекс хүрээнд байгааг түрүүлж шалгана.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int count, query_count;\n    cin >> count >> query_count;\n    vector<long long> values(count);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    for (int query = 0; query < query_count; ++query) {\n        long long target;\n        cin >> target;\n        int position = first_not_less(values, target);\n        bool found = position < count && values[position] == target;\n        cout << position << ' ' << found << '\\n';\n    }\n}\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "Бүтэн ажиллах C++17 программ",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_not_less(const vector<long long>& values, long long target) {\n    int left = 0;\n    int right = static_cast<int>(values.size());\n    while (left < right) {\n        int middle = left + (right - left) / 2;\n        if (values[middle] < target) {\n            left = middle + 1;\n        } else {\n            right = middle;\n        }\n    }\n    return left;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int count, query_count;\n    cin >> count >> query_count;\n    vector<long long> values(count);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    for (int query = 0; query < query_count; ++query) {\n        long long target;\n        cin >> target;\n        int position = first_not_less(values, target);\n        bool found = position < count && values[position] == target;\n        cout << position << ' ' << found << '\\n';\n    }\n}\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "5 6\n1 2 2 2 5\n2\n3\n0\n5\n6\n-1\n",
+              "type": "code",
+              "language": "Input"
+            },
+            {
+              "text": "1 1\n4 0\n0 0\n4 1\n5 0\n0 0\n",
+              "type": "code",
+              "language": "Output"
+            }
+          ]
+        },
+        {
+          "key": "errors",
+          "title": "9. Зааг олдлоо гээд утга олдсон гэсэн үг биш",
+          "blocks": [
+            {
+              "text": "Гурав хайхад зааг дөрөв, утга тав болно. Иймээс хайсан утга байгаа эсэхэд эхлээд индекс $n$-ээс бага, дараа нь тэр утга $x$-тэй тэнцүү эсэхийг шалгана. Кодын богино холболттой нөхцөл төгсгөлийн элементийг уншихаас хамгаална.",
+              "type": "p"
+            },
+            {
+              "text": "Тэнцүү үед шууд буцаавал эхний давхардлыг батлахгүй. Баруун заагийг дундахаас нэгээр багасгавал энэ хагаст нээлттэй хувилбарын зөв хариуг хасаж болзошгүй. Өөр төрлийн хайлтын заагийн дүрмийг хооронд нь бүү холь.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "limits",
+          "title": "10. Хоосон массив ба хэт том тоо",
+          "blocks": [
+            {
+              "text": "$n=0$ үед хоёр зааг анхнаасаа тэг, массив уншихгүй, хариу тэг. Нэг элементтэй, бүгд тэнцүү, бүхнээс бага болон бүхнээс эрс их хайх утгыг тусад нь турш.",
+              "type": "p"
+            },
+            {
+              "text": "Кодод $0\\le n,q\\le200000$, утгууд болон асуулт $-10^{18}$-аас $10^{18}$ хооронд. Утгын нэмэх, хасах үйлдэл хийхгүй тул харьцуулалт аюулгүй. Индексийн дунджийг хоёр заагийн нийлбэрээр бус ялгавраар тооцсон.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "library",
+          "title": "11. Стандарт сангийн ижил үйлдэл",
+          "blocks": [
+            {
+              "text": "C++-ийн стандарт функц итератор буюу элементийн байрлал заагч буцаана. Төгсгөлийн зааг нь хүчинтэй хариу боловч утгыг нь уншихгүй. Хоёр итераторын ялгавар vector дээр тэгээс эхэлсэн индекс болно.",
+              "type": "p"
+            },
+            {
+              "text": "Ижил харьцуулалтаар эрэмбэлэгдсэн байх шаардлагатай. Vector дээр санамсаргүй байрлалд шууд хандах тул логарифм хугацаатай; холбоост жагсаалтын итераторуудыг урагшлуулах нийт ажил шугаман байж болно.",
+              "type": "p"
+            },
+            {
+              "text": "auto it = lower_bound(values.begin(), values.end(), target);\nint position = static_cast<int>(it - values.begin());\nbool found = it != values.end() && *it == target;",
+              "type": "code",
+              "language": "C++"
+            }
+          ]
+        },
+        {
+          "key": "variants",
+          "title": "12. Хоёр заагаар утгын мужийг тоолох",
+          "blocks": [
+            {
+              "text": "Lower bound-ийн индекс өөрөө $x$-ээс эрс бага элементийн тоо. Upper bound нь $x$-ээс эрс их эхний байрлал тул хоёр заагийн ялгавар яг $x$-тэй тэнцүү элементийн тоо.",
+              "type": "p"
+            },
+            {
+              "text": "$[u,v]$ утгын хаалттай мужид хэд байгааг дээд заагаас доод заагийг хасаж олно. $u\\le v$ байх нөхцөлтэй. Байрлалын муж ба утгын мужийг ялга: олсон индексүүдийн хоорондох хэсэг нь хагаст нээлттэй.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "practice",
+          "title": "13. Шууд заагаас өөр нөхцөлүүд рүү",
+          "blocks": [
+            {
+              "text": "Apartments",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Хүлцлийн завсарт тохирох хослол; хоёр зааг мэдэх нь дангаараа хамгийн олон хослолыг шийдэхгүй.",
+              "type": "p"
+            },
+            {
+              "text": "Pair of Topics",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Хоёр дарааллын ялгаварт шилжүүлээд хосын эрс их нөхцөлийг заагаар тоол. Өөртэй нь болон давхар тоолохоос хамгаал.",
+              "type": "p"
+            },
+            {
+              "text": "Towers",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Тэнцүү орой дээр тавьж болохгүйг ажиглаад upper bound хэрэгтэйг тайлбарла.",
+              "type": "p"
+            },
+            {
+              "text": "Increasing Subsequence",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Төгсгөлийн хамгийн бага утгууд дээр lower bound ашиглахад эрс өсөх нөхцөл хэрхэн хадгалагдахыг судал.",
+              "type": "p"
+            },
+            {
+              "text": "Xenia and Colorful Gems",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Хэд хэдэн өнгийн эрэмбэлэгдсэн дарааллаас ойролцоо нэр дэвшигч сонгоно; сонголтын тусдаа баталгаа шаардлагатай.",
+              "type": "p"
+            },
+            {
+              "text": "Factory Machines",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Энд массивын утга бус боломжтой эсэх хариуны мужийг хуваана. Нөхцөлийн монотон чанарыг шинээр батал.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "priority",
+          "title": "14. Заагийн гэрээг олон бодлогод хэрэглэх",
+          "blocks": [
+            {
+              "text": "Өндөр ач холбогдолтой. Давхардал, гишүүнчлэл, утгын тоололд байнга хэрэг болно. Pair of Topics бол нөхцөлийг нэг дарааллын заагт хувиргах цөм дасгал; бусад дасгал нэмэлт санаа шаардах тул тэр санааг ялгаж давт.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "mastery",
+          "title": "15. Өөрийн тайлбараар батлаад шалгах",
+          "blocks": [
+            {
+              "text": "Яагаад хариу $n$ байж болдог, тэнцүү үед яагаад баруун зааг хөдөлдөг, ямар нөхцөлд массив уншиж болохыг код харалгүй тайлбарла. Дараа нь жижиг бүх үл буурах массивт зүүнээс шалгах аргын хариутай тулга.",
+              "type": "p"
+            },
+            {
+              "text": "Хоёрын давхардсан жишээнд гурван алхмыг гараар бич. Хайлтын үр дүн дөрөв гарсан нь “гурав олдсон” гэсэн үг биш гэдгийг нотлох жишээ өг. Сүүлд сангийн хувилбарт шилжсэн ч эдгээр гэрээг хадгал.",
+              "type": "p"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Lower bound — the first value not less than a target",
+          "summary": "Find the first value not less than a target in a non-decreasing sequence, including duplicates and missing values.",
+          "sections": [
+            {
+              "key": "need",
+              "title": "1. Find a value or its first position?",
+              "blocks": [
+                {
+                  "text": "Prices are $[1,2,2,2,5]$ in non-decreasing order. The first price at least two has zero-based index one. Finding an arbitrary two is insufficient: indices two and three also contain it.",
+                  "type": "p"
+                },
+                {
+                  "text": "For target three, the answer is index four, containing five. For six, no element qualifies; use the sequence length as the past-end boundary.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "direct",
+              "title": "2. Scan from the left",
+              "blocks": [
+                {
+                  "text": "Let $n$ be the number of elements, $q$ the queries and $x$ a target. A left-to-right scan returns the first $a_i\\ge x$, or $n$. It costs $O(nq)$ overall.",
+                  "type": "p"
+                },
+                {
+                  "text": "At $n=q=200000$, this can require forty billion checks. Non-decreasing order lets one comparison eliminate a whole region; an arbitrary unsorted array does not.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "state",
+              "title": "3. The answer is a boundary index",
+              "blocks": [
+                {
+                  "text": "Lower bound is the first index satisfying $a_i\\ge x$, or $n$ if none. Answer indices lie in $[0,n]$, but valid elements lie in $[0,n)$; never read element $n$.",
+                  "type": "p"
+                },
+                {
+                  "text": "Values below the target form a prefix, followed by values at least the target. We locate their boundary. Equal values are allowed; strict increase is unnecessary.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "method",
+              "title": "4. Shrink a half-open unknown region",
+              "blocks": [
+                {
+                  "text": "Start with $L=0,R=n$. Unknown elements are $[L,R)$, while the answer boundary lies in $[L,R]$. While $L<R$, choose $M=L+\\lfloor(R-L)/2\\rfloor$.",
+                  "type": "p"
+                },
+                {
+                  "text": "If $a_M<x$, all positions up to it are too small, so set $L=M+1$. Otherwise keep this candidate and the region left of it by setting $R=M$. Equality therefore moves the right boundary left. Return the shared index when $L=R$.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "trace",
+              "title": "5. Find the first of three equal twos",
+              "blocks": [
+                {
+                  "text": "With $x=2$, midpoint index two qualifies, then index one qualifies. Finally index zero is too small, bringing the left boundary to one.",
+                  "type": "p"
+                },
+                {
+                  "text": "For $x=6$, comparisons move the left boundary forward until the answer is five, equal to $n$. That valid answer boundary is not an element to dereference.",
+                  "type": "p"
+                },
+                {
+                  "rows": [
+                    [
+                      "0",
+                      "5",
+                      "2",
+                      "2",
+                      "$R=2$"
+                    ],
+                    [
+                      "0",
+                      "2",
+                      "1",
+                      "2",
+                      "$R=1$"
+                    ],
+                    [
+                      "0",
+                      "1",
+                      "0",
+                      "1",
+                      "$L=1$"
+                    ]
+                  ],
+                  "type": "table",
+                  "headers": [
+                    "Left",
+                    "Right",
+                    "Middle",
+                    "Value",
+                    "Update"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "proof",
+              "title": "6. Why can discarded regions stay discarded?",
+              "blocks": [
+                {
+                  "text": "Maintain that all positions before $L$ are below $x$, and all actual positions from $R$ onward are at least $x$. Initially both known regions are empty.",
+                  "type": "p"
+                },
+                {
+                  "text": "Non-decreasing order preserves the first claim when $a_M<x$ and we advance left; it preserves the second when we move right to a qualifying midpoint. Each step strictly decreases $R-L$. At termination the regions meet, proving that the returned boundary is the first qualifying index.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "cost",
+              "title": "7. Sorting cost is separate from searching",
+              "blocks": [
+                {
+                  "text": "Each step roughly halves the remaining length: $O(\\log(n+1))$ time and constant auxiliary memory per search. The full program takes $O(n+q\\log(n+1))$ time and linear array memory.",
+                  "type": "p"
+                },
+                {
+                  "text": "Input is already non-decreasing. Sorting first adds $O(n\\log n)$ and changes original indices. Inserting at the returned vector position can still take linear time.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "implementation",
+              "title": "8. Separate the boundary from exact membership",
+              "blocks": [
+                {
+                  "text": "8.1. Input and boundaries",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Take values by constant reference without copying. Initialize zero and the length; boundaries surround the answer, not necessarily two valid elements.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_not_less(const vector<long long>& values, long long target) {\n    int left = 0;\n    int right = static_cast<int>(values.size());\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "8.2. Partition the region",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Compare the midpoint and shrink exactly one side; equality keeps searching to the left.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "    while (left < right) {\n        int middle = left + (right - left) / 2;\n        if (values[middle] < target) {\n            left = middle + 1;\n        } else {\n            right = middle;\n        }\n    }\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "8.3. Return the boundary",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Return the meeting index without dereferencing it, including past-end and empty-array results.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "    return left;\n}\n\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "8.4. Queries and output",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Read length and query count, then non-decreasing values and targets. Print the boundary and a zero/one exact-membership flag, checking the index before accessing it.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int count, query_count;\n    cin >> count >> query_count;\n    vector<long long> values(count);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    for (int query = 0; query < query_count; ++query) {\n        long long target;\n        cin >> target;\n        int position = first_not_less(values, target);\n        bool found = position < count && values[position] == target;\n        cout << position << ' ' << found << '\\n';\n    }\n}\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "Complete compilable C++17 program",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_not_less(const vector<long long>& values, long long target) {\n    int left = 0;\n    int right = static_cast<int>(values.size());\n    while (left < right) {\n        int middle = left + (right - left) / 2;\n        if (values[middle] < target) {\n            left = middle + 1;\n        } else {\n            right = middle;\n        }\n    }\n    return left;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int count, query_count;\n    cin >> count >> query_count;\n    vector<long long> values(count);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    for (int query = 0; query < query_count; ++query) {\n        long long target;\n        cin >> target;\n        int position = first_not_less(values, target);\n        bool found = position < count && values[position] == target;\n        cout << position << ' ' << found << '\\n';\n    }\n}\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "5 6\n1 2 2 2 5\n2\n3\n0\n5\n6\n-1\n",
+                  "type": "code",
+                  "language": "Input"
+                },
+                {
+                  "text": "1 1\n4 0\n0 0\n4 1\n5 0\n0 0\n",
+                  "type": "code",
+                  "language": "Output"
+                }
+              ]
+            },
+            {
+              "key": "errors",
+              "title": "9. A boundary is not an exact match",
+              "blocks": [
+                {
+                  "text": "For target three, boundary four contains five. Exact membership needs both an in-range index and equality. Short-circuit evaluation prevents reading past the end.",
+                  "type": "p"
+                },
+                {
+                  "text": "Returning immediately on equality does not guarantee the first duplicate. Subtracting one from the midpoint when updating right mixes a different interval convention and can discard the answer.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "limits",
+              "title": "10. Empty arrays and numerical limits",
+              "blocks": [
+                {
+                  "text": "For an empty array both boundaries start at zero, so no element is read. Test singletons, all-equal values and targets outside the value range.",
+                  "type": "p"
+                },
+                {
+                  "text": "The program accepts $0\\le n,q\\le200000$ and values/targets within $\\pm10^{18}$. It performs no target arithmetic. The midpoint uses a difference rather than adding the boundaries.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "library",
+              "title": "11. The standard-library operation",
+              "blocks": [
+                {
+                  "text": "The standard function returns an iterator. The end iterator is a valid boundary result but must not be dereferenced. On a vector, subtracting the beginning produces a zero-based index.",
+                  "type": "p"
+                },
+                {
+                  "text": "The range must be ordered consistently with the comparison. Random-access vector iterators give logarithmic search time; non-random-access iterators can require linear total increments.",
+                  "type": "p"
+                },
+                {
+                  "text": "auto it = lower_bound(values.begin(), values.end(), target);\nint position = static_cast<int>(it - values.begin());\nbool found = it != values.end() && *it == target;",
+                  "type": "code",
+                  "language": "C++"
+                }
+              ]
+            },
+            {
+              "key": "variants",
+              "title": "12. Count a value interval with two boundaries",
+              "blocks": [
+                {
+                  "text": "The lower-bound index counts values strictly below $x$. Upper bound is the first value strictly above $x$, so their difference counts exact equals.",
+                  "type": "p"
+                },
+                {
+                  "text": "For $u\\le v$, count values in the closed value interval $[u,v]$ by subtracting lower bound of the left endpoint from upper bound of the right endpoint. The resulting index interval is half-open.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "practice",
+              "title": "13. From direct boundaries to different conditions",
+              "blocks": [
+                {
+                  "text": "Apartments",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Tolerance intervals plus matching choices; boundaries alone do not solve the full matching objective.",
+                  "type": "p"
+                },
+                {
+                  "text": "Pair of Topics",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Transform to differences and count strictly positive pairs through a boundary, excluding self-pairs and double counting.",
+                  "type": "p"
+                },
+                {
+                  "text": "Towers",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Recognize why equality requires upper rather than lower bound.",
+                  "type": "p"
+                },
+                {
+                  "text": "Increasing Subsequence",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Study the minimum-tail invariant for a strictly increasing subsequence.",
+                  "type": "p"
+                },
+                {
+                  "text": "Xenia and Colorful Gems",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Select neighboring candidates in several sorted color arrays; justify the additional candidate reduction.",
+                  "type": "p"
+                },
+                {
+                  "text": "Factory Machines",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Search an answer domain rather than array positions; prove the new feasibility predicate monotone.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "priority",
+              "title": "14. Reuse a precise boundary contract",
+              "blocks": [
+                {
+                  "text": "High educational priority: duplicates, membership and value counts recur widely. Pair of Topics is core practice in transforming a condition into a boundary; other linked tasks need additional ideas that should be practiced explicitly.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "mastery",
+              "title": "15. Explain and test it yourself",
+              "blocks": [
+                {
+                  "text": "Explain why $n$ is a possible answer, why equality moves right leftward and when indexing is safe. Compare against a linear scan on all small non-decreasing arrays.",
+                  "type": "p"
+                },
+                {
+                  "text": "Trace the three steps for repeated twos and give a case where a returned index does not mean the target exists. Keep the same contract when using the library.",
+                  "type": "p"
+                }
+              ]
+            }
+          ],
+          "prerequisites": "Non-decreasing sequences, zero-based indexing, half-open intervals and binary search."
+        }
+      },
+      "automaticDemo": false,
+      "prerequisites": "Үл буурах дараалал, тэгээс эхэлсэн индекс, хагаст нээлттэй завсар, хоёртын хайлт.",
+      "priorityLevel": "high",
+      "priorityReason": "Эрэмбэлэгдсэн өгөгдлийн зааг, давхардал, утгын муж, гишүүнчлэлийг нэг баталгаатай хайлтаар шийдэх өргөн хэрэглээтэй суурь учраас High. Хүндрэлийн үнэлгээ биш.",
+      "prerequisiteIds": [
+        "binary-search"
+      ],
+      "learningRelations": {
+        "next": "upper-bound",
+        "practice": [
+          {
+            "key": "313",
+            "stage": "Warm-up",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "26",
+            "stage": "Standard",
+            "reason": "Хосын эрс нөхцөлийг эрэмбэлэгдсэн дарааллын заагт хувиргаж тоолох цөм дасгал.",
+            "priority": true
+          },
+          {
+            "key": "322",
+            "stage": "Observation",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "109",
+            "stage": "Application",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "29",
+            "stage": "Challenge",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "95",
+            "stage": "Olympiad extension",
+            "reason": "",
+            "priority": false
+          }
+        ],
+        "variants": [
+          {
+            "tutorialId": "upper-bound",
+            "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+            "descriptionEn": "Compare its assumptions and use cases."
+          },
+          {
+            "tutorialId": "binary-search-answer",
+            "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+            "descriptionEn": "Compare its assumptions and use cases."
+          }
+        ]
+      }
+    },
+    "revision": 2,
+    "published": true,
+    "body_md5": "a393bee36c2ab3a58d8c7203c005f380"
+  },
+  "upper-bound": {
+    "id": "upper-bound",
+    "body": {
+      "id": "upper-bound",
+      "level": "Анхан шат",
+      "order": 45,
+      "title": "Upper bound — эрс их эхний утгын зааг",
+      "aliases": "upper-bound Upper bound ба давтамж Upper bound and frequency",
+      "related": [
+        "lower-bound",
+        "binary-search-answer"
+      ],
+      "summary": "Тэнцүү утгуудыг зүүн талд үлдээж, эрс их эхний байрлал болон түүнээс өмнөх элементийг аюулгүй олъё.",
+      "category": "Array ба search",
+      "levelKey": "beginner",
+      "sections": [
+        {
+          "key": "need",
+          "title": "1. Хоёртой тэнцүү бүх утгыг алгасах",
+          "blocks": [
+            {
+              "text": "Үл буурах $[1,2,2,2,5]$ дараалалд хоёроос эрс их эхний утга тав, индекс дөрөв. Lower bound нэгийг буцаадаг байсан. Ганцхан тэнцүүгийн ялгаа гурван элементийн зөрүү үүсгэлээ.",
+              "type": "p"
+            },
+            {
+              "text": "Мөн хоёроос ихгүй сүүлийн утгын индекс гурав байна. Эрс их эхний заагийг олсны дараа нэгийг хасвал тэр өмнөх индекс гарна. Гэхдээ тийм өмнөх элемент үргэлж байхгүй.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "direct",
+          "title": "2. Давхардал дээгүүр нэг нэгээр алхахгүй",
+          "blocks": [
+            {
+              "text": "Элементийн тоо $n$, асуултын тоо $q$, хайх утга $x$. Эхнээс $a_i>x$ болохыг хүлээн нэг нэгээр шалгавал $O(nq)$. Lower bound-оос эхлээд тэнцүү бүх элементийг алхаж өнгөрөх нь ч бүгд тэнцүү үед асуулт бүрд шугаман болно.",
+              "type": "p"
+            },
+            {
+              "text": "Харин $a_i\\le x$ гэсэн хэсэг эхэндээ бүхэлдээ байрладаг. Түүний дараах эхний индексийг шууд хоёртын хайлтаар олъё.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "state",
+          "title": "3. Тэнцүү утга зүүн хэсэгт харьяалагдана",
+          "blocks": [
+            {
+              "text": "Upper bound нь $a_i>x$ болох эхний индекс; байхгүй бол $n$. Хариу $[0,n]$ дотор, бодит элементийн индекс $[0,n)$ дотор. Тэнцүү утгыг хариу гэж авахгүй.",
+              "type": "p"
+            },
+            {
+              "text": "Заагийн өмнөх бүх утга $x$-ээс ихгүй, заагаас эхэлсэн бүх бодит утга эрс их. Иймд заагийн индекс өөрөө ихгүй элементийн тоо. Хариу тэг бол ихгүй элемент огт байхгүй.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "method",
+          "title": "4. Бага эсвэл тэнцүү бол баруун тийш",
+          "blocks": [
+            {
+              "text": "Эхлээд $L=0,R=n$. $L<R$ үед дундах $M=L+\\lfloor(R-L)/2\\rfloor$. Хэрэв $a_M\\le x$ бол тэнцүү байсан ч эхний эрс их утга энд байхгүй тул $L=M+1$. Үгүй бол $R=M$.",
+              "type": "p"
+            },
+            {
+              "text": "Lower bound-оос ялгаатай ганц харьцуулалт нь тэнцүүг зүүн талд үлдээх эсэх. Гэсэн ч хайж буй нөхцөлийг үгээр эхлээд тодорхойл, дараа нь харьцуулалтаа бич. Цээжилсэн тэмдгийг учиргүй сольж болохгүй.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "trace",
+          "title": "5. Тэнцүү оройг давж дөрөвт хүрэх",
+          "blocks": [
+            {
+              "text": "Хайх утга хоёр. Дундах индекс хоёрын утга хоёр тул зүүн зааг гурав. Дараа нь индекс дөрвийн тав эрс их тул баруун зааг дөрөв. Индекс гурвын хоёр ихгүй тул зүүн зааг дөрөв болж дуусна.",
+              "type": "p"
+            },
+            {
+              "text": "Хариу дөрөв, өмнөх индекс гурав. Харин тэг хайхад зааг тэг: түүнээс өмнө элементгүй тул хасах үйлдлийг индекс дээр шууд хийхгүй. Код энэ тохиолдолд хасах нэг хэвлэнэ.",
+              "type": "p"
+            },
+            {
+              "rows": [
+                [
+                  "0",
+                  "5",
+                  "2",
+                  "2",
+                  "$L=3$"
+                ],
+                [
+                  "3",
+                  "5",
+                  "4",
+                  "5",
+                  "$R=4$"
+                ],
+                [
+                  "3",
+                  "4",
+                  "3",
+                  "2",
+                  "$L=4$"
+                ]
+              ],
+              "type": "table",
+              "headers": [
+                "Зүүн",
+                "Баруун",
+                "Дундах",
+                "Утга",
+                "Шинэ зааг"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "proof",
+          "title": "6. Хоёр батлагдсан хэсгийн дундах зааг",
+          "blocks": [
+            {
+              "text": "Давталтын өмнө $L$-ээс өмнөх бүх элемент $x$-ээс ихгүй, $R$-ээс цааших бүх бодит элемент эрс их гэсэн баталгаа байна. Эхэнд хоёр хэсэг хоосон.",
+              "type": "p"
+            },
+            {
+              "text": "Дундах утга ихгүй бол түүнээс өмнөх утгууд ч ихгүй тул зүүн талыг хасаж болно. Эрс их бол түүнээс хойших утгууд ч эрс их тул барууныг татна. $L<R$ үед $M<R\\le n$ учир уншиж буй индекс хүчинтэй. Алхам бүр уртыг багасгаж эцэст заагууд уулзахад хүссэн хуваалт бүрэн тогтоно.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "cost",
+          "title": "7. Асуулт бүрийн логарифм хайлт",
+          "blocks": [
+            {
+              "text": "Үлдсэн урт ойролцоогоор таллагдах учир нэг хайлт $O(\\log(n+1))$, нэмэлт санах ой $O(1)$. Массив унших, хадгалахтай нийлээд $O(n+q\\log(n+1))$ хугацаа, $O(n)$ зай.",
+              "type": "p"
+            },
+            {
+              "text": "Эрэмбэлэхийг оролтод хийсэн гэж үзсэн. Дараа нь өөрчилсөн утга үл буурах нөхцөлийг эвдвэл хуучин хайлтыг шууд ашиглаж болохгүй. Зааг олсон нь vector-оос дундах элемент устгах ажлыг логарифм болгохгүй.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "implementation",
+          "title": "8. Эхний эрс их ба сүүлийн ихгүй индекс",
+          "blocks": [
+            {
+              "text": "8.1. Оролт ба зааг",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Утгуудыг хуулбарлахгүй тогтмол лавлагаагаар авна. Зүүн зааг тэг, баруун зааг элементийн тоо. Хоёр зааг нь боломжит хариуг хүрээлэхээс биш хоёулаа массивын хүчинтэй индекс гэсэн үг биш.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_greater(const vector<long long>& values, long long target) {\n    int left = 0;\n    int right = static_cast<int>(values.size());\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "8.2. Хэсгийг хуваах",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Дундах утга бага эсвэл тэнцүү бол зүүн заагийг нэгээр давуулна. Зөвхөн эрс их үед барууныг дундах дээр авчирна.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "    while (left < right) {\n        int middle = left + (right - left) / 2;\n        if (values[middle] <= target) {\n            left = middle + 1;\n        } else {\n            right = middle;\n        }\n    }\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "8.3. Зааг буцаах",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Заагууд уулзахад нэг индекс буцаана. Утга уншихгүй тул төгсгөлийн зааг болон хоосон массивт аюулгүй.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "    return left;\n}\n\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "8.4. Асуултууд ба гаралт",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхний мөрд элементийн тоо, асуултын тоо. Дараа нь үл буурах утгууд, асуултууд. Асуулт бүрд зааг ба сүүлийн ихгүй элементийн индексийг хэвлэнэ. Тийм элементгүй бол хасах нэг.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int count, query_count;\n    cin >> count >> query_count;\n    vector<long long> values(count);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    for (int query = 0; query < query_count; ++query) {\n        long long target;\n        cin >> target;\n        int position = first_greater(values, target);\n        int predecessor = position == 0 ? -1 : position - 1;\n        cout << position << ' ' << predecessor << '\\n';\n    }\n}\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "Бүтэн ажиллах C++17 программ",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_greater(const vector<long long>& values, long long target) {\n    int left = 0;\n    int right = static_cast<int>(values.size());\n    while (left < right) {\n        int middle = left + (right - left) / 2;\n        if (values[middle] <= target) {\n            left = middle + 1;\n        } else {\n            right = middle;\n        }\n    }\n    return left;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int count, query_count;\n    cin >> count >> query_count;\n    vector<long long> values(count);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    for (int query = 0; query < query_count; ++query) {\n        long long target;\n        cin >> target;\n        int position = first_greater(values, target);\n        int predecessor = position == 0 ? -1 : position - 1;\n        cout << position << ' ' << predecessor << '\\n';\n    }\n}\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "5 6\n1 2 2 2 5\n2\n3\n0\n5\n6\n-1\n",
+              "type": "code",
+              "language": "Input"
+            },
+            {
+              "text": "4 3\n4 3\n0 -1\n5 4\n5 4\n0 -1\n",
+              "type": "code",
+              "language": "Output"
+            }
+          ]
+        },
+        {
+          "key": "errors",
+          "title": "9. Өмнөх элементийн хоёр талын хамгаалалт",
+          "blocks": [
+            {
+              "text": "Зааг тэг үед нэгийг хасаад массив уншвал буруу. Зааг $n$ үед харин өмнөх элемент байж болно: массив хоосон биш бол сүүлийн индекс $n-1$ зөв. Төгсгөлийн заагийг хариу биш гэж шууд хаяж болохгүй.",
+              "type": "p"
+            },
+            {
+              "text": "Бүгд хоёр гэсэн массивт хоёр хайвал upper bound $n$, lower bound тэг. Энэ хоёрын ялгаа бүх элементийн тоо. Тэнцүүг буруу талд явуулсан кодыг энэ жижиг жишээ шууд барина.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "limits",
+          "title": "10. Хайх утгад нэг нэмэхгүй",
+          "blocks": [
+            {
+              "text": "Бүхэл тоон дээр upper bound-ийг хайх утгад нэг нэмсэн lower bound болгон бичмээр санагдана. Гэвч хамгийн их бүхэл тоонд нэг нэмэхэд хальж болно, бодит тоонд “дараагийн нэгж” гэсэн ижил утга байхгүй. Эрс их гэсэн харьцуулалтаа шууд хэрэглэ.",
+              "type": "p"
+            },
+            {
+              "text": "Кодын гэрээ $0\\le n,q\\le200000$, утга ба асуулт $\\pm10^{18}$ дотор. Хоосон массивт хариу тэг, өмнөх индекс хасах нэг. Тоон утгад арифметик хийхгүй, дундах индексийг ялгавраар олно.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "library",
+          "title": "11. Сангийн итератор ба устгалтай олонлог",
+          "blocks": [
+            {
+              "text": "Стандарт сангийн upper bound итератор буцаана. Vector дээр эхлэлийн итераторыг хасаж индекс гаргана. Өмнөх элементийг авах бол эхлэлтэй тэнцүү бишийг заавал шалга; төгсгөлтэй тэнцүү байсан ч хоосон биш бол өмнөх нь хүчинтэй.",
+              "type": "p"
+            },
+            {
+              "text": "Concert Tickets шиг нэг сонгосноо устгадаг бодлогод multiset-ийн өөрийн upper_bound үйлдлийг ашиглавал модоор логарифм хайна. Ерөнхий алгоритмыг модны хоёр чиглэлт итератор дээр ажиллуулахад итератор урагшлуулах ажил шугаман байж болно.",
+              "type": "p"
+            },
+            {
+              "text": "auto it = upper_bound(values.begin(), values.end(), target);\nint position = static_cast<int>(it - values.begin());\nif (it != values.begin()) {\n    long long last_not_greater = *prev(it);\n    // Use last_not_greater here.\n}",
+              "type": "code",
+              "language": "C++"
+            }
+          ]
+        },
+        {
+          "key": "variants",
+          "title": "12. Тоолол, овоолго, дэд дарааллын ялгаа",
+          "blocks": [
+            {
+              "text": "Upper bound-ийн индекс нь ихгүй элементийн тоо. Lower bound-той хасвал тэнцүү элементийн тоо. Towers-д шинэ шоо зөвхөн өөрөөс нь эрс их оройн дээр суудаг тул овоолгын оройн эхний эрс ихийг сонгоно.",
+              "type": "p"
+            },
+            {
+              "text": "Increasing Subsequence-д эрс өсөх урт олоход тэнцүү төгсгөлийг сунгаж болохгүй тул lower bound хэрэглэнэ. Харин үл буурах хувилбарт тэнцүүгээр сунгаж болно. Энэ нь зөвхөн функц солих арга бус, хадгалж буй төгсгөлүүдийн утга ба баталгааны өөрчлөлт.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "practice",
+          "title": "13. Тэнцүүг аль талд үлдээхээ сонгох",
+          "blocks": [
+            {
+              "text": "Towers",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Овоолгын оройн эхний эрс их утгыг солино; тэнцүү оройг сонгож болохгүй. Оройн дараалал яагаад үл буурахыг батал.",
+              "type": "p"
+            },
+            {
+              "text": "Concert Tickets",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Төсвөөс ихгүй сүүлийн үнэ: upper bound-ийн өмнөхийг зөвхөн эхлэл биш үед ав. Устгалд multiset хэрэгтэй.",
+              "type": "p"
+            },
+            {
+              "text": "Pair of Topics",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Эрс эерэг хосыг тоолохдоо тэнцүүг хасах нөхцөлөө upper bound-аар илэрхийл.",
+              "type": "p"
+            },
+            {
+              "text": "Increasing Subsequence",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Эрс өсөх ба үл буурах уртыг ялгаж, lower ба upper bound-ийн сонголтын баталгааг гарга.",
+              "type": "p"
+            },
+            {
+              "text": "Salary Queries",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Өөрчлөгдөх цалингийн мужийн тоолол: хоёр зааг дээр нэмээд давтамж хадгалах бүтэц шаардлагатай.",
+              "type": "p"
+            },
+            {
+              "text": "Xenia and Colorful Gems",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Олон эрэмбэлэгдсэн өнгийн дарааллаас өмнөх ба дараах нэр дэвшигчийг аюулгүй авч сонголтоо батал.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "priority",
+          "title": "14. Эрс нөхцөлийг зөв хэрэгжүүлэх суурь",
+          "blocks": [
+            {
+              "text": "Өндөр ач холбогдолтой. Towers нь эрс их заагийг давтан ашиглах шууд цөм; эрс нөхцөлд тэнцүүг хасах чадвараа үүгээр давт. Concert Tickets-д устгал, Salary Queries-д динамик тооллын нэмэлт бүтэц шаардлагатай тул тэдгээрийг дан заагийн хайлтаар шийднэ гэж бүү үз.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "mastery",
+          "title": "15. Хоёр заагийн ялгааг өөрөө сэргээх",
+          "blocks": [
+            {
+              "text": "Код харалгүй бага биш эхний ба эрс их эхний заагийн өмнөх хэсэг ямар утгуудтайг бич. Тэг, $n$, бүхэлдээ тэнцүү болон хоосон тохиолдол бүрд өмнөх элементийн утга уншиж болох эсэхийг тайлбарла.",
+              "type": "p"
+            },
+            {
+              "text": "Жижиг үл буурах массив бүрд зүүнээс шалгасан лавлахтай тулга. Дараа нь Towers-ийн тэнцүү оройн жишээ, тасалбарын төсөв бүх үнээс бага жишээгээр сангийн итераторын хамгаалалтаа шалга.",
+              "type": "p"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Upper bound — the first value strictly greater than a target",
+          "summary": "Keep equal values on the left and safely find the first strictly greater value and its predecessor.",
+          "sections": [
+            {
+              "key": "need",
+              "title": "1. Skip every value equal to two",
+              "blocks": [
+                {
+                  "text": "In $[1,2,2,2,5]$, the first value strictly above two is five, at index four. Lower bound returned one: equality makes a three-element difference.",
+                  "type": "p"
+                },
+                {
+                  "text": "The last value at most two is at index three, immediately before that boundary. A predecessor does not always exist.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "direct",
+              "title": "2. Do not walk across duplicates",
+              "blocks": [
+                {
+                  "text": "Let $n$ be the length, $q$ the queries and $x$ the target. Scanning for $a_i>x$ costs $O(nq)$. Walking from lower bound across equal elements is also linear per query when all values are equal.",
+                  "type": "p"
+                },
+                {
+                  "text": "Instead, values at most the target form one prefix. Binary search directly for the position after that prefix.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "state",
+              "title": "3. Equality belongs to the left region",
+              "blocks": [
+                {
+                  "text": "Upper bound is the first index with $a_i>x$, or $n$. Answers lie in $[0,n]$, while elements lie in $[0,n)$. Equal values do not qualify.",
+                  "type": "p"
+                },
+                {
+                  "text": "All earlier values are at most the target and all values from the boundary onward are strictly greater. The boundary index is therefore the count of values at most the target; zero means there are none.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "method",
+              "title": "4. Move right on less than or equal",
+              "blocks": [
+                {
+                  "text": "Start at $L=0,R=n$ and choose the midpoint while $L<R$. If $a_M\\le x$, even equality is not a qualifying value, so set $L=M+1$; otherwise set $R=M$.",
+                  "type": "p"
+                },
+                {
+                  "text": "Compared with lower bound, equality now belongs to the discarded left prefix. State the desired condition in words before selecting the comparison.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "trace",
+              "title": "5. Pass equal values and reach four",
+              "blocks": [
+                {
+                  "text": "For target two, midpoint two is equal, so left becomes three. Midpoint four contains five, moving right to four. Midpoint three is equal, bringing left to four.",
+                  "type": "p"
+                },
+                {
+                  "text": "The result is four and its predecessor is three. For target zero the result is zero, with no predecessor; the program explicitly outputs minus one rather than indexing before the beginning.",
+                  "type": "p"
+                },
+                {
+                  "rows": [
+                    [
+                      "0",
+                      "5",
+                      "2",
+                      "2",
+                      "$L=3$"
+                    ],
+                    [
+                      "3",
+                      "5",
+                      "4",
+                      "5",
+                      "$R=4$"
+                    ],
+                    [
+                      "3",
+                      "4",
+                      "3",
+                      "2",
+                      "$L=4$"
+                    ]
+                  ],
+                  "type": "table",
+                  "headers": [
+                    "Left",
+                    "Right",
+                    "Middle",
+                    "Value",
+                    "Update"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "proof",
+              "title": "6. A boundary between two proven regions",
+              "blocks": [
+                {
+                  "text": "Maintain that every position before $L$ is at most $x$, and every actual position from $R$ onward is strictly greater. Both regions start empty.",
+                  "type": "p"
+                },
+                {
+                  "text": "Monotonicity justifies discarding the prefix on a non-greater midpoint or the suffix on a greater midpoint. While $L<R$, $M<R\\le n$ guarantees safe indexing. Strictly shrinking the unknown length ensures termination at exactly the required partition.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "cost",
+              "title": "7. Logarithmic work per query",
+              "blocks": [
+                {
+                  "text": "A search takes $O(\\log(n+1))$ time and constant auxiliary memory. Including array input, the program takes $O(n+q\\log(n+1))$ time and linear memory.",
+                  "type": "p"
+                },
+                {
+                  "text": "Input is already ordered. Updates can invalidate that ordering, and locating an element does not make vector deletion logarithmic.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "implementation",
+              "title": "8. First greater and last non-greater indices",
+              "blocks": [
+                {
+                  "text": "8.1. Input and boundaries",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Take values by constant reference without copying. Initialize zero and the length; boundaries surround the answer, not necessarily two valid elements.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_greater(const vector<long long>& values, long long target) {\n    int left = 0;\n    int right = static_cast<int>(values.size());\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "8.2. Partition the region",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Compare the midpoint and shrink exactly one side; equality belongs to the discarded left prefix.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "    while (left < right) {\n        int middle = left + (right - left) / 2;\n        if (values[middle] <= target) {\n            left = middle + 1;\n        } else {\n            right = middle;\n        }\n    }\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "8.3. Return the boundary",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Return the meeting index without dereferencing it, including past-end and empty-array results.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "    return left;\n}\n\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "8.4. Queries and output",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Read length and query count, then non-decreasing values and targets. Print the boundary and the last non-greater index, or minus one when absent.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int count, query_count;\n    cin >> count >> query_count;\n    vector<long long> values(count);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    for (int query = 0; query < query_count; ++query) {\n        long long target;\n        cin >> target;\n        int position = first_greater(values, target);\n        int predecessor = position == 0 ? -1 : position - 1;\n        cout << position << ' ' << predecessor << '\\n';\n    }\n}\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "Complete compilable C++17 program",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint first_greater(const vector<long long>& values, long long target) {\n    int left = 0;\n    int right = static_cast<int>(values.size());\n    while (left < right) {\n        int middle = left + (right - left) / 2;\n        if (values[middle] <= target) {\n            left = middle + 1;\n        } else {\n            right = middle;\n        }\n    }\n    return left;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int count, query_count;\n    cin >> count >> query_count;\n    vector<long long> values(count);\n    for (long long& value : values) {\n        cin >> value;\n    }\n    for (int query = 0; query < query_count; ++query) {\n        long long target;\n        cin >> target;\n        int position = first_greater(values, target);\n        int predecessor = position == 0 ? -1 : position - 1;\n        cout << position << ' ' << predecessor << '\\n';\n    }\n}\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "5 6\n1 2 2 2 5\n2\n3\n0\n5\n6\n-1\n",
+                  "type": "code",
+                  "language": "Input"
+                },
+                {
+                  "text": "4 3\n4 3\n0 -1\n5 4\n5 4\n0 -1\n",
+                  "type": "code",
+                  "language": "Output"
+                }
+              ]
+            },
+            {
+              "key": "errors",
+              "title": "9. Guard predecessor and past-end operations",
+              "blocks": [
+                {
+                  "text": "When the boundary is zero, no predecessor may be read. At boundary $n$, a predecessor does exist if the array is nonempty: its last index. Do not reject the past-end boundary as an invalid answer.",
+                  "type": "p"
+                },
+                {
+                  "text": "In an all-two array, searching for two gives upper bound $n$ and lower bound zero. Their difference is the full length, exposing an incorrect equality rule.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "limits",
+              "title": "10. Do not add one to the target",
+              "blocks": [
+                {
+                  "text": "Replacing upper bound by lower bound of target plus one can overflow at the maximum integer and has no equivalent unit-step meaning for real-valued domains. Compare strictly greater directly.",
+                  "type": "p"
+                },
+                {
+                  "text": "The program supports $0\\le n,q\\le200000$ and values/queries within $\\pm10^{18}$. Empty input returns boundary zero and predecessor minus one. No arithmetic is performed on values.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "library",
+              "title": "11. Library iterators and deletion",
+              "blocks": [
+                {
+                  "text": "The library returns an iterator; subtract the vector beginning for an index. Before taking a predecessor, check it is not begin. An end result still has a predecessor in a nonempty range.",
+                  "type": "p"
+                },
+                {
+                  "text": "For deletions as in Concert Tickets, use the multiset member upper_bound for logarithmic tree lookup. The generic algorithm on bidirectional tree iterators can require linear iterator movement.",
+                  "type": "p"
+                },
+                {
+                  "text": "auto it = upper_bound(values.begin(), values.end(), target);\nint position = static_cast<int>(it - values.begin());\nif (it != values.begin()) {\n    long long last_not_greater = *prev(it);\n    // Use last_not_greater here.\n}",
+                  "type": "code",
+                  "language": "C++"
+                }
+              ]
+            },
+            {
+              "key": "variants",
+              "title": "12. Counts, piles and subsequences",
+              "blocks": [
+                {
+                  "text": "The upper-bound index counts non-greater values; subtracting lower bound counts equals. Towers needs the first pile top strictly larger than a new cube.",
+                  "type": "p"
+                },
+                {
+                  "text": "Strictly increasing subsequences use lower bound so equals do not extend the length. Non-decreasing subsequences allow equality and change the boundary rule, together with the tail-state invariant.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "practice",
+              "title": "13. Decide where equality belongs",
+              "blocks": [
+                {
+                  "text": "Towers",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Replace the first strictly greater pile top, never an equal one, and justify the ordered-tail invariant.",
+                  "type": "p"
+                },
+                {
+                  "text": "Concert Tickets",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Take the predecessor of upper bound only when it is not begin; use a multiset for deletion.",
+                  "type": "p"
+                },
+                {
+                  "text": "Pair of Topics",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Use upper bound to exclude equality when counting strictly positive pairs.",
+                  "type": "p"
+                },
+                {
+                  "text": "Increasing Subsequence",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Justify the different boundary rules for strictly increasing and non-decreasing subsequences.",
+                  "type": "p"
+                },
+                {
+                  "text": "Salary Queries",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Dynamic salary range counts need a frequency structure as well as boundary searches.",
+                  "type": "p"
+                },
+                {
+                  "text": "Xenia and Colorful Gems",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Safely inspect predecessor/successor candidates in several sorted color arrays and justify selection.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "priority",
+              "title": "14. A foundation for strict conditions",
+              "blocks": [
+                {
+                  "text": "High educational priority. Towers directly repeats the strictly-greater boundary and is core practice in excluding equality. Concert Tickets needs deletion and Salary Queries needs dynamic counts; boundary search alone is not their complete solution.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "mastery",
+              "title": "15. Reconstruct both boundary rules",
+              "blocks": [
+                {
+                  "text": "Without looking at code, state the left-region condition for each boundary. Explain predecessor safety at zero, $n$, all-equal and empty inputs.",
+                  "type": "p"
+                },
+                {
+                  "text": "Compare against a linear scan on small non-decreasing arrays, then test equal pile tops and a ticket budget below every price to check iterator guards.",
+                  "type": "p"
+                }
+              ]
+            }
+          ],
+          "prerequisites": "Non-decreasing sequences, zero-based indexing, half-open intervals and binary search."
+        }
+      },
+      "automaticDemo": false,
+      "prerequisites": "Үл буурах дараалал, тэгээс эхэлсэн индекс, хагаст нээлттэй завсар, хоёртын хайлт.",
+      "priorityLevel": "high",
+      "priorityReason": "Эрс ба тэнцүүг зөв ялган давхардлын тоо, сүүлийн ихгүй утга, овоолгын сонголт зэрэг нийтлэг нөхцөлийг шийдэх суурь учраас High. Хүндрэлийн зэрэг биш.",
+      "prerequisiteIds": [
+        "binary-search"
+      ],
+      "learningRelations": {
+        "next": "two-pointers",
+        "practice": [
+          {
+            "key": "322",
+            "stage": "Warm-up",
+            "reason": "Эрс их эхний оройг сонгох зааг ба овоолгын зөв нөхцөлийг шууд хэрэгжүүлэх цөм дасгал.",
+            "priority": true
+          },
+          {
+            "key": "315",
+            "stage": "Standard",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "26",
+            "stage": "Observation",
+            "reason": "Хосын эрс нөхцөлийг эрэмбэлэгдсэн дарааллын заагт хувиргаж тоолох цөм дасгал.",
+            "priority": true
+          },
+          {
+            "key": "109",
+            "stage": "Application",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "404",
+            "stage": "Challenge",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "29",
+            "stage": "Olympiad extension",
+            "reason": "",
+            "priority": false
+          }
+        ],
+        "variants": [
+          {
+            "tutorialId": "lower-bound",
+            "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+            "descriptionEn": "Compare its assumptions and use cases."
+          },
+          {
+            "tutorialId": "binary-search-answer",
+            "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+            "descriptionEn": "Compare its assumptions and use cases."
+          }
+        ]
+      }
+    },
+    "revision": 2,
+    "published": true,
+    "body_md5": "1e0f88837cc494028657dc6e5262b8ff"
+  }
+}
