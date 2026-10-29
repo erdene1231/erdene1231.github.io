@@ -1,0 +1,41 @@
+{
+  "grid-max": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    vector<vector<ll>> a(n, vector<ll>(m));\n    for (auto &row : a) {\n        for (ll &x : row) cin >> x;\n    }\n    vector<string> g(n);\n    for (string &row : g) cin >> row;\n\n",
+    "    const ll NEG = -(1LL << 60);\n    vector<vector<ll>> dp(n, vector<ll>(m, NEG));\n    vector<vector<char>> par(n, vector<char>(m));\n    if (g[0][0] == '.') dp[0][0] = a[0][0];\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < m; j++) {\n            if (g[i][j] == '*' || (i == 0 && j == 0)) continue;\n            ll best = NEG;\n            if (i > 0 && dp[i - 1][j] != NEG) {\n                best = dp[i - 1][j];\n                par[i][j] = 'D';\n            }\n            if (j > 0 && dp[i][j - 1] > best) {\n                best = dp[i][j - 1];\n                par[i][j] = 'R';\n            }\n            if (best != NEG) dp[i][j] = best + a[i][j];\n        }\n    }\n\n",
+    "    if (dp[n - 1][m - 1] == NEG) {\n        cout << \"IMPOSSIBLE\\n\";\n        return 0;\n    }\n    string path;\n    int i = n - 1, j = m - 1;\n    while (i != 0 || j != 0) {\n        char c = par[i][j];\n        path += c;\n        if (c == 'D') i--;\n        else j--;\n    }\n    reverse(path.begin(), path.end());\n    cout << dp[n - 1][m - 1] << '\\n' << path << '\\n';\n}\n"
+  ],
+  "grid-count": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    vector<string> g(n);\n    for (string &row : g) cin >> row;\n    const ll MOD = 1000000007;\n    vector<ll> dp(m);\n    dp[0] = 1;\n\n",
+    "    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < m; j++) {\n            if (g[i][j] == '*') dp[j] = 0;\n            else if (j > 0) dp[j] = (dp[j] + dp[j - 1]) % MOD;\n        }\n    }\n    cout << dp[m - 1] << '\\n';\n}\n"
+  ],
+  "subset-table": [
+    "#include <bits/stdc++.h>\nusing namespace std;\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<int> w(n);\n    int W = 0;\n    for (int &x : w) {\n        cin >> x;\n        W += x;\n    }\n",
+    "    vector<vector<char>> dp(n + 1, vector<char>(W + 1));\n    dp[0][0] = true;\n    for (int k = 1; k <= n; k++) {\n        for (int x = 0; x <= W; x++) {\n            dp[k][x] = dp[k - 1][x];\n            if (x >= w[k - 1]) dp[k][x] |= dp[k - 1][x - w[k - 1]];\n        }\n    }\n",
+    "    for (int x = 0; x <= W; x++) cout << int(dp[n][x]) << (x == W ? '\\n' : ' ');\n}\n"
+  ],
+  "subset-compact": [
+    "#include <bits/stdc++.h>\nusing namespace std;\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<int> w(n);\n    int W = 0;\n    for (int &x : w) {\n        cin >> x;\n        W += x;\n    }\n",
+    "    vector<char> dp(W + 1);\n    dp[0] = true;\n    for (int v : w) {\n        for (int x = W; x >= v; x--) dp[x] |= dp[x - v];\n    }\n",
+    "    for (int x = 0; x <= W; x++) cout << int(dp[x]) << (x == W ? '\\n' : ' ');\n}\n"
+  ],
+  "value-table": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, W;\n    cin >> n >> W;\n    vector<int> w(n);\n    vector<ll> v(n);\n    for (int i = 0; i < n; i++) cin >> w[i] >> v[i];\n",
+    "    vector<vector<ll>> dp(n + 1, vector<ll>(W + 1));\n    for (int k = 1; k <= n; k++) {\n        for (int c = 0; c <= W; c++) {\n            dp[k][c] = dp[k - 1][c];\n            if (c >= w[k - 1]) {\n                dp[k][c] = max(dp[k][c], dp[k - 1][c - w[k - 1]] + v[k - 1]);\n            }\n        }\n    }\n",
+    "    vector<int> take;\n    int c = W;\n    for (int k = n; k >= 1; k--) {\n        if (dp[k][c] != dp[k - 1][c]) {\n            take.push_back(k);\n            c -= w[k - 1];\n        }\n    }\n    reverse(take.begin(), take.end());\n    cout << dp[n][W] << '\\n' << take.size() << '\\n';\n    for (int id : take) cout << id << ' ';\n    cout << '\\n';\n}\n"
+  ],
+  "value-compact": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, W;\n    cin >> n >> W;\n    vector<int> w(n);\n    vector<ll> v(n);\n    for (int i = 0; i < n; i++) cin >> w[i] >> v[i];\n",
+    "    vector<ll> dp(W + 1);\n    for (int k = 0; k < n; k++) {\n        for (int c = W; c >= w[k]; c--) {\n            dp[c] = max(dp[c], dp[c - w[k]] + v[k]);\n        }\n    }\n    cout << dp[W] << '\\n';\n}\n"
+  ],
+  "value-unbounded": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, W;\n    cin >> n >> W;\n    vector<int> w(n);\n    vector<ll> v(n);\n    for (int i = 0; i < n; i++) cin >> w[i] >> v[i];\n",
+    "    vector<ll> dp(W + 1);\n    for (int k = 0; k < n; k++) {\n        for (int c = w[k]; c <= W; c++) {\n            dp[c] = max(dp[c], dp[c - w[k]] + v[k]);\n        }\n    }\n    cout << dp[W] << '\\n';\n}\n"
+  ]
+}
