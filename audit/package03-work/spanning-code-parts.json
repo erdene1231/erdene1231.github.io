@@ -1,0 +1,21 @@
+{
+  "dsu": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "struct DSU {\n    vector<int> par, sz;\n    DSU(int n) {\n        par.resize(n + 1);\n        sz.assign(n + 1, 1);\n        iota(par.begin(), par.end(), 0);\n    }\n",
+    "    int find(int u) {\n        if (par[u] == u) return u;\n        return par[u] = find(par[u]);\n    }\n",
+    "    bool same(int a, int b) {\n        return find(a) == find(b);\n    }\n    bool unite(int a, int b) {\n        a = find(a);\n        b = find(b);\n        if (a == b) return false;\n        if (sz[a] < sz[b]) swap(a, b);\n        par[b] = a;\n        sz[a] += sz[b];\n        return true;\n    }\n};\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    DSU d(n);\n    while (q--) {\n        int t, a, b;\n        cin >> t >> a >> b;\n        if (t == 1) d.unite(a, b);\n        else cout << d.same(a, b) << '\\n';\n    }\n}\n"
+  ],
+  "kruskal": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "struct DSU {\n    vector<int> par, sz;\n    DSU(int n) {\n        par.resize(n + 1);\n        sz.assign(n + 1, 1);\n        iota(par.begin(), par.end(), 0);\n    }\n    int find(int u) {\n        if (par[u] == u) return u;\n        return par[u] = find(par[u]);\n    }\n    bool same(int a, int b) {\n        return find(a) == find(b);\n    }\n    bool unite(int a, int b) {\n        a = find(a);\n        b = find(b);\n        if (a == b) return false;\n        if (sz[a] < sz[b]) swap(a, b);\n        par[b] = a;\n        sz[a] += sz[b];\n        return true;\n    }\n};\n\n",
+    "struct Edge {\n    int a, b;\n    ll w;\n};\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    vector<Edge> edges(m);\n    for (auto &[a, b, w] : edges) cin >> a >> b >> w;\n    sort(edges.begin(), edges.end(), [](const Edge &a, const Edge &b) {\n        return a.w < b.w;\n    });\n    DSU d(n);\n    ll sum = 0;\n    vector<Edge> tree;\n    for (auto e : edges) {\n        if (!d.unite(e.a, e.b)) continue;\n        sum += e.w;\n        tree.push_back(e);\n    }\n    if ((int)tree.size() != n - 1) {\n        cout << \"IMPOSSIBLE\\n\";\n        return 0;\n    }\n    cout << sum << '\\n';\n    for (auto [a, b, w] : tree) cout << a << ' ' << b << ' ' << w << '\\n';\n}\n"
+  ],
+  "prim": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    vector<vector<pair<int, ll>>> adj(n + 1);\n    for (int i = 0; i < m; i++) {\n        int a, b;\n        ll w;\n        cin >> a >> b >> w;\n        adj[a].push_back({b, w});\n        adj[b].push_back({a, w});\n    }\n",
+    "    using State = tuple<ll, int, int>;\n    priority_queue<State, vector<State>, greater<State>> q;\n    vector<bool> used(n + 1);\n    vector<tuple<int, int, ll>> tree;\n    q.push({0, 1, 0});\n    ll sum = 0;\n    int cnt = 0;\n    while (!q.empty()) {\n        auto [w, u, p] = q.top();\n        q.pop();\n        if (used[u]) continue;\n        used[u] = true;\n        cnt++;\n        sum += w;\n        if (p != 0) tree.push_back({p, u, w});\n        for (auto [v, cost] : adj[u]) {\n            if (!used[v]) q.push({cost, v, u});\n        }\n    }\n",
+    "    if (cnt != n) {\n        cout << \"IMPOSSIBLE\\n\";\n        return 0;\n    }\n    cout << sum << '\\n';\n    for (auto [a, b, w] : tree) cout << a << ' ' << b << ' ' << w << '\\n';\n}\n"
+  ]
+}
