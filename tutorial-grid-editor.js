@@ -1,4 +1,4 @@
-import {gridDimensions,gridKey,gridLayout,regionCells,renderGridRows,prepareGridTable,validateGridPresentation,mergeGridCells,unmergeGridCells,colorGridCells} from './tutorial-grid.js?v=61';
+import {gridDimensions,gridKey,gridLayout,regionCells,renderGridRows,prepareGridTable,validateGridPresentation,mergeGridCells,unmergeGridCells,colorGridCells} from './tutorial-grid.js?v=62';
 
 const stateFor=new WeakMap();
 const make=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e;};
@@ -26,7 +26,7 @@ export function gridControls(root,b,change,{locked=()=>false,validate=()=>{}}={}
     const apply=btn('Өнгө өгөх',()=>run(()=>colorGridCells(b,selection(),state.color))),reset=btn('Өнгө арилгах',()=>run(()=>colorGridCells(b,selection(),undefined)));colors.append(apply,reset);
     const palette=make('div');palette.className='grid-palette';colors.append(palette);const swatches=[];
     for(const[name,color]of[['Хөх','#dbeafe'],['Ногоон','#dcfce7'],['Шар','#fef3c7'],['Ягаан','#fce7f3'],['Нил','#e0e7ff'],['Саарал','#e5e7eb']]){const e=btn(name,()=>{state.color=color;run(()=>colorGridCells(b,selection(),color));});e.setAttribute('aria-label',name+' өнгө өгөх');e.style.backgroundColor=color;e.style.color='#000000';palette.append(e);swatches.push(e);}
-    const wrap=make('div'),table=make('table'),tbody=make('tbody');wrap.className='grid-editor-scroll';table.className='grid-editor-preview';table.style.width=(cols*48)+'px';table.style.tableLayout='fixed';prepareGridTable(table,b);table.append(tbody);wrap.append(table);group.append(wrap,message);
+    const wrap=make('div'),table=make('table'),tbody=make('tbody');wrap.className='grid-editor-scroll';table.className='grid-editor-preview';table.style.width=(cols*48)+'px';table.style.tableLayout='fixed';prepareGridTable(table,b,{fixed:true});table.append(tbody);wrap.append(table);group.append(wrap,message);
     const buttons=renderGridRows(tbody,b,{editor:true,onCell:select});
     function disabled(e,value){e.disabled=locked()||value;e.dataset.boundaryDisabled=String(value);}
     function update(){
