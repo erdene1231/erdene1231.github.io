@@ -59,7 +59,7 @@ export function typeset(elements,build,valid=()=>true){
 async function copy(text,button,success){try{await navigator.clipboard.writeText(text);const previous=button.textContent;button.textContent=success;setTimeout(()=>button.textContent=previous,1800);}catch{$('tutorial-message').textContent='Хуулах боломжгүй байна / Copy unavailable.';}}
 export function setupTutorials(ctx){
  const requiresOnline=ctx.requiresOnline??!!ctx.client();
- const lessonSeed=fetch('./tutorials.js?v=55on?v=23').then(r=>{if(!r.ok)throw new Error('Tutorials ачаалсангүй.');return r.json();}).then(d=>d.tutorials),contentReady=Promise.all([loadLearningContent().catch(()=>({curriculum:{order:[]},editions:{editions:{}}})),lessonSeed]);let acceptTurn=0;
+ const lessonSeed=fetch('./tutorials.json?v=23').then(r=>{if(!r.ok)throw new Error('Tutorials ачаалсангүй.');return r.json();}).then(d=>d.tutorials),contentReady=Promise.all([loadLearningContent().catch(()=>({curriculum:{order:[]},editions:{editions:{}}})),lessonSeed]);let acceptTurn=0;
 
  let topics=[],current=null,renderTurn=0,resultTurn=0,loadTurn=0,lang='mn',readingMode='full',activePart=0,requestedPart,onlineReady=false,hasLive=false,editor,mediaAccountId=ctx.user()?.id||null;
  try{lang=localStorage.getItem('erdene:tutorial-language')==='en'?'en':'mn';}catch{}$('tutorial-language').value=lang;
