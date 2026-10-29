@@ -1,0 +1,17 @@
+{
+  "compression": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "vector<ll> compress(const vector<ll> &a) {\n    vector<ll> v = a;\n    sort(v.begin(), v.end());\n    v.erase(unique(v.begin(), v.end()), v.end());\n    return v;\n}\n\n",
+    "int rankOf(const vector<ll> &v, ll x) {\n    return lower_bound(v.begin(), v.end(), x) - v.begin();\n}\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    vector<ll> v = compress(a);\n",
+    "    cout << v.size() << '\\n';\n    for (int i = 0; i < n; i++) {\n        if (i) cout << ' ';\n        cout << rankOf(v, a[i]) + 1;\n    }\n    cout << '\\n';\n    return 0;\n}\n"
+  ],
+  "difference": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "struct Diff {\n    int n;\n    vector<ll> d;\n\n    Diff(int _n) {\n        n = _n;\n        d.resize(n + 1);\n    }\n\n",
+    "    void build(const vector<ll> &a) {\n        fill(d.begin(), d.end(), 0);\n        for (int i = 0; i < n; i++) {\n            d[i] += a[i];\n            d[i + 1] -= a[i];\n        }\n    }\n\n",
+    "    void add(int l, int r, ll x) {\n        d[l] += x;\n        d[r] -= x;\n    }\n\n",
+    "    vector<ll> values() const {\n        vector<ll> a(n);\n        ll s = 0;\n        for (int i = 0; i < n; i++) {\n            s += d[i];\n            a[i] = s;\n        }\n        return a;\n    }\n};\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    Diff diff(n);\n    diff.build(a);\n    while (q--) {\n        int l, r;\n        ll x;\n        cin >> l >> r >> x;\n        diff.add(l - 1, r, x);\n    }\n    a = diff.values();\n    for (int i = 0; i < n; i++) {\n        if (i) cout << ' ';\n        cout << a[i];\n    }\n    cout << '\\n';\n    return 0;\n}\n"
+  ]
+}
