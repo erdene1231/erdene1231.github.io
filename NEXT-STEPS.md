@@ -1,3 +1,11 @@
+## Current: full Tree queries published — 2026-10-29 12:10 UTC
+
+Existing `lca` revision 7/history 230 is live after PR #130 merge `5388f15e1639c42aa63bf43e6825ab0a45ff9e48`; Pages 40870999971 succeeded, 15 runtime/JSON assets match v64. Exact anonymous MN/EN body and all other 57 rows, eight private drafts, Mongolia, 1010 problems, learner/profile and authority fingerprints are verified. See `audit/PACKAGE03-TREE-QUERY-PUBLICATION-RECEIPT.json` and `audit/PACKAGE03-TREE-QUERIES-REVIEW.md`.
+
+One-time SQL `e4a62f08257b0319a70ba06a91abe0714c7e21c08dfc0fe98c2d32a95a520fb4` SUCCEEDED; NEVER REPLAY. Private recovery is `/workspace/package03-tree-query-execution`; postchecks `/workspace/package03-tree-query-postpublish`. All chapter18 source examples/subtopics plus requested static edge/vertex min/max/sum are covered, with LCA-first ordering and six explained C++17 programs (561 UBSan runs). Historical pending candidates and saved struct code are preserved in `audit/package03-preserved`; branch `codex/package03-lca-struct` remains intact. No migration/security/editor/deferred-feature change.
+
+Original55 cycle: **16/55 verified public,39 remaining**. New Introduction and SCC are separate additions (58 stored/57 public). Next source chapter19 Paths and circuits: inspect actual contents and map to existing stable IDs, preserving drafts. Continue full source depth/natural MN/EN/CP-style explained code under standing tested PR/merge/guarded publication authority. No GitHub APPROVE reviews without specific confirmation. All3 deferred completion/profile/weekly-progress items remain deferred. No owner acceptance is claimed.
+
 ## Package 2: exhaustive search and sorting published — 2026-10-28 03:14 UTC
 
 PR #31 merged as `009b2fbe53d609886f2bc7c9fb2d4a8dff882a86`; Pages deployment succeeded. `brute-force` and `sorting` are now revision 4, tutorial history 148–149. Anonymous retrieval returns both exact reviewed native MN/EN documents. Both languages passed actual block-editor editing/serialization/reload, alongside 16 full-reader cases and 196 C++ oracle cases plus samples. The 106 Node tests passed. See `audit/PACKAGE02-SEARCH-SORT-PUBLICATION-RECEIPT.json` and `audit/PACKAGE02-SEARCH-SORT-REVIEW.json`.

@@ -500,3 +500,12 @@ Both SQL jobs SUCCEEDED; NEVER REPLAY: 8d61b37d60ce0bcd8492f46280eaa45577d7e6c87
 New scc is published revision 1 / history 229 after PR #128 merge 0c0410047f1e846082e5bb88c18d5627c0fcffe7; Pages 40863735230 succeeded and 15 v64 runtime/JSON assets matched. One-time SQL 43cdfd7fe1e20223eb5ce5e5b2621d41d9de8acba8de574227924e107e0f7fff SUCCEEDED; NEVER REPLAY. Read SCC-PUBLICATION-RECEIPT. Exact anonymous/native checks passed, with all old 57 rows, Mongolia, 8 drafts, 1010 problems, learner data and authority fingerprints unchanged. Current catalog: 58 stored / 57 public. No migration/security/deferred-feature change.
 
 Original55 rewrite count remains 15/55, 40 remaining. Introduction and SCC are separate additions; SCC contains full chapter17 including 2SAT. Next chapter18 Tree queries must preserve stable lca, private changes and saved struct work; explain LCA first before jump-table/LCA/static-path queries and cover the full source. Existing tested PR/merge/guarded publication authority applies. Never submit GitHub APPROVE reviews without specific confirmation or replay old jobs.
+
+
+## Latest handbook Tree queries checkpoint
+
+Full chapter 18 is published in existing `lca` revision 7/history 230 after PR #130 merge `5388f15e1639c42aa63bf43e6825ab0a45ff9e48`; Pages run 40870999971 succeeded, and 15 v64 assets match. One-time SQL `e4a62f08257b0319a70ba06a91abe0714c7e21c08dfc0fe98c2d32a95a520fb4` SUCCEEDED; NEVER REPLAY. Read TREE-QUERY-PUBLICATION-RECEIPT and NEXT-STEPS.
+
+All other 57 rows, eight drafts, Mongolia, 1010 problems, learner and authority state are unchanged. Original 55 cycle: 16/55 public-verified, 39 remaining; Introduction and SCC are separate new additions. All chapter 18 source examples and subtopics plus static edge/vertex min/max/sum are covered, with LCA-first ordering, six explained programs and 561 UBSan runs. Earlier unpublished representatives are archived safely; the saved struct branch is retained.
+
+Next chapter 19, Paths and circuits, requires actual source review and stable-ID mapping. No migration, security or deferred-feature changes were made. Never submit GitHub APPROVE reviews without specific confirmation or replay old jobs.
