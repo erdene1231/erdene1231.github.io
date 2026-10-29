@@ -86,7 +86,7 @@ test('all52 mechanical style updates use guarded native lifecycle and preserve d
 });
 test('handbook LCA replacement publishes flexible11-section native content atomically without changing drafts or other lessons',async()=>{
  const{ownerReviewedLessonsSql}=await import('../tools/package02_reviewed_publication.mjs');const{db}=await foundationDatabase();try{
- const d=JSON.parse(fs.readFileSync('audit/package03-lessons/lca.json'));const old=(await db.query("select *,md5(body::text) body_md5 from tutorial_catalog where id='lca'")).rows[0];
+ const d=JSON.parse(fs.readFileSync('audit/package03-preserved/lca-before-chapter18.json'));const old=(await db.query("select *,md5(body::text) body_md5 from tutorial_catalog where id='lca'")).rows[0];
  await db.query("insert into tutorial_drafts(tutorial_id,editor_id,body,revision,base_revision) select id,'00000000-0000-0000-0000-000000000002',body,3,revision from tutorial_catalog where id in('lca','mongolia','sorting')");
  const snapshot=async()=>({catalog:(await db.query('select * from tutorial_catalog order by id')).rows,drafts:(await db.query('select * from tutorial_drafts order by tutorial_id')).rows,history:(await db.query('select * from tutorial_changes order by change_id')).rows,progress:(await db.query('select * from progress')).rows});const before=await snapshot();const target={...d,expected_revision:old.revision,expected_body_md5:old.body_md5};const sql=ownerReviewedLessonsSql({targets:[target]},await localOwnerGuard(db,['lca']));
  await assert.rejects(db.exec(sql.replace('-- Atomic boundary: one target and its history are complete.',"RAISE EXCEPTION 'Injected handbook failure';")),/Injected handbook/);assert.deepEqual(await snapshot(),before);

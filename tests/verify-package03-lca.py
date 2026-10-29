@@ -1,7 +1,7 @@
 """Independent parent/path oracle for the original weighted LCA lesson."""
 import collections,hashlib,json,random,subprocess,tempfile
 from pathlib import Path
-ROOT=Path(__file__).resolve().parents[1];d=json.loads((ROOT/'audit/package03-lessons/lca.json').read_text());blocks=d['body']['sections'][7]['blocks'];code=(ROOT/'audit/package03-work/lca-path.cpp').read_text();rng=random.Random(20261028);cases=queries=0
+ROOT=Path(__file__).resolve().parents[1];d=json.loads((ROOT/'audit/package03-preserved/lca-before-chapter18.json').read_text());blocks=d['body']['sections'][7]['blocks'];code=(ROOT/'audit/package03-work/lca-path.cpp').read_text();rng=random.Random(20261028);cases=queries=0
 with tempfile.TemporaryDirectory()as tmp:
  src=Path(tmp)/'lca.cpp';exe=Path(tmp)/'lca';src.write_text(code)
  def compile(path,extra=[]):
