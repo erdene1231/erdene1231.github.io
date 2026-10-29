@@ -1,11 +1,12 @@
+import {refreshInlineMath} from './tutorial-math-layout.js?v=56';
 import {priorityLevel,priorityLabel,priorityRank} from './priority.js?v=52';
-import {renderExtendedBlock} from './tutorial-block-renderer.js?v=55';
-import {clearMediaCache} from './tutorial-media.js?v=55';
+import {renderExtendedBlock} from './tutorial-block-renderer.js?v=54';
+import {clearMediaCache} from './tutorial-media.js?v=52';
 import {loadLearningContent,bodyHash} from './learning-model.js?v=52';
 import {algorithmDemo} from './algorithm-demos.js?v=52';
 import {segmentTreeDemo} from './segment-tree-demo.js?v=52';
-import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=55';
-import {setupTutorialEditor} from './tutorial-editor.js?v=55';
+import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=52';
+import {setupTutorialEditor} from './tutorial-editor.js?v=56';
 const $=id=>document.getElementById(id);
 export const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
 let mathPromise=null,mathQueue=Promise.resolve();
@@ -54,7 +55,7 @@ export function drawArticle(t,parent,lang,options={}){const v=view(t,lang);paren
  if(t.id==='segment-tree'&&i===3)part.append(segmentTreeDemo(lang,typeset));if(i===3&&t.automaticDemo!==false){const demo=algorithmDemo(t.id,lang,typeset);if(demo)part.append(demo);}parent.append(part);
 }}
 export function typeset(elements,build,valid=()=>true){
- mathQueue=mathQueue.catch(()=>{}).then(async()=>{if(!valid())return;window.MathJax?.typesetClear?.(elements);if(build&&build()===false)return;const mj=await mathjax();if(!valid())return;await mj.typesetPromise(elements);if(!valid())mj.typesetClear?.(elements);});return mathQueue;
+ mathQueue=mathQueue.catch(()=>{}).then(async()=>{if(!valid())return;window.MathJax?.typesetClear?.(elements);if(build&&build()===false)return;const mj=await mathjax();if(!valid())return;await mj.typesetPromise(elements);if(!valid())mj.typesetClear?.(elements);else refreshInlineMath(elements);});return mathQueue;
 }
 async function copy(text,button,success){try{await navigator.clipboard.writeText(text);const previous=button.textContent;button.textContent=success;setTimeout(()=>button.textContent=previous,1800);}catch{$('tutorial-message').textContent='Хуулах боломжгүй байна / Copy unavailable.';}}
 export function setupTutorials(ctx){
