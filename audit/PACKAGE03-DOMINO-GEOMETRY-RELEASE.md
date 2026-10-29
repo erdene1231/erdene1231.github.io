@@ -11,3 +11,5 @@ Regression: the user's exact14domino regions are measured against the28unmerged 
 Cache version62 follows the changed grid module/style reverse-import closure; unrelated URL versions stay intact. Public content remains DP revision9. No private draft, learner progress or user account fixture is edited. Known live Chromium certificate limitation remains; local actual native rendering and post-deploy byte/public-data verification are distinguished from live visual access.
 
 Tree work remains saved on codex/package03-handbook-trees at077fb8d; the complete in-progress source-based MN/EN generator is retained privately under /workspace/tree-draft-checkpoint. No new tree lesson has been published yet.
+
+User clarification specifically selects the second screenshot's letters. Regression now explicitly fixes its four reference rows to ABBCDDE / AFFCGHE / IIJJGHK / LLMMNNK and checks each actual rendered letter region against those exact row/column coordinates, in addition to physical dimensions. B covers row1columns2–3; I/J cover row3columns1–2/3–4; L/M/N cover row4columns1–2/3–4/5–6. Labels, original per-cell strings and the correct second reference are not rewritten.
