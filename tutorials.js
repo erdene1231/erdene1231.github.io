@@ -1,14 +1,14 @@
-import {orderTutorials,handbookChapterNumbers} from './tutorial-order.js?v=67';
+import {orderTutorials,handbookChapterNumbers} from './tutorial-order.js?v=68';
 import {renderGridRows,prepareGridTable} from './tutorial-grid.js?v=62';
 import {refreshInlineMath} from './tutorial-math-layout.js?v=56';
 import {priorityLevel,priorityLabel,priorityRank} from './priority.js?v=52';
 import {renderExtendedBlock} from './tutorial-block-renderer.js?v=63';
 import {clearMediaCache} from './tutorial-media.js?v=63';
-import {loadLearningContent,bodyHash} from './learning-model.js?v=66';
+import {loadLearningContent,bodyHash} from './learning-model.js?v=68';
 import {algorithmDemo} from './algorithm-demos.js?v=52';
 import {segmentTreeDemo} from './segment-tree-demo.js?v=52';
 import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=63';
-import {setupTutorialEditor} from './tutorial-editor.js?v=67';
+import {setupTutorialEditor} from './tutorial-editor.js?v=68';
 const $=id=>document.getElementById(id);
 export const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
 let mathPromise=null,mathQueue=Promise.resolve();

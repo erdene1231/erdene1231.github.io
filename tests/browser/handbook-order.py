@@ -3,7 +3,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[2]
 rows=[r for r in json.loads((ROOT/'audit/PART04-BASELINE.json').read_text())['tutorials']if r['id']!='mongolia']
-for id in ['introduction','scc','paths-circuits','flows-cuts','number-theory']:
+for id in ['introduction','scc','paths-circuits','flows-cuts','number-theory','matrices']:
  b=json.loads((ROOT/f'audit/package03-lessons/{id}.json').read_text())['body'];rows=[r for r in rows if r['id']!=id]+[{'id':id,'body':b,'revision':1}]
 class Quiet(http.server.SimpleHTTPRequestHandler):
  def log_message(self,*a):pass
@@ -29,4 +29,4 @@ try:
    results.append({'width':width,'theme':theme,'visible_lessons':len(rows),'default_exact_order':r['ids'],'source_chapter_numbers_and_unnumbered_supplements':True,'explicit_priority_sort_and_filter':True,'no_document_overflow':True});p.close()
   browser.close()
 finally:server.shutdown()
-(ROOT/'audit/PACKAGE03-HANDBOOK-ORDER-BROWSER.json').write_text(json.dumps({'status':'passed','cases':results,'scope':'Native listing with all 59 published lesson identities; local readonly fixtures, no production writes'},indent=2)+'\n');print('Native handbook order, numbering and explicit priority controls passed')
+(ROOT/'audit/PACKAGE03-HANDBOOK-ORDER-BROWSER.json').write_text(json.dumps({'status':'passed','cases':results,'scope':'Native listing with all 60 published lesson identities; local readonly fixtures, no production writes'},indent=2)+'\n');print('Native handbook order, numbering and explicit priority controls passed')
