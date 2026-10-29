@@ -1,0 +1,1740 @@
+{
+  "kmp": {
+    "body": {
+      "id": "kmp",
+      "level": "Ахисан шат",
+      "order": 40,
+      "title": "KMP — таарсан эхний хэсгээ дахин ашиглах",
+      "aliases": "kmp KMP — string дотор pattern хайх KMP — finding a pattern in a string kmp prefix function string pattern matching текст хайх border substring",
+      "related": [
+        "binary-search",
+        "dynamic-programming",
+        "lca"
+      ],
+      "summary": "Угтвар ба төгсгөлийн холбоосоор буцаж, текстийн байрлалыг ухраахгүй бүх давхцсан таарцыг олно.",
+      "category": "Strings",
+      "levelKey": "advanced",
+      "sections": [
+        {
+          "key": "need",
+          "title": "1. Давхцсан хоёр таарцыг хоёуланг олох",
+          "blocks": [
+            {
+              "text": "Загвар “aba”, текст “ababa” байг. Загвар эхлэх байрлалууд нэг ба гурав. Эхний таарцыг олоод гурван байрлал алгасвал хоёр дахь давхцсан таарцыг алддаг.",
+              "type": "p"
+            },
+            {
+              "text": "Бид зөвхөн тоо бус эхлэх бүх байрлалыг нэгээс эхэлсэн дугаараар гаргана. Текстийг нэг чиглэлд уншаад өмнө таарсан хэсгийн хэрэгтэй мэдээллийг хадгалъя.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "direct",
+          "title": "2. Байрлал бүрээс эхнээс нь харьцуулах",
+          "blocks": [
+            {
+              "text": "Текстийн уртыг $n$, загварын уртыг $m$ гэе. Энгийн арга текстийн боломжит эхлэл бүрд загварын бүх үсгийг харьцуулна. Текст урт ижил үсгүүдтэй, загварын сүүлийн үсэг л зөрвөл өмнөх урт таарцыг дахин дахин шалгаж $O(nm)$ хүрнэ.",
+              "type": "p"
+            },
+            {
+              "text": "Зөрсөн үед өмнө таарсан хэсгийн зарим төгсгөл загварын эхлэлтэй ижил байж болно. Тэр мэдээллийг урьдчилан гаргавал текст рүү ухрах шаардлагагүй.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "state",
+          "title": "3. Богино угтвар ба төгсгөлийн хамгийн урт давхцал",
+          "blocks": [
+            {
+              "text": "$border[i]$ нь загварын $[0,i]$ хэсгийн өөрөөс нь богино, эхлэл ба төгсгөлд ижил байдаг хамгийн урт хэсгийн урт. Өөрийг нь бүтнээр авахгүй учраас proper буюу өөрөөс нь богино угтвар гэдэг.",
+              "type": "p"
+            },
+            {
+              "text": "“ababa”-гийн угтвар-төгсгөлийн давхцал “aba” урт гурав. Ганц үсгийнх тэг. Кодод эхлэлээс таарсан уртыг хадгалж байгаа болохоос төгсгөлийн индексийг хадгалахгүй.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "method",
+          "title": "4. Зөрвөл дараагийн боломжит урт руу буцах",
+          "blocks": [
+            {
+              "text": "Дараагийн үсэг зөрвөл $length=border[length-1]$ гэж богиносгоно. Бүхэл таарсан хэсгийг шинээр эхлэх бус түүний хамгийн урт зөв давхцлыг үлдээнэ. Тэр ч зөрвөл дахин холбоосоор явна.",
+              "type": "p"
+            },
+            {
+              "text": "Таарвал уртыг нэгээр нэмнэ. Загварын border массивыг байгуулахад ч, текст уншихад ч ижил санаа үйлчилнэ. Бүтэн таарсны дараа мөн border-ийн холбоосоор буцаж давхцлыг хадгална.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "trace",
+          "title": "5. Загварын холбоос ба текстийн хоёр таарц",
+          "blocks": [
+            {
+              "text": "“ababaca” загварын border утгууд $[0,0,1,2,3,0,1]$. “c” дээр урт гуравтай “aba”-г сунгаж болохгүй; гуравнаас нэг, нэгээс тэг рүү буцаж байж зогсоно.",
+              "type": "p"
+            },
+            {
+              "text": "“aba”-г “ababa”-д хайхад таарсан уртууд нэг, хоёр, гурав. Гурав хүрэхэд эхлэл нэгийг гаргаад уртыг border[2] буюу нэг болгоно. Дараагийн “b”, “a” хоёр уртыг гурав болгож эхлэл гурвыг гаргана.",
+              "type": "p"
+            },
+            {
+              "rows": [
+                [
+                  "0",
+                  "a",
+                  "0"
+                ],
+                [
+                  "1",
+                  "b",
+                  "0"
+                ],
+                [
+                  "2",
+                  "a",
+                  "1"
+                ],
+                [
+                  "3",
+                  "b",
+                  "2"
+                ],
+                [
+                  "4",
+                  "a",
+                  "3"
+                ],
+                [
+                  "5",
+                  "c",
+                  "0"
+                ],
+                [
+                  "6",
+                  "a",
+                  "1"
+                ]
+              ],
+              "type": "table",
+              "headers": [
+                "Загварын индекс",
+                "Үсэг",
+                "Border урт"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "proof",
+          "title": "6. Яагаад боломжит таарцыг алгасахгүй вэ?",
+          "blocks": [
+            {
+              "text": "Өмнөх таарсан хэсгийн урт $j$ байг. Шинэ таарцыг түүн дотроос эхлүүлэх боломж байвал үлдэх хэсэг нь тэр таарсан хэсгийн төгсгөл бөгөөд загварын угтвар байх ёстой. Иймээс дараагийн урт нь зөв давхцлын гинжин холбоос дээр байна.",
+              "type": "p"
+            },
+            {
+              "text": "Хамгийн урт зөв давхцлаас нь эхэлж дараалан шалгах нь бүх боломжит богино угтварыг хамарна. Таарсан үед нэгээр сунгах, бүтэн үед байрлал гаргах хоёр нь яг загварын урттай тохирлыг бүртгэнэ. Иймээс таарц алдахгүй, хуурамч таарц үүсгэхгүй.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "cost",
+          "title": "7. Урт өсөх ба буурах нийт зардал",
+          "blocks": [
+            {
+              "text": "Нэг үсэг уншихад таарсан урт хамгийн ихдээ нэгээр өснө. Холбоосоор буцах алхам бүр уртыг эрс бууруулдаг тул бүх бууралтын тоо өмнөх өсөлтүүдээр хязгаарлагдана. Угтварын хүснэгт байгуулах $O(m)$, текст хайх $O(n)$ нийт $O(n+m)$.",
+              "type": "p"
+            },
+            {
+              "text": "Border $O(m)$, энэ кодын гаргах байрлалын массив $O(n)$ хүртэл зай авна. Зөвхөн тоо асуувал байрлалуудыг хадгалахгүй байж болно.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "implementation",
+          "title": "8. Border байгуулаад текстийг урагш унших",
+          "blocks": [
+            {
+              "text": "8.1. Эхлэл ба төлөв",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Загварын өмнөх зөв давхцлын уртаас эхэлж, зөрөх бүрд богино холбоос руу буцаж prefix хүснэгтийг байгуулна. Нэг үсэгт тэг.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvector<int> prefix_function(const string& pattern) {\n    int count = static_cast<int>(pattern.size());\n    vector<int> border(count);\n    for (int index = 1; index < count; ++index) {\n        int length = border[index - 1];\n        while (length > 0 && pattern[index] != pattern[length]) {\n            length = border[length - 1];\n        }\n        if (pattern[index] == pattern[length]) {\n            ++length;\n        }\n        border[index] = length;\n    }\n    return border;\n}\n\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "8.2. Үндсэн үйлдэл",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Текстийн индекс зөвхөн урагшилна. Бүтэн таарвал нэгээс эхэлсэн байрлалыг хадгалаад давхцлын холбоос руу шууд буцна. Загвар хоосон биш гэсэн гэрээтэй.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "vector<int> find_occurrences(const string& text, const string& pattern) {\n    vector<int> border = prefix_function(pattern), positions;\n    int matched = 0;\n    for (int index = 0; index < static_cast<int>(text.size()); ++index) {\n        while (matched > 0 && text[index] != pattern[matched]) {\n            matched = border[matched - 1];\n        }\n        if (text[index] == pattern[matched]) {\n            ++matched;\n        }\n        if (matched == static_cast<int>(pattern.size())) {\n            positions.push_back(index - matched + 2);\n            matched = border[matched - 1];\n        }\n    }\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "8.3. Үр дүн",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Бүх байрлалын векторыг буцаана. Тоо л асуух хувилбарт векторын оронд тоолуур хэрэглэж болно.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "    return positions;\n}\n\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "8.4. Оролт ба гаралт",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхний мөрд текст, дараагийн мөрд загвар; хоёул жижиг латин үсэгтэй, урт $1$–$200000$. Эхний гаралтын мөрд тоо, дараагийн мөрд нэгээс эхэлсэн эхлэх байрлалууд, таарцгүй бол хоосон мөр.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string pattern, text;\n    cin >> text >> pattern;\n    vector<int> positions = find_occurrences(text, pattern);\n    cout << positions.size() << '\\n';\n    for (int index = 0; index < static_cast<int>(positions.size()); ++index) {\n        cout << positions[index] << (index + 1 == static_cast<int>(positions.size()) ? '\\n' : ' ');\n    }\n    if (positions.empty()) {\n        cout << '\\n';\n    }\n}\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "Бүтэн ажиллах C++17 программ",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvector<int> prefix_function(const string& pattern) {\n    int count = static_cast<int>(pattern.size());\n    vector<int> border(count);\n    for (int index = 1; index < count; ++index) {\n        int length = border[index - 1];\n        while (length > 0 && pattern[index] != pattern[length]) {\n            length = border[length - 1];\n        }\n        if (pattern[index] == pattern[length]) {\n            ++length;\n        }\n        border[index] = length;\n    }\n    return border;\n}\n\nvector<int> find_occurrences(const string& text, const string& pattern) {\n    vector<int> border = prefix_function(pattern), positions;\n    int matched = 0;\n    for (int index = 0; index < static_cast<int>(text.size()); ++index) {\n        while (matched > 0 && text[index] != pattern[matched]) {\n            matched = border[matched - 1];\n        }\n        if (text[index] == pattern[matched]) {\n            ++matched;\n        }\n        if (matched == static_cast<int>(pattern.size())) {\n            positions.push_back(index - matched + 2);\n            matched = border[matched - 1];\n        }\n    }\n    return positions;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string pattern, text;\n    cin >> text >> pattern;\n    vector<int> positions = find_occurrences(text, pattern);\n    cout << positions.size() << '\\n';\n    for (int index = 0; index < static_cast<int>(positions.size()); ++index) {\n        cout << positions[index] << (index + 1 == static_cast<int>(positions.size()) ? '\\n' : ' ');\n    }\n    if (positions.empty()) {\n        cout << '\\n';\n    }\n}\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "ababa\naba\n",
+              "type": "code",
+              "language": "Input"
+            },
+            {
+              "text": "2\n1 3\n",
+              "type": "code",
+              "language": "Output"
+            }
+          ]
+        },
+        {
+          "key": "errors",
+          "title": "9. Бүтэн таарсан уртаар дараагийн үсэг уншихгүй",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Бүтэн таарц $matched=m$ болсон даруйд хариугаа гаргаад зөв давхцлын урт руу буцна. Үгүй бол дараагийн үсэгт ",
+                  "marks": []
+                },
+                {
+                  "text": "pattern[m]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " гэж хязгаараас гарна.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "Таарсны дараа шууд тэг болгож ч болохгүй: “aba” жишээний хоёр дахь таарцын эхний “a”-г алдана. Border[length-1] гэдэг нь индекс нэгээр бага байгааг анхаар.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "meaning",
+          "title": "10. Дэд дараалал ба залгаа дэд мөр өөр",
+          "blocks": [
+            {
+              "text": "KMP нь залгаа үсгүүдээрх таарцыг хайна. “abc” нь “axbyc”-ийн дэд дараалал байж болох ч залгаа дэд мөр биш тул KMP таарц гэж авахгүй.",
+              "type": "p"
+            },
+            {
+              "text": "Энэ код жижиг латин үсэгтэй хоосон бус хоёр мөр авдаг. UTF-8 текстийг өөрчлөлтгүй string-ээр уншвал индекс нь байтын байрлал болохыг ойлго; энэ сургалтын гаралт нэг үсэг нэг байт гэсэн гэрээтэй.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "applications",
+          "title": "11. Border-оос үелэл рүү",
+          "blocks": [
+            {
+              "text": "Бүх зөв давхцлыг олохдоо бүтэн мөрийн сүүлийн border-оос эхлэн border холбоосоор буцаж болно. Үелэлтэй холбоог гаргахдаа сүүлийн хэсэг дутуу байж болох эсэхийг бодлогын тодорхойлолтоос шалга.",
+              "type": "p"
+            },
+            {
+              "text": "Мөр яг ижил хэсгүүдийн бүтэн давталт байх зорилгод урт нь тухайн богино уртад хуваагдах нөхцөл нэмэгдэнэ. Finding Periods-ийн бүх асуултыг ганц хуваагдах шалгалтаар орлуулахгүй.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "connections",
+          "title": "12. Нэг загвар ба олон загвар",
+          "blocks": [
+            {
+              "text": "Олон загварыг нэг текстэд тус тус KMP хийвэл текстийг загвар бүрд дахин уншина. Олон загварын нийт хэмжээнд тохирох өөр бүтэц, тухайлбал автомат хэрэгтэй байж болно.",
+              "type": "p"
+            },
+            {
+              "text": "Хэш нь хурдан хураангуй өгдөг ч мөргөлдөх боломжтой; KMP-ийн яг тааруулах баталгаа ийм магадлалын нөхцөлгүй. Ямар хариу, ямар хэмжээ хэрэгтэйгээс аргаа сонго.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "practice",
+          "title": "13. Таарцаас холбоосын өөр хэрэглээ рүү",
+          "blocks": [
+            {
+              "text": "String Matching",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Давхцсан таарцуудыг алдахгүй, эх бодлого зөвхөн тоо асуувал гаралтаа тохируул.",
+              "type": "p"
+            },
+            {
+              "text": "Finding Borders",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Сүүлийн border-оос холбоосоор бүх зөв уртыг гарга.",
+              "type": "p"
+            },
+            {
+              "text": "Finding Periods",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Бүтэн ба дутуу давталтын тодорхойлолтыг ялга.",
+              "type": "p"
+            },
+            {
+              "text": "String Functions",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Prefix ба өөр төрлийн мөрийн функцийн утгыг тусад нь гарга.",
+              "type": "p"
+            },
+            {
+              "text": "Minimal Rotation",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Хамгийн бага эргэлт нь таарц хайхаас өөр зорилго, нэмэлт арга хэрэгтэй.",
+              "type": "p"
+            },
+            {
+              "text": "Pattern Positions",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Олон загварын нийт хэмжээгээр аргаа сонго; ганц KMP давтах нь үнэтэй байж болно.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "priority",
+          "title": "14. Зөв холбоос нь өмнөх ажлыг хадгална",
+          "blocks": [
+            {
+              "text": "Өндөр ач холбогдолтой. String Matching ба Finding Borders нь таарах урт ба зөв давхцлын шууд цөм. Үсгийг дахин шалгахгүй байхын цаана ямар мэдээлэл хадгалж байгааг тайлбарла.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "mastery",
+          "title": "15. Энгийн залгаа хайлттай тулга",
+          "blocks": [
+            {
+              "text": "“aba” ба “ababa”-гийн хоёр байрлалыг гараар ол. Нэг үсгийн загвар, ижил олон үсэг, огт таарахгүй, загвар текстээс урт, олон давхцалтай тохиолдлуудыг шалга.",
+              "type": "p"
+            },
+            {
+              "text": "Жижиг мөр бүрд бүх боломжит эхлэлээс шууд харьцуулсан лавлахтай гарсан байрлалын жагсаалтыг яг тулга. Border массивын утга бүр үнэхээр өөрөөс нь богино угтвар/төгсгөлийн хамгийн урт урт эсэхийг бас шалгаж болно.",
+              "type": "p"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "KMP — reuse the matched prefix",
+          "summary": "Follow proper prefix/suffix links to find every overlapping occurrence without moving the text position backward.",
+          "sections": [
+            {
+              "key": "need",
+              "title": "1. Find both overlapping occurrences",
+              "blocks": [
+                {
+                  "text": "Pattern “aba” occurs in “ababa” at positions one and three. Skipping the whole pattern after a match would miss the overlapping occurrence.",
+                  "type": "p"
+                },
+                {
+                  "text": "Return every one-based starting position, not just a count, while reading text forward and retaining useful matched information.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "direct",
+              "title": "2. Restarting comparisons at every position",
+              "blocks": [
+                {
+                  "text": "Let text length be $n$ and pattern length $m$. Naive matching may take $O(nm)$ when long runs match until the final pattern character repeatedly fails.",
+                  "type": "p"
+                },
+                {
+                  "text": "After a mismatch, a suffix of the matched part may equal a pattern prefix. Precomputing those possibilities avoids backing up in the text.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "state",
+              "title": "3. Longest proper prefix that is also a suffix",
+              "blocks": [
+                {
+                  "text": "$border[i]$ is the longest proper prefix of pattern prefix $[0,i]$ that is also its suffix. Proper excludes the entire prefix itself.",
+                  "type": "p"
+                },
+                {
+                  "text": "For “ababa”, the longest proper border is “aba”, length three; a singleton has zero. Store lengths, not ending indices.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "method",
+              "title": "4. Fall back to the next possible border length",
+              "blocks": [
+                {
+                  "text": "On mismatch set $length=border[length-1]$, preserving the longest possible proper overlap rather than restarting blindly. Follow further links if necessary.",
+                  "type": "p"
+                },
+                {
+                  "text": "On equality extend by one. The same idea builds borders and scans text; after a full match, fall back to preserve overlaps.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "trace",
+              "title": "5. Pattern links and two text matches",
+              "blocks": [
+                {
+                  "text": "The border array for “ababaca” is $[0,0,1,2,3,0,1]$. At “c”, fallback tries lengths three, one and zero.",
+                  "type": "p"
+                },
+                {
+                  "text": "Searching “aba” in “ababa” reaches matched lengths one, two, three; report start one and reset to border[2], one. The next “b”, “a” produce the second match at three.",
+                  "type": "p"
+                },
+                {
+                  "rows": [
+                    [
+                      "0",
+                      "a",
+                      "0"
+                    ],
+                    [
+                      "1",
+                      "b",
+                      "0"
+                    ],
+                    [
+                      "2",
+                      "a",
+                      "1"
+                    ],
+                    [
+                      "3",
+                      "b",
+                      "2"
+                    ],
+                    [
+                      "4",
+                      "a",
+                      "3"
+                    ],
+                    [
+                      "5",
+                      "c",
+                      "0"
+                    ],
+                    [
+                      "6",
+                      "a",
+                      "1"
+                    ]
+                  ],
+                  "type": "table",
+                  "headers": [
+                    "Pattern index",
+                    "Character",
+                    "Border length"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "proof",
+              "title": "6. Why does fallback skip no possible match?",
+              "blocks": [
+                {
+                  "text": "If a new candidate starts inside an already matched length-$j$ part, its retained portion must be both a suffix of that part and a pattern prefix. Its length therefore lies on the proper-border chain.",
+                  "type": "p"
+                },
+                {
+                  "text": "Trying borders from longest downward covers all viable shorter prefixes. Extending on equality and reporting full length records exactly the pattern matches, with neither omissions nor false positives.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "cost",
+              "title": "7. Bound total rises and falls",
+              "blocks": [
+                {
+                  "text": "Matched length rises by at most one per consumed character, while every fallback strictly lowers it, so total fallback work is bounded by prior rises. Building borders takes $O(m)$ and scanning $O(n)$.",
+                  "type": "p"
+                },
+                {
+                  "text": "Borders use $O(m)$ space and returned positions up to $O(n)$. Counting only can avoid storing positions.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "implementation",
+              "title": "8. Build borders, then scan text forward",
+              "blocks": [
+                {
+                  "text": "8.1. State and setup",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Build the prefix table from the previous border length, following shorter links on mismatch; singleton border is zero.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvector<int> prefix_function(const string& pattern) {\n    int count = static_cast<int>(pattern.size());\n    vector<int> border(count);\n    for (int index = 1; index < count; ++index) {\n        int length = border[index - 1];\n        while (length > 0 && pattern[index] != pattern[length]) {\n            length = border[length - 1];\n        }\n        if (pattern[index] == pattern[length]) {\n            ++length;\n        }\n        border[index] = length;\n    }\n    return border;\n}\n\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "8.2. Main operation",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Move text only forward. Record one-based starts on full matches and immediately fall back to retain overlap; the pattern is nonempty.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "vector<int> find_occurrences(const string& text, const string& pattern) {\n    vector<int> border = prefix_function(pattern), positions;\n    int matched = 0;\n    for (int index = 0; index < static_cast<int>(text.size()); ++index) {\n        while (matched > 0 && text[index] != pattern[matched]) {\n            matched = border[matched - 1];\n        }\n        if (text[index] == pattern[matched]) {\n            ++matched;\n        }\n        if (matched == static_cast<int>(pattern.size())) {\n            positions.push_back(index - matched + 2);\n            matched = border[matched - 1];\n        }\n    }\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "8.3. Result",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Return all positions; a count-only version can use a counter instead.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "    return positions;\n}\n\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "8.4. Input and output",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Read text then pattern, both nonempty lowercase Latin strings of length at most $200000$. Print count then one-based starting positions; no matches gives a blank second line.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string pattern, text;\n    cin >> text >> pattern;\n    vector<int> positions = find_occurrences(text, pattern);\n    cout << positions.size() << '\\n';\n    for (int index = 0; index < static_cast<int>(positions.size()); ++index) {\n        cout << positions[index] << (index + 1 == static_cast<int>(positions.size()) ? '\\n' : ' ');\n    }\n    if (positions.empty()) {\n        cout << '\\n';\n    }\n}\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "Complete compilable C++17 program",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvector<int> prefix_function(const string& pattern) {\n    int count = static_cast<int>(pattern.size());\n    vector<int> border(count);\n    for (int index = 1; index < count; ++index) {\n        int length = border[index - 1];\n        while (length > 0 && pattern[index] != pattern[length]) {\n            length = border[length - 1];\n        }\n        if (pattern[index] == pattern[length]) {\n            ++length;\n        }\n        border[index] = length;\n    }\n    return border;\n}\n\nvector<int> find_occurrences(const string& text, const string& pattern) {\n    vector<int> border = prefix_function(pattern), positions;\n    int matched = 0;\n    for (int index = 0; index < static_cast<int>(text.size()); ++index) {\n        while (matched > 0 && text[index] != pattern[matched]) {\n            matched = border[matched - 1];\n        }\n        if (text[index] == pattern[matched]) {\n            ++matched;\n        }\n        if (matched == static_cast<int>(pattern.size())) {\n            positions.push_back(index - matched + 2);\n            matched = border[matched - 1];\n        }\n    }\n    return positions;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string pattern, text;\n    cin >> text >> pattern;\n    vector<int> positions = find_occurrences(text, pattern);\n    cout << positions.size() << '\\n';\n    for (int index = 0; index < static_cast<int>(positions.size()); ++index) {\n        cout << positions[index] << (index + 1 == static_cast<int>(positions.size()) ? '\\n' : ' ');\n    }\n    if (positions.empty()) {\n        cout << '\\n';\n    }\n}\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "ababa\naba\n",
+                  "type": "code",
+                  "language": "Input"
+                },
+                {
+                  "text": "2\n1 3\n",
+                  "type": "code",
+                  "language": "Output"
+                }
+              ]
+            },
+            {
+              "key": "errors",
+              "title": "9. Do not retain full pattern length for the next access",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "After matched length reaches $m$, report and fall back immediately, avoiding an out-of-range ",
+                      "marks": []
+                    },
+                    {
+                      "text": "pattern[m]",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " access.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "Resetting to zero instead also loses overlaps such as the second “aba”. Note the length-minus-one index in border links.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "meaning",
+              "title": "10. Subsequences and contiguous substrings differ",
+              "blocks": [
+                {
+                  "text": "KMP finds contiguous substrings, not subsequences: “abc” is a subsequence of “axbyc” but not a substring.",
+                  "type": "p"
+                },
+                {
+                  "text": "The program takes nonempty lowercase Latin strings. Its character positions assume one byte per input character; raw UTF-8 string indices would instead be byte positions.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "applications",
+              "title": "11. From borders to periods",
+              "blocks": [
+                {
+                  "text": "Follow the final border chain to enumerate borders. For periods, check whether a partial final repetition is allowed by the definition.",
+                  "type": "p"
+                },
+                {
+                  "text": "An exact repetition decomposition adds a divisibility condition; do not replace every period task with that single test.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "connections",
+              "title": "12. One pattern versus many patterns",
+              "blocks": [
+                {
+                  "text": "Running KMP separately for many patterns repeatedly scans the text; a multi-pattern automaton may be more suitable.",
+                  "type": "p"
+                },
+                {
+                  "text": "Hashes offer compact fingerprints with possible collisions, while KMP’s exact-match proof needs no collision assumption. Choose by goal and bounds.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "practice",
+              "title": "13. From occurrences to other border uses",
+              "blocks": [
+                {
+                  "text": "String Matching",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Keep overlaps and adapt output if only count is requested.",
+                  "type": "p"
+                },
+                {
+                  "text": "Finding Borders",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Follow the final border chain.",
+                  "type": "p"
+                },
+                {
+                  "text": "Finding Periods",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Distinguish exact and partial repetition definitions.",
+                  "type": "p"
+                },
+                {
+                  "text": "String Functions",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Derive meanings of prefix and other string functions.",
+                  "type": "p"
+                },
+                {
+                  "text": "Minimal Rotation",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Minimum rotation is a different objective requiring more reasoning.",
+                  "type": "p"
+                },
+                {
+                  "text": "Pattern Positions",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Account for total multi-pattern work.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "priority",
+              "title": "14. Correct links preserve useful work",
+              "blocks": [
+                {
+                  "text": "High priority. String Matching and Finding Borders directly exercise matched lengths and proper borders. Understand preserved information behind the linear-time bound.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "mastery",
+              "title": "15. Compare with direct substring search",
+              "blocks": [
+                {
+                  "text": "Check the two example starts by hand. Cover singleton patterns, repeated letters, no match, pattern longer than text and heavy overlaps.",
+                  "type": "p"
+                },
+                {
+                  "text": "Compare complete position lists with direct substring comparisons at every start, and independently verify each border length on small patterns.",
+                  "type": "p"
+                }
+              ]
+            }
+          ],
+          "prerequisites": "String indices and reuse of prefix states; the program uses lowercase Latin letters."
+        }
+      },
+      "automaticDemo": false,
+      "prerequisites": "Дарааллын индекс, prefix төлөвийн санаа, өмнөх бэлэн хариуг дахин ашиглах. Кодын тэмдэгтүүд жижиг латин үсэг байна.",
+      "priorityLevel": "high",
+      "priorityReason": "Яг таарцыг мөргөлдөөнгүй шугаман хугацаанд олох суурь. Угтвар/төгсгөлийн утга, fallback ба нийлбэр зардлын баталгааг ойлгох нь олон тэмдэгт мөрийн бодлогод өндөр өгөөжтэй.",
+      "prerequisiteIds": [
+        "binary-search",
+        "dynamic-programming"
+      ],
+      "learningRelations": {
+        "next": "string-hashing",
+        "practice": [
+          {
+            "key": "474",
+            "stage": "Warm-up",
+            "reason": "Яг таарц эсвэл угтвар-төгсгөлийн холбоосыг шууд хэрэгжүүлэх цөм дасгал.",
+            "priority": true
+          },
+          {
+            "key": "475",
+            "stage": "Standard",
+            "reason": "Яг таарц эсвэл угтвар-төгсгөлийн холбоосыг шууд хэрэгжүүлэх цөм дасгал.",
+            "priority": true
+          },
+          {
+            "key": "476",
+            "stage": "Observation",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "488",
+            "stage": "Application",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "477",
+            "stage": "Challenge",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "484",
+            "stage": "Olympiad extension",
+            "reason": "",
+            "priority": false
+          }
+        ],
+        "variants": [
+          {
+            "tutorialId": "binary-search",
+            "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+            "descriptionEn": "Compare its assumptions and use cases."
+          },
+          {
+            "tutorialId": "dynamic-programming",
+            "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+            "descriptionEn": "Compare its assumptions and use cases."
+          },
+          {
+            "tutorialId": "lca",
+            "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+            "descriptionEn": "Compare its assumptions and use cases."
+          }
+        ]
+      }
+    },
+    "revision": 6,
+    "body_md5": "92d93f60f140b38b2a21cf1e7971d5f8",
+    "published": true
+  },
+  "string-hashing": {
+    "body": {
+      "id": "string-hashing",
+      "level": "Ахисан шат",
+      "order": 52,
+      "title": "Тэмдэгт мөрийн хэш — хурдан хураангуй ба мөргөлдөөн",
+      "aliases": "string-hashing String hashing — substring-ийн fingerprint String hashing — substring fingerprints",
+      "related": [
+        "kmp",
+        "binary-search"
+      ],
+      "summary": "Олон гишүүнтийн prefix-ээр дэд мөрийн хураангуйг тогтмол хугацаанд гаргаж, хэш тэнцүүг яг мөр тэнцүүтэй андуурахгүй.",
+      "category": "String",
+      "levelKey": "advanced",
+      "sections": [
+        {
+          "key": "need",
+          "title": "1. Нэг мөрийн олон дэд хэсгийн хураангуй",
+          "blocks": [
+            {
+              "text": "“ababa” мөрийн $[1,3]$ ба $[3,5]$ хоёул “aba”, харин $[2,4]$ нь “bab”. Дэд мөр бүрийн урт ба жижиг тоон хураангуйг хурдан гаргаж үзье.",
+              "type": "p"
+            },
+            {
+              "text": "Энэ хичээлийн бүтэн программ хураангуйг л хэвлэнэ. Хоёр хэш тэнцүү байвал ижил мөр гэж шийдсэн YES хариу өгөхгүй; яг ямар шинж баталж байгаагаа тусад нь тайлбарлана.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "direct",
+          "title": "2. Дэд мөр бүрийг дахин уншихгүй",
+          "blocks": [
+            {
+              "text": "Асуулт бүрийн бүх үсгээр хураангуйг шинээр бодвол нийт асуултын уртаар ажиллана. Нэг удаа prefix мэдээлэл бэлтгээд хүссэн хэсгийг хоёр хилээс гаргаж болно.",
+              "type": "p"
+            },
+            {
+              "text": "Энэ нь нийлбэрийн prefix-тэй төстэй боловч үсгийн байрлалыг жингээр ялгаж, зүүн талын өмнөх хэсгийг зөв зэргээр үржүүлж хасна.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "state",
+          "title": "3. Суурь, модуль, үсгийн тоо",
+          "blocks": [
+            {
+              "text": "Үсгүүдийг a=1, b=2, ... z=26 гэж кодлоно. Суурь $B=31$, модуль $M$ авъя. $H[0]=0$, $H[i+1]=(H[i]B+code(s_i))\\bmod M$. $P[i]=B^i\\bmod M$, $P[0]=1$.",
+              "type": "p"
+            },
+            {
+              "text": "Код хоёр өөр модуль $10^9+7$, $10^9+9$-д энэ мэдээллийг тус тус хадгална. Суурь тогтмол бөгөөд нууц эсвэл санамсаргүй биш.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "method",
+          "title": "4. Өмнөх prefix-ийг зөв жинд нь хасах",
+          "blocks": [
+            {
+              "text": "Дотоод индексийг хагас нээлттэй $[l,r)$ гэвэл урт $L=r-l$. $H[r]$-д өмнөх $H[l]$ хэсэг $B^L$-ээр үржигдсэн байгаа. Тиймээс $hash(l,r)=(H[r]-H[l]P[L])\\bmod M$.",
+              "type": "p"
+            },
+            {
+              "text": "Сөрөг үлдэгдлийг $M$ нэмээд хэвийн мужид оруулна. Ижил агуулгатай, ижил урттай дэд мөрүүд өөр байрлалд байсан ч нэг ижил хураангуйтай болно.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "trace",
+          "title": "5. aba-ийн хураангуй хоёр байрлалд ижил",
+          "blocks": [
+            {
+              "text": "“aba”-гийн модуль авахаас өмнөх утга $1cdot31^2+2cdot31+1=1024$. “bab”-гийнх $2cdot31^2+1cdot31+2=1955$. Эдгээр богино утга хоёр модулиас бага тул хоёр хэш нь тус бүр ижил тоо гарна.",
+              "type": "p"
+            },
+            {
+              "text": "“ababa”-гийн нийт хураангуй $984127$. Программ $[1,3]$, $[3,5]$, $[2,4]$, $[1,5]$ асуултад урт болон хоёр хураангуйг хэвлэнэ.",
+              "type": "p"
+            },
+            {
+              "rows": [
+                [
+                  "[1,3]",
+                  "3",
+                  "1024",
+                  "1024"
+                ],
+                [
+                  "[3,5]",
+                  "3",
+                  "1024",
+                  "1024"
+                ],
+                [
+                  "[2,4]",
+                  "3",
+                  "1955",
+                  "1955"
+                ],
+                [
+                  "[1,5]",
+                  "5",
+                  "984127",
+                  "984127"
+                ]
+              ],
+              "type": "table",
+              "headers": [
+                "Асуулт",
+                "Урт",
+                "Эхний хэш",
+                "Хоёр дахь хэш"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "proof",
+          "title": "6. Олон гишүүнтийг хоёр хэсэгт салгах",
+          "blocks": [
+            {
+              "text": "Prefix-ийн тодорхойлолтыг задлавал эхний үсэг хамгийн их зэрэгтэй, сүүлийнх тэг зэрэгтэй байна. $H[r]$-ийн эхний $l$ үсгийн бүх зэрэг $H[l]$-ийнхээс $r-l$-ээр их.",
+              "type": "p"
+            },
+            {
+              "text": "Тиймээс $H[l]P[r-l]$-г хасахад зөвхөн хүссэн дэд мөрийн олон гишүүнт үлдэнэ. Модулийн арифметик нэмэх, үржүүлэх, хасахад нийцтэй тул энэ тэнцэтгэл үлдэгдэл дээр ч зөв. Энэ нь fingerprint зөв гэсэн баталгаа, мөргөлдөөн байхгүй гэсэн баталгаа биш.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "cost",
+          "title": "7. Prefix байгуулах шугаман, хураангуй асуулт тогтмол",
+          "blocks": [
+            {
+              "text": "Хоёр модуль тогтмол тоо тул байгуулах $O(n)$, асуулт $O(1)$, хадгалах $O(n)$. $n,q\\le200000$. Хоёр үлдэгдлийн үржвэр ойролцоогоор $10^{18}$ хүртэл хүрэх тул long long хэрэглэнэ.",
+              "type": "p"
+            },
+            {
+              "text": "Яг ижил эсэхийг хэш таарсан болгонд үсгээр нягталбал нэмэлт зардал тэр шалгасан нийт урттай тэнцэнэ. Тийм баталгаажуулалтыг хийчихээд бүх equality асуулт хамгийн муудаа тогтмол гэж нэрлэхгүй.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "implementation",
+          "title": "8. Хоёр prefix ба нормчилсон дэд хэш",
+          "blocks": [
+            {
+              "text": "8.1. Эхлэл ба төлөв",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Суурь 31, хоёр модулийг тогтоож урт ба хоёр үлдэгдлийн бүтцийг зарлана. Дараагийн массивууд prefix ба зэргүүдийг модуль тус бүрд хадгална.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long BASE = 31;\nconstexpr array<long long, 2> MODULI{1000000007, 1000000009};\nstruct Fingerprint {\n    int length;\n    array<long long, 2> hash;\n};\n\nclass StringHash {\n    array<vector<long long>, 2> prefix, power;\npublic:\n    explicit StringHash(const string& text) {\n        int count = static_cast<int>(text.size());\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "8.2. Үндсэн үйлдэл",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Үсгийг нэгээс хорин зургаа болгож, prefix ба зэрэг бүрийг модулиар бодно. Хоёр хүснэгтийн эхний prefix тэг, зэрэг нэг.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "        for (int part = 0; part < 2; ++part) {\n            prefix[part].resize(count + 1);\n            power[part].assign(count + 1, 1);\n            for (int index = 0; index < count; ++index) {\n                int value = text[index] - 'a' + 1;\n                prefix[part][index + 1] = (prefix[part][index] * BASE + value) % MODULI[part];\n                power[part][index + 1] = power[part][index] * BASE % MODULI[part];\n            }\n        }\n    }\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "8.3. Үр дүн",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Дотоод $[left,right)$-ийн өмнөх prefix-ийг зөв уртаар үржүүлж хасна. Нэг модуль нэмээд үлдэгдэл авахад сөрөг утга арилах ба ижил агуулгад байрлалаас үл хамаарах fingerprint гарна.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "    Fingerprint substring(int left, int right) const {\n        Fingerprint result{right - left, {0, 0}};\n        for (int part = 0; part < 2; ++part) {\n            long long removed = prefix[part][left] * power[part][right - left] % MODULI[part];\n            result.hash[part] = (prefix[part][right] - removed + MODULI[part]) % MODULI[part];\n        }\n        return result;\n    }\n};\n\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "8.4. Оролт ба гаралт",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Эхлээд жижиг латин үсгийн хоосон бус мөр, дараа нь асуултын тоо. Урт ба асуулт ихдээ $200000$. Асуулт бүр нэгээс эхэлсэн хаалттай хоёр хил; гаралт урт, эхний ба хоёр дахь хэш.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string text;\n    int query_count;\n    cin >> text >> query_count;\n    StringHash hashes(text);\n    for (int query = 0; query < query_count; ++query) {\n        int left, right;\n        cin >> left >> right;\n        Fingerprint result = hashes.substring(left - 1, right);\n        cout << result.length << ' ' << result.hash[0] << ' ' << result.hash[1] << '\\n';\n    }\n}\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "Бүтэн ажиллах C++17 программ",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long BASE = 31;\nconstexpr array<long long, 2> MODULI{1000000007, 1000000009};\nstruct Fingerprint {\n    int length;\n    array<long long, 2> hash;\n};\n\nclass StringHash {\n    array<vector<long long>, 2> prefix, power;\npublic:\n    explicit StringHash(const string& text) {\n        int count = static_cast<int>(text.size());\n        for (int part = 0; part < 2; ++part) {\n            prefix[part].resize(count + 1);\n            power[part].assign(count + 1, 1);\n            for (int index = 0; index < count; ++index) {\n                int value = text[index] - 'a' + 1;\n                prefix[part][index + 1] = (prefix[part][index] * BASE + value) % MODULI[part];\n                power[part][index + 1] = power[part][index] * BASE % MODULI[part];\n            }\n        }\n    }\n    Fingerprint substring(int left, int right) const {\n        Fingerprint result{right - left, {0, 0}};\n        for (int part = 0; part < 2; ++part) {\n            long long removed = prefix[part][left] * power[part][right - left] % MODULI[part];\n            result.hash[part] = (prefix[part][right] - removed + MODULI[part]) % MODULI[part];\n        }\n        return result;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string text;\n    int query_count;\n    cin >> text >> query_count;\n    StringHash hashes(text);\n    for (int query = 0; query < query_count; ++query) {\n        int left, right;\n        cin >> left >> right;\n        Fingerprint result = hashes.substring(left - 1, right);\n        cout << result.length << ' ' << result.hash[0] << ' ' << result.hash[1] << '\\n';\n    }\n}\n",
+              "type": "code",
+              "language": "C++17"
+            },
+            {
+              "text": "ababa\n4\n1 3\n3 5\n2 4\n1 5\n",
+              "type": "code",
+              "language": "Input"
+            },
+            {
+              "text": "3 1024 1024\n3 1024 1024\n3 1955 1955\n5 984127 984127\n",
+              "type": "code",
+              "language": "Output"
+            }
+          ]
+        },
+        {
+          "key": "collision",
+          "title": "9. Тэнцүү хураангуй ижил мөрийг батлахгүй",
+          "blocks": [
+            {
+              "text": "Жижиг жишээний модуль тав, суурь 31 үед “ab” нь 33, “ba” нь 63, хоёул тавд хуваахад гурав. Ижил урттай өөр мөр мөргөлдөж байна. Энэ нь программын том хоёр модулийн яг тэр мөргөлдөөн гэсэн үг биш, зөвхөн зарчмын эсрэг жишээ.",
+              "type": "p"
+            },
+            {
+              "text": "Хязгаартай олон хураангуйд хангалттай олон өөр мөр оноовол ямар нэг мөргөлдөөн заавал бий. Хоёр модуль зэрэг таарах шаардлага чангарна, гэхдээ логикийн баталгаа болохгүй. Тогтмол сууринд дурын халдлагатай өгөгдөлд тодорхой алдааны магадлал зохиож хэлэхгүй.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "equality",
+          "title": "10. Юуг яг дүгнэж болох вэ?",
+          "blocks": [
+            {
+              "text": "Урт өөр бол мөр өөр. Ижил уртад хэшийн аль нэг хэсэг өөр бол мөр өөр. Хоёул ижил бол мөр ижил байж болно, эсвэл мөргөлдсөн байж болно. Яг баталгаа хэрэгтэй бол үсгээр шалгах эсвэл KMP, suffix бүтэц зэрэг баталгаатай аргаа сонго.",
+              "type": "p"
+            },
+            {
+              "text": "Программ тэнцүү эсэхийг шийдэх бус урт ба хоёр үлдэгдэл гэсэн гурван тоо хэвлэнэ.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "boundaries",
+          "title": "11. Нэгээс эхэлсэн асуулт ба хагас нээлттэй дотоод хил",
+          "blocks": [
+            {
+              "text": "Оролтын $[L,R]$ нэгээс эхэлсэн хаалттай хил. Код үүнийг $[L-1,R)$ болгон өгнө. Урт $R-L+1$ гарна. Хоёрын нэгийг дур мэдэн хасвал хамгийн эхний эсвэл сүүлийн үсэг алдагдана.",
+              "type": "p"
+            },
+            {
+              "text": "Уртыг fingerprint-тэй хамт хадгална. Хоёр өөр мөрийг харьцуулах бол үсгийн кодлол, суурь, модулиуд, зэргийн чиглэл бүгд ижил байх ёстой.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "applications",
+          "title": "12. Палиндром ба давтагдах хэсгийн нэмэлт санаа",
+          "blocks": [
+            {
+              "text": "Урвуу мөрийн ижил хэсэгтэй харьцуулж палиндромд нэр дэвшигч шалгаж болно. Төвөө тогтоогоод радиусаар хайх зэрэг нэмэлт хайлтын шинж, хоёр мөрийн индексийн хувиргалтыг батал; хэшийн мөргөлдөөний асуудал хэвээр.",
+              "type": "p"
+            },
+            {
+              "text": "Өөрчлөлттэй Palindrome Queries-д prefix тогтмол хадгалалт хангалтгүй, динамик бүтэцтэй жинт нийлбэр хэрэгтэй. Ялгаатай дэд мөр тоолоход урт, бүх нэр дэвшигчийн тоо, мөргөлдөөн гурвыг тусад нь хяна.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "practice",
+          "title": "13. Хураангуйг яг алгоритмтай харьцуулах",
+          "blocks": [
+            {
+              "text": "String Matching",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "KMP-ийн яг хариутай хэшийн шүүлтийг харьцуул; ижил хэшийг шууд баталгаа гэж бүү ав.",
+              "type": "p"
+            },
+            {
+              "text": "Finding Borders",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Prefix/suffix хэшийн нэр дэвшигчийг яг border холбоостой харьцуул.",
+              "type": "p"
+            },
+            {
+              "text": "Finding Periods",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Үеллийн тодорхойлолт ба мөргөлдөөний баталгааг тусад нь гарга.",
+              "type": "p"
+            },
+            {
+              "text": "Longest Palindrome",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Урвуу мөрийн хил ба радиусын хайлтыг батал; яг шугаман өөр арга ч бий.",
+              "type": "p"
+            },
+            {
+              "text": "Palindrome Queries",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Динамик өөрчлөлтөд жинт хэш хадгалах бүтцийг шинээр гарга.",
+              "type": "p"
+            },
+            {
+              "text": "Distinct Substrings",
+              "type": "heading",
+              "level": 4
+            },
+            {
+              "text": "Бүх дэд мөрийн тоо ба мөргөлдөөний асуудал дан prefix-ээс шийдэгдэхгүй.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "priority",
+          "title": "14. Нөхцөлтэй хэрэгсэл, яг тэнцүүгийн баталгаа биш",
+          "blocks": [
+            {
+              "text": "Дунд ач холбогдолтой. Хэш нь олон дэд мөрийн хурдан шүүлт, нэмэлт хайлтад хэрэгтэй. String Matching ба Finding Borders-ийг KMP-ийн яг шийдэлтэй харьцуулж, хэш ашигласан хувилбарын нэмэлт баталгаажуулалтын зардал ба эрсдэлийг тайлбарла.",
+              "type": "p"
+            }
+          ]
+        },
+        {
+          "key": "mastery",
+          "title": "15. Prefix ашиглаагүй олон гишүүнтийн лавлах",
+          "blocks": [
+            {
+              "text": "Жижиг дэд мөр бүрийн үсгүүдийг эхнээс нь үржүүлж нэмсэн хоёр үлдэгдэлтэй тулга. Ижил агуулга өөр байрлалд ижил fingerprint өгдгийг шалга. Сөрөг хасалтын нормчлол, урт нэг, бүхэл мөр, давтагдсан үсгүүдийг хамруул.",
+              "type": "p"
+            },
+            {
+              "text": "Модуль тавтай “ab”, “ba” эсрэг жишээг өөрөө бод. Программ зөв fingerprint гаргаж байгаа эсэх ба fingerprint ялгаатай мөрүүдийг үргэлж ялгаж чадах эсэх хоёр өөр асуулт гэдгийг тайлбарлаж чад.",
+              "type": "p"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "String hashing — fast fingerprints and collisions",
+          "summary": "Extract substring polynomial fingerprints in constant time while distinguishing equal hashes from proven string equality.",
+          "sections": [
+            {
+              "key": "need",
+              "title": "1. Fingerprint many substrings of one string",
+              "blocks": [
+                {
+                  "text": "In “ababa”, ranges $[1,3]$ and $[3,5]$ both contain “aba”, while $[2,4]$ contains “bab”. Compute each length and compact numeric fingerprint efficiently.",
+                  "type": "p"
+                },
+                {
+                  "text": "The complete program prints fingerprints, not an unqualified equality verdict. We state precisely what equality or inequality of fingerprints establishes.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "direct",
+              "title": "2. Avoid rescanning every substring",
+              "blocks": [
+                {
+                  "text": "Recomputing fingerprints character by character costs the total queried length. Precompute prefix information once and extract each range from two boundaries.",
+                  "type": "p"
+                },
+                {
+                  "text": "Unlike plain sums, position matters: weight characters and remove the old prefix after multiplying it by the right power.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "state",
+              "title": "3. Base, modulus and character codes",
+              "blocks": [
+                {
+                  "text": "Map a through z to one through twenty-six. With base $B=31$, set $H[0]=0$, $H[i+1]=(H[i]B+code(s_i))\\bmod M$, and powers $P[i]=B^i\\bmod M$.",
+                  "type": "p"
+                },
+                {
+                  "text": "Maintain both moduli $10^9+7$ and $10^9+9$. The fixed base is neither secret nor random.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "method",
+              "title": "4. Remove the old prefix at its shifted weight",
+              "blocks": [
+                {
+                  "text": "For internal half-open range $[l,r)$, length is $L=r-l$. The earlier prefix contributes $H[l]B^L$, so subtract it: $hash(l,r)=(H[r]-H[l]P[L])\\bmod M$.",
+                  "type": "p"
+                },
+                {
+                  "text": "Normalize negative residues by adding the modulus. Identical content of equal length has identical fingerprints regardless of location.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "trace",
+              "title": "5. The same aba fingerprint at two positions",
+              "blocks": [
+                {
+                  "text": "Before reduction, “aba” gives $1cdot31^2+2cdot31+1=1024$, while “bab” gives $1955$. Both are below either modulus, so their two components coincide numerically.",
+                  "type": "p"
+                },
+                {
+                  "text": "The full “ababa” fingerprint is $984127$. Queries print length and both residues.",
+                  "type": "p"
+                },
+                {
+                  "rows": [
+                    [
+                      "[1,3]",
+                      "3",
+                      "1024",
+                      "1024"
+                    ],
+                    [
+                      "[3,5]",
+                      "3",
+                      "1024",
+                      "1024"
+                    ],
+                    [
+                      "[2,4]",
+                      "3",
+                      "1955",
+                      "1955"
+                    ],
+                    [
+                      "[1,5]",
+                      "5",
+                      "984127",
+                      "984127"
+                    ]
+                  ],
+                  "type": "table",
+                  "headers": [
+                    "Range",
+                    "Length",
+                    "First hash",
+                    "Second hash"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "proof",
+              "title": "6. Split the polynomial into old prefix and new substring",
+              "blocks": [
+                {
+                  "text": "Expanding a prefix gives the first character the largest exponent and the last exponent zero. The first $l$ characters in $H[r]$ have all exponents shifted by $r-l$ relative to $H[l]$.",
+                  "type": "p"
+                },
+                {
+                  "text": "Subtracting that shifted prefix leaves exactly the substring polynomial. Modular operations preserve the identity, proving correct extraction, not collision-free encoding.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "cost",
+              "title": "7. Linear preprocessing, constant fingerprint extraction",
+              "blocks": [
+                {
+                  "text": "With two fixed moduli, preprocessing/storage are linear and fingerprint queries constant time, for up to $200000$ characters/queries. Residue products can approach $10^{18}$, requiring long long.",
+                  "type": "p"
+                },
+                {
+                  "text": "Exact character verification after matching hashes adds work proportional to checked lengths; it does not preserve worst-case constant-time equality.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "implementation",
+              "title": "8. Two prefixes and normalized substring hashes",
+              "blocks": [
+                {
+                  "text": "8.1. State and setup",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Define base thirty-one, two moduli and the length/two-residue result; arrays store prefixes and powers per modulus.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long BASE = 31;\nconstexpr array<long long, 2> MODULI{1000000007, 1000000009};\nstruct Fingerprint {\n    int length;\n    array<long long, 2> hash;\n};\n\nclass StringHash {\n    array<vector<long long>, 2> prefix, power;\npublic:\n    explicit StringHash(const string& text) {\n        int count = static_cast<int>(text.size());\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "8.2. Main operation",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Map letters to one through twenty-six and build modular prefixes/powers from initial zero/one.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "        for (int part = 0; part < 2; ++part) {\n            prefix[part].resize(count + 1);\n            power[part].assign(count + 1, 1);\n            for (int index = 0; index < count; ++index) {\n                int value = text[index] - 'a' + 1;\n                prefix[part][index + 1] = (prefix[part][index] * BASE + value) % MODULI[part];\n                power[part][index + 1] = power[part][index] * BASE % MODULI[part];\n            }\n        }\n    }\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "8.3. Result",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Remove the shifted prefix for internal half-open bounds and normalize; equal content obtains location-independent fingerprints.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "    Fingerprint substring(int left, int right) const {\n        Fingerprint result{right - left, {0, 0}};\n        for (int part = 0; part < 2; ++part) {\n            long long removed = prefix[part][left] * power[part][right - left] % MODULI[part];\n            result.hash[part] = (prefix[part][right] - removed + MODULI[part]) % MODULI[part];\n        }\n        return result;\n    }\n};\n\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "8.4. Input and output",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Read a nonempty lowercase string then query count, each at most $200000$. Queries use one-based inclusive bounds; print length and both hashes.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string text;\n    int query_count;\n    cin >> text >> query_count;\n    StringHash hashes(text);\n    for (int query = 0; query < query_count; ++query) {\n        int left, right;\n        cin >> left >> right;\n        Fingerprint result = hashes.substring(left - 1, right);\n        cout << result.length << ' ' << result.hash[0] << ' ' << result.hash[1] << '\\n';\n    }\n}\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "Complete compilable C++17 program",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr long long BASE = 31;\nconstexpr array<long long, 2> MODULI{1000000007, 1000000009};\nstruct Fingerprint {\n    int length;\n    array<long long, 2> hash;\n};\n\nclass StringHash {\n    array<vector<long long>, 2> prefix, power;\npublic:\n    explicit StringHash(const string& text) {\n        int count = static_cast<int>(text.size());\n        for (int part = 0; part < 2; ++part) {\n            prefix[part].resize(count + 1);\n            power[part].assign(count + 1, 1);\n            for (int index = 0; index < count; ++index) {\n                int value = text[index] - 'a' + 1;\n                prefix[part][index + 1] = (prefix[part][index] * BASE + value) % MODULI[part];\n                power[part][index + 1] = power[part][index] * BASE % MODULI[part];\n            }\n        }\n    }\n    Fingerprint substring(int left, int right) const {\n        Fingerprint result{right - left, {0, 0}};\n        for (int part = 0; part < 2; ++part) {\n            long long removed = prefix[part][left] * power[part][right - left] % MODULI[part];\n            result.hash[part] = (prefix[part][right] - removed + MODULI[part]) % MODULI[part];\n        }\n        return result;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string text;\n    int query_count;\n    cin >> text >> query_count;\n    StringHash hashes(text);\n    for (int query = 0; query < query_count; ++query) {\n        int left, right;\n        cin >> left >> right;\n        Fingerprint result = hashes.substring(left - 1, right);\n        cout << result.length << ' ' << result.hash[0] << ' ' << result.hash[1] << '\\n';\n    }\n}\n",
+                  "type": "code",
+                  "language": "C++17"
+                },
+                {
+                  "text": "ababa\n4\n1 3\n3 5\n2 4\n1 5\n",
+                  "type": "code",
+                  "language": "Input"
+                },
+                {
+                  "text": "3 1024 1024\n3 1024 1024\n3 1955 1955\n5 984127 984127\n",
+                  "type": "code",
+                  "language": "Output"
+                }
+              ]
+            },
+            {
+              "key": "collision",
+              "title": "9. Equal fingerprints do not prove equal strings",
+              "blocks": [
+                {
+                  "text": "With toy modulus five and base thirty-one, “ab” is thirty-three and “ba” sixty-three, both residue three. This illustrates the principle, not an asserted collision for the program’s two large moduli.",
+                  "type": "p"
+                },
+                {
+                  "text": "Finite fingerprints cannot injectively encode arbitrarily many strings. Requiring two residues narrows collisions but never proves equality; fixed public parameters do not justify invented adversarial error probabilities.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "equality",
+              "title": "10. What can be concluded exactly?",
+              "blocks": [
+                {
+                  "text": "Different lengths or a different residue prove inequality. Matching length and both residues leave equality unconfirmed unless checked or replaced by an exact method.",
+                  "type": "p"
+                },
+                {
+                  "text": "The program prints a length and two residues, rather than an unqualified equality decision.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "boundaries",
+              "title": "11. Inclusive input versus half-open internal ranges",
+              "blocks": [
+                {
+                  "text": "Convert one-based inclusive $[L,R]$ to zero-based half-open $[L-1,R)$, giving length $R-L+1$.",
+                  "type": "p"
+                },
+                {
+                  "text": "Carry length with fingerprints. Cross-string comparison requires identical alphabet codes, base, moduli and polynomial orientation.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "applications",
+              "title": "12. Palindromes and repeated substrings need more reasoning",
+              "blocks": [
+                {
+                  "text": "Reverse-string comparisons can filter palindrome candidates, but require correct index mapping and a justified center/radius search; collision concerns remain.",
+                  "type": "p"
+                },
+                {
+                  "text": "Dynamic palindrome queries need updateable weighted summaries rather than immutable prefixes. Distinct-substring tasks also require length, candidate-count and collision reasoning.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "practice",
+              "title": "13. Compare fingerprints with exact methods",
+              "blocks": [
+                {
+                  "text": "String Matching",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Compare hash filtering with exact KMP; equal hashes need qualification.",
+                  "type": "p"
+                },
+                {
+                  "text": "Finding Borders",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Compare prefix/suffix hash candidates with exact border links.",
+                  "type": "p"
+                },
+                {
+                  "text": "Finding Periods",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Separate period semantics from collision handling.",
+                  "type": "p"
+                },
+                {
+                  "text": "Longest Palindrome",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Prove reversed indices and radius search; exact linear alternatives exist.",
+                  "type": "p"
+                },
+                {
+                  "text": "Palindrome Queries",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Derive an updateable weighted-hash structure.",
+                  "type": "p"
+                },
+                {
+                  "text": "Distinct Substrings",
+                  "type": "heading",
+                  "level": 4
+                },
+                {
+                  "text": "Prefix hashes alone do not settle candidate complexity or collision-free distinct counting.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "priority",
+              "title": "14. A useful tool, not an equality proof",
+              "blocks": [
+                {
+                  "text": "Medium priority. Hashing is useful for filtering and richer searches; compare String Matching/Borders with exact KMP and account for verification cost or collision risk in hash-based alternatives.",
+                  "type": "p"
+                }
+              ]
+            },
+            {
+              "key": "mastery",
+              "title": "15. Check against direct polynomial recomputation",
+              "blocks": [
+                {
+                  "text": "Recompute both substring polynomials character by character, without prefix extraction. Cover identical content at different positions, negative-residue normalization, singleton/full ranges and repeated letters.",
+                  "type": "p"
+                },
+                {
+                  "text": "Verify the toy collision and explain the difference between computing the specified hash correctly and uniquely distinguishing all strings.",
+                  "type": "p"
+                }
+              ]
+            }
+          ],
+          "prerequisites": "Prefix preprocessing, modular arithmetic and precomputed powers; lowercase Latin input."
+        }
+      },
+      "automaticDemo": false,
+      "prerequisites": "Урьдчилсан нийлбэр, үлдэгдлийн арифметик, зэрэг урьдчилан бодох. Код жижиг латин үсэгтэй.",
+      "priorityLevel": "medium",
+      "priorityReason": "Дэд мөрийн хурдан хураангуй, олон харьцуулалтын хэрэгтэй туслах арга. Мөргөлдөөнөөс шалтгаалан яг тэнцүү гэсэн баталгаанд нэмэлт шалгалт эсвэл өөр алгоритм шаарддаг тул нөхцөлтэй дунд ач холбогдолтой.",
+      "prerequisiteIds": [
+        "prefix-sums",
+        "fast-power"
+      ],
+      "learningRelations": {
+        "next": null,
+        "practice": [
+          {
+            "key": "474",
+            "stage": "Warm-up",
+            "reason": "Хэшийн шүүлтийг KMP-ийн яг шийдэлтэй харьцуулж, мөргөлдөөн ба баталгаажуулалтын зардлыг тайлбарлах цөм дасгал.",
+            "priority": true
+          },
+          {
+            "key": "475",
+            "stage": "Standard",
+            "reason": "Хэшийн шүүлтийг KMP-ийн яг шийдэлтэй харьцуулж, мөргөлдөөн ба баталгаажуулалтын зардлыг тайлбарлах цөм дасгал.",
+            "priority": true
+          },
+          {
+            "key": "476",
+            "stage": "Observation",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "478",
+            "stage": "Application",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "481",
+            "stage": "Challenge",
+            "reason": "",
+            "priority": false
+          },
+          {
+            "key": "485",
+            "stage": "Olympiad extension",
+            "reason": "",
+            "priority": false
+          }
+        ],
+        "variants": [
+          {
+            "tutorialId": "kmp",
+            "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+            "descriptionEn": "Compare its assumptions and use cases."
+          },
+          {
+            "tutorialId": "binary-search",
+            "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+            "descriptionEn": "Compare its assumptions and use cases."
+          }
+        ]
+      }
+    },
+    "revision": 2,
+    "body_md5": "fbba2eefb42aa3e2cc9f3c46aafdfea2",
+    "published": true
+  }
+}
