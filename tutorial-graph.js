@@ -21,10 +21,33 @@ export function graphControls(root,b,change,validate,repaint) {
  const exportButton=document.createElement('button');exportButton.type='button';exportButton.textContent='Граф JSON татах';exportButton.onclick=()=>{try{validate(b);const content=JSON.stringify(b,null,2);if(new Blob([content]).size>100000)throw Error('Графын JSON файл 100KB-ээс ихгүй байна.');const url=URL.createObjectURL(new Blob([content],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='graph.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(e){error.textContent=e instanceof SyntaxError?'JSON файлын бүтэц буруу.':e.message;}};group.append(exportButton);
 }
 // Keep labels inside the responsive drawing without changing their saved coordinates.
-export function positionGraphLabels(canvas,labels){
+export function positionGraphLabels(canvas,labels,afterLayout=()=>{}){
  queueMicrotask(()=>{
   if(!canvas.isConnected)return;
-  const place=()=>{const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;for(const {element,x,y,dx,dy}of labels){const a=element.offsetWidth/2,b=element.offsetHeight/2;const px=Math.max(a,Math.min(w-a,w*x/100+dx)),py=Math.max(b,Math.min(h-b,h*y/100+dy));element.style.left=px+'px';element.style.top=py+'px';element.style.transform='translate(-50%,-50%)';}};
-  place();if(typeof ResizeObserver==='function'){const observer=new ResizeObserver(()=>{if(!canvas.isConnected){observer.disconnect();return;}place();});observer.observe(canvas);for(const l of labels)observer.observe(l.element);}
+  const place=()=>{const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;afterLayout();for(const {element,x,y,dx,dy}of labels){const a=element.offsetWidth/2,b=element.offsetHeight/2;const px=Math.max(a,Math.min(w-a,w*x/100+dx)),py=Math.max(b,Math.min(h-b,h*y/100+dy));element.style.left=px+'px';element.style.top=py+'px';element.style.transform='translate(-50%,-50%)';}};
+  place();if(typeof ResizeObserver==='function'){const observer=new ResizeObserver(()=>{if(!canvas.isConnected){observer.disconnect();return;}place();});observer.observe(canvas);for(const l of labels)observer.observe(l.element);for(const n of canvas.querySelectorAll('.diagram-node'))observer.observe(n);}
  });
+}
+
+// Arrow geometry is measured in CSS pixels, so fixed-size node labels cannot
+// conceal arrowheads when an SVG is scaled to a narrow reader/editor panel.
+export function positionGraphArrows(canvas, arrows) {
+ const box=canvas.getBoundingClientRect();
+ if(!box.width||!box.height)return;
+ const nodes=new Map([...canvas.querySelectorAll('.diagram-node')].map(n=>[n.dataset.nodeId,n.getBoundingClientRect()]));
+ const point=(x,y)=>(x/box.width*600)+','+(y/box.height*320);
+ for(const {line,arrow,from,to}of arrows){
+  const a=nodes.get(from),b=nodes.get(to);if(!a||!b)continue;
+  const ax=(a.left+a.right)/2-box.left,ay=(a.top+a.bottom)/2-box.top;
+  const bx=(b.left+b.right)/2-box.left,by=(b.top+b.bottom)/2-box.top;
+  const len=Math.hypot(bx-ax,by-ay);if(len<1){arrow.setAttribute('points','');continue;}
+  const ux=(bx-ax)/len,uy=(by-ay)/len;
+  const boundary=r=>Math.min(Math.abs(ux)>1e-8?r.width/2/Math.abs(ux):Infinity,Math.abs(uy)>1e-8?r.height/2/Math.abs(uy):Infinity);
+  const start=boundary(a)+1,end=boundary(b)+3;
+  if(start+end+8>=len){arrow.setAttribute('points','');continue;}
+  const x=bx-ux*end,y=by-uy*end;
+  line.setAttribute('x1',(ax+ux*start)/box.width*600);line.setAttribute('y1',(ay+uy*start)/box.height*320);
+  line.setAttribute('x2',x/box.width*600);line.setAttribute('y2',y/box.height*320);
+  arrow.setAttribute('points',[point(x,y),point(x-ux*8-uy*4,y-uy*8+ux*4),point(x-ux*8+uy*4,y-uy*8-ux*4)].join(' '));
+ }
 }
