@@ -462,3 +462,9 @@ Sorting revision 8/history 208 is live (PR 94, merge 11e1333, Pages 40807027628 
 ## Data structures chapter 4 published
 
 PR 96 merged 762cbca3feefe6eedf0aa7bde86a03b88ae59ea8. set-map revision 5/history 209 is published with all six source subsections, native MN/EN and the same six practice relationships. One-time SQL SHA-256 ab09ec93697f4a26543ec14bdccaf6bf67e8dad04d3706f6cb6779a9f44fb567 SUCCEEDED; NEVER REPLAY. Exact anonymous body and all other 56 rows, private drafts, learner/profile state, 1010 problems and authority fingerprints verified unchanged. See DATA-STRUCTURES-PUBLICATION-RECEIPT. Nine programs/two harnesses pass UBSan (200 runs, 6812 intersection answers, 1245 frequency and 1575 nearest queries); native reader/editor and atomic publication checks pass. No schema/access/deferred-feature change. Three existing handbook rewrites are now published; 52 remain. Introduction is a separate new addition. Next is full chapter 5 Complete search, using existing brute-force ID after fresh source/live/draft review. Do not infer owner acceptance or rewrite narrow overlapping IDs automatically.
+
+## Current handbook graph checkpoint
+
+PR #112 merged as 655e15b; graph-basics is published revision 5 / history 221. One-time SQL SHA-256 af31b0eecde79f338678598bf8b25433c8cf121b1585055c5df07b60dee792f9 SUCCEEDED; NEVER REPLAY. Counts remain 57 stored / 56 public tutorials and 1010 problems. All 8 drafts, Mongolia, the other 56 rows, learner records and authority fingerprints are unchanged. The target private draft retains its older base. See audit/PACKAGE03-GRAPHS-PUBLICATION-RECEIPT.json.
+
+The handbook cycle has 10/55 existing rewrites public-verified, with 45 remaining; Introduction is separate. Next is full chapter 12, Graph traversal. No migration, security, editor or deferred-feature changes, and no owner acceptance claim.
