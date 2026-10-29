@@ -1,0 +1,17 @@
+{
+  "sparse": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "struct Sparse {\n    int n;\n    vector<int> lg;\n    vector<vector<ll>> st;\n\n    Sparse(int _n) {\n        n = _n;\n        lg.resize(n + 1);\n        for (int i = 2; i <= n; i++) lg[i] = lg[i / 2] + 1;\n        int k = n ? lg[n] + 1 : 0;\n        st.assign(k, vector<ll>(n));\n    }\n\n",
+    "    void build(const vector<ll> &a) {\n        if (n == 0) return;\n        st[0] = a;\n        for (int k = 1; k < (int)st.size(); k++) {\n            int w = 1 << (k - 1);\n            for (int i = 0; i + 2 * w <= n; i++) {\n                st[k][i] = min(st[k - 1][i], st[k - 1][i + w]);\n            }\n        }\n    }\n\n",
+    "    ll query(int l, int r) const {\n        int k = lg[r - l];\n        int w = 1 << k;\n        return min(st[k][l], st[k][r - w]);\n    }\n};\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    Sparse sp(n);\n    sp.build(a);\n    while (q--) {\n        int l, r;\n        cin >> l >> r;\n        cout << sp.query(l - 1, r) << '\\n';\n    }\n    return 0;\n}\n"
+  ],
+  "fenwick": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "struct Fenwick {\n    int n;\n    vector<ll> tree;\n\n    Fenwick(int _n) {\n        n = _n;\n        tree.resize(n + 1);\n    }\n\n",
+    "    void add(int i, ll x) {\n        for (; i <= n; i += i & -i) tree[i] += x;\n    }\n\n",
+    "    ll sum(int i) const {\n        ll s = 0;\n        for (; i > 0; i -= i & -i) s += tree[i];\n        return s;\n    }\n\n",
+    "    ll rangeSum(int l, int r) const {\n        return sum(r) - sum(l - 1);\n    }\n};\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n + 1);\n    Fenwick fw(n);\n    for (int i = 1; i <= n; i++) {\n        cin >> a[i];\n        fw.add(i, a[i]);\n    }\n    while (q--) {\n        int type, l, r;\n        cin >> type;\n        if (type == 1) {\n            ll x;\n            cin >> l >> x;\n            fw.add(l, x - a[l]);\n            a[l] = x;\n        } else {\n            cin >> l >> r;\n            cout << fw.rangeSum(l, r) << '\\n';\n        }\n    }\n    return 0;\n}\n"
+  ]
+}
