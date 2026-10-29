@@ -2,9 +2,16 @@ import functools,http.server,json,threading
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[2]
-rows=[r for r in json.loads((ROOT/'audit/PART04-BASELINE.json').read_text())['tutorials']if r['id']!='mongolia']
-for id in ['introduction','scc','paths-circuits','flows-cuts','number-theory','matrices','probability','game-theory','sqrt-algorithms','geometry','sweep-line']:
- b=json.loads((ROOT/f'audit/package03-lessons/{id}.json').read_text())['body'];rows=[r for r in rows if r['id']!=id]+[{'id':id,'body':b,'revision':1}]
+import argparse
+parser=argparse.ArgumentParser();parser.add_argument('--catalog',type=Path);parser.add_argument('--candidate',type=Path,action='append',default=[]);parser.add_argument('--report',default='audit/PACKAGE03-HANDBOOK-ORDER-BROWSER.json');args=parser.parse_args()
+if args.catalog:
+ rows=[r for r in json.loads(args.catalog.read_text())['tutorials']if r['id']!='mongolia'and r.get('published',True)]
+else:
+ rows=[r for r in json.loads((ROOT/'audit/PART04-BASELINE.json').read_text())['tutorials']if r['id']!='mongolia']
+ for id in ['introduction','scc','paths-circuits','flows-cuts','number-theory','matrices','probability','game-theory','sqrt-algorithms','geometry','sweep-line']:
+  b=json.loads((ROOT/f'audit/package03-lessons/{id}.json').read_text())['body'];rows=[r for r in rows if r['id']!=id]+[{'id':id,'body':b,'revision':1}]
+for path in args.candidate:
+ d=json.loads(path.read_text());r=next(r for r in rows if r['id']==d['id']);r['body']=d['body']
 class Quiet(http.server.SimpleHTTPRequestHandler):
  def log_message(self,*a):pass
 server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(Quiet,directory=str(ROOT)));threading.Thread(target=server.serve_forever,daemon=True).start();base=f'http://127.0.0.1:{server.server_port}';results=[]
@@ -32,4 +39,4 @@ try:
    results.append({'width':width,'theme':theme,'visible_lessons':len(rows),'default_exact_order':r['ids'],'source_chapter_numbers_and_unnumbered_supplements':True,'explicit_priority_sort_and_filter':True,'no_document_overflow':True});p.close()
   browser.close()
 finally:server.shutdown()
-(ROOT/'audit/PACKAGE03-HANDBOOK-ORDER-BROWSER.json').write_text(json.dumps({'status':'passed','cases':results,'scope':'Native listing with all 65 published lesson identities; local readonly fixtures, no production writes'},indent=2)+'\n');print('Native handbook order, numbering and explicit priority controls passed')
+(ROOT/args.report).write_text(json.dumps({'status':'passed','cases':results,'scope':'Native listing with all 65 published lesson identities; local readonly fixtures, no production writes'},indent=2)+'\n');print('Native handbook order, numbering and explicit priority controls passed')

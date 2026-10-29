@@ -1,0 +1,15 @@
+{
+  "one": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "vector<ll> prefix(const vector<ll> &a) {\n    int n = a.size();\n    vector<ll> p(n + 1);\n    for (int i = 0; i < n; i++) p[i + 1] = p[i] + a[i];\n    return p;\n}\n\n",
+    "ll rangeSum(const vector<ll> &p, int l, int r) {\n    return p[r] - p[l];\n}\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    vector<ll> p = prefix(a);\n    while (q--) {\n        int l, r;\n        cin >> l >> r;\n        cout << rangeSum(p, l - 1, r) << '\\n';\n    }\n    return 0;\n}\n"
+  ],
+  "two": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "struct Prefix2D {\n    int n, m;\n    vector<vector<ll>> p;\n\n    Prefix2D(int _n, int _m) {\n        n = _n;\n        m = _m;\n        p.assign(n + 1, vector<ll>(m + 1));\n    }\n\n",
+    "    void build(const vector<vector<ll>> &a) {\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < m; j++) {\n                p[i + 1][j + 1] = a[i][j] + p[i][j + 1] + p[i + 1][j] - p[i][j];\n            }\n        }\n    }\n\n",
+    "    ll sum(int y1, int x1, int y2, int x2) const {\n        return p[y2][x2] - p[y1][x2] - p[y2][x1] + p[y1][x1];\n    }\n};\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m, q;\n    cin >> n >> m >> q;\n    vector<vector<ll>> a(n, vector<ll>(m));\n    for (auto &row : a) {\n        for (ll &x : row) cin >> x;\n    }\n    Prefix2D pref(n, m);\n    pref.build(a);\n    while (q--) {\n        int y1, x1, y2, x2;\n        cin >> y1 >> x1 >> y2 >> x2;\n        cout << pref.sum(y1 - 1, x1 - 1, y2, x2) << '\\n';\n    }\n    return 0;\n}\n"
+  ]
+}
