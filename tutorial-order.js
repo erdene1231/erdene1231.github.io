@@ -11,7 +11,7 @@ export const handbookTutorialOrder = [
  'graph-basics','bfs','dfs','flood-fill','connected-components','bipartite',
  'dijkstra','bellman-ford','floyd-warshall','tree-basics','tree-dp','kruskal','dsu',
  'topological-sort','scc','lca','paths-circuits','flows-cuts',
- 'number-theory','gcd','sieve','fast-power','combinatorics','matrices','probability','game-theory','kmp','string-hashing','sqrt-algorithms','lazy-segment-tree','geometry',
+ 'number-theory','gcd','sieve','fast-power','combinatorics','matrices','probability','game-theory','kmp','string-hashing','sqrt-algorithms','lazy-segment-tree','geometry','sweep-line',
  'invariant','debugging','subtask-strategy'
 ];
 export function orderTutorials(input, fallbackOrder=[]) {
@@ -25,5 +25,5 @@ export const handbookChapterNumbers = Object.freeze({
  'dynamic-programming':7,'two-pointers':8,'prefix-sums':9,'bit-operations':10,
  'graph-basics':11,bfs:12,dijkstra:13,'tree-basics':14,kruskal:15,
  'topological-sort':16,scc:17,lca:18,'paths-circuits':19,'flows-cuts':20,
- 'number-theory':21,combinatorics:22,matrices:23,probability:24,'game-theory':25,kmp:26,'sqrt-algorithms':27,'lazy-segment-tree':28,geometry:29
+ 'number-theory':21,combinatorics:22,matrices:23,probability:24,'game-theory':25,kmp:26,'sqrt-algorithms':27,'lazy-segment-tree':28,geometry:29,'sweep-line':30
 });
