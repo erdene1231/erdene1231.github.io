@@ -720,3 +720,8 @@ All 55 existing non-Mongolia lessons are published and reconciled against curren
 ## Handbook Tree queries — verified 2026-10-29
 
 Existing `lca` revision 7/history 230 is published and anonymously verified after PR #130. LCA-first ordering, full chapter 18 examples/subtopics and requested static edge/vertex path aggregates are complete. Original rewrite cycle: 16/55 public-verified, 39 remaining; Introduction and SCC are separate additions. Catalog stays 58 stored/57 public tutorials and 1010 problems. All unrelated rows, eight drafts, learner and authority state are unchanged. See TREE-QUERY-PUBLICATION-RECEIPT; its successful one-time SQL must never be replayed. No deferred feature was implemented and owner acceptance is not inferred.
+
+
+## Handbook Paths and circuits — verified 2026-10-29
+
+New `paths-circuits` revision 1/history 231 is public-verified after PR #132 and v65 deployment. Contains all four chapter 19 subsections with exact source routes/boards, five explained C++17 programs, 931 UBSan runs, native MN/EN roundtrips and guarded publication checks. Medium tutorial priority; only two new tutorial-core relationships, no global problem-priority updates. All prior 58 rows, eight drafts, Mongolia, 1010 problems, learner/profile and authority state are unchanged. Original cycle 16/55; three separate new additions; 59 stored/58 public. See PATHS-PUBLICATION-RECEIPT; successful SQL must never be replayed. All three deferred features remain deferred, no owner acceptance inferred.

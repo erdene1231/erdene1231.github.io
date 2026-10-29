@@ -1,3 +1,11 @@
+## Current: Paths and circuits published — 2026-10-29 13:05 UTC
+
+New `paths-circuits` revision 1/history 231 is live after PR #132 merge `614c7fa002be0a736b64d5e1d2bd92d91bfcefa8`; Pages run 40878176728 succeeded, 15 v65 runtime/JSON assets match. Exact anonymous MN/EN body and all 58 prior catalog rows, eight private drafts, Mongolia, 1010 problems, learner/profile and authority fingerprints are verified. See `audit/PACKAGE03-PATHS-PUBLICATION-RECEIPT.json` and `audit/PACKAGE03-PATHS-REVIEW.md`.
+
+One-time SQL `30ec5bc11c14b52a9220192ee46781dd8176e5d1e142615f0160c1629a8cfafd` SUCCEEDED; NEVER REPLAY. Recovery: `/workspace/package03-paths-execution`; postchecks: `/workspace/package03-paths-postpublish`. Source chapter 19's four main subsections, exact routes/boards and reasoning are retained. Five explained C++17 programs passed 931 UBSan runs. Medium tutorial priority is individually justified; only new tutorial relationships mark Mail Delivery/Teleporters Path as core, with no global problem priority change. No migration/security/editor/deferred-feature changes.
+
+Original 55 rewrite cycle stays **16/55 verified, 39 remaining**. Separate new handbook additions are Introduction, SCC and Paths/circuits (59 stored/58 public). Do not create duplicate Euler, Hamilton, De Bruijn or knight-tour lessons: they are covered in this containing lesson. Next chapter 20, Flows and cuts, needs actual full-source review and stable-ID mapping. Standing tested PR/merge/ordinary guarded publication remains authorized; no GitHub APPROVE review without specific confirmation. Preserve all drafts, owner edits, Mongolia and learner data. All three deferred completion/profile/weekly-progress requests remain deferred. No owner acceptance is inferred.
+
 ## Current: full Tree queries published — 2026-10-29 12:10 UTC
 
 Existing `lca` revision 7/history 230 is live after PR #130 merge `5388f15e1639c42aa63bf43e6825ab0a45ff9e48`; Pages 40870999971 succeeded, 15 runtime/JSON assets match v64. Exact anonymous MN/EN body and all other 57 rows, eight private drafts, Mongolia, 1010 problems, learner/profile and authority fingerprints are verified. See `audit/PACKAGE03-TREE-QUERY-PUBLICATION-RECEIPT.json` and `audit/PACKAGE03-TREE-QUERIES-REVIEW.md`.

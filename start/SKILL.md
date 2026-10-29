@@ -509,3 +509,10 @@ Full chapter 18 is published in existing `lca` revision 7/history 230 after PR #
 All other 57 rows, eight drafts, Mongolia, 1010 problems, learner and authority state are unchanged. Original 55 cycle: 16/55 public-verified, 39 remaining; Introduction and SCC are separate new additions. All chapter 18 source examples and subtopics plus static edge/vertex min/max/sum are covered, with LCA-first ordering, six explained programs and 561 UBSan runs. Earlier unpublished representatives are archived safely; the saved struct branch is retained.
 
 Next chapter 19, Paths and circuits, requires actual source review and stable-ID mapping. No migration, security or deferred-feature changes were made. Never submit GitHub APPROVE reviews without specific confirmation or replay old jobs.
+
+
+## Latest handbook Paths and circuits checkpoint
+
+New `paths-circuits` is published revision 1/history 231 after PR #132 merge `614c7fa002be0a736b64d5e1d2bd92d91bfcefa8`; Pages 40878176728 succeeded, with 15 v65 assets verified. One-time SQL `30ec5bc11c14b52a9220192ee46781dd8176e5d1e142615f0160c1629a8cfafd` SUCCEEDED; NEVER REPLAY. Read PATHS-PUBLICATION-RECEIPT and NEXT-STEPS.
+
+All prior 58 catalog rows, eight drafts, Mongolia, 1010 problems, learner/profile and authority state are unchanged. Catalog: 59 stored / 58 public. Original rewrite cycle stays 16/55, 39 remaining; Introduction, SCC and Paths/circuits are three separate additions. Full chapter 19's four subsections and exact route/board examples, five explained programs/931 UBSan executions, native editor/reader and atomic checks are verified. No migration, security, editor or deferred-feature changes. Next source chapter is Flows and cuts. Avoid duplicate Euler/Hamilton/De Bruijn/knight lessons and never submit APPROVE reviews or replay successful jobs.
