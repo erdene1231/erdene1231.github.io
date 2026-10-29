@@ -1,10 +1,10 @@
 # Handbook curriculum reconciliation — 2026-10-29
 
-Original read-only audit of the fresh anonymous65-lesson catalog and successful publication receipts, now updated with verified search publication PR156. Only its three target bodies/history changed; no private draft/learner/problem/access change. Mongolia remains excluded; no private draft bodies were inspected by this audit.
+Original read-only audit of the fresh anonymous65-lesson catalog and successful publication receipts, now updated with verified search publications PR156 and single-target PR158. Only those four target bodies/history changed; no private draft/learner/problem/access change. Mongolia remains excluded; no private draft bodies were inspected by this audit.
 
-55 originals =24 newly rewritten +31 still pre-handbook standalone bodies. Ten separate additions yield65 public lessons;66 stored including the last-verified excluded Mongolia. **The counts are consistent.** All 34 rewritten/new live bodies exactly match their latest successful receipts. All 31 remaining bodies exactly match the pre-Introduction recovery snapshot: concept coverage elsewhere has not rewritten these IDs. Previous package2 quality work is historical, not new-cycle credit.
+55 originals =25 newly rewritten +30 still pre-handbook standalone bodies. Ten separate additions yield65 public lessons;66 stored including the last-verified excluded Mongolia. **The counts are consistent.** All 35 rewritten/new live bodies exactly match their latest successful receipts. All 30 remaining bodies exactly match the pre-Introduction recovery snapshot: concept coverage elsewhere has not rewritten these IDs. Previous package2 quality work is historical, not new-cycle credit.
 
-## The 24 rewritten original IDs
+## The 25 rewritten original IDs
 
 | Stable ID | Live revision | Source chapter | Latest matching receipt |
 |---|---:|---:|---|
@@ -13,6 +13,7 @@ Original read-only audit of the fresh anonymous65-lesson catalog and successful 
 | `binary-search` | 9 | 3 | [PACKAGE03-SEARCH-PUBLICATION-RECEIPT.json](PACKAGE03-SEARCH-PUBLICATION-RECEIPT.json) |
 | `lower-bound` | 3 | 3 | [PACKAGE03-SEARCH-PUBLICATION-RECEIPT.json](PACKAGE03-SEARCH-PUBLICATION-RECEIPT.json) |
 | `upper-bound` | 3 | 3 | [PACKAGE03-SEARCH-PUBLICATION-RECEIPT.json](PACKAGE03-SEARCH-PUBLICATION-RECEIPT.json) |
+| `binary-search-answer` | 5 | 3 | [PACKAGE03-ANSWER-PUBLICATION-RECEIPT.json](PACKAGE03-ANSWER-PUBLICATION-RECEIPT.json) |
 | `set-map` | 6 | 4 | [PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json](PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json) |
 | `brute-force` | 5 | 5 | [PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json](PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json) |
 | `greedy` | 9 | 6 | [PACKAGE03-GREEDY-PUBLICATION-RECEIPT.json](PACKAGE03-GREEDY-PUBLICATION-RECEIPT.json) |
@@ -33,13 +34,12 @@ Original read-only audit of the fresh anonymous65-lesson catalog and successful 
 | `string-hashing` | 3 | 26 | [PACKAGE03-STRINGS-PUBLICATION-RECEIPT.json](PACKAGE03-STRINGS-PUBLICATION-RECEIPT.json) |
 | `lazy-segment-tree` | 7 | 28 | [PACKAGE03-SEGREVISIT-PUBLICATION-RECEIPT.json](PACKAGE03-SEGREVISIT-PUBLICATION-RECEIPT.json) |
 
-## The 31 remaining originals — preserve every ID
+## The 30 remaining originals — preserve every ID
 
 “Covered by” identifies already published concepts, not completion of the standalone rewrite. Each body was inspected for its current goal/section structure; this bounded inventory is not a new complete semantic/code review.
 
 | Stable ID | Live revision | Source mapping / covered by | Standalone work still needed |
 |---|---:|---|---|
-| `binary-search-answer` | 4 | 3.3 → `sorting#binary-search` | Monotone predicate/first feasible answer extension; preserve machine-production example and overflow contract. |
 | `stack-queue` | 4 | 4.5 → `set-map#other-structures` | LIFO/FIFO focused usage and pop/empty semantics; keep both containers distinct. |
 | `priority-queue` | 4 | 4.5 → `set-map#other-structures` | Heap selection and room-allocation application; not a sorted sequence. |
 | `recursion` | 4 | 5.1–5.4 → `brute-force#subsets` | Recursion/call-return foundation with Hanoi supplement; source generation/backtracking gives broader context. |
@@ -113,13 +113,13 @@ Original read-only audit of the fresh anonymous65-lesson catalog and successful 
 
 ## Visible ordering and bookkeeping
 
-The 118-entry source-subtopic ledger had stale unfinished statuses for chapters18–23 and 27–30, plus an intermediate DP revision. Its publication fields are now reconciled locally to current containing-topic IDs/revisions/hashes/receipts. This fixes bookkeeping only; it does not mark any of the 31 focused originals rewritten.
+The 118-entry source-subtopic ledger had stale unfinished statuses for chapters18–23 and 27–30, plus an intermediate DP revision. Its publication fields are now reconciled locally to current containing-topic IDs/revisions/hashes/receipts. This fixes bookkeeping only; it does not mark any of the 30 focused originals rewritten.
 
 All 30 chapter labels occur in increasing handbook order, Introduction first. Focused extras use “Нэмэлт”, not invented chapter numbers. The fresh-catalog native reader test checks actual listing, numbering, explicit priority sort/filter and 390/1200px layouts; deployed order/runtime/curriculum bytes match cache75 under normal TLS. These are local native and deployed-file checks, not a certificate-bypassed live-browser claim.
 
 Confirmed issue: chapter 9 number currently belongs to old `prefix-sums`, while the complete Range queries lesson is `segment-tree` and is labeled supplementary. Fix later by moving only the chapter-number mapping and containing-first9-cluster order; preserve both IDs, content/progress and explicit sort controls. No runtime fix in this audit.
 
-`binary-search-answer` sits after Greedy although its source is 3.3; place it beside the search supplements at its rewrite. Compression beside Sorting is defensible, with a9.4 cross-link. Methodology lessons remain unnumbered after the book. New HLD/centroid/etc should be unnumbered near prerequisites, not chapters31 onward.
+`binary-search-answer` retains its existing Greedy prerequisite and post-Greedy supplement placement after review. Full source3.3 is already in Sorting, so no prerequisite is moved behind its dependent lesson. Compression beside Sorting is defensible, with a9.4 cross-link. Methodology lessons remain unnumbered after the book. New HLD/centroid/etc should be unnumbered near prerequisites, not chapters31 onward.
 
 Backlog placeholders are not a completion ledger: network-flow/bipartite-matching, Mo/offline and persistent trees already have real containing-section implementations. Reconcile their labels later rather than create duplicate lessons. In particular a `low` length array in Directed graphs is NOT bridge low-link, generic substring LCP is NOT suffix-array/LCP, and an I/O flush caveat is NOT a complete interactive/communication lesson.
 
@@ -127,7 +127,7 @@ Backlog placeholders are not a completion ledger: network-flow/bipartite-matchin
 
 | Batch | Order | Existing IDs | Plan |
 |---|---|---|---|
-| A | 3 Sorting supplements | `binary-search-answer` | Binary-search/lower-bound/upper-bound are published; first-feasible-answer is next. Keep focused IDs, exercises and source chapter 3.3 connection; no republishing Sorting. |
+| A | 3 Sorting supplements | Complete | All four focused originals published. Do not repeat them or Sorting. |
 | B | 4 Containers | `stack-queue`, `priority-queue` | Use 4.5 plus room-allocation application, no wholesale set-map rewrite. |
 | C | 5 Complete-search foundation | `recursion` | Use 5.1–5.4; keep useful call-return/Hanoi example. |
 | D | 7 DP supplements | `grid-dp`, `knapsack`, `lis`, `interval-dp` | Preserve goal-specific extensions; digit-DP/grouped DP optimizations remain explicit supplementary additions. |
@@ -142,10 +142,10 @@ Backlog placeholders are not a completion ledger: network-flow/bipartite-matchin
 | M | 26 Explicit string additions | Explicit additions only | Suffix-array/LCP and Aho as focused supplements; Z/KMP/rolling hash are done, no duplicate lessons. |
 | N | Unnumbered contest/methodology supplements | `invariant`, `debugging`, `subtask-strategy` | Keep clearly supplemental, with relevant book links. Interactive/communication teaching is a separate modest supplement. |
 
-**Next concrete batch:** `binary-search-answer`, then `stack-queue` and `priority-queue`. The first three search lessons are published revision9/3/3, histories244–246; do not repeat them or Sorting. Use source3.3 first-feasible predicate reasoning and preserve useful distinct examples, IDs/practice, natural MN/EN, compact explained C++17, native roundtrip and fresh guarded publication.
+**Next concrete batch:** `stack-queue` and `priority-queue`. Use source4.5 and retain distinct LIFO/FIFO/heap rules and useful room-allocation practice. Keep natural MN/EN, compact explained C++17, native roundtrips and fresh guarded publication. All four search originals are complete; do not replay their SQL.
 
 Remaining focused new groups: bridges/articulation; HLD; centroid decomposition; digit DP; grouped DP optimizations; Aho; suffix array with adjacent LCP; interactive/communication. Place according to prerequisites. Z, KMP, rolling hash, functional graphs,2SAT, matching/flow, Euler and static binary lifting are already substantively covered. Do not add duplicate top-level lessons.
 
-Book chapter 30 is final; no next numbered chapter. All 31 originals plus explicit requested additions still need tracked execution, and package3 is not complete. No package5, deferred progress/profile UI, problem statements/editorials, security expansion or approval review. Every future completed unit still needs real bilingual teaching review, correct compact CP code, native editor/reader checks and fresh guarded publication; source attribution stays centralized.
+Book chapter 30 is final; no next numbered chapter. All 30 originals plus explicit requested additions still need tracked execution, and package3 is not complete. No package5, deferred progress/profile UI, problem statements/editorials, security expansion or approval review. Every future completed unit still needs real bilingual teaching review, correct compact CP code, native editor/reader checks and fresh guarded publication; source attribution stays centralized.
 
 Machine-readable identities, hashes, receipt links, mapping and bounds: [PACKAGE03-CURRICULUM-RECONCILIATION.json](PACKAGE03-CURRICULUM-RECONCILIATION.json).
