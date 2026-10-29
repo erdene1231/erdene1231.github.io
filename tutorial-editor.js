@@ -1,21 +1,21 @@
 import {priorityLevel} from './priority.js?v=52';
 import {mountTutorialReset} from './tutorial-reset.js?v=52';
 import {sameEditorBody} from './tutorial-workflow.js?v=52';
-import {mountBackupImport} from './tutorial-backup.js?v=52';
+import {mountBackupImport} from './tutorial-backup.js?v=55';
 import {normalizeProblemReferences} from './learning-model.js?v=52';
 import {openProblemSelection} from './problem-selection-dialog.js?v=52';
 import {tutorialSlug} from './tutorial-slug.js?v=52';
 import {mountTutorialLifecycle} from './tutorial-lifecycle.js?v=52';
-import {createBlock} from './tutorial-blocks.js?v=52';
-import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=52';
-import {mountPublication} from './tutorial-publication.js?v=52';
-import {mountBlockEditor} from './tutorial-block-editor.js?v=52';
+import {createBlock} from './tutorial-blocks.js?v=55';
+import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=55';
+import {mountPublication} from './tutorial-publication.js?v=55';
+import {mountBlockEditor} from './tutorial-block-editor.js?v=55';
 import {mountDraftRecovery} from './tutorial-draft-recovery.js?v=52';
 import {createDraftSession} from './tutorial-drafts.js?v=52';
 import {editableVersion} from './tutorial-editor-compat.js?v=52';
 import {validateRelations} from './learning-model.js?v=52';
-import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=52';
-import {node,drawArticle,typeset} from './tutorials.js?v=52';
+import {validateTutorial,view,levelNames,levels} from './tutorial-model.js?v=55';
+import {node,drawArticle,typeset} from './tutorials.js?v=55';
 const $=id=>document.getElementById(id);
 export function setupTutorialEditor(ctx){
  let allowed=false,token=0,draft=null,revision=0,lang='mn',busy=false,accountId,blockEditor,workspace=[],catalogCurrent=null;
