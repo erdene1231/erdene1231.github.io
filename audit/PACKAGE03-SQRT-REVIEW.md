@@ -1,0 +1,23 @@
+# Square root algorithms — chapter 27
+
+Source read: supplied Competitive Programmer’s Handbook, July 3 2018, printed 251–256 / PDF 261–266. All six text pages and their rendered figures were inspected. This is a new containing topic `sqrt-algorithms`; no existing stable identity covers this complete chapter. Existing focused range, BFS, knapsack and string lessons remain unchanged.
+
+## Actual source coverage
+
+- Opening block structure: original 16 values, point assignment 7→5, whole blocks and two fringes for inclusive source range 3..13 (half-open [3,14) here). Original first block is printed as 21, but 5+8+6+3=22; retain values and correct all three diagrams to 22. Totals before/after are 22/17/20/13 and 22/15/20/13; query is 46. Native merged top cells show totals above their four elements.
+- 27.1 Combining algorithms: exact AFBA/CEGE/BDAF/ACBD grid, closest E distance 2, pair checking versus multi-source BFS, light/heavy proofs. Implementation records BFS origin to avoid counting a source’s own zero distance. Skip singleton groups without pretending a fixed alphabet drives the asymptotic bound.
+- Batch processing: original 4×4 intermediate grid with black (0,0),(2,1),(2,3), star (0,2), nearest distance 2, and post-paint grid. Snapshot distances plus only new pending cells; query BEFORE painting; rebuild BEFORE clearing pending. General Q cost and the source Q=N−1 specialization both explained.
+- 27.2 Integer partitions: positive-sum triangular lower bound; distinct count versus total item count. Knapsack {1,3,3} and all six possible sums preserved. Added the missing linear-per-group bounded-count implementation; a plain unbounded boolean update would be wrong. N+1 entries include both zero and N.
+- String construction: ABAB and {A,B,AB}, all four concatenations and prefix DP trace, Trie baseline, total dictionary length / distinct-length bound and hash membership. Added double hashing plus exact-verification mode. Fast expected complexity is explicitly conditional; exact character verification may cost more. Dictionary is a set, empty words rejected, byte indexing and count modulus explicit.
+- 27.3 Mo: static/offline requirement, left-block then right-end ordering, movement proof with actual Q rather than silently assuming Q=N, per-move cost, exact original nine values and source ranges [1,5)→[2,7), three-step frequency trace and answers 3→4. Compression and restored input order included. Expand-before-shrink code supports empty and disjoint ranges.
+- Native mastery exercises and four existing practice problems retained in two teaching groups; only core Mo practice is marked tutorial-local priority. No global metadata/primary-topic changes.
+
+## Substantive review and technical limits
+
+Both language narratives were read in source order. Terminology uses блок (defined as consecutive elements), багц, давтамж, ялгаатай утга, идэвхтэй завсар, and previously confirmed эрэмбэлэгдсэн дараалал. No new terminology-source consultation is claimed. No repeated book/edition narration or lesson source footer; centralized attribution remains. `snapshot` appears only as implementation shorthand alongside the fully explained last-BFS distances, not as an unexplained algorithm.
+
+Six separately compilable C++17 programs each have meaningful ordered fragments with field/constructor/operation/main explanations, followed by the exact concatenated complete program in both languages. `int` sizes/indices and `ll` sums/hashes are deliberate; value/input domains keep intermediate arithmetic in range. No global int macro. Mo uses no recursive traversal. Existing native merged/color grid schema only; no editor, migration or security feature changes.
+
+Fresh read-only catalog at 2026-10-29T17:58Z confirms `kmp` revision 7 contains section `z` titled `26.4 Z алгоритм`, with the Z implementation. No republication. Suffix array/LCP and Aho–Corasick remain pending; no suffix automaton expansion. Original-55 count stays 20 until another original is actually rewritten; this new topic would be separate addition eight ONLY after verified publication.
+
+Code report: PACKAGE03-SQRT-CODE.json (6 programs, 618 UBSan/oracle executions). Full Node suite: 266 passed; final affected tests passed. Native bilingual editor/reader and 8 diagram fixtures: PACKAGE03-SQRT-BROWSER/EN-EDITOR/DIAGRAMS.json. Tests include actual weak-hash collision AD/BA, negative/64-bit values, old block sums, all grouped subset sums, single-cell/long grids, empty ranges and 200000-element Mo arrays. Local native rendering and anonymous/default-TLS postchecks do not imply live authenticated visual checks or owner acceptance. Publication evidence is separate and not claimed by this review.
