@@ -1,0 +1,729 @@
+{
+  "id": "stack-queue",
+  "expected_revision": 4,
+  "expected_published": true,
+  "expected_body_md5": "e43a7c6e3c88a218c3f5b201e164c7fd",
+  "expected_body_sha256": "a8b86dad9230a2a0851297ca9cf4d7b25d02d6ef4ba8fc331916591076b02dae",
+  "reviewed_body_sha256": "406097fe5bc1364749f6605d28275cc413c45b53cf8a3273b57df0588ec132d7",
+  "proposed_body_sha256": "406097fe5bc1364749f6605d28275cc413c45b53cf8a3273b57df0588ec132d7",
+  "body": {
+    "id": "stack-queue",
+    "level": "Анхан шат",
+    "order": 5,
+    "title": "Стек ба дараалал — LIFO, FIFO ба хэрэглэх дүрэм",
+    "aliases": "stack-queue Stack ба queue Stack and queue",
+    "related": [
+      "recursion",
+      "set-map"
+    ],
+    "summary": "Ижил утгууд яагаад хоёр өөр дарааллаар гарахыг тушаал бүрээр дагаж, хоосон төлөв, интерфейс, нийт ажлыг батална. Дараа нь өсөх стек болон графын хайлтад холбож үзнэ.",
+    "category": "Data structures",
+    "levelKey": "beginner",
+    "sections": [
+      {
+        "key": "choice",
+        "title": "Дараагийн элементийг яаж сонгох вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Ширээн дээр ном давхарлаж тавиад хамгийн дээрхийг нь авъя. Сүүлд тавьсан ном эхэлж гарна. Харин үйлчлүүлэх хүмүүсийг ирсэн дарааллаар нь оруулбал түрүүлж ирсэн нь эхэлж гарна. Эдгээр нь утгын их багыг харьцуулсан эрэмбэ биш, оруулсан ДАРААЛЛААР сонгох хоёр дүрэм."
+          },
+          {
+            "type": "p",
+            "text": "Stack буюу стек нь сүүлд орсныг түрүүлж гаргана (LIFO). Queue буюу дараалал нь түрүүлж орсныг түрүүлж гаргана (FIFO). Ижил push командууд өгсөн ч pop хийхэд өөр утга гарч болно. Queue нь “эрэмбэлэгдсэн дараалал” гэсэн үг биш."
+          },
+          {
+            "type": "diagram",
+            "kind": "dp",
+            "rows": [
+              [
+                "push",
+                "3",
+                "2",
+                "5"
+              ],
+              [
+                "stack: bottom→top",
+                "3",
+                "2",
+                "5"
+              ],
+              [
+                "queue: front→back",
+                "3",
+                "2",
+                "5"
+              ]
+            ],
+            "caption": "Ижил утгууд; стек баруун үзүүрээс, дараалал зүүн үзүүрээс гаргана."
+          }
+        ]
+      },
+      {
+        "key": "operations",
+        "title": "Үйлдлүүдийг нэг жишээн дээр мөрдөх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Стект push($x$) нь дээр нэмнэ; top() нь дээрхийг уншина; pop() нь түүнийг арилгана. top уншихад бүтэц өөрчлөгдөхгүй. pop утга буцаадаггүй тул хэрэгтэй утгаа эхлээд уншаад, дараа нь арилгана."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Үйлдэл",
+              "Стек (доороос дээш)",
+              "Дараалал (урд→хойд)"
+            ],
+            "rows": [
+              [
+                "push 3",
+                "3",
+                "3"
+              ],
+              [
+                "push 2",
+                "3 2",
+                "3 2"
+              ],
+              [
+                "push 5",
+                "3 2 5",
+                "3 2 5"
+              ],
+              [
+                "read",
+                "top=5",
+                "front=3, back=5"
+              ],
+              [
+                "pop",
+                "3 2",
+                "2 5"
+              ],
+              [
+                "read",
+                "top=2",
+                "front=2, back=5"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Дараалалд push($x$) нь хойно нэмнэ, front() нь урд, back() нь хойд утгыг уншина. pop() зөвхөн урдаас арилгана. back-ийг уншиж болдог нь араас pop хийж болно гэсэн үг биш. Хоёр үзүүрт нэмэх/арилгах хэрэгтэй бол deque гэсэн өөр интерфейс сонгоно."
+          },
+          {
+            "type": "p",
+            "text": "Хоёр бүтцийг хоосортол нь арилгавал стек 5,2,3; дараалал 3,2,5 гаргана. Давхардсан 3 дахин оруулбал тусдаа элемент хэвээр: эдгээр бүтэц олонлог шиг давхардлыг арилгадаггүй."
+          },
+          {
+            "type": "p",
+            "text": "Хоосон бүтэц дээр top/front/back/pop дуудахгүй. Тэд автоматаар EMPTY хэвлэх эсвэл exception хаях ёстой гэж үзэж болохгүй. Манай программ empty()-г эхлээд шалгаад EMPTY гэж өөрөө хэвлэнэ. Устгасан элементийн reference-ийг дараа ашиглахгүй; хэрэгтэй бол утгыг нь хуулж ав."
+          }
+        ]
+      },
+      {
+        "key": "program",
+        "title": "Ижил команд, хоёр өөр дараалал — C++17",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Стект боловсруулсан push/pop командын дараа, хараахан арилгаагүй элементүүд анхны оруулсан дарааллаар доороос дээш байна. Иймээс top нь тэдний хамгийн сүүлчийнх. Дараалалд арилгаагүй элементүүд ирсэн дарааллаар урдаас хойш үлдэнэ. Энэ нь ямар ч урт командын дарааллын дараа LIFO/FIFO дүрэм зөв хэвээр байх шалтгаан."
+          },
+          {
+            "type": "p",
+            "text": "Энд стандартын анхны deque суурьтай stack/queue ашиглана. Нэг үзүүрийн push/pop, top/front/back, empty/size нь $O(1)$ өртөгтэй; $n$ команд нийт $O(n)$, хадгалагдах дээд хэмжээ $k$ бол зай $O(k)$. Өөр дотоод бүтэц сонговол түүний үйлдлийн өртөг дагана. vector-ийн эхний элементийг erase хийхийг queue-ийн $O(1)$ pop-той андуурахгүй: үлдсэн утгуудыг зөөх $O(k)$ ажил гарна."
+          },
+          {
+            "type": "p",
+            "text": "Оролт командын тоо $n$≤200000. PUSH $x$, PEEK, POP, SIZE гэсэн зөв командууд өгөгдөнө; $x$ нь ll-д багтана. PUSH хоёуланд нэмнэ. PEEK нь stack.top, queue.front, queue.back; POP нь арилгах хоёр утгыг хэвлээд арилгана; SIZE нийтлэг хэмжээг хэвлэнэ. Хоосон PEEK/POP нь EMPTY. Ижил нэмэлт/арилгалт хийдэг тул ХЭМЖЭЭ нь үргэлж ижил, харин агуулга pop-ийн дараа өөр болно."
+          },
+          {
+            "type": "p",
+            "text": "ll нь том утгад, int нь командын тоонд."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+          },
+          {
+            "type": "p",
+            "text": "main хоёр хоосон бүтэц байгуулж, команд бүрийг нэг удаа уншина. Кодын энэ хэсэг давталтыг нээж байгаа тул дангаараа бүтэн программ биш."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    stack<ll> s;\n    queue<ll> q;\n    while (n--) {\n        string cmd;\n        cin >> cmd;"
+          },
+          {
+            "type": "p",
+            "text": "PUSH ижил утгыг хоёр бүтэц рүү өгнө. PEEK нь хоёул хоосон эсэхийг хэмжээний ижил invariant-аар шалгаад зөв үзүүрүүдийг уншина."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "if (cmd == \"PUSH\") {\n            ll x;\n            cin >> x;\n            s.push(x);\n            q.push(x);\n        } else if (cmd == \"PEEK\") {\n            if (s.empty()) cout << \"EMPTY\\n\";\n            else cout << s.top() << ' ' << q.front() << ' ' << q.back() << '\\n';"
+          },
+          {
+            "type": "p",
+            "text": "POP хэвлэсний дараа л арилгана. SIZE нь утга харахгүй тул хоосонд ч зөв. Энэ хэсэг if, while, main-ийн үлдсэн хаалтуудыг хаана."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "} else if (cmd == \"POP\") {\n            if (s.empty()) cout << \"EMPTY\\n\";\n            else {\n                cout << s.top() << ' ' << q.front() << '\\n';\n                s.pop();\n                q.pop();\n            }\n        } else if (cmd == \"SIZE\") {\n            cout << s.size() << '\\n';\n        }\n    }\n}"
+          },
+          {
+            "type": "p",
+            "text": "Дээрх хэсгүүдийг энэ дарааллаар нэгтгэсэн бүтэн C++17 программ. Нээлттэй үлдсэн main/давталтын хаалтууд мөн энд бүрэн хаагдана."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    stack<ll> s;\n    queue<ll> q;\n    while (n--) {\n        string cmd;\n        cin >> cmd;\n        if (cmd == \"PUSH\") {\n            ll x;\n            cin >> x;\n            s.push(x);\n            q.push(x);\n        } else if (cmd == \"PEEK\") {\n            if (s.empty()) cout << \"EMPTY\\n\";\n            else cout << s.top() << ' ' << q.front() << ' ' << q.back() << '\\n';\n        } else if (cmd == \"POP\") {\n            if (s.empty()) cout << \"EMPTY\\n\";\n            else {\n                cout << s.top() << ' ' << q.front() << '\\n';\n                s.pop();\n                q.pop();\n            }\n        } else if (cmd == \"SIZE\") {\n            cout << s.size() << '\\n';\n        }\n    }\n}\n"
+          }
+        ]
+      },
+      {
+        "key": "brackets",
+        "title": "Стек хэрэглэх бодит жишээ: хаалт шалгах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хаалтууд зөв хосолсон эсэхийг стекээр шалгая. Нээх хаалтыг дээр нэмнэ. Хаах хаалт ирэхэд хамгийн сүүлд нээгдсэн хаалттай таарах ёстой: доторх хос гаднах хосоосоо өмнө хаагдана. Зөвхөн нээсэн/хаасан тоог тоолох нь хангалтгүй; ([)] ижил тоотой ч буруу."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Тэмдэгт",
+              "Стек",
+              "Шалтгаан"
+            ],
+            "rows": [
+              [
+                "(",
+                "(",
+                "push"
+              ],
+              [
+                "[",
+                "([",
+                "push"
+              ],
+              [
+                "]",
+                "(",
+                "match [ then pop"
+              ],
+              [
+                ")",
+                "empty",
+                "match ( then pop"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Уншсан угтварын дараа стек нь хаагдаагүй нээх хаалтуудыг дарааллаар хадгална. Хаах үед хоосон эсвэл төрөл зөрвөл тэр алдааг дараагийн тэмдэгтүүд засаж чадахгүй. Эцэст хоосон байвал бүгд зөв хаагдсан; үлдсэн нээх хаалт байвал дутуу. Тэмдэгт бүр нэг удаа орж/гардаг тул $O(n)$ хугацаа, $O(n)$ зай."
+          },
+          {
+            "type": "p",
+            "text": "Оролт ганц мөрөнд зөвхөн ()[]{} тэмдэгтүүд, урт≤200000; хоосон мөр зөв. YES эсвэл NO гаргана. Дурын текстийн доторх ишлэл/тайлбарыг ялгах програмчлалын хэлний parser гэж үзэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Стандарт stack болон string ашиглана."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+          },
+          {
+            "type": "p",
+            "text": "match нь зөвхөн гурван төрлийн хосыг зөвшөөрнө."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "bool match(char a, char b) {\n    return (a == '(' && b == ')') || (a == '[' && b == ']') ||\n           (a == '{' && b == '}');\n}"
+          },
+          {
+            "type": "p",
+            "text": "balanced нээхэд push, хаахад empty/төрлийг шалгаад pop хийнэ. Богино холболт нь хоосон дээр top уншихаас хамгаална. Эцсийн empty нь дутуу нээхийг шалгана."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "bool balanced(const string &s) {\n    stack<char> st;\n    for (char c : s) {\n        if (c == '(' || c == '[' || c == '{') st.push(c);\n        else {\n            if (st.empty() || !match(st.top(), c)) return false;\n            st.pop();\n        }\n    }\n    return st.empty();\n}"
+          },
+          {
+            "type": "p",
+            "text": "getline хоосон мөрийг ч уншина. bool хариуг YES/NO болгон хэвлэнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string s;\n    getline(cin, s);\n    cout << (balanced(s) ? \"YES\" : \"NO\") << '\\n';\n}"
+          },
+          {
+            "type": "p",
+            "text": "Дээрх хэсгүүдийг энэ дарааллаар нэгтгэсэн бүтэн C++17 программ. Нээлттэй үлдсэн main/давталтын хаалтууд мөн энд бүрэн хаагдана."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nbool match(char a, char b) {\n    return (a == '(' && b == ')') || (a == '[' && b == ']') ||\n           (a == '{' && b == '}');\n}\n\nbool balanced(const string &s) {\n    stack<char> st;\n    for (char c : s) {\n        if (c == '(' || c == '[' || c == '{') st.push(c);\n        else {\n            if (st.empty() || !match(st.top(), c)) return false;\n            st.pop();\n        }\n    }\n    return st.empty();\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string s;\n    getline(cin, s);\n    cout << (balanced(s) ? \"YES\" : \"NO\") << '\\n';\n}\n"
+          }
+        ]
+      },
+      {
+        "key": "uses",
+        "title": "Дүрмээ бодлогын шаардлагаас сонгох",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Стек нь буцах ажил, undo, дутуу дуудлагын үргэлжлэлд; queue нь ирсэн дараалал, BFS-ийн давхаргад тохирно. BFS-ийн queue-г стекээр солиход ижил оройд хүрч болох ч хамгийн цөөн ирмэгийн баталгаа алдагдана. Утгын бага/ихээр дараагийнхыг сонгох хэрэгтэй бол priority queue гэсэн өөр дүрэм шаардлагатай."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших ба бие даах бодлогууд",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эзэмших дасгал: өөрөө жижиг командын дараалал зохиож, алхам бүрийн төлөв ба гаралтыг гараар бич. Хоосон, ганц элемент, давхардал, сөрөг/том утга, тэнцүү сонголт, бүрэн хоосортол арилгах тохиолдлыг оруул."
+          },
+          {
+            "type": "p",
+            "text": "([]) ба ([)]-г стекээр мөрдөж ялгааг тайлбарла. Stack/queue-д ижил 3,2,5 оруулаад гурван POP-ийн гаралтыг гарга: 5/3, 2/2, 3/5."
+          },
+          {
+            "type": "p",
+            "text": "Эхэлж эзэмших бодлогууд: хэрэглэх бүтэц, хадгалах төлөв, зөв сонголтын шалтгаанаа тодорхойл. Өсөх стек эсвэл графын хайлт шаардсан өргөтгөлд холбогдох хичээлийн нэмэлт үндэслэл хэрэгтэй; зөвхөн үндсэн push/pop код хангалтгүй."
+          },
+          {
+            "type": "p",
+            "text": "Өсөх стекийн боломж хасах баталгаа, тэнцүү утгын дүрэм ба нэг удаа оруулж гаргах нийт ажлыг бие даан хэрэгжүүлэх цөм дасгал."
+          },
+          {
+            "type": "problem",
+            "problemKey": "101"
+          },
+          {
+            "type": "p",
+            "text": "Бие дааж бодох бодлогууд: эхлээд жижиг жишээг гараар бодож, сонгосон дүрэм нь оролтын нөхцөлтэй таарч байгааг батал."
+          },
+          {
+            "type": "problem",
+            "problemKey": "752"
+          },
+          {
+            "type": "problem",
+            "problemKey": "363"
+          },
+          {
+            "type": "problem",
+            "problemKey": "360"
+          },
+          {
+            "type": "problem",
+            "problemKey": "373"
+          },
+          {
+            "type": "problem",
+            "problemKey": "871"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Stacks and queues — latest or earliest?",
+        "summary": "Trace identical arrivals under two removal rules. Prove state, handle emptiness and account for total work before connecting to monotonic stacks and graph search.",
+        "sections": [
+          {
+            "key": "choice",
+            "title": "Which element comes next?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Take the top book from a pile: the last book placed is the first removed. Serve people in arrival order instead: the first arrival leaves first. These rules depend on INSERTION ORDER, not on comparing numerical values."
+              },
+              {
+                "type": "p",
+                "text": "A stack uses last-in-first-out (LIFO). A queue uses first-in-first-out (FIFO). Identical pushes can therefore produce different pops. A queue is not a sorted sequence."
+              },
+              {
+                "type": "diagram",
+                "kind": "dp",
+                "rows": [
+                  [
+                    "push",
+                    "3",
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "stack: bottom→top",
+                    "3",
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "queue: front→back",
+                    "3",
+                    "2",
+                    "5"
+                  ]
+                ],
+                "caption": "Same values; remove from the right for the stack and the left for the queue."
+              }
+            ]
+          },
+          {
+            "key": "operations",
+            "title": "Trace the operations",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For a stack, push($x$) adds at the top, top() reads it and pop() removes it. Reading top does not modify the container. pop returns no value: read first if the removed value is needed."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Operation",
+                  "Stack bottom→top",
+                  "Queue front→back"
+                ],
+                "rows": [
+                  [
+                    "push 3",
+                    "3",
+                    "3"
+                  ],
+                  [
+                    "push 2",
+                    "3 2",
+                    "3 2"
+                  ],
+                  [
+                    "push 5",
+                    "3 2 5",
+                    "3 2 5"
+                  ],
+                  [
+                    "read",
+                    "top=5",
+                    "front=3, back=5"
+                  ],
+                  [
+                    "pop",
+                    "3 2",
+                    "2 5"
+                  ],
+                  [
+                    "read",
+                    "top=2",
+                    "front=2, back=5"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "A queue pushes at the back, reads the front with front() and the back with back(), and pops only from the front. Reading back does not provide a back-pop operation. Use a deque when insertion/removal is needed at both ends."
+              },
+              {
+                "type": "p",
+                "text": "Draining gives 5,2,3 for the stack and 3,2,5 for the queue. Pushing another 3 creates another element; these containers do not deduplicate like a set."
+              },
+              {
+                "type": "p",
+                "text": "Do not call top/front/back/pop on an empty container. Do not expect an automatic EMPTY result or a guaranteed exception. Our program checks empty() and prints EMPTY itself. Never use a reference to an erased element; copy its value when needed."
+              }
+            ]
+          },
+          {
+            "key": "program",
+            "title": "Same commands, different orders — C++17",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "After any command prefix, a stack contains the unremoved insertions in their original bottom-to-top order, so top is the most recent. A queue retains unremoved arrivals front-to-back. These invariants explain LIFO/FIFO behavior for arbitrary command sequences."
+              },
+              {
+                "type": "p",
+                "text": "We use the default deque-backed stack/queue. Endpoint pushes/pops, access, empty and size cost $O(1)$; $n$ commands take $O(n)$, with $O(k)$ space for peak size $k$. A different backing container changes the corresponding costs. Erasing vector.begin() shifts the remaining elements and costs $O(k)$, unlike a queue pop."
+              },
+              {
+                "type": "p",
+                "text": "Input $n$≤200000 valid commands: PUSH $x$, PEEK, POP, SIZE, with ll values. PUSH inserts into both. PEEK prints stack.top, queue.front, queue.back; POP prints both removed values and then removes them. SIZE prints their common size; empty PEEK/POP prints EMPTY. Equal numbers of insertions/removals keep their SIZES equal, while their contents diverge after pops."
+              },
+              {
+                "type": "p",
+                "text": "Use ll for values and int for the command count."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+              },
+              {
+                "type": "p",
+                "text": "main creates both empty containers and reads one command per iteration. This fragment opens the loop; it is not a complete program alone."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    stack<ll> s;\n    queue<ll> q;\n    while (n--) {\n        string cmd;\n        cin >> cmd;"
+              },
+              {
+                "type": "p",
+                "text": "PUSH adds the same value to each. PEEK uses their equal-size invariant to test emptiness and reads the appropriate ends."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "if (cmd == \"PUSH\") {\n            ll x;\n            cin >> x;\n            s.push(x);\n            q.push(x);\n        } else if (cmd == \"PEEK\") {\n            if (s.empty()) cout << \"EMPTY\\n\";\n            else cout << s.top() << ' ' << q.front() << ' ' << q.back() << '\\n';"
+              },
+              {
+                "type": "p",
+                "text": "POP reads before removal. SIZE is valid even when empty. This part closes the remaining if, while and main blocks."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "} else if (cmd == \"POP\") {\n            if (s.empty()) cout << \"EMPTY\\n\";\n            else {\n                cout << s.top() << ' ' << q.front() << '\\n';\n                s.pop();\n                q.pop();\n            }\n        } else if (cmd == \"SIZE\") {\n            cout << s.size() << '\\n';\n        }\n    }\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program assembles the preceding parts in order, including the remaining main/loop braces."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    stack<ll> s;\n    queue<ll> q;\n    while (n--) {\n        string cmd;\n        cin >> cmd;\n        if (cmd == \"PUSH\") {\n            ll x;\n            cin >> x;\n            s.push(x);\n            q.push(x);\n        } else if (cmd == \"PEEK\") {\n            if (s.empty()) cout << \"EMPTY\\n\";\n            else cout << s.top() << ' ' << q.front() << ' ' << q.back() << '\\n';\n        } else if (cmd == \"POP\") {\n            if (s.empty()) cout << \"EMPTY\\n\";\n            else {\n                cout << s.top() << ' ' << q.front() << '\\n';\n                s.pop();\n                q.pop();\n            }\n        } else if (cmd == \"SIZE\") {\n            cout << s.size() << '\\n';\n        }\n    }\n}\n"
+              }
+            ]
+          },
+          {
+            "key": "brackets",
+            "title": "A stack application: bracket matching",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Use a stack to check bracket matching. Push each opening bracket; a closing bracket must match the most recently opened one, because inner pairs close before outer pairs. Counts alone are insufficient: ([)] has equal counts but is invalid."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Character",
+                  "Stack",
+                  "Reason"
+                ],
+                "rows": [
+                  [
+                    "(",
+                    "(",
+                    "push"
+                  ],
+                  [
+                    "[",
+                    "([",
+                    "push"
+                  ],
+                  [
+                    "]",
+                    "(",
+                    "match [ then pop"
+                  ],
+                  [
+                    ")",
+                    "empty",
+                    "match ( then pop"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "After each prefix, the stack contains precisely its unmatched opening brackets. An empty stack or wrong type at a closing bracket cannot be repaired by later characters. At the end, empty means all pairs closed; remaining openings mean incomplete input. Each character is pushed/popped at most once: $O(n)$ time and space."
+              },
+              {
+                "type": "p",
+                "text": "Input one line of only ()[]{} characters, length≤200000; the empty line is valid. Output YES or NO. This is not a language parser that interprets quotes/comments inside arbitrary text."
+              },
+              {
+                "type": "p",
+                "text": "Use standard stack and string."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+              },
+              {
+                "type": "p",
+                "text": "match accepts the three permitted bracket pairs."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "bool match(char a, char b) {\n    return (a == '(' && b == ')') || (a == '[' && b == ']') ||\n           (a == '{' && b == '}');\n}"
+              },
+              {
+                "type": "p",
+                "text": "balanced pushes openings and checks empty/type before popping a closing pair. Short-circuit evaluation prevents top on empty; the final empty check rejects unclosed openings."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "bool balanced(const string &s) {\n    stack<char> st;\n    for (char c : s) {\n        if (c == '(' || c == '[' || c == '{') st.push(c);\n        else {\n            if (st.empty() || !match(st.top(), c)) return false;\n            st.pop();\n        }\n    }\n    return st.empty();\n}"
+              },
+              {
+                "type": "p",
+                "text": "getline also reads an empty line; print the boolean result as YES/NO."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string s;\n    getline(cin, s);\n    cout << (balanced(s) ? \"YES\" : \"NO\") << '\\n';\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program assembles the preceding parts in order, including the remaining main/loop braces."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nbool match(char a, char b) {\n    return (a == '(' && b == ')') || (a == '[' && b == ']') ||\n           (a == '{' && b == '}');\n}\n\nbool balanced(const string &s) {\n    stack<char> st;\n    for (char c : s) {\n        if (c == '(' || c == '[' || c == '{') st.push(c);\n        else {\n            if (st.empty() || !match(st.top(), c)) return false;\n            st.pop();\n        }\n    }\n    return st.empty();\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string s;\n    getline(cin, s);\n    cout << (balanced(s) ? \"YES\" : \"NO\") << '\\n';\n}\n"
+              }
+            ]
+          },
+          {
+            "key": "uses",
+            "title": "Choose the rule from the problem",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Stacks suit undo, backtracking and pending calls; queues suit arrivals and BFS layers. Replacing the BFS queue with a stack may still reach vertices but loses its shortest-edge-count argument. Selecting by value instead requires a priority queue."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Mastery exercise: invent a short command sequence and write every state/output by hand. Include empty/singleton containers, duplicates, negative/extreme values, ties and draining to empty."
+              },
+              {
+                "type": "p",
+                "text": "Trace ([]) versus ([)]. Push 3,2,5 into both containers, then derive the three POP pairs: 5/3,2/2,3/5."
+              },
+              {
+                "type": "p",
+                "text": "Core practice: state the structure, maintained state and reason its selection rule is correct. Extensions such as monotone stacks or graph search need the corresponding further arguments, not just basic push/pop code."
+              },
+              {
+                "type": "p",
+                "text": "Explain the invariant and operation costs for this core application."
+              },
+              {
+                "type": "problem",
+                "problemKey": "101"
+              },
+              {
+                "type": "p",
+                "text": "Independent practice: solve a small example by hand and justify that the chosen rule matches the problem’s conditions."
+              },
+              {
+                "type": "problem",
+                "problemKey": "752"
+              },
+              {
+                "type": "problem",
+                "problemKey": "363"
+              },
+              {
+                "type": "problem",
+                "problemKey": "360"
+              },
+              {
+                "type": "problem",
+                "problemKey": "373"
+              },
+              {
+                "type": "problem",
+                "problemKey": "871"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know loops, functions, references and recursive return order."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Давталт, функц, холбоос болон рекурсийн буцах дарааллыг мэддэг байна.",
+    "priorityLevel": "high",
+    "priorityReason": "Сүүлд орсон болон түрүүлж орсон зүйлсийг ялган боловсруулах нь рекурс, графын хайлт, хаалт болон боломжит хариуг хасах олон аргын суурь. Үзүүрийн зөв үйлдэл ба хоосон төлөвийн хамгаалалт тогтмол хэрэглэгдэнэ.",
+    "prerequisiteIds": [
+      "recursion"
+    ],
+    "learningRelations": {
+      "next": "set-map",
+      "practice": [
+        {
+          "key": "752",
+          "stage": "Warm-up",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "101",
+          "stage": "Standard",
+          "reason": "Өсөх стекийн боломж хасах баталгаа, тэнцүү утгын дүрэм ба нэг удаа оруулж гаргах нийт ажлыг бие даан хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "363",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "360",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "373",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "871",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "recursion",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "set-map",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "status": "full focused MN/EN drafted; review/native/publication gates separate"
+}
