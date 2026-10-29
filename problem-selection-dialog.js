@@ -1,6 +1,6 @@
 import {priorityLevel,priorityLabel,isHighPriority,ratingClass} from './priority.js?v=52';
 import {filterProblems,getTags,ratingLabel} from './catalog.js?v=52';
-import {problemReferenceKey as canonicalKey,problemIndex} from './learning-model.js?v=52';
+import {problemReferenceKey as canonicalKey,problemIndex} from './learning-model.js?v=58';
 const el=(tag,text)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;return n;};
 export function openProblemSelection({problems,progress=()=>({}),selected=[],valid=()=>true,multiple=true,includeArchived=false,maxSelected=Infinity,onSelect}){
  const dialog=el('dialog'),heading=el('h2','Бодлого сонгох'),filters=el('div'),status=el('p');

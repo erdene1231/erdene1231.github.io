@@ -8,6 +8,8 @@ rows=[r for r in json.loads((ROOT/'audit/PART04-BASELINE.json').read_text())['tu
 for row in rows:
  for doc in docs:
   if row['body']['id']==doc['id']:row['body']=doc
+for doc in docs:
+ if not any(row['body']['id']==doc['id']for row in rows):rows.append({'id':doc['id'],'body':doc,'revision':1})
 problems=json.loads(subprocess.check_output(['node','--input-type=module','-e',"import{proposalProblems}from'./tools/package02_tutorial_proposals.mjs';console.log(JSON.stringify(proposalProblems()))"],cwd=ROOT,text=True))
 class Quiet(http.server.SimpleHTTPRequestHandler):
  def log_message(self,*a):pass
@@ -20,6 +22,10 @@ try:
    page.route('**/*',lambda r:r.abort()if not r.request.url.startswith(base)else r.fulfill(status=200,content_type='text/javascript',body='')if '/app.js?'in r.request.url or'/navigation.js?'in r.request.url else r.continue_())
    page.goto(base+'/index.html#tutorial/'+docs[0]['id'],wait_until='networkidle')
    page.evaluate('''async payload=>{const{setupTutorials}=await import('/tutorials.js?v=57');const{setupLearning}=await import('/learning.js?v=57');const section=document.getElementById('tutorial-reader').closest('section');for(const e of document.querySelectorAll('main>section'))e.hidden=e!==section;section.hidden=false;document.documentElement.dataset.theme=payload.theme;window.p02Learning=await setupLearning({client:()=>null,user:()=>null,isAdmin:()=>false,problems:()=>payload.problems,progress:()=>({}),openProblem:p=>{window.p02LastOpened=p.id}});window.p02TopicIds=new Set(payload.rows.map(r=>r.body.id));const ctx={client:()=>({rpc:async name=>{if(name==='get_tutorials')return{data:payload.rows};throw Error('Unexpected RPC '+name)}}),user:()=>null,learning:()=>p02Learning,isAdmin:()=>false};window.app=setupTutorials(ctx);await app.connected();}''',{'rows':rows,'problems':problems,'theme':theme})
+   if any(doc['id']=='introduction'for doc in docs):
+    page.wait_for_function("()=>document.querySelectorAll('#tutorial-grid .tutorial-card').length>1")
+    first=page.locator('#tutorial-grid .tutorial-card').evaluate_all("els=>els.slice(0,2).map(e=>e.getAttribute('href'))")
+    assert first==['#tutorial/introduction','#tutorial/complexity'],first
    for doc in docs:
     for lang in ['mn','en']:
      page.evaluate('(id)=>location.hash="#tutorial/"+id',doc['id']);page.select_option('#tutorial-language',lang)

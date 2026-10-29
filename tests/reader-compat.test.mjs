@@ -10,8 +10,8 @@ const sample=()=>structuredClone(lessons[0]);
 const withBlock=block=>({...sample(),sections:[{title:'Reader compatibility fixture',blocks:[block]}]});
 const mediaPath='test-lesson/00000000-0000-0000-0000-000000000001/11111111-1111-1111-1111-111111111111.webp';
 
-test('all 55 existing documents validate without changing IDs, content, relationships or metadata',()=>{
- assert.equal(lessons.length,55);
+test('all 56 current seed documents validate without changing IDs, content, relationships or metadata',()=>{
+ assert.equal(lessons.length,56);
  for(const original of lessons){
   const body=structuredClone(original),before=JSON.stringify(body);
   assert.equal(validateTutorial(body),body);

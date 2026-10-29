@@ -1,3 +1,4 @@
+// Historical migration fixtures use the original 55; current Introduction publication is tested separately.
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {PGlite} from '@electric-sql/pglite';
 const read=p=>fs.readFileSync(new URL('../'+p,import.meta.url),'utf8');
 test('024 publication preserves baseline, enforces actor/CAS, hides private drafts and validates public content',async()=>{
@@ -11,7 +12,7 @@ test('024 publication preserves baseline, enforces actor/CAS, hides private draf
  for(const id of [a,b,c])await db.query('insert into auth.users values ($1)',[id]);for(const id of [a,b])await db.query('insert into admin_accounts values ($1)',[id]);
  const baseline=JSON.parse(read('supabase/audit/production-after-023.json'));
  for(const name of ['is_admin','tutorial_require_text','safe_tutorial_link','validate_tutorial_inline','validate_tutorial_extended_block','validate_tutorial_body','get_tutorials'])await db.exec(baseline.functions.find(f=>f.name===name).definition);
- const topics=JSON.parse(read('tutorials.json')).tutorials;for(const t of topics)await db.query('insert into tutorial_catalog(id,body,revision) values($1,$2,7)',[t.id,t]);
+ const topics=JSON.parse(read('tutorials.json')).tutorials.filter(t=>t.id!=='introduction');for(const t of topics)await db.query('insert into tutorial_catalog(id,body,revision) values($1,$2,7)',[t.id,t]);
  const before=(await db.query('select id,body,revision from tutorial_catalog order by id')).rows;
  await db.exec(read('supabase/023-tutorial-drafts.sql'));const migration=read('supabase/024-tutorial-publication.sql');await db.exec(migration);
  assert.deepEqual((await db.query('select id,body,revision from tutorial_catalog order by id')).rows,before);

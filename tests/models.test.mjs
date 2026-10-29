@@ -12,8 +12,8 @@ test('all 702 problems have numeric ratings; original IDs/numbers and official C
  for(const old of read('tests/baseline-ids.json')){const p=problems.find(p=>p.id===old.id);assert(p,old.id);assert.equal(p.number,old.number);if(old.officialRating)assert.equal(p.rating,old.officialRating);}
  assert.equal(new Set(problems.map(canonicalKey)).size,problems.length);assert.equal(problemIndex(problems).get('cses|1071').id,'task-87');
 });
-test('55 bilingual published lessons, acyclic prerequisites, variants and curated practice all resolve',()=>{
- const known=new Set(topics.map(t=>t.id)),position=new Map(curr.order.map((id,i)=>[id,i]));assert.equal(known.size,55);
+test('56 bilingual seed lessons, acyclic prerequisites, variants and curated practice all resolve',()=>{
+ const known=new Set(topics.map(t=>t.id)),position=new Map(curr.order.map((id,i)=>[id,i]));assert.equal(known.size,56);
  for(const t of topics)validateTutorial(t);
  for(const[id,rel]of Object.entries(curr.lessons)){assert(known.has(id));for(const p of rel.prerequisites)assert(position.get(p)<position.get(id),id+' → '+p);for(const v of rel.variants)assert(known.has(v.tutorialId));validateRelations(rel,id,topics,problems);}
  for(const row of curr.backlog){assert.equal(row.status,'not_published');assert(!known.has(row.id));}

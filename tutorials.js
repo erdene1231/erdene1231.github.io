@@ -2,11 +2,11 @@ import {refreshInlineMath} from './tutorial-math-layout.js?v=56';
 import {priorityLevel,priorityLabel,priorityRank} from './priority.js?v=52';
 import {renderExtendedBlock} from './tutorial-block-renderer.js?v=57';
 import {clearMediaCache} from './tutorial-media.js?v=57';
-import {loadLearningContent,bodyHash} from './learning-model.js?v=52';
+import {loadLearningContent,bodyHash} from './learning-model.js?v=58';
 import {algorithmDemo} from './algorithm-demos.js?v=52';
 import {segmentTreeDemo} from './segment-tree-demo.js?v=52';
 import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=57';
-import {setupTutorialEditor} from './tutorial-editor.js?v=57';
+import {setupTutorialEditor} from './tutorial-editor.js?v=58';
 const $=id=>document.getElementById(id);
 export const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
 let mathPromise=null,mathQueue=Promise.resolve();
@@ -60,7 +60,7 @@ export function typeset(elements,build,valid=()=>true){
 async function copy(text,button,success){try{await navigator.clipboard.writeText(text);const previous=button.textContent;button.textContent=success;setTimeout(()=>button.textContent=previous,1800);}catch{$('tutorial-message').textContent='Хуулах боломжгүй байна / Copy unavailable.';}}
 export function setupTutorials(ctx){
  const requiresOnline=ctx.requiresOnline??!!ctx.client();
- const lessonSeed=fetch('./tutorials.json?v=23').then(r=>{if(!r.ok)throw new Error('Tutorials ачаалсангүй.');return r.json();}).then(d=>d.tutorials),contentReady=Promise.all([loadLearningContent().catch(()=>({curriculum:{order:[]},editions:{editions:{}}})),lessonSeed]);let acceptTurn=0;
+ const lessonSeed=fetch('./tutorials.json?v=24').then(r=>{if(!r.ok)throw new Error('Tutorials ачаалсангүй.');return r.json();}).then(d=>d.tutorials),contentReady=Promise.all([loadLearningContent().catch(()=>({curriculum:{order:[]},editions:{editions:{}}})),lessonSeed]);let acceptTurn=0;
 
  let topics=[],current=null,renderTurn=0,resultTurn=0,loadTurn=0,lang='mn',readingMode='full',activePart=0,requestedPart,onlineReady=false,hasLive=false,editor,mediaAccountId=ctx.user()?.id||null;
  try{lang=localStorage.getItem('erdene:tutorial-language')==='en'?'en':'mn';}catch{}$('tutorial-language').value=lang;

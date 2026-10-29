@@ -1,3 +1,4 @@
+// Historical migration fixtures use the original 55; current Introduction publication is tested separately.
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -15,7 +16,7 @@ test('022 extends the verified 021 validator without overwriting content, IDs, p
    await db.exec(baseline.functions.find(f=>f.name===name).definition);
    await db.exec(`revoke all on function ${name}(${name==='tutorial_require_text'?'jsonb,integer':'text,jsonb'}) from public,anon,authenticated;`);
   }
-  const lessons=JSON.parse(read('tutorials.json')).tutorials;
+  const lessons=JSON.parse(read('tutorials.json')).tutorials.filter(t=>t.id!=='introduction');
   for(const t of lessons)await db.query('insert into tutorial_catalog values ($1,$2,7)',[t.id,t]);
   const before=(await db.query('select * from tutorial_catalog order by id')).rows;
   const progress=(await db.query('select * from progress')).rows;

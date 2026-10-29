@@ -1,3 +1,4 @@
+// Historical migration fixtures use the original 55; current Introduction publication is tested separately.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -19,7 +20,7 @@ test('023 isolates editor drafts, enforces CAS/rebase/authorization, and preserv
  for(const id of [a,b])await db.query('insert into admin_accounts values ($1)',[id]);
  const baseline=JSON.parse(read('supabase/audit/production-after-022.json'));
  for(const name of ['is_admin','tutorial_require_text','safe_tutorial_link','validate_tutorial_inline','validate_tutorial_extended_block','validate_tutorial_body'])await db.exec(baseline.functions.find(f=>f.name===name).definition);
- const lessons=JSON.parse(read('tutorials.json')).tutorials;
+ const lessons=JSON.parse(read('tutorials.json')).tutorials.filter(t=>t.id!=='introduction');
  for(const t of lessons)await db.query('insert into tutorial_catalog(id,body,revision) values ($1,$2,7)',[t.id,t]);
  const catalog=()=>db.query('select id,body,revision,updated_at from tutorial_catalog order by id');
  const before=(await catalog()).rows,validator=await db.query("select pg_get_functiondef('validate_tutorial_body(text,jsonb)'::regprocedure) as definition");
