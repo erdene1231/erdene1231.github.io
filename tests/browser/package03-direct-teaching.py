@@ -2,9 +2,10 @@ import argparse,functools,http.server,json,threading,subprocess
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[2]
-parser=argparse.ArgumentParser();parser.add_argument('--candidate',type=Path,action='append');parser.add_argument('--report',default='audit/PACKAGE02-REWRITE-BROWSER.json');args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--candidate',type=Path,action='append');parser.add_argument('--catalog',type=Path);parser.add_argument('--report',default='audit/PACKAGE02-REWRITE-BROWSER.json');args=parser.parse_args()
 docs=[json.loads(p.read_text())['body']for p in args.candidate]if args.candidate else[json.loads((ROOT/'audit/package02-rewrite'/f'{id}.json').read_text())['body']for id in ['binary-search','greedy','dynamic-programming']]
-rows=[r for r in json.loads((ROOT/'audit/PART04-BASELINE.json').read_text())['tutorials'] if r['id']!='mongolia']
+catalog=json.loads(args.catalog.read_text())if args.catalog else json.loads((ROOT/'audit/PART04-BASELINE.json').read_text())
+rows=[r for r in catalog['tutorials'] if r['id']!='mongolia' and r.get('published',True)]
 for row in rows:
  for doc in docs:
   if row['body']['id']==doc['id']:row['body']=doc
