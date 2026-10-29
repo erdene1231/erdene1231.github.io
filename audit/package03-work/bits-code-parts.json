@@ -1,0 +1,48 @@
+{
+  "representation": [
+    "#include <bits/stdc++.h>\nusing namespace std;\n\n",
+    "int main() {\n    int32_t x = -43;\n    uint32_t y = static_cast<uint32_t>(x);\n    cout << bitset<32>(43) << '\\n';\n    cout << x << ' ' << y << '\\n';\n    cout << bitset<32>(y) << '\\n';\n    uint32_t top = UINT32_MAX;\n    top++;\n    cout << top << '\\n';\n    int mx = INT_MAX;\n    cout << mx << ' ' << 1LL + mx << '\\n';\n}\n"
+  ],
+  "operations": [
+    "#include <bits/stdc++.h>\nusing namespace std;\n\nusing ull = unsigned long long;\n\n",
+    "constexpr int W = numeric_limits<ull>::digits;\n\nint leading(ull x) {\n    return x ? __builtin_clzll(x) : W;\n}\nint trailing(ull x) {\n    return x ? __builtin_ctzll(x) : W;\n}\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    ull x, y;\n    int k;\n    cin >> x >> y >> k;\n    ull bit = 1ULL << k;\n",
+    "    cout << (x & y) << ' ' << (x | y) << ' ' << (x ^ y) << ' ' << ~x << '\\n';\n    cout << (x << k) << ' ' << (x >> k) << '\\n';\n    cout << bool(x & bit) << ' ' << (x | bit) << ' ' << (x & ~bit) << ' ' << (x ^ bit) << '\\n';\n    cout << (x & (x - 1)) << ' ' << (x & -x) << ' ' << (x | (x - 1)) << '\\n';\n    cout << (x != 0 && (x & (x - 1)) == 0) << '\\n';\n    cout << leading(x) << ' ' << trailing(x) << ' ' << __builtin_popcountll(x) << ' ' << __builtin_parityll(x) << '\\n';\n",
+    "    unsigned int z = 5328;\n    cout << __builtin_clz(z) << ' ' << __builtin_ctz(z) << ' ' << __builtin_popcount(z) << ' ' << __builtin_parity(z) << '\\n';\n}\n"
+  ],
+  "sets": [
+    "#include <bits/stdc++.h>\nusing namespace std;\n\nusing ull = unsigned long long;\n\n",
+    "struct MaskSet {\n    int n;\n    ull mask, limit;\n    MaskSet(int _n) {\n        n = _n;\n        mask = 0;\n        limit = (1ULL << n) - 1;\n    }\n    void add(int k) { mask |= 1ULL << k; }\n    void erase(int k) { mask &= ~(1ULL << k); }\n    bool contains(int k) const { return mask & (1ULL << k); }\n    int size() const { return __builtin_popcountll(mask); }\n};\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, a, b, k;\n    cin >> n >> a >> b >> k;\n    MaskSet x(n), y(n);\n    for (int i = 0, v; i < a; i++) {\n        cin >> v;\n        x.add(v);\n    }\n    for (int i = 0, v; i < b; i++) {\n        cin >> v;\n        y.add(v);\n    }\n    cout << x.mask << ' ' << x.size() << '\\n';\n    for (int i = 0; i < n; i++) if (x.contains(i)) cout << i << ' ';\n    cout << '\\n';\n    cout << (x.mask & y.mask) << ' ' << (x.mask | y.mask) << ' ' << ((~x.mask) & x.limit) << ' ' << (x.mask & ~y.mask) << '\\n';\n",
+    "    for (ull s = 0; s <= x.limit; s++) cout << s << ' ';\n    cout << '\\n';\n    for (ull s = 0; s <= x.limit; s++) {\n        if (__builtin_popcountll(s) == k) cout << s << ' ';\n    }\n    cout << '\\n';\n    ull s = 0;\n    do {\n        cout << s << ' ';\n        s = (s - x.mask) & x.mask;\n    } while (s != 0);\n    cout << '\\n';\n}\n"
+  ],
+  "hamming": [
+    "#include <bits/stdc++.h>\nusing namespace std;\n\nusing ull = unsigned long long;\n\n",
+    "int direct(const string& a, const string& b) {\n    int d = 0;\n    for (int i = 0; i < (int)a.size(); i++) d += a[i] != b[i];\n    return d;\n}\null pack(const string& s) {\n    ull x = 0;\n    for (char c : s) x = (x << 1) | (c - '0');\n    return x;\n}\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    vector<string> s(n);\n    vector<ull> a(n);\n    for (int i = 0; i < n; i++) {\n        cin >> s[i];\n        a[i] = pack(s[i]);\n    }\n    int slow = k + 1, fast = k + 1;\n    for (int i = 0; i < n; i++) {\n        for (int j = i + 1; j < n; j++) {\n            slow = min(slow, direct(s[i], s[j]));\n            fast = min(fast, __builtin_popcountll(a[i] ^ a[j]));\n        }\n    }\n    cout << slow << ' ' << fast << '\\n';\n}\n"
+  ],
+  "rectangles": [
+    "#include <bits/stdc++.h>\nusing namespace std;\n\nusing ll = long long;\n\n",
+    "ll direct(const vector<string>& a) {\n    int n = a.size();\n    ll ans = 0;\n    for (int r = 0; r < n; r++) {\n        for (int s = r + 1; s < n; s++) {\n            int c = 0;\n            for (int j = 0; j < n; j++) c += a[r][j] == '1' && a[s][j] == '1';\n            ans += 1LL * c * (c - 1) / 2;\n        }\n    }\n    return ans;\n}\n\n",
+    "ll packed(const vector<string>& a) {\n    int n = a.size(), blocks = (n + 63) / 64;\n    vector<vector<unsigned long long>> bits(n, vector<unsigned long long>(blocks));\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < n; j++) {\n            if (a[i][j] == '1') bits[i][j / 64] |= 1ULL << (j % 64);\n        }\n    }\n    ll ans = 0;\n    for (int r = 0; r < n; r++) {\n        for (int s = r + 1; s < n; s++) {\n            int c = 0;\n            for (int j = 0; j < blocks; j++) c += __builtin_popcountll(bits[r][j] & bits[s][j]);\n            ans += 1LL * c * (c - 1) / 2;\n        }\n    }\n    return ans;\n}\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, mode;\n    cin >> n >> mode;\n    vector<string> a(n);\n    for (string& row : a) cin >> row;\n    if (mode == 1) cout << direct(a) << '\\n';\n    else cout << packed(a) << '\\n';\n}\n"
+  ],
+  "selection": [
+    "#include <bits/stdc++.h>\nusing namespace std;\n\nusing ll = long long;\n\n",
+    "ll selection(const vector<vector<int>>& price, int n) {\n    int k = price.size(), states = 1 << k;\n    const ll INF = 4'000'000'000'000'000'000LL;\n    vector<vector<ll>> dp(n + 1, vector<ll>(states, INF));\n    dp[0][0] = 0;\n",
+    "    for (int d = 0; d < n; d++) {\n        dp[d + 1] = dp[d];\n        for (int s = 0; s < states; s++) {\n            for (int x = 0; x < k; x++) {\n                if ((s & (1 << x)) && dp[d][s ^ (1 << x)] != INF) {\n                    dp[d + 1][s] = min(dp[d + 1][s], dp[d][s ^ (1 << x)] + price[x][d]);\n                }\n            }\n        }\n    }\n    return dp[n][states - 1] == INF ? -1 : dp[n][states - 1];\n}\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int k, n;\n    cin >> k >> n;\n    vector<vector<int>> price(k, vector<int>(n));\n    for (auto& row : price) for (int& x : row) cin >> x;\n    cout << selection(price, n) << '\\n';\n}\n"
+  ],
+  "elevator": [
+    "#include <bits/stdc++.h>\nusing namespace std;\n\nusing ll = long long;\n\n",
+    "int elevator(const vector<ll>& w, ll x) {\n    int n = w.size(), states = 1 << n;\n    vector<pair<int, ll>> best(states, {n + 1, 0});\n    best[0] = {1, 0};\n",
+    "    for (int s = 1; s < states; s++) {\n        for (int p = 0; p < n; p++) {\n            if (s & (1 << p)) {\n                auto cur = best[s ^ (1 << p)];\n                if (cur.second + w[p] <= x) cur.second += w[p];\n                else {\n                    cur.first++;\n                    cur.second = w[p];\n                }\n                best[s] = min(best[s], cur);\n            }\n        }\n    }\n    return n == 0 ? 0 : best[states - 1].first;\n}\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    ll x;\n    cin >> n >> x;\n    vector<ll> w(n);\n    for (ll& v : w) cin >> v;\n    cout << elevator(w, x) << '\\n';\n}\n"
+  ],
+  "subset-sums": [
+    "#include <bits/stdc++.h>\nusing namespace std;\n\nusing ll = long long;\n\n",
+    "vector<ll> subset_sums(vector<ll> sum, int n) {\n    int states = 1 << n;\n",
+    "    for (int k = 0; k < n; k++) {\n        for (int s = 0; s < states; s++) {\n            if (s & (1 << k)) sum[s] += sum[s ^ (1 << k)];\n        }\n    }\n    return sum;\n}\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<ll> value(1 << n);\n    for (ll& x : value) cin >> x;\n    vector<ll> sum = subset_sums(value, n);\n    for (int s = 0; s < (1 << n); s++) cout << sum[s] << (s + 1 == (1 << n) ? '\\n' : ' ');\n}\n"
+  ]
+}

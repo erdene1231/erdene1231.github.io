@@ -1,0 +1,19 @@
+# Chapter 10: Bit manipulation
+
+Full chapter read, printed 95–106 (PDF 105–116), including the final counting-subsets section. Five source sections remain in order within existing bit-operations; existing bitmask-dp is linked and unchanged. Actual printed 101 and 102 figures were rendered and inspected to recover exact black cells, both rectangles, all prices and the optimal shopping schedule.
+
+- 10.1:32-bit 43/-43 patterns, signed/unsigned ranges, conversion to 4294967253, unsigned wrapping. Correct source simplifications: negative lower bits are not magnitude, int width is not universally 32, signed overflow is undefined. Never execute the source's overflowing signed increment; demonstrate promotion and defined unsigned wrap instead.
+- 10.2:22/26 AND 18, OR 30, XOR 12, NOT 29/-30 versus unsigned interpretation;14<<2=56,49>>3=6; divisibility, bit access/set/clear/toggle, three low-bit formulas, positive-power-of-two condition and zero cases.5328 retains 32-bit counts 19/4/5/1. GCC builtins are extensions, clz/ctz exclude 0; ll suffix/operand width explained. C++17 negative signed shifts and invalid counts qualified, wide masks use 1ULL.
+- 10.3: exact set 1,3,4,8→282 and union with 3,6,8,9; set operations, universe-limited complement, all subsets/exact size/submask iterations, unsigned ascending recurrence and empty-set behavior. MaskSet constructor and operations explained/tested, not an unexplained class dump.
+- 10.4: both Hamming examples and all three pair distances; direct and packed implementations, source 13.5/0.5 timing retained as illustrative, not reproduced. Exact 5×5 black grid and both source rectangles reconstructed. Direct row-pair count and 64-bit packed code, ceil block bound/tail bits/64 and 128 boundaries, ll count multiplication, source 29.6/3.1/1.7 timing retained with environment qualification. No speed promise or false benchmark attribution.
+- 10.5: full 3×8 prices and 2+2+1 schedule; total(S,d), empty/singleton/unreachable bases, skip/buy recurrence, previous-day-only dependency, full table and complexity. Elevator weights 2,3,3,5,6/capacity 10, order and groups, state{1,3,4}=(2,5), factorial/subset contrast, lexicographic dominance, subset order, internal empty ride versus physical 0. All eight assigned subset values, sum{0,2}=10, partial-state example/base/recurrence, three bit-stage table, in-place invariant and n 2^n complexity retained. Added complete independently written C++17 implementations for every substantive example.
+
+Code:8 programs,453 UBSan/oracle cases. Includes full/high-bit 64 masks, exact word boundaries,2500×2500 all-black grid,3e9 purchase cost, unreachable purchases, empty elevator, capacity 10^18, negative SOS values. Native tests cover MN/EN, responsive/theme reader, native editor/serialize/reload, math and code. No extra migrations, editor changes, security or deferred backlog scope.
+
+Technical qualifications checked against primary documentation:
+- https://timsong-cpp.github.io/cppwp/n4659/expr (representable range and undefined behavior)
+- https://timsong-cpp.github.io/cppwp/n4659/expr.shift (C++17 shift rules)
+- https://timsong-cpp.github.io/cppwp/n4659/conv.integral (unsigned modular conversion)
+- https://gcc.gnu.org/onlinedocs/gcc/Bit-Operation-Builtins.html (argument types, zero preconditions, ll forms)
+
+Terminology review: a bounded search for “хоёрын гүйцээлт” and institutional Mongolian Hamming terminology did not establish a reliable Mongolian authority. Irrelevant search results were not cited as evidence. Use standard Two’s complement/Hamming names with explicit natural Mongolian definitions rather than claim an invented normative translation. Signed/unsigned introduced as тэмдэгтэй/тэмдэггүй; shifts explained as moving bits, compiler as хөрвүүлэгч. Repeated source/book/edition narration remains absent, acknowledgement/license centralized.
