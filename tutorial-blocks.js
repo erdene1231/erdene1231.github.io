@@ -1,3 +1,4 @@
+import {validateGridPresentation} from './tutorial-grid.js?v=61';
 import {validateGraphStyle} from './tutorial-graph.js?v=57';
 // Typed content, never arbitrary HTML. Old block shapes stay valid.
 export const BLOCK_TYPES=['p','rich','heading','code','math','list','ordered','checklist','table','links','quote','callout','note','divider','image','diagram','problem','tutorial'];
@@ -30,6 +31,7 @@ export function validateExtendedBlock(b){
  if(b.type==='problem'){text(b.problemKey,200);if(!/^(?:[1-9][0-9]{0,15}|[a-z0-9 ._-]+\|[a-z0-9_\/-]+)$/i.test(b.problemKey))throw new Error('Problem key буруу.');return true;}
  if(b.type==='tutorial'){if(!/^[a-z0-9-]{1,80}$/.test(b.tutorialId))throw new Error('Tutorial ID буруу.');if(b.label!==undefined)text(b.label,300);return true;}
  if(b.type==='diagram'){
+  validateGridPresentation(b);
   if(!['array','graph','tree','dp'].includes(b.kind))throw new Error('Diagram төрөл буруу.');if(b.caption!==undefined&&String(b.caption).length>2000)throw new Error('Diagram тайлбар хэт урт.');
   if(['array','dp'].includes(b.kind)){if(!Array.isArray(b.rows)||!b.rows.length||b.rows.length>20)throw new Error('Diagram 1–20 мөртэй байна.');for(const row of b.rows){if(!Array.isArray(row)||!row.length||row.length>30)throw new Error('Diagram мөр 1–30 нүдтэй байна.');for(const value of row)text(value,500);}}
   else {if(!Array.isArray(b.nodes)||!b.nodes.length||b.nodes.length>30||!Array.isArray(b.edges)||b.edges.length>100)throw new Error('Graph 1–30 орой, 0–100 ирмэгтэй байна.');const ids=new Set();for(const n of b.nodes){text(n.id,50);text(n.label,500);if(ids.has(n.id))throw new Error('Diagram оройн ID давхардсан.');ids.add(n.id);if(n.x!==undefined&&(!Number.isFinite(n.x)||n.x<5||n.x>95))throw new Error('Оройн x нь 5–95 байна.');if(n.y!==undefined&&(!Number.isFinite(n.y)||n.y<5||n.y>95))throw new Error('Оройн y нь 5–95 байна.');}for(const edge of b.edges)if(!Array.isArray(edge)||edge.length!==2||edge.some(id=>!ids.has(id)))throw new Error('Diagram ирмэгийн ID байхгүй.');validateGraphStyle(b);}
