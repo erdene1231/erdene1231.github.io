@@ -1,0 +1,27 @@
+{
+  "lis-quadratic": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n",
+    "    vector<int> dp(n, 1), par(n, -1);\n    int best = -1;\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < i; j++) {\n            if (a[j] < a[i] && dp[j] + 1 > dp[i]) {\n                dp[i] = dp[j] + 1;\n                par[i] = j;\n            }\n        }\n        if (best == -1 || dp[i] > dp[best]) best = i;\n    }\n",
+    "    vector<int> path;\n    for (int i = best; i != -1; i = par[i]) path.push_back(i);\n    reverse(path.begin(), path.end());\n    cout << path.size() << '\\n';\n    for (int i : path) cout << i + 1 << ' ';\n    cout << '\\n';\n}\n"
+  ],
+  "lis-fast": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n",
+    "    vector<ll> tail;\n    vector<int> pos, par(n, -1);\n    for (int i = 0; i < n; i++) {\n        int j = lower_bound(tail.begin(), tail.end(), a[i]) - tail.begin();\n        if (j > 0) par[i] = pos[j - 1];\n        if (j == int(tail.size())) {\n            tail.push_back(a[i]);\n            pos.push_back(i);\n        } else {\n            tail[j] = a[i];\n            pos[j] = i;\n        }\n    }\n    int best = pos.empty() ? -1 : pos.back();\n",
+    "    vector<int> path;\n    for (int i = best; i != -1; i = par[i]) path.push_back(i);\n    reverse(path.begin(), path.end());\n    cout << path.size() << '\\n';\n    for (int i : path) cout << i + 1 << ' ';\n    cout << '\\n';\n}\n"
+  ],
+  "lnds-fast": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n",
+    "    vector<ll> tail;\n    vector<int> pos, par(n, -1);\n    for (int i = 0; i < n; i++) {\n        int j = upper_bound(tail.begin(), tail.end(), a[i]) - tail.begin();\n        if (j > 0) par[i] = pos[j - 1];\n        if (j == int(tail.size())) {\n            tail.push_back(a[i]);\n            pos.push_back(i);\n        } else {\n            tail[j] = a[i];\n            pos[j] = i;\n        }\n    }\n    int best = pos.empty() ? -1 : pos.back();\n",
+    "    vector<int> path;\n    for (int i = best; i != -1; i = par[i]) path.push_back(i);\n    reverse(path.begin(), path.end());\n    cout << path.size() << '\\n';\n    for (int i : path) cout << i + 1 << ' ';\n    cout << '\\n';\n}\n"
+  ],
+  "interval-merge": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "struct MergeDP {\n    int n;\n    vector<ll> pref;\n    vector<vector<ll>> dp;\n    vector<vector<int>> cut;\n\n    MergeDP(const vector<ll> &a) {\n        n = a.size();\n        pref.resize(n + 1);\n        dp.assign(n, vector<ll>(n));\n        cut.assign(n, vector<int>(n, -1));\n        for (int i = 0; i < n; i++) pref[i + 1] = pref[i] + a[i];\n    }\n\n",
+    "    ll solve() {\n        for (int len = 2; len <= n; len++) {\n            for (int l = 0; l + len <= n; l++) {\n                int r = l + len - 1;\n                dp[l][r] = 1LL << 60;\n                ll sum = pref[r + 1] - pref[l];\n                for (int k = l; k < r; k++) {\n                    ll val = dp[l][k] + dp[k + 1][r] + sum;\n                    if (val < dp[l][r]) {\n                        dp[l][r] = val;\n                        cut[l][r] = k;\n                    }\n                }\n            }\n        }\n        return n == 0 ? 0 : dp[0][n - 1];\n    }\n\n",
+    "    void print(int l, int r) {\n        if (l == r) return;\n        int k = cut[l][r];\n        print(l, k);\n        print(k + 1, r);\n        cout << l + 1 << ' ' << k + 1 << ' ' << r + 1 << '\\n';\n    }\n};\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    MergeDP dp(a);\n    cout << dp.solve() << '\\n';\n    if (n > 0) dp.print(0, n - 1);\n}\n"
+  ]
+}
