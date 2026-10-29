@@ -1,0 +1,788 @@
+{
+  "id": "interval-dp",
+  "expected_revision": 2,
+  "expected_published": true,
+  "expected_body_md5": "e334f7619bf9537708d109fba095a2d4",
+  "expected_body_sha256": "fd9d42b01807cd5b432a89b7deb6e2551b87b56614f01ace41bf18f62b8fd3a7",
+  "reviewed_body_sha256": "ae51a372698a6f5a4d68e66dfc7164a9f06c376bda0679457f1955fa89c9c31b",
+  "proposed_body_sha256": "ae51a372698a6f5a4d68e66dfc7164a9f06c376bda0679457f1955fa89c9c31b",
+  "body": {
+    "id": "interval-dp",
+    "level": "Дунд шат",
+    "order": 49,
+    "title": "Завсрын DP — сүүлчийн нэгтгэл ба үйлдлүүд сэргээх",
+    "aliases": "interval-dp Interval DP — хамгийн сүүлийн үйлдлээс эхлэх Interval DP — reason from the final operation",
+    "related": [
+      "knapsack",
+      "tree-dp"
+    ],
+    "summary": "Залгаа хэсгийн төлөвийг сүүлчийн хуваалтаас гаргаж, богиноос урт руу бодно. Өртөг, хуваалтын хүснэгт, бодит нэгтгэлийн дарааллыг хамтад нь тайлбарлана.",
+    "category": "Dynamic programming",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "goal",
+        "title": "Хөрш бүлгүүдийн нэгтгэлийн дараалал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэг мөрөнд [10,20,30,40] хэмжээтэй дөрвөн бүлэг байг. Нэг алхамд зөвхөн хөрш хоёр бүлгийг нэгтгэж, нийлбэр хэмжээтэй нь тэнцүү өртөг төлнө. Шинэ бүлэг тэр нийлбэр хэмжээтэй үлдэнэ. Бүгдийг нэг бүлэг болгох хамгийн бага нийт өртгийг олъё. Анхны дараалал өөрчлөгдөхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Эхний 10 ба 20-ыг нэгтгэвэл 30 төлнө. Дараа нь тэр 30-ыг хөрш 30-тай нэгтгэж 60, эцэст нь 40-тэй нэгтгэж 100 төлөхөд нийт 190. Харин эхлээд 30 ба 40-ийг нэгтгээд, дараа нь 20, эцэст нь 10-ыг нэмбэл 70+90+100=260. Төгсгөлийн бүлгийн хэмжээ аль ч дарааллаар 100 боловч завсрын төлбөрүүд өөр."
+          },
+          {
+            "type": "diagram",
+            "kind": "dp",
+            "rows": [
+              [
+                "10",
+                "20",
+                "30",
+                "40"
+              ],
+              [
+                "30",
+                "30",
+                "40",
+                "–"
+              ],
+              [
+                "60",
+                "40",
+                "–",
+                "–"
+              ],
+              [
+                "100",
+                "–",
+                "–",
+                "–"
+              ]
+            ],
+            "caption": "190 өртөгтэй нэгтгэлийн төлөвүүд. “–” нь бүлэг үлдээгүйг тэмдэглэнэ."
+          },
+          {
+            "type": "p",
+            "text": "Хөрш хос бүрийг эхэлж авч бүх үргэлжлэлийг туршиж болно. Гэвч ижил залгаа хэсгийг нэг бүлэг болгох ажил олон салбарт давтагдана. Эхний үйлдлийг таахын оронд хамгийн сүүлийн үйлдлийг харъя: тэр үед анхны дарааллын нэг зүүн завсар, нэг баруун завсар тус бүр нэг бүлэг болсон байна."
+          }
+        ]
+      },
+      {
+        "key": "split",
+        "title": "Сүүлчийн хуваалтаар төлөв ба шилжилт гаргах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "dp[l][$r$] нь анхны l..$r$ залгаа хэсгийг нэг бүлэг болгох хамгийн бага нийт өртөг, хоёр хил хоёулаа орно. Ганц бүлэгт үйлдэл хэрэггүй тул dp[$i$][$i$]=0. Үүссэн бүлгийн эцсийн хэмжээ нь доторх анхны бүх хэмжээний нийлбэр: өмнө нь ямар дарааллаар нэгтгэснээс хамаарахгүй. Иймээс төлөвт үйлдлийн түүхийг нэмэхгүй, хоёр хил хангалттай."
+          },
+          {
+            "type": "p",
+            "text": "Сүүлчийн нэгтгэлийн зааг $k$ гэвэл зүүн нь [l,$k$], баруун нь [$k$+1,$r$]. Нэр дэвших өртөг $dp[l][k]+dp[k+1][r]+S(l,r)$. Иймээс $dp[l][r]=\\min_{l\\le k<r}(dp[l][k]+dp[k+1][r]+S(l,r))$. Энд S нь сүүлчийн нэгтгэлийн нэг удаагийн төлбөр; дэд завсруудын өмнөх төлбөр dp дотор аль хэдийн орсон."
+          },
+          {
+            "type": "p",
+            "text": "pref[0]=0, pref[$i$+1]=pref[$i$]+a[$i$] гэж урьдчилсан нийлбэр бэлдвэл S(l,$r$)=pref[$r$+1]−pref[l]. Ингэж нэг завсрын нийлбэрийг $O(1)$ хугацаанд авна. $k$ бүрд завсрын бүх элементийг дахин нэмбэл шилжилт шаардлагагүй удааширна."
+          },
+          {
+            "type": "p",
+            "text": "Дурын зөв үйлдлийн дарааллын сүүлд анхны хэсэг яг нэг $k$-ээр хоёр хуваагдсан байх ёстой. Хоёр дэд ажлын өртөг тус бүр өөрийн DP-ийн доод утгаас бага байж чадахгүй, тиймээс тухайн дарааллын өртөг нэр дэвшигчээс бага биш. Харин дэд завсруудын хамгийн сайн хоёр дарааллыг хийгээд сүүлд нийлүүлбэл тэр нэр дэвшигчид хүрнэ. Иймээс бүх $k$-ийн бага нь хүрч болох, оновчтой хариу."
+          }
+        ]
+      },
+      {
+        "key": "order",
+        "title": "Богино завсраас уртыг бодох",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хоёр хүүхэд нь эцэг завсраасаа богино. Тиймээс len=2,3,…,$n$ гэж уртыг өсгөж, урт бүрд бүх l-ийг шалгана; $r$=l+len−1. Ингэхэд dp[l][$k$] ба dp[$k$+1][$r$] бэлэн. Зөвхөн l-ийг багаас нь өсгөж бүх $r$-г бодвол баруун хүүхэд хараахан бодогдоогүй байж болно. Давталтын дараалал нь зүгээр бичлэгийн сонголт биш, хамаарлын баталгаа юм."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "l",
+              "$r$",
+              "Нийлбэр",
+              "Хамгийн бага өртөг"
+            ],
+            "rows": [
+              [
+                "0",
+                "0",
+                "10",
+                "0"
+              ],
+              [
+                "1",
+                "1",
+                "20",
+                "0"
+              ],
+              [
+                "2",
+                "2",
+                "30",
+                "0"
+              ],
+              [
+                "3",
+                "3",
+                "40",
+                "0"
+              ],
+              [
+                "0",
+                "1",
+                "30",
+                "30"
+              ],
+              [
+                "1",
+                "2",
+                "50",
+                "50"
+              ],
+              [
+                "2",
+                "3",
+                "70",
+                "70"
+              ],
+              [
+                "0",
+                "2",
+                "60",
+                "90"
+              ],
+              [
+                "1",
+                "3",
+                "90",
+                "140"
+              ],
+              [
+                "0",
+                "3",
+                "100",
+                "190"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Эхний гурван бүлгийн нийлбэр 60. $k$=0 бол 0+50+60=110; $k$=1 бол 30+0+60=90. Сүүлийн гурван бүлгийн бага өртөг 140. Бүтэн дөрвийн нийлбэр 100 бөгөөд гурван хуваалтын өртөг 0+140+100=240, 30+70+100=200, 90+0+100=190. Эхэнд үзүүлсэн нэгтгэл энэ 190-д хүрч байгаагаар DP-ийн утга бодит дараалалтай таарна."
+          },
+          {
+            "type": "p",
+            "text": "Хоёр хил $O(n^2)$ завсар, нэг завсарт $O(n)$ хуваалт тул $O(n³)$ хугацаа. pref нь $O(n)$, dp ба cut тус бүр $O(n^2)$ зай. Хариуг хурдан олохын тулд дур мэдэн $k$-ийн хэсгийг хасаж болохгүй; оновчтой заагийн нэмэлт шинжийг баталсан тусдаа оновчлол шаардлагатай."
+          }
+        ]
+      },
+      {
+        "key": "recover",
+        "title": "cut хүснэгтээс бодит үйлдлүүд сэргээх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Утгыг сайжруулсан $k$-г cut[l][$r$]-д хадгалбал бодит үйлдлүүдийг сэргээнэ. Эхлээд зүүн хүүхдийг, дараа нь баруун хүүхдийг бүрэн нэгтгээд, эцэст нь тэднийг нийлүүлэх үйлдлийг хэвлэнэ. Эцгийн үйлдлийг хүүхдээс өмнө хэвлэвэл заасан хоёр бүлэг хараахан бий болоогүй байна. Ганц нүдэнд үйлдэл хэвлэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Гаралтын l,$k$,$r$ нь 1-ээс эхэлсэн АНХНЫ индексүүд: анхны l..$k$ хэсгээс үүссэн нэг бүлгийг $k$+1..$r$ хэсгийн бүлэгтэй нийлүүл гэсэн утгатай. Тухайн мөчийн өөрчлөгдөж буй жагсаалтын байрлал гэж ойлгохгүй. Тэнцүү өртөгтэй хуваалт олон байвал эхний таарсныг үлдээнэ; бүгдийг гаргах шаардлагагүй."
+          },
+          {
+            "type": "p",
+            "text": "Жишээний хэвлэх гурван мөр нь 1 1 2; 1 2 3; 1 3 4. Эхний мөр 10 ба 20-ыг нийлүүлнэ. Дараагийн мөр анхны 1..2-оос үүссэн 30-ыг анхны 3 дахь 30-тай, сүүлийн мөр анхны 1..3 бүлгийг 4 дэх 40-тэй нийлүүлнэ. Төлбөр 30+60+100."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "Struct, байгуулагч ба бүтэн C++17 хэрэгжүүлэлт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Кодын оролт 0≤$n$≤400, хэмжээ бүр 0..10⁹. pref болон өртөг ll; хил, хуваалт int. Нийт хэмжээ хамгийн ихдээ 4×10¹¹, $n$−1 нэгтгэл бүр тэр нийлбэрээс ихгүй тул нийт өртөг 1.6×10¹⁴-өөс бага. 2⁶⁰ анхны “одоохондоо хамгийн сайн хариу алга” утга үүнээс эрс их, ll дотор нийлбэрүүд аюулгүй. Сөрөг хэмжээг энэ бодлогын зөвшөөрсөн оролт гэж үзэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "MergeDP struct нь pref,dp,cut-аа эзэмшинэ. Байгуулагч нь a-г өөрчлөхгүй лавлагаагаар авч $n$-г тогтооно, pref-ийн $n$+1 нүдийг 0-оор, dp-ийн $n$×$n$ нүдийг 0-оор, cut-ыг −1-ээр бэлтгэнэ. dp[$i$][$i$]=0 гэсэн эхлэл ингэж үүснэ; харин урт завсрыг solve дотор маш их утгаар дахин эхлүүлдэг учир анхны 0 нь хуурамч хямд хариу болохгүй."
+          },
+          {
+            "type": "p",
+            "text": "solve зөвхөн бэлэн богино хүүхдүүдээс нэр дэвшигч гаргана; $n$=0 үед dp[0] уншихгүй шууд 0 буцаана. print нь сүүлд шийдсэн cut-ыг ашиглах тул эхлээд solve дуусах ёстой. $n$=0 үед main нь print-ийг дуудахгүй."
+          },
+          {
+            "type": "p",
+            "text": "Стандарт сангууд; ll нь бүх хэмжээний нийлбэр ба өртөгт хэрэглэгдэнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+          },
+          {
+            "type": "p",
+            "text": "Талбарууд болон байгуулагч: хэмжээ, урьдчилсан нийлбэр, DP ба сэргээх хуваалтын массивуудыг бэлтгэнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "struct MergeDP {\n    int n;\n    vector<ll> pref;\n    vector<vector<ll>> dp;\n    vector<vector<int>> cut;\n\n    MergeDP(const vector<ll> &a) {\n        n = a.size();\n        pref.resize(n + 1);\n        dp.assign(n, vector<ll>(n));\n        cut.assign(n, vector<int>(n, -1));\n        for (int i = 0; i < n; i++) pref[i + 1] = pref[i] + a[i];\n    }"
+          },
+          {
+            "type": "p",
+            "text": "Уртыг өсгөх гурван давталт дотор бүх хууль ёсны $k$-г шалгана. Сайжрахад утга ба хуваалтыг хамт хадгална."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "ll solve() {\n        for (int len = 2; len <= n; len++) {\n            for (int l = 0; l + len <= n; l++) {\n                int r = l + len - 1;\n                dp[l][r] = 1LL << 60;\n                ll sum = pref[r + 1] - pref[l];\n                for (int k = l; k < r; k++) {\n                    ll val = dp[l][k] + dp[k + 1][r] + sum;\n                    if (val < dp[l][r]) {\n                        dp[l][r] = val;\n                        cut[l][r] = k;\n                    }\n                }\n            }\n        }\n        return n == 0 ? 0 : dp[0][n - 1];\n    }"
+          },
+          {
+            "type": "p",
+            "text": "Хоёр хүүхдийн дараа эцгийн үйлдлийг гаргана. Struct-ийн хаалт энэ хэсгийн төгсгөлд байна."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "void print(int l, int r) {\n        if (l == r) return;\n        int k = cut[l][r];\n        print(l, k);\n        print(k + 1, r);\n        cout << l + 1 << ' ' << k + 1 << ' ' << r + 1 << '\\n';\n    }\n};"
+          },
+          {
+            "type": "p",
+            "text": "main оролтыг уншиж байгуулагчийг дуудна, solve-ийн хариуг хэвлээд зөвхөн хоосон биш үед үйлдлүүдээ гаргана."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    MergeDP dp(a);\n    cout << dp.solve() << '\\n';\n    if (n > 0) dp.print(0, n - 1);\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct MergeDP {\n    int n;\n    vector<ll> pref;\n    vector<vector<ll>> dp;\n    vector<vector<int>> cut;\n\n    MergeDP(const vector<ll> &a) {\n        n = a.size();\n        pref.resize(n + 1);\n        dp.assign(n, vector<ll>(n));\n        cut.assign(n, vector<int>(n, -1));\n        for (int i = 0; i < n; i++) pref[i + 1] = pref[i] + a[i];\n    }\n\n    ll solve() {\n        for (int len = 2; len <= n; len++) {\n            for (int l = 0; l + len <= n; l++) {\n                int r = l + len - 1;\n                dp[l][r] = 1LL << 60;\n                ll sum = pref[r + 1] - pref[l];\n                for (int k = l; k < r; k++) {\n                    ll val = dp[l][k] + dp[k + 1][r] + sum;\n                    if (val < dp[l][r]) {\n                        dp[l][r] = val;\n                        cut[l][r] = k;\n                    }\n                }\n            }\n        }\n        return n == 0 ? 0 : dp[0][n - 1];\n    }\n\n    void print(int l, int r) {\n        if (l == r) return;\n        int k = cut[l][r];\n        print(l, k);\n        print(k + 1, r);\n        cout << l + 1 << ' ' << k + 1 << ' ' << r + 1 << '\\n';\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    MergeDP dp(a);\n    cout << dp.solve() << '\\n';\n    if (n > 0) dp.print(0, n - 1);\n}\n"
+          },
+          {
+            "type": "p",
+            "text": "Сэргээх мод $n$ навчтай, $n$−1 дотоод оройтой тул хэвлэх $O(n)$ ажил, идэвхтэй рекурсийн гүн хамгийн муудаа $O(n)$. Энд $n$≤400 хязгаартай жишээ; энэ нь дурын том оролтод стек аюулгүй гэсэн баталгаа биш. Илүү том гүнд хүүхдүүдийг боловсруулсны дараах ажлыг хадгалсан ил стек хэрэгтэй байж болно."
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "Шуналтай аргын алдаа ба хэрэглээний хязгаар",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "“Хамгийн бага хөрш нийлбэрийг эхэлж ав” гэсэн дүрэм үргэлж зөв биш. [6,4,4,6]-д 4+4=8-г эхэлбэл [6,8,6], дараа нь 14, эцэст нь 20 төлнө: нийт 42. Харин зүүн 6+4=10, баруун 4+6=10, дараа нь 20 гэж нийт 40 төлж болно. Хямд эхний алхам эцсийн хариуг батлахгүй."
+          },
+          {
+            "type": "p",
+            "text": "Мөн [1,100,1]-д хоёр 1 нь хөрш биш. Тэднийг нийлүүлдэг хөршийн хязгааргүй аргыг энд хэрэглэж болохгүй: зөв хөрш нэгтгэлийн хариу 101+102=203, харин хууль бус сонголт 2+102=104 болно. Бодлогын “хөрш” гэсэн ганц нөхцөл алгоритмыг өөрчилж байна."
+          },
+          {
+            "type": "p",
+            "text": "Завсрын тоглоомд хоёр тоглогчийн онооны зөрүү, хаалт эсвэл тэгш өнцөгт хуваахад өөр төлөв/үйлдэл хэрэгтэй. Нийтлэг санаа нь хоёр хил ба богино хүүхдийн хамаарал болохоос энэ нийлбэртэй шилжилт бүх завсрын бодлогод зөв гэсэн үг биш."
+          },
+          {
+            "type": "p",
+            "text": "Хоосон, ганц бүлэг, хоёр бүлэг, тэг хэмжээ, тэнцүү сонголт, 32-битээс их өртгийг шалга. Жижиг $n$ дээр эхний хөрш хосыг бүх янзаар сонгон, нэгтгэсэн жагсаалт дээр үргэлжлүүлж бүх өртгийн багыг олж болно. Энэ нь сүүлчийн хуваалтаар бодох DP-гээс өөр бүтэцтэй лавлах болно. Сэргээсэн мөр бүр яг тэр мөчид хөрш хоёр бүлгийг холбож буйг, нийт төлбөр оновчтойг мөн шалга."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өөрийгөө шалга: 1. dp[$i$][$i$] яагаад a[$i$] биш 0 вэ? 2. Сүүлчийн $k$-г сонгоход хоёр хүүхдийн түүхийг яагаад мартаж болох вэ? 3. Эцгийн үйлдлийг түрүүлж хэвлэвэл юу болох вэ? 4. [10,20,30,40]-ын бүтэн гурван хуваалтын үнэ хэд вэ?"
+          },
+          {
+            "type": "p",
+            "text": "Хариу: ганц бүлгийг нэг болгоход үйлдэлгүй; эцсийн хэмжээ зөвхөн анхны нийлбэрээс хамаарна, хүүхдийн хамгийн сайн өртөг хангалттай; холбох бүлгүүд бий болоогүй байна; 240,200,190."
+          },
+          {
+            "type": "p",
+            "text": "Сэдвийг эзэмших үндсэн бодлогууд"
+          },
+          {
+            "type": "p",
+            "text": "Slimes: сүүлчийн хуваалт, урьдчилсан нийлбэр, уртаар бодох баталгаагаа хэрэгжүүл."
+          },
+          {
+            "type": "problem",
+            "problemKey": "690"
+          },
+          {
+            "type": "p",
+            "text": "Бие даах ба ахиулах бодлогууд"
+          },
+          {
+            "type": "p",
+            "text": "Removal Game: хоёр тоглогчийн онооны зөрүүний өөр төлөв гарга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "81"
+          },
+          {
+            "type": "p",
+            "text": "Deque: хоёр үзүүрээс авахад тоглогч солигдох тэмдгийг батал."
+          },
+          {
+            "type": "problem",
+            "problemKey": "688"
+          },
+          {
+            "type": "p",
+            "text": "Rectangle Cutting: хоёр хэмжээ ба бүх таслах байрлалын өөр шилжилт хэрэгтэй."
+          },
+          {
+            "type": "problem",
+            "problemKey": "350"
+          },
+          {
+            "type": "p",
+            "text": "Knuth Division: хуваалтын мужийг багасгахаасаа өмнө нэмэлт оновчлолын нөхцөлийг батал; куб код том оролтод хангалтгүй байж болно."
+          },
+          {
+            "type": "problem",
+            "problemKey": "526"
+          },
+          {
+            "type": "p",
+            "text": "Stick Divisions: хөрш байх хязгааргүй нөхцөлийг эндхийнхтэй харьцуул; хамгийн жижиг хоёр бүлгийн арга яагаад өөр бодлогод зөвийг судал."
+          },
+          {
+            "type": "problem",
+            "problemKey": "673"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Interval DP — final merges and reconstruction",
+        "summary": "Derive contiguous-interval states from the final split, process increasing lengths and reconstruct actual adjacent merge operations.",
+        "sections": [
+          {
+            "key": "goal",
+            "title": "Choosing an adjacent-merge order",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Four groups have sizes[10,20,30,40] in a row. A move merges two adjacent groups, costs their combined size and leaves a group of that size. Minimize total cost until one group remains. Original order cannot change."
+              },
+              {
+                "type": "p",
+                "text": "Merge 10 and 20 for cost 30, merge their new 30 with the next 30 for 60, then with 40 for 100: total 190. Starting with 30 and 40, then adding 20 and 10, costs 70+90+100=260. The final size is 100 in either order, but intermediate payments differ."
+              },
+              {
+                "type": "diagram",
+                "kind": "dp",
+                "rows": [
+                  [
+                    "10",
+                    "20",
+                    "30",
+                    "40"
+                  ],
+                  [
+                    "30",
+                    "30",
+                    "40",
+                    "–"
+                  ],
+                  [
+                    "60",
+                    "40",
+                    "–",
+                    "–"
+                  ],
+                  [
+                    "100",
+                    "–",
+                    "–",
+                    "–"
+                  ]
+                ],
+                "caption": "Successive states of a cost190 construction. “–” marks padding, not a remaining group."
+              },
+              {
+                "type": "p",
+                "text": "Trying every possible first adjacent merge repeats the task of combining the same contiguous region. Instead examine the last move: at that time one left interval and one right interval of the original sequence have each become a single group."
+              }
+            ]
+          },
+          {
+            "key": "split",
+            "title": "State and transition from the final split",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "dp[l][$r$] is the minimum cost to combine the original inclusive interval l..$r$. A singleton needs no operation, so dp[$i$][$i$]=0. The final group size is the sum of its original sizes, independent of their internal merge order. Thus the state needs two endpoints, not the whole history."
+              },
+              {
+                "type": "p",
+                "text": "For a final split $k$, the left group is[l,$k$] and the right[$k$+1,$r$]. The candidate cost is dp[l][$k$]+dp[$k$+1][$r$]+S(l,$r$). Minimize over l≤$k$<$r$. S is the single final-merge payment; dp already contains all previous payments inside the children."
+              },
+              {
+                "type": "p",
+                "text": "With pref[0]=0 and pref[$i$+1]=pref[$i$]+a[$i$], obtain S(l,$r$)=pref[$r$+1]−pref[l] in $O(1)$. Re-summing all elements for every split would unnecessarily increase the running time."
+              },
+              {
+                "type": "p",
+                "text": "Every valid sequence has a final split $k$ into two original contiguous intervals. Its child costs cannot be below the corresponding DP optima, giving a lower bound by our candidate. Conversely, perform optimal child sequences and then merge the resulting adjacent groups to attain that candidate. Minimizing over all $k$ therefore gives an attainable optimum."
+              }
+            ]
+          },
+          {
+            "key": "order",
+            "title": "Evaluate short intervals before long ones",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Both children are shorter than their parent interval. Increase len from 2 through $n$, and for each length inspect every l with $r$=l+len−1. Both child results are then ready. A naive ascending-l outer loop may read an uncomputed right child. Loop order is a dependency proof, not just a formatting preference."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "l",
+                  "$r$",
+                  "Sum",
+                  "Minimum cost"
+                ],
+                "rows": [
+                  [
+                    "0",
+                    "0",
+                    "10",
+                    "0"
+                  ],
+                  [
+                    "1",
+                    "1",
+                    "20",
+                    "0"
+                  ],
+                  [
+                    "2",
+                    "2",
+                    "30",
+                    "0"
+                  ],
+                  [
+                    "3",
+                    "3",
+                    "40",
+                    "0"
+                  ],
+                  [
+                    "0",
+                    "1",
+                    "30",
+                    "30"
+                  ],
+                  [
+                    "1",
+                    "2",
+                    "50",
+                    "50"
+                  ],
+                  [
+                    "2",
+                    "3",
+                    "70",
+                    "70"
+                  ],
+                  [
+                    "0",
+                    "2",
+                    "60",
+                    "90"
+                  ],
+                  [
+                    "1",
+                    "3",
+                    "90",
+                    "140"
+                  ],
+                  [
+                    "0",
+                    "3",
+                    "100",
+                    "190"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "The first three groups total 60. Splitting at 0 costs 0+50+60=110; splitting at 1 costs 30+0+60=90. The last three have optimum 140. For all four, the three candidates are 0+140+100=240,30+70+100=200 and 90+0+100=190. The initial construction attains 190, connecting the DP table to actual moves."
+              },
+              {
+                "type": "p",
+                "text": "There are $O(n^2)$ intervals and $O(n)$ splits per interval, giving $O(n³)$ time. pref uses $O(n)$, and dp/cut each $O(n^2)$ space. Do not discard candidate splits merely for speed; narrowing them requires a separately proven optimization property."
+              }
+            ]
+          },
+          {
+            "key": "recover",
+            "title": "Recover actual operations from cut",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Record the improving split in cut[l][$r$]. Reconstruct the left child, then the right child, and print the parent merge only afterward. Printing the parent first would refer to groups not yet created. Singletons emit no operation."
+              },
+              {
+                "type": "p",
+                "text": "Output l,$k$,$r$ as one-based ORIGINAL indices: merge the current group formed from original l..$k$ with the group from $k$+1..$r$. These are not numeric positions in a shrinking list. When several splits tie, retaining the first is sufficient."
+              },
+              {
+                "type": "p",
+                "text": "The example prints three operations:1 1 2;1 2 3;1 3 4. First join 10 and 20; next join their size 30 group with original item 3 of size 30; finally join original interval 1..3 with item 4 of size 40. The cost is 30+60+100."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "Struct, initialization and full C++17 implementation",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Input requires 0≤$n$≤400 and sizes 0..10⁹. Prefix sums and costs use ll; boundaries/splits use int. Total mass is at most 4×10¹¹, and each of $n$−1 merges costs at most that mass, so the optimum is below 1.6×10¹⁴. The initial sentinel 2⁶⁰ is much larger and all additions fit ll. Negative sizes are outside this problem’s stated input domain."
+              },
+              {
+                "type": "p",
+                "text": "MergeDP owns pref,dp and cut. Its constructor takes the input by const reference, sets $n$, initializes $n$+1 prefix entries to 0, an $n$×$n$ dp table to 0 and cut to−1. This establishes singleton dp[$i$][$i$]=0. solve resets longer intervals to a large value before minimizing, so their initial zeros never act as false cheap answers."
+              },
+              {
+                "type": "p",
+                "text": "solve reads only ready shorter children and returns 0 without accessing dp[0] for an empty input. print relies on computed splits, so call solve first. main does not invoke print when $n$=0."
+              },
+              {
+                "type": "p",
+                "text": "Standard facilities; ll stores accumulated mass and costs."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+              },
+              {
+                "type": "p",
+                "text": "Fields and constructor allocate and initialize dimensions, prefix sums, DP and reconstruction splits."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "struct MergeDP {\n    int n;\n    vector<ll> pref;\n    vector<vector<ll>> dp;\n    vector<vector<int>> cut;\n\n    MergeDP(const vector<ll> &a) {\n        n = a.size();\n        pref.resize(n + 1);\n        dp.assign(n, vector<ll>(n));\n        cut.assign(n, vector<int>(n, -1));\n        for (int i = 0; i < n; i++) pref[i + 1] = pref[i] + a[i];\n    }"
+              },
+              {
+                "type": "p",
+                "text": "The length-ordered loops examine every legal split, saving an improving value and its split together."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "ll solve() {\n        for (int len = 2; len <= n; len++) {\n            for (int l = 0; l + len <= n; l++) {\n                int r = l + len - 1;\n                dp[l][r] = 1LL << 60;\n                ll sum = pref[r + 1] - pref[l];\n                for (int k = l; k < r; k++) {\n                    ll val = dp[l][k] + dp[k + 1][r] + sum;\n                    if (val < dp[l][r]) {\n                        dp[l][r] = val;\n                        cut[l][r] = k;\n                    }\n                }\n            }\n        }\n        return n == 0 ? 0 : dp[0][n - 1];\n    }"
+              },
+              {
+                "type": "p",
+                "text": "Emit the parent operation after both children. This fragment also closes the struct."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "void print(int l, int r) {\n        if (l == r) return;\n        int k = cut[l][r];\n        print(l, k);\n        print(k + 1, r);\n        cout << l + 1 << ' ' << k + 1 << ' ' << r + 1 << '\\n';\n    }\n};"
+              },
+              {
+                "type": "p",
+                "text": "main reads input, invokes the constructor, prints solve’s result and emits operations only for a nonempty instance."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    MergeDP dp(a);\n    cout << dp.solve() << '\\n';\n    if (n > 0) dp.print(0, n - 1);\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct MergeDP {\n    int n;\n    vector<ll> pref;\n    vector<vector<ll>> dp;\n    vector<vector<int>> cut;\n\n    MergeDP(const vector<ll> &a) {\n        n = a.size();\n        pref.resize(n + 1);\n        dp.assign(n, vector<ll>(n));\n        cut.assign(n, vector<int>(n, -1));\n        for (int i = 0; i < n; i++) pref[i + 1] = pref[i] + a[i];\n    }\n\n    ll solve() {\n        for (int len = 2; len <= n; len++) {\n            for (int l = 0; l + len <= n; l++) {\n                int r = l + len - 1;\n                dp[l][r] = 1LL << 60;\n                ll sum = pref[r + 1] - pref[l];\n                for (int k = l; k < r; k++) {\n                    ll val = dp[l][k] + dp[k + 1][r] + sum;\n                    if (val < dp[l][r]) {\n                        dp[l][r] = val;\n                        cut[l][r] = k;\n                    }\n                }\n            }\n        }\n        return n == 0 ? 0 : dp[0][n - 1];\n    }\n\n    void print(int l, int r) {\n        if (l == r) return;\n        int k = cut[l][r];\n        print(l, k);\n        print(k + 1, r);\n        cout << l + 1 << ' ' << k + 1 << ' ' << r + 1 << '\\n';\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    MergeDP dp(a);\n    cout << dp.solve() << '\\n';\n    if (n > 0) dp.print(0, n - 1);\n}\n"
+              },
+              {
+                "type": "p",
+                "text": "The reconstruction tree has $n$ leaves and $n$−1 internal nodes, so printing takes $O(n)$ time with worst-case $O(n)$ active recursion depth. The example is bounded by $n$≤400; this does not guarantee stack safety for arbitrary large inputs. Deep reconstruction may need explicit frames preserving post-child work."
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "Greedy failures and problem boundaries",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Greedily merging the cheapest adjacent pair can fail. For[6,4,4,6], merging 4+4 first costs 8, then 14, then 20: total 42. Instead merge the left 6+4 and right 4+6 for 10 each, then 20, totaling 40. A cheap first move does not certify a globally cheap sequence."
+              },
+              {
+                "type": "p",
+                "text": "In[1,100,1] the two ones are not adjacent. An unrestricted merging method that joins them is invalid here: legal adjacent merges cost 101+102=203, while the forbidden construction gives 2+102=104. The adjacency condition changes the algorithm."
+              },
+              {
+                "type": "p",
+                "text": "Interval games may need a score-difference state; parentheses or rectangle splitting have other operations. The reusable idea is interval boundaries and shorter dependencies, not a claim that this sum-cost transition solves every interval problem."
+              },
+              {
+                "type": "p",
+                "text": "Test empty/single/two-group instances, zero sizes, ties and costs beyond 32 bits. For small $n$ independently enumerate every possible first adjacent pair and recurse on the resulting list. This first-move reference differs structurally from the last-split DP. Also check that each reconstructed operation joins two actually adjacent current groups and that the total payment is optimal."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Check yourself:1. Why is dp[$i$][$i$]0 rather than a[$i$]?2. Why can child histories be forgotten after choosing $k$?3. What breaks if the parent operation is printed first?4. What are the three full-interval candidates for[10,20,30,40]?"
+              },
+              {
+                "type": "p",
+                "text": "Answers: a singleton already needs no merge; final mass depends only on the original interval sum, so optimal child costs suffice; its groups do not exist yet;240,200,190."
+              },
+              {
+                "type": "p",
+                "text": "Core problems for mastering the topic"
+              },
+              {
+                "type": "p",
+                "text": "Slimes: implement the last split, prefix sums and length-order proof."
+              },
+              {
+                "type": "problem",
+                "problemKey": "690"
+              },
+              {
+                "type": "p",
+                "text": "Independent practice and extensions"
+              },
+              {
+                "type": "p",
+                "text": "Removal Game: derive a different state for score difference between two players."
+              },
+              {
+                "type": "problem",
+                "problemKey": "81"
+              },
+              {
+                "type": "p",
+                "text": "Deque: justify the sign change when players alternate taking endpoints."
+              },
+              {
+                "type": "problem",
+                "problemKey": "688"
+              },
+              {
+                "type": "p",
+                "text": "Rectangle Cutting: use two dimensions and different cut transitions."
+              },
+              {
+                "type": "problem",
+                "problemKey": "350"
+              },
+              {
+                "type": "p",
+                "text": "Knuth Division: prove the extra optimization conditions before narrowing splits; cubic time may not fit the large input."
+              },
+              {
+                "type": "problem",
+                "problemKey": "526"
+              },
+              {
+                "type": "p",
+                "text": "Stick Divisions: contrast unrestricted merging with adjacency and justify its different greedy method."
+              },
+              {
+                "type": "problem",
+                "problemKey": "673"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "DP states and prefix sums; an interval is a contiguous part of the original order."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Динамик программчлалын төлөв, урьдчилсан нийлбэр. Завсар нь анхны дарааллын залгаа хэсэг.",
+    "priorityLevel": "high",
+    "priorityReason": "Завсрын сүүлчийн үйлдлээс төлөв ба хуваалтыг гаргах, богиноос урт хамаарлын дарааллыг батлах суурь. Тоглоом, нэгтгэл, хаалттай илэрхийлэл зэрэг олон төрлийн DP-г танихад өндөр өгөөжтэй.",
+    "prerequisiteIds": [
+      "dynamic-programming",
+      "prefix-sums"
+    ],
+    "learningRelations": {
+      "next": "tree-basics",
+      "practice": [
+        {
+          "key": "690",
+          "stage": "Warm-up",
+          "reason": "Төлөвийн утга, боловсруулах дараалал ба үндсэн сонголтын баталгааг хэрэгжүүлэх шууд цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "81",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "688",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "350",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "526",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "673",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "knapsack",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "tree-dp",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "status": "complete focused bilingual candidate; publication evidence separate"
+}
