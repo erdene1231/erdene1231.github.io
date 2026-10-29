@@ -715,3 +715,8 @@ START-HERE.md (220 мөр), requirements-01.txt (1197 мөр), requirements-02.t
 ## Package 2 tutorial sub-workstream reconciliation
 
 All 55 existing non-Mongolia lessons are published and reconciled against current anonymous bodies. C01–C14 above are closed for this existing tutorial scope using individual lesson semantic/code/reader evidence plus audit/PACKAGE02-TUTORIAL-RECONCILIATION.json. The bounded reconciliation is not a substitute for those reviews or a claim of user acceptance. Current sorting revision 7 and its previously verified code are preserved; Mongolia remains unpublished revision 2, unchanged against fresh guards. No missing package 3 topics were created. The interactive/communication bank follow-up remains incomplete, so package 2 is not complete.
+
+
+## Handbook Tree queries — verified 2026-10-29
+
+Existing `lca` revision 7/history 230 is published and anonymously verified after PR #130. LCA-first ordering, full chapter 18 examples/subtopics and requested static edge/vertex path aggregates are complete. Original rewrite cycle: 16/55 public-verified, 39 remaining; Introduction and SCC are separate additions. Catalog stays 58 stored/57 public tutorials and 1010 problems. All unrelated rows, eight drafts, learner and authority state are unchanged. See TREE-QUERY-PUBLICATION-RECEIPT; its successful one-time SQL must never be replayed. No deferred feature was implemented and owner acceptance is not inferred.
