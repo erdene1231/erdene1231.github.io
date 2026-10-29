@@ -1,3 +1,5 @@
+Current status: both lessons are now published and verified. See [publication receipt](PACKAGE03-LIS-INTERVAL-PUBLICATION-RECEIPT.json). The original preparation record below is historical and its pending gates are superseded by that receipt.
+
 # Next original batch — preparation, not completed lessons
 
 GitHub receipt recovery is finished: preserved e063c29 and its audit correction f154d95 were pushed using the existing command-scoped gh helper, then PR165 merged as6dafe1b2fff288fd7e0372208ea230780e64a7df. No credential/config/security changes or SQL replay. The earlier CLI401 cause remains unverified. Branch for this next batch starts at that verified remote main.

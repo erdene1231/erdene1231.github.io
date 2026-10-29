@@ -1,10 +1,10 @@
 # Handbook curriculum reconciliation — 2026-10-29
 
-Original read-only audit of the fresh anonymous65-lesson catalog and successful publication receipts, now updated with verified search publications PR156/158 and container publication PR160 and recursion PR162 plus grid/knapsack PR164. Only those nine target bodies/history changed; no private draft/learner/problem/access change. Mongolia remains excluded; no private draft bodies were inspected by this audit.
+Original read-only audit of the fresh anonymous65-lesson catalog and successful publication receipts, now updated with verified search publications PR156/158 and container publication PR160 and recursion PR162 plus grid/knapsack PR164 and LIS/interval PR166. Only those eleven target bodies/history changed; no private draft/learner/problem/access change. Mongolia remains excluded; no private draft bodies were inspected by this audit.
 
-55 originals =30 newly rewritten +25 still pre-handbook standalone bodies. Ten separate additions yield65 public lessons;66 stored including the last-verified excluded Mongolia. **The counts are consistent.** All 40 rewritten/new live bodies exactly match their latest successful receipts. All 25 remaining bodies exactly match the pre-Introduction recovery snapshot: concept coverage elsewhere has not rewritten these IDs. Previous package2 quality work is historical, not new-cycle credit.
+55 originals =32 newly rewritten +23 still pre-handbook standalone bodies. Ten separate additions yield65 public lessons;66 stored including the last-verified excluded Mongolia. **The counts are consistent.** All 42 rewritten/new live bodies exactly match their latest successful receipts. All 23 remaining bodies exactly match the pre-Introduction recovery snapshot: concept coverage elsewhere has not rewritten these IDs. Previous package2 quality work is historical, not new-cycle credit.
 
-## The 30 rewritten original IDs
+## The 32 rewritten original IDs
 
 | Stable ID | Live revision | Source chapter | Latest matching receipt |
 |---|---:|---:|---|
@@ -23,6 +23,8 @@ Original read-only audit of the fresh anonymous65-lesson catalog and successful 
 | `dynamic-programming` | 9 | 7 | [PACKAGE03-DOMINO-PUBLICATION-RECEIPT.json](PACKAGE03-DOMINO-PUBLICATION-RECEIPT.json) |
 | `grid-dp` | 5 | 7.3 supplement | [PACKAGE03-GRID-KNAPSACK-PUBLICATION-RECEIPT.json](PACKAGE03-GRID-KNAPSACK-PUBLICATION-RECEIPT.json) |
 | `knapsack` | 7 | 7.4 supplement | [PACKAGE03-GRID-KNAPSACK-PUBLICATION-RECEIPT.json](PACKAGE03-GRID-KNAPSACK-PUBLICATION-RECEIPT.json) |
+| `lis` | 7 | 7.2 supplement | [PACKAGE03-LIS-INTERVAL-PUBLICATION-RECEIPT.json](PACKAGE03-LIS-INTERVAL-PUBLICATION-RECEIPT.json) |
+| `interval-dp` | 3 | 7 supplement | [PACKAGE03-LIS-INTERVAL-PUBLICATION-RECEIPT.json](PACKAGE03-LIS-INTERVAL-PUBLICATION-RECEIPT.json) |
 | `two-pointers` | 7 | 8 | [PACKAGE03-AMORTIZED-PUBLICATION-RECEIPT.json](PACKAGE03-AMORTIZED-PUBLICATION-RECEIPT.json) |
 | `segment-tree` | 7 | 9 | [PACKAGE03-RANGE-PUBLICATION-RECEIPT.json](PACKAGE03-RANGE-PUBLICATION-RECEIPT.json) |
 | `bit-operations` | 6 | 10 | [PACKAGE03-BITS-PUBLICATION-RECEIPT.json](PACKAGE03-BITS-PUBLICATION-RECEIPT.json) |
@@ -39,14 +41,12 @@ Original read-only audit of the fresh anonymous65-lesson catalog and successful 
 | `string-hashing` | 3 | 26 | [PACKAGE03-STRINGS-PUBLICATION-RECEIPT.json](PACKAGE03-STRINGS-PUBLICATION-RECEIPT.json) |
 | `lazy-segment-tree` | 7 | 28 | [PACKAGE03-SEGREVISIT-PUBLICATION-RECEIPT.json](PACKAGE03-SEGREVISIT-PUBLICATION-RECEIPT.json) |
 
-## The 25 remaining originals — preserve every ID
+## The 23 remaining originals — preserve every ID
 
 “Covered by” identifies already published concepts, not completion of the standalone rewrite. Each body was inspected for its current goal/section structure; this bounded inventory is not a new complete semantic/code review.
 
 | Stable ID | Live revision | Source mapping / covered by | Standalone work still needed |
 |---|---:|---|---|
-| `lis` | 6 | 7.2 → `dynamic-programming#lis` | Source LIS derivation plus tails/reconstruction extension; strictly increasing vs non-decreasing. |
-| `interval-dp` | 2 | supplement to 7 → `dynamic-programming` | Adjacent-merge interval DP is useful existing supplemental material, not an explicit chapter 7 subsection. |
 | `sliding-window` | 2 | 8.1/8.3 → `two-pointers#two-pointers` | Keep positive-sum counting and connect to minimum/deque; positivity is essential. |
 | `monotonic-stack` | 6 | 8.2 → `two-pointers#nearest-smaller` | Nearest-smaller source versus existing next-greater application; explain inequality/tie choices. |
 | `prefix-sums` | 6 | 9.1 → `segment-tree#static` | Static sums and source examples; still old standalone body despite displayed chapter 9 number. |
@@ -113,7 +113,7 @@ Original read-only audit of the fresh anonymous65-lesson catalog and successful 
 
 ## Visible ordering and bookkeeping
 
-The 118-entry source-subtopic ledger had stale unfinished statuses for chapters18–23 and 27–30, plus an intermediate DP revision. Its publication fields are now reconciled locally to current containing-topic IDs/revisions/hashes/receipts. This fixes bookkeeping only; it does not mark any of the 25 focused originals rewritten.
+The 118-entry source-subtopic ledger had stale unfinished statuses for chapters18–23 and 27–30, plus an intermediate DP revision. Its publication fields are now reconciled locally to current containing-topic IDs/revisions/hashes/receipts. This fixes bookkeeping only; it does not mark any of the 23 focused originals rewritten.
 
 All 30 chapter labels occur in increasing handbook order, Introduction first. Focused extras use “Нэмэлт”, not invented chapter numbers. The fresh-catalog native reader test checks actual listing, numbering, explicit priority sort/filter and 390/1200px layouts; deployed order/runtime/curriculum bytes match cache75 under normal TLS. These are local native and deployed-file checks, not a certificate-bypassed live-browser claim.
 
@@ -130,7 +130,7 @@ Backlog placeholders are not a completion ledger: network-flow/bipartite-matchin
 | A | 3 Sorting supplements | Complete | All four focused originals published. Do not repeat them or Sorting. |
 | B | 4 Containers | Complete | Both focused originals published; do not repeat them or set-map. |
 | C | 5 Complete-search foundation | complete | Focused recursion supplement published; preserve Complete search. |
-| D | 7 DP supplements | `lis`, `interval-dp` | Preserve goal-specific extensions; digit-DP/grouped DP optimizations remain explicit supplementary additions. |
+| D | 7 DP supplements | complete | Grid DP, knapsack, LIS and interval DP published; preserve each distinct original. |
 | E | 8 Amortized techniques | `sliding-window`, `monotonic-stack` | Connect source 8.1–8.3 and preserve distinct existing problem contracts. |
 | F | 9 Range-query supplements | `prefix-sums`, `prefix-sums-2d`, `hash-compression`, `difference-array`, `sparse-table`, `fenwick-tree` | Correct chapter 9 containing-topic numbering via a separately tested narrow software change; retain all focused IDs and their own progress. |
 | G | 10 Subset-state DP | `bitmask-dp` | Tie masks/state transitions to 10.5, preserve assignment application. |
@@ -142,10 +142,10 @@ Backlog placeholders are not a completion ledger: network-flow/bipartite-matchin
 | M | 26 Explicit string additions | Explicit additions only | Suffix-array/LCP and Aho as focused supplements; Z/KMP/rolling hash are done, no duplicate lessons. |
 | N | Unnumbered contest/methodology supplements | `invariant`, `debugging`, `subtask-strategy` | Keep clearly supplemental, with relevant book links. Interactive/communication teaching is a separate modest supplement. |
 
-**Next concrete batch:** `lis`, `interval-dp`. Preserve LIS strict-versus-nondecreasing semantics, tails/reconstruction and interval-DP split/length ordering. Grid DP and knapsack are published; do not duplicate the full DP chapter. Retain all remaining IDs and explicit additions; never replay completed jobs.
+**Next concrete batch:** `sliding-window`, `monotonic-stack`, source8. Preserve distinct two-pointer/deque/stack assumptions and amortized reasoning; the complete chapter and all four DP supplements are already published. Retain all remaining IDs and explicit additions; never replay completed jobs.
 
 Remaining focused new groups: bridges/articulation; HLD; centroid decomposition; digit DP; grouped DP optimizations; Aho; suffix array with adjacent LCP; interactive/communication. Place according to prerequisites. Z, KMP, rolling hash, functional graphs,2SAT, matching/flow, Euler and static binary lifting are already substantively covered. Do not add duplicate top-level lessons.
 
-Book chapter 30 is final; no next numbered chapter. All 25 originals plus explicit requested additions still need tracked execution, and package3 is not complete. No package5, deferred progress/profile UI, problem statements/editorials, security expansion or approval review. Every future completed unit still needs real bilingual teaching review, correct compact CP code, native editor/reader checks and fresh guarded publication; source attribution stays centralized.
+Book chapter 30 is final; no next numbered chapter. All 23 originals plus explicit requested additions still need tracked execution, and package3 is not complete. No package5, deferred progress/profile UI, problem statements/editorials, security expansion or approval review. Every future completed unit still needs real bilingual teaching review, correct compact CP code, native editor/reader checks and fresh guarded publication; source attribution stays centralized.
 
 Machine-readable identities, hashes, receipt links, mapping and bounds: [PACKAGE03-CURRICULUM-RECONCILIATION.json](PACKAGE03-CURRICULUM-RECONCILIATION.json).
