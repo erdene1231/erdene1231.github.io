@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import {canonicalKey,problemIndex,resolvePractice,tutorialMastery,dayCompletion,CHECKS,buildStatistics,dateKey,monday,weekStatistics,bodyHash,validateRelations,withArchivedProblems} from '../learning-model.js';
 import {validateProblem,parseCatalog} from '../problem-store.js';
 import {validateTutorial} from '../tutorial-model.js';
+import {proposalProblems} from '../tools/package02_tutorial_proposals.mjs';
 import {filterProblems} from '../catalog.js';
 const read=name=>JSON.parse(fs.readFileSync(new URL('../'+name,import.meta.url)));
 const catalog=read('problems.json'),problems=catalog.problems,topics=read('tutorials.json').tutorials,curr=read('curriculum.json'),plan=read('study-plan.json');
@@ -12,11 +13,11 @@ test('all 702 problems have numeric ratings; original IDs/numbers and official C
  for(const old of read('tests/baseline-ids.json')){const p=problems.find(p=>p.id===old.id);assert(p,old.id);assert.equal(p.number,old.number);if(old.officialRating)assert.equal(p.rating,old.officialRating);}
  assert.equal(new Set(problems.map(canonicalKey)).size,problems.length);assert.equal(problemIndex(problems).get('cses|1071').id,'task-87');
 });
-test('56 bilingual seed lessons, acyclic prerequisites, variants and curated practice all resolve',()=>{
- const known=new Set(topics.map(t=>t.id)),position=new Map(curr.order.map((id,i)=>[id,i]));assert.equal(known.size,56);
- for(const t of topics)validateTutorial(t);
- for(const[id,rel]of Object.entries(curr.lessons)){assert(known.has(id));for(const p of rel.prerequisites)assert(position.get(p)<position.get(id),id+' → '+p);for(const v of rel.variants)assert(known.has(v.tutorialId));validateRelations(rel,id,topics,problems);}
- for(const row of curr.backlog){assert.equal(row.status,'not_published');assert(!known.has(row.id));}
+test('56 seed lessons plus the scoped SCC catalog addition resolve prerequisites and practice',()=>{
+ const addition=read('audit/package03-lessons/scc.json').body,allTopics=topics.concat(addition),known=new Set(topics.map(t=>t.id)),position=new Map(curr.order.map((id,i)=>[id,i]));assert.equal(known.size,56);
+ for(const t of allTopics)validateTutorial(t);
+ for(const[id,rel]of Object.entries(curr.lessons)){const scopedTopics=id==='scc'?allTopics:topics,scopedKnown=new Set(scopedTopics.map(t=>t.id));assert(scopedKnown.has(id));for(const p of rel.prerequisites)assert(position.get(p)<position.get(id),id+' → '+p);for(const v of rel.variants)assert(scopedKnown.has(v.tutorialId));validateRelations(rel,id,scopedTopics,id==='scc'?proposalProblems():problems);}
+ for(const row of curr.backlog){assert.equal(row.status,'not_published');assert(!allTopics.some(t=>t.id===row.id));}
 });
 test('all 100 days refer to real tasks and published tutorials',()=>{
  const idx=problemIndex(problems),ids=new Set(topics.map(t=>t.id));assert.equal(plan.days.length,100);

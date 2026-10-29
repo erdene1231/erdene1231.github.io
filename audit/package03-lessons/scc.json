@@ -1,0 +1,3856 @@
+{
+  "id": "scc",
+  "expected_absent": true,
+  "reviewed_body_sha256": "d3931a96ad0ed7ec0795efc70ae0a2cfcdf6838174113649dc588e22efcfe683",
+  "proposed_body_sha256": "d3931a96ad0ed7ec0795efc70ae0a2cfcdf6838174113649dc588e22efcfe683",
+  "body": {
+    "id": "scc",
+    "level": "Ахисан шат",
+    "order": 44,
+    "title": "Хүчтэй холбоост компонент — Kosaraju ба 2SAT",
+    "aliases": "scc strongly connected components strong connectivity kosaraju 2sat 2-sat implication condensation хүчтэй холбоост компонент",
+    "related": [
+      "topological-sort",
+      "dfs",
+      "graph-basics"
+    ],
+    "summary": "Чиглэлтэй графыг SCC-уудад хувааж DAG болгох, хоёр DFS-ийн зөв ажиллагаа, 2SAT-ийн дагалдал ба оноолт, компонентын DP-г бүтэн жишээ, тайлбартай C++17 программаар сурна.",
+    "category": "Graphs",
+    "levelKey": "advanced",
+    "sections": [
+      {
+        "key": "strong",
+        "title": "Хүчтэй холбоост компонент ба компонентын DAG",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Чиглэлгүй үед бүх орой хоорондоо холбогдсон байх нь замаар очиж болохыг баталдаг. Харин чиглэлтэй графын сумнуудыг үл тооцвол холбоост харагдсан ч нэг оройгоос нөгөөд сум дагуу хүрэхгүй байж болно. Дурын $u,v$ оройд $u$-ээс $v$, мөн $v$-ээс $u$ хүрэх чиглэлтэй зам байдаг графыг хүчтэй холбоост гэнэ."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "1",
+                "label": "1",
+                "x": 25,
+                "y": 20
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 75,
+                "y": 20
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 25,
+                "y": 80
+              },
+              {
+                "id": "4",
+                "label": "4",
+                "x": 75,
+                "y": 80
+              }
+            ],
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "2",
+                "4"
+              ],
+              [
+                "4",
+                "3"
+              ],
+              [
+                "3",
+                "1"
+              ]
+            ],
+            "directed": true,
+            "caption": "Дөрвөн оройг тойрч бүх чиглэлд хүрч болно."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "1",
+                "label": "1",
+                "x": 25,
+                "y": 20
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 75,
+                "y": 20
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 25,
+                "y": 80
+              },
+              {
+                "id": "4",
+                "label": "4",
+                "x": 75,
+                "y": 80
+              }
+            ],
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "2",
+                "4"
+              ],
+              [
+                "4",
+                "3"
+              ],
+              [
+                "1",
+                "3"
+              ]
+            ],
+            "directed": true,
+            "caption": "Сумыг үл тооцвол холбоост боловч 2-оос 1 хүрэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Хүчтэй холбоост компонент (strongly connected component, SCC) нь өөртөө дахин орой нэмж хүчтэй холбоост хэвээр үлдээх боломжгүй бүлэг. Энэ нь хамгийн олон оройтой ганц бүлэг хайж байгаа гэсэн үг биш. Оройнууд харилцан хүрдэг эсэхээрээ үл давхцах бүлгүүдэд хуваагдана. Орой өөртөө хоосон замаар хүрдэг тул тусгаар орой ч нэг SCC."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "1",
+                "label": "1",
+                "x": 12,
+                "y": 22
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 38,
+                "y": 22
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 66,
+                "y": 22
+              },
+              {
+                "id": "4",
+                "label": "4",
+                "x": 12,
+                "y": 78
+              },
+              {
+                "id": "5",
+                "label": "5",
+                "x": 38,
+                "y": 78
+              },
+              {
+                "id": "6",
+                "label": "6",
+                "x": 66,
+                "y": 78
+              },
+              {
+                "id": "7",
+                "label": "7",
+                "x": 90,
+                "y": 50
+              }
+            ],
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "4"
+              ],
+              [
+                "2",
+                "1"
+              ],
+              [
+                "2",
+                "5"
+              ],
+              [
+                "3",
+                "2"
+              ],
+              [
+                "3",
+                "7"
+              ],
+              [
+                "5",
+                "4"
+              ],
+              [
+                "6",
+                "5"
+              ],
+              [
+                "6",
+                "3"
+              ],
+              [
+                "7",
+                "6"
+              ]
+            ],
+            "directed": true,
+            "caption": "Долоон оройтой үндсэн жишээ."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "1",
+                "label": "1",
+                "x": 12,
+                "y": 22,
+                "color": "#dbeafe",
+                "textColor": "#111827",
+                "annotation": "A",
+                "annotationDy": -29
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 38,
+                "y": 22,
+                "color": "#dbeafe",
+                "textColor": "#111827",
+                "annotation": "A",
+                "annotationDy": -29
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 66,
+                "y": 22,
+                "color": "#dcfce7",
+                "textColor": "#111827",
+                "annotation": "B",
+                "annotationDy": -29
+              },
+              {
+                "id": "4",
+                "label": "4",
+                "x": 12,
+                "y": 78,
+                "color": "#fef3c7",
+                "textColor": "#111827",
+                "annotation": "C",
+                "annotationDy": -29
+              },
+              {
+                "id": "5",
+                "label": "5",
+                "x": 38,
+                "y": 78,
+                "color": "#fce7f3",
+                "textColor": "#111827",
+                "annotation": "D",
+                "annotationDy": -29
+              },
+              {
+                "id": "6",
+                "label": "6",
+                "x": 66,
+                "y": 78,
+                "color": "#dcfce7",
+                "textColor": "#111827",
+                "annotation": "B",
+                "annotationDy": -29
+              },
+              {
+                "id": "7",
+                "label": "7",
+                "x": 90,
+                "y": 50,
+                "color": "#dcfce7",
+                "textColor": "#111827",
+                "annotation": "B",
+                "annotationDy": -29
+              }
+            ],
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "4"
+              ],
+              [
+                "2",
+                "1"
+              ],
+              [
+                "2",
+                "5"
+              ],
+              [
+                "3",
+                "2"
+              ],
+              [
+                "3",
+                "7"
+              ],
+              [
+                "5",
+                "4"
+              ],
+              [
+                "6",
+                "5"
+              ],
+              [
+                "6",
+                "3"
+              ],
+              [
+                "7",
+                "6"
+              ]
+            ],
+            "directed": true,
+            "caption": "A={1,2}, B={3,6,7}, C={4}, D={5}."
+          },
+          {
+            "type": "p",
+            "text": "Жишээнд $A=\\{1,2\\}$, $B=\\{3,6,7\\}$, $C=\\{4\\}$, $D=\\{5\\}$. Нэг компонентыг нэг орой болгоод, өөр компонентуудын хоорондох ирмэгүүдийг үлдээвэл компонентын граф буюу condensation graph гарна. Өөртөө буцсан болон давхардсан ирмэгүүдийг хасна."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "A",
+                "x": 32,
+                "y": 18,
+                "color": "#dbeafe",
+                "textColor": "#111827"
+              },
+              {
+                "id": "B",
+                "label": "B",
+                "x": 82,
+                "y": 43,
+                "color": "#dcfce7",
+                "textColor": "#111827"
+              },
+              {
+                "id": "C",
+                "label": "C",
+                "x": 18,
+                "y": 83,
+                "color": "#fef3c7",
+                "textColor": "#111827"
+              },
+              {
+                "id": "D",
+                "label": "D",
+                "x": 56,
+                "y": 83,
+                "color": "#fce7f3",
+                "textColor": "#111827"
+              }
+            ],
+            "edges": [
+              [
+                "B",
+                "A"
+              ],
+              [
+                "B",
+                "D"
+              ],
+              [
+                "A",
+                "C"
+              ],
+              [
+                "A",
+                "D"
+              ],
+              [
+                "D",
+                "C"
+              ]
+            ],
+            "directed": true,
+            "caption": "Компонентуудын хооронд цикл байхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Компонентын графт цикл байсан бол тэр цикл дээрх бүх бүлгээс бусад бүлэгтээ очоод буцаж ирэх боломжтой. Тэгвэл тэд тусдаа хамгийн томоор авсан бүлгүүд биш, нэг SCC болох ёстой — зөрчил. Иймээс компонентын граф DAG бөгөөд топологийн эрэмбэ, DP ашиглаж болно. Гэхдээ нэг бүлгийг нэг орой болголоо гээд дурын бодлогын хариу автоматаар хадгалагдахгүй; тухайн бодлогод компонентын дотоод мэдээллийг зөв нэгтгэх шаардлагатай."
+          }
+        ]
+      },
+      {
+        "key": "kosaraju",
+        "title": "17.1 Kosaraju-ийн алгоритм",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Kosaraju-ийн алгоритм хоёр DFS хийдэг. Эхнийх нь анхны граф дээр дуусалтын дараалал байгуулна. Хоёр дахь нь бүх ирмэгийг эргүүлсэн граф дээр, тэр жагсаалтын урвуу дарааллаар эхэлж SCC-уудыг олно. Чиглэлтэй циклтэй байж болно: эхний жагсаалт нь анхны графын топологийн эрэмбэ биш, зөвхөн DFS-ийн дуусалтын жагсаалт юм."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Хайлт 1: орой дуусахад нэмэх"
+          },
+          {
+            "type": "p",
+            "text": "Эхлээгүй орой бүрээс хайна. Жишээнд $1$-ээс $2$, тэндээс $5$, дараа нь $4$ рүү орно. Хөршүүд нь дууссан үед оройгоо жагсаалтад нэмнэ. Орох, гарах үйл явдал бүрт цагийг нэгээр нэмбэл дараах тэмдэглэгээ гарна: $x/y$ нь орсон ба дууссан цаг."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "1",
+                "label": "1",
+                "x": 12,
+                "y": 22,
+                "annotation": "1/8",
+                "annotationDy": -29
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 38,
+                "y": 22,
+                "annotation": "2/7",
+                "annotationDy": -29
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 66,
+                "y": 22,
+                "annotation": "9/14",
+                "annotationDy": -29
+              },
+              {
+                "id": "4",
+                "label": "4",
+                "x": 12,
+                "y": 78,
+                "annotation": "4/5",
+                "annotationDy": -29
+              },
+              {
+                "id": "5",
+                "label": "5",
+                "x": 38,
+                "y": 78,
+                "annotation": "3/6",
+                "annotationDy": -29
+              },
+              {
+                "id": "6",
+                "label": "6",
+                "x": 66,
+                "y": 78,
+                "annotation": "11/12",
+                "annotationDy": -29
+              },
+              {
+                "id": "7",
+                "label": "7",
+                "x": 90,
+                "y": 50,
+                "annotation": "10/13",
+                "annotationDy": -29
+              }
+            ],
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "4"
+              ],
+              [
+                "2",
+                "1"
+              ],
+              [
+                "2",
+                "5"
+              ],
+              [
+                "3",
+                "2"
+              ],
+              [
+                "3",
+                "7"
+              ],
+              [
+                "5",
+                "4"
+              ],
+              [
+                "6",
+                "5"
+              ],
+              [
+                "6",
+                "3"
+              ],
+              [
+                "7",
+                "6"
+              ]
+            ],
+            "directed": true,
+            "caption": "Орох/дуусах цаг: жишээнд ашигласан хөршийн дарааллаар."
+          },
+          {
+            "type": "p",
+            "text": "$4$ эхэлж $5$ цагт дуусна, дараа нь $5,2,1$ дуусна. Дараагийн шинэ эхлэл $3$-аас $7$, $6$ рүү орж буцна. Бүх дуусалтын жагсаалт $[4,5,2,1,6,7,3]$. Хөршийн өөр дараалал өөр цаг, жагсаалт өгч болох ч SCC-ийн хуваалт өөрчлөгдөхгүй."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Орой",
+              "Дуусах цаг"
+            ],
+            "rows": [
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "6"
+              ],
+              [
+                "2",
+                "7"
+              ],
+              [
+                "1",
+                "8"
+              ],
+              [
+                "6",
+                "12"
+              ],
+              [
+                "7",
+                "13"
+              ],
+              [
+                "3",
+                "14"
+              ]
+            ]
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Хайлт 2: эргүүлсэн ирмэгээр, урвуу дарааллаар"
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "1",
+                "label": "1",
+                "x": 12,
+                "y": 22
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 38,
+                "y": 22
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 66,
+                "y": 22
+              },
+              {
+                "id": "4",
+                "label": "4",
+                "x": 12,
+                "y": 78
+              },
+              {
+                "id": "5",
+                "label": "5",
+                "x": 38,
+                "y": 78
+              },
+              {
+                "id": "6",
+                "label": "6",
+                "x": 66,
+                "y": 78
+              },
+              {
+                "id": "7",
+                "label": "7",
+                "x": 90,
+                "y": 50
+              }
+            ],
+            "edges": [
+              [
+                "2",
+                "1"
+              ],
+              [
+                "4",
+                "1"
+              ],
+              [
+                "1",
+                "2"
+              ],
+              [
+                "5",
+                "2"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "7",
+                "3"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "6"
+              ],
+              [
+                "3",
+                "6"
+              ],
+              [
+                "6",
+                "7"
+              ]
+            ],
+            "directed": true,
+            "caption": "Ирмэг бүрийн чиглэлийг эргүүлэв."
+          },
+          {
+            "type": "diagram",
+            "kind": "array",
+            "rows": [
+              [
+                "3",
+                "7",
+                "6",
+                "1",
+                "2",
+                "5",
+                "4"
+              ]
+            ],
+            "caption": "Хоёр дахь хайлтын эхлэлийн дараалал."
+          },
+          {
+            "type": "p",
+            "text": "Эхний шинэ эхлэл $3$. Эргүүлсэн граф дээр $3,6,7$ хамт олдоно. $7,6$ жагсаалтад дараа нь таарахад аль хэдийн компоненттой тул алгасана. Дараагийн шинэ эхлэл $1$ нь $1,2$-ыг нэгтгэнэ. Эцэст $5$, дараа нь $4$ тусдаа SCC болно."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "1",
+                "label": "1",
+                "x": 12,
+                "y": 22
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 38,
+                "y": 22
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 66,
+                "y": 22,
+                "color": "#dcfce7",
+                "textColor": "#111827",
+                "annotation": "B",
+                "annotationDy": -29
+              },
+              {
+                "id": "4",
+                "label": "4",
+                "x": 12,
+                "y": 78
+              },
+              {
+                "id": "5",
+                "label": "5",
+                "x": 38,
+                "y": 78
+              },
+              {
+                "id": "6",
+                "label": "6",
+                "x": 66,
+                "y": 78,
+                "color": "#dcfce7",
+                "textColor": "#111827",
+                "annotation": "B",
+                "annotationDy": -29
+              },
+              {
+                "id": "7",
+                "label": "7",
+                "x": 90,
+                "y": 50,
+                "color": "#dcfce7",
+                "textColor": "#111827",
+                "annotation": "B",
+                "annotationDy": -29
+              }
+            ],
+            "edges": [
+              [
+                "2",
+                "1"
+              ],
+              [
+                "4",
+                "1"
+              ],
+              [
+                "1",
+                "2"
+              ],
+              [
+                "5",
+                "2"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "7",
+                "3"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "6"
+              ],
+              [
+                "3",
+                "6"
+              ],
+              [
+                "6",
+                "7"
+              ]
+            ],
+            "directed": true,
+            "caption": "Эхлээд B={3,6,7} олдоно."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "1",
+                "label": "1",
+                "x": 12,
+                "y": 22,
+                "color": "#dbeafe",
+                "textColor": "#111827",
+                "annotation": "A",
+                "annotationDy": -29
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 38,
+                "y": 22,
+                "color": "#dbeafe",
+                "textColor": "#111827",
+                "annotation": "A",
+                "annotationDy": -29
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 66,
+                "y": 22,
+                "color": "#dcfce7",
+                "textColor": "#111827",
+                "annotation": "B",
+                "annotationDy": -29
+              },
+              {
+                "id": "4",
+                "label": "4",
+                "x": 12,
+                "y": 78
+              },
+              {
+                "id": "5",
+                "label": "5",
+                "x": 38,
+                "y": 78
+              },
+              {
+                "id": "6",
+                "label": "6",
+                "x": 66,
+                "y": 78,
+                "color": "#dcfce7",
+                "textColor": "#111827",
+                "annotation": "B",
+                "annotationDy": -29
+              },
+              {
+                "id": "7",
+                "label": "7",
+                "x": 90,
+                "y": 50,
+                "color": "#dcfce7",
+                "textColor": "#111827",
+                "annotation": "B",
+                "annotationDy": -29
+              }
+            ],
+            "edges": [
+              [
+                "2",
+                "1"
+              ],
+              [
+                "4",
+                "1"
+              ],
+              [
+                "1",
+                "2"
+              ],
+              [
+                "5",
+                "2"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "7",
+                "3"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "6"
+              ],
+              [
+                "3",
+                "6"
+              ],
+              [
+                "6",
+                "7"
+              ]
+            ],
+            "directed": true,
+            "caption": "Дараа нь A={1,2}; өмнөх B рүү дахин орохгүй."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "1",
+                "label": "1",
+                "x": 12,
+                "y": 22,
+                "color": "#dbeafe",
+                "textColor": "#111827",
+                "annotation": "A",
+                "annotationDy": -29
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 38,
+                "y": 22,
+                "color": "#dbeafe",
+                "textColor": "#111827",
+                "annotation": "A",
+                "annotationDy": -29
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 66,
+                "y": 22,
+                "color": "#dcfce7",
+                "textColor": "#111827",
+                "annotation": "B",
+                "annotationDy": -29
+              },
+              {
+                "id": "4",
+                "label": "4",
+                "x": 12,
+                "y": 78,
+                "color": "#fef3c7",
+                "textColor": "#111827",
+                "annotation": "C",
+                "annotationDy": -29
+              },
+              {
+                "id": "5",
+                "label": "5",
+                "x": 38,
+                "y": 78,
+                "color": "#fce7f3",
+                "textColor": "#111827",
+                "annotation": "D",
+                "annotationDy": -29
+              },
+              {
+                "id": "6",
+                "label": "6",
+                "x": 66,
+                "y": 78,
+                "color": "#dcfce7",
+                "textColor": "#111827",
+                "annotation": "B",
+                "annotationDy": -29
+              },
+              {
+                "id": "7",
+                "label": "7",
+                "x": 90,
+                "y": 50,
+                "color": "#dcfce7",
+                "textColor": "#111827",
+                "annotation": "B",
+                "annotationDy": -29
+              }
+            ],
+            "edges": [
+              [
+                "2",
+                "1"
+              ],
+              [
+                "4",
+                "1"
+              ],
+              [
+                "1",
+                "2"
+              ],
+              [
+                "5",
+                "2"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "7",
+                "3"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "6"
+              ],
+              [
+                "3",
+                "6"
+              ],
+              [
+                "6",
+                "7"
+              ]
+            ],
+            "directed": true,
+            "caption": "Эцэст D={5}, C={4}."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Яагаад хоёр дахь хайлт өөр бүлэг рүү алдагдахгүй вэ?"
+          },
+          {
+            "type": "p",
+            "text": "Ялгаатай компонентуудын хооронд $C\\to D$ ирмэг байвал $C$-ийн хамгийн сүүлчийн дуусах цаг $D$-гийнхаас их. $C$-г түрүүлж үзсэн бол DFS $D$-г дуусгаад $C$-дээ буцна. $D$-г түрүүлж үзсэн бол $D$-ээс $C$ хүрэхгүй — хүрвэл тэд нэг SCC болох байсан — тиймээс $D$ өмнө нь дууссан байна."
+          },
+          {
+            "type": "p",
+            "text": "Одоо хараахан оноогоогүй компонентуудаас хамгийн их дуусах цагтайг сонгоно. Эргүүлсэн графт түүнээс өөр оноогоогүй бүлэг рүү гарах ирмэг байсан бол анхны графт тэр бүлгээс сонгосон бүлэг рүү ирмэг байсан гэсэн үг. Тэр бүлгийн дуусах цаг илүү их байх ёстой — сонголттой зөрчилдөнө. Компонент дотор бүх чиглэлийг эргүүлсэн ч харилцан хүрдэг хэвээр тул бүх гишүүд нь олдоно. Өмнө оноосон бүлгүүдийг алгасах нь чухал."
+          },
+          {
+            "type": "p",
+            "text": "Ирмэг эргүүлэх дангаараа хангалтгүй: зөв эхлэлийн дараалалтай хамт хэрэгтэй. Компонентуудыг олдсон дарааллаар $0,1,\\ldots$ дугаарлавал энэ хэрэгжүүлэлтэд анхны графын бүлэг хоорондын ирмэг бүр бага дугаараас их рүү явна. Жишээний кодын дугаарууд $B=0,A=1,D=2,C=3$; тайлбарын үсгүүдээс ялгаатай нь алдаа биш. Энэ топологийн чиглэлийг 2SAT-ийн утга онооход ашиглана."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Хоёр хайлт ба компонентын DAG-ийн C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт $n,m$, дараа нь $m$ чиглэлтэй ",
+                "marks": []
+              },
+              {
+                "text": "a b",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "; $1\\le n\\le200000$, $m\\le400000$. Оролтын орой $1$-ээс эхэлнэ, struct дотор $0$-ээс. Гаралт: SCC-ийн тоо; орой бүрийн SCC дугаар; дуусалтын жагсаалт; орох цагууд; дуусах цагууд; компонентын DAG-ийн ирмэгийн тоо; дараа нь тэр ирмэгүүд. Хэвлэхдээ компонент болон оройн дугаарт нэгийг нэмж харуулна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Орой, индекс, $2n$ хүртэлх цаг ",
+                "marks": []
+              },
+              {
+                "text": "int",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-д багтана. Дараагийн хэрэглээнд нийлбэрт ",
+                "marks": []
+              },
+              {
+                "text": "ll",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хэрэгтэй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "SCC(n)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " constructor анхны ",
+                "marks": []
+              },
+              {
+                "text": "g",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " ба эргүүлсэн ",
+                "marks": []
+              },
+              {
+                "text": "rg",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " жагсаалтыг хэмжээлнэ. ",
+                "marks": []
+              },
+              {
+                "text": "add(a,b)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нэг ирмэгийг анхны чиглэлээр, нөгөөг нь эсрэг чиглэлээр хадгална. ",
+                "marks": []
+              },
+              {
+                "text": "groups",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь олдсон бүлгүүдийн гишүүд.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "struct SCC {\n    int n;\n    vector<vector<int>> g, rg, groups;\n    vector<int> comp, ord, tin, tout;\n    SCC(int _n) {\n        n = _n;\n        g.resize(n);\n        rg.resize(n);\n    }\n    void add(int a, int b) {\n        g[a].push_back(b);\n        rg[b].push_back(a);\n    }"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Ил стекний ",
+                "marks": []
+              },
+              {
+                "text": "(u,i)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь орой ба дараагийн шалгах ирмэг. Хүүхэд рүү орохоос өмнө индексийг нэмээд, бүх хөрш дуусахад ",
+                "marks": []
+              },
+              {
+                "text": "ord",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-д нэмнэ. ",
+                "marks": []
+              },
+              {
+                "text": "tin/tout",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь зөвхөн жишээг мөрдөхөд тусалдаг цагууд. Рекурс ашиглахгүй учраас урт гинж дээр дуудлагын стек дүүрэхгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int run() {\n        vector<int> seen(n);\n        comp.assign(n, -1);\n        tin.assign(n, 0);\n        tout.assign(n, 0);\n        ord.clear();\n        groups.clear();\n        int timer = 0;\n        for (int s = 0; s < n; s++) {\n            if (seen[s]) continue;\n            vector<pair<int, int>> st = {{s, 0}};\n            seen[s] = true;\n            tin[s] = ++timer;\n            while (!st.empty()) {\n                int u = st.back().first;\n                int &i = st.back().second;\n                if (i == (int)g[u].size()) {\n                    tout[u] = ++timer;\n                    ord.push_back(u);\n                    st.pop_back();\n                    continue;\n                }\n                int v = g[u][i++];\n                if (!seen[v]) {\n                    seen[v] = true;\n                    tin[v] = ++timer;\n                    st.push_back({v, 0});\n                }\n            }\n        }"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Урвуу жагсаалтаас шинэ эхлэл бүрт бүлэг үүсгэнэ. Оройг стект нэмэхдээ ",
+                "marks": []
+              },
+              {
+                "text": "comp",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " оноодог тул олон давхардсан ирмэг нэг оройг дахин нэмэхгүй. Өмнөх бүлэгт оноосон орой руу орохгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "for (int i = n - 1; i >= 0; i--) {\n            int s = ord[i];\n            if (comp[s] != -1) continue;\n            int c = (int)groups.size();\n            groups.push_back({});\n            vector<int> st = {s};\n            comp[s] = c;\n            while (!st.empty()) {\n                int u = st.back();\n                st.pop_back();\n                groups[c].push_back(u);\n                for (int v : rg[u]) {\n                    if (comp[v] != -1) continue;\n                    comp[v] = c;\n                    st.push_back(v);\n                }\n            }\n        }\n        return (int)groups.size();\n    }"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Нэг бүлгийн гишүүдийн гарах ирмэгүүдийг шалгана. Дотоод ирмэгийг хасна. ",
+                "marks": []
+              },
+              {
+                "text": "seen[d] == c",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь $c$-ээс $d$ рүү ирмэг өмнө нэмснийг тэмдэглэж, бүлэг бүрт бүтэн хүснэгт дахин тэглэхгүйгээр давхардлыг арилгана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "vector<vector<int>> dag() const {\n        int k = (int)groups.size();\n        vector<vector<int>> adj(k);\n        vector<int> seen(k, -1);\n        for (int c = 0; c < k; c++) {\n            for (int u : groups[c]) {\n                for (int v : g[u]) {\n                    int d = comp[v];\n                    if (c == d || seen[d] == c) continue;\n                    seen[d] = c;\n                    adj[c].push_back(d);\n                }\n            }\n        }\n        return adj;\n    }\n};"
+          },
+          {
+            "type": "p",
+            "text": "Хоёр хайлтыг нэг удаа ажиллуулаад бүлэг, оноолт, цаг болон DAG-ийг хэвлэнэ. Өөр дугаарлалтай зөв SCC хуваалтыг дугаарын тэнцлээр бус харилцан хүрэх шинжээр харьцуулна."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    SCC s(n);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        s.add(a - 1, b - 1);\n    }\n    cout << s.run() << '\\n';\n    auto print = [&](const vector<int> &a, int shift) {\n        for (int i = 0; i < n; i++) cout << a[i] + shift << (i + 1 == n ? '\\n' : ' ');\n    };\n    print(s.comp, 1);\n    print(s.ord, 1);\n    print(s.tin, 0);\n    print(s.tout, 0);\n    auto adj = s.dag();\n    int m2 = 0;\n    for (auto &a : adj) m2 += (int)a.size();\n    cout << m2 << '\\n';\n    for (int c = 0; c < (int)adj.size(); c++) {\n        for (int d : adj[c]) cout << c + 1 << ' ' << d + 1 << '\\n';\n    }\n}"
+          },
+          {
+            "type": "p",
+            "text": "Өмнөх хэсгүүдийг нэгтгэсэн бүтэн C++17 программ. Программ бүрийг тусдаа файлд хөрвүүлнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct SCC {\n    int n;\n    vector<vector<int>> g, rg, groups;\n    vector<int> comp, ord, tin, tout;\n    SCC(int _n) {\n        n = _n;\n        g.resize(n);\n        rg.resize(n);\n    }\n    void add(int a, int b) {\n        g[a].push_back(b);\n        rg[b].push_back(a);\n    }\n    int run() {\n        vector<int> seen(n);\n        comp.assign(n, -1);\n        tin.assign(n, 0);\n        tout.assign(n, 0);\n        ord.clear();\n        groups.clear();\n        int timer = 0;\n        for (int s = 0; s < n; s++) {\n            if (seen[s]) continue;\n            vector<pair<int, int>> st = {{s, 0}};\n            seen[s] = true;\n            tin[s] = ++timer;\n            while (!st.empty()) {\n                int u = st.back().first;\n                int &i = st.back().second;\n                if (i == (int)g[u].size()) {\n                    tout[u] = ++timer;\n                    ord.push_back(u);\n                    st.pop_back();\n                    continue;\n                }\n                int v = g[u][i++];\n                if (!seen[v]) {\n                    seen[v] = true;\n                    tin[v] = ++timer;\n                    st.push_back({v, 0});\n                }\n            }\n        }\n        for (int i = n - 1; i >= 0; i--) {\n            int s = ord[i];\n            if (comp[s] != -1) continue;\n            int c = (int)groups.size();\n            groups.push_back({});\n            vector<int> st = {s};\n            comp[s] = c;\n            while (!st.empty()) {\n                int u = st.back();\n                st.pop_back();\n                groups[c].push_back(u);\n                for (int v : rg[u]) {\n                    if (comp[v] != -1) continue;\n                    comp[v] = c;\n                    st.push_back(v);\n                }\n            }\n        }\n        return (int)groups.size();\n    }\n    vector<vector<int>> dag() const {\n        int k = (int)groups.size();\n        vector<vector<int>> adj(k);\n        vector<int> seen(k, -1);\n        for (int c = 0; c < k; c++) {\n            for (int u : groups[c]) {\n                for (int v : g[u]) {\n                    int d = comp[v];\n                    if (c == d || seen[d] == c) continue;\n                    seen[d] = c;\n                    adj[c].push_back(d);\n                }\n            }\n        }\n        return adj;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    SCC s(n);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        s.add(a - 1, b - 1);\n    }\n    cout << s.run() << '\\n';\n    auto print = [&](const vector<int> &a, int shift) {\n        for (int i = 0; i < n; i++) cout << a[i] + shift << (i + 1 == n ? '\\n' : ' ');\n    };\n    print(s.comp, 1);\n    print(s.ord, 1);\n    print(s.tin, 0);\n    print(s.tout, 0);\n    auto adj = s.dag();\n    int m2 = 0;\n    for (auto &a : adj) m2 += (int)a.size();\n    cout << m2 << '\\n';\n    for (int c = 0; c < (int)adj.size(); c++) {\n        for (int d : adj[c]) cout << c + 1 << ' ' << d + 1 << '\\n';\n    }\n}\n"
+          },
+          {
+            "type": "p",
+            "text": "Хоёр DFS, граф эргүүлэх, массив эхлүүлэх болон DAG байгуулах нь нийт $O(n+m)$ хугацаа, $O(n+m)$ санах ойтой. Тусгаар орой бүр тусдаа SCC; өөртөө заасан болон зэрэгцээ ирмэг хуваалтыг эвдэхгүй. Анхны граф бүхэлдээ хүчтэй холбоост эсэхийг $k=1$ эсэхээр мэднэ."
+          }
+        ]
+      },
+      {
+        "key": "2sat",
+        "title": "17.2 2SAT бодлого",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "2SAT-д хувьсагч бүр үнэн эсвэл худал утгатай. Хоёр литералын OR бүхий нөхцөлүүдийг AND-аар холбоно. Литерал гэдэг нь $x_i$ эсвэл түүний үгүйсгэл $\\neg x_i$. $\\lor$ нь «эсвэл», $\\land$ нь «ба»: OR нөхцөлөөс дор хаяж нэг нь, AND-аас бүх нөхцөл нь үнэн байх ёстой."
+          },
+          {
+            "type": "math",
+            "tex": "(a_1\\lor b_1)\\land(a_2\\lor b_2)\\land\\cdots\\land(a_m\\lor b_m)"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Биелэх ба биелэхгүй хоёр жишээ"
+          },
+          {
+            "type": "math",
+            "tex": "\\begin{aligned}L_1={}&(x_2\\lor\\neg x_1)\\land(\\neg x_1\\lor\\neg x_2)\\\\&\\land(x_1\\lor x_3)\\land(\\neg x_2\\lor\\neg x_3)\\\\&\\land(x_1\\lor x_4).\\end{aligned}"
+          },
+          {
+            "type": "p",
+            "text": "$x_1=false$, $x_2=false$, $x_3=true$, $x_4=true$ гэж авбал таван нөхцөл бүгд үнэн. Жишээ нь $(x_1\\lor x_3)$-т эхнийх худал ч хоёр дахь нь үнэн. Нэг нөхцөлийг хангаад зогсохгүй бүх тавыг шалгах ёстой."
+          },
+          {
+            "type": "math",
+            "tex": "\\begin{aligned}L_2={}&(x_1\\lor x_2)\\land(x_1\\lor\\neg x_2)\\\\&\\land(\\neg x_1\\lor x_3)\\land(\\neg x_1\\lor\\neg x_3).\\end{aligned}"
+          },
+          {
+            "type": "p",
+            "text": "$L_2$-т $x_1$ худал байвал эхний хоёр нөхцөл $x_2$ болон $\\neg x_2$-ыг зэрэг үнэн болгохыг шаардана. $x_1$ үнэн байвал сүүлийн хоёр нөхцөл $x_3$ болон $\\neg x_3$-ыг зэрэг шаардана. Аль ч сонголт зөрчилтэй тул шийдэлгүй."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Нөхцөлийг чиглэлтэй граф болгох"
+          },
+          {
+            "type": "p",
+            "text": "$(a\\lor b)$ нь «$a$ худал бол $b$ үнэн», «$b$ худал бол $a$ үнэн» гэсэн хоёр дагалдлыг өгнө: $\\neg a\\to b$, $\\neg b\\to a$. Implication буюу ийм дагалдал нь эхний литерал үнэн байвал дараагийнх заавал үнэн гэсэн утгатай. Хоёр ирмэгийг хоёуланг нэмэх ёстой."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "-3",
+                "label": "¬x3",
+                "x": 8,
+                "y": 20
+              },
+              {
+                "id": "2",
+                "label": "x2",
+                "x": 33,
+                "y": 20
+              },
+              {
+                "id": "-1",
+                "label": "¬x1",
+                "x": 58,
+                "y": 20
+              },
+              {
+                "id": "4",
+                "label": "x4",
+                "x": 83,
+                "y": 20
+              },
+              {
+                "id": "-4",
+                "label": "¬x4",
+                "x": 8,
+                "y": 80
+              },
+              {
+                "id": "1",
+                "label": "x1",
+                "x": 33,
+                "y": 80
+              },
+              {
+                "id": "-2",
+                "label": "¬x2",
+                "x": 58,
+                "y": 80
+              },
+              {
+                "id": "3",
+                "label": "x3",
+                "x": 83,
+                "y": 80
+              }
+            ],
+            "edges": [
+              [
+                "-2",
+                "-1"
+              ],
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "-2"
+              ],
+              [
+                "2",
+                "-1"
+              ],
+              [
+                "-1",
+                "3"
+              ],
+              [
+                "-3",
+                "1"
+              ],
+              [
+                "2",
+                "-3"
+              ],
+              [
+                "3",
+                "-2"
+              ],
+              [
+                "-1",
+                "4"
+              ],
+              [
+                "-4",
+                "1"
+              ]
+            ],
+            "directed": true,
+            "caption": "L1-ийн хоёр ирмэгтэй хөрвүүлэлт бүрийг нэмэв."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "-1",
+                "label": "¬x1",
+                "x": 50,
+                "y": 14
+              },
+              {
+                "id": "1",
+                "label": "x1",
+                "x": 50,
+                "y": 87
+              },
+              {
+                "id": "3",
+                "label": "x3",
+                "x": 8,
+                "y": 51
+              },
+              {
+                "id": "2",
+                "label": "x2",
+                "x": 35,
+                "y": 51
+              },
+              {
+                "id": "-2",
+                "label": "¬x2",
+                "x": 65,
+                "y": 51
+              },
+              {
+                "id": "-3",
+                "label": "¬x3",
+                "x": 83,
+                "y": 51
+              }
+            ],
+            "edges": [
+              [
+                "-1",
+                "2"
+              ],
+              [
+                "-2",
+                "1"
+              ],
+              [
+                "-1",
+                "-2"
+              ],
+              [
+                "2",
+                "1"
+              ],
+              [
+                "1",
+                "3"
+              ],
+              [
+                "-3",
+                "-1"
+              ],
+              [
+                "1",
+                "-3"
+              ],
+              [
+                "3",
+                "-1"
+              ]
+            ],
+            "directed": true,
+            "caption": "L2-ийн бүх зургаан литерал нэг SCC-д байна."
+          },
+          {
+            "type": "p",
+            "text": "Хэрэв $x_i$ ба $\\neg x_i$ нэг SCC-д байвал нэгээс нь нөгөөд, бас буцаж хүрнэ. Аль нэг нь заавал үнэн байх ёстой, харин тэндээс дагалдлууд нөгөөг бас үнэн болгоно — зөрчил. Ийм хос байвал 2SAT шийдэлгүй. $L_2$-т бүх литерал нэг SCC; $L_1$-т хувьсагчийн хоёр литерал үргэлж өөр SCC-д байна."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "SCC-уудаас утга оноох"
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "A",
+                "label": "A",
+                "x": 12,
+                "y": 50,
+                "color": "#dbeafe",
+                "textColor": "#111827"
+              },
+              {
+                "id": "B",
+                "label": "B",
+                "x": 37,
+                "y": 50,
+                "color": "#dcfce7",
+                "textColor": "#111827"
+              },
+              {
+                "id": "C",
+                "label": "C",
+                "x": 62,
+                "y": 50,
+                "color": "#fef3c7",
+                "textColor": "#111827"
+              },
+              {
+                "id": "D",
+                "label": "D",
+                "x": 87,
+                "y": 50,
+                "color": "#fce7f3",
+                "textColor": "#111827"
+              }
+            ],
+            "edges": [
+              [
+                "A",
+                "B"
+              ],
+              [
+                "B",
+                "C"
+              ],
+              [
+                "C",
+                "D"
+              ]
+            ],
+            "directed": true,
+            "caption": "L1-ийн компонентын граф A → B → C → D."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Компонент",
+              "Литералууд"
+            ],
+            "rows": [
+              [
+                "$A$",
+                "$\\neg x_4$"
+              ],
+              [
+                "$B$",
+                "$x_1,x_2,\\neg x_3$"
+              ],
+              [
+                "$C$",
+                "$\\neg x_1,\\neg x_2,x_3$"
+              ],
+              [
+                "$D$",
+                "$x_4$"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Компонентын DAG-ийг урвуу топологийн дарааллаар боловсруулъя. Эхлээд $D$-д $x_4=true$. Дараа нь $C$-д $\\neg x_1$, $\\neg x_2$, $x_3$-ыг үнэн болгох тул $x_1=false$, $x_2=false$, $x_3=true$. $B,A$-д очиход хувьсагчид аль хэдийн оноогдсон тул дахин өөрчлөхгүй. Энэ нь дээрх шийдлийг өгнө."
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Кодын SCC дугаар анхны ирмэгийн дагуу өсдөг учраас $value[i]=(comp[x_i]>comp[\\neg x_i])$ гэж авна: хоёр литералаас урвуу боловсруулалтад түрүүлж таарахыг үнэн болгож байна. Өөр SCC алгоритм эсвэл хоёр хайлтын чиглэл хэрэглэвэл дугаарлалтын чиглэл өөр байж болно; ",
+                "marks": []
+              },
+              {
+                "text": ">",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " тэмдгийг тайлбаргүй цээжилж хуулж болохгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Энэ оноолт дагалдлыг зөрчихгүйг баталъя. $a\\to b$ байхад $a$ үнэн, $b$ худал болсон гэж үзье. Хос ирмэгүүдийн бүтцээс $\\neg b\\to\\neg a$ бас бий. Топологийн дугаар ба оноолтын дүрмээс $comp(a)\\le comp(b)<comp(\\neg b)\\le comp(\\neg a)<comp(a)$ гэсэн боломжгүй гинж гарна. Иймээс бүх дагалдал, тэдгээрээс анхны OR нөхцөлүүд хангагдана."
+          },
+          {
+            "type": "p",
+            "text": "Мөн $x_i\\to x_j\\to\\neg x_j$ зам байвал $x_i$-г үнэн болгож болохгүй. Дагалдал бүрийн эсрэг хосоос $\\neg x_j\\to\\neg x_i$ зам бас үүснэ. Тэгэхээр $x_i$-ээс өөрийн үгүйсгэл рүү хүрч, дээрх дарааллын дүрэм $x_i$-г худал сонгоно. Энэ нь зөрчилтэй сонголтыг урвуу боловсруулалт яагаад зайлсхийдгийг тайлбарлана."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "2SAT-ийн C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт $n,m$, дараа нь $m$ мөр тэмдэгтэй ",
+                "marks": []
+              },
+              {
+                "text": "a b",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ": эерэг $i$ нь $x_i$, сөрөг $-i$ нь $\\neg x_i$; мөр бүр $(a\\lor b)$. $1\\le n\\le200000$, $m\\le400000$, литерал $0$ биш, $|a|,|b|\\le n$. Гаралт хувьсагч бүрийн $0/1$ утга эсвэл ",
+                "marks": []
+              },
+              {
+                "text": "IMPOSSIBLE",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ". Нэг литерал давтагдсан $(a\\lor a)$ нь нэг утгыг албадана; $(a\\lor\\neg a)$ үргэлж үнэн.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Литералын дугаар, SCC болон логик утга ",
+                "marks": []
+              },
+              {
+                "text": "int",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ".",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+          },
+          {
+            "type": "p",
+            "text": "Өмнөх SCC struct-ийг өөрчлөлтгүй ашиглана. Хоёр DFS-ийн чиглэл, дугаарлалтын баталгаа хэвээр."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "struct SCC {\n    int n;\n    vector<vector<int>> g, rg, groups;\n    vector<int> comp, ord, tin, tout;\n    SCC(int _n) {\n        n = _n;\n        g.resize(n);\n        rg.resize(n);\n    }\n    void add(int a, int b) {\n        g[a].push_back(b);\n        rg[b].push_back(a);\n    }\n    int run() {\n        vector<int> seen(n);\n        comp.assign(n, -1);\n        tin.assign(n, 0);\n        tout.assign(n, 0);\n        ord.clear();\n        groups.clear();\n        int timer = 0;\n        for (int s = 0; s < n; s++) {\n            if (seen[s]) continue;\n            vector<pair<int, int>> st = {{s, 0}};\n            seen[s] = true;\n            tin[s] = ++timer;\n            while (!st.empty()) {\n                int u = st.back().first;\n                int &i = st.back().second;\n                if (i == (int)g[u].size()) {\n                    tout[u] = ++timer;\n                    ord.push_back(u);\n                    st.pop_back();\n                    continue;\n                }\n                int v = g[u][i++];\n                if (!seen[v]) {\n                    seen[v] = true;\n                    tin[v] = ++timer;\n                    st.push_back({v, 0});\n                }\n            }\n        }\n        for (int i = n - 1; i >= 0; i--) {\n            int s = ord[i];\n            if (comp[s] != -1) continue;\n            int c = (int)groups.size();\n            groups.push_back({});\n            vector<int> st = {s};\n            comp[s] = c;\n            while (!st.empty()) {\n                int u = st.back();\n                st.pop_back();\n                groups[c].push_back(u);\n                for (int v : rg[u]) {\n                    if (comp[v] != -1) continue;\n                    comp[v] = c;\n                    st.push_back(v);\n                }\n            }\n        }\n        return (int)groups.size();\n    }\n    vector<vector<int>> dag() const {\n        int k = (int)groups.size();\n        vector<vector<int>> adj(k);\n        vector<int> seen(k, -1);\n        for (int c = 0; c < k; c++) {\n            for (int u : groups[c]) {\n                for (int v : g[u]) {\n                    int d = comp[v];\n                    if (c == d || seen[d] == c) continue;\n                    seen[d] = c;\n                    adj[c].push_back(d);\n                }\n            }\n        }\n        return adj;\n    }\n};"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "TwoSAT(n)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " initializer жагсаалтаар $2n$ оройтой ",
+                "marks": []
+              },
+              {
+                "text": "s",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-г байгуулна. $x_i$-ийн дугаар $2(i-1)$, үгүйсгэлийнх дараагийн сондгой дугаар; ",
+                "marks": []
+              },
+              {
+                "text": "u ^ 1",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь түүний эсрэг литерал. ",
+                "marks": []
+              },
+              {
+                "text": "add",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нэг OR нөхцөлөөс хоёр ирмэг нэмнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "struct TwoSAT {\n    int n;\n    SCC s;\n    TwoSAT(int _n) : n(_n), s(2 * _n) {}\n    int node(int a) const {\n        return 2 * (abs(a) - 1) + (a < 0);\n    }\n    void add(int a, int b) {\n        int u = node(a), v = node(b);\n        s.add(u ^ 1, v);\n        s.add(v ^ 1, u);\n    }"
+          },
+          {
+            "type": "p",
+            "text": "Ижил SCC-д орсон хосыг эхэлж шалгана. Үгүй бол баталсан топологийн дугаараар онооно. $n\\ge1$ тул хоосон вектор нь шийдэлгүйг тэмдэглэж чадна."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "vector<int> solve() {\n        s.run();\n        vector<int> value(n);\n        for (int i = 0; i < n; i++) {\n            if (s.comp[2 * i] == s.comp[2 * i + 1]) return {};\n            value[i] = s.comp[2 * i] > s.comp[2 * i + 1];\n        }\n        return value;\n    }\n};"
+          },
+          {
+            "type": "p",
+            "text": "Нөхцөлүүдийг уншаад нэг удаа бодно. Хариуг анхны томьёоны нөхцөл бүр дээр орлуулж шалгаж болно."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    TwoSAT sat(n);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        sat.add(a, b);\n    }\n    auto value = sat.solve();\n    if (value.empty()) cout << \"IMPOSSIBLE\\n\";\n    else for (int i = 0; i < n; i++) cout << value[i] << (i + 1 == n ? '\\n' : ' ');\n}"
+          },
+          {
+            "type": "p",
+            "text": "Өмнөх хэсгүүдийг нэгтгэсэн бүтэн C++17 программ. Программ бүрийг тусдаа файлд хөрвүүлнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct SCC {\n    int n;\n    vector<vector<int>> g, rg, groups;\n    vector<int> comp, ord, tin, tout;\n    SCC(int _n) {\n        n = _n;\n        g.resize(n);\n        rg.resize(n);\n    }\n    void add(int a, int b) {\n        g[a].push_back(b);\n        rg[b].push_back(a);\n    }\n    int run() {\n        vector<int> seen(n);\n        comp.assign(n, -1);\n        tin.assign(n, 0);\n        tout.assign(n, 0);\n        ord.clear();\n        groups.clear();\n        int timer = 0;\n        for (int s = 0; s < n; s++) {\n            if (seen[s]) continue;\n            vector<pair<int, int>> st = {{s, 0}};\n            seen[s] = true;\n            tin[s] = ++timer;\n            while (!st.empty()) {\n                int u = st.back().first;\n                int &i = st.back().second;\n                if (i == (int)g[u].size()) {\n                    tout[u] = ++timer;\n                    ord.push_back(u);\n                    st.pop_back();\n                    continue;\n                }\n                int v = g[u][i++];\n                if (!seen[v]) {\n                    seen[v] = true;\n                    tin[v] = ++timer;\n                    st.push_back({v, 0});\n                }\n            }\n        }\n        for (int i = n - 1; i >= 0; i--) {\n            int s = ord[i];\n            if (comp[s] != -1) continue;\n            int c = (int)groups.size();\n            groups.push_back({});\n            vector<int> st = {s};\n            comp[s] = c;\n            while (!st.empty()) {\n                int u = st.back();\n                st.pop_back();\n                groups[c].push_back(u);\n                for (int v : rg[u]) {\n                    if (comp[v] != -1) continue;\n                    comp[v] = c;\n                    st.push_back(v);\n                }\n            }\n        }\n        return (int)groups.size();\n    }\n    vector<vector<int>> dag() const {\n        int k = (int)groups.size();\n        vector<vector<int>> adj(k);\n        vector<int> seen(k, -1);\n        for (int c = 0; c < k; c++) {\n            for (int u : groups[c]) {\n                for (int v : g[u]) {\n                    int d = comp[v];\n                    if (c == d || seen[d] == c) continue;\n                    seen[d] = c;\n                    adj[c].push_back(d);\n                }\n            }\n        }\n        return adj;\n    }\n};\n\nstruct TwoSAT {\n    int n;\n    SCC s;\n    TwoSAT(int _n) : n(_n), s(2 * _n) {}\n    int node(int a) const {\n        return 2 * (abs(a) - 1) + (a < 0);\n    }\n    void add(int a, int b) {\n        int u = node(a), v = node(b);\n        s.add(u ^ 1, v);\n        s.add(v ^ 1, u);\n    }\n    vector<int> solve() {\n        s.run();\n        vector<int> value(n);\n        for (int i = 0; i < n; i++) {\n            if (s.comp[2 * i] == s.comp[2 * i + 1]) return {};\n            value[i] = s.comp[2 * i] > s.comp[2 * i + 1];\n        }\n        return value;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    TwoSAT sat(n);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        sat.add(a, b);\n    }\n    auto value = sat.solve();\n    if (value.empty()) cout << \"IMPOSSIBLE\\n\";\n    else for (int i = 0; i < n; i++) cout << value[i] << (i + 1 == n ? '\\n' : ' ');\n}\n"
+          },
+          {
+            "type": "p",
+            "text": "$2n$ литерал, $2m$ дагалдалтай тул хугацаа ба санах ой $O(n+m)$. Харин OR бүрд гурван литералтай ерөнхий 3SAT нь NP-hard. $\\neg a$ үнэн байхад үлдсэн хоёрын аль нэг хэрэгтэй болохоос нэг литералыг шууд албадахгүй, тиймээс энэ хоёр ирмэгтэй дүрмийг шууд сунгаж SCC-ээр бүх SAT-ыг бодож болохгүй."
+          }
+        ]
+      },
+      {
+        "key": "application",
+        "title": "Компонентын DAG дээрх жишээ",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Компонентын DAG дээрх хэрэглээ"
+          },
+          {
+            "type": "p",
+            "text": "Чиглэлтэй графын орой бүрд сөрөг биш зоос байг. Аль ч оройгоос эхэлж, орой ба ирмэгээр давтан явж болох ч зоосыг нэг л удаа авна. Нэг SCC дотор дурын гишүүнээс бусад бүх гишүүнийг дараалан дайрч, хүссэн гарах ирмэгийн эхлэлд очиж чадна. Иймээс бүлгийн зоосыг нийлүүлээд DAG дээр хамгийн их нийлбэртэй зам олж болно."
+          },
+          {
+            "type": "p",
+            "text": "Компонентын нийт зоосыг $sum[c]$, тэнд төгсөх хамгийн сайн нийлбэрийг $best[c]$ гэе. Дурын газраас эхэлж болох тул эхэндээ $best[c]=sum[c]$. $c\\to d$ бүрд $best[d]=\\max(best[d],best[c]+sum[d])$. Кодын дугаар өсөх нь топологийн дараалал тул $c=0,1,\\ldots$ гэж нэг удаа тойрно. SCC хооронд буцаж ирэхгүй учраас зоос давхар тоологдохгүй."
+          },
+          {
+            "type": "p",
+            "text": "Давтан явж болох болон сөрөг биш зоос гэсэн нөхцөлүүд чухал. Заавал энгийн зам шаардах эсвэл сөрөг зоостой оройг албадан дайрахад бүх SCC-ийн нийлбэрийг шууд авч болохгүй. Энэ нь дурын графын хамгийн урт энгийн замыг SCC-ээр хялбар бодчихдог гэсэн үг биш."
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт $n,m$, дараа нь $n$ зоос, дараа нь чиглэлтэй ирмэгүүд. $1\\le n\\le200000$, $m\\le400000$, $0\\le coin[u]\\le10^9$. Гаралт хамгийн их цуглуулах нийлбэр. $n\\cdot10^9$ хүртэлх нийлбэрт ",
+                "marks": []
+              },
+              {
+                "text": "ll",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", индексэд ",
+                "marks": []
+              },
+              {
+                "text": "int",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ". SCC, DAG, DP бүгд нийлээд $O(n+m)$ хугацаа, санах ой.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Нийлбэрт 64 бит хэрэгтэй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+          },
+          {
+            "type": "p",
+            "text": "Өмнөх SCC ба шугаман хугацааны DAG байгуулагчийг дахин ашиглана."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "struct SCC {\n    int n;\n    vector<vector<int>> g, rg, groups;\n    vector<int> comp, ord, tin, tout;\n    SCC(int _n) {\n        n = _n;\n        g.resize(n);\n        rg.resize(n);\n    }\n    void add(int a, int b) {\n        g[a].push_back(b);\n        rg[b].push_back(a);\n    }\n    int run() {\n        vector<int> seen(n);\n        comp.assign(n, -1);\n        tin.assign(n, 0);\n        tout.assign(n, 0);\n        ord.clear();\n        groups.clear();\n        int timer = 0;\n        for (int s = 0; s < n; s++) {\n            if (seen[s]) continue;\n            vector<pair<int, int>> st = {{s, 0}};\n            seen[s] = true;\n            tin[s] = ++timer;\n            while (!st.empty()) {\n                int u = st.back().first;\n                int &i = st.back().second;\n                if (i == (int)g[u].size()) {\n                    tout[u] = ++timer;\n                    ord.push_back(u);\n                    st.pop_back();\n                    continue;\n                }\n                int v = g[u][i++];\n                if (!seen[v]) {\n                    seen[v] = true;\n                    tin[v] = ++timer;\n                    st.push_back({v, 0});\n                }\n            }\n        }\n        for (int i = n - 1; i >= 0; i--) {\n            int s = ord[i];\n            if (comp[s] != -1) continue;\n            int c = (int)groups.size();\n            groups.push_back({});\n            vector<int> st = {s};\n            comp[s] = c;\n            while (!st.empty()) {\n                int u = st.back();\n                st.pop_back();\n                groups[c].push_back(u);\n                for (int v : rg[u]) {\n                    if (comp[v] != -1) continue;\n                    comp[v] = c;\n                    st.push_back(v);\n                }\n            }\n        }\n        return (int)groups.size();\n    }\n    vector<vector<int>> dag() const {\n        int k = (int)groups.size();\n        vector<vector<int>> adj(k);\n        vector<int> seen(k, -1);\n        for (int c = 0; c < k; c++) {\n            for (int u : groups[c]) {\n                for (int v : g[u]) {\n                    int d = comp[v];\n                    if (c == d || seen[d] == c) continue;\n                    seen[d] = c;\n                    adj[c].push_back(d);\n                }\n            }\n        }\n        return adj;\n    }\n};"
+          },
+          {
+            "type": "p",
+            "text": "Зоос, ирмэгийг уншаад SCC болон DAG-ийг байгуулна."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    vector<ll> coins(n);\n    for (ll &x : coins) cin >> x;\n    SCC s(n);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        s.add(a - 1, b - 1);\n    }\n    int k = s.run();\n    auto adj = s.dag();"
+          },
+          {
+            "type": "p",
+            "text": "Бүлэг бүрийн нийлбэрийг бодоод урагш дугаараар шилжилт хийнэ. Хамгийн сайн эхлэл, төгсгөлийг нийт массивын максимумаар авна."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "vector<ll> sum(k), best(k);\n    for (int u = 0; u < n; u++) sum[s.comp[u]] += coins[u];\n    best = sum;\n    for (int c = 0; c < k; c++) {\n        for (int d : adj[c]) best[d] = max(best[d], best[c] + sum[d]);\n    }\n    cout << *max_element(best.begin(), best.end()) << '\\n';\n}"
+          },
+          {
+            "type": "p",
+            "text": "Өмнөх хэсгүүдийг нэгтгэсэн бүтэн C++17 программ. Программ бүрийг тусдаа файлд хөрвүүлнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct SCC {\n    int n;\n    vector<vector<int>> g, rg, groups;\n    vector<int> comp, ord, tin, tout;\n    SCC(int _n) {\n        n = _n;\n        g.resize(n);\n        rg.resize(n);\n    }\n    void add(int a, int b) {\n        g[a].push_back(b);\n        rg[b].push_back(a);\n    }\n    int run() {\n        vector<int> seen(n);\n        comp.assign(n, -1);\n        tin.assign(n, 0);\n        tout.assign(n, 0);\n        ord.clear();\n        groups.clear();\n        int timer = 0;\n        for (int s = 0; s < n; s++) {\n            if (seen[s]) continue;\n            vector<pair<int, int>> st = {{s, 0}};\n            seen[s] = true;\n            tin[s] = ++timer;\n            while (!st.empty()) {\n                int u = st.back().first;\n                int &i = st.back().second;\n                if (i == (int)g[u].size()) {\n                    tout[u] = ++timer;\n                    ord.push_back(u);\n                    st.pop_back();\n                    continue;\n                }\n                int v = g[u][i++];\n                if (!seen[v]) {\n                    seen[v] = true;\n                    tin[v] = ++timer;\n                    st.push_back({v, 0});\n                }\n            }\n        }\n        for (int i = n - 1; i >= 0; i--) {\n            int s = ord[i];\n            if (comp[s] != -1) continue;\n            int c = (int)groups.size();\n            groups.push_back({});\n            vector<int> st = {s};\n            comp[s] = c;\n            while (!st.empty()) {\n                int u = st.back();\n                st.pop_back();\n                groups[c].push_back(u);\n                for (int v : rg[u]) {\n                    if (comp[v] != -1) continue;\n                    comp[v] = c;\n                    st.push_back(v);\n                }\n            }\n        }\n        return (int)groups.size();\n    }\n    vector<vector<int>> dag() const {\n        int k = (int)groups.size();\n        vector<vector<int>> adj(k);\n        vector<int> seen(k, -1);\n        for (int c = 0; c < k; c++) {\n            for (int u : groups[c]) {\n                for (int v : g[u]) {\n                    int d = comp[v];\n                    if (c == d || seen[d] == c) continue;\n                    seen[d] = c;\n                    adj[c].push_back(d);\n                }\n            }\n        }\n        return adj;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    vector<ll> coins(n);\n    for (ll &x : coins) cin >> x;\n    SCC s(n);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        s.add(a - 1, b - 1);\n    }\n    int k = s.run();\n    auto adj = s.dag();\n    vector<ll> sum(k), best(k);\n    for (int u = 0; u < n; u++) sum[s.comp[u]] += coins[u];\n    best = sum;\n    for (int c = 0; c < k; c++) {\n        for (int d : adj[c]) best[d] = max(best[d], best[c] + sum[d]);\n    }\n    cout << *max_element(best.begin(), best.end()) << '\\n';\n}\n"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Дасгал ба бие даах бодлогууд",
+        "blocks": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Сэдвийг эзэмших дасгал"
+          },
+          {
+            "type": "p",
+            "text": "Эхний хоёр дөрвөн оройтой графын хүрэх боломжийг гараар хүснэгтлэ. Долоон оройтой жишээнээс бүлэг тус бүрийн харилцан хүрэх замыг бичээд, хоёр бүлгийг нэмж нэгтгэж яагаад болохгүйг тайлбарла. Компонентын DAG-ийн таван ирмэгийг анхны графын аль ирмэгээс гарсныг тулга."
+          },
+          {
+            "type": "p",
+            "text": "DFS-ийн цаг ба дуусалтын жагсаалтыг мөрд. Хоёр дахь хайлтад зөвхөн ирмэг эргүүлээд дурын эхлэл сонговол яагаад буруу болох жишээ гарга. $L_1$-ийн арван чиглэлтэй ирмэгийг өөрөө гаргаж, дөрвөн SCC ба оноолтыг шалга. $L_2$-т эсрэг литералууд хоёр чиглэлд хүрч байгааг харуул."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Эзэмших ба бие даах бодлогууд"
+          },
+          {
+            "type": "p",
+            "text": "Цөм #383 Planets and Kingdoms дээр SCC хуваалтыг, #384 Giant Pizza дээр 2SAT-ийн хос дагалдал ба оноолтыг хэрэгжүүл. #382 Flight Routes Check дээр бүх граф нэг SCC эсэхээс гадна хүрэхгүй хосын тайлбар шаардагдахыг анхаар."
+          },
+          {
+            "type": "p",
+            "text": "#385 Coin Collector дээр дээрх нөхцөлтэй DAG DP-г хэрэглэ. #761 Come Back in One Piece болон #802 Checkposts нь SCC-ийн гишүүд дээр тоо, өртгийн нэгтгэл хийх бие даах дасгалууд. Аль ч бодлогод өөр компонентын дугаарлалттай ч ижил хуваалт зөв байж болохыг сана."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Strong connectivity — Kosaraju and 2SAT",
+        "summary": "Derive SCC decomposition and condensation, the two DFS passes, 2SAT implications and assignment, and a DAG aggregation application with complete examples and explained C++17.",
+        "sections": [
+          {
+            "key": "strong",
+            "title": "Strong components and the condensation DAG",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Undirected connectivity guarantees routes between vertices. In a directed graph, ignoring arrows may make it look connected even when directed reachability fails. A graph is strongly connected when for every pair $u,v$, there are directed paths both from $u$ to $v$ and from $v$ to $u$."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 25,
+                    "y": 20
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 75,
+                    "y": 20
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 25,
+                    "y": 80
+                  },
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 75,
+                    "y": 80
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "1"
+                  ]
+                ],
+                "directed": true,
+                "caption": "Following the cycle reaches every vertex from every start."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 25,
+                    "y": 20
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 75,
+                    "y": 20
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 25,
+                    "y": 80
+                  },
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 75,
+                    "y": 80
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "3"
+                  ],
+                  [
+                    "1",
+                    "3"
+                  ]
+                ],
+                "directed": true,
+                "caption": "Weakly connected, but no directed path leads from 2 to 1."
+              },
+              {
+                "type": "p",
+                "text": "A strongly connected component (SCC) is a strongly connected group that cannot be enlarged while retaining that property. This does not mean finding only the largest group. Mutual reachability partitions all vertices into disjoint groups. Empty self-paths make an isolated vertex an SCC too."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 12,
+                    "y": 22
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 38,
+                    "y": 22
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 66,
+                    "y": 22
+                  },
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 12,
+                    "y": 78
+                  },
+                  {
+                    "id": "5",
+                    "label": "5",
+                    "x": 38,
+                    "y": 78
+                  },
+                  {
+                    "id": "6",
+                    "label": "6",
+                    "x": 66,
+                    "y": 78
+                  },
+                  {
+                    "id": "7",
+                    "label": "7",
+                    "x": 90,
+                    "y": 50
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "3",
+                    "2"
+                  ],
+                  [
+                    "3",
+                    "7"
+                  ],
+                  [
+                    "5",
+                    "4"
+                  ],
+                  [
+                    "6",
+                    "5"
+                  ],
+                  [
+                    "6",
+                    "3"
+                  ],
+                  [
+                    "7",
+                    "6"
+                  ]
+                ],
+                "directed": true,
+                "caption": "The main seven-vertex example."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 12,
+                    "y": 22,
+                    "color": "#dbeafe",
+                    "textColor": "#111827",
+                    "annotation": "A",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 38,
+                    "y": 22,
+                    "color": "#dbeafe",
+                    "textColor": "#111827",
+                    "annotation": "A",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 66,
+                    "y": 22,
+                    "color": "#dcfce7",
+                    "textColor": "#111827",
+                    "annotation": "B",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 12,
+                    "y": 78,
+                    "color": "#fef3c7",
+                    "textColor": "#111827",
+                    "annotation": "C",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "5",
+                    "label": "5",
+                    "x": 38,
+                    "y": 78,
+                    "color": "#fce7f3",
+                    "textColor": "#111827",
+                    "annotation": "D",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "6",
+                    "label": "6",
+                    "x": 66,
+                    "y": 78,
+                    "color": "#dcfce7",
+                    "textColor": "#111827",
+                    "annotation": "B",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "7",
+                    "label": "7",
+                    "x": 90,
+                    "y": 50,
+                    "color": "#dcfce7",
+                    "textColor": "#111827",
+                    "annotation": "B",
+                    "annotationDy": -29
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "3",
+                    "2"
+                  ],
+                  [
+                    "3",
+                    "7"
+                  ],
+                  [
+                    "5",
+                    "4"
+                  ],
+                  [
+                    "6",
+                    "5"
+                  ],
+                  [
+                    "6",
+                    "3"
+                  ],
+                  [
+                    "7",
+                    "6"
+                  ]
+                ],
+                "directed": true,
+                "caption": "A={1,2}, B={3,6,7}, C={4}, D={5}."
+              },
+              {
+                "type": "p",
+                "text": "Here $A=\\{1,2\\}$, $B=\\{3,6,7\\}$, $C=\\{4\\}$ and $D=\\{5\\}$. Contract each component into one vertex and keep edges between different components to obtain the condensation graph. Remove internal loops and duplicate edges."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "A",
+                    "label": "A",
+                    "x": 32,
+                    "y": 18,
+                    "color": "#dbeafe",
+                    "textColor": "#111827"
+                  },
+                  {
+                    "id": "B",
+                    "label": "B",
+                    "x": 82,
+                    "y": 43,
+                    "color": "#dcfce7",
+                    "textColor": "#111827"
+                  },
+                  {
+                    "id": "C",
+                    "label": "C",
+                    "x": 18,
+                    "y": 83,
+                    "color": "#fef3c7",
+                    "textColor": "#111827"
+                  },
+                  {
+                    "id": "D",
+                    "label": "D",
+                    "x": 56,
+                    "y": 83,
+                    "color": "#fce7f3",
+                    "textColor": "#111827"
+                  }
+                ],
+                "edges": [
+                  [
+                    "B",
+                    "A"
+                  ],
+                  [
+                    "B",
+                    "D"
+                  ],
+                  [
+                    "A",
+                    "C"
+                  ],
+                  [
+                    "A",
+                    "D"
+                  ],
+                  [
+                    "D",
+                    "C"
+                  ]
+                ],
+                "directed": true,
+                "caption": "The component graph is acyclic."
+              },
+              {
+                "type": "p",
+                "text": "A cycle in the condensation graph would make all its groups mutually reachable, so they should be one SCC rather than distinct maximal groups. Thus condensation is a DAG and admits topological processing and DP. Contraction does not automatically preserve every problem’s answer: internal component information must be aggregated appropriately."
+              }
+            ]
+          },
+          {
+            "key": "kosaraju",
+            "title": "17.1 Kosaraju’s algorithm",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Kosaraju uses two DFS passes. The first records finishing order in the original graph. The second explores the reversed graph, starting vertices in reverse finishing order, to form SCCs. Cycles are allowed: the first list is not a topological order of the original graph, only a DFS finishing list."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Search 1: append on completion"
+              },
+              {
+                "type": "p",
+                "text": "Start at every unvisited vertex. Here search goes from $1$ to $2$, then $5$ and $4$. Append a vertex after its outgoing neighbors are finished. Increment a clock on every entry and exit; annotation $x/y$ gives entry and finishing times."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 12,
+                    "y": 22,
+                    "annotation": "1/8",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 38,
+                    "y": 22,
+                    "annotation": "2/7",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 66,
+                    "y": 22,
+                    "annotation": "9/14",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 12,
+                    "y": 78,
+                    "annotation": "4/5",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "5",
+                    "label": "5",
+                    "x": 38,
+                    "y": 78,
+                    "annotation": "3/6",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "6",
+                    "label": "6",
+                    "x": 66,
+                    "y": 78,
+                    "annotation": "11/12",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "7",
+                    "label": "7",
+                    "x": 90,
+                    "y": 50,
+                    "annotation": "10/13",
+                    "annotationDy": -29
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "3",
+                    "2"
+                  ],
+                  [
+                    "3",
+                    "7"
+                  ],
+                  [
+                    "5",
+                    "4"
+                  ],
+                  [
+                    "6",
+                    "5"
+                  ],
+                  [
+                    "6",
+                    "3"
+                  ],
+                  [
+                    "7",
+                    "6"
+                  ]
+                ],
+                "directed": true,
+                "caption": "Entry/exit times for the illustrated adjacency order."
+              },
+              {
+                "type": "p",
+                "text": "$4$ finishes first at time $5$, followed by $5,2,1$. The next new search starts at $3$ and visits $7,6$. The full finishing list is $[4,5,2,1,6,7,3]$. Other adjacency orders may change timestamps and this list without changing the SCC partition."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Vertex",
+                  "Finishing time"
+                ],
+                "rows": [
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "6"
+                  ],
+                  [
+                    "2",
+                    "7"
+                  ],
+                  [
+                    "1",
+                    "8"
+                  ],
+                  [
+                    "6",
+                    "12"
+                  ],
+                  [
+                    "7",
+                    "13"
+                  ],
+                  [
+                    "3",
+                    "14"
+                  ]
+                ]
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Search 2: reverse edges and reverse finishing order"
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 12,
+                    "y": 22
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 38,
+                    "y": 22
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 66,
+                    "y": 22
+                  },
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 12,
+                    "y": 78
+                  },
+                  {
+                    "id": "5",
+                    "label": "5",
+                    "x": 38,
+                    "y": 78
+                  },
+                  {
+                    "id": "6",
+                    "label": "6",
+                    "x": 66,
+                    "y": 78
+                  },
+                  {
+                    "id": "7",
+                    "label": "7",
+                    "x": 90,
+                    "y": 50
+                  }
+                ],
+                "edges": [
+                  [
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "4",
+                    "1"
+                  ],
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "7",
+                    "3"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "6"
+                  ],
+                  [
+                    "3",
+                    "6"
+                  ],
+                  [
+                    "6",
+                    "7"
+                  ]
+                ],
+                "directed": true,
+                "caption": "Reverse every edge."
+              },
+              {
+                "type": "diagram",
+                "kind": "array",
+                "rows": [
+                  [
+                    "3",
+                    "7",
+                    "6",
+                    "1",
+                    "2",
+                    "5",
+                    "4"
+                  ]
+                ],
+                "caption": "Starting order for the second pass."
+              },
+              {
+                "type": "p",
+                "text": "The first new start is $3$, reaching $3,6,7$ in the reversed graph. Later list entries $7,6$ are skipped because they are already assigned. The next new start $1$ groups $1,2$. Finally $5$ and then $4$ form singleton SCCs."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 12,
+                    "y": 22
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 38,
+                    "y": 22
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 66,
+                    "y": 22,
+                    "color": "#dcfce7",
+                    "textColor": "#111827",
+                    "annotation": "B",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 12,
+                    "y": 78
+                  },
+                  {
+                    "id": "5",
+                    "label": "5",
+                    "x": 38,
+                    "y": 78
+                  },
+                  {
+                    "id": "6",
+                    "label": "6",
+                    "x": 66,
+                    "y": 78,
+                    "color": "#dcfce7",
+                    "textColor": "#111827",
+                    "annotation": "B",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "7",
+                    "label": "7",
+                    "x": 90,
+                    "y": 50,
+                    "color": "#dcfce7",
+                    "textColor": "#111827",
+                    "annotation": "B",
+                    "annotationDy": -29
+                  }
+                ],
+                "edges": [
+                  [
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "4",
+                    "1"
+                  ],
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "7",
+                    "3"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "6"
+                  ],
+                  [
+                    "3",
+                    "6"
+                  ],
+                  [
+                    "6",
+                    "7"
+                  ]
+                ],
+                "directed": true,
+                "caption": "First discover B={3,6,7}."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 12,
+                    "y": 22,
+                    "color": "#dbeafe",
+                    "textColor": "#111827",
+                    "annotation": "A",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 38,
+                    "y": 22,
+                    "color": "#dbeafe",
+                    "textColor": "#111827",
+                    "annotation": "A",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 66,
+                    "y": 22,
+                    "color": "#dcfce7",
+                    "textColor": "#111827",
+                    "annotation": "B",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 12,
+                    "y": 78
+                  },
+                  {
+                    "id": "5",
+                    "label": "5",
+                    "x": 38,
+                    "y": 78
+                  },
+                  {
+                    "id": "6",
+                    "label": "6",
+                    "x": 66,
+                    "y": 78,
+                    "color": "#dcfce7",
+                    "textColor": "#111827",
+                    "annotation": "B",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "7",
+                    "label": "7",
+                    "x": 90,
+                    "y": 50,
+                    "color": "#dcfce7",
+                    "textColor": "#111827",
+                    "annotation": "B",
+                    "annotationDy": -29
+                  }
+                ],
+                "edges": [
+                  [
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "4",
+                    "1"
+                  ],
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "7",
+                    "3"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "6"
+                  ],
+                  [
+                    "3",
+                    "6"
+                  ],
+                  [
+                    "6",
+                    "7"
+                  ]
+                ],
+                "directed": true,
+                "caption": "Then A={1,2}; already assigned B is not revisited."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 12,
+                    "y": 22,
+                    "color": "#dbeafe",
+                    "textColor": "#111827",
+                    "annotation": "A",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 38,
+                    "y": 22,
+                    "color": "#dbeafe",
+                    "textColor": "#111827",
+                    "annotation": "A",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 66,
+                    "y": 22,
+                    "color": "#dcfce7",
+                    "textColor": "#111827",
+                    "annotation": "B",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 12,
+                    "y": 78,
+                    "color": "#fef3c7",
+                    "textColor": "#111827",
+                    "annotation": "C",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "5",
+                    "label": "5",
+                    "x": 38,
+                    "y": 78,
+                    "color": "#fce7f3",
+                    "textColor": "#111827",
+                    "annotation": "D",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "6",
+                    "label": "6",
+                    "x": 66,
+                    "y": 78,
+                    "color": "#dcfce7",
+                    "textColor": "#111827",
+                    "annotation": "B",
+                    "annotationDy": -29
+                  },
+                  {
+                    "id": "7",
+                    "label": "7",
+                    "x": 90,
+                    "y": 50,
+                    "color": "#dcfce7",
+                    "textColor": "#111827",
+                    "annotation": "B",
+                    "annotationDy": -29
+                  }
+                ],
+                "edges": [
+                  [
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "4",
+                    "1"
+                  ],
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "7",
+                    "3"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "6"
+                  ],
+                  [
+                    "3",
+                    "6"
+                  ],
+                  [
+                    "6",
+                    "7"
+                  ]
+                ],
+                "directed": true,
+                "caption": "Finally D={5}, C={4}."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Why does the second search not leak into another component?"
+              },
+              {
+                "type": "p",
+                "text": "For an edge $C\\to D$ between distinct SCCs, the maximum finishing time of $C$ exceeds that of $D$. If $C$ is visited first, DFS completes $D$ before returning to finish $C$. If $D$ is visited first, it cannot reach $C$ or they would be one SCC, so $D$ finishes earlier."
+              },
+              {
+                "type": "p",
+                "text": "Choose the largest remaining finishing time. If the reversed graph could leave its SCC for another unassigned SCC, the original graph would have an edge from that SCC into the chosen one, requiring a larger finishing time and contradicting the choice. Reversal preserves mutual reachability within an SCC, so all its members are found. Skipping previously assigned groups is essential."
+              },
+              {
+                "type": "p",
+                "text": "Reversal alone is insufficient; the starting order matters too. Numbering components $0,1,\\ldots$ as discovered makes every cross-component original edge go from a smaller ID to a larger ID in this implementation. Here IDs are $B=0,A=1,D=2,C=3$; these differ from explanatory letters without error. The ID direction will matter for 2SAT assignment."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "C++17 for both searches and the condensation DAG"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read $n,m$ and $m$ directed edges ",
+                    "marks": []
+                  },
+                  {
+                    "text": "a b",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", with $1\\le n\\le200000$ and $m\\le400000$. Input vertices are one-based, internal vertices zero-based. Output component count, component IDs, finishing list, entry times, exit times, condensation-edge count and then its edges. Printed component and vertex IDs are converted to one-based.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Vertices, indices and timestamps up to $2n$ fit ",
+                    "marks": []
+                  },
+                  {
+                    "text": "int",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": "; the later sum application uses ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ll",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ".",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The ",
+                    "marks": []
+                  },
+                  {
+                    "text": "SCC(n)",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " constructor sizes original ",
+                    "marks": []
+                  },
+                  {
+                    "text": "g",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " and reversed ",
+                    "marks": []
+                  },
+                  {
+                    "text": "rg",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " adjacency lists. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "add(a,b)",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " stores both the original and reversed direction. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "groups",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " stores discovered component members.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "struct SCC {\n    int n;\n    vector<vector<int>> g, rg, groups;\n    vector<int> comp, ord, tin, tout;\n    SCC(int _n) {\n        n = _n;\n        g.resize(n);\n        rg.resize(n);\n    }\n    void add(int a, int b) {\n        g[a].push_back(b);\n        rg[b].push_back(a);\n    }"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Each explicit frame ",
+                    "marks": []
+                  },
+                  {
+                    "text": "(u,i)",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " stores a vertex and next-edge index. Advance before entering a child and append to ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ord",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " after all neighbors finish. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "tin/tout",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " are diagnostic timestamps for the trace. No recursion means a deep chain cannot overflow the call stack.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int run() {\n        vector<int> seen(n);\n        comp.assign(n, -1);\n        tin.assign(n, 0);\n        tout.assign(n, 0);\n        ord.clear();\n        groups.clear();\n        int timer = 0;\n        for (int s = 0; s < n; s++) {\n            if (seen[s]) continue;\n            vector<pair<int, int>> st = {{s, 0}};\n            seen[s] = true;\n            tin[s] = ++timer;\n            while (!st.empty()) {\n                int u = st.back().first;\n                int &i = st.back().second;\n                if (i == (int)g[u].size()) {\n                    tout[u] = ++timer;\n                    ord.push_back(u);\n                    st.pop_back();\n                    continue;\n                }\n                int v = g[u][i++];\n                if (!seen[v]) {\n                    seen[v] = true;\n                    tin[v] = ++timer;\n                    st.push_back({v, 0});\n                }\n            }\n        }"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Create a group for each new reverse-list start. Assign ",
+                    "marks": []
+                  },
+                  {
+                    "text": "comp",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " when pushing so parallel edges cannot push a vertex repeatedly. Never enter an already assigned group.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "for (int i = n - 1; i >= 0; i--) {\n            int s = ord[i];\n            if (comp[s] != -1) continue;\n            int c = (int)groups.size();\n            groups.push_back({});\n            vector<int> st = {s};\n            comp[s] = c;\n            while (!st.empty()) {\n                int u = st.back();\n                st.pop_back();\n                groups[c].push_back(u);\n                for (int v : rg[u]) {\n                    if (comp[v] != -1) continue;\n                    comp[v] = c;\n                    st.push_back(v);\n                }\n            }\n        }\n        return (int)groups.size();\n    }"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Inspect outgoing edges of each group’s members. Remove internal edges. Stamp ",
+                    "marks": []
+                  },
+                  {
+                    "text": "seen[d] == c",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " records that edge $c\\to d$ was already added, deduplicating without clearing a full table for every group.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "vector<vector<int>> dag() const {\n        int k = (int)groups.size();\n        vector<vector<int>> adj(k);\n        vector<int> seen(k, -1);\n        for (int c = 0; c < k; c++) {\n            for (int u : groups[c]) {\n                for (int v : g[u]) {\n                    int d = comp[v];\n                    if (c == d || seen[d] == c) continue;\n                    seen[d] = c;\n                    adj[c].push_back(d);\n                }\n            }\n        }\n        return adj;\n    }\n};"
+              },
+              {
+                "type": "p",
+                "text": "Run both passes once and print groups, assignments, times and DAG. Compare alternate valid partitions by membership equivalence rather than requiring identical numeric IDs."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    SCC s(n);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        s.add(a - 1, b - 1);\n    }\n    cout << s.run() << '\\n';\n    auto print = [&](const vector<int> &a, int shift) {\n        for (int i = 0; i < n; i++) cout << a[i] + shift << (i + 1 == n ? '\\n' : ' ');\n    };\n    print(s.comp, 1);\n    print(s.ord, 1);\n    print(s.tin, 0);\n    print(s.tout, 0);\n    auto adj = s.dag();\n    int m2 = 0;\n    for (auto &a : adj) m2 += (int)a.size();\n    cout << m2 << '\\n';\n    for (int c = 0; c < (int)adj.size(); c++) {\n        for (int d : adj[c]) cout << c + 1 << ' ' << d + 1 << '\\n';\n    }\n}"
+              },
+              {
+                "type": "p",
+                "text": "Complete C++17 program combining the preceding parts. Compile complete programs as separate files."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct SCC {\n    int n;\n    vector<vector<int>> g, rg, groups;\n    vector<int> comp, ord, tin, tout;\n    SCC(int _n) {\n        n = _n;\n        g.resize(n);\n        rg.resize(n);\n    }\n    void add(int a, int b) {\n        g[a].push_back(b);\n        rg[b].push_back(a);\n    }\n    int run() {\n        vector<int> seen(n);\n        comp.assign(n, -1);\n        tin.assign(n, 0);\n        tout.assign(n, 0);\n        ord.clear();\n        groups.clear();\n        int timer = 0;\n        for (int s = 0; s < n; s++) {\n            if (seen[s]) continue;\n            vector<pair<int, int>> st = {{s, 0}};\n            seen[s] = true;\n            tin[s] = ++timer;\n            while (!st.empty()) {\n                int u = st.back().first;\n                int &i = st.back().second;\n                if (i == (int)g[u].size()) {\n                    tout[u] = ++timer;\n                    ord.push_back(u);\n                    st.pop_back();\n                    continue;\n                }\n                int v = g[u][i++];\n                if (!seen[v]) {\n                    seen[v] = true;\n                    tin[v] = ++timer;\n                    st.push_back({v, 0});\n                }\n            }\n        }\n        for (int i = n - 1; i >= 0; i--) {\n            int s = ord[i];\n            if (comp[s] != -1) continue;\n            int c = (int)groups.size();\n            groups.push_back({});\n            vector<int> st = {s};\n            comp[s] = c;\n            while (!st.empty()) {\n                int u = st.back();\n                st.pop_back();\n                groups[c].push_back(u);\n                for (int v : rg[u]) {\n                    if (comp[v] != -1) continue;\n                    comp[v] = c;\n                    st.push_back(v);\n                }\n            }\n        }\n        return (int)groups.size();\n    }\n    vector<vector<int>> dag() const {\n        int k = (int)groups.size();\n        vector<vector<int>> adj(k);\n        vector<int> seen(k, -1);\n        for (int c = 0; c < k; c++) {\n            for (int u : groups[c]) {\n                for (int v : g[u]) {\n                    int d = comp[v];\n                    if (c == d || seen[d] == c) continue;\n                    seen[d] = c;\n                    adj[c].push_back(d);\n                }\n            }\n        }\n        return adj;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    SCC s(n);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        s.add(a - 1, b - 1);\n    }\n    cout << s.run() << '\\n';\n    auto print = [&](const vector<int> &a, int shift) {\n        for (int i = 0; i < n; i++) cout << a[i] + shift << (i + 1 == n ? '\\n' : ' ');\n    };\n    print(s.comp, 1);\n    print(s.ord, 1);\n    print(s.tin, 0);\n    print(s.tout, 0);\n    auto adj = s.dag();\n    int m2 = 0;\n    for (auto &a : adj) m2 += (int)a.size();\n    cout << m2 << '\\n';\n    for (int c = 0; c < (int)adj.size(); c++) {\n        for (int d : adj[c]) cout << c + 1 << ' ' << d + 1 << '\\n';\n    }\n}\n"
+              },
+              {
+                "type": "p",
+                "text": "Both DFS passes, reversed adjacency, array initialization and condensation construction take total $O(n+m)$ time and space. Isolated vertices form separate SCCs; self-loops and parallel edges do not invalidate the partition. The whole graph is strongly connected exactly when $k=1$."
+              }
+            ]
+          },
+          {
+            "key": "2sat",
+            "title": "17.2 The 2SAT problem",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "In 2SAT each variable is true or false. Clauses join two literals by OR, and all clauses are joined by AND. A literal is $x_i$ or its negation $\\neg x_i$. Symbol $\\lor$ means OR and $\\land$ means AND: at least one literal must hold in every clause."
+              },
+              {
+                "type": "math",
+                "tex": "(a_1\\lor b_1)\\land(a_2\\lor b_2)\\land\\cdots\\land(a_m\\lor b_m)"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "A satisfiable and an unsatisfiable example"
+              },
+              {
+                "type": "math",
+                "tex": "\\begin{aligned}L_1={}&(x_2\\lor\\neg x_1)\\land(\\neg x_1\\lor\\neg x_2)\\\\&\\land(x_1\\lor x_3)\\land(\\neg x_2\\lor\\neg x_3)\\\\&\\land(x_1\\lor x_4).\\end{aligned}"
+              },
+              {
+                "type": "p",
+                "text": "$x_1=false$, $x_2=false$, $x_3=true$, $x_4=true$ satisfies all five clauses. In $(x_1\\lor x_3)$ the first literal is false but the second true. Satisfying just one clause is insufficient; check every clause."
+              },
+              {
+                "type": "math",
+                "tex": "\\begin{aligned}L_2={}&(x_1\\lor x_2)\\land(x_1\\lor\\neg x_2)\\\\&\\land(\\neg x_1\\lor x_3)\\land(\\neg x_1\\lor\\neg x_3).\\end{aligned}"
+              },
+              {
+                "type": "p",
+                "text": "If $x_1$ is false in $L_2$, the first two clauses require both $x_2$ and $\\neg x_2$. If $x_1$ is true, the final two require both $x_3$ and $\\neg x_3$. Both choices contradict each other, so no assignment exists."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Building the implication graph"
+              },
+              {
+                "type": "p",
+                "text": "Clause $(a\\lor b)$ gives two implications: $\\neg a\\to b$ and $\\neg b\\to a$. An implication means that if its first literal is true, its second must be true. Both edges are required."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "-3",
+                    "label": "¬x3",
+                    "x": 8,
+                    "y": 20
+                  },
+                  {
+                    "id": "2",
+                    "label": "x2",
+                    "x": 33,
+                    "y": 20
+                  },
+                  {
+                    "id": "-1",
+                    "label": "¬x1",
+                    "x": 58,
+                    "y": 20
+                  },
+                  {
+                    "id": "4",
+                    "label": "x4",
+                    "x": 83,
+                    "y": 20
+                  },
+                  {
+                    "id": "-4",
+                    "label": "¬x4",
+                    "x": 8,
+                    "y": 80
+                  },
+                  {
+                    "id": "1",
+                    "label": "x1",
+                    "x": 33,
+                    "y": 80
+                  },
+                  {
+                    "id": "-2",
+                    "label": "¬x2",
+                    "x": 58,
+                    "y": 80
+                  },
+                  {
+                    "id": "3",
+                    "label": "x3",
+                    "x": 83,
+                    "y": 80
+                  }
+                ],
+                "edges": [
+                  [
+                    "-2",
+                    "-1"
+                  ],
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "-2"
+                  ],
+                  [
+                    "2",
+                    "-1"
+                  ],
+                  [
+                    "-1",
+                    "3"
+                  ],
+                  [
+                    "-3",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "-3"
+                  ],
+                  [
+                    "3",
+                    "-2"
+                  ],
+                  [
+                    "-1",
+                    "4"
+                  ],
+                  [
+                    "-4",
+                    "1"
+                  ]
+                ],
+                "directed": true,
+                "caption": "All paired implications for L1."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "-1",
+                    "label": "¬x1",
+                    "x": 50,
+                    "y": 14
+                  },
+                  {
+                    "id": "1",
+                    "label": "x1",
+                    "x": 50,
+                    "y": 87
+                  },
+                  {
+                    "id": "3",
+                    "label": "x3",
+                    "x": 8,
+                    "y": 51
+                  },
+                  {
+                    "id": "2",
+                    "label": "x2",
+                    "x": 35,
+                    "y": 51
+                  },
+                  {
+                    "id": "-2",
+                    "label": "¬x2",
+                    "x": 65,
+                    "y": 51
+                  },
+                  {
+                    "id": "-3",
+                    "label": "¬x3",
+                    "x": 83,
+                    "y": 51
+                  }
+                ],
+                "edges": [
+                  [
+                    "-1",
+                    "2"
+                  ],
+                  [
+                    "-2",
+                    "1"
+                  ],
+                  [
+                    "-1",
+                    "-2"
+                  ],
+                  [
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "-3",
+                    "-1"
+                  ],
+                  [
+                    "1",
+                    "-3"
+                  ],
+                  [
+                    "3",
+                    "-1"
+                  ]
+                ],
+                "directed": true,
+                "caption": "All six literals of L2 lie in one SCC."
+              },
+              {
+                "type": "p",
+                "text": "If $x_i$ and $\\neg x_i$ share an SCC, implications lead in both directions. One of the two must be true, forcing the other true as well: a contradiction. Any such pair makes 2SAT unsatisfiable. All literals of $L_2$ share one SCC, whereas each complementary pair of $L_1$ lies in different SCCs."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Assigning values from SCCs"
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "A",
+                    "label": "A",
+                    "x": 12,
+                    "y": 50,
+                    "color": "#dbeafe",
+                    "textColor": "#111827"
+                  },
+                  {
+                    "id": "B",
+                    "label": "B",
+                    "x": 37,
+                    "y": 50,
+                    "color": "#dcfce7",
+                    "textColor": "#111827"
+                  },
+                  {
+                    "id": "C",
+                    "label": "C",
+                    "x": 62,
+                    "y": 50,
+                    "color": "#fef3c7",
+                    "textColor": "#111827"
+                  },
+                  {
+                    "id": "D",
+                    "label": "D",
+                    "x": 87,
+                    "y": 50,
+                    "color": "#fce7f3",
+                    "textColor": "#111827"
+                  }
+                ],
+                "edges": [
+                  [
+                    "A",
+                    "B"
+                  ],
+                  [
+                    "B",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "D"
+                  ]
+                ],
+                "directed": true,
+                "caption": "Condensation of L1: A → B → C → D."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Component",
+                  "Literals"
+                ],
+                "rows": [
+                  [
+                    "$A$",
+                    "$\\neg x_4$"
+                  ],
+                  [
+                    "$B$",
+                    "$x_1,x_2,\\neg x_3$"
+                  ],
+                  [
+                    "$C$",
+                    "$\\neg x_1,\\neg x_2,x_3$"
+                  ],
+                  [
+                    "$D$",
+                    "$x_4$"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Process the component DAG in reverse topological order. First $D$ makes $x_4=true$. Then $C$ makes $\\neg x_1$, $\\neg x_2$, $x_3$ true, giving $x_1=false$, $x_2=false$, $x_3=true$. When reaching $B,A$, already assigned variables remain unchanged. This yields the assignment shown above."
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Our SCC IDs increase along original edges, so set $value[i]=(comp[x_i]>comp[\\neg x_i])$: the literal encountered first in reverse processing becomes true. Other SCC numbering conventions may reverse this direction; do not memorize ",
+                    "marks": []
+                  },
+                  {
+                    "text": ">",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " without checking the convention.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Suppose implication $a\\to b$ were violated with $a$ true and $b$ false. The paired construction also contains $\\neg b\\to\\neg a$. Topological IDs and our assignment give the impossible chain $comp(a)\\le comp(b)<comp(\\neg b)\\le comp(\\neg a)<comp(a)$. Thus all implications, and therefore all original OR clauses, hold."
+              },
+              {
+                "type": "p",
+                "text": "If $x_i\\to x_j\\to\\neg x_j$, then $x_i$ cannot be true. Paired implications also give a path $\\neg x_j\\to\\neg x_i$. Hence $x_i$ reaches its negation and the ordering rule chooses $x_i$ false. This explains why reverse processing avoids such contradictory choices."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "C++17 for 2SAT"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read $n,m$ and $m$ signed pairs ",
+                    "marks": []
+                  },
+                  {
+                    "text": "a b",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ": positive $i$ means $x_i$, negative $-i$ means $\\neg x_i$, and each row is $(a\\lor b)$. Assume $1\\le n\\le200000$, $m\\le400000$, nonzero literals and $|a|,|b|\\le n$. Print a $0/1$ assignment or ",
+                    "marks": []
+                  },
+                  {
+                    "text": "IMPOSSIBLE",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Repeated literal $(a\\lor a)$ forces a value; $(a\\lor\\neg a)$ is a tautology.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Literal IDs, SCC IDs and Boolean values use ",
+                    "marks": []
+                  },
+                  {
+                    "text": "int",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ".",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+              },
+              {
+                "type": "p",
+                "text": "Reuse the same SCC structure and its established numbering direction."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "struct SCC {\n    int n;\n    vector<vector<int>> g, rg, groups;\n    vector<int> comp, ord, tin, tout;\n    SCC(int _n) {\n        n = _n;\n        g.resize(n);\n        rg.resize(n);\n    }\n    void add(int a, int b) {\n        g[a].push_back(b);\n        rg[b].push_back(a);\n    }\n    int run() {\n        vector<int> seen(n);\n        comp.assign(n, -1);\n        tin.assign(n, 0);\n        tout.assign(n, 0);\n        ord.clear();\n        groups.clear();\n        int timer = 0;\n        for (int s = 0; s < n; s++) {\n            if (seen[s]) continue;\n            vector<pair<int, int>> st = {{s, 0}};\n            seen[s] = true;\n            tin[s] = ++timer;\n            while (!st.empty()) {\n                int u = st.back().first;\n                int &i = st.back().second;\n                if (i == (int)g[u].size()) {\n                    tout[u] = ++timer;\n                    ord.push_back(u);\n                    st.pop_back();\n                    continue;\n                }\n                int v = g[u][i++];\n                if (!seen[v]) {\n                    seen[v] = true;\n                    tin[v] = ++timer;\n                    st.push_back({v, 0});\n                }\n            }\n        }\n        for (int i = n - 1; i >= 0; i--) {\n            int s = ord[i];\n            if (comp[s] != -1) continue;\n            int c = (int)groups.size();\n            groups.push_back({});\n            vector<int> st = {s};\n            comp[s] = c;\n            while (!st.empty()) {\n                int u = st.back();\n                st.pop_back();\n                groups[c].push_back(u);\n                for (int v : rg[u]) {\n                    if (comp[v] != -1) continue;\n                    comp[v] = c;\n                    st.push_back(v);\n                }\n            }\n        }\n        return (int)groups.size();\n    }\n    vector<vector<int>> dag() const {\n        int k = (int)groups.size();\n        vector<vector<int>> adj(k);\n        vector<int> seen(k, -1);\n        for (int c = 0; c < k; c++) {\n            for (int u : groups[c]) {\n                for (int v : g[u]) {\n                    int d = comp[v];\n                    if (c == d || seen[d] == c) continue;\n                    seen[d] = c;\n                    adj[c].push_back(d);\n                }\n            }\n        }\n        return adj;\n    }\n};"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The ",
+                    "marks": []
+                  },
+                  {
+                    "text": "TwoSAT(n)",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " initializer list constructs member ",
+                    "marks": []
+                  },
+                  {
+                    "text": "s",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " with $2n$ vertices. Positive $x_i$ has ID $2(i-1)$ and its negation the next odd ID; ",
+                    "marks": []
+                  },
+                  {
+                    "text": "u ^ 1",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " toggles the literal. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "add",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " inserts both implications for one OR clause.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "struct TwoSAT {\n    int n;\n    SCC s;\n    TwoSAT(int _n) : n(_n), s(2 * _n) {}\n    int node(int a) const {\n        return 2 * (abs(a) - 1) + (a < 0);\n    }\n    void add(int a, int b) {\n        int u = node(a), v = node(b);\n        s.add(u ^ 1, v);\n        s.add(v ^ 1, u);\n    }"
+              },
+              {
+                "type": "p",
+                "text": "Check complementary pairs in the same SCC first. Otherwise assign by the proven ID order. Since $n\\ge1$, an empty vector can signal unsatisfiability."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "vector<int> solve() {\n        s.run();\n        vector<int> value(n);\n        for (int i = 0; i < n; i++) {\n            if (s.comp[2 * i] == s.comp[2 * i + 1]) return {};\n            value[i] = s.comp[2 * i] > s.comp[2 * i + 1];\n        }\n        return value;\n    }\n};"
+              },
+              {
+                "type": "p",
+                "text": "Read all clauses and solve once. Verify the returned values by substitution into every original clause."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    TwoSAT sat(n);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        sat.add(a, b);\n    }\n    auto value = sat.solve();\n    if (value.empty()) cout << \"IMPOSSIBLE\\n\";\n    else for (int i = 0; i < n; i++) cout << value[i] << (i + 1 == n ? '\\n' : ' ');\n}"
+              },
+              {
+                "type": "p",
+                "text": "Complete C++17 program combining the preceding parts. Compile complete programs as separate files."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct SCC {\n    int n;\n    vector<vector<int>> g, rg, groups;\n    vector<int> comp, ord, tin, tout;\n    SCC(int _n) {\n        n = _n;\n        g.resize(n);\n        rg.resize(n);\n    }\n    void add(int a, int b) {\n        g[a].push_back(b);\n        rg[b].push_back(a);\n    }\n    int run() {\n        vector<int> seen(n);\n        comp.assign(n, -1);\n        tin.assign(n, 0);\n        tout.assign(n, 0);\n        ord.clear();\n        groups.clear();\n        int timer = 0;\n        for (int s = 0; s < n; s++) {\n            if (seen[s]) continue;\n            vector<pair<int, int>> st = {{s, 0}};\n            seen[s] = true;\n            tin[s] = ++timer;\n            while (!st.empty()) {\n                int u = st.back().first;\n                int &i = st.back().second;\n                if (i == (int)g[u].size()) {\n                    tout[u] = ++timer;\n                    ord.push_back(u);\n                    st.pop_back();\n                    continue;\n                }\n                int v = g[u][i++];\n                if (!seen[v]) {\n                    seen[v] = true;\n                    tin[v] = ++timer;\n                    st.push_back({v, 0});\n                }\n            }\n        }\n        for (int i = n - 1; i >= 0; i--) {\n            int s = ord[i];\n            if (comp[s] != -1) continue;\n            int c = (int)groups.size();\n            groups.push_back({});\n            vector<int> st = {s};\n            comp[s] = c;\n            while (!st.empty()) {\n                int u = st.back();\n                st.pop_back();\n                groups[c].push_back(u);\n                for (int v : rg[u]) {\n                    if (comp[v] != -1) continue;\n                    comp[v] = c;\n                    st.push_back(v);\n                }\n            }\n        }\n        return (int)groups.size();\n    }\n    vector<vector<int>> dag() const {\n        int k = (int)groups.size();\n        vector<vector<int>> adj(k);\n        vector<int> seen(k, -1);\n        for (int c = 0; c < k; c++) {\n            for (int u : groups[c]) {\n                for (int v : g[u]) {\n                    int d = comp[v];\n                    if (c == d || seen[d] == c) continue;\n                    seen[d] = c;\n                    adj[c].push_back(d);\n                }\n            }\n        }\n        return adj;\n    }\n};\n\nstruct TwoSAT {\n    int n;\n    SCC s;\n    TwoSAT(int _n) : n(_n), s(2 * _n) {}\n    int node(int a) const {\n        return 2 * (abs(a) - 1) + (a < 0);\n    }\n    void add(int a, int b) {\n        int u = node(a), v = node(b);\n        s.add(u ^ 1, v);\n        s.add(v ^ 1, u);\n    }\n    vector<int> solve() {\n        s.run();\n        vector<int> value(n);\n        for (int i = 0; i < n; i++) {\n            if (s.comp[2 * i] == s.comp[2 * i + 1]) return {};\n            value[i] = s.comp[2 * i] > s.comp[2 * i + 1];\n        }\n        return value;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    TwoSAT sat(n);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        sat.add(a, b);\n    }\n    auto value = sat.solve();\n    if (value.empty()) cout << \"IMPOSSIBLE\\n\";\n    else for (int i = 0; i < n; i++) cout << value[i] << (i + 1 == n ? '\\n' : ' ');\n}\n"
+              },
+              {
+                "type": "p",
+                "text": "There are $2n$ literal vertices and $2m$ implications, so time and space are $O(n+m)$. General 3SAT, with three literals per clause, is NP-hard. Knowing $\\neg a$ only requires one of two remaining literals, rather than forcing one literal; the paired-edge rule cannot directly solve arbitrary SAT."
+              }
+            ]
+          },
+          {
+            "key": "application",
+            "title": "A condensation-DAG application",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "An application on the condensation DAG"
+              },
+              {
+                "type": "p",
+                "text": "Suppose each vertex has nonnegative coins. Start anywhere and revisit vertices/edges, but collect each vertex’s coins once. Within an SCC you can successively visit every member and then reach any desired exit vertex. Sum the component’s coins and find a maximum-sum path in the condensation DAG."
+              },
+              {
+                "type": "p",
+                "text": "Let $sum[c]$ be component coins and $best[c]$ the best total ending there. Starting anywhere gives initial $best[c]=sum[c]$. For every $c\\to d$, update $best[d]=\\max(best[d],best[c]+sum[d])$. Increasing component IDs already form a topological order, so process $c=0,1,\\ldots$ once. The DAG prevents returning to a component and double-counting coins."
+              },
+              {
+                "type": "p",
+                "text": "Revisits and nonnegative coins are essential assumptions. Requiring a simple path, or forcing passage through negative-valued vertices, can invalidate summing the whole SCC. This does not make arbitrary longest simple paths easy."
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read $n,m$, then $n$ coin values and directed edges. Assume $1\\le n\\le200000$, $m\\le400000$, $0\\le coin[u]\\le10^9$. Output the maximum collected total. Totals up to $n\\cdot10^9$ require ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ll",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": "; indices use ",
+                    "marks": []
+                  },
+                  {
+                    "text": "int",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". SCC, condensation and DP together cost $O(n+m)$ time and space.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Totals require 64 bits."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+              },
+              {
+                "type": "p",
+                "text": "Reuse the same SCC structure and linear condensation builder."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "struct SCC {\n    int n;\n    vector<vector<int>> g, rg, groups;\n    vector<int> comp, ord, tin, tout;\n    SCC(int _n) {\n        n = _n;\n        g.resize(n);\n        rg.resize(n);\n    }\n    void add(int a, int b) {\n        g[a].push_back(b);\n        rg[b].push_back(a);\n    }\n    int run() {\n        vector<int> seen(n);\n        comp.assign(n, -1);\n        tin.assign(n, 0);\n        tout.assign(n, 0);\n        ord.clear();\n        groups.clear();\n        int timer = 0;\n        for (int s = 0; s < n; s++) {\n            if (seen[s]) continue;\n            vector<pair<int, int>> st = {{s, 0}};\n            seen[s] = true;\n            tin[s] = ++timer;\n            while (!st.empty()) {\n                int u = st.back().first;\n                int &i = st.back().second;\n                if (i == (int)g[u].size()) {\n                    tout[u] = ++timer;\n                    ord.push_back(u);\n                    st.pop_back();\n                    continue;\n                }\n                int v = g[u][i++];\n                if (!seen[v]) {\n                    seen[v] = true;\n                    tin[v] = ++timer;\n                    st.push_back({v, 0});\n                }\n            }\n        }\n        for (int i = n - 1; i >= 0; i--) {\n            int s = ord[i];\n            if (comp[s] != -1) continue;\n            int c = (int)groups.size();\n            groups.push_back({});\n            vector<int> st = {s};\n            comp[s] = c;\n            while (!st.empty()) {\n                int u = st.back();\n                st.pop_back();\n                groups[c].push_back(u);\n                for (int v : rg[u]) {\n                    if (comp[v] != -1) continue;\n                    comp[v] = c;\n                    st.push_back(v);\n                }\n            }\n        }\n        return (int)groups.size();\n    }\n    vector<vector<int>> dag() const {\n        int k = (int)groups.size();\n        vector<vector<int>> adj(k);\n        vector<int> seen(k, -1);\n        for (int c = 0; c < k; c++) {\n            for (int u : groups[c]) {\n                for (int v : g[u]) {\n                    int d = comp[v];\n                    if (c == d || seen[d] == c) continue;\n                    seen[d] = c;\n                    adj[c].push_back(d);\n                }\n            }\n        }\n        return adj;\n    }\n};"
+              },
+              {
+                "type": "p",
+                "text": "Read coins and edges, then compute SCCs and condensation."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    vector<ll> coins(n);\n    for (ll &x : coins) cin >> x;\n    SCC s(n);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        s.add(a - 1, b - 1);\n    }\n    int k = s.run();\n    auto adj = s.dag();"
+              },
+              {
+                "type": "p",
+                "text": "Aggregate component sums and relax in increasing ID order. The global maximum chooses the best start and endpoint."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "vector<ll> sum(k), best(k);\n    for (int u = 0; u < n; u++) sum[s.comp[u]] += coins[u];\n    best = sum;\n    for (int c = 0; c < k; c++) {\n        for (int d : adj[c]) best[d] = max(best[d], best[c] + sum[d]);\n    }\n    cout << *max_element(best.begin(), best.end()) << '\\n';\n}"
+              },
+              {
+                "type": "p",
+                "text": "Complete C++17 program combining the preceding parts. Compile complete programs as separate files."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct SCC {\n    int n;\n    vector<vector<int>> g, rg, groups;\n    vector<int> comp, ord, tin, tout;\n    SCC(int _n) {\n        n = _n;\n        g.resize(n);\n        rg.resize(n);\n    }\n    void add(int a, int b) {\n        g[a].push_back(b);\n        rg[b].push_back(a);\n    }\n    int run() {\n        vector<int> seen(n);\n        comp.assign(n, -1);\n        tin.assign(n, 0);\n        tout.assign(n, 0);\n        ord.clear();\n        groups.clear();\n        int timer = 0;\n        for (int s = 0; s < n; s++) {\n            if (seen[s]) continue;\n            vector<pair<int, int>> st = {{s, 0}};\n            seen[s] = true;\n            tin[s] = ++timer;\n            while (!st.empty()) {\n                int u = st.back().first;\n                int &i = st.back().second;\n                if (i == (int)g[u].size()) {\n                    tout[u] = ++timer;\n                    ord.push_back(u);\n                    st.pop_back();\n                    continue;\n                }\n                int v = g[u][i++];\n                if (!seen[v]) {\n                    seen[v] = true;\n                    tin[v] = ++timer;\n                    st.push_back({v, 0});\n                }\n            }\n        }\n        for (int i = n - 1; i >= 0; i--) {\n            int s = ord[i];\n            if (comp[s] != -1) continue;\n            int c = (int)groups.size();\n            groups.push_back({});\n            vector<int> st = {s};\n            comp[s] = c;\n            while (!st.empty()) {\n                int u = st.back();\n                st.pop_back();\n                groups[c].push_back(u);\n                for (int v : rg[u]) {\n                    if (comp[v] != -1) continue;\n                    comp[v] = c;\n                    st.push_back(v);\n                }\n            }\n        }\n        return (int)groups.size();\n    }\n    vector<vector<int>> dag() const {\n        int k = (int)groups.size();\n        vector<vector<int>> adj(k);\n        vector<int> seen(k, -1);\n        for (int c = 0; c < k; c++) {\n            for (int u : groups[c]) {\n                for (int v : g[u]) {\n                    int d = comp[v];\n                    if (c == d || seen[d] == c) continue;\n                    seen[d] = c;\n                    adj[c].push_back(d);\n                }\n            }\n        }\n        return adj;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    vector<ll> coins(n);\n    for (ll &x : coins) cin >> x;\n    SCC s(n);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        s.add(a - 1, b - 1);\n    }\n    int k = s.run();\n    auto adj = s.dag();\n    vector<ll> sum(k), best(k);\n    for (int u = 0; u < n; u++) sum[s.comp[u]] += coins[u];\n    best = sum;\n    for (int c = 0; c < k; c++) {\n        for (int d : adj[c]) best[d] = max(best[d], best[c] + sum[d]);\n    }\n    cout << *max_element(best.begin(), best.end()) << '\\n';\n}\n"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Exercises and independent practice",
+            "blocks": [
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Exercises to master the topic"
+              },
+              {
+                "type": "p",
+                "text": "Build reachability tables for both four-vertex graphs. In the seven-vertex example exhibit mutual routes inside each SCC and explain why no two SCCs can merge. Match all five condensation edges to original edges."
+              },
+              {
+                "type": "p",
+                "text": "Trace DFS times and finishing order. Construct a counterexample to reversing edges but choosing arbitrary second-pass starts. Derive all ten implications of $L_1$, check its four SCCs and assignment, and exhibit contradictory mutual reachability in $L_2$."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Mastery and independent practice"
+              },
+              {
+                "type": "p",
+                "text": "Implement SCC partitioning for core #383 Planets and Kingdoms and paired implications/assignment for core #384 Giant Pizza. #382 Flight Routes Check also asks for an explanation via an unreachable pair, beyond testing whether there is one SCC."
+              },
+              {
+                "type": "p",
+                "text": "Use the condensation DP on #385 Coin Collector. #761 Come Back in One Piece and #802 Checkposts provide independent practice aggregating counts or costs within SCCs. Equivalent partitions may use different numeric component IDs."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Directed DFS, finishing order, DAGs and topological sorting; Boolean AND, OR and negation."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Чиглэлтэй графын DFS, дуусалтын дараалал, DAG ба топологийн эрэмбэ; логикийн «ба», «эсвэл», үгүйсгэл.",
+    "priorityLevel": "high",
+    "priorityReason": "Циклтэй чиглэлтэй графыг DAG болгон хялбарчлах суурь арга; хүрэх боломж, компонентын DP, 2SAT загварчлал зэрэг олон төрлийн бодлогод дахин хэрэглэгддэг.",
+    "prerequisiteIds": [
+      "topological-sort",
+      "dfs"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "topological-sort",
+          "description": "SCC-ийг нэгтгэсний дараах DAG ба боловсруулах дарааллыг харьцуул.",
+          "descriptionEn": "Compare DAG processing after SCC contraction."
+        }
+      ],
+      "next": "lca",
+      "practice": [
+        {
+          "key": "383",
+          "stage": "Warm-up",
+          "priority": true,
+          "reason": "SCC хуваалтыг шууд хэрэгжүүлэх үндсэн дасгал."
+        },
+        {
+          "key": "382",
+          "stage": "Standard",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "384",
+          "stage": "Observation",
+          "priority": true,
+          "reason": "Хоёр литералтай нөхцөлийг дагалдал болгон оноолт гаргах үндсэн дасгал."
+        },
+        {
+          "key": "385",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "761",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "802",
+          "stage": "Olympiad extension",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    }
+  }
+}
