@@ -1,0 +1,847 @@
+{
+  "id": "number-theory",
+  "revision": 6,
+  "published": true,
+  "body": {
+    "id": "number-theory",
+    "level": "Дунд шат",
+    "order": 38,
+    "title": "Анхны үржигдэхүүн — задралаас хуваагчийн тоо олох",
+    "aliases": "number-theory Prime factorization — анхны үржигдэхүүнд задлах Prime factorization — decomposing an integer gcd lcm euclid sieve prime эратосфен анхны тоо modulo fast power modular arithmetic",
+    "related": [
+      "gcd",
+      "sieve",
+      "combinatorics"
+    ],
+    "summary": "Жижиг хуваагчийг бүрэн салгаж, үлдсэн тооны хязгаарыг багасгана. Анхны зэргүүдээс эерэг хуваагчдыг давхардалгүй тоолъё.",
+    "category": "Mathematics",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Далан хоёрын хуваагчдыг яаж тоолох вэ?",
+        "blocks": [
+          {
+            "text": "$72$-ыг үлдэгдэлгүй хуваадаг эерэг тоонуудыг жагсааж болно. Гэхдээ илүү том тоонд бүх хуваагчийг нэг нэгээр хайх нь урт ажил. $72=2^3\\cdot3^2$ гэсэн задрал тооллыг хялбарчилна.",
+            "type": "p"
+          },
+          {
+            "text": "Хуваагч дотор хоёрын зэрэг тэгээс гурав, гурвын зэрэг тэгээс хоёр хүртэл сонгогдоно. Хоёр сонголт бие даасан тул $(3+1)(2+1)=12$ хуваагч. Нэгийг ч мартсангүй: бүх зэргийг тэг сонговол нэг гарна. Эхлээд ийм задралыг олох аргыг байгуулъя.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Тоо хүртэлх бүх хуваагчийг шалгахгүй",
+        "blocks": [
+          {
+            "text": "Оролтын эерэг тоог $N$ гэе. Нэгээс $N$ хүртэл бүрд үлдэгдэл шалгах арга $O(N)$. Харин нийлмэл тоо хоёр үржигдэхүүнтэй бол хоёул квадрат язгуураас их байж чадахгүй: үржвэр нь анхны тооноос эрс их болно.",
+            "type": "p"
+          },
+          {
+            "text": "Иймээс нэг жижиг үржигдэхүүн олдоно. Түүнийг салгасны дараа үлдсэн тоонд ижил санааг хэрэглэнэ. Хайх хязгаарыг анхны тоонд бус, багасаж буй үлдэгдэлд барина.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "3. Анхны тоо ба зэргийн хосууд",
+        "blocks": [
+          {
+            "text": "Анхны тоо нь нэгээс их бөгөөд эерэг хуваагч нь зөвхөн нэг ба өөрөө байдаг. Нэг анхны тоо биш. Анхны үржигдэхүүний задралыг $N=p_1^{e_1}\\cdots p_t^{e_t}$ гэж бичье: өөр өөр анхны тоо, эерэг бүхэл зэргүүд.",
+            "type": "p"
+          },
+          {
+            "text": "Хуваагч бүр яг $p_1^{f_1}\\cdots p_t^{f_t}$ хэлбэртэй, $0\\le f_i\\le e_i$. Анхны үржигдэхүүний цорын ганц задралаас өөр зэргийн сонголтууд өөр тоо өгнө. Тиймээс хуваагчийн тоо $\\prod_i(e_i+1)$. $N=1$ үед хосуудын жагсаалт хоосон, үржвэр нэг байна.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Олсон хуваагчийг дуустал нь салгах",
+        "blocks": [
+          {
+            "text": "Үлдсэн тоог анхны оролтоор эхлүүлнэ. Хоёроос эхлэн боломжит хуваагч бүрийг шалга. Хуваагдаж байвал дахин дахин хувааж, хэдэн удаа салгаснаа зэрэг болгон хадгална. Нэг удаа л хуваавал задралд давхардсан хос эсвэл нийлмэл үлдэгдэл орж болно.",
+            "type": "p"
+          },
+          {
+            "text": "Хуваагчийн квадрат үлдсэн тооноос их болмогц зогсоно. Код квадратыг үржүүлэхийн оронд хуваагч нь үлдсэн тоог өөрт нь хувааснаас ихгүй эсэхийг шалгана. Үлдсэн тоо нэгээс их байвал тэр нь сүүлийн анхны үржигдэхүүн, зэрэг нь нэг.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "5. Гурван зуун жаран хэрхэн багасах вэ?",
+        "blocks": [
+          {
+            "text": "$360$-аас хоёрыг гурван удаа салгахад дөчин тав үлдэнэ. Гурвыг хоёр удаа салгахад тав үлдэнэ. Дараагийн боломжит хуваагч дөрөв боловч квадрат нь таваас их тул давталт дуусна. Үлдсэн тавыг анхны үржигдэхүүн болгон нэмнэ.",
+            "type": "p"
+          },
+          {
+            "text": "Хариу $360=2^3\\cdot3^2\\cdot5$. Хуваагчийн тоо $(3+1)(2+1)(1+1)=24$. Тавыг тусад нь давталтаар шалгаагүй ч орхигдуулаагүй: үлдэгдлийн эцсийн шалгалт түүнийг барина.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "—",
+                "—",
+                "360",
+                "1"
+              ],
+              [
+                "2",
+                "3",
+                "45",
+                "4"
+              ],
+              [
+                "3",
+                "2",
+                "5",
+                "12"
+              ],
+              [
+                "5",
+                "1",
+                "1",
+                "24"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Хуваагч",
+              "Зэрэг",
+              "Үлдсэн тоо",
+              "Хуваагчийн сонголтын үржвэр"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Яагаад гарсан үржигдэхүүн бүр анхны вэ?",
+        "blocks": [
+          {
+            "text": "Боломжит хуваагчийг шалгахын өмнө түүнээс бага бүх анхны үржигдэхүүнийг бүрэн салгасан байна. Хэрэв одоо тоог хувааж буй хуваагч нийлмэл байсан бол түүний нэг жижиг анхны үржигдэхүүн үлдсэн тоог бас хуваах ёстой. Тэр нь өмнө бүрэн салсан гэдэгтэй зөрчилдөнө. Иймээс код нийлмэл боломжит хуваагчийг шалгасан ч хариунд анхны тоо л нэмэгдэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "Хасаж авсан бүх зэрэгт үржигдэхүүн ба үлдсэн тооны үржвэр үргэлж анхны оролттой тэнцүү. Давталтын эцсийн үлдэгдэл нийлмэл байсан бол квадрат язгуураас нь ихгүй анхны хуваагч үлдэх ёстой, гэтэл тийм бүх боломжийг аль хэдийн шалгасан. Тиймээс нэгээс их үлдэгдэл анхны. Үржвэрийн нөхцөл задрал юу ч алдаагүйг батална.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Хамгийн муу тохиолдол нь том анхны тоо",
+        "blocks": [
+          {
+            "text": "Анхны оролт $N$ байхад боломжит хуваагч ихдээ $\\sqrt N$ хүртэл явна. Доторх бүх амжилттай хуваалт нийлээд $O(\\log N)$: хуваах бүрд тоо дор хаяж хоёр дахин багасна. Нийт хамгийн муу хугацаа $O(\\sqrt N)$, хосуудыг хадгалах зай $O(\\log N)$.",
+            "type": "p"
+          },
+          {
+            "text": "$N\\le10^{12}$ гэсэн энэ программын хүрээнд хамгийн муудаа ойролцоогоор сая боломжит хуваагч шалгана. Энэ нь дурын 64 битийн том анхны тоог хурдан задалдаг арга биш. Цөөн тоонд тохирох арга олон асуултад автоматаар тохирохгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. Задрал ба хуваагчийн тоог тусгаарлах",
+        "blocks": [
+          {
+            "text": "8.1. Задралын төлөв",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Үржигдэхүүн ба зэргийн хосуудын хоосон жагсаалт үүсгэнэ. Оролтыг өөрчлөхгүй, тусдаа үлдсэн тоог багасгаж явна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvector<pair<long long, int>> factorize(long long number) {\n    vector<pair<long long, int>> factors;\n    long long remaining = number;\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.2. Давтан хуваалт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Боломжит хуваагч бүрийг бүрэн салгаж зэргийг нь нэмнэ. Квадратын үржвэрийн оронд хуваасан харьцуулалт хэрэглэнэ. Эцсийн нэгээс их үлдэгдлийг зэрэг нэгтэй нэмнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    for (long long divisor = 2; divisor <= remaining / divisor; ++divisor) {\n        int exponent = 0;\n        while (remaining % divisor == 0) {\n            remaining /= divisor;\n            ++exponent;\n        }\n        if (exponent > 0) {\n            factors.push_back({divisor, exponent});\n        }\n    }\n    if (remaining > 1) {\n        factors.push_back({remaining, 1});\n    }\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.3. Хосуудын үр дүн",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Өсөх анхны тоонууд ба эерэг зэргүүдийг буцаана. Нэг гэсэн оролтод жагсаалт хоосон хэвээр.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    return factors;\n}\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.4. Задрал ба тоог хэвлэх",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт ганц эерэг тоо. Эхлээд ялгаатай анхны үржигдэхүүний тоо, дараа нь анхны тоо ба зэргийн хос бүр, сүүлд эерэг хуваагчийн тоо хэвлэнэ. Хуваагчийн тоог нэгээр эхлүүлэх нь хоосон үржвэрийг зөв боловсруулна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    long long number;\n    cin >> number;\n    vector<pair<long long, int>> factors = factorize(number);\n    cout << factors.size() << '\\n';\n    long long divisor_count = 1;\n    for (auto [prime, exponent] : factors) {\n        cout << prime << ' ' << exponent << '\\n';\n        divisor_count *= exponent + 1;\n    }\n    cout << divisor_count << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн ажиллах C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvector<pair<long long, int>> factorize(long long number) {\n    vector<pair<long long, int>> factors;\n    long long remaining = number;\n    for (long long divisor = 2; divisor <= remaining / divisor; ++divisor) {\n        int exponent = 0;\n        while (remaining % divisor == 0) {\n            remaining /= divisor;\n            ++exponent;\n        }\n        if (exponent > 0) {\n            factors.push_back({divisor, exponent});\n        }\n    }\n    if (remaining > 1) {\n        factors.push_back({remaining, 1});\n    }\n    return factors;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    long long number;\n    cin >> number;\n    vector<pair<long long, int>> factors = factorize(number);\n    cout << factors.size() << '\\n';\n    long long divisor_count = 1;\n    for (auto [prime, exponent] : factors) {\n        cout << prime << ' ' << exponent << '\\n';\n        divisor_count *= exponent + 1;\n    }\n    cout << divisor_count << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "360\n",
+            "type": "code",
+            "language": "Input"
+          },
+          {
+            "text": "3\n2 3\n3 2\n5 1\n24\n",
+            "type": "code",
+            "language": "Output"
+          }
+        ]
+      },
+      {
+        "key": "errors",
+        "title": "9. Нэг, квадрат, сүүлийн үлдэгдэл",
+        "blocks": [
+          {
+            "text": "Нэгийг анхны үржигдэхүүнд нэмэхгүй. Квадрат язгууртай тэнцүү хуваагчийг шалгах ёстой: дөчин ес дээр долоог алгасвал нийлмэл үлдэгдлийг анхны гэж андуурна. Давталтын төгсгөлийн нэгээс их үлдэгдлийг мөн мартаж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Оролт тэг байвал эерэг хуваагчдын тоо төгсгөлгүй бөгөөд хоёрт дахин хуваах давталт зогсохгүй. Энэ код тэг, сөрөг тоо авдаггүй. Хүрээнээс гадуурх оролтыг “хоосон задрал” гэж чимээгүй тайлбарлаж болохгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "uses",
+        "title": "10. ХИЕХ ба ХБЕХ-д зэргийг харьцуулах",
+        "blocks": [
+          {
+            "text": "Хоёр тооны задралд байхгүй анхны тооны зэргийг тэг гэж үзье. ХИЕХ-д зэрэг бүрийн бага, ХБЕХ-д ихийг авна. Жишээ нь $12=2^2\\cdot3$, $18=2\\cdot3^2$ тул ХИЕХ зургаа, ХБЕХ гучин зургаа.",
+            "type": "p"
+          },
+          {
+            "text": "Зөвхөн ХИЕХ хэрэгтэй бол Евклидийн арга тоог бүрэн задлахаас хурдан. ХБЕХ-ийн томьёонд эхлээд ХИЕХ-д хуваасан ч эцсийн үржвэр сонгосон тоон төрөлд багтах ёстой; задрал байгаа нь хальж дүүрэхээс өөрөө хамгаалахгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "many",
+        "title": "11. Олон жижиг тоонд шигшүүрийн бэлтгэл",
+        "blocks": [
+          {
+            "text": "Хамгийн их утга $M$ гэж мэдэгдсэн, олон асуулттай бол тоо бүрийн хамгийн бага анхны хуваагчийг шигшүүрээр бэлдэж болно. Асуулт бүр тэр хуваагчид давтан хуваагдах учир салгалтын тоотой дүйх ажил хийнэ. Бэлтгэлийн хугацаа, $O(M)$ зайг тусад нь тооцно.",
+            "type": "p"
+          },
+          {
+            "text": "Counting Divisors-ийн олон жижиг асуултыг энэ хичээлийн ганц тоонд зориулсан программыг олон дахин ажиллуулаад хангалттай гэж үзэж болохгүй. Өмнөх шигшүүрийн хичээлтэй холбож арга ба хязгаарыг сонго. Бүх тооны хуваагчийн тоог хуваагч бүрийн үржвэрүүд дээр нэмэх өөр бэлтгэл ч бий.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "variants",
+        "title": "12. Зэргийн үлдэгдэлд тусдаа нөхцөл бий",
+        "blocks": [
+          {
+            "text": "Анхны задрал Divisor Analysis-ийн үржвэрийн бүтэц, Prime Multiples-ийн орсон-гарсны тоолол, Counting Coprime Pairs-ийн нийтлэг анхны хуваагчийг танихад тусална. Гэхдээ аль нь ч дан задралын мөрүүдийг хэвлээд дуусах бодлого биш.",
+            "type": "p"
+          },
+          {
+            "text": "Зэргийг модулиар бууруулахдаа суурь ба модуль харилцан анхны эсэхийг шалгана. Анхны модульд хуваагдах суурь дээр Фермагийн нөхцөлийг шууд хэрэглэж болохгүй. Зэрэг хурдан бодох болон комбинаторикийн хичээлүүдэд эдгээр ялгааг үргэлжлүүлнэ.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Задралаас тоолол ба модулийн хэрэглээ рүү",
+        "blocks": [
+          {
+            "text": "Counting Divisors",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Анхны зэргээс хуваагч тоолохыг олон жижиг асуултад тохирсон бэлтгэлтэй холбо.",
+            "type": "p"
+          },
+          {
+            "text": "Exponentiation",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Хуваагчийг бус зэргийг хоёртын бичлэгээр багасгах аргын ялгааг тайлбарла.",
+            "type": "p"
+          },
+          {
+            "text": "Exponentiation II",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Зэргийн үлдэгдэл бууруулахдаа суурь ба модулийн харилцан анхны нөхцөлийг шалга.",
+            "type": "p"
+          },
+          {
+            "text": "Divisor Analysis",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Зэрэг бүрийн сонголтоос хуваагчийн тоо, нийлбэр, үржвэрийг тус тус гарга; модулийн нөхцөлийг ялга.",
+            "type": "p"
+          },
+          {
+            "text": "Prime Multiples",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Олон анхны хуваагчийн үржвэр дээр орсон-гарсны тоолол, үржвэрийн хязгаарыг нэм.",
+            "type": "p"
+          },
+          {
+            "text": "Counting Coprime Pairs",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Нийтлэг анхны хуваагчтай хосуудыг тоолох нэмэлт нэгтгэл, давхар тооллын засвар шаардлагатай.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "priority",
+        "title": "14. Хязгаарт тохирсон тоон аргыг сонгох",
+        "blocks": [
+          {
+            "text": "Өндөр ач холбогдолтой. Counting Divisors нь задрал ба зэргийн сонголтын цөм хэрэглээ. Түүнийг шигшүүрийн бэлтгэлтэй холбож, ганц тоо ба олон асуултын хугацааны ялгааг тооцож сур. Холбогдсон бусад бодлого өөрийн нэмэлт нөхцөлтэй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Үржүүлж сэргээгээд бүх хуваагчтай тулгах",
+        "blocks": [
+          {
+            "text": "Нэг, анхны тоо, анхны тооны зэрэг, хоёр өөр анхны үржигдэхүүнтэй тоо, квадрат тоог шалга. Гарсан хос бүрийн зэрэг эерэг, анхны тоонууд өсөх, үржүүлж сэргээсэн нь оролттой тэнцүү байх ёстой.",
+            "type": "p"
+          },
+          {
+            "text": "Жижиг тоонд нэгээс тухайн тоо хүртэлх бүх хуваагчийг шууд тоолоод томьёотой тулга. Дараа нь сүүлийн үлдэгдлийг авдаг мөрийг хасвал ямар жишээ алдахыг, квадратын заагийг эрс болгож сольвол ямар жишээ алдахыг нэрлэ.",
+            "type": "p"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Prime factorization — derive the divisor count",
+        "summary": "Remove each small factor completely, shrink the remaining search bound, and count positive divisors from prime exponents.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. How many divisors does seventy-two have?",
+            "blocks": [
+              {
+                "text": "List the positive integers that divide $72$ exactly, or use $72=2^3\\cdot3^2$. Each divisor chooses an exponent from zero through three for two, and zero through two for three.",
+                "type": "p"
+              },
+              {
+                "text": "Independent choices give $(3+1)(2+1)=12$ divisors. Choosing all zero exponents includes one. We first need a reliable way to obtain the factorization.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Do not test every integer up to the number",
+            "blocks": [
+              {
+                "text": "Let the input be positive $N$. Testing every potential divisor through $N$ costs $O(N)$. A composite number has a factor no larger than its square root; otherwise both factors would multiply to more than the number.",
+                "type": "p"
+              },
+              {
+                "text": "Remove a small factor and apply the same observation to the remaining quotient. The stopping bound should follow that shrinking remainder.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "3. Prime-and-exponent pairs",
+            "blocks": [
+              {
+                "text": "A prime is an integer greater than one with only one and itself as positive divisors. One is not prime. Write $N=p_1^{e_1}\\cdots p_t^{e_t}$ with distinct primes and positive exponents.",
+                "type": "p"
+              },
+              {
+                "text": "Each divisor has exactly the form $p_1^{f_1}\\cdots p_t^{f_t}$ with $0\\le f_i\\le e_i$. Unique prime factorization makes different exponent choices distinct, so the count is $\\prod_i(e_i+1)$. For $N=1$, the factor list is empty and this product is one.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Remove every copy of a factor",
+            "blocks": [
+              {
+                "text": "Initialize the remainder to the input. Test candidate divisors from two, dividing repeatedly while possible and recording the number of divisions as the exponent. Dividing only once can leave an incomplete factorization.",
+                "type": "p"
+              },
+              {
+                "text": "Stop when the candidate square exceeds the remainder. The code compares against remainder divided by the candidate rather than multiplying the square. Any final remainder above one is a prime with exponent one.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "5. Watch three hundred sixty shrink",
+            "blocks": [
+              {
+                "text": "Removing two three times from $360$ leaves forty-five; removing three twice leaves five. The next candidate four already has square larger than five, so the loop ends and five is appended.",
+                "type": "p"
+              },
+              {
+                "text": "Thus $360=2^3\\cdot3^2\\cdot5$ and the divisor count is $(3+1)(2+1)(1+1)=24$. The final remainder check captures five without testing it as a loop candidate.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "—",
+                    "—",
+                    "360",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "3",
+                    "45",
+                    "4"
+                  ],
+                  [
+                    "3",
+                    "2",
+                    "5",
+                    "12"
+                  ],
+                  [
+                    "5",
+                    "1",
+                    "1",
+                    "24"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Factor",
+                  "Exponent",
+                  "Remainder",
+                  "Accumulated choices"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Why is every reported factor prime?",
+            "blocks": [
+              {
+                "text": "Before a candidate is tested, all smaller prime factors have been completely removed. A composite candidate dividing the remainder would have a smaller prime factor that still divided it, contradicting complete removal. Thus only primes are reported.",
+                "type": "p"
+              },
+              {
+                "text": "The product of extracted prime powers and the remainder always equals the original input. A composite final remainder would have a prime factor no larger than its square root, but all such candidates have already been ruled out. Hence a remainder above one is prime, and the product invariant proves completeness.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. A large prime is the slow case",
+            "blocks": [
+              {
+                "text": "At most $\\sqrt N$ candidates are visited. All successful divisions together are $O(\\log N)$ since each reduces the remainder by at least a factor of two. Worst-case time is $O(\\sqrt N)$ and factor storage is $O(\\log N)$.",
+                "type": "p"
+              },
+              {
+                "text": "The program’s $N\\le10^{12}$ limit means roughly a million candidates in the worst case. This is not fast factorization for arbitrary large 64-bit primes, nor automatically suitable for many queries.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. Separate factorization from divisor counting",
+            "blocks": [
+              {
+                "text": "8.1. Factorization state",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Create an empty list of prime/exponent pairs and shrink a separate remainder, preserving the original argument.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvector<pair<long long, int>> factorize(long long number) {\n    vector<pair<long long, int>> factors;\n    long long remaining = number;\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.2. Repeated division",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Remove every copy of each candidate, use a division-based square bound, and append a final remainder above one with exponent one.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    for (long long divisor = 2; divisor <= remaining / divisor; ++divisor) {\n        int exponent = 0;\n        while (remaining % divisor == 0) {\n            remaining /= divisor;\n            ++exponent;\n        }\n        if (exponent > 0) {\n            factors.push_back({divisor, exponent});\n        }\n    }\n    if (remaining > 1) {\n        factors.push_back({remaining, 1});\n    }\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.3. Return factor pairs",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Return increasing primes with positive exponents; input one leaves the list empty.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    return factors;\n}\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.4. Print factors and count",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read one positive integer. Print the number of distinct prime factors, each prime/exponent pair, then the positive divisor count. Starting the count at one handles the empty product.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    long long number;\n    cin >> number;\n    vector<pair<long long, int>> factors = factorize(number);\n    cout << factors.size() << '\\n';\n    long long divisor_count = 1;\n    for (auto [prime, exponent] : factors) {\n        cout << prime << ' ' << exponent << '\\n';\n        divisor_count *= exponent + 1;\n    }\n    cout << divisor_count << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete compilable C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvector<pair<long long, int>> factorize(long long number) {\n    vector<pair<long long, int>> factors;\n    long long remaining = number;\n    for (long long divisor = 2; divisor <= remaining / divisor; ++divisor) {\n        int exponent = 0;\n        while (remaining % divisor == 0) {\n            remaining /= divisor;\n            ++exponent;\n        }\n        if (exponent > 0) {\n            factors.push_back({divisor, exponent});\n        }\n    }\n    if (remaining > 1) {\n        factors.push_back({remaining, 1});\n    }\n    return factors;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    long long number;\n    cin >> number;\n    vector<pair<long long, int>> factors = factorize(number);\n    cout << factors.size() << '\\n';\n    long long divisor_count = 1;\n    for (auto [prime, exponent] : factors) {\n        cout << prime << ' ' << exponent << '\\n';\n        divisor_count *= exponent + 1;\n    }\n    cout << divisor_count << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "360\n",
+                "type": "code",
+                "language": "Input"
+              },
+              {
+                "text": "3\n2 3\n3 2\n5 1\n24\n",
+                "type": "code",
+                "language": "Output"
+              }
+            ]
+          },
+          {
+            "key": "errors",
+            "title": "9. One, squares and the last remainder",
+            "blocks": [
+              {
+                "text": "Do not report one as prime. Include equality at the square-root boundary: skipping seven for forty-nine could misclassify the composite remainder. Do not omit the final remainder above one.",
+                "type": "p"
+              },
+              {
+                "text": "Zero has infinitely many positive divisors and repeated division would not terminate. This program excludes zero and negative inputs; they are not silently interpreted as empty factorizations.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "uses",
+            "title": "10. Compare exponents for GCD and LCM",
+            "blocks": [
+              {
+                "text": "Treat absent prime exponents as zero. GCD takes each minimum exponent and LCM each maximum. For $12=2^2\\cdot3$ and $18=2\\cdot3^2$, these give six and thirty-six.",
+                "type": "p"
+              },
+              {
+                "text": "If only GCD is needed, Euclid is faster than full factorization. Even dividing by GCD first does not guarantee that a final LCM product fits its numeric type.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "many",
+            "title": "11. Preprocess for many small inputs",
+            "blocks": [
+              {
+                "text": "With many bounded inputs up to $M$, precompute smallest prime factors by a sieve, then repeatedly remove those factors per query. Account separately for preprocessing and $O(M)$ memory.",
+                "type": "p"
+              },
+              {
+                "text": "Counting Divisors has many small queries; repeating this single-number reference program is not automatically the right solution. Reuse the sieve lesson. Another option increments divisor counts along every divisor’s multiples.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "variants",
+            "title": "12. Modular exponent work has separate conditions",
+            "blocks": [
+              {
+                "text": "Factorization informs Divisor Analysis, inclusion-exclusion in Prime Multiples and common-prime counting in Counting Coprime Pairs. None is solved by merely printing factors.",
+                "type": "p"
+              },
+              {
+                "text": "Reducing an exponent modulo a totient requires coprimality. A base divisible by a prime modulus does not satisfy the usual Fermat condition. Continue these distinctions in fast powers and combinatorics.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From factors to counting and modular applications",
+            "blocks": [
+              {
+                "text": "Counting Divisors",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Combine the exponent-count formula with preprocessing for many small queries.",
+                "type": "p"
+              },
+              {
+                "text": "Exponentiation",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Distinguish halving an exponent from removing prime factors.",
+                "type": "p"
+              },
+              {
+                "text": "Exponentiation II",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Check coprimality and zero-base cases before reducing an exponent.",
+                "type": "p"
+              },
+              {
+                "text": "Divisor Analysis",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Derive divisor count, sum and product separately with their modular conditions.",
+                "type": "p"
+              },
+              {
+                "text": "Prime Multiples",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Add inclusion-exclusion and safe product bounds.",
+                "type": "p"
+              },
+              {
+                "text": "Counting Coprime Pairs",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Add aggregation by common divisors and correct overlap between counted pairs.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "priority",
+            "title": "14. Choose a number-theoretic method for the limits",
+            "blocks": [
+              {
+                "text": "High educational priority. Counting Divisors connects exponents to independent choices. Combine it with sieve preprocessing and distinguish one input from many queries; later tasks require additional reasoning.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Reconstruct and compare against all divisors",
+            "blocks": [
+              {
+                "text": "Test one, primes, prime powers, products of distinct primes and perfect squares. Check positive exponents, increasing prime bases and exact reconstruction.",
+                "type": "p"
+              },
+              {
+                "text": "For small inputs, enumerate every positive divisor and compare with the formula. Name counterexamples for removing the final-remainder check or making the square-root test strict.",
+                "type": "p"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Remainders and divisibility, primes, GCD and basic sieving."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Үлдэгдэл ба хуваагдал, анхны тоо, ХИЕХ, шигшүүрийн үндсэн санаа.",
+    "priorityLevel": "high",
+    "priorityReason": "Анхны үржигдэхүүний задрал, хуваагчийн тоо, ХИЕХ ба ХБЕХ-ийн зэргийн утгыг холбох үндсэн мэдлэг. Дараагийн тоолол ба модулийн аргуудын суурь учраас High; тоон хязгаарт тохирох аргыг сонгох нь чухал.",
+    "prerequisiteIds": [
+      "gcd",
+      "sieve"
+    ],
+    "learningRelations": {
+      "next": "combinatorics",
+      "practice": [
+        {
+          "key": "439",
+          "stage": "Warm-up",
+          "reason": "Анхны зэргүүдийн сонголтыг хуваагчийн тоонд холбож, олон жижиг асуултын тохирох бэлтгэлийг сонгох цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "437",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "438",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "442",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "443",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "444",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "gcd",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "sieve",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "combinatorics",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  }
+}
