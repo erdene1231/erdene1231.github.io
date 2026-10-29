@@ -1,0 +1,15 @@
+# Chapter 9: Range queries
+
+Complete uploaded chapter read: printed 83–94 (PDF 93–104). Rendered pages 85,87,89,90,92 inspected for the two-dimensional corners, all Fenwick stored ranges and full segment tree. Native figures were then inspected at 390 px: node labels/outer intervals separated, all 15 nodes visible, and prefix corners/colored area readable in dark theme.
+
+The stable `segment-tree` ID contains the complete chapter. Four source sections remain in order, followed by the existing mastery/independent practice. Focused prefix-sums, prefix-sums-2d, sparse-table, fenwick-tree, hash-compression and difference-array lessons remain separate and unchanged.
+
+- Intro: source array 1,3,8,4,6,1,3,4; [3,6] sum 14/min 1/max 6; linear scan versus repeated-query cost.
+- 9.1: full source array 1,3,4,8,6,1,4,2; all prefixes 1,4,8,16,22,23,27,29; sum[3,6]=27−8=19; empty prefix; two-dimensional A/B/C/D inclusion/exclusion. All 21 power-of-two minimum intervals, half recurrences and overlapping[1,4]/[3,6] query retained. Explain why overlap is valid for min but not sum. Added complete scan/prefix/sparse/2D code.
+- 9.2: exact Fenwick array 1,4,4,16,6,7,4,29; all eight stored intervals; prefix 7=16+7+4; update 3→4→8; lowbit calculation, negative additions, empty prefix and prohibition on add(0). Compact size constructor and full program explained.
+- 9.3: full sum tree over 5,8,6,3,2,7,2,6; root 39, halves 22/17; [2,7]=9+17=26; update path from value 7; exact 15-position storage table. Recursive Segtree is the main implementation with build/add/query,4 n allocation and constructor explained. Bottom-up power-of-two padding, endpoint parity and full code retained. Minimum tree over 5,8,6,3,1,7,2,6, leftmost-minimum descent and full implementation supplied. Associative combination, operation identities, update semantics and left-to-right order explained without claiming all Fenwick variants are sums-only.
+- 9.4: source coordinates 555,10^9,8→2,3,1; equality/order versus distances and need for known coordinates. Source array 3,3,1,1,1,5,2,2; differences 3,0,−2,0,0,4,−3,0; range[1,4]+5 yields differences 3,5,−2,0,0,−1,−3,0 and restored values 3,8,6,6,6,5,2,2. Full Fenwick-difference implementation, last-boundary handling and distinction from range-add/range-sum retained.
+
+Each implementation has meaningful explained fragments before the full compilable program. Values/sums use appropriate int/ll types, no global macro. Independent elementary oracles cover 345 UBSan program cases and 8566 query answers, plus large sums and boundaries. All code fragments match the compiled sources exactly. Additional prose explains assumptions/correctness instead of copying source simplifications as absolute claims.
+
+Actual MN/EN prose read contextually: direct teaching, no repeated book/edition/source narration, mathematical variables delimited, natural terms and necessary technical names explained. Original source acknowledgement/license stays centralized. Private draft and old practice metadata remain frozen and guarded, not rebased or rewritten.
