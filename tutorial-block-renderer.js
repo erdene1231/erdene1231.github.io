@@ -1,7 +1,7 @@
-import {renderGridRows,prepareGridTable} from './tutorial-grid.js?v=61';
+import {renderGridRows,prepareGridTable} from './tutorial-grid.js?v=62';
 import {positionGraphLabels} from './tutorial-graph.js?v=57';
-import {safeLink,validateExtendedBlock} from './tutorial-blocks.js?v=61';
-import {tutorialImageUrl} from './tutorial-media.js?v=57';
+import {safeLink,validateExtendedBlock} from './tutorial-blocks.js?v=62';
+import {tutorialImageUrl} from './tutorial-media.js?v=62';
 const node=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 export function appendInline(parent,content){
  for(const run of content||[]){let e=document.createTextNode(run.text);for(const mark of run.marks||[]){const tag={bold:'strong',italic:'em',underline:'u',strike:'s',code:'code'}[mark];if(tag){const wrap=node(tag);wrap.append(e);e=wrap;}}

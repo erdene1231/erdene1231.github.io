@@ -157,10 +157,19 @@ export function renderGridRows(parent, b, {editor=false, onCell}={}) {
     return buttons;
 }
 
-export function prepareGridTable(table,b) {
+export function prepareGridTable(table,b,{fixed=b.type==='diagram'}={}) {
     if(!b.gridPresentation)return;
     table.classList.add('grid-presented');
-    if(b.type==='diagram'){const{cols}=gridDimensions(b);table.style.width=(cols*48)+'px';table.style.tableLayout='fixed';}
+    if(fixed){
+        const{cols}=gridDimensions(b),width=(cols*48)+'px';
+        table.style.width=width;table.style.setProperty('--grid-width',width);table.style.tableLayout='fixed';
+        // Merged first-row cells cannot establish the underlying unit columns.
+        // Give every original column its own track before applying spans.
+        table.querySelector(':scope > colgroup[data-grid-columns]')?.remove();
+        const group=document.createElement('colgroup');group.dataset.gridColumns='true';
+        for(let c=0;c<cols;c++){const col=document.createElement('col');col.style.width='48px';group.append(col);}
+        table.prepend(group);
+    }
 }
 
 export function validateGridDocument(b) {
