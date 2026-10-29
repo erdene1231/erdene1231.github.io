@@ -725,3 +725,12 @@ Existing `lca` revision 7/history 230 is published and anonymously verified afte
 ## Handbook Paths and circuits — verified 2026-10-29
 
 New `paths-circuits` revision 1/history 231 is public-verified after PR #132 and v65 deployment. Contains all four chapter 19 subsections with exact source routes/boards, five explained C++17 programs, 931 UBSan runs, native MN/EN roundtrips and guarded publication checks. Medium tutorial priority; only two new tutorial-core relationships, no global problem-priority updates. All prior 58 rows, eight drafts, Mongolia, 1010 problems, learner/profile and authority state are unchanged. Original cycle 16/55; three separate new additions; 59 stored/58 public. See PATHS-PUBLICATION-RECEIPT; successful SQL must never be replayed. All three deferred features remain deferred, no owner acceptance inferred.
+
+
+## Handbook Flows and cuts — verified 2026-10-29
+
+New `flows-cuts` is published revision 1 / history 232 after PR #134 merge `114bd513b7f17f0bd700bd3198636b0e3c5fa073`. Pages run 40890724209 succeeded; 15 v66 assets match deployed bytes under normal TLS. Exact anonymous body matches the reviewed candidate. All prior 59 tutorial rows, eight private drafts, Mongolia, 1010 problems, learner/profile and authority fingerprints remain unchanged. Catalog: 60 stored / 59 public.
+
+The complete chapter 20 retains all four source subsections, residual cancellation, max-flow/min-cut proof, disjoint paths, matching/Hall/Kőnig and DAG covers/Dilworth, with 32 native diagrams, four explained C++17 programs, 766 independent UBSan/oracle executions and 246 passing Node tests. Native MN/EN editor round-trips and responsive/theme reader checks passed. See audit/PACKAGE03-FLOWS-PUBLICATION-RECEIPT.json. No live authenticated/browser visual success or owner acceptance is inferred.
+
+One-time SQL SHA-256 `0364e5de9e23e9e84761ab9a4bc1053e23eb7605b52efc8c4da9ee58d81ccd63` SUCCEEDED; NEVER REPLAY. No migration, security, editor or deferred-feature changes. Original rewrite cycle remains 16/55, with 39 remaining; Introduction, SCC, Paths/circuits and Flows/cuts are four separate additions. Next is full source chapter 21 Number theory: map its complete source to stable existing IDs and fresh owner/draft guards before editing. All three deferred backlog features remain deferred. Never submit GitHub APPROVE reviews without specific confirmation.
