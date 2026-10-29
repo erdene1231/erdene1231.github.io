@@ -1,0 +1,929 @@
+{
+  "id": "prefix-sums-2d",
+  "body": {
+    "id": "prefix-sums-2d",
+    "level": "Анхан шат",
+    "order": 9,
+    "title": "2D хуримтлагдсан нийлбэр — давхар хассан буланг буцааж нэмэх",
+    "aliases": "prefix-sums-2d 2D prefix sum — grid-ийн хэсгийн нийлбэр 2D prefix sums — rectangle totals",
+    "related": [
+      "prefix-sums",
+      "binary-search"
+    ],
+    "summary": "Тэгш өнцөгтийн олон асуултад дөрвөн булангийн нийлбэрээр хариулъя. Бэлтгэх ба асуух тэмдгийг нүд бүрийн тоологдох тоогоор баталж, сөрөг утгатай бүтэн жишээг дагана.",
+    "category": "Array ба search",
+    "levelKey": "beginner",
+    "sections": [
+      {
+        "key": "need",
+        "title": "1. Газрын зургийн хэсэг дэх нийлбэр",
+        "blocks": [
+          {
+            "text": "Хотын газрын зургийг мөр, баганатай хүснэгтээр төсөөл. Нүд бүрд модны тоо, хүн ам эсвэл мөнгөний өөрчлөлт байж болно. Олон удаа тэгш өнцөгт хэсгийн нийлбэрийг асуух бөгөөд хүснэгт асуултуудын хооронд өөрчлөгдөхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Нэг хэмжээст хичээлд эхнээс авсан хоёр нийлбэрийг хассан. Хоёр хэмжээст хүснэгтэд дээрээс ба зүүнээс хоёр удаа хасахад аль булан давхар хасагдахыг олох хэрэгтэй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "2. Нүд бүрийг дахин үзэх арга",
+        "blocks": [
+          {
+            "text": "Тэгш өнцөгтийн мөр бүрийн багана бүрийг давтаж шууд нэмбэл талбайтай нь тэнцүү ажил хийнэ. $R$ мөр, $C$ баганатай хүснэгтийн $q$ асуулт бүр бүтэн хүснэгтийг хамарвал $O(RCq)$.",
+            "type": "p"
+          },
+          {
+            "text": "Мөр бүрд тусдаа 1D нийлбэр байгуулбал нэг мөрийн хэсгийг хурдан олно, гэхдээ нэг асуултад бүх хамаарах мөрөөр давтаж болно. Мөрийн тооноос ч үл хамаарах хариу гаргахын тулд хоёр чиглэлийг хамтад нь хадгалъя.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "observation",
+        "title": "3. Эхний мөр, эхний баганаас авсан тэгш өнцөгт",
+        "blocks": [
+          {
+            "text": "$P[r][c]$-г эхний $r$ мөр, эхний $c$ баганын нийлбэр гэе. Өөрөөр хэлбэл тэгээс эхэлсэн $[0,r)\\times[0,c)$ хэсэг. $P[0][c]=P[r][0]=0$: мөр эсвэл баганагүй тэгш өнцөгт хоосон.",
+            "type": "p"
+          },
+          {
+            "text": "Хүссэн $[t,b)\\times[l,r)$ хэсэгт эхлээд $P[b][r]$-г авна. Дээрх хэрэггүй хэсэг $P[t][r]$, зүүн талын хэрэггүй хэсэг $P[b][l]$-г хасна. Зүүн дээд $P[t][l]$ хоёр хасалтад хоёуланд орсон тул нэг удаа буцааж нэмнэ.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "4. Байгуулах ба асуух дөрвөн булан",
+        "blocks": [
+          {
+            "text": "$P[i+1][j+1]=a[i][j]+P[i][j+1]+P[i+1][j]-P[i][j]$. Дээд хэсэг ба зүүн хэсгийг нэмэхэд зүүн дээд нь давхар нэмэгдсэн учраас энэ удаа нэгийг хасна. Нүд өөрөө хоёр хэсгийн алинд ч ороогүй тул нэмж өгнө.",
+            "type": "p"
+          },
+          {
+            "text": "Мөрөөр, мөр дотроо зүүнээс баруун тийш бөглөвөл хэрэгтэй гурван өмнөх утга бэлэн байна. Асуултын томьёо $P[b][r]-P[t][r]-P[b][l]+P[t][l]$. Байгуулахад давхар нэмснийг хасаж, асуухад давхар хассаныг нэмдгийг ялга.",
+            "type": "p"
+          },
+          {
+            "text": "Оролтын нэгээс эхэлсэн, хоёр үзүүрээ багтаасан дээд/зүүн/доод/баруун координатыг дотооддоо дээдээс нэг, зүүнээс нэг хасаж хөрвүүлнэ. Доод ба баруун нь багтахгүй хязгаар болж хэвээр үлдэнэ.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "walkthrough",
+        "title": "5. Хүснэгтийн бүх нийлбэр ба нэг асуулт",
+        "blocks": [
+          {
+            "text": "Жишээний гурван мөр нь $[2,-1,3,4]$, $[0,5,-2,1]$, $[7,2,0,-3]$. Эхний бэлэн мөр $[0,2,1,4,8]$. Дараагийн мөрийн $P[2][2]=5+1+2-2=6$. Үлдсэн бүх утгыг доорх хүснэгт харуулна.",
+            "type": "p"
+          },
+          {
+            "text": "Оролтын $(2,2)$-оос $(3,4)$ хүртэл асуувал дотоод $[1,3)\\times[1,4)$. Хариу $18-8-9+2=3$. Шууд нүднүүдийг нэмэхэд $5-2+1+2+0-3=3$ гэж таарна.",
+            "type": "p"
+          },
+          {
+            "text": "Бүтэн хүснэгтийн нийлбэр $18$. Ганц $(2,3)$ нүдний асуулт $-2$. Хоосон хүрээг бодит асуулттай андуурахгүй: ганц нүдний хоёр гаднах үзүүр тэнцүү ч дотоод урт нэг байна.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "$0$",
+                "$0$",
+                "$0$",
+                "$0$",
+                "$0$",
+                "$0$"
+              ],
+              [
+                "$1$",
+                "$0$",
+                "$2$",
+                "$1$",
+                "$4$",
+                "$8$"
+              ],
+              [
+                "$2$",
+                "$0$",
+                "$2$",
+                "$6$",
+                "$7$",
+                "$12$"
+              ],
+              [
+                "$3$",
+                "$0$",
+                "$9$",
+                "$15$",
+                "$16$",
+                "$18$"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Мөр\\багана",
+              "0",
+              "1",
+              "2",
+              "3",
+              "4"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "6. Нүд бүр хэдэн удаа тоологдов?",
+        "blocks": [
+          {
+            "text": "Байгуулах эхэнд хоосон захуудын нийлбэр зөв. Өмнөх гурван нийлбэр зөв гэж үзвэл дээд ба зүүн хэсгийн огтлолыг нэг удаа хасаж, шинэ нүдийг нэмэх нь эхний $i+1$ мөр, $j+1$ баганын яг нийлбэр болно. Мөрөөр бөглөх дараалал энэ нөхцөлийг хадгална.",
+            "type": "p"
+          },
+          {
+            "text": "Асуултын томьёонд хүссэн хэсгийн нүд нэг удаа тоологдоно. Зөвхөн дээд зурваст орсон нүд $+1-1=0$, зөвхөн зүүнд орсон нүд мөн тэг. Зүүн дээд огтлолын нүд $+1-1-1+1=0$. Бусад нүд огт ороогүй.",
+            "type": "p"
+          },
+          {
+            "text": "Иймээс хэрэгтэй нүд бүр нэг, хэрэггүй бүр тэг коэффициенттэй. Энэ баталгаа нүдний тэмдэг эсвэл тооноос хамаарахгүй. Хоёр төгсгөлтэй давталт бэлэн хүснэгт үүсгэж, асуулт бүр төгсгөлтэй цөөн үйлдэл хийдэг.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "title": "7. Бэлтгэлийн талбай, асуултын тогтмол ажил",
+        "blocks": [
+          {
+            "text": "Хоёр хэмжээ эерэг үед бэлтгэл $O(RC)$, асуулт бүр $O(1)$, нийт $O(RC+q)$ хугацаатай. Хоосон хэмжээг ч оруулсан жигд хязгаар $O((R+1)(C+1)+q)$. Хүснэгтийн зай $(R+1)(C+1)$ хэмжээтэй, хоёр хэмжээ эерэг үед $O(RC)$. Энэ код эх хүснэгтийг мөн хадгалдаг.",
+            "type": "p"
+          },
+          {
+            "text": "$R,C\\le1000$, $|a[i][j]|\\le10^9$ бол нэг нийлбэрийн хэмжээ $10^{15}$-өөс хэтрэхгүй. Дөрвөн нийлбэрийн завсрын нийлбэрийг тус тусын хэмжээгээр үнэлсэн ч $4\\cdot10^{15}$ тул 64 битийн тэмдэгтэй төрөлд багтана. 32 бит хангалтгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "8. C++17: хоосон захтай хүснэгт",
+        "blocks": [
+          {
+            "text": "Эхний мөрд мөрийн тоо, баганын тоо, асуултын тоо; дараа нь тоон нүднүүд, эцэст нь дээд/зүүн/доод/баруун координаттай асуултууд өгнө. Мөр, багана 0–1000, асуулт 0–200000, нүдний хэмжээ абсолют утгаараа нэг тэрбумаас ихгүй. Аль нэг хэмжээ тэг бол асуулт тэг. Forest Queries-ийн тэмдэгт нүдийг энэ тоон хувилбарт 0/1 болгон хөрвүүлж болно.",
+            "type": "p"
+          },
+          {
+            "text": "8.1. Байгуулах",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Мөр, баганын тооноос нэгээр их тэг хүснэгт байгуулна. Мөрөөр бөглөхөд дээд, зүүн, зүүн дээд утгууд бэлэн; зөвхөн тухайн нүдийг шинээр нэмнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nusing Grid = vector<vector<long long>>;\n\nGrid build_prefix(const Grid& values, int columns) {\n    int rows = static_cast<int>(values.size());\n    Grid prefix(rows + 1, vector<long long>(columns + 1, 0));\n    for (int row = 0; row < rows; ++row) {\n        for (int column = 0; column < columns; ++column) {\n            prefix[row + 1][column + 1] = values[row][column]\n                + prefix[row][column + 1] + prefix[row + 1][column]\n                - prefix[row][column];\n        }\n    }\n    return prefix;\n}\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.2. Тэгш өнцөгт асуух",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Дотоод дөрвөн координат бүгд тэгээс эхэлж, доод ба баруун хязгаар багтахгүй. Нэг том, хоёр хасах, нэг буцааж нэмэх мужийг нэртэй аргументууд тодорхойлно.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "long long rectangle_sum(const Grid& prefix, int top, int left,\n                        int bottom, int right) {\n    return prefix[bottom][right] - prefix[top][right]\n        - prefix[bottom][left] + prefix[top][left];\n}\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.3. Уншиж бэлтгэх",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Эхлээд тоон хүснэгтийг уншаад нэг удаа бэлтгэнэ. Баганын тоог тусад нь дамжуулснаар мөргүй хүснэгтийн хэмжээг ч мэднэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int rows, columns, query_count;\n    cin >> rows >> columns >> query_count;\n    Grid values(rows, vector<long long>(columns));\n    for (int row = 0; row < rows; ++row) {\n        for (int column = 0; column < columns; ++column) {\n            cin >> values[row][column];\n        }\n    }\n    Grid prefix = build_prefix(values, columns);\n\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "8.4. Хөрвүүлж хариулах",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролтын дээд ба зүүнээс нэгийг хасаад туслах функцэд өгнө. Асуулт бүр үр дүнгээ шууд хэвлэж, хүснэгтийг өөрчлөхгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "    for (int query = 0; query < query_count; ++query) {\n        int top, left, bottom, right;\n        cin >> top >> left >> bottom >> right;\n        cout << rectangle_sum(prefix, top - 1, left - 1, bottom, right) << '\\n';\n    }\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн ажиллах C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nusing Grid = vector<vector<long long>>;\n\nGrid build_prefix(const Grid& values, int columns) {\n    int rows = static_cast<int>(values.size());\n    Grid prefix(rows + 1, vector<long long>(columns + 1, 0));\n    for (int row = 0; row < rows; ++row) {\n        for (int column = 0; column < columns; ++column) {\n            prefix[row + 1][column + 1] = values[row][column]\n                + prefix[row][column + 1] + prefix[row + 1][column]\n                - prefix[row][column];\n        }\n    }\n    return prefix;\n}\n\nlong long rectangle_sum(const Grid& prefix, int top, int left,\n                        int bottom, int right) {\n    return prefix[bottom][right] - prefix[top][right]\n        - prefix[bottom][left] + prefix[top][left];\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int rows, columns, query_count;\n    cin >> rows >> columns >> query_count;\n    Grid values(rows, vector<long long>(columns));\n    for (int row = 0; row < rows; ++row) {\n        for (int column = 0; column < columns; ++column) {\n            cin >> values[row][column];\n        }\n    }\n    Grid prefix = build_prefix(values, columns);\n\n    for (int query = 0; query < query_count; ++query) {\n        int top, left, bottom, right;\n        cin >> top >> left >> bottom >> right;\n        cout << rectangle_sum(prefix, top - 1, left - 1, bottom, right) << '\\n';\n    }\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "3 4 3\n2 -1 3 4\n0 5 -2 1\n7 2 0 -3\n2 2 3 4\n1 1 3 4\n2 3 2 3\n",
+            "type": "code",
+            "language": "Input"
+          },
+          {
+            "text": "3\n18\n-2\n",
+            "type": "code",
+            "language": "Output"
+          }
+        ]
+      },
+      {
+        "key": "boundaries",
+        "title": "9. Эхний мөрөөс эхэлсэн асуулт",
+        "blocks": [
+          {
+            "text": "Дээд эсвэл зүүн координат нэг бол хөрвүүлсний дараа тэг болно; тусгай нөхцөлгүйгээр тэг захыг уншина. Сүүлийн мөр, баганын асуулт хүснэгтийн нэмэлт хүрээнд зөв багтана.",
+            "type": "p"
+          },
+          {
+            "text": "Ганц нүд, ганц мөр, ганц багана, бүх хүснэгт, сөрөг нийлбэр, бүх утга тэгийг шалга. Туслах функцийн өндөр эсвэл өргөн тэгтэй завсрын хариу тэг боловч бодит оролтод тийм асуулт өгөхгүй. Аль нэг хэмжээ тэг бол асуултын тоо мөн тэг.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "mistakes",
+        "title": "10. Буцааж нэмэх буланг мартвал",
+        "blocks": [
+          {
+            "text": "Зүүн дээд буланг буцааж нэмэхгүй бол хэрэггүй хэсгийг хоёр удаа хассан алдаа гарна. Жишээний асуулт $18-8-9=1$ гэж буруу гарна; алга болсон $+2$ нь яг огтлол юм.",
+            "type": "p"
+          },
+          {
+            "text": "Мөр ба баганын координатыг сольж унших нь дөрвөлжин хүснэгт дээр нууж болох алдаа. Өөр өөр өндөр, өргөнтэй жишээ хэрэглэ. Нэгээс эхэлсэн дөрвөн координатаас зөвхөн дээд, зүүнийг бууруул.",
+            "type": "p"
+          },
+          {
+            "text": "Нүд өөрчлөгдвөл өмнөх нийлбэрүүд хуучирна. Тогтмол хүснэгтийн энэ арга өөрчлөлттэй асуултыг өөрөө шийдэхгүй; дахин бэлтгэх эсвэл 2D өгөгдлийн бүтэц хэрэгтэй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "connections",
+        "title": "11. Дөрвөн булангийн санааг хаана шилжүүлэх вэ?",
+        "blocks": [
+          {
+            "text": "Нэг хэмжээст нийтлэг эхлэлийг хасах санааг хоёр чиглэлд хийсэн нь inclusion-exclusion буюу давхардсан хэсгийг засаж тоолох зарчим. Нэрийг цээжлэхээс өмнө нүд бүрийн коэффициентийг зур.",
+            "type": "p"
+          },
+          {
+            "text": "Босгоос бага нүдийг нэг, бусдыг тэг болговол тэгш өнцөгт дэх тоог хурдан олно. Pond зэрэг бодлогод үүнийг хариун дээр хоёртын хайлттай нэгтгэж болно, гэхдээ тухайн медианы нөхцөл өсөх чиглэлтэйг тусад нь батлах хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "type": "tutorial",
+            "label": "Хуримтлагдсан нийлбэр",
+            "tutorialId": "prefix-sums"
+          },
+          {
+            "type": "tutorial",
+            "label": "Хоёртын хайлт",
+            "tutorialId": "binary-search"
+          }
+        ]
+      },
+      {
+        "key": "recognition",
+        "title": "12. Тогтмол хүснэгтийн олон тэгш өнцөгт үү?",
+        "blocks": [
+          {
+            "text": "Асуултын хэсэг тэгш өнцөгт үү, өгөгдөл тогтмол уу, нэмэх/хасах үйлдэл нийтлэг хэсгийг цуцалж чадах уу гэдгийг асуу. Мөр, баганын нэрийг эхлээд тогтмол сонго.",
+            "type": "p"
+          },
+          {
+            "text": "Тэгш өнцөгтийн нийлбэрийг хурдан олох нь бүх тэгш өнцөгтийг цөөн тоотой болгохгүй. Бүх хоёр мөр, хоёр баганыг сонговол $O(R^2C^2)$ асуулт хэвээр; талбайн дээд хэмжээтэй бодлогод түүний тоог тусад нь үнэл.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "13. Тооллогоос хугацаа ба динамик өөрчлөлт рүү",
+        "blocks": [
+          {
+            "text": "Forest Queries",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Модыг нэг, хоосон нүдийг тэг болгон дөрвөн булангийн тооллогыг бие даан хэрэгжүүл.",
+            "type": "p"
+          },
+          {
+            "text": "Star sky",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Гэрэлтэлтийн мөчлөгийн төлөв бүрд тусдаа нийлбэрийн хүснэгт байгуулах хэрэгтэйг ялга. Нэг хүснэгт бүх цагт өөрчлөгдөхгүй гэсэн буруу таамаг бүү хий.",
+            "type": "p"
+          },
+          {
+            "text": "AtCoder ABC005 D",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Тэгш өнцөгтүүдийг жагсаан талбай тус бүрийн хамгийн их нийлбэрийг ол. Дараа нь зөвшөөрсөн талбайгаас ихгүй бүх талбайн хамгийн ихийг урьдчилан гарга.",
+            "type": "p"
+          },
+          {
+            "text": "AtCoder ABC203 D — Pond",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Медианы босгыг тооллогын хүснэгтээр шалгахдаа шаардсан эрэмбийн байрлалыг зөв гарга. Хоёртын хайлтын нөхцөлийн чиглэлийг батал.",
+            "type": "p"
+          },
+          {
+            "text": "Forest Queries II",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Нүд солигддог учраас хуучин хуримтлагдсан хүснэгт хүрэлцэхгүйг тайлбарла. 2D Фенвикийн мод зэрэг өөрчлөлт дэмжих бүтцээ үзсэний дараа оролд.",
+            "type": "p"
+          },
+          {
+            "text": "IOI 2009 Raisins",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Тэгш өнцөгтийн жинг хурдан олох хэсэгт энэ аргыг хэрэглэ. Зүсэх дарааллыг оновчлох нь нэмэлт завсрын DP учраас нийлбэр олохоос тусдаа баталгаа шаарддаг.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "importance",
+        "title": "14. Суурь хэрэгсэл ба нэмэлт мэдлэг",
+        "blocks": [
+          {
+            "text": "High ач холбогдолтой: хүснэгтийн олон асуулт, босгоор хувиргах, жижиг дэд бодлогын зардал олох зэрэгт дахин хэрэглэгддэг. Хүндрэл бага харагдсан ч огтлолын тэмдгийг өөрөө гаргаж сурах нь чухал.",
+            "type": "p"
+          },
+          {
+            "text": "Forest Queries нь цөм дасгал бөгөөд сан дахь High үнэлгээ нь хэвээр. Бусад хугацаа, медиан, динамик бүтэц, завсрын DP шаарддаг холбоосуудыг нэмэлтээр өгсөн; бүгдийг нь бодох нь эхний хэрэгжүүлэлтийн нөхцөл биш.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "15. Томьёоны дөрвөн тэмдгийг тайлбарла",
+        "blocks": [
+          {
+            "text": "Дөрвөн мужийг зурж, хэрэггүй нүд бүр тэг коэффициенттэйг тайлбарла. Дээд захын тэг мөр, зүүн захын тэг багана тусгай нөхцөлийг яаж арилгасныг хэл. Кодоо бие даан бичээд жижиг хүснэгтийн бүх асуултыг шууд нэмэхтэй тулга.",
+            "type": "p"
+          },
+          {
+            "text": "Шалгахдаа нийт нийлбэр таарснаар зогсохгүй: ганц нүд, дотоод тэгш өнцөгт, сөрөг утгыг хамруул. Уншсан, ойлгосон, хэрэгжүүлсэн, бие даан бодсон түвшнээ тусад нь үнэл.",
+            "type": "p"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "2D prefix sums — restore the twice-subtracted corner",
+        "summary": "Answer rectangle queries from four prefixes. Prove construction and query signs by cell coefficients and trace a complete signed example.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "1. Sum a rectangle in a map",
+            "blocks": [
+              {
+                "text": "Imagine a map as rows and columns, each cell holding a tree count, population or signed change. Many queries request rectangular sums, and the grid stays unchanged between queries.",
+                "type": "p"
+              },
+              {
+                "text": "In one dimension we subtracted two prefixes. In two dimensions, removing a top strip and a left strip removes their shared corner twice.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "2. Visit every cell for each query",
+            "blocks": [
+              {
+                "text": "Directly adding each queried cell costs the rectangle area, or $O(RCq)$ for $q$ full-grid queries.",
+                "type": "p"
+              },
+              {
+                "text": "Independent one-dimensional prefixes per row still require visiting every queried row. To answer independently of height as well, store prefixes in both directions.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "observation",
+            "title": "3. Prefix rectangles begin at the origin",
+            "blocks": [
+              {
+                "text": "Let $P[r][c]$ sum the first $r$ rows and $c$ columns: zero-based $[0,r)\\times[0,c)$. A zero row or column boundary denotes an empty rectangle, so $P[0][c]=P[r][0]=0$.",
+                "type": "p"
+              },
+              {
+                "text": "For $[t,b)\\times[l,r)$, start with $P[b][r]$, subtract the unwanted top $P[t][r]$ and left $P[b][l]$, then restore their twice-subtracted overlap $P[t][l]$.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "4. Four-corner construction and queries",
+            "blocks": [
+              {
+                "text": "Build $P[i+1][j+1]=a[i][j]+P[i][j+1]+P[i+1][j]-P[i][j]$. Top and left prefixes overlap, so subtract one copy; the current cell belongs to neither and must be added.",
+                "type": "p"
+              },
+              {
+                "text": "Row-major order makes all three predecessors ready. A query uses $P[b][r]-P[t][r]-P[b][l]+P[t][l]$. Construction removes a double addition; querying restores a double subtraction.",
+                "type": "p"
+              },
+              {
+                "text": "Convert one-based inclusive input by subtracting one from top and left only. Bottom and right stay unchanged as excluded internal boundaries.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "walkthrough",
+            "title": "5. Trace the whole table and one query",
+            "blocks": [
+              {
+                "text": "The rows are $[2,-1,3,4]$, $[0,5,-2,1]$, $[7,2,0,-3]$. The first completed prefix row is $[0,2,1,4,8]$. In the next row, $P[2][2]=5+1+2-2=6$. The table below shows every entry.",
+                "type": "p"
+              },
+              {
+                "text": "External corners $(2,2)$ through $(3,4)$ become $[1,3)\\times[1,4)$. Compute $18-8-9+2=3$, matching direct addition $5-2+1+2+0-3=3$.",
+                "type": "p"
+              },
+              {
+                "text": "The full grid totals $18$; the single cell $(2,3)$ equals $-2$. Equal external endpoints denote one cell, not an empty internal interval.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "$0$",
+                    "$0$",
+                    "$0$",
+                    "$0$",
+                    "$0$",
+                    "$0$"
+                  ],
+                  [
+                    "$1$",
+                    "$0$",
+                    "$2$",
+                    "$1$",
+                    "$4$",
+                    "$8$"
+                  ],
+                  [
+                    "$2$",
+                    "$0$",
+                    "$2$",
+                    "$6$",
+                    "$7$",
+                    "$12$"
+                  ],
+                  [
+                    "$3$",
+                    "$0$",
+                    "$9$",
+                    "$15$",
+                    "$16$",
+                    "$18$"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Row / column",
+                  "0",
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "6. Count the coefficient of each cell",
+            "blocks": [
+              {
+                "text": "Empty borders are correct initially. Assuming the three predecessor prefixes are correct, remove their double overlap and add the new cell to obtain exactly the first $i+1$ rows and $j+1$ columns. Row-major order preserves this induction.",
+                "type": "p"
+              },
+              {
+                "text": "In a query, a desired cell has coefficient one. A cell only in the removed top or left strip has $+1-1=0$. A top-left overlap cell has $+1-1-1+1=0$. Other cells never occur.",
+                "type": "p"
+              },
+              {
+                "text": "Every desired cell is counted once and every unwanted cell zero times, independent of its sign. Finite construction loops and constant-work queries terminate.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "cost",
+            "title": "7. Area-sized preparation, constant query work",
+            "blocks": [
+              {
+                "text": "For positive dimensions, preparation costs $O(RC)$, each query $O(1)$, total $O(RC+q)$. A uniform time bound including empty dimensions is $O((R+1)(C+1)+q)$. Storage has $(R+1)(C+1)$ entries, or $O(RC)$ for positive dimensions. This code also keeps the original grid.",
+                "type": "p"
+              },
+              {
+                "text": "With $R,C\\le1000$ and $|a[i][j]|\\le10^9$, each prefix magnitude is at most $10^{15}$. Even a conservative four-term bound is $4\\cdot10^{15}$, within signed 64-bit range; 32-bit storage is insufficient.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "8. C++17: keep empty borders",
+            "blocks": [
+              {
+                "text": "Read row count, column count, query count, then numeric cells and one-based inclusive top/left/bottom/right queries. Dimensions are 0–1000, queries 0–200000, cell magnitudes at most one billion. A zero dimension requires zero queries. Forest Queries character cells can be mapped to 0/1 for this numeric teaching model.",
+                "type": "p"
+              },
+              {
+                "text": "8.1. Build",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Allocate zero borders. In row-major order top, left and top-left entries are ready; add only the new cell.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nusing Grid = vector<vector<long long>>;\n\nGrid build_prefix(const Grid& values, int columns) {\n    int rows = static_cast<int>(values.size());\n    Grid prefix(rows + 1, vector<long long>(columns + 1, 0));\n    for (int row = 0; row < rows; ++row) {\n        for (int column = 0; column < columns; ++column) {\n            prefix[row + 1][column + 1] = values[row][column]\n                + prefix[row][column + 1] + prefix[row + 1][column]\n                - prefix[row][column];\n        }\n    }\n    return prefix;\n}\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.2. Query",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "All helper coordinates are zero-based with excluded bottom/right boundaries. Named arguments express one containing region, two removals and one restoration.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "long long rectangle_sum(const Grid& prefix, int top, int left,\n                        int bottom, int right) {\n    return prefix[bottom][right] - prefix[top][right]\n        - prefix[bottom][left] + prefix[top][left];\n}\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.3. Read and prepare",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read the numeric grid and prepare once. Passing the column count separately also handles a grid with no rows.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int rows, columns, query_count;\n    cin >> rows >> columns >> query_count;\n    Grid values(rows, vector<long long>(columns));\n    for (int row = 0; row < rows; ++row) {\n        for (int column = 0; column < columns; ++column) {\n            cin >> values[row][column];\n        }\n    }\n    Grid prefix = build_prefix(values, columns);\n\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "8.4. Convert and answer",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Convert only top and left at the input boundary, then answer without modifying the grid.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "    for (int query = 0; query < query_count; ++query) {\n        int top, left, bottom, right;\n        cin >> top >> left >> bottom >> right;\n        cout << rectangle_sum(prefix, top - 1, left - 1, bottom, right) << '\\n';\n    }\n    return 0;\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete compilable C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nusing Grid = vector<vector<long long>>;\n\nGrid build_prefix(const Grid& values, int columns) {\n    int rows = static_cast<int>(values.size());\n    Grid prefix(rows + 1, vector<long long>(columns + 1, 0));\n    for (int row = 0; row < rows; ++row) {\n        for (int column = 0; column < columns; ++column) {\n            prefix[row + 1][column + 1] = values[row][column]\n                + prefix[row][column + 1] + prefix[row + 1][column]\n                - prefix[row][column];\n        }\n    }\n    return prefix;\n}\n\nlong long rectangle_sum(const Grid& prefix, int top, int left,\n                        int bottom, int right) {\n    return prefix[bottom][right] - prefix[top][right]\n        - prefix[bottom][left] + prefix[top][left];\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int rows, columns, query_count;\n    cin >> rows >> columns >> query_count;\n    Grid values(rows, vector<long long>(columns));\n    for (int row = 0; row < rows; ++row) {\n        for (int column = 0; column < columns; ++column) {\n            cin >> values[row][column];\n        }\n    }\n    Grid prefix = build_prefix(values, columns);\n\n    for (int query = 0; query < query_count; ++query) {\n        int top, left, bottom, right;\n        cin >> top >> left >> bottom >> right;\n        cout << rectangle_sum(prefix, top - 1, left - 1, bottom, right) << '\\n';\n    }\n    return 0;\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "3 4 3\n2 -1 3 4\n0 5 -2 1\n7 2 0 -3\n2 2 3 4\n1 1 3 4\n2 3 2 3\n",
+                "type": "code",
+                "language": "Input"
+              },
+              {
+                "text": "3\n18\n-2\n",
+                "type": "code",
+                "language": "Output"
+              }
+            ]
+          },
+          {
+            "key": "boundaries",
+            "title": "9. Queries touching the borders",
+            "blocks": [
+              {
+                "text": "A top or left input coordinate of one converts to zero, directly using the empty border. Queries including the last row or column remain in range.",
+                "type": "p"
+              },
+              {
+                "text": "Test one cell, one row/column, full grid, negative sums and all zeros. Empty-height/width helper rectangles sum to zero but are not valid external queries. If either grid dimension is zero, query count must be zero.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "mistakes",
+            "title": "10. Do not forget the restored corner",
+            "blocks": [
+              {
+                "text": "Omitting the restored corner subtracts the overlap twice. Our example incorrectly becomes $18-8-9=1$ instead of adding the missing $2$.",
+                "type": "p"
+              },
+              {
+                "text": "Swapping rows and columns may hide on square inputs; test unequal dimensions. Convert only top and left from one-based input.",
+                "type": "p"
+              },
+              {
+                "text": "Changing cells invalidates stored prefixes. Dynamic queries need reconstruction or a suitable 2D data structure; this static method does not automatically support updates.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "connections",
+            "title": "11. Where does four-corner reasoning transfer?",
+            "blocks": [
+              {
+                "text": "Applying prefix cancellation in two directions is inclusion–exclusion: repair overlap counts. Derive cell coefficients before memorizing the name.",
+                "type": "p"
+              },
+              {
+                "text": "Turn cells below a threshold into ones and others into zeros to count them in rectangles. Pond combines this with binary search, but its median predicate needs a separate monotonicity proof.",
+                "type": "p"
+              },
+              {
+                "type": "tutorial",
+                "label": "Prefix sums",
+                "tutorialId": "prefix-sums"
+              },
+              {
+                "type": "tutorial",
+                "label": "Binary search",
+                "tutorialId": "binary-search"
+              }
+            ]
+          },
+          {
+            "key": "recognition",
+            "title": "12. Many rectangles over an unchanged grid?",
+            "blocks": [
+              {
+                "text": "Is the region rectangular, is the grid static, and does addition permit cancellation? Fix row/column names first.",
+                "type": "p"
+              },
+              {
+                "text": "Constant-time evaluation does not reduce the number of rectangles. Enumerating every pair of row and column boundaries still makes $O(R^2C^2)$ queries; analyze that separately.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "13. From counts to time and dynamic changes",
+            "blocks": [
+              {
+                "text": "Forest Queries",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Map trees to one, empty cells to zero and implement four-corner counting independently.",
+                "type": "p"
+              },
+              {
+                "text": "Star sky",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Separate the brightness-cycle states into their own prefix tables; one unchanged table does not represent every time.",
+                "type": "p"
+              },
+              {
+                "text": "AtCoder ABC005 D",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Enumerate rectangles, maximize by exact area, then build maxima for all areas up to a limit.",
+                "type": "p"
+              },
+              {
+                "text": "AtCoder ABC203 D — Pond",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Derive the median rank and threshold-count condition, then prove the binary-search direction.",
+                "type": "p"
+              },
+              {
+                "text": "Forest Queries II",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Cell toggles invalidate static prefixes; study a structure such as a 2D Fenwick tree first.",
+                "type": "p"
+              },
+              {
+                "text": "IOI 2009 Raisins",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Use prefixes for rectangle weights; optimizing cuts additionally needs interval DP and a separate proof.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "importance",
+            "title": "14. A foundation and its optional extensions",
+            "blocks": [
+              {
+                "text": "Priority is High because this reusable tool supports grid queries, threshold transforms and subproblem-cost calculations. Deriving overlap signs matters even when code is short.",
+                "type": "p"
+              },
+              {
+                "text": "Forest Queries is core and already High in the bank. Time, median, dynamic structures and interval-DP extensions are optional rather than prerequisites for the first implementation.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "15. Explain all four signs",
+            "blocks": [
+              {
+                "text": "Draw all regions and explain why unwanted cells have coefficient zero. Describe how the empty top row and left column remove special cases. Implement independently and compare every small-grid rectangle with direct addition.",
+                "type": "p"
+              },
+              {
+                "text": "Do not stop at a matching full-grid sum: include single cells, interior rectangles and negatives. Assess reading, understanding, implementation and independent solving separately.",
+                "type": "p"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know 1D prefix sums, 2D arrays, row/column coordinates and half-open intervals."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Нэг хэмжээст хуримтлагдсан нийлбэр, хоёр хэмжээст массив, мөр/баганын координат болон хагас нээлттэй завсрыг мэддэг байна.",
+    "priorityLevel": "high",
+    "priorityReason": "Тогтмол хүснэгтийн олон асуулт, босгын тооллого болон динамик програмчлалын хэсгийн зардлыг хурдан олох түгээмэл суурь. Огтлолын тэмдэг, координатын утгыг баталж хэрэглэх чадвар нь өргөн дамждаг.",
+    "prerequisiteIds": [
+      "prefix-sums"
+    ],
+    "learningRelations": {
+      "next": "greedy",
+      "practice": [
+        {
+          "key": "401",
+          "stage": "Warm-up",
+          "reason": "Дөрвөн булангийн огтлол, хоосон зах, координатын хөрвүүлэлтийг тогтмол хүснэгтийн бодит асуултад бие даан хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "743",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "747",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "748",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "415",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "915",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "prefix-sums",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "binary-search",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "revision": 4,
+  "published": true,
+  "body_md5": "ecd6344f932a802c7f9c91d2656f05b7"
+}

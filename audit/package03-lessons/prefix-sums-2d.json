@@ -1,0 +1,827 @@
+{
+  "id": "prefix-sums-2d",
+  "expected_revision": 4,
+  "expected_published": true,
+  "expected_body_md5": "ecd6344f932a802c7f9c91d2656f05b7",
+  "expected_body_sha256": "7fbc2c7775782cbabeeeff7a7e04914660d7c7243988e8db7181705816948b8a",
+  "reviewed_body_sha256": "9689c273733f86d027821ca190469f5fc8352b7f711af2db58cb6a114e0c1832",
+  "proposed_body_sha256": "9689c273733f86d027821ca190469f5fc8352b7f711af2db58cb6a114e0c1832",
+  "body": {
+    "id": "prefix-sums-2d",
+    "level": "Анхан шат",
+    "order": 9,
+    "title": "2D хуримтлагдсан нийлбэр — дөрвөн булан ба огтлол",
+    "aliases": "prefix-sums-2d 2D prefix sum — grid-ийн хэсгийн нийлбэр 2D prefix sums — rectangle totals",
+    "related": [
+      "prefix-sums",
+      "binary-search"
+    ],
+    "summary": "Эхний мөр/баганын тодорхойлолт, тэгээр эхлүүлсэн нэмэлт зааг, A−B−C+D ба координатын хөрвүүлэлтийг сөрөг утгатай бүтэн хүснэгт дээр тайлбарлаж хэрэгжүүлнэ.",
+    "category": "Array ба search",
+    "levelKey": "beginner",
+    "sections": [
+      {
+        "key": "definition",
+        "title": "Эхний мөр ба баганын тэгш өнцөгт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Тогтмол хүснэгтийн олон тэгш өнцөгт хэсгийн нийлбэрийг асууна. Нүд бүр тоо, өөрчлөлт, эсвэл 0/1 тооллого байж болно. Асуулт бүрд бүх нүдийг нэмбэл том тэгш өнцөгт бүр $O(nm)$ ажилтай. Нэг хэмжээст хичээлийн нийтлэг эхлэлийг хасах санааг энэ удаа зүүн дээд булангаас авсан тэгш өнцөгтүүдэд хэрэглэе."
+          },
+          {
+            "type": "p",
+            "text": "$P[y][x]$ нь эхний $y$ мөр, эхний $x$ баганын нийлбэр: $[0,y)\\times[0,x)$. $y$,$x$ нь нүдний сүүлийн индекс биш, авсан мөр/баганын тоо. Иймээс ($n$+1)×($m$+1) хүснэгттэй, P[0][$x$]=P[$y$][0]=0. Элементгүй дээд мөр, зүүн багана нь жинхэнэ оролтын нүд биш."
+          }
+        ]
+      },
+      {
+        "key": "corners",
+        "title": "A−B−C+D: давхар хассан огтлолыг нэмэх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Дотоод асуулт $[y_1,y_2)\\times[x_1,x_2)$ байг. Том $A=P[y_2][x_2]$-оос дээрх $C=P[y_1][x_2]$, зүүн талын $B=P[y_2][x_1]$-г хасна. Гэтэл зүүн дээд $D=P[y_1][x_1]$ огтлол хоёр удаа хасагдсан тул нэг удаа буцааж нэмнэ: $A-B-C+D$."
+          },
+          {
+            "type": "p",
+            "text": "Огтлолын нэг нүд A-д нэг удаа, −B ба −C-д тус бүр нэг удаа орж коэффициент нь 1−1−1=−1 болсон. +$D$ нь түүнийг 0 болгоно. Бусад дээрх/зүүн зурвасын нүд 1−1=0, хүссэн хэсгийн нүд зөвхөн A-д орсон тул 1 үлдэнэ. Иймээс хассан гаднах нүдийг санамсаргүй нэмээд байгаа биш, давхар хасалтыг яг засаж байна."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "directed": false,
+            "nodes": [
+              {
+                "id": "D",
+                "label": "D",
+                "x": 25,
+                "y": 25,
+                "annotation": "P[1][1] = 2",
+                "annotationDy": -30
+              },
+              {
+                "id": "C",
+                "label": "C",
+                "x": 75,
+                "y": 25,
+                "annotation": "P[1][4] = 8",
+                "annotationDy": -30
+              },
+              {
+                "id": "B",
+                "label": "B",
+                "x": 25,
+                "y": 75,
+                "annotation": "P[3][1] = 9",
+                "annotationDy": -30
+              },
+              {
+                "id": "A",
+                "label": "A",
+                "x": 75,
+                "y": 75,
+                "annotation": "P[3][4] = 18",
+                "annotationDy": -30
+              }
+            ],
+            "edges": [
+              [
+                "D",
+                "C"
+              ],
+              [
+                "C",
+                "A"
+              ],
+              [
+                "A",
+                "B"
+              ],
+              [
+                "B",
+                "D"
+              ]
+            ],
+            "caption": "Дөрвөн prefix зааг: D,C дээр; B,A доор. Энэ нь prefix-ийн координатын зураглал, нүд хооронд явах граф биш."
+          },
+          {
+            "type": "p",
+            "text": "Дараах тоон жишээнд y1=1,x1=1,y2=3,x2=4 тул дөрвөн үсгийн утга зурагт үзүүлсэн 2,8,9,18 болно. Эдгээр нь булангийн ганц нүдний утга биш, зүүн дээдээс тэр зааг хүртэлх БҮХ нүдний нийлбэр гэдгийг анхаар."
+          }
+        ]
+      },
+      {
+        "key": "build",
+        "title": "Хүснэгтийг давхар тоололгүй байгуулах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэг нүдийг нэмж бэлтгэхэд $P[i+1][j+1]=a[i][j]+P[i][j+1]+P[i+1][j]-P[i][j]$. Дээрх ба зүүн тэгш өнцөгтийг нэмэхэд зүүн дээд огтлол давхар орсон тул нэгийг хасаад, аль алинд нь ороогүй одоогийн нүдийг нэмнэ. Query-ийн тэмдэгтэй андуурч болохгүй: бэлтгэл нь “хоёр хэсэг нэм, огтлол хас, нүд нэм”, асуулт нь “том хэсгээс хоёр зурвас хас, огтлол нэм”."
+          },
+          {
+            "type": "p",
+            "text": "Мөрийг дээрээс доош, мөр дотор зүүнээс баруун явбал дээрх, зүүн ба диагональ P утгууд бэлэн. Тэгээр эхлүүлсэн нэмэлт мөр/багана зөв 0 эхлэлтэй; нүд бүрийн дээрх тэнцэтгэл зөв бүсийн нийлбэр бүтээж байгаа тул индукцээр бүх хүснэгт зөв. Эхний мөр/баганад тусгай if шаардлагагүй."
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "Бүх prefix утга ба зургаан нүдний асуулт",
+        "blocks": [
+          {
+            "type": "diagram",
+            "kind": "dp",
+            "rows": [
+              [
+                "2",
+                "-1",
+                "3",
+                "4"
+              ],
+              [
+                "0",
+                "5",
+                "-2",
+                "1"
+              ],
+              [
+                "7",
+                "2",
+                "0",
+                "-3"
+              ]
+            ],
+            "caption": "0-ээс эхэлсэн 3×4 оролт. Тодруулсан мөр1..2, багана1..3 нь асуух зургаан нүд.",
+            "highlights": [
+              "1:1",
+              "1:2",
+              "1:3",
+              "2:1",
+              "2:2",
+              "2:3"
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "$y$ / $x$",
+              "0",
+              "1",
+              "2",
+              "3",
+              "4"
+            ],
+            "rows": [
+              [
+                "0",
+                "0",
+                "0",
+                "0",
+                "0",
+                "0"
+              ],
+              [
+                "1",
+                "0",
+                "2",
+                "1",
+                "4",
+                "8"
+              ],
+              [
+                "2",
+                "0",
+                "2",
+                "6",
+                "7",
+                "12"
+              ],
+              [
+                "3",
+                "0",
+                "9",
+                "15",
+                "16",
+                "18"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Эхний prefix мөр [0,2,1,4,8]. Дараагийн мөрийн P[2][2]=5+P[1][2]+P[2][1]−P[1][1]=5+1+2−2=6. Энэ нь анхны 2,−1,0,5 дөрвөн нүдний нийлбэртэй таарна. Сүүлийн P[3][4]=−3+12+16−7=18. Бүх бэлтгэлийн утгыг хүснэгтээс нэг нэгээр нь шалгаж болно."
+          },
+          {
+            "type": "p",
+            "text": "Гаднах 1-ээс эхэлсэн (2,2)..(3,4) асуулт дотроо [1,3)×[1,4). Дөрвөн утга нь A=18,B=9,C=8,$D$=2. Хариу 18−9−8+2=3. Шууд нүднүүдээ нэмэхэд 5−2+1+2+0−3=3. Бүтэн хүснэгт 18, эхний нүд 2, сүүлийн нүд −3; сөрөг тоонд ч ижил дүрэм ажиллана."
+          }
+        ]
+      },
+      {
+        "key": "coordinates",
+        "title": "Мөр, багана ба хоёр үзүүрийн гэрээ",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Функцийн гэрээ $0\\le y_1\\le y_2\\le n$, $0\\le x_1\\le x_2\\le m$. $y$ нь мөр, $x$ нь багана. Урт/өргөн нь y2−y1 ба x2−x1. Аль нэг нь 0 бол хоосон тэгш өнцөгт, дөрвөн утга цуцлагдаж хариу 0. Координатыг солих, буруу заагийг автоматаар тайрах үйлдэл хийхгүй."
+          },
+          {
+            "type": "p",
+            "text": "main-ийн оролт харин 1-ээс эхэлсэн, хоёр булан хоёулаа орох y1,x1,y2,x2. Дээд/зүүн эхлэлийг л нэгээр бууруулна, доод/баруун үзүүр хэвээр. Жишээ нь (2,3)..(2,3) нь хоосон биш, дотоод [1,2)×[2,3) ганц нүд бөгөөд −2 гарна. Эхний мөр/баганад хүрвэл хасах prefix нь нэмэлт заагийн 0 болно."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "Struct-ийн бэлтгэл ба бүтэн C++17 программ",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Prefix2D struct-ийн байгуулагч $n$,$m$ хэмжээг хадгалж, ($n$+1)×($m$+1) ll хүснэгтийг 0-оор үүсгэнэ. Энд нэмэлт мөр/багана нь хоосон эхлэлийн координатууд; segment tree-ийн 4n байрлалтай адил шалтгаан биш. build нь яг $n$×$m$ хэмжээтэй оролтоос бүх дотоод утгыг бодно; sum нь хүснэгтийг өөрчлөхгүй const асуулт. Эхлээд build дууссаны дараа асууна."
+          },
+          {
+            "type": "p",
+            "text": "Оролт 0≤$n$,$m$≤1000, 0≤q≤200000, |a[$i$][$j$]|≤10⁹. Аль нэг хэмжээ 0 бол main-ийн q=0; туслах sum нь хүчинтэй хоосон хүрээг дэмжсэн хэвээр. Нийлбэрийн хэмжээ 10¹⁵ хүртэл, дөрвөн гишүүнтэй илэрхийллийн завсрын утгууд ч 4×10¹⁵-өөс ихгүй тул ll хангалттай. Индексүүд int, нэмэх/хасахаас өмнө утгууд ll болсон байна."
+          },
+          {
+            "type": "p",
+            "text": "ll нь нүдний утга, prefix ба буцах нийлбэрт."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+          },
+          {
+            "type": "p",
+            "text": "Талбарууд ба хэмжээ авдаг байгуулагч. vector<ll> нүднүүд анх 0 болно."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "struct Prefix2D {\n    int n, m;\n    vector<vector<ll>> p;\n\n    Prefix2D(int _n, int _m) {\n        n = _n;\n        m = _m;\n        p.assign(n + 1, vector<ll>(m + 1));\n    }"
+          },
+          {
+            "type": "p",
+            "text": "Давталтын $i$,$j$ нь оролтын нүд, харин $i$+1,$j$+1 нь P-ийн заагийн индекс."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "void build(const vector<vector<ll>> &a) {\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < m; j++) {\n                p[i + 1][j + 1] = a[i][j] + p[i][j + 1] + p[i + 1][j] - p[i][j];\n            }\n        }\n    }"
+          },
+          {
+            "type": "p",
+            "text": "sum нь баруун/доод үзүүр орохгүй дотоод дөрвөн зааг авна. A−C−B+$D$ гэж бичсэн нь A−B−C+$D$-тэй ижил."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "ll sum(int y1, int x1, int y2, int x2) const {\n        return p[y2][x2] - p[y1][x2] - p[y2][x1] + p[y1][x1];\n    }\n};"
+          },
+          {
+            "type": "p",
+            "text": "main тоон хүснэгтийг уншиж нэг удаа бэлдэнэ. Асуултад y1,x1-ээс нэгийг хасаад y2,x2-г хэвээр дамжуулна."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m, q;\n    cin >> n >> m >> q;\n    vector<vector<ll>> a(n, vector<ll>(m));\n    for (auto &row : a) {\n        for (ll &x : row) cin >> x;\n    }\n    Prefix2D pref(n, m);\n    pref.build(a);\n    while (q--) {\n        int y1, x1, y2, x2;\n        cin >> y1 >> x1 >> y2 >> x2;\n        cout << pref.sum(y1 - 1, x1 - 1, y2, x2) << '\\n';\n    }\n    return 0;\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Prefix2D {\n    int n, m;\n    vector<vector<ll>> p;\n\n    Prefix2D(int _n, int _m) {\n        n = _n;\n        m = _m;\n        p.assign(n + 1, vector<ll>(m + 1));\n    }\n\n    void build(const vector<vector<ll>> &a) {\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < m; j++) {\n                p[i + 1][j + 1] = a[i][j] + p[i][j + 1] + p[i + 1][j] - p[i][j];\n            }\n        }\n    }\n\n    ll sum(int y1, int x1, int y2, int x2) const {\n        return p[y2][x2] - p[y1][x2] - p[y2][x1] + p[y1][x1];\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m, q;\n    cin >> n >> m >> q;\n    vector<vector<ll>> a(n, vector<ll>(m));\n    for (auto &row : a) {\n        for (ll &x : row) cin >> x;\n    }\n    Prefix2D pref(n, m);\n    pref.build(a);\n    while (q--) {\n        int y1, x1, y2, x2;\n        cin >> y1 >> x1 >> y2 >> x2;\n        cout << pref.sum(y1 - 1, x1 - 1, y2, x2) << '\\n';\n    }\n    return 0;\n}\n"
+          },
+          {
+            "type": "p",
+            "text": "Бэлтгэл ба хүснэгтийн зай O(($n$+1)($m$+1)), асуулт бүр $O(1)$; хоосон биш ердийн хүснэгтэд нийт $O(nm+q)$ хугацаа, $O(nm)$ санах ой. Оролтын a мөн хадгалагдсан ч ижил эрэмбийн зайтай. Асуултын хариуг нэг нэгээр нь хэвлэнэ; бүх боломжит тэгш өнцөгтийг урьдчилж хадгалахгүй."
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "Тогтмол хүснэгтийн нөхцөл ба шалгалт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "a[$i$][$j$]-г өөрчилбөл P[$y$][$x$]-ийн $y$>$i$,$x$>$j$ бүх утгад нөлөөлнө. Нэг өөрчлөлт хамгийн муудаа $O(nm)$ prefix засварлана. Бүтнээр дахин build хийх, эсвэл өөрчлөлт дэмжих 2D бүтэц сонгох хэрэгтэй. Хуучин P-ийг хэвээр байлгаад шинэ a-г уншсан мэт асуух нь буруу."
+          },
+          {
+            "type": "p",
+            "text": "Хоосон хүснэгт/дотоод хүрээ, нэг нүд, нэг мөр, нэг багана, бүтэн хүснэгт, дээд/зүүн зах, сөрөг утгыг шалга. Жижиг хүснэгтийн бүх тэгш өнцөгтийг шууд нэмээд sum-тай тулгана. Ганц нүдний асуулт анхны a[$i$][$j$]-г буцааж байгаа эсэх, бүх нэмэлт заагийн 0 хэвээр эсэх нь индексийн сайн шалгалт."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өөрийгөө шалга: 1. P[2][3] хэдэн нүд хамрах вэ? 2. $D$-г нэмэхээс өмнө огтлолын коэффициент хэд вэ? 3. Гаднах ижил хоёр булан хоосон уу? 4. Мөр, баганыг андуурвал дөрвөлжин бус хүснэгтэд юу болох вэ?"
+          },
+          {
+            "type": "p",
+            "text": "Хариу: 2×3=6; −1 тул +1-ээр 0 болгоно; үгүй, нэг нүд; өөр хэсэг асуух эсвэл хүрээнээс гарах эрсдэлтэй."
+          },
+          {
+            "type": "p",
+            "text": "Сэдвийг эзэмших үндсэн бодлогууд"
+          },
+          {
+            "type": "p",
+            "text": "Forest Queries: “*” модыг 1, хоосныг 0 болгоод бэлд; сургалтын код тоон хүснэгт уншиж байгааг ялга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "401"
+          },
+          {
+            "type": "p",
+            "text": "Бие даах ба ахиулах бодлогууд"
+          },
+          {
+            "type": "p",
+            "text": "Star sky: гэрэлтэлтийн мөчлөгийн төлөв бүрд тусдаа хүснэгт хэрэгтэйг гарга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "743"
+          },
+          {
+            "type": "p",
+            "text": "AtCoder ABC005 $D$: бүх тэгш өнцөгт ба талбайн хязгаарын хамгийн сайн хариу гэсэн нэмэлт бэлтгэл шаардлагатай."
+          },
+          {
+            "type": "problem",
+            "problemKey": "747"
+          },
+          {
+            "type": "p",
+            "text": "Pond: босгоос доош/их нүдний тоо ба медианы шаардсан эрэмбийн байрыг баталж, хоёртын хайлттай холбо."
+          },
+          {
+            "type": "problem",
+            "problemKey": "748"
+          },
+          {
+            "type": "p",
+            "text": "Forest Queries II: өөрчлөлттэй тул статик prefix дангаараа хүрэлцэхгүй; өөрчлөлт дэмжих бүтэцтэй болсны дараа оролд."
+          },
+          {
+            "type": "problem",
+            "problemKey": "415"
+          },
+          {
+            "type": "p",
+            "text": "IOI2009 Raisins: бүсийн жинг хурдан олно, харин зүсэлтийн оновчлол тусдаа завсрын DP баталгаа шаарддаг."
+          },
+          {
+            "type": "problem",
+            "problemKey": "915"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "2D prefix sums — four corners and overlap",
+        "summary": "Derive padding and A−B−C+D from first-row/column rectangles, convert coordinates and implement a complete signed-grid example.",
+        "sections": [
+          {
+            "key": "definition",
+            "title": "A rectangle of the first rows and columns",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Answer many rectangle-sum queries on a fixed grid. Cells may be quantities, signed changes or 0/1 counts. Scanning a large rectangle costs $O(nm)$ per query. Extend the one-dimensional shared-prefix cancellation to rectangles beginning at the upper-left corner."
+              },
+              {
+                "type": "p",
+                "text": "P[$y$][$x$] is the sum of the first $y$ rows and first $x$ columns: [0,$y$)×[0,$x$). Coordinates count included rows/columns rather than naming the final cell. Allocate($n$+1)×($m$+1), with P[0][$x$]=P[$y$][0]=0. The padded top row and left column are not input cells."
+              }
+            ]
+          },
+          {
+            "key": "corners",
+            "title": "A−B−C+D repairs the overlap",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For internal query $[y_1,y_2)\\times[x_1,x_2)$, start with $A=P[y_2][x_2]$. Subtract the upper strip $C=P[y_1][x_2]$ and left strip $B=P[y_2][x_1]$. Their upper-left overlap $D=P[y_1][x_1]$ was subtracted twice, so add it back once: $A-B-C+D$."
+              },
+              {
+                "type": "p",
+                "text": "An overlap cell has coefficient 1−1−1=−1 after the two subtractions; +$D$ restores it to 0. Other cells in the upper/left strips get 1−1=0, while target cells occur only in A and keep coefficient 1. Adding $D$ repairs an exact double subtraction rather than adding unrelated outside cells."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "directed": false,
+                "nodes": [
+                  {
+                    "id": "D",
+                    "label": "D",
+                    "x": 25,
+                    "y": 25,
+                    "annotation": "P[1][1] = 2",
+                    "annotationDy": -30
+                  },
+                  {
+                    "id": "C",
+                    "label": "C",
+                    "x": 75,
+                    "y": 25,
+                    "annotation": "P[1][4] = 8",
+                    "annotationDy": -30
+                  },
+                  {
+                    "id": "B",
+                    "label": "B",
+                    "x": 25,
+                    "y": 75,
+                    "annotation": "P[3][1] = 9",
+                    "annotationDy": -30
+                  },
+                  {
+                    "id": "A",
+                    "label": "A",
+                    "x": 75,
+                    "y": 75,
+                    "annotation": "P[3][4] = 18",
+                    "annotationDy": -30
+                  }
+                ],
+                "edges": [
+                  [
+                    "D",
+                    "C"
+                  ],
+                  [
+                    "C",
+                    "A"
+                  ],
+                  [
+                    "A",
+                    "B"
+                  ],
+                  [
+                    "B",
+                    "D"
+                  ]
+                ],
+                "caption": "Four prefix boundaries: D,C above B,A. This is a coordinate diagram, not a traversal graph."
+              },
+              {
+                "type": "p",
+                "text": "In the numerical example below, $y$ 1=1,$x$ 1=1,$y$ 2=3,$x$ 2=4 produce the displayed prefix values 2,8,9,18. These are sums of whole upper-left rectangles, not values of four individual corner cells."
+              }
+            ]
+          },
+          {
+            "key": "build",
+            "title": "Build without double counting",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Build P[$i$+1][$j$+1]=a[$i$][$j$]+P[$i$][$j$+1]+P[$i$+1][$j$]−P[$i$][$j$]. Adding the upper and left rectangles double-counts their upper-left overlap; subtract it and add the current cell, which belonged to neither. Building and querying have different signs: build adds two regions, subtracts overlap and adds a cell; query subtracts two strips from a large region and restores overlap."
+              },
+              {
+                "type": "p",
+                "text": "Scan rows top to bottom and columns left to right so upper, left and diagonal prefixes are ready. The padded zeros are correct empty bases; each recurrence builds the right region sum, proving the table by induction. No special first-row/column branch is necessary."
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "The full table and a six-cell query",
+            "blocks": [
+              {
+                "type": "diagram",
+                "kind": "dp",
+                "rows": [
+                  [
+                    "2",
+                    "-1",
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "0",
+                    "5",
+                    "-2",
+                    "1"
+                  ],
+                  [
+                    "7",
+                    "2",
+                    "0",
+                    "-3"
+                  ]
+                ],
+                "caption": "A zero-based3×4 grid. Highlighted rows1..2 and columns1..3 are the six queried cells.",
+                "highlights": [
+                  "1:1",
+                  "1:2",
+                  "1:3",
+                  "2:1",
+                  "2:2",
+                  "2:3"
+                ]
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "$y$ / $x$",
+                  "0",
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ],
+                "rows": [
+                  [
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0"
+                  ],
+                  [
+                    "1",
+                    "0",
+                    "2",
+                    "1",
+                    "4",
+                    "8"
+                  ],
+                  [
+                    "2",
+                    "0",
+                    "2",
+                    "6",
+                    "7",
+                    "12"
+                  ],
+                  [
+                    "3",
+                    "0",
+                    "9",
+                    "15",
+                    "16",
+                    "18"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "The first prefix row is[0,2,1,4,8]. Then P[2][2]=5+P[1][2]+P[2][1]−P[1][1]=5+1+2−2=6, matching input cells 2,−1,0,5. Finally P[3][4]=−3+12+16−7=18. The table exposes every intermediate prefix for checking."
+              },
+              {
+                "type": "p",
+                "text": "One-based inclusive query(2,2)..(3,4) becomes[1,3)×[1,4). A=18,B=9,C=8,$D$=2 give 18−9−8+2=3, matching direct cells 5−2+1+2+0−3=3. The whole grid sums to 18, the first cell is 2 and the last−3. Signed values obey the same rule."
+              }
+            ]
+          },
+          {
+            "key": "coordinates",
+            "title": "Rows, columns and endpoint conventions",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Helper contract:0≤$y$ 1≤$y$ 2≤$n$ and 0≤$x$ 1≤$x$ 2≤$m$. $y$ denotes rows and $x$ columns. Height/width are $y$ 2−$y$ 1 and $x$ 2−$x$ 1. If either is zero, the rectangle is empty and the four terms cancel to 0. Coordinates are neither reordered nor clipped automatically."
+              },
+              {
+                "type": "p",
+                "text": "main instead reads one-based inclusive corners $y$ 1,$x$ 1,$y$ 2,$x$ 2. Subtract 1 only from the upper/left starts. Query(2,3)..(2,3) is not empty: internal[1,2)×[2,3) contains one cell and returns−2. Touching the first row/column makes the corresponding subtracted prefix a padded zero."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "Struct initialization and complete C++17",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "The Prefix2D constructor stores $n$,$m$ and zero-initializes an($n$+1)×($m$+1) ll table. Its extra row/column represent empty-prefix coordinates, unlike a segment tree’s 4n layout. build consumes an $n$×$m$ input; sum is const and does not change the table. Finish building before querying."
+              },
+              {
+                "type": "p",
+                "text": "Require 0≤$n$,$m$≤1000,0≤q≤200000 and |a[$i$][$j$]|≤10⁹. If either dimension is zero, main requires q=0; the helper still supports valid empty rectangles. Sums are bounded by 10¹⁵ and intermediate four-term expressions by 4×10¹⁵, safely in ll. Indices are int and operands are already ll before arithmetic."
+              },
+              {
+                "type": "p",
+                "text": "ll stores cell values, prefixes and returned sums."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+              },
+              {
+                "type": "p",
+                "text": "Fields and the size-taking constructor; vector<ll> entries start at 0."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "struct Prefix2D {\n    int n, m;\n    vector<vector<ll>> p;\n\n    Prefix2D(int _n, int _m) {\n        n = _n;\n        m = _m;\n        p.assign(n + 1, vector<ll>(m + 1));\n    }"
+              },
+              {
+                "type": "p",
+                "text": "Loop $i$,$j$ name input cells, while $i$+1,$j$+1 name prefix boundaries."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "void build(const vector<vector<ll>> &a) {\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < m; j++) {\n                p[i + 1][j + 1] = a[i][j] + p[i][j + 1] + p[i + 1][j] - p[i][j];\n            }\n        }\n    }"
+              },
+              {
+                "type": "p",
+                "text": "sum accepts four internal half-open boundaries. Its A−C−B+$D$ order equals A−B−C+$D$."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "ll sum(int y1, int x1, int y2, int x2) const {\n        return p[y2][x2] - p[y1][x2] - p[y2][x1] + p[y1][x1];\n    }\n};"
+              },
+              {
+                "type": "p",
+                "text": "main reads a numeric grid and builds once, then converts only the starting row/column for queries."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m, q;\n    cin >> n >> m >> q;\n    vector<vector<ll>> a(n, vector<ll>(m));\n    for (auto &row : a) {\n        for (ll &x : row) cin >> x;\n    }\n    Prefix2D pref(n, m);\n    pref.build(a);\n    while (q--) {\n        int y1, x1, y2, x2;\n        cin >> y1 >> x1 >> y2 >> x2;\n        cout << pref.sum(y1 - 1, x1 - 1, y2, x2) << '\\n';\n    }\n    return 0;\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Prefix2D {\n    int n, m;\n    vector<vector<ll>> p;\n\n    Prefix2D(int _n, int _m) {\n        n = _n;\n        m = _m;\n        p.assign(n + 1, vector<ll>(m + 1));\n    }\n\n    void build(const vector<vector<ll>> &a) {\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < m; j++) {\n                p[i + 1][j + 1] = a[i][j] + p[i][j + 1] + p[i + 1][j] - p[i][j];\n            }\n        }\n    }\n\n    ll sum(int y1, int x1, int y2, int x2) const {\n        return p[y2][x2] - p[y1][x2] - p[y2][x1] + p[y1][x1];\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m, q;\n    cin >> n >> m >> q;\n    vector<vector<ll>> a(n, vector<ll>(m));\n    for (auto &row : a) {\n        for (ll &x : row) cin >> x;\n    }\n    Prefix2D pref(n, m);\n    pref.build(a);\n    while (q--) {\n        int y1, x1, y2, x2;\n        cin >> y1 >> x1 >> y2 >> x2;\n        cout << pref.sum(y1 - 1, x1 - 1, y2, x2) << '\\n';\n    }\n    return 0;\n}\n"
+              },
+              {
+                "type": "p",
+                "text": "Preprocessing/table space is O(($n$+1)($m$+1)); each query is $O(1)$. For ordinary nonempty grids total time is $O(nm+q)$ and memory $O(nm)$. Stored input a is of the same space order. Answers are streamed; we do not precompute every possible rectangle separately."
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "Static-grid assumptions and checks",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Changing a[$i$][$j$] affects every P[$y$][$x$] with $y$>$i$ and $x$>$j$, potentially $O(nm)$ entries. Rebuild or choose an update-supporting two-dimensional structure. Querying an unchanged P after changing a returns stale results."
+              },
+              {
+                "type": "p",
+                "text": "Test empty dimensions/internal rectangles, one cell, one row/column, the full grid, top/left boundaries and signed values. Compare every small rectangle to a direct sum. Singleton queries recovering a[$i$][$j$] and zero padding are useful indexing checks."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Check yourself:1. How many cells does P[2][3] cover?2. What is the overlap coefficient before adding $D$?3. Are identical external inclusive corners empty?4. What happens when rows/columns are swapped on a nonsquare grid?"
+              },
+              {
+                "type": "p",
+                "text": "Answers:2×3=6;−1, restored to 0 by+1; no, one cell; a different rectangle or an out-of-bounds access."
+              },
+              {
+                "type": "p",
+                "text": "Core problems for mastering the topic"
+              },
+              {
+                "type": "p",
+                "text": "Forest Queries: map tree“*” to 1 and empty to 0; adapt the example program’s numeric-grid input."
+              },
+              {
+                "type": "problem",
+                "problemKey": "401"
+              },
+              {
+                "type": "p",
+                "text": "Independent practice and extensions"
+              },
+              {
+                "type": "p",
+                "text": "Star sky: derive a separate table for each brightness-cycle state."
+              },
+              {
+                "type": "problem",
+                "problemKey": "743"
+              },
+              {
+                "type": "p",
+                "text": "AtCoder ABC 005 $D$: additionally enumerate rectangles and prepare optima for area limits."
+              },
+              {
+                "type": "problem",
+                "problemKey": "747"
+              },
+              {
+                "type": "p",
+                "text": "Pond: prove the threshold-count/median rank before combining with binary search."
+              },
+              {
+                "type": "problem",
+                "problemKey": "748"
+              },
+              {
+                "type": "p",
+                "text": "Forest Queries II: static prefixes alone do not support updates; first learn an update-capable structure."
+              },
+              {
+                "type": "problem",
+                "problemKey": "415"
+              },
+              {
+                "type": "p",
+                "text": "IOI 2009 Raisins: query region mass quickly, then separately justify the cutting DP."
+              },
+              {
+                "type": "problem",
+                "problemKey": "915"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know 1D prefix sums, 2D arrays, row/column coordinates and half-open intervals."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Нэг хэмжээст хуримтлагдсан нийлбэр, хоёр хэмжээст массив, мөр/баганын координат болон хагас нээлттэй завсрыг мэддэг байна.",
+    "priorityLevel": "high",
+    "priorityReason": "Тогтмол хүснэгтийн олон асуулт, босгын тооллого болон динамик програмчлалын хэсгийн зардлыг хурдан олох түгээмэл суурь. Огтлолын тэмдэг, координатын утгыг баталж хэрэглэх чадвар нь өргөн дамждаг.",
+    "prerequisiteIds": [
+      "prefix-sums"
+    ],
+    "learningRelations": {
+      "next": "greedy",
+      "practice": [
+        {
+          "key": "401",
+          "stage": "Warm-up",
+          "reason": "Дөрвөн булангийн огтлол, хоосон зах, координатын хөрвүүлэлтийг тогтмол хүснэгтийн бодит асуултад бие даан хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "743",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "747",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "748",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "415",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "915",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "prefix-sums",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "binary-search",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "status": "complete focused bilingual candidate; publication evidence separate"
+}
