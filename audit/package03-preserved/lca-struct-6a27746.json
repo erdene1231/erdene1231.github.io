@@ -1,0 +1,1828 @@
+{
+  "id": "lca",
+  "expected_revision": 6,
+  "expected_published": true,
+  "expected_body_md5": "722b1c08372befdbf7de0c8cf7d53015",
+  "expected_body_sha256": "b247ad93b8eef6a8ed51cdd4e5d7231fe4b5a6a96bde914464784b9930834f0c",
+  "body": {
+    "id": "lca",
+    "level": "Ахисан шат",
+    "order": 41,
+    "title": "LCA, хоёртын үсрэлт ба замын асуулт",
+    "aliases": "lca LCA — хоёр node-ийн нийтлэг ancestor LCA — lowest common ancestor tree lca lowest common ancestor binary lifting ancestor мод өвөг",
+    "related": [
+      "tree-basics",
+      "bit-operations",
+      "bfs",
+      "bitmask-dp"
+    ],
+    "summary": "Хамгийн ойр нийтлэг өвгийг олж, тогтмол жинтэй замын бага/их утгыг хоёртын үсрэлтээр тооцоолъё. Нийлбэрийг хуримтлагдсан жингээр олно.",
+    "category": "Trees",
+    "levelKey": "advanced",
+    "sections": [
+      {
+        "key": "need",
+        "title": "Хамгийн ойр нийтлэг өвөг гэж юу вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Модны үндсийг $1$ орой гэж авъя. Зурагт $1$–$7$ нь оройн дугаар; ирмэгийн хажууд бичсэн тоонууд нь жин. Эхлээд жинг түр орхиод $4$ ба $5$-аас үндэс рүү өгсөх замыг харъя."
+          },
+          {
+            "type": "code",
+            "language": "Text",
+            "text": "        1\n     6 / \\ 4\n      2   3\n   2 / \\9 \\ -3\n    4   5   6\n             \\ 5\n              7"
+          },
+          {
+            "type": "p",
+            "text": "$4\\to2\\to1$ ба $5\\to2\\to1$ гэсэн замууд анх $2$ дээр нийлнэ. Хоёр оройн замд хоёуланд нь байдаг оройг нийтлэг өвөг гэнэ. Тэдгээрээс үндсээсээ хамгийн хол буюу хамгийн гүнд орших нь хамгийн ойр нийтлэг өвөг, товчоор LCA юм."
+          },
+          {
+            "type": "p",
+            "text": "Энд $\\operatorname{LCA}(4,5)=2$, харин $\\operatorname{LCA}(4,7)=1$. Орой өөрөө өөрийнхөө өвөг тул $\\operatorname{LCA}(6,7)=6$, мөн $\\operatorname{LCA}(3,3)=3$. “Хамгийн ойр” гэдэг нь оройн дугаар хамгийн бага гэсэн үг биш."
+          },
+          {
+            "type": "p",
+            "text": "Одоо хоёр оройн хоорондох замын хамгийн бага, хамгийн их жин болон жингийн нийлбэрийг олон удаа асууя. LCA нь тэр замыг хоёр өгсөх хэсэгт салгах тул эхлээд түүнийг хурдан олох аргаа байгуулна."
+          }
+        ]
+      },
+      {
+        "key": "direct",
+        "title": "Нэг нэгээр өгсөхөөс урт үсрэлт рүү",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Орой бүрийн эцэг ба үндсээсээ хэдэн ирмэгийн зайд байгааг хадгалбал энгийн арга бий. Илүү гүн оройг нэг нэгээр өгсгөж гүнийг тэнцүүлнэ. Дараа нь хоёуланг зэрэг эцэг рүү нь шилжүүлэхэд анх таарсан орой LCA болно."
+          },
+          {
+            "type": "p",
+            "text": "Гинжин модонд нэг асуулт $O(n)$ алхам шаардана. $n$ орой дээр $q$ асуулттай бол $O(nq)$ хүрч болно. Нэг ижил өгсөх хэсгийг дахин дахин туулж байгаа нь зардал юм. Нэг, хоёр, дөрөв, найман ирмэгийг нэг дор алгасах мэдээлэл бэлдэж болох уу?"
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "Хоёр богино үсрэлтээс нэг уртыг байгуулах",
+        "blocks": [
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "up[j][u]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь $u$-гаас $2^j$ ирмэг өгсөхөд хүрэх орой. ",
+                "marks": []
+              },
+              {
+                "text": "up[0][u]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь шууд эцэг. Эхний хагаст хүрсэн оройгоос мөн уртаар ахивал бүтэн үсрэлт болно:",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "p",
+            "text": "$\\mathrm{up}[j][u]=\\mathrm{up}[j-1][\\mathrm{up}[j-1][u]]$."
+          },
+          {
+            "type": "p",
+            "text": "Манай модонд $7$-гийн нэг алхмын өвөг $6$, хоёр алхмынх $3$. Зургаан алхам өгсөх шаардлагатай бол $6=2+4$ гэж задлаад хоёр үсрэлт хийнэ. Гүний зөрүүг хоёртын бичлэгээр задлах нь энэ сонголтыг шууд өгдөг."
+          },
+          {
+            "type": "note",
+            "text": "Кодод үндэсний эцгийг үндэс өөрөөр нь авна. Энэ нь байхгүй орой руу хүснэгтээр орохоос сэргийлэх дотоод тохиролцоо. Замын жин тооцохдоо зөвхөн одоо байгаа өгсөх ирмэгүүдээр үсэрнэ."
+          }
+        ]
+      },
+      {
+        "key": "method",
+        "title": "Хүснэгтээр LCA-г олох",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхлээд гүний зөрүүний битүүдээр гүн оройг өгсгө. Ижил оройд хүрвэл тэр нь хариу. Үгүй бол оройнууд ижил гүнд, хоёр өөр салаанд үлдэнэ."
+          },
+          {
+            "type": "p",
+            "text": "Одоо том үсрэлтээс жижиг рүү хар. Хоёр оройн тухайн уртын өвөг ялгаатай бол хоёуланг тийш ахиулж болно. Харин ижил бол тэр үсрэлт LCA дээр эсвэл түүнээс дээш хүргэж магадгүй тул авахгүй. Эцэст нь хоёр орой нийтлэг эцгийнхээ яг доор үлдэнэ."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Алхам",
+              "$u$",
+              "$v$",
+              "Шийдвэр"
+            ],
+            "rows": [
+              [
+                "Эхлэл",
+                "4",
+                "7",
+                "Гүн 2 ба 3"
+              ],
+              [
+                "Тэнцүүлэх",
+                "4",
+                "6",
+                "7-г нэг алхам ахиулна"
+              ],
+              [
+                "2 ирмэг",
+                "4",
+                "6",
+                "Өвгүүд хоёул 1: үсрэхгүй"
+              ],
+              [
+                "1 ирмэг",
+                "2",
+                "3",
+                "Өвгүүд ялгаатай: хоёул үсэрнэ"
+              ],
+              [
+                "Хариу",
+                "1",
+                "1",
+                "Нийтлэг эцэг 1"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "key": "aggregate",
+        "title": "Үсрэлттэй хамт замын мэдээллийг авч явах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "LCA-г оллоо. Гэхдээ $4$-өөс $1$ хүртэл хоёр ирмэгийг нэг үсрэлтээр алгасахдаа зөвхөн хүрэх оройг хадгалсан бол жин $2,6$ байсныг мэдэхгүй. Иймээс үсрэлт бүрийн хамгийн бага ба их жинг хамт хадгалъя."
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "mn[j][u]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", ",
+                "marks": []
+              },
+              {
+                "text": "mx[j][u]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь $u$-гаас өгсөх тэр $2^j$ ирмэгийн бага, их жин. Хоёр хагасын бага утгын багыг, их утгын ихийг авна. ",
+                "marks": []
+              },
+              {
+                "text": "up",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хүснэгттэй ижил хуваалтаар эдгээр хүснэгтийг байгуулна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Асуултын LCA-г $c$ гэе. $u\\to c$ ба $v\\to c$ гэсэн хоёр замын хэсгийг гүний зөрүүгээр нь тус тус үсэрч нэгтгэнэ. Энэ хоёр хэсэгт нийтлэг ирмэг байхгүй. LCA-гаас дээших ирмэгийг аль нь ч оруулахгүй."
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Нийлбэрт өөр үсрэлтийн хүснэгт хэрэггүй: ",
+                "marks": []
+              },
+              {
+                "text": "pref[u]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-д үндсээс $u$ хүрэх жингийн нийлбэрийг хадгалбал $\\mathrm{sum}(u,v)=\\mathrm{pref}[u]+\\mathrm{pref}[v]-2\\mathrm{pref}[c]$. Бага/их утгыг ингэж хасаж болохгүй учраас тэдгээрт тусдаа хүснэгт хэрэгтэй.",
+                "marks": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "Нэг асуултыг жинтэй нь дуустал мөрдөх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$4$ ба $7$-гийн LCA нь $1$. Эхний тал $4\\to2\\to1$: хоёр ирмэгийн жин $2,6$, тиймээс хоёрын зэргийн нэг үсрэлтээс бага $2$, их $6$ гарна."
+          },
+          {
+            "type": "p",
+            "text": "Нөгөө талын урт гурав. Эхлээд $7\\to6$ ирмэгийн $5$-ыг авна. Дараа нь $6\\to3\\to1$ гэсэн хоёр ирмэгийн $-3,4$-ийг нэг үсрэлтээр авна. Ингээд бүх замын бага нь $-3$, их нь $6$."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Авсан хэсэг",
+              "Жин",
+              "Одоогийн бага",
+              "Одоогийн их"
+            ],
+            "rows": [
+              [
+                "4 → 1",
+                "2, 6",
+                "2",
+                "6"
+              ],
+              [
+                "7 → 6",
+                "5",
+                "2",
+                "6"
+              ],
+              [
+                "6 → 1",
+                "-3, 4",
+                "-3",
+                "6"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Үндэс хүрэх нийлбэрүүд $\\mathrm{pref}[4]=8$, $\\mathrm{pref}[7]=6$, $\\mathrm{pref}[1]=0$. Тэгэхээр замын нийлбэр $8+6-2\\cdot0=14$. Дээш өгсөхөд ирмэгийн жингийн тэмдгийг солихгүй. Жин нь анхнаасаа сөрөг байж болно."
+          }
+        ]
+      },
+      {
+        "key": "proof",
+        "title": "Яагаад зөв, ямар зардалтай вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Үсрэлтийн хүснэгтийн эхний мөр зөв шууд эцгүүдээс эхэлнэ. Дараагийн мөр хоёр зөв хагас замыг залгадаг тул хүрэх орой ба бага/их утгууд зөв. Хүснэгтийг оройн дугаараар бус, үсрэлтийн хэмжээгээр нь гаднаас давтаж байгуулна."
+          },
+          {
+            "type": "p",
+            "text": "LCA хайхад гүнийг тэнцүүлэх нь нийтлэг өвгийг давахгүй. Ижил гүнээс ижил уртаар үсрээд хоёр өөр оройд хүрч байвал нийтлэг өвгийн доор хэвээр байна. Томоос жижиг рүү шалгасны дараа нэг алхмаар ч ялгаатай өвөг рүү ахих боломжгүй болно; тэгэхээр нийтлэг эцэг нь хамгийн ойрынх."
+          },
+          {
+            "type": "p",
+            "text": "Замын мэдээлэл авахад үсрэлтүүдийн уртын нийлбэр яг гүний зөрүү. Тэдгээр нь залгаа бөгөөд давхардахгүй; хоёр талын ирмэгүүд ч давхардахгүй. Иймээс бүх хэрэгтэй жинг яг нэг удаа тооцно."
+          },
+          {
+            "type": "p",
+            "text": "BFS $O(n)$, хүснэгтүүд $O(n\\log n)$ хугацаа ба санах ой шаарддаг. LCA болон хоёр талын үсрэлт тус бүр $O(\\log n)$ тул нэг бүтэн асуулт мөн $O(\\log n)$. Нийт $O((n+q)\\log n)$. Нэг л асуултад эцгээр энгийн өгсөлт илүү тохиромжтой байж болно."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "Алхам бүрийг C++17 код болгох",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Оролт: $1\\le n\\le200000$, $0\\le q\\le200000$; дараа нь $n-1$ ширхэг $u,v,w$ ирмэг, эцэст нь $q$ ширхэг хоёр оройтой асуулт. Оройнууд $1$-ээс дугаарлагдана. Ирмэгүүд холбоост мод үүсгэнэ, $|w|\\le10^9$, утгууд өөрчлөгдөхгүй. Гаралт бүр LCA, хамгийн бага жин, хамгийн их жин, жингийн нийлбэр гэсэн дөрвөн тоотой. Ижил оройн хоосон замд сүүлийн гурван тоог тэг гэж хэвлэх тохиролцоотой."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Өгөгдөл ба хэмжээгээр нь бэлдэх constructor"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Кодод ",
+                "marks": []
+              },
+              {
+                "text": "ll",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь ",
+                "marks": []
+              },
+              {
+                "text": "long long",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " төрлийн товч нэр. ",
+                "marks": []
+              },
+              {
+                "text": "up",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь өвөг, ",
+                "marks": []
+              },
+              {
+                "text": "mn",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", ",
+                "marks": []
+              },
+              {
+                "text": "mx",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь үсрэлтийн жингийн бага ба их утга. ",
+                "marks": []
+              },
+              {
+                "text": "pref",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь үндэс хүртэлх нийлбэр, ",
+                "marks": []
+              },
+              {
+                "text": "dep",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь ирмэгээр хэмжсэн гүн. ",
+                "marks": []
+              },
+              {
+                "text": "INF",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " ба ",
+                "marks": []
+              },
+              {
+                "text": "-INF",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь хоосон хэсгийг нэгтгэхэд хариуг өөрчлөхгүй утгууд; бодит ирмэгийн жин биш.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Холбоотой хүснэгтүүд ба тэдгээрийн үйлдлийг ",
+                "marks": []
+              },
+              {
+                "text": "binaryJump",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нэртэй нэг ",
+                "marks": []
+              },
+              {
+                "text": "struct",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-д багтаана. ",
+                "marks": []
+              },
+              {
+                "text": "n",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь оройн тоо, ",
+                "marks": []
+              },
+              {
+                "text": "lg",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь хоёрын зэргийн хэдэн мөр хэрэгтэйг хадгална. Эдгээр нь бүтцийн гишүүд учраас үйлдэл бүр ижил төлөвийг ашиглана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "binaryJump(int _n)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь ",
+                "marks": []
+              },
+              {
+                "text": "constructor",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ": ",
+                "marks": []
+              },
+              {
+                "text": "binaryJump tree(n)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гэж объект үүсгэхэд нэг удаа ажиллана. ",
+                "marks": []
+              },
+              {
+                "text": "_n",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " параметрийг ",
+                "marks": []
+              },
+              {
+                "text": "n",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гишүүнд оноогоод, хамгийн том гүний зөрүүг задлахад хүрэлцэх ",
+                "marks": []
+              },
+              {
+                "text": "lg",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийг олно. Оройнуудыг $1$-ээс дугаарласан тул массив бүрд $",
+                "marks": []
+              },
+              {
+                "text": "n",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "+1$ нүд авна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "dep",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийн $-1$ нь хараахан очоогүй орой, ",
+                "marks": []
+              },
+              {
+                "text": "pref",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийн $0$ нь анхны нийлбэр. ",
+                "marks": []
+              },
+              {
+                "text": "up",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийн эхний утга $1$ нь үндэс рүү заана. ",
+                "marks": []
+              },
+              {
+                "text": "mn",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийг ",
+                "marks": []
+              },
+              {
+                "text": "INF",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", ",
+                "marks": []
+              },
+              {
+                "text": "mx",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийг -",
+                "marks": []
+              },
+              {
+                "text": "INF",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ээр эхлүүлэхэд хоосон хэсэг бодит бага/их жинг өөрчлөхгүй. Энэ нь segment tree-ийн $4n$ байрлал биш: энд хүснэгт бүр $\\mathrm{",
+                "marks": []
+              },
+              {
+                "text": "lg",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "}\\times(",
+                "marks": []
+              },
+              {
+                "text": "n",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "+1)$ нүдтэй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst ll INF = 1LL << 62;\nstruct binaryJump {\n    int n, lg;\n    vector<int> dep;\n    vector<ll> pref;\n    vector<vector<int>> up;\n    vector<vector<ll>> mn, mx;\n\n    binaryJump(int _n) {\n        n = _n;\n        lg = 1;\n        while ((1LL << lg) <= n) {\n            ++lg;\n        }\n        dep.assign(n + 1, -1);\n        pref.assign(n + 1, 0);\n        up.assign(lg, vector<int>(n + 1, 1));\n        mn.assign(lg, vector<ll>(n + 1, INF));\n        mx.assign(lg, vector<ll>(n + 1, -INF));\n    }\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Шууд эцгээс хүснэгт рүү"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "BFS эцэг, гүн, ирмэгийн жин ба нийлбэрийг нэг удаа олно. Дараа нь хоёр хагасыг нэгтгэж хүснэгтийн урт мөрүүдийг байгуулна. Үндэсний эцэг өөрөө, харин түүний хоосон ирмэгийн бага/их утга хэвээр үлдэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    void build(const vector<vector<pair<int, ll>>>& adj) {\n        queue<int> q;\n        dep[1] = 0;\n        q.push(1);\n        while (!q.empty()) {\n            int u = q.front();\n            q.pop();\n            for (auto [v, w] : adj[u]) {\n                if (dep[v] != -1) {\n                    continue;\n                }\n                dep[v] = dep[u] + 1;\n                pref[v] = pref[u] + w;\n                up[0][v] = u;\n                mn[0][v] = mx[0][v] = w;\n                q.push(v);\n            }\n        }\n        for (int j = 1; j < lg; ++j) {\n            for (int u = 1; u <= n; ++u) {\n                int v = up[j - 1][u];\n                up[j][u] = up[j - 1][v];\n                mn[j][u] = min(mn[j - 1][u], mn[j - 1][v]);\n                mx[j][u] = max(mx[j - 1][u], mx[j - 1][v]);\n            }\n        }\n    }\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Эхлээд LCA"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Гүний зөрүүгээр нэг талыг ахиулна. Тэнцсэн эсэхийг заавал шалгаад, үгүй бол нийтлэг өвгийг давалгүйгээр хоёуланг зэрэг үсэргэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    int lca(int u, int v) {\n        if (dep[u] < dep[v]) {\n            swap(u, v);\n        }\n        int d = dep[u] - dep[v];\n        for (int j = 0; j < lg; ++j) {\n            if ((d >> j) & 1) {\n                u = up[j][u];\n            }\n        }\n        if (u == v) {\n            return u;\n        }\n        for (int j = lg - 1; j >= 0; --j) {\n            if (up[j][u] != up[j][v]) {\n                u = up[j][u];\n                v = up[j][v];\n            }\n        }\n        return up[0][u];\n    }\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "LCA хүртэлх хоёр хэсгийн мэдээлэл"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "c",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь өмнөх функцээр олсон LCA. Тал бүрийн гүний зөрүүний битээр үсэрч, авахынхаа өмнөх оройн хүснэгтээс жинг нэгтгэнэ. Нийлбэрийг ",
+                "marks": []
+              },
+              {
+                "text": "pref",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ээр шууд олно. Өөр оройнуудын замд ядаж нэг бодит ирмэг байгаа тул эхний хязгааргүй утгууд гаралт руу алдагдахгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "    array<ll, 3> path_info(int a, int b, int c) {\n        if (a == b) {\n            return {0, 0, 0};\n        }\n        ll lo = INF, hi = -INF;\n        for (int u : {a, b}) {\n            int d = dep[u] - dep[c];\n            for (int j = 0; j < lg; ++j) {\n                if ((d >> j) & 1) {\n                    lo = min(lo, mn[j][u]);\n                    hi = max(hi, mx[j][u]);\n                    u = up[j][u];\n                }\n            }\n        }\n        return {lo, hi, pref[a] + pref[b] - 2 * pref[c]};\n    }\n};\n\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Оролт, бэлтгэл, асуултууд"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Модоо нэг удаа уншиж бэлдэнэ. Асуулт бүр эхлээд LCA, дараа нь замын гурван утгыг олно. Хүснэгтүүдийг асуулт бүрд дахин байгуулахгүй. Нийлбэрийн хэмжээ ойролцоогоор $2\\cdot10^{14}$-өөс ихгүй тул ",
+                "marks": []
+              },
+              {
+                "text": "long long",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хүрэлцэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "main дотор бүтцийг хэмжээгээр нь үүсгээд build-ийг нэг удаа дуудна. Дараа нь tree.lca ба tree.path_info нь тэр объектын бэлдсэн хүснэгтүүдээр асуултад хариулна. Энэ жишээнд build-ийг дахин дуудахгүй; ирмэг эсвэл жин өөрчлөгдвөл хуучин хүснэгт хүчинтэй биш.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<vector<pair<int, ll>>> adj(n + 1);\n    for (int i = 0; i < n - 1; ++i) {\n        int u, v;\n        ll w;\n        cin >> u >> v >> w;\n        adj[u].push_back({v, w});\n        adj[v].push_back({u, w});\n    }\n    binaryJump tree(n);\n    tree.build(adj);\n    while (q--) {\n        int u, v;\n        cin >> u >> v;\n        int c = tree.lca(u, v);\n        auto [lo, hi, sum] = tree.path_info(u, v, c);\n        cout << c << ' ' << lo << ' ' << hi << ' ' << sum << '\\n';\n    }\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Бүтэн C++17 программ"
+          },
+          {
+            "type": "note",
+            "text": "Дээрх хэсгүүдийг дарааллаар нь залгахад энэ бүтэн код үүснэ. Хэсгүүдийн зарим нь дангаараа ажиллахгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst ll INF = 1LL << 62;\nstruct binaryJump {\n    int n, lg;\n    vector<int> dep;\n    vector<ll> pref;\n    vector<vector<int>> up;\n    vector<vector<ll>> mn, mx;\n\n    binaryJump(int _n) {\n        n = _n;\n        lg = 1;\n        while ((1LL << lg) <= n) {\n            ++lg;\n        }\n        dep.assign(n + 1, -1);\n        pref.assign(n + 1, 0);\n        up.assign(lg, vector<int>(n + 1, 1));\n        mn.assign(lg, vector<ll>(n + 1, INF));\n        mx.assign(lg, vector<ll>(n + 1, -INF));\n    }\n\n    void build(const vector<vector<pair<int, ll>>>& adj) {\n        queue<int> q;\n        dep[1] = 0;\n        q.push(1);\n        while (!q.empty()) {\n            int u = q.front();\n            q.pop();\n            for (auto [v, w] : adj[u]) {\n                if (dep[v] != -1) {\n                    continue;\n                }\n                dep[v] = dep[u] + 1;\n                pref[v] = pref[u] + w;\n                up[0][v] = u;\n                mn[0][v] = mx[0][v] = w;\n                q.push(v);\n            }\n        }\n        for (int j = 1; j < lg; ++j) {\n            for (int u = 1; u <= n; ++u) {\n                int v = up[j - 1][u];\n                up[j][u] = up[j - 1][v];\n                mn[j][u] = min(mn[j - 1][u], mn[j - 1][v]);\n                mx[j][u] = max(mx[j - 1][u], mx[j - 1][v]);\n            }\n        }\n    }\n\n    int lca(int u, int v) {\n        if (dep[u] < dep[v]) {\n            swap(u, v);\n        }\n        int d = dep[u] - dep[v];\n        for (int j = 0; j < lg; ++j) {\n            if ((d >> j) & 1) {\n                u = up[j][u];\n            }\n        }\n        if (u == v) {\n            return u;\n        }\n        for (int j = lg - 1; j >= 0; --j) {\n            if (up[j][u] != up[j][v]) {\n                u = up[j][u];\n                v = up[j][v];\n            }\n        }\n        return up[0][u];\n    }\n\n    array<ll, 3> path_info(int a, int b, int c) {\n        if (a == b) {\n            return {0, 0, 0};\n        }\n        ll lo = INF, hi = -INF;\n        for (int u : {a, b}) {\n            int d = dep[u] - dep[c];\n            for (int j = 0; j < lg; ++j) {\n                if ((d >> j) & 1) {\n                    lo = min(lo, mn[j][u]);\n                    hi = max(hi, mx[j][u]);\n                    u = up[j][u];\n                }\n            }\n        }\n        return {lo, hi, pref[a] + pref[b] - 2 * pref[c]};\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<vector<pair<int, ll>>> adj(n + 1);\n    for (int i = 0; i < n - 1; ++i) {\n        int u, v;\n        ll w;\n        cin >> u >> v >> w;\n        adj[u].push_back({v, w});\n        adj[v].push_back({u, w});\n    }\n    binaryJump tree(n);\n    tree.build(adj);\n    while (q--) {\n        int u, v;\n        cin >> u >> v;\n        int c = tree.lca(u, v);\n        auto [lo, hi, sum] = tree.path_info(u, v, c);\n        cout << c << ' ' << lo << ' ' << hi << ' ' << sum << '\\n';\n    }\n}\n"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Жишээ оролт ба гаралт"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "7 5\n1 2 6\n1 3 4\n2 4 2\n2 5 9\n3 6 -3\n6 7 5\n4 5\n4 7\n6 7\n3 3\n1 7\n"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "2 2 9 11\n1 -3 6 14\n6 5 5 5\n3 0 0 0\n1 -3 5 6\n"
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "Энэ аргын хил: хоосон зам, шинэчлэлт, чиглэл",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Ижил оройн замд ирмэг байхгүй. Математикийн хувьд хоосон олонлогийн хамгийн бага/их бодит жин тодорхойгүй тул гаралтад тэг өгөхийг тусгайлан тохиролцсон. Энэ тэгийг бусад замын хамгийн бага/их утгын эхлэл болгож болохгүй: бүх жин сөрөг эсвэл эерэг үед алдана."
+          },
+          {
+            "type": "p",
+            "text": "Энд ирмэгийн жин хадгалсан. Оройн утгатай хувилбарт хоёр талаас өгсөх хэсгүүдэд LCA-г оруулахгүй байгаад төгсгөлд түүний утгыг нэг удаа нэмэх хэрэгтэй. Оройн нийлбэрийн томьёонд $+\\mathrm{value}[c]$ нэмэгдэнэ; ижил оройн хариу ч тэр оройн утга болно."
+          },
+          {
+            "type": "p",
+            "text": "Утгууд тогтмол тул хүснэгтүүд хүчинтэй. Нэг ирмэгийн жинг өөрчилбөл түүнийг багтаасан олон үсрэлт хуучирна. Кодод шинэчлэлтийн үйлдэл байхгүй. Өөрчлөлттэй замын асуултыг модыг замд хуваах болон интервалын бүтцээр шийдэх нь тусдаа сэдэв."
+          },
+          {
+            "type": "p",
+            "text": "Бага, их, нийлбэр нь хэсгүүдийн дарааллыг солиход өөрчлөгдөхгүй. Харин мөр залгах эсвэл матриц үржүүлэхэд чиглэл чухал: $u\\to c$-ийн дараа $c\\to v$ байх ёстой. Хоёр талаас дээш цуглуулсан мэдээллийг шууд дурын дарааллаар нэгтгэж болохгүй; чиглэл тус бүрийн мэдээлэл эсвэл тохирох урвуулах арга хэрэгтэй."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Санаагаа өөр нөхцөлд турших",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхлээд дээрх жинтэй модны асуултуудыг гараар бод. Гинж, од, ганц орой, сөрөг жин, нэг нь нөгөөгийн өвөг гэсэн тохиолдлыг нэм. Дараах картууд өмнөх дасгалын холбоосуудыг хадгална."
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Company Queries I"
+          },
+          {
+            "type": "p",
+            "text": "Өгөгдсөн тооны өвгийг ол. Алхам гүнээс хэтрэхэд байхгүй өвгийн гаралтыг тусдаа нөхцөлөөр шийд; үндсийг өөрийнх нь эцэг гэж авсан дотоод тохиролцоо тэр бодлогын хариу биш."
+          },
+          {
+            "type": "problem",
+            "problemKey": "425"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Company Queries II"
+          },
+          {
+            "type": "p",
+            "text": "Эхлээд зөвхөн LCA хэсгийг бие даан хэрэгжүүл. Гүн тэнцүүлэх, ижил орой, өөр салааг шалга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "426"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Distance Queries"
+          },
+          {
+            "type": "p",
+            "text": "Ирмэгийн тоогоор зайг гүнүүдээс гарга. Дараа нь өөрийн жижиг жинтэй хувилбарт нийлбэр, бага/их жинг шалга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "427"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Counting Paths"
+          },
+          {
+            "type": "p",
+            "text": "LCA зөвхөн замыг задалж өгнө. Олон замын нөлөөг нэгтгэхийн тулд модон дээрх хуримтлуулалтын нэмэлт санаа хэрэгтэй."
+          },
+          {
+            "type": "problem",
+            "problemKey": "428"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Path Queries"
+          },
+          {
+            "type": "p",
+            "text": "Энэ бодлогод шинэчлэлт бий. Манай static хүснэгтийг шууд хэрэглэхгүй; модны тойролт ба Fenwick/segment tree-ийн санаатай холбож үз."
+          },
+          {
+            "type": "problem",
+            "problemKey": "430"
+          },
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "Tree Distances II"
+          },
+          {
+            "type": "p",
+            "text": "Бүх оройгоос гарах нийт зайг үр дүнтэй олоход модыг дахин үндэслэх динамик программчлал илүү тохирно. Бүх хосыг LCA-аар шалгах нь хурдан шийдэл биш."
+          },
+          {
+            "type": "problem",
+            "problemKey": "424"
+          }
+        ]
+      },
+      {
+        "key": "mastery",
+        "title": "Өөрийн тайлбар ба шалгалт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Код харалгүй LCA яагаад хоёр өгсөх хэсгийн зааг болохыг тайлбарла. Дараа нь хоёрын зэргийн хүснэгтийн нэг нүд яг ямар ирмэгүүдийг хамарч байгааг зур. Үсрэлтийг авахын өмнө мэдээллийг яагаад хуучин оройгоос унших ёстой вэ?"
+          },
+          {
+            "type": "p",
+            "text": "Жижиг санамсаргүй модонд эцгээр нэг нэгээр өгсөх LCA, замыг ил гарган бүх жинг нь гүйлгэх лавлахтай тулга. Үндэс өөрөө орсон асуулт, ижил орой, сөрөг ба давхардсан жин, урт гинжийг заавал шалга."
+          },
+          {
+            "type": "p",
+            "text": "Энэ сэдэв олон модны асуултын суурь тул өндөр ач холбогдолтой (High) хэвээр. Энэ нь бүх бодлого хялбар гэсэн үг биш. LCA-г бие даан тайлбарлах, хэрэгжүүлэх, шинэ бодлогод хэрэглэх нь тусдаа чадварууд; зөвхөн уншсан тэмдэглэгээ хангалтгүй."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "LCA, binary lifting and static path queries",
+        "summary": "Understand LCA first, then carry min/max edge information with binary jumps. Use root-prefix sums when subtraction is simpler.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "What is the lowest common ancestor?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Root the tree at vertex $1$. Numbers along the edges are weights. Ignore the weights for a moment and follow the routes from $4$ and $5$ toward the root."
+              },
+              {
+                "type": "code",
+                "language": "Text",
+                "text": "        1\n     6 / \\ 4\n      2   3\n   2 / \\9 \\ -3\n    4   5   6\n             \\ 5\n              7"
+              },
+              {
+                "type": "p",
+                "text": "The routes $4\\to2\\to1$ and $5\\to2\\to1$ first meet at $2$. A common ancestor lies on both routes to the root. The deepest common ancestor is their lowest common ancestor, abbreviated LCA."
+              },
+              {
+                "type": "p",
+                "text": "Here $\\operatorname{LCA}(4,5)=2$, while $\\operatorname{LCA}(4,7)=1$. A vertex is its own ancestor: $\\operatorname{LCA}(6,7)=6$ and $\\operatorname{LCA}(3,3)=3$. Lowest refers to depth, not the smallest vertex number."
+              },
+              {
+                "type": "p",
+                "text": "Now suppose many queries ask for the minimum edge weight, maximum edge weight and weight sum on a path. Its LCA splits the path into two upward parts, so first we need to find that ancestor efficiently."
+              }
+            ]
+          },
+          {
+            "key": "direct",
+            "title": "From parent steps to longer jumps",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Store each parent and the depth measured in edges from the root. Raise the deeper vertex one edge at a time until the depths agree. Then raise both together; their first meeting point is the LCA."
+              },
+              {
+                "type": "p",
+                "text": "A query can take $O(n)$ steps on a chain, hence $O(nq)$ for $q$ queries. The repeated work is walking the same upward segments. Can we precompute jumps of one, two, four and eight edges?"
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "Build one long jump from two short jumps",
+            "blocks": [
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "up[j][u]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " is the vertex reached after $2^j$ parent edges from $u$. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "up[0][u]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " is the parent. The second half starts where the first half ends:",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "p",
+                "text": "$\\mathrm{up}[j][u]=\\mathrm{up}[j-1][\\mathrm{up}[j-1][u]]$."
+              },
+              {
+                "type": "p",
+                "text": "Vertex $7$ has one-step ancestor $6$ and two-step ancestor $3$. To climb six edges, use $6=2+4$: only two jumps. The binary representation of a depth difference selects these powers directly."
+              },
+              {
+                "type": "note",
+                "text": "The implementation makes the root its own parent as an internal sentinel convention. Path aggregates still consume only real edges; no query jumps beyond the required depth."
+              }
+            ]
+          },
+          {
+            "key": "method",
+            "title": "Find LCA with the jump table",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Raise the deeper vertex using the set bits of the depth difference. If the vertices now agree, this is the answer. Otherwise they have equal depth and remain on different branches."
+              },
+              {
+                "type": "p",
+                "text": "Inspect jump sizes from large to small. If the two jump destinations differ, move both vertices there. If they agree, that jump could reach or pass the LCA, so do not take it. Finally the two vertices lie immediately below their common parent."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Step",
+                  "$u$",
+                  "$v$",
+                  "Decision"
+                ],
+                "rows": [
+                  [
+                    "Start",
+                    "4",
+                    "7",
+                    "Depths 2 and 3"
+                  ],
+                  [
+                    "Align",
+                    "4",
+                    "6",
+                    "Raise 7 by one edge"
+                  ],
+                  [
+                    "2 edges",
+                    "4",
+                    "6",
+                    "Both destinations are 1: skip"
+                  ],
+                  [
+                    "1 edge",
+                    "2",
+                    "3",
+                    "Different destinations: take both"
+                  ],
+                  [
+                    "Answer",
+                    "1",
+                    "1",
+                    "Common parent is 1"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "key": "aggregate",
+            "title": "Carry path information with each jump",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Finding LCA is not enough to recover weights. Jumping from $4$ to $1$ skips weights $2,6$. If we stored only the destination, those values would be lost. Store their minimum and maximum with each jump."
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "mn[j][u]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " and ",
+                    "marks": []
+                  },
+                  {
+                    "text": "mx[j][u]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " summarize exactly the $2^j$ upward edges starting at $u$. Combine the minima and maxima of the two halves, using the same midpoint as ",
+                    "marks": []
+                  },
+                  {
+                    "text": "up",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ".",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Let the LCA be $c$. Lift $u$ to $c$ and $v$ to $c$, collecting jump summaries on each side. These two parts share no edges. Neither includes the edge above the LCA."
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "For sums, an extra jump table is unnecessary: store the root-path sum in ",
+                    "marks": []
+                  },
+                  {
+                    "text": "pref[u]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", then $\\mathrm{sum}(u,v)=\\mathrm{pref}[u]+\\mathrm{pref}[v]-2\\mathrm{pref}[c]$. Minima and maxima have no matching subtraction operation, so they need the jump summaries.",
+                    "marks": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "Trace one weighted query to completion",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For $4$ and $7$, the LCA is $1$. The first side is $4\\to2\\to1$, with weights $2,6$. A single two-edge jump contributes minimum $2$ and maximum $6$."
+              },
+              {
+                "type": "p",
+                "text": "The other side has length three. First take $7\\to6$ with weight $5$. Then take the two-edge jump $6\\to3\\to1$, whose weights are $-3,4$. The combined minimum is $-3$ and maximum is $6$."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Consumed segment",
+                  "Weights",
+                  "Minimum so far",
+                  "Maximum so far"
+                ],
+                "rows": [
+                  [
+                    "4 → 1",
+                    "2, 6",
+                    "2",
+                    "6"
+                  ],
+                  [
+                    "7 → 6",
+                    "5",
+                    "2",
+                    "6"
+                  ],
+                  [
+                    "6 → 1",
+                    "-3, 4",
+                    "-3",
+                    "6"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "The root-path sums are $\\mathrm{pref}[4]=8$, $\\mathrm{pref}[7]=6$ and $\\mathrm{pref}[1]=0$, giving total $8+6-2\\cdot0=14$. Upward traversal does not negate an edge weight; weights themselves may be negative."
+              }
+            ]
+          },
+          {
+            "key": "proof",
+            "title": "Why it works and what it costs",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "The first jump row has correct direct parents. Each next row concatenates two correct half-paths, so destinations and min/max summaries remain correct. Build rows by jump length, not by vertex number."
+              },
+              {
+                "type": "p",
+                "text": "Depth alignment cannot pass the LCA. At equal depths, two different jump destinations are still below the common ancestor. After checking sizes from large to small, even a one-edge jump cannot keep the destinations different. Their shared parent must therefore be the lowest common ancestor."
+              },
+              {
+                "type": "p",
+                "text": "Aggregate jumps have lengths summing exactly to the depth difference. They consume consecutive, nonoverlapping edges; the two sides also share no edges. Every required edge is included exactly once."
+              },
+              {
+                "type": "p",
+                "text": "BFS takes $O(n)$. Tables need $O(n\\log n)$ time and memory. LCA and each upward aggregate take $O(\\log n)$, so an entire query is $O(\\log n)$ and total time is $O((n+q)\\log n)$. For just one query, the simple parent-walking method may be preferable."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "Turn each step into C++17",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Input: $1\\le n\\le200000$ and $0\\le q\\le200000$, followed by $n-1$ edges $u,v,w$ and then $q$ vertex-pair queries. Vertices are numbered from $1$. The edges form a connected tree, $|w|\\le10^9$, and there are no updates. Output LCA, minimum weight, maximum weight and weight sum. For the empty path from a vertex to itself, print zeros for the last three fields by convention."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "State and a size-taking constructor"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "up",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " stores ancestors; ",
+                    "marks": []
+                  },
+                  {
+                    "text": "mn",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " and ",
+                    "marks": []
+                  },
+                  {
+                    "text": "mx",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " store jump minima and maxima. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "pref",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " is the root-path sum and ",
+                    "marks": []
+                  },
+                  {
+                    "text": "dep",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " is depth in edges. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "INF",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " and ",
+                    "marks": []
+                  },
+                  {
+                    "text": "-INF",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " are neutral values for an empty segment, not real edge weights.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The compact ",
+                    "marks": []
+                  },
+                  {
+                    "text": "binaryJump",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " ",
+                    "marks": []
+                  },
+                  {
+                    "text": "struct",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " owns the related tables and operations. Its members ",
+                    "marks": []
+                  },
+                  {
+                    "text": "n",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " and ",
+                    "marks": []
+                  },
+                  {
+                    "text": "lg",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " store the vertex count and the number of power-of-two rows, so every operation uses the same state.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "binaryJump(int _n)",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " is the ",
+                    "marks": []
+                  },
+                  {
+                    "text": "constructor",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ": creating ",
+                    "marks": []
+                  },
+                  {
+                    "text": "binaryJump tree(n)",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " runs it once. It copies ",
+                    "marks": []
+                  },
+                  {
+                    "text": "_n",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " into the member ",
+                    "marks": []
+                  },
+                  {
+                    "text": "n",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", then finds enough rows to represent every possible depth difference. Vertices are numbered from $1$, so each row has $",
+                    "marks": []
+                  },
+                  {
+                    "text": "n",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": "+1$ entries.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "A ",
+                    "marks": []
+                  },
+                  {
+                    "text": "dep",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " value of $-1$ means unvisited; ",
+                    "marks": []
+                  },
+                  {
+                    "text": "pref",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " starts at $0$. Initial ",
+                    "marks": []
+                  },
+                  {
+                    "text": "up",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " entries point to root $1$. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "INF",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " and -",
+                    "marks": []
+                  },
+                  {
+                    "text": "INF",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " are neutral initial values for minimum and maximum. This is not the $4n$ layout of a segment tree: each jump table has $\\mathrm{",
+                    "marks": []
+                  },
+                  {
+                    "text": "lg",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": "}\\times(",
+                    "marks": []
+                  },
+                  {
+                    "text": "n",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": "+1)$ cells.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst ll INF = 1LL << 62;\nstruct binaryJump {\n    int n, lg;\n    vector<int> dep;\n    vector<ll> pref;\n    vector<vector<int>> up;\n    vector<vector<ll>> mn, mx;\n\n    binaryJump(int _n) {\n        n = _n;\n        lg = 1;\n        while ((1LL << lg) <= n) {\n            ++lg;\n        }\n        dep.assign(n + 1, -1);\n        pref.assign(n + 1, 0);\n        up.assign(lg, vector<int>(n + 1, 1));\n        mn.assign(lg, vector<ll>(n + 1, INF));\n        mx.assign(lg, vector<ll>(n + 1, -INF));\n    }\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "From direct parents to tables"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "BFS computes parents, depths, direct edge weights and root sums. The next loops combine two halves for each longer jump. The root points to itself and retains neutral edge summaries.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    void build(const vector<vector<pair<int, ll>>>& adj) {\n        queue<int> q;\n        dep[1] = 0;\n        q.push(1);\n        while (!q.empty()) {\n            int u = q.front();\n            q.pop();\n            for (auto [v, w] : adj[u]) {\n                if (dep[v] != -1) {\n                    continue;\n                }\n                dep[v] = dep[u] + 1;\n                pref[v] = pref[u] + w;\n                up[0][v] = u;\n                mn[0][v] = mx[0][v] = w;\n                q.push(v);\n            }\n        }\n        for (int j = 1; j < lg; ++j) {\n            for (int u = 1; u <= n; ++u) {\n                int v = up[j - 1][u];\n                up[j][u] = up[j - 1][v];\n                mn[j][u] = min(mn[j - 1][u], mn[j - 1][v]);\n                mx[j][u] = max(mx[j - 1][u], mx[j - 1][v]);\n            }\n        }\n    }\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "LCA first"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Align depths, check whether the vertices already agree, then lift both while staying below their common ancestor.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    int lca(int u, int v) {\n        if (dep[u] < dep[v]) {\n            swap(u, v);\n        }\n        int d = dep[u] - dep[v];\n        for (int j = 0; j < lg; ++j) {\n            if ((d >> j) & 1) {\n                u = up[j][u];\n            }\n        }\n        if (u == v) {\n            return u;\n        }\n        for (int j = lg - 1; j >= 0; --j) {\n            if (up[j][u] != up[j][v]) {\n                u = up[j][u];\n                v = up[j][v];\n            }\n        }\n        return up[0][u];\n    }\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Aggregate the two sides up to LCA"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "c",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " is the LCA already found. On each side, combine the table entry before moving to the jump destination. Use ",
+                    "marks": []
+                  },
+                  {
+                    "text": "pref",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " for the sum. Distinct vertices have at least one real path edge, so neutral sentinels cannot leak into the output.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "    array<ll, 3> path_info(int a, int b, int c) {\n        if (a == b) {\n            return {0, 0, 0};\n        }\n        ll lo = INF, hi = -INF;\n        for (int u : {a, b}) {\n            int d = dep[u] - dep[c];\n            for (int j = 0; j < lg; ++j) {\n                if ((d >> j) & 1) {\n                    lo = min(lo, mn[j][u]);\n                    hi = max(hi, mx[j][u]);\n                    u = up[j][u];\n                }\n            }\n        }\n        return {lo, hi, pref[a] + pref[b] - 2 * pref[c]};\n    }\n};\n\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Input, preprocessing and queries"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read and preprocess the tree once. Each query finds LCA before collecting its path information. Do not rebuild the tables per query. Root-path sums have magnitude below about $2\\cdot10^{14}$ under the stated limits, so ",
+                    "marks": []
+                  },
+                  {
+                    "text": "long long",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " is sufficient.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "In main, construct the structure with its size and call build once. Then tree.lca and tree.path_info answer queries using that object’s precomputed tables. This example does not rebuild the object: changing an edge or weight invalidates the tables.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<vector<pair<int, ll>>> adj(n + 1);\n    for (int i = 0; i < n - 1; ++i) {\n        int u, v;\n        ll w;\n        cin >> u >> v >> w;\n        adj[u].push_back({v, w});\n        adj[v].push_back({u, w});\n    }\n    binaryJump tree(n);\n    tree.build(adj);\n    while (q--) {\n        int u, v;\n        cin >> u >> v;\n        int c = tree.lca(u, v);\n        auto [lo, hi, sum] = tree.path_info(u, v, c);\n        cout << c << ' ' << lo << ' ' << hi << ' ' << sum << '\\n';\n    }\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Complete C++17 program"
+              },
+              {
+                "type": "note",
+                "text": "Concatenating the fragments in order gives exactly this program. Individual fragments are not necessarily standalone programs."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst ll INF = 1LL << 62;\nstruct binaryJump {\n    int n, lg;\n    vector<int> dep;\n    vector<ll> pref;\n    vector<vector<int>> up;\n    vector<vector<ll>> mn, mx;\n\n    binaryJump(int _n) {\n        n = _n;\n        lg = 1;\n        while ((1LL << lg) <= n) {\n            ++lg;\n        }\n        dep.assign(n + 1, -1);\n        pref.assign(n + 1, 0);\n        up.assign(lg, vector<int>(n + 1, 1));\n        mn.assign(lg, vector<ll>(n + 1, INF));\n        mx.assign(lg, vector<ll>(n + 1, -INF));\n    }\n\n    void build(const vector<vector<pair<int, ll>>>& adj) {\n        queue<int> q;\n        dep[1] = 0;\n        q.push(1);\n        while (!q.empty()) {\n            int u = q.front();\n            q.pop();\n            for (auto [v, w] : adj[u]) {\n                if (dep[v] != -1) {\n                    continue;\n                }\n                dep[v] = dep[u] + 1;\n                pref[v] = pref[u] + w;\n                up[0][v] = u;\n                mn[0][v] = mx[0][v] = w;\n                q.push(v);\n            }\n        }\n        for (int j = 1; j < lg; ++j) {\n            for (int u = 1; u <= n; ++u) {\n                int v = up[j - 1][u];\n                up[j][u] = up[j - 1][v];\n                mn[j][u] = min(mn[j - 1][u], mn[j - 1][v]);\n                mx[j][u] = max(mx[j - 1][u], mx[j - 1][v]);\n            }\n        }\n    }\n\n    int lca(int u, int v) {\n        if (dep[u] < dep[v]) {\n            swap(u, v);\n        }\n        int d = dep[u] - dep[v];\n        for (int j = 0; j < lg; ++j) {\n            if ((d >> j) & 1) {\n                u = up[j][u];\n            }\n        }\n        if (u == v) {\n            return u;\n        }\n        for (int j = lg - 1; j >= 0; --j) {\n            if (up[j][u] != up[j][v]) {\n                u = up[j][u];\n                v = up[j][v];\n            }\n        }\n        return up[0][u];\n    }\n\n    array<ll, 3> path_info(int a, int b, int c) {\n        if (a == b) {\n            return {0, 0, 0};\n        }\n        ll lo = INF, hi = -INF;\n        for (int u : {a, b}) {\n            int d = dep[u] - dep[c];\n            for (int j = 0; j < lg; ++j) {\n                if ((d >> j) & 1) {\n                    lo = min(lo, mn[j][u]);\n                    hi = max(hi, mx[j][u]);\n                    u = up[j][u];\n                }\n            }\n        }\n        return {lo, hi, pref[a] + pref[b] - 2 * pref[c]};\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<vector<pair<int, ll>>> adj(n + 1);\n    for (int i = 0; i < n - 1; ++i) {\n        int u, v;\n        ll w;\n        cin >> u >> v >> w;\n        adj[u].push_back({v, w});\n        adj[v].push_back({u, w});\n    }\n    binaryJump tree(n);\n    tree.build(adj);\n    while (q--) {\n        int u, v;\n        cin >> u >> v;\n        int c = tree.lca(u, v);\n        auto [lo, hi, sum] = tree.path_info(u, v, c);\n        cout << c << ' ' << lo << ' ' << hi << ' ' << sum << '\\n';\n    }\n}\n"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Sample input and output"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "7 5\n1 2 6\n1 3 4\n2 4 2\n2 5 9\n3 6 -3\n6 7 5\n4 5\n4 7\n6 7\n3 3\n1 7\n"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "2 2 9 11\n1 -3 6 14\n6 5 5 5\n3 0 0 0\n1 -3 5 6\n"
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "Limits: empty paths, updates and direction",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "A same-vertex path has no edges. Its real minimum and maximum are undefined, so zeros are an explicit output convention. Do not initialize ordinary path extrema to zero: that fails on all-negative or all-positive weights."
+              },
+              {
+                "type": "p",
+                "text": "This program stores edge weights. For vertex values, exclude the LCA from both upward parts and add its value once at the end. The vertex-sum formula gains $+\\mathrm{value}[c]$, and a same-vertex query returns that vertex value."
+              },
+              {
+                "type": "p",
+                "text": "Tables remain valid because values are static. Changing one edge weight can invalidate many jump summaries; this program has no update operation. Dynamic path queries need a separate approach such as path decomposition plus a range structure."
+              },
+              {
+                "type": "p",
+                "text": "Min, max and sum are unchanged when segment order is swapped. String concatenation or matrix multiplication is different: the order must be $u\\to c$, then $c\\to v$. Two upward summaries cannot be combined arbitrarily; maintain directional summaries or an appropriate reversal operation."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Test the idea in other settings",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "First solve the weighted example by hand. Add a chain, star, one vertex, negative weights and ancestor/descendant queries. The following cards preserve the existing practice links."
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Company Queries I"
+              },
+              {
+                "type": "p",
+                "text": "Find a requested ancestor. Handle jumps beyond the depth according to that task; our internal self-parent sentinel is not its missing-ancestor output."
+              },
+              {
+                "type": "problem",
+                "problemKey": "425"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Company Queries II"
+              },
+              {
+                "type": "p",
+                "text": "Implement the LCA part independently; test depth alignment, identical vertices and different branches."
+              },
+              {
+                "type": "problem",
+                "problemKey": "426"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Distance Queries"
+              },
+              {
+                "type": "p",
+                "text": "Use depths for distance in edge counts. Then test sum/min/max on your own small weighted variant."
+              },
+              {
+                "type": "problem",
+                "problemKey": "427"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Counting Paths"
+              },
+              {
+                "type": "p",
+                "text": "LCA only provides the path split; combining many path contributions also needs tree accumulation."
+              },
+              {
+                "type": "problem",
+                "problemKey": "428"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Path Queries"
+              },
+              {
+                "type": "p",
+                "text": "This task has updates. Static jump summaries alone do not solve it; connect traversal order with Fenwick/segment trees."
+              },
+              {
+                "type": "problem",
+                "problemKey": "430"
+              },
+              {
+                "type": "heading",
+                "level": 4,
+                "text": "Tree Distances II"
+              },
+              {
+                "type": "p",
+                "text": "Rerooting tree DP is more appropriate for total distances from every vertex. Calling LCA on every pair is not an efficient solution."
+              },
+              {
+                "type": "problem",
+                "problemKey": "424"
+              }
+            ]
+          },
+          {
+            "key": "mastery",
+            "title": "Explain and verify it yourself",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Without looking at code, explain why LCA splits the path into two upward parts. Draw exactly which edges one jump-table cell covers. Why must you read a summary from the current vertex before moving to its ancestor?"
+              },
+              {
+                "type": "p",
+                "text": "On small random trees, compare against parent-by-parent LCA and an explicit walk over the path weights. Include root queries, identical vertices, negative and repeated weights, and a long chain."
+              },
+              {
+                "type": "p",
+                "text": "The topic remains High priority because it underpins many tree-query problems; priority does not mean every application is easy. Explaining, implementing and transferring the idea are distinct skills. Merely recording that you read it is not mastery."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Rooted trees, parents and depths, BFS, binary representation and bit tests."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Үндэстэй мод, эцэг ба гүн, BFS, хоёртын бичлэг ба бит шалгах.",
+    "priorityLevel": "high",
+    "priorityReason": "Үндэстэй модны өвөг, олон замын асуулт, зай ба модон дээрх тооллын нийтлэг суурь. Нэг бэлтгэлийг олон асуултад ашиглах, гүн ба хоёрын зэргийн хүснэгтийг холбох ач холбогдлоор High; хүндрэлийн зэрэг биш.",
+    "prerequisiteIds": [
+      "tree-basics",
+      "bit-operations",
+      "bfs"
+    ],
+    "learningRelations": {
+      "next": "tree-dp",
+      "practice": [
+        {
+          "key": "425",
+          "stage": "Warm-up",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "426",
+          "stage": "Standard",
+          "reason": "Хоёрын зэргийн хүснэгт, гүн тэнцүүлэх ба нийтлэг өвгөөр замыг задлахыг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "427",
+          "stage": "Observation",
+          "reason": "Хоёрын зэргийн хүснэгт, гүн тэнцүүлэх ба нийтлэг өвгөөр замыг задлахыг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "428",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "430",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "424",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "tree-basics",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "bit-operations",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "bfs",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "bitmask-dp",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "proposed_body_sha256": "eb9a95af2ff292380d8466fe411e36498c7034def9a92620aa1ed683f0cad0ef",
+  "reviewed_body_sha256": "eb9a95af2ff292380d8466fe411e36498c7034def9a92620aa1ed683f0cad0ef",
+  "status": "Original handbook-informed representative: substantive MN/EN review, code oracle, native reader and both editor round-trips passed; publication pending",
+  "source": "audit/PACKAGE03-HANDBOOK-TEACHING-GUIDE.md",
+  "scope": "Substantive existing LCA extension; no new tutorial ID, existing metadata/practice/priority preserved",
+  "review_notes": [
+    "Full228-line owner CP-style reference read. Compact size-constructed binaryJump struct; deliberate int indices/ll sums; no unused sample macros. All5fragments reassemble full program."
+  ]
+}
