@@ -3,7 +3,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[2]
 rows=[r for r in json.loads((ROOT/'audit/PART04-BASELINE.json').read_text())['tutorials']if r['id']!='mongolia']
-for id in ['introduction','scc','paths-circuits','flows-cuts','number-theory','matrices','probability']:
+for id in ['introduction','scc','paths-circuits','flows-cuts','number-theory','matrices','probability','game-theory']:
  b=json.loads((ROOT/f'audit/package03-lessons/{id}.json').read_text())['body'];rows=[r for r in rows if r['id']!=id]+[{'id':id,'body':b,'revision':1}]
 class Quiet(http.server.SimpleHTTPRequestHandler):
  def log_message(self,*a):pass
