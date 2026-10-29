@@ -2,7 +2,7 @@
 // Whole words avoid ordinary language/identifiers; code, links and delimited math
 // are excluded. Existing documents are never rewritten by this module.
 const mathOrCode=/\$\$[\s\S]*?\$\$|(?<!\\)\$(?:\\.|[^$\\])*\$|\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\]|`[^`]*`|https?:\/\/\S+/g;
-const bare=/(?<![A-Za-z0-9_])(?:[nNmMLRrkKxXyYiIjJuUvVwWfFdD]|[LRnm]_[A-Za-z0-9{}]+)(?![A-Za-z0-9_])/g;
+const bare=/(?<![\p{L}\p{N}_])(?:[nNmMLRrkKxXyYiIjJuUvVwWfFdD]|[LRnm]_[A-Za-z0-9{}]+)(?![\p{L}\p{N}_])/gu;
 export function mathProseWarnings(document){
  const found=[];const check=(text,path)=>{for(const m of String(text||'').replace(mathOrCode,' ').matchAll(bare))found.push({path,variable:m[0]});};
  for(const [lang,body]of[['mn',document],['en',document.translations?.en]]){if(!body)continue;
