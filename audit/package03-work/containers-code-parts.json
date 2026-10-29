@@ -1,0 +1,32 @@
+{
+  "stack-queue": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    stack<ll> s;\n    queue<ll> q;\n    while (n--) {\n        string cmd;\n        cin >> cmd;\n",
+    "        if (cmd == \"PUSH\") {\n            ll x;\n            cin >> x;\n            s.push(x);\n            q.push(x);\n        } else if (cmd == \"PEEK\") {\n            if (s.empty()) cout << \"EMPTY\\n\";\n            else cout << s.top() << ' ' << q.front() << ' ' << q.back() << '\\n';\n",
+    "        } else if (cmd == \"POP\") {\n            if (s.empty()) cout << \"EMPTY\\n\";\n            else {\n                cout << s.top() << ' ' << q.front() << '\\n';\n                s.pop();\n                q.pop();\n            }\n        } else if (cmd == \"SIZE\") {\n            cout << s.size() << '\\n';\n        }\n    }\n}\n"
+  ],
+  "brackets": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "bool match(char a, char b) {\n    return (a == '(' && b == ')') || (a == '[' && b == ']') ||\n           (a == '{' && b == '}');\n}\n\n",
+    "bool balanced(const string &s) {\n    stack<char> st;\n    for (char c : s) {\n        if (c == '(' || c == '[' || c == '{') st.push(c);\n        else {\n            if (st.empty() || !match(st.top(), c)) return false;\n            st.pop();\n        }\n    }\n    return st.empty();\n}\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string s;\n    getline(cin, s);\n    cout << (balanced(s) ? \"YES\" : \"NO\") << '\\n';\n}\n"
+  ],
+  "heaps": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    priority_queue<ll> hi;\n    priority_queue<ll, vector<ll>, greater<ll>> lo;\n    while (n--) {\n        string cmd;\n        cin >> cmd;\n",
+    "        if (cmd == \"PUSH\") {\n            ll x;\n            cin >> x;\n            hi.push(x);\n            lo.push(x);\n        } else if (cmd == \"PEEK\") {\n            if (hi.empty()) cout << \"EMPTY\\n\";\n            else cout << hi.top() << ' ' << lo.top() << '\\n';\n",
+    "        } else if (cmd == \"POP\") {\n            if (hi.empty()) cout << \"EMPTY\\n\";\n            else {\n                cout << hi.top() << ' ' << lo.top() << '\\n';\n                hi.pop();\n                lo.pop();\n            }\n        } else if (cmd == \"SIZE\") cout << hi.size() << '\\n';\n    }\n}\n"
+  ],
+  "jobs": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "struct Job {\n    ll p;\n    int id;\n};\n\n",
+    "struct Cmp {\n    bool operator()(const Job &a, const Job &b) const {\n        if (a.p != b.p) return a.p < b.p;\n        return a.id > b.id;\n    }\n};\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    priority_queue<Job, vector<Job>, Cmp> q;\n    for (int i = 1; i <= n; i++) {\n        ll p;\n        cin >> p;\n        q.push({p, i});\n    }\n    while (!q.empty()) {\n        Job cur = q.top();\n        q.pop();\n        cout << cur.id << ' ' << cur.p << '\\n';\n    }\n}\n"
+  ],
+  "rooms": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "struct Stay {\n    ll l, r;\n    int id;\n    bool operator<(const Stay &s) const {\n        return tie(l, r, id) < tie(s.l, s.r, s.id);\n    }\n};\n\n",
+    "pair<int, vector<int>> allocate(vector<Stay> a) {\n    sort(a.begin(), a.end());\n    priority_queue<pair<ll, int>, vector<pair<ll, int>>, greater<pair<ll, int>>> q;\n    vector<int> ans(a.size());\n    int rooms = 0;\n    for (Stay s : a) {\n        int id;\n        if (!q.empty() && q.top().first < s.l) {\n            id = q.top().second;\n            q.pop();\n        } else id = ++rooms;\n        ans[s.id] = id;\n        q.push({s.r, id});\n    }\n    return {rooms, ans};\n}\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<Stay> a(n);\n    for (int i = 0; i < n; i++) {\n        cin >> a[i].l >> a[i].r;\n        a[i].id = i;\n    }\n    auto [rooms, ans] = allocate(a);\n    cout << rooms << '\\n';\n    for (int id : ans) cout << id << ' ';\n    cout << '\\n';\n}\n"
+  ]
+}
