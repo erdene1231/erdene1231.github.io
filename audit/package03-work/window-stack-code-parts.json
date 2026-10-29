@@ -1,0 +1,30 @@
+{
+  "fixed-sum": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, k;\n    cin >> n >> k;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n",
+    "    if (k < 1 || k > n) {\n        cout << '\\n';\n        return 0;\n    }\n    ll sum = 0;\n    for (int r = 0; r < n; r++) {\n        sum += a[r];\n        if (r >= k) sum -= a[r - k];\n        if (r >= k - 1) cout << sum << (r == n - 1 ? '\\n' : ' ');\n    }\n}\n"
+  ],
+  "positive-count": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    ll x;\n    cin >> n >> x;\n    vector<ll> a(n);\n    for (ll &v : a) cin >> v;\n",
+    "    int l = 0, ans = 0;\n    ll sum = 0;\n    for (int r = 0; r < n; r++) {\n        sum += a[r];\n        while (l <= r && sum > x) sum -= a[l++];\n        if (l <= r && sum == x) ans++;\n    }\n    cout << ans << '\\n';\n}\n"
+  ],
+  "deque-extrema": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, k;\n    cin >> n >> k;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n",
+    "    if (k < 1 || k > n) {\n        cout << \"\\n\\n\";\n        return 0;\n    }\n    deque<int> lo, hi;\n    vector<ll> mn, mx;\n    for (int i = 0; i < n; i++) {\n        while (!lo.empty() && lo.front() <= i - k) lo.pop_front();\n        while (!hi.empty() && hi.front() <= i - k) hi.pop_front();\n        while (!lo.empty() && a[lo.back()] >= a[i]) lo.pop_back();\n        while (!hi.empty() && a[hi.back()] <= a[i]) hi.pop_back();\n        lo.push_back(i);\n        hi.push_back(i);\n        if (i >= k - 1) {\n            mn.push_back(a[lo.front()]);\n            mx.push_back(a[hi.front()]);\n        }\n    }\n",
+    "    for (int i = 0; i < int(mn.size()); i++) {\n        cout << mn[i] << (i + 1 == int(mn.size()) ? '\\n' : ' ');\n    }\n    for (int i = 0; i < int(mx.size()); i++) {\n        cout << mx[i] << (i + 1 == int(mx.size()) ? '\\n' : ' ');\n    }\n}\n"
+  ],
+  "neighbors": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "vector<int> prevSmaller(const vector<ll> &a, bool strict) {\n    int n = a.size();\n    vector<int> ans(n), st;\n    for (int i = 0; i < n; i++) {\n        while (!st.empty() && (strict ? a[st.back()] >= a[i] : a[st.back()] > a[i])) {\n            st.pop_back();\n        }\n        if (!st.empty()) ans[i] = st.back() + 1;\n        st.push_back(i);\n    }\n    return ans;\n}\n\n",
+    "vector<int> nextGreater(const vector<ll> &a, bool strict) {\n    int n = a.size();\n    vector<int> ans(n), st;\n    for (int i = n - 1; i >= 0; i--) {\n        while (!st.empty() && (strict ? a[st.back()] <= a[i] : a[st.back()] < a[i])) {\n            st.pop_back();\n        }\n        if (!st.empty()) ans[i] = st.back() + 1;\n        st.push_back(i);\n    }\n    return ans;\n}\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    vector<vector<int>> ans = {\n        prevSmaller(a, true), prevSmaller(a, false),\n        nextGreater(a, true), nextGreater(a, false)\n    };\n    for (const auto &row : ans) {\n        for (int i : row) cout << i << ' ';\n        cout << '\\n';\n    }\n}\n"
+  ],
+  "histogram": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    vector<int> l(n, -1), r(n, n), st;\n",
+    "    for (int i = 0; i < n; i++) {\n        while (!st.empty() && a[st.back()] >= a[i]) st.pop_back();\n        if (!st.empty()) l[i] = st.back();\n        st.push_back(i);\n    }\n    st.clear();\n    for (int i = n - 1; i >= 0; i--) {\n        while (!st.empty() && a[st.back()] >= a[i]) st.pop_back();\n        if (!st.empty()) r[i] = st.back();\n        st.push_back(i);\n    }\n",
+    "    ll ans = 0;\n    for (int i = 0; i < n; i++) {\n        ll width = r[i] - l[i] - 1;\n        ans = max(ans, a[i] * width);\n    }\n    cout << ans << '\\n';\n}\n"
+  ]
+}
