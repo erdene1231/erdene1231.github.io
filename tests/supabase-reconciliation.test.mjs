@@ -1,3 +1,4 @@
+// Historical migration fixtures use the original 55; current Introduction publication is tested separately.
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {PGlite} from '@electric-sql/pglite';
@@ -12,7 +13,7 @@ test('021 validates optional prerequisites and preserves existing data and ACL',
    const f=baseline.functions.find(f=>f.name===name);await db.exec(f.definition);
    await db.exec(`revoke all on function public.${name}(${name==='tutorial_require_text'?'jsonb,integer':'text,jsonb'}) from public,anon,authenticated;`);
   }
-  const lesson=JSON.parse(read('tutorials.json')).tutorials[0];
+  const lesson=JSON.parse(read('tutorials.json')).tutorials.filter(t=>t.id!=='introduction')[0];
   const validate=body=>db.query('select public.validate_tutorial_body($1,$2)',[body.id,body]);
   // Demonstrate the missing production validation before applying 021 locally.
   await validate({...lesson,prerequisiteIds:'invalid'});
@@ -26,7 +27,7 @@ test('021 validates optional prerequisites and preserves existing data and ACL',
   }
   for(const value of [[],['binary-search'],Array(30).fill('valid-id')])await validate({...lesson,prerequisiteIds:value});
   const noPrerequisites={...lesson};delete noPrerequisites.prerequisiteIds;await validate(noPrerequisites);
-  for(const t of JSON.parse(read('tutorials.json')).tutorials)await validate(t);
+  for(const t of JSON.parse(read('tutorials.json')).tutorials.filter(t=>t.id!=='introduction'))await validate(t);
   assert.deepEqual((await db.query('select body from public.untouched')).rows,[{body:{marker:1}}]);
  }finally{await db.close();}
 });
