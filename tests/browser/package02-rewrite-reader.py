@@ -35,8 +35,9 @@ try:
      if lang=='mn':
       page.screenshot(path=f'/tmp/p02-rewrite-{doc["id"]}-{width}.png',full_page=False)
       if not page.locator('#tutorial-contents-panel').evaluate('(e)=>e.open'):page.locator('#tutorial-contents-panel summary').click()
-      page.locator('#tutorial-toc a').nth(7).click()
-      page.wait_for_function("location.hash.endsWith('/part/7')")
+      target=min(7,len(doc['sections'])-1)
+      page.locator('#tutorial-toc a').nth(target).click()
+      page.wait_for_function("p=>location.hash.endsWith('/part/'+p)",arg=target)
       if width in [375,1200]:page.screenshot(path=f'/tmp/p02-rewrite-code-{doc["id"]}-{width}.png')
       if mobile:assert not page.locator('#tutorial-contents-panel').evaluate('(e)=>e.open')
       page.locator('#tutorial-reading-mode').select_option('step')
