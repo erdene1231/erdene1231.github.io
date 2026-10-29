@@ -1,4 +1,4 @@
-import {validateTutorial} from './tutorial-model.js?v=57';
+import {validateTutorial} from './tutorial-model.js?v=61';
 export const STATEMENT_CHECKS=['task','input','output','constraints','samples','translation','rights'];
 export function assertProblemStatementReady(problem){
  const body=problem.statement,provenance=problem.statementProvenance;if(!provenance||JSON.stringify(provenance).length>16384)throw Error('Statement provenance required, at most16KB.');

@@ -1,5 +1,6 @@
+import {validateGridPresentation} from './tutorial-grid.js?v=61';
 import {validatePriority} from './priority.js?v=52';
-import {validateExtendedBlock} from './tutorial-blocks.js?v=57';
+import {validateExtendedBlock} from './tutorial-blocks.js?v=61';
 export const levels=['beginner','intermediate','advanced'];
 export const levelNames={mn:['Анхан шат','Дунд шат','Ахисан шат'],en:['Beginner','Intermediate','Advanced']};
 export function validateTutorial(t){
@@ -20,7 +21,7 @@ export function validateTutorial(t){
    if(['p','note','code'].includes(b.type)){optional(b.text,40000,'Агуулга');if(b.type==='note'){if(b.collapsible!==undefined&&typeof b.collapsible!=='boolean')fail('Нээж унших тохиргоо буруу.');if(b.label!==undefined)str(b.label,200,'Нээх товчны нэр');}if(b.type==='code'&&b.language!==undefined)str(b.language,80,'Кодын төрөл');}
    else if(b.type==='math')str(b.tex,8000,'Томъёо');
    else if(['list','ordered'].includes(b.type)){if(!Array.isArray(b.items)||!b.items.length||b.items.length>100)fail('Жагсаалт буруу.');for(const x of b.items)str(x,8000,'Жагсаалтын мөр');}
-   else if(b.type==='table'){if(!Array.isArray(b.headers)||!b.headers.length||b.headers.length>8||!Array.isArray(b.rows)||!b.rows.length||b.rows.length>100)fail('Хүснэгт буруу.');for(const h of b.headers)str(h,200,'Багана');for(const row of b.rows){if(!Array.isArray(row)||row.length!==b.headers.length)fail('Хүснэгтийн баганын тоо зөрсөн.');for(const c of row)str(c,8000,'Нүд');}}
+   else if(b.type==='table'){validateGridPresentation(b);if(!Array.isArray(b.headers)||!b.headers.length||b.headers.length>8||!Array.isArray(b.rows)||!b.rows.length||b.rows.length>100)fail('Хүснэгт буруу.');for(const h of b.headers)str(h,200,'Багана');for(const row of b.rows){if(!Array.isArray(row)||row.length!==b.headers.length)fail('Хүснэгтийн баганын тоо зөрсөн.');for(const c of row)str(c,8000,'Нүд');}}
    else if(b.type==='links'){if(!Array.isArray(b.items)||!b.items.length||b.items.length>30)fail('Холбоосын жагсаалт буруу.');for(const x of b.items){str(x.label,300,'Холбоосын нэр');str(x.url,1000,'Холбоос');let u;try{u=new URL(x.url);}catch{fail('Холбоос буруу.');}if(u.protocol!=='https:'||u.username||u.password)fail('HTTPS холбоос оруулна уу.');}}
    else if(!validateExtendedBlock(b))fail('Дэмжигдээгүй агуулгын төрөл.');
   }}
