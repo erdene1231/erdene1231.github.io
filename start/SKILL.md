@@ -468,3 +468,9 @@ PR 96 merged 762cbca3feefe6eedf0aa7bde86a03b88ae59ea8. set-map revision 5/histor
 PR #112 merged as 655e15b; graph-basics is published revision 5 / history 221. One-time SQL SHA-256 af31b0eecde79f338678598bf8b25433c8cf121b1585055c5df07b60dee792f9 SUCCEEDED; NEVER REPLAY. Counts remain 57 stored / 56 public tutorials and 1010 problems. All 8 drafts, Mongolia, the other 56 rows, learner records and authority fingerprints are unchanged. The target private draft retains its older base. See audit/PACKAGE03-GRAPHS-PUBLICATION-RECEIPT.json.
 
 The handbook cycle has 10/55 existing rewrites public-verified, with 45 remaining; Introduction is separate. Next is full chapter 12, Graph traversal. No migration, security, editor or deferred-feature changes, and no owner acceptance claim.
+
+## Latest Graph traversal and domino publication checkpoint
+
+Graph traversal is live in stable bfs revision 7 / history 223, PR #115 merged aec49044696a553a4bf57fd6c84b04a7117598a1, Pages 40840116153 succeeded. Dynamic-programming revision 9 / history 222 contains the user's merged colored domino diagrams from PR #114. No other lesson, private draft, bank, learner/profile or authority state changed. Counts remain 57 stored / 56 public tutorials, 8 private drafts and 1010 problems. No migration or security change.
+
+Successful one-time SQL hashes are `3a166f4c5dbdb50946a81d0d25637307ff1bd37a11594f5cfef35324803b111b` (domino) and `a08fffb946c3f3118834bbb15d7f2444035029b57c5a43df094fbc644fc2432f` (traversal). NEVER REPLAY EITHER. Read the DOMINO and TRAVERSAL PUBLICATION-RECEIPT artifacts before new work. The handbook cycle has 11/55 existing rewrites public-verified, with 44 remaining; Introduction is separate. Next chapter 13 is Shortest paths. Preserve focused existing IDs, all private drafts, owner edits and Mongolia, and keep the three deferred features deferred.
