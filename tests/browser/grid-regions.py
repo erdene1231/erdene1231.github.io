@@ -10,7 +10,7 @@ try:
  with sync_playwright() as pw:
   browser=pw.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox'])
   for width,theme in [(1280,'light'),(1280,'dark'),(390,'light'),(390,'dark')]:
-   page=browser.new_page(viewport={'width':width,'height':900});errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+   page=browser.new_page(viewport={'width':width,'height':900},has_touch=width<600);errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
    page.route('**/*',lambda r:r.abort() if not r.request.url.startswith(base) else r.fulfill(status=200,content_type='text/javascript',body='') if '/app.js?' in r.request.url or '/navigation.js?' in r.request.url else r.continue_());page.goto(base+'/index.html',wait_until='networkidle')
    page.evaluate('''async theme=>{document.documentElement.dataset.theme=theme;const{mountBlockEditor}=await import('/tutorial-block-editor.js?v=61');window.mount=mountBlockEditor;window.sections=[{key:'s',title:'Grid',blocks:[{key:'b',type:'diagram',kind:'dp',rows:[['A','A','B'],['C','D','B']],highlights:[],caption:'Domino'}]}];document.body.innerHTML='<main style="max-width:900px;margin:auto;padding:12px;min-width:0"><div id="fixture"></div><div id="reader"></div></main>';window.messages=[];window.editor=mount(document.querySelector('#fixture'),sections,{message:s=>messages.push(s),changed:()=>{}});}''',theme)
    def cell(r,c):return page.locator(f'.grid-controls td[data-grid-row="{r}"][data-grid-col="{c}"] button')
@@ -19,9 +19,11 @@ try:
    page.locator('[data-undo]').click();assert page.evaluate('sections[0].blocks[0].gridPresentation.colors===undefined');page.locator('[data-redo]').click()
    cell(0,0).click();page.get_by_role('button',name='Нэгтгэл салгах',exact=True).click();assert page.locator('.grid-controls td').count()==6
    cell(0,2).click();cell(1,2).click(modifiers=['Shift']);page.get_by_role('button',name='Нүд нэгтгэх',exact=True).click();assert page.locator('.grid-controls td[rowspan="2"]').count()==1
+   # Custom color applies to the whole region, with contrasting text.
+   cell(0,2).click();page.get_by_label('Нүдний өнгө',exact=True).fill('#000000');page.get_by_role('button',name='Өнгө өгөх',exact=True).click();assert cell(0,2).evaluate('(e)=>getComputedStyle(e).color')=='rgb(255, 255, 255)'
    # Existing merged region cannot be overlapped. No source strings are removed.
    cell(0,1).click();cell(0,2).click(modifiers=['Control']);cell(1,1).click(modifiers=['Control']);page.get_by_role('button',name='Нүд нэгтгэх',exact=True).click();assert 'давхцаж' in page.locator('.grid-selection-status').inner_text()
-   page.get_by_role('button',name='Сонголт цэвэрлэх',exact=True).click();cell(0,0).click();cell(1,1).click(modifiers=['Control']);page.get_by_role('button',name='Нүд нэгтгэх',exact=True).click();assert 'тэгш өнцөгт' in page.locator('.grid-selection-status').inner_text()
+   page.get_by_role('button',name='Сонголт цэвэрлэх',exact=True).click();cell(0,0).click();page.get_by_role('button',name='Олон нүд',exact=True).click();cell(1,1).click();page.get_by_role('button',name='Олон нүд',exact=True).click();page.get_by_role('button',name='Нүд нэгтгэх',exact=True).click();assert 'тэгш өнцөгт' in page.locator('.grid-selection-status').inner_text()
    # Keyboard rectangular selection and mixed text visible.
    cell(1,0).click();cell(1,0).press('Shift+ArrowRight');page.get_by_role('button',name='Нүд нэгтгэх',exact=True).click();assert 'C · D' in page.locator('.grid-controls').inner_text()
    # Download and import are the actual editor controls.
