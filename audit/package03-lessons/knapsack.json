@@ -1,0 +1,1234 @@
+{
+  "id": "knapsack",
+  "expected_revision": 6,
+  "expected_published": true,
+  "expected_body_md5": "86cc8c88c963ab9be051be3c06b27635",
+  "expected_body_sha256": "05ad276d04763de26678832c3e5ac9e13598fa1cd0efbe4a958f05b2ce62d442",
+  "reviewed_body_sha256": "12647cfdcb5100b6df27d2a7d67ca922e3b0b9f74a21d1857772340cd1c1e48a",
+  "proposed_body_sha256": "12647cfdcb5100b6df27d2a7d67ca922e3b0b9f74a21d1857772340cd1c1e48a",
+  "body": {
+    "id": "knapsack",
+    "level": "Дунд шат",
+    "order": 26,
+    "title": "Үүргэвчийн DP — нийлбэр, үнэ цэнэ ба сонголтын дүрэм",
+    "aliases": "knapsack 0/1 knapsack — авах эсвэл авахгүй 0/1 knapsack — take it or leave it knapsack үүргэвч багтаамж 0/1 dp capacity descending",
+    "related": [
+      "dynamic-programming",
+      "grid-dp",
+      "lis"
+    ],
+    "summary": "Бүх хүрэх нийлбэрээс 0/1 хамгийн их үнэ цэнэ рүү шилжиж, хүснэгт, нэг мөр, сонголт сэргээх болон давтагдах зүйлийн ялгааг батална.",
+    "category": "Dynamic programming",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "sums",
+        "title": "Жингүүдээс үүсэх бүх нийлбэр",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Жинтэй зүйлсээс заримыг нь сонгоход ямар нийлбэрүүд үүсэх вэ? Жишээ нь [1,3,3,5] жинтэй дөрвөн зүйл байна. Ижил 3 жинтэй хоёр зүйл нь тусдаа зүйл; тус бүрийг хамгийн ихдээ нэг удаа авч болно. Хоосон сонголтын нийлбэр 0. Боломжит нийлбэрүүд нь 0,1,3,4,5,6,7,8,9,11,12; 0..12 дотроос зөвхөн 2 ба 10 үүсэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "7-г 1+3+3 гэж бүрдүүлнэ. Энэ нь “хамгийн их үнэ цэнэ” гэсэн зорилгоос өмнөх, зөвхөн хүрэх боломж асуусан бодлого. Дараа нь ижил авах/авахгүй салгалтаар жин ба үнэ цэнэтэй сонголтод шилжинэ. Ямар төлөвт юу хадгалж байгаагаа сольж болох ч нэг зүйлийг хэдэн удаа хэрэглэх дүрмээ сольж болохгүй."
+          }
+        ]
+      },
+      {
+        "key": "table",
+        "title": "Өмнөх зүйлсээр хязгаарласан хоёр хэмжээст төлөв",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$dp[k][x]$ нь эхний $k$ зүйлийн заримаар яг $x$ нийлбэр үүсгэж болох эсэх. $k$ дахь зүйлийг авахгүй бол dp[$k$−1][$x$], авбал үлдсэн $x$−$w$[$k$−1]-ийг өмнөх $k$−1 зүйлээр бүрдүүлэх ёстой. Иймээс $dp[k][x]=dp[k-1][x]\\lor dp[k-1][x-w[k-1]]$; хоёр дахь хэсгийг зөвхөн $x$≥$w$[$k$−1] үед шалгана. Кодын зүйлс 0-ээс, ашигласан зүйлсийн тоо $k$ нь 0..$n$ байна."
+          },
+          {
+            "type": "p",
+            "text": "Зүйлгүй үед зөвхөн dp[0][0]=true, бусад нь false. Авах/авахгүй хоёр тохиолдол боломжит бүх сонголтыг хамарна. Аль аль нь өмнөх мөрөөс уншдаг учир нэг зүйлийг дахин авахгүй. Энд бид сонголтын ТОО биш, боломжтой эсэхийг хадгалж байгаа тул хоёр аргаар үүссэн ижил нийлбэрт зөвхөн true үлдэнэ."
+          },
+          {
+            "type": "diagram",
+            "kind": "dp",
+            "rows": [
+              [
+                "k / x",
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12"
+              ],
+              [
+                "0",
+                "X",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·"
+              ],
+              [
+                "1",
+                "X",
+                "X",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·"
+              ],
+              [
+                "2",
+                "X",
+                "X",
+                "·",
+                "X",
+                "X",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·"
+              ],
+              [
+                "3",
+                "X",
+                "X",
+                "·",
+                "X",
+                "X",
+                "·",
+                "X",
+                "X",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·"
+              ],
+              [
+                "4",
+                "X",
+                "X",
+                "·",
+                "X",
+                "X",
+                "X",
+                "X",
+                "X",
+                "X",
+                "X",
+                "·",
+                "X",
+                "X"
+              ]
+            ],
+            "caption": "[1,3,3,5]-ын бүх мөр. X — хүрч болно, · — хүрэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Эхний 1-ийн дараа 0,1. Эхний 3-ыг нэмбэл хуучин 0,1 дээр шинэ 3,4 үүснэ. Дараагийн 3 нь 6,7-г шинээр өгнө: хоёр 3-ыг хоёр тусдаа мөрөөр ашигласан. Эцсийн 5 нь 5,8,9,11,12-г нэмнэ. Төлөв бүрд бүх дэд олонлогийг хадгалахгүй, зөвхөн тухайн нийлбэр үүссэн эсэхийг нэгтгэж байгаа нь ажлыг багасгана."
+          },
+          {
+            "type": "p",
+            "text": "$W$ нь бүх жингийн нийлбэр. Доорх хоёр хувилбарт 0≤$n$≤100, жин бүр сөрөг биш int, $W$≤100000 гэж авна. Нийлбэр int-д багтана; сөрөг жинд энэ индексийн загвар үйлчлэхгүй. Хоёр хэмжээст хувилбар O(($n$+1)($W$+1)) хугацаа/зайтай. $W$-ийн тоон утгаар өсөж байгаа тул жингийн бичигдэх цифрийн тоотой харьцуулахад энэ нь олон гишүүнт хугацааны баталгаа биш."
+          },
+          {
+            "type": "p",
+            "text": "Индекс, нийт жинд int; боломжтой эсэхэд char массив хангалттай."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;"
+          },
+          {
+            "type": "p",
+            "text": "$n$ ба $n$ жин уншиж $W$-г нийлүүлнэ. $n$=0 үед зөвхөн нийлбэр 0 байна."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<int> w(n);\n    int W = 0;\n    for (int &x : w) {\n        cin >> x;\n        W += x;\n    }"
+          },
+          {
+            "type": "p",
+            "text": "Өмнөх мөрийн авахгүй хувилбарыг хуулж, индекс зөв үед авах хувилбарыг OR-оор нэгтгэнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "vector<vector<char>> dp(n + 1, vector<char>(W + 1));\n    dp[0][0] = true;\n    for (int k = 1; k <= n; k++) {\n        for (int x = 0; x <= W; x++) {\n            dp[k][x] = dp[k - 1][x];\n            if (x >= w[k - 1]) dp[k][x] |= dp[k - 1][x - w[k - 1]];\n        }\n    }"
+          },
+          {
+            "type": "p",
+            "text": "0..$W$ нийлбэр бүрийн боломжийг 0/1 хэлбэрээр хэвлэнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "for (int x = 0; x <= W; x++) cout << int(dp[n][x]) << (x == W ? '\\n' : ' ');\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<int> w(n);\n    int W = 0;\n    for (int &x : w) {\n        cin >> x;\n        W += x;\n    }\n    vector<vector<char>> dp(n + 1, vector<char>(W + 1));\n    dp[0][0] = true;\n    for (int k = 1; k <= n; k++) {\n        for (int x = 0; x <= W; x++) {\n            dp[k][x] = dp[k - 1][x];\n            if (x >= w[k - 1]) dp[k][x] |= dp[k - 1][x - w[k - 1]];\n        }\n    }\n    for (int x = 0; x <= W; x++) cout << int(dp[n][x]) << (x == W ? '\\n' : ' ');\n}\n"
+          }
+        ]
+      },
+      {
+        "key": "compress",
+        "title": "Нэг мөрийн санах ой: яагаад бууруулж явах вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Одоогийн мөр зөвхөн өмнөх мөрөөс хамаарна. Нэг массивтай бол зүйлийн жин $v$-д $x$-ийг $W$-ээс $v$ хүртэл бууруулж шинэчил. Тэр мөчид бага индекс $x$−$v$ хараахан өөрчлөгдөөгүй, өмнөх зүйлсийн хариу байна. Их индексүүд шинэ мөрийнх болсон ч тэднийг энэ шилжилт уншихгүй. Иймээс нэг зүйлийг давхар хэрэглэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Хэрэв нэг ширхэг 3 жин байхад 0-оос өсгөж шинэчилбэл 3-ыг true болгосны дараа тэр шинэ утгаас 6-г true болгоно. Нэг зүйлийг хоёр удаа хэрэглэсэн хэрэг. Харин $W$-ээс бууруулахад 6-г шалгах мөчид 3 нь хуучин false. Жин 0 үед эх ба зорих индекс ижил ч OR нь өөрийгөө өөрчлөхгүй; дараагийн зүйл рүү хэвийн шилжинэ."
+          },
+          {
+            "type": "p",
+            "text": "Хугацаа $O(nW)$, DP-ийн зай $O(W)$. $n$=0 эсвэл $W$=0 заагт бүтэн хэмжээг O(($n$+1)($W$+1)) гэж үзэж болно. Дараах код эх индексээс $x$+$v$ рүү үсрэхийн оронд зорих индексээс $x$−$v$-г уншдаг; ингэснээр $W$-ээс хэтэрсэн бичилт хийхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Боломжийн утга 0/1 тул том бүхэл төрөл шаардахгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;"
+          },
+          {
+            "type": "p",
+            "text": "Өмнөхтэй ижил оролт ба $W$, гаралттай. Хоёр программыг ижил жижиг оролт дээр тулгаж болно."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<int> w(n);\n    int W = 0;\n    for (int &x : w) {\n        cin >> x;\n        W += x;\n    }"
+          },
+          {
+            "type": "p",
+            "text": "dp[0]-г нэг болгож, жин бүрд баруунаас зүүн шинэчилнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "vector<char> dp(W + 1);\n    dp[0] = true;\n    for (int v : w) {\n        for (int x = W; x >= v; x--) dp[x] |= dp[x - v];\n    }"
+          },
+          {
+            "type": "p",
+            "text": "Эцсийн нэг мөр нь хоёр хэмжээст хүснэгтийн $n$ дэх мөртэй тэнцэнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "for (int x = 0; x <= W; x++) cout << int(dp[x]) << (x == W ? '\\n' : ' ');\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<int> w(n);\n    int W = 0;\n    for (int &x : w) {\n        cin >> x;\n        W += x;\n    }\n    vector<char> dp(W + 1);\n    dp[0] = true;\n    for (int v : w) {\n        for (int x = W; x >= v; x--) dp[x] |= dp[x - v];\n    }\n    for (int x = 0; x <= W; x++) cout << int(dp[x]) << (x == W ? '\\n' : ' ');\n}\n"
+          }
+        ]
+      },
+      {
+        "key": "value",
+        "title": "0/1 үүргэвч: хамгийн их үнэ цэнэ ба сонголт сэргээх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Одоо зүйл бүр жин $w$ ба үнэ цэнэ $v$-тэй, нийт жин $W$-ээс хэтрэхгүйгээр нийт үнэ цэнийг ихэсгэе. dp[$k$][c] нь эхний $k$ зүйлээс сонгоод c хүртэлх багтаамжид багтах хамгийн их үнэ цэнэ. “Яг c жинтэй” биш. Хоосон сонголт зөвшөөрсөн учир зүйлгүй бүх багтаамжийн эхлэл 0, сөрөг үнэ цэнэтэй зүйлийг авах албагүй."
+          },
+          {
+            "type": "p",
+            "text": "$k$ дахь зүйлийг авахгүй бол $dp[k-1][c]$. Багтвал авах хувилбар нь $dp[k-1][c-w[k-1]]+v[k-1]$. Хоёрын ихийг сонгоно. Бүх боломжит сонголт энэ хоёрын аль нэг тул индукцээр хамгийн сайн утга хадгалагдана. $k$ өсөх дарааллаар бодно; тусдаа мөртэй үед c-ийн чиглэл хамаагүй."
+          },
+          {
+            "type": "diagram",
+            "kind": "dp",
+            "rows": [
+              [
+                "k / c",
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+              ],
+              [
+                "0",
+                "0",
+                "0",
+                "0",
+                "0",
+                "0",
+                "0"
+              ],
+              [
+                "1",
+                "0",
+                "0",
+                "3",
+                "3",
+                "3",
+                "3"
+              ],
+              [
+                "2",
+                "0",
+                "0",
+                "3",
+                "4",
+                "4",
+                "7"
+              ],
+              [
+                "3",
+                "0",
+                "0",
+                "3",
+                "4",
+                "5",
+                "7"
+              ]
+            ],
+            "caption": "Жин [2,3,4], үнэ цэнэ [3,4,5], W=5."
+          },
+          {
+            "type": "p",
+            "text": "Хоёр дахь зүйлийг авч c=5 дээр өмнөх мөрийн c=2 утга 3 дээр 4-ийг нэмээд 7 болно. Гурав дахь зүйлийн үнэ 5 боловч үлдэх c=1 дээр өмнөх утга 0 тул 7-г сайжруулахгүй. Хариу нь 1 ба 2 дугаартай зүйлс, жин 5, үнэ цэнэ 7. Хамгийн өндөр ганц үнэ цэнэтэй зүйлийг шууд авах шуналтай арга энэ жишээнд буруу."
+          },
+          {
+            "type": "p",
+            "text": "Зөвхөн утга бус зүйлсийг нь олохдоо ($n$,$W$)-ээс буцна. dp[$k$][c]==dp[$k$−1][c] бол $k$ дахь зүйлийг авахгүй байж болно; тэнцсэн үед тэр хувилбарыг сонгоно. Өөр бол уг зүйл авсан, c-ээс жинг нь хасаад $k$-г багасгана. Аль ч тохиолдолд $k$ буурдаг тул нэг зүйл хоёр удаа гарахгүй."
+          },
+          {
+            "type": "p",
+            "text": "Доорх үнэ цэнэтэй гурван кодод 0≤$n$≤100, 0≤$W$≤10000, жин бүр 1..10000, |$v$|≤10⁹. 0/1 хариуны хэмжээ $n$×10⁹, давтагдах хувилбарынх $W$×10⁹-өөс хэтрэхгүй, ll-д багтана. Жин эерэг тул давтагдах сонголт төгсгөлтэй. Хүснэгттэй сэргээх хувилбар $O(nW)$ хугацаа, $O(nW)$ DP зай; хамгийн ихдээ 1000000 орчим төлөв."
+          },
+          {
+            "type": "p",
+            "text": "Жин/индекст int, үнэ цэнэ/нийлбэрт ll."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+          },
+          {
+            "type": "p",
+            "text": "$n$,$W$, дараа нь зүйл бүрийн жин ба үнэ цэнийг нэг мөрөөр уншина."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, W;\n    cin >> n >> W;\n    vector<int> w(n);\n    vector<ll> v(n);\n    for (int i = 0; i < n; i++) cin >> w[i] >> v[i];"
+          },
+          {
+            "type": "p",
+            "text": "Багтаамж “хүртэл” гэсэн төлөв учир бүх эхлэл 0. Хоёр хувилбар хоёул өмнөх мөрөөс уншина."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "vector<vector<ll>> dp(n + 1, vector<ll>(W + 1));\n    for (int k = 1; k <= n; k++) {\n        for (int c = 0; c <= W; c++) {\n            dp[k][c] = dp[k - 1][c];\n            if (c >= w[k - 1]) {\n                dp[k][c] = max(dp[k][c], dp[k - 1][c - w[k - 1]] + v[k - 1]);\n            }\n        }\n    }"
+          },
+          {
+            "type": "p",
+            "text": "Тэнцсэн үед авахгүй хувилбарыг үлдээнэ. Хариу, авсан зүйлийн тоо, 1-ээс эхэлсэн дугааруудыг хэвлэнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "vector<int> take;\n    int c = W;\n    for (int k = n; k >= 1; k--) {\n        if (dp[k][c] != dp[k - 1][c]) {\n            take.push_back(k);\n            c -= w[k - 1];\n        }\n    }\n    reverse(take.begin(), take.end());\n    cout << dp[n][W] << '\\n' << take.size() << '\\n';\n    for (int id : take) cout << id << ' ';\n    cout << '\\n';\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, W;\n    cin >> n >> W;\n    vector<int> w(n);\n    vector<ll> v(n);\n    for (int i = 0; i < n; i++) cin >> w[i] >> v[i];\n    vector<vector<ll>> dp(n + 1, vector<ll>(W + 1));\n    for (int k = 1; k <= n; k++) {\n        for (int c = 0; c <= W; c++) {\n            dp[k][c] = dp[k - 1][c];\n            if (c >= w[k - 1]) {\n                dp[k][c] = max(dp[k][c], dp[k - 1][c - w[k - 1]] + v[k - 1]);\n            }\n        }\n    }\n    vector<int> take;\n    int c = W;\n    for (int k = n; k >= 1; k--) {\n        if (dp[k][c] != dp[k - 1][c]) {\n            take.push_back(k);\n            c -= w[k - 1];\n        }\n    }\n    reverse(take.begin(), take.end());\n    cout << dp[n][W] << '\\n' << take.size() << '\\n';\n    for (int id : take) cout << id << ' ';\n    cout << '\\n';\n}\n"
+          }
+        ]
+      },
+      {
+        "key": "value-row",
+        "title": "Үнэ цэнийн нэг мөр ба сэргээх мэдээллийн ялгаа",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хэрэв зөвхөн хамгийн их утга хэрэгтэй бол өмнөх мөрийг нэг массивт шахна. c-г $W$-ээс тухайн жин хүртэл бууруулахад dp[c−$w$] нь өмнөх зүйлсийн утга хэвээр, яг боломжийн тохиолдолтой адил. Үйлдэл OR биш max, авах хувилбарт үнэ цэнэ нэмнэ. Төлөвийн утга “c хүртэл багтах” хэвээр тул dp-гийн эхлэл бүгд 0."
+          },
+          {
+            "type": "p",
+            "text": "Нэг жин 2, үнэ цэнэ 3, $W$=4 үед буурах давталт dp[4]=3 өгнө. Өсөх давталт эхлээд dp[2]=3 болгоод dp[4]=dp[2]+3=6 гэж давхар авна. $O(nW)$ хугацаа, $O(W)$ DP зайтай дараах хувилбарын гаралт зөвхөн хамгийн их үнэ цэнэ; сонголтын дугаар хэвлэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Үнэ цэнэ 32-битээс их болж болно; dp нь ll."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+          },
+          {
+            "type": "p",
+            "text": "Хүснэгттэй хувилбартай ижил жин/үнэ цэнийн оролт."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, W;\n    cin >> n >> W;\n    vector<int> w(n);\n    vector<ll> v(n);\n    for (int i = 0; i < n; i++) cin >> w[i] >> v[i];"
+          },
+          {
+            "type": "p",
+            "text": "Зүйл бүрд багтаамж буурна. Багтахгүй зүйлд дотоод давталт огт ажиллахгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "vector<ll> dp(W + 1);\n    for (int k = 0; k < n; k++) {\n        for (int c = W; c >= w[k]; c--) {\n            dp[c] = max(dp[c], dp[c - w[k]] + v[k]);\n        }\n    }\n    cout << dp[W] << '\\n';\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, W;\n    cin >> n >> W;\n    vector<int> w(n);\n    vector<ll> v(n);\n    for (int i = 0; i < n; i++) cin >> w[i] >> v[i];\n    vector<ll> dp(W + 1);\n    for (int k = 0; k < n; k++) {\n        for (int c = W; c >= w[k]; c--) {\n            dp[c] = max(dp[c], dp[c - w[k]] + v[k]);\n        }\n    }\n    cout << dp[W] << '\\n';\n}\n"
+          },
+          {
+            "type": "p",
+            "text": "Шахсан утгын массив дээр ганц parent[c] хадгалаад сонголт сэргээх нь дангаараа найдвартай биш: parent заасан бага багтаамж дараагийн зүйл дээр өөрчлөгдөж, өөр үеийн мөр рүү заах боломжтой. Энгийн, баталгаатай сэргээхэд дээрх хоёр хэмжээст хүснэгт эсвэл үеийг нь хадгалсан шийдвэрийн мэдээлэл хэрэглэ. Энэ кодын $O(W)$ гэсэн амлалтад сэргээх түүх нуугдаагүй."
+          },
+          {
+            "type": "p",
+            "text": "Жишээ нь ганц жин 2, үнэ 3, багтаамж 4 байг. Буурах шинэчлэлтээр dp[4]=3 болох үед parent[4]=2 гэж тэмдэглэсэн ч дараа нь мөн тэр зүйлээр dp[2]=3, parent[2]=0 болно. Эцэст нь 4→2→0 гэж дагавал нэг зүйлийг хоёр удаа авсан мэт харагдана. Хариуны утга зөв байсан ч энэ сэргээх холбоос буруу гэсэн үг."
+          },
+          {
+            "type": "p",
+            "text": "“Яг $W$ жинд” хамгийн сайн үнэ асуувал эхлэл өөр: зөвхөн dp[0]=0, бусад боломжгүй. Тэдгээрийг тусгай бага утгаар тэмдэглээд зөвхөн хүрэх боломжтой эхээс нэмнэ. Бүгдийг 0 болговол хүрч болохгүй жинг ч зөвшөөрсөн хэрэг. Жишээ нь ганц жин 2-той байхад яг 3 боломжгүй, харин 3 хүртэл багтах бодлогын хариу тэр зүйлийн үнэ байж болно."
+          }
+        ]
+      },
+      {
+        "key": "unbounded",
+        "title": "Давтаж авч болох үед өсөх давталт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Харин нэг төрлийн зүйлийг хүссэн тоогоор авч болдог бол давталтыг зориуд өсгөнө. dp[c−$w$] нь одоогийн төрлийг аль хэдийн ашигласан байж болно; түүнд дахин нэгийг нэмэх нь энэ удаад зөв. Өмнөх жин 2, үнэ 3, $W$=4 жишээний хариу 6 болно. Кодын ялгаа жижиг боловч сонголтын дүрэм бүхэлдээ өөр."
+          },
+          {
+            "type": "p",
+            "text": "Зүйл бүрийн өмнөх ба одоогийн төрлөөс бүтсэн боломжуудыг авч үзье. c өсөж байгаа учир c−$w$<c төлөв аль хэдийн бэлэн, одоогийн төрлийн дахин нэг хувийг нэмж болно. Авахгүй сонголт dp[c]-д үлдэнэ. Жин 0, үнэ эерэг бол хариу хязгааргүй болох тул ийм оролтыг энэ код зөвшөөрөхгүй. Сөрөг жин ч энэ хамаарлыг эвдэнэ."
+          },
+          {
+            "type": "p",
+            "text": "Төрөл, багтаамж int; давтагдсан үнэ цэнийн нийлбэр ll."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+          },
+          {
+            "type": "p",
+            "text": "Ижил оролт боловч $n$ нь нэг удаагийн зүйлс бус, давтаж авч болох төрлүүдийн тоо."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, W;\n    cin >> n >> W;\n    vector<int> w(n);\n    vector<ll> v(n);\n    for (int i = 0; i < n; i++) cin >> w[i] >> v[i];"
+          },
+          {
+            "type": "p",
+            "text": "Багтаамжийг тухайн эерэг жингээс $W$ хүртэл өсгөнө. Хугацаа $O(nW)$, DP зай $O(W)$."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "vector<ll> dp(W + 1);\n    for (int k = 0; k < n; k++) {\n        for (int c = w[k]; c <= W; c++) {\n            dp[c] = max(dp[c], dp[c - w[k]] + v[k]);\n        }\n    }\n    cout << dp[W] << '\\n';\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, W;\n    cin >> n >> W;\n    vector<int> w(n);\n    vector<ll> v(n);\n    for (int i = 0; i < n; i++) cin >> w[i] >> v[i];\n    vector<ll> dp(W + 1);\n    for (int k = 0; k < n; k++) {\n        for (int c = w[k]; c <= W; c++) {\n            dp[c] = max(dp[c], dp[c - w[k]] + v[k]);\n        }\n    }\n    cout << dp[W] << '\\n';\n}\n"
+          }
+        ]
+      },
+      {
+        "key": "model",
+        "title": "Төлөвийн утгаас алгоритмын дүрмээ сонгох",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Бодлого уншихдаа гурван асуулт тавь: яг жин үү, дээд багтаамж уу; боломжтой эсэх, тоо, эсвэл хамгийн сайн үнэ цэнэ юу; зүйл нэг удаа юу, хязгааргүй юу? Эдгээр нь тус тус эхлэл, нэгтгэх үйлдэл, давталтын чиглэлийг шийднэ. Тооллого дээр ялгаатай зүйл/ижил төрлийн хуулбар болон дарааллыг ялгаатайд тооцох эсэхийг нэмээд тодорхойл; Boolean DP-гээ шууд тоо гэж тайлбарлаж болохгүй."
+          },
+          {
+            "type": "p",
+            "text": "Шалгах жижиг оролтууд: зүйлгүй/багтаамж 0, бүх зүйл хэт хүнд, ижил жинтэй хоёр өөр зүйл, олон тэнцүү сайн сонголт, сөрөг үнэ, 32-битээс давсан нийт үнэ. $n$ жижиг үед бүх 2ⁿ дэд олонлогийг шалгаж 0/1 хариу болон сэргээсэн зүйлийн жин/үнэ цэнийг тулга. Давтагдах хувилбарт жин бүр эерэг үед хуулбарын тоог 0..$W$/$w$ хүрээнд үүсгэж бие даасан шалгалт хий."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өөрийгөө шалга: 1. [1,3,3,5]-аас 7 яаж үүсэх вэ, 10 яагаад үүсэхгүй вэ? 2. Ганц жин 2, үнэ 3, $W$=4 дээр хоёр чиглэл ямар хариу өгөх вэ? 3. Яг жинтэй төлөвийг бүгдийг 0 эхлүүлж болох уу? 4. Нэг мөрийн DP дээр зөвхөн parent[c] байхад яагаад үе холилдож болох вэ?"
+          },
+          {
+            "type": "p",
+            "text": "Хариу: 1+3+3; бүх дэд олонлогийн нийлбэрийн хүснэгтэд 10 байхгүй; буурахад 3, өсөхөд 6; боломжгүй төлөвийг ялгах ёстой; заасан бага багтаамж дараа нь шинэчлэгдэж болно. Үндсэн хоёр бодлогод “авах/авахгүй” баталгаа ба буурах давталтаа тайлбарла."
+          },
+          {
+            "type": "p",
+            "text": "Сэдвийг эзэмших үндсэн бодлогууд"
+          },
+          {
+            "type": "p",
+            "text": "Book Shop: үнэ/хуудсыг жин/үнэ цэнэ гэж загварчил; оролтын массивын хэлбэр сургалтын хос мөрөөс өөр."
+          },
+          {
+            "type": "problem",
+            "problemKey": "346"
+          },
+          {
+            "type": "p",
+            "text": "Money Sums: үнэ цэнэ бус яг хүрэх нийлбэрүүдийг гарга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "352"
+          },
+          {
+            "type": "p",
+            "text": "Бие даах ба ахиулах бодлогууд"
+          },
+          {
+            "type": "p",
+            "text": "Two Sets II: хуваалтыг хоёр талаас нь давхар тоолох эсэхийг шийд."
+          },
+          {
+            "type": "problem",
+            "problemKey": "353"
+          },
+          {
+            "type": "p",
+            "text": "Knapsack 1: том үнэ цэнэ ба нэг удаагийн сонголтыг нэгтгэ."
+          },
+          {
+            "type": "problem",
+            "problemKey": "680"
+          },
+          {
+            "type": "p",
+            "text": "Knapsack 2: $W$ том бол үнэ цэнээр индексэлж хамгийн бага жин хадгалах өөр төлөв гарга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "681"
+          },
+          {
+            "type": "p",
+            "text": "Minimizing Coins: давтагдах зоосонд хамгийн бага тоо гэсэн өөр зорилго, боломжгүй төлөв ба өсөх хамаарлыг тайлбарла."
+          },
+          {
+            "type": "problem",
+            "problemKey": "341"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Knapsack DP — sums, values and reuse rules",
+        "summary": "Derive reachable sums and0/1 maximum value, justify table and one-row states, reconstruct selections and distinguish repeatable items.",
+        "sections": [
+          {
+            "key": "sums",
+            "title": "All sums obtainable from weights",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Which sums can be formed by selecting some weighted items? With weights[1,3,3,5], the two items of weight 3 are distinct and may each be used at most once. The empty selection gives 0. Reachable sums are 0,1,3,4,5,6,7,8,9,11,12: only 2 and 10 are missing in 0..12."
+              },
+              {
+                "type": "p",
+                "text": "The sum 7 uses 1+3+3. This first problem asks reachability, not maximum value. Later the same take/skip split handles items with both weight and value. Changing the stored objective must not silently change how many times an item may be used."
+              }
+            ]
+          },
+          {
+            "key": "table",
+            "title": "A two-dimensional prefix state",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "dp[$k$][$x$] means that some of the first $k$ items form exactly $x$. Skipping item $k$ uses dp[$k$−1][$x$]; taking it leaves $x$−$w$[$k$−1] to the preceding $k$−1 items. Combine these alternatives with OR, checking the take case only if $x$≥$w$[$k$−1]. Code items are zero-based; the prefix length $k$ ranges 0..$n$."
+              },
+              {
+                "type": "p",
+                "text": "With no items only dp[0][0] is true. Taking and skipping exhaust all subsets. Both read the previous row, preventing reuse of the current item. This state stores existence, not the number of selections, so two constructions of the same sum still produce just true."
+              },
+              {
+                "type": "diagram",
+                "kind": "dp",
+                "rows": [
+                  [
+                    "k / x",
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7",
+                    "8",
+                    "9",
+                    "10",
+                    "11",
+                    "12"
+                  ],
+                  [
+                    "0",
+                    "X",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·"
+                  ],
+                  [
+                    "1",
+                    "X",
+                    "X",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·"
+                  ],
+                  [
+                    "2",
+                    "X",
+                    "X",
+                    "·",
+                    "X",
+                    "X",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·"
+                  ],
+                  [
+                    "3",
+                    "X",
+                    "X",
+                    "·",
+                    "X",
+                    "X",
+                    "·",
+                    "X",
+                    "X",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·"
+                  ],
+                  [
+                    "4",
+                    "X",
+                    "X",
+                    "·",
+                    "X",
+                    "X",
+                    "X",
+                    "X",
+                    "X",
+                    "X",
+                    "X",
+                    "·",
+                    "X",
+                    "X"
+                  ]
+                ],
+                "caption": "Every row for[1,3,3,5]. X means reachable; · means unreachable."
+              },
+              {
+                "type": "p",
+                "text": "After weight 1, reach 0,1. The first 3 adds 3,4 to those old sums. The second 3 newly reaches 6,7; the two copies were used in two different rows. Finally 5 adds 5,8,9,11,12. We merge all subsets with the same state instead of storing every subset separately."
+              },
+              {
+                "type": "p",
+                "text": "$W$ is the sum of all weights. Both versions assume 0≤$n$≤100, nonnegative int weights and $W$≤100000. $W$ fits int; negative weights require a different indexed state. The table takes O(($n$+1)($W$+1)) time and space. Its dependence is on numeric $W$, not the number of digits needed to encode the weights; it is pseudopolynomial."
+              },
+              {
+                "type": "p",
+                "text": "int suffices for indices and total weight; char stores Boolean reachability."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;"
+              },
+              {
+                "type": "p",
+                "text": "Read $n$ and its weights, accumulating $W$. With $n$=0, only sum 0 exists."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<int> w(n);\n    int W = 0;\n    for (int &x : w) {\n        cin >> x;\n        W += x;\n    }"
+              },
+              {
+                "type": "p",
+                "text": "Copy the skip alternative from the preceding row and OR in the take alternative when its index is valid."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "vector<vector<char>> dp(n + 1, vector<char>(W + 1));\n    dp[0][0] = true;\n    for (int k = 1; k <= n; k++) {\n        for (int x = 0; x <= W; x++) {\n            dp[k][x] = dp[k - 1][x];\n            if (x >= w[k - 1]) dp[k][x] |= dp[k - 1][x - w[k - 1]];\n        }\n    }"
+              },
+              {
+                "type": "p",
+                "text": "Print reachability as 0/1 for every sum 0..$W$."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "for (int x = 0; x <= W; x++) cout << int(dp[n][x]) << (x == W ? '\\n' : ' ');\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<int> w(n);\n    int W = 0;\n    for (int &x : w) {\n        cin >> x;\n        W += x;\n    }\n    vector<vector<char>> dp(n + 1, vector<char>(W + 1));\n    dp[0][0] = true;\n    for (int k = 1; k <= n; k++) {\n        for (int x = 0; x <= W; x++) {\n            dp[k][x] = dp[k - 1][x];\n            if (x >= w[k - 1]) dp[k][x] |= dp[k - 1][x - w[k - 1]];\n        }\n    }\n    for (int x = 0; x <= W; x++) cout << int(dp[n][x]) << (x == W ? '\\n' : ' ');\n}\n"
+              }
+            ]
+          },
+          {
+            "key": "compress",
+            "title": "One row: why update downward?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Only the preceding row is needed. In one array, for an item of weight $v$ scan $x$ downward from $W$ to $v$. The smaller source $x$−$v$ has not yet changed and still describes earlier items. Larger entries already belong to the new row, but this transition does not read them. Thus an item is not reused."
+              },
+              {
+                "type": "p",
+                "text": "With a single weight 3, an ascending scan can set 3 and then use that newly set entry to set 6, reusing the item. Descending checks 6 while 3 still has its old false value. For weight 0, source and destination coincide and OR leaves reachability unchanged; the outer loop still advances to the next item."
+              },
+              {
+                "type": "p",
+                "text": "Time is $O(nW)$, DP space $O(W)$, with O(($n$+1)($W$+1)) covering zero-size boundaries. The code reads $x$−$v$ for each valid destination rather than writing forward to $x$+$v$, so it never writes beyond $W$."
+              },
+              {
+                "type": "p",
+                "text": "Boolean reachability needs no large integer type."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;"
+              },
+              {
+                "type": "p",
+                "text": "Use the same input, $W$ and output contract as the table version, making comparison straightforward."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<int> w(n);\n    int W = 0;\n    for (int &x : w) {\n        cin >> x;\n        W += x;\n    }"
+              },
+              {
+                "type": "p",
+                "text": "Seed dp[0] and update right to left for each item."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "vector<char> dp(W + 1);\n    dp[0] = true;\n    for (int v : w) {\n        for (int x = W; x >= v; x--) dp[x] |= dp[x - v];\n    }"
+              },
+              {
+                "type": "p",
+                "text": "The final array equals row $n$ of the two-dimensional table."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "for (int x = 0; x <= W; x++) cout << int(dp[x]) << (x == W ? '\\n' : ' ');\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<int> w(n);\n    int W = 0;\n    for (int &x : w) {\n        cin >> x;\n        W += x;\n    }\n    vector<char> dp(W + 1);\n    dp[0] = true;\n    for (int v : w) {\n        for (int x = W; x >= v; x--) dp[x] |= dp[x - v];\n    }\n    for (int x = 0; x <= W; x++) cout << int(dp[x]) << (x == W ? '\\n' : ' ');\n}\n"
+              }
+            ]
+          },
+          {
+            "key": "value",
+            "title": "0/1 maximum value and reconstruction",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Now each item has weight $w$ and value $v$. Maximize total value with total weight at most $W$. dp[$k$][c] is the best value among the first $k$ items fitting capacity c: it is not an exact-weight state. The empty selection is allowed, so every capacity starts at 0 with no items and negative-value items need not be selected."
+              },
+              {
+                "type": "p",
+                "text": "Skipping gives dp[$k$−1][c]. If the item fits, taking gives dp[$k$−1][c−$w$[$k$−1]]+$v$[$k$−1]. Choose the larger. Every feasible selection lies in one of these cases, so induction preserves optimality. Process $k$ upward; with separate rows either capacity direction is valid."
+              },
+              {
+                "type": "diagram",
+                "kind": "dp",
+                "rows": [
+                  [
+                    "k / c",
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0",
+                    "0"
+                  ],
+                  [
+                    "1",
+                    "0",
+                    "0",
+                    "3",
+                    "3",
+                    "3",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "0",
+                    "0",
+                    "3",
+                    "4",
+                    "4",
+                    "7"
+                  ],
+                  [
+                    "3",
+                    "0",
+                    "0",
+                    "3",
+                    "4",
+                    "5",
+                    "7"
+                  ]
+                ],
+                "caption": "Weights[2,3,4], values[3,4,5], W=5."
+              },
+              {
+                "type": "p",
+                "text": "At capacity 5, taking item 2 adds 4 to the previous row’s value 3 at capacity 2, giving 7. Item 3 yields only 5 plus 0 at remaining capacity 1 and cannot improve 7. Items 1 and 2 attain weight 5 and value 7. Greedily taking the single highest-value item fails here."
+              },
+              {
+                "type": "p",
+                "text": "To recover items, walk backward from($n$,$W$). Equality with dp[$k$−1][c] allows skipping item $k$; choose that option on ties. Otherwise it was taken, so subtract its weight and reduce $k$. $k$ decreases in either case, ensuring no item appears twice."
+              },
+              {
+                "type": "p",
+                "text": "The following three value programs require 0≤$n$≤100,0≤$W$≤10000, positive weights 1..10000 and |$v$|≤10⁹. A 0/1 value is bounded by $n$×10⁹ and the unbounded optimum by $W$×10⁹, both safe in ll. Positive weights ensure finite repeated selection. Table reconstruction takes $O(nW)$ time and DP space, about a million states at the maximum bounds."
+              },
+              {
+                "type": "p",
+                "text": "Use int for weights/indices and ll for values/totals."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+              },
+              {
+                "type": "p",
+                "text": "Read $n$,$W$, followed by one weight/value pair per item."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, W;\n    cin >> n >> W;\n    vector<int> w(n);\n    vector<ll> v(n);\n    for (int i = 0; i < n; i++) cin >> w[i] >> v[i];"
+              },
+              {
+                "type": "p",
+                "text": "All capacities start at 0 for the “at most” state; both alternatives read the preceding row."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "vector<vector<ll>> dp(n + 1, vector<ll>(W + 1));\n    for (int k = 1; k <= n; k++) {\n        for (int c = 0; c <= W; c++) {\n            dp[k][c] = dp[k - 1][c];\n            if (c >= w[k - 1]) {\n                dp[k][c] = max(dp[k][c], dp[k - 1][c - w[k - 1]] + v[k - 1]);\n            }\n        }\n    }"
+              },
+              {
+                "type": "p",
+                "text": "Skip on ties. Print the optimum, selected count and one-based item IDs."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "vector<int> take;\n    int c = W;\n    for (int k = n; k >= 1; k--) {\n        if (dp[k][c] != dp[k - 1][c]) {\n            take.push_back(k);\n            c -= w[k - 1];\n        }\n    }\n    reverse(take.begin(), take.end());\n    cout << dp[n][W] << '\\n' << take.size() << '\\n';\n    for (int id : take) cout << id << ' ';\n    cout << '\\n';\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, W;\n    cin >> n >> W;\n    vector<int> w(n);\n    vector<ll> v(n);\n    for (int i = 0; i < n; i++) cin >> w[i] >> v[i];\n    vector<vector<ll>> dp(n + 1, vector<ll>(W + 1));\n    for (int k = 1; k <= n; k++) {\n        for (int c = 0; c <= W; c++) {\n            dp[k][c] = dp[k - 1][c];\n            if (c >= w[k - 1]) {\n                dp[k][c] = max(dp[k][c], dp[k - 1][c - w[k - 1]] + v[k - 1]);\n            }\n        }\n    }\n    vector<int> take;\n    int c = W;\n    for (int k = n; k >= 1; k--) {\n        if (dp[k][c] != dp[k - 1][c]) {\n            take.push_back(k);\n            c -= w[k - 1];\n        }\n    }\n    reverse(take.begin(), take.end());\n    cout << dp[n][W] << '\\n' << take.size() << '\\n';\n    for (int id : take) cout << id << ' ';\n    cout << '\\n';\n}\n"
+              }
+            ]
+          },
+          {
+            "key": "value-row",
+            "title": "One-row values versus reconstruction history",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "If only the value is needed, compress the previous row into one array. Descending from $W$ to the item’s weight keeps dp[c−$w$] on the previous-item layer, just as in reachability. Replace OR with max and add the item’s value. The state is still “fits at most c”, so all entries start at 0."
+              },
+              {
+                "type": "p",
+                "text": "For one item of weight 2/value 3 and $W$=4, descending yields dp[4]=3. Ascending first sets dp[2]=3, then reuses it to produce 6 at capacity 4. The following $O(nW)$-time, $O(W)$-DP-space program prints only the optimum, not item IDs."
+              },
+              {
+                "type": "p",
+                "text": "Values may exceed 32 bits, so dp uses ll."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+              },
+              {
+                "type": "p",
+                "text": "The same weight/value input as the table version."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, W;\n    cin >> n >> W;\n    vector<int> w(n);\n    vector<ll> v(n);\n    for (int i = 0; i < n; i++) cin >> w[i] >> v[i];"
+              },
+              {
+                "type": "p",
+                "text": "Capacity decreases for each item. An item that does not fit runs no inner iterations."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "vector<ll> dp(W + 1);\n    for (int k = 0; k < n; k++) {\n        for (int c = W; c >= w[k]; c--) {\n            dp[c] = max(dp[c], dp[c - w[k]] + v[k]);\n        }\n    }\n    cout << dp[W] << '\\n';\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, W;\n    cin >> n >> W;\n    vector<int> w(n);\n    vector<ll> v(n);\n    for (int i = 0; i < n; i++) cin >> w[i] >> v[i];\n    vector<ll> dp(W + 1);\n    for (int k = 0; k < n; k++) {\n        for (int c = W; c >= w[k]; c--) {\n            dp[c] = max(dp[c], dp[c - w[k]] + v[k]);\n        }\n    }\n    cout << dp[W] << '\\n';\n}\n"
+              },
+              {
+                "type": "p",
+                "text": "A lone parent[c] beside the compressed value array is not automatically a valid reconstruction: later items can overwrite the smaller state it refers to, mixing layers. Use the preceding two-dimensional table or properly versioned decisions for straightforward reliable recovery. No reconstruction history is hidden in the $O(W)$-space claim."
+              },
+              {
+                "type": "p",
+                "text": "For example, one weight-2/value-3 item and capacity4 yields dp[4]=3. A naive parent[4]=2 may be recorded, but later the same item updates dp[2]=3 and parent[2]=0. Following4→2→0 then appears to take that item twice. The value can be correct while this reconstruction is wrong."
+              },
+              {
+                "type": "p",
+                "text": "Exact-weight optimization has different initialization: only dp[0]=0, all other weights unreachable. Use a sentinel and add only from reachable sources. Initializing every entry to 0 falsely permits impossible exact weights. A single item of weight 2 cannot attain exactly 3, although it may be optimal under capacity 3."
+              }
+            ]
+          },
+          {
+            "key": "unbounded",
+            "title": "Ascending updates for repeatable items",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "If each item type may be chosen repeatedly, deliberately scan upward. dp[c−$w$] may already use the current type, and adding another copy is now legal. The weight 2/value 3/capacity 4 example has answer 6. The small code change represents a different selection rule."
+              },
+              {
+                "type": "p",
+                "text": "For each type, retain selections omitting it and add another copy to selections at c−$w$. With c increasing, that smaller capacity is already ready, possibly using the same type. A positive-value zero-weight item would make the optimum unbounded, so this program explicitly excludes it. Negative weights also violate the dependency argument."
+              },
+              {
+                "type": "p",
+                "text": "Types/capacities are int; repeated value totals are ll."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+              },
+              {
+                "type": "p",
+                "text": "The same input format now describes repeatable types, not single-use items."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, W;\n    cin >> n >> W;\n    vector<int> w(n);\n    vector<ll> v(n);\n    for (int i = 0; i < n; i++) cin >> w[i] >> v[i];"
+              },
+              {
+                "type": "p",
+                "text": "Scan capacity upward from the positive weight to $W$. Time is $O(nW)$, DP space $O(W)$."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "vector<ll> dp(W + 1);\n    for (int k = 0; k < n; k++) {\n        for (int c = w[k]; c <= W; c++) {\n            dp[c] = max(dp[c], dp[c - w[k]] + v[k]);\n        }\n    }\n    cout << dp[W] << '\\n';\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, W;\n    cin >> n >> W;\n    vector<int> w(n);\n    vector<ll> v(n);\n    for (int i = 0; i < n; i++) cin >> w[i] >> v[i];\n    vector<ll> dp(W + 1);\n    for (int k = 0; k < n; k++) {\n        for (int c = w[k]; c <= W; c++) {\n            dp[c] = max(dp[c], dp[c - w[k]] + v[k]);\n        }\n    }\n    cout << dp[W] << '\\n';\n}\n"
+              }
+            ]
+          },
+          {
+            "key": "model",
+            "title": "Choose the rules from the state meaning",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Ask three questions: exact weight or a capacity bound; existence, number of selections or optimum value; single-use or repeatable items? These determine initialization, combination and loop direction respectively. For counting, additionally define distinct items versus copies and whether order matters; a Boolean DP is not a count."
+              },
+              {
+                "type": "p",
+                "text": "Test no items/zero capacity, every item too heavy, two distinct equal-weight items, tied optima, negative values and totals beyond 32 bits. For small $n$ enumerate all subsets and check both the 0/1 optimum and reconstructed IDs/weight/value. For repeatable positive weights enumerate multiplicities 0..$W$/$w$ as an independent oracle."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Check yourself:1. How is 7 formed from[1,3,3,5], and why not 10?2. What do the two directions return for one weight 2/value 3 item and $W$=4?3. May every exact-weight state start at 0?4. Why can a single parent[c] mix layers?"
+              },
+              {
+                "type": "p",
+                "text": "Answers:1+3+3; the subset table contains no 10; descending 3 versus ascending 6; unreachable exact weights must be distinct; a referenced smaller capacity may later be overwritten. In the core problems justify the take/skip split and descending loop."
+              },
+              {
+                "type": "p",
+                "text": "Core problems for mastering the topic"
+              },
+              {
+                "type": "p",
+                "text": "Book Shop: model prices/pages as weight/value; its input arrays differ from the example’s pair format."
+              },
+              {
+                "type": "problem",
+                "problemKey": "346"
+              },
+              {
+                "type": "p",
+                "text": "Money Sums: output exact reachable sums instead of value optima."
+              },
+              {
+                "type": "problem",
+                "problemKey": "352"
+              },
+              {
+                "type": "p",
+                "text": "Independent practice and extensions"
+              },
+              {
+                "type": "p",
+                "text": "Two Sets II: account for whether both sides count the same partition twice."
+              },
+              {
+                "type": "problem",
+                "problemKey": "353"
+              },
+              {
+                "type": "p",
+                "text": "Knapsack 1: combine large values with single-use selection."
+              },
+              {
+                "type": "problem",
+                "problemKey": "680"
+              },
+              {
+                "type": "p",
+                "text": "Knapsack 2: when $W$ is huge, index value and minimize weight instead."
+              },
+              {
+                "type": "problem",
+                "problemKey": "681"
+              },
+              {
+                "type": "p",
+                "text": "Minimizing Coins: derive a minimum-count objective with unreachable states and repeatable-coin dependencies."
+              },
+              {
+                "type": "problem",
+                "problemKey": "341"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "DP states, transitions and dependencies on a previous row; understanding grid DP processing order."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Динамик программчлалын төлөв, шилжилт, өмнөх мөрийн хамаарал. Хүснэгтэн DP-ийн боловсруулах дарааллыг тайлбарлаж чаддаг байх.",
+    "priorityLevel": "high",
+    "priorityReason": "Хязгаартай сонголт, авах/авахгүй салгалт, өмнөх ба одоогийн үеийг ялгах чадвар нь олон динамик программчлалын суурь. Нэг удаагийн ба давтаж болох хэрэглээг давталтын дарааллаар ялгах нь өндөр өгөөжтэй.",
+    "prerequisiteIds": [
+      "dynamic-programming",
+      "grid-dp"
+    ],
+    "learningRelations": {
+      "next": "lis",
+      "practice": [
+        {
+          "key": "346",
+          "stage": "Warm-up",
+          "reason": "Үндсэн төлөв ба шинэчлэлтийн дарааллыг бие даан хэрэгжүүлэх шууд цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "352",
+          "stage": "Standard",
+          "reason": "Үндсэн төлөв ба шинэчлэлтийн дарааллыг бие даан хэрэгжүүлэх шууд цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "353",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "680",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "681",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "341",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "dynamic-programming",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "grid-dp",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "lis",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "status": "complete focused bilingual candidate; publication evidence separate"
+}
