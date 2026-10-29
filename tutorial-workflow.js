@@ -1,4 +1,4 @@
-import {normalizeProblemReferences,stableStringify} from './learning-model.js?v=68';
+import {normalizeProblemReferences,stableStringify} from './learning-model.js?v=69';
 export function comparableBody(value,problems=[]){
  if(!value)return null;const body=normalizeProblemReferences(value,problems);delete body.searchText;delete body.revision;
  if(typeof body._draftRelationsText==='string')try{body.learningRelations=JSON.parse(body._draftRelationsText);delete body._draftRelationsText;}catch{}
