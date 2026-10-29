@@ -1,0 +1,730 @@
+{
+  "id": "upper-bound",
+  "expected_revision": 2,
+  "expected_published": true,
+  "expected_body_md5": "1e0f88837cc494028657dc6e5262b8ff",
+  "expected_body_sha256": "5cbbff10c7319d8e3874495d57fb1f9e34ba51af20b9c2463ddd07920f12fdf2",
+  "reviewed_body_sha256": "b4d3b107e945d11c1c0ef61e8e595bad4ffe82a56e6e83d474240180a5869521",
+  "proposed_body_sha256": "b4d3b107e945d11c1c0ef61e8e595bad4ffe82a56e6e83d474240180a5869521",
+  "body": {
+    "id": "upper-bound",
+    "level": "Анхан шат",
+    "order": 45,
+    "title": "Upper bound — эрс их эхний утгын зааг",
+    "aliases": "upper-bound Upper bound ба давтамж Upper bound and frequency",
+    "related": [
+      "lower-bound",
+      "binary-search-answer"
+    ],
+    "summary": "Тэнцүү утгуудыг зүүн талд үлдээж, эрс их эхний байрлал болон түүнээс өмнөх элементийг аюулгүй олъё.",
+    "category": "Array ба search",
+    "levelKey": "beginner",
+    "sections": [
+      {
+        "key": "meaning",
+        "title": "Upper bound ямар зааг олдог вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Үл буурах $[1,2,2,2,5]$ дараалалд $2$-оос эрс их анхны утгыг олъё. Хариу нь $5$, индекс $4$. Доод зааг $1$-ийг буцаадаг байснаас ялгаа нь тэнцүү утгуудыг аль талд оруулахад байна."
+          },
+          {
+            "type": "diagram",
+            "kind": "dp",
+            "rows": [
+              [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4"
+              ],
+              [
+                "1",
+                "2",
+                "2",
+                "2",
+                "5"
+              ],
+              [
+                "≤2",
+                "≤2",
+                "≤2",
+                "≤2",
+                ">2"
+              ]
+            ],
+            "caption": "Индекс, утга, нөхцөлийн хоёр хэсэг."
+          },
+          {
+            "type": "p",
+            "text": "Хариуг “эхний $a[p]>x$ индекс” гэж тодорхойлно. Ийм элемент байхгүй бол $p=n$. Энэ нь алдаа биш, массивын дараах зааг. Хоосон массивт ч хариу $0=n$. Хариуны индексийг буцаах нь тухайн утга $x$-тэй яг тэнцүү гэсэн үг биш."
+          }
+        ]
+      },
+      {
+        "key": "invariant",
+        "title": "Хоёр батлагдсан хэсэг ба дундах муж",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$[0,l)$ хэсгийн бүх утга $x$-ээс ихгүй, $[r,n)$ хэсгийн бүх утга $x$-ээс эрс их гэдгийг хадгална. Эхэндээ $l=0,r=n$ тул хоёр хэсэг хоосон, нөхцөл шууд үнэн. Шалгаж дуусаагүй элементүүд $[l,r)$ дотор; харин ХАРИУНЫ ЗААГ $[l,r]$ дотор байна. Хариу $r=n$ байх боломжтойг энэ ялгаа илэрхийлнэ."
+          },
+          {
+            "type": "p",
+            "text": "Дундах утга $a[mid]\\le x$ бол тэнцүү утгыг мөн алгасаж $l=mid+1$. Харин $a[mid]>x$ бол mid өөрөө эхний эрс их байж болох тул $r=mid$. Доод заагийн < шалгалтыг ≤ болгосон нь бүх ялгаа."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "l",
+              "$r$",
+              "mid",
+              "a[mid]",
+              "Дараагийн муж"
+            ],
+            "rows": [
+              [
+                "0",
+                "5",
+                "2",
+                "2",
+                "[3,5)"
+              ],
+              [
+                "3",
+                "5",
+                "4",
+                "5",
+                "[3,4)"
+              ],
+              [
+                "3",
+                "4",
+                "3",
+                "2",
+                "[4,4)"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Давталт бүрд $r-l$ багасна. $l=r$ болоход шалгах элемент үлдээгүй: зүүн талын бүх утга буруу, эндээс баруун талын бүх утга зөв. Иймээс энэ байрлал яг эхний зөв зааг. Хэрэв бүх утга буруу бол $l=r=n$, бүх утга зөв бол $l=r=0$. Ижил утгууд дээр ч зааг хөдөлж төгсөнө."
+          }
+        ]
+      },
+      {
+        "key": "library",
+        "title": "Стандарт сан ба хөршүүдийн утга",
+        "blocks": [
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "upper_bound",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь эхний эрс их элементийн итератор, олдохгүй бол end() өгнө. $p-1$ нь сүүлийн ихгүй индекс; $p=0$ бол ийм элемент байхгүй. ",
+                "marks": []
+              },
+              {
+                "text": "upper_bound(x)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийг ",
+                "marks": []
+              },
+              {
+                "text": "lower_bound(x+1)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гэж бичих шаардлагагүй: $x$ нь ll-ийн хамгийн их утга байвал $x$+1 халилт үүсгэнэ. Шууд зөв харьцуулалт хэрэглэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "auto l = lower_bound(a.begin(), a.end(), x);\nauto r = upper_bound(a.begin(), a.end(), x);\ncout << r - l << \"\\n\";"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "$x$-тэй тэнцүү элементүүд $[lower(x),upper(x))$ дотор байна. Жишээнд $[1,4)$ тул гурван ширхэг. ",
+                "marks": []
+              },
+              {
+                "text": "equal_range",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хоёр итераторыг нэг дор өгнө. $s\\le t$ үед $[s,t]$ утгын муж дахь элементийн тоо $upper(t)-lower(s)$; $s>t$ бол хоосон мужийг 0 гэж тусад нь шийд. Энэ бол утгын муж, массивын индексийн завсар биш.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "p",
+            "text": "vector-ийн санамсаргүй хандах итераторт нэг хайлт $O(\\log(n+1))$ хугацаа, нэмэлт зай $O(1)$. std::set/map дээр ерөнхий lower_bound-ийн харьцуулалт логарифм ч итераторын шилжилт шугаман байж болно; тэдгээрийн гишүүн lower_bound/upper_bound функцийг ашигла. Массив хайлтын турш үл буурах дараалалтай байна."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "Хэрэгжүүлэлтийг хэсэгчлэн бүтээх нь",
+        "blocks": [
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Нэг асуулт бүрд массивыг дахин эрэмбэлэхгүй. Эрэмбэлэлт хэрэгтэй бол нэг удаагийн $O(n\\log n)$ бэлтгэл бөгөөд анхны индексүүдийн утга өөрчлөгдөнө. Дараах программд оролт аль хэдийн үл буурах гэж өгсөн; $0\\le n\\le200000$, $0\\le q\\le200000$. Утга ба хайх $x$ нь ll-д багтах бүхэл, хэмжээ ба индекс int. ",
+                "marks": []
+              },
+              {
+                "text": "n",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хэмжээний vector-ийг санах ойд багтаах нөхцөлтэй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Асуулт бүрд p, p−1, тэнцүү утгын тоо хэвлэнэ: эхний эрс их, сүүлийн ихгүй, equal_range-ийн итераторуудын ялгавар."
+          },
+          {
+            "type": "p",
+            "text": "Утга ll, хэмжээ ба индекс int. Том утгад $x$+1 зэрэг арифметик хийхгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+          },
+          {
+            "type": "p",
+            "text": "upperBound-ийн ≤ шалгалт тэнцүүг зүүн хэсэгт шилжүүлнэ. Бусад мужийн дүрэм lowerBound-тай адил ч зорилго нь эрс их эхний байрлал."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int upperBound(const vector<ll> &a, ll x) {\n    int l = 0, r = a.size();\n    while (l < r) {\n        int mid = l + (r - l) / 2;\n        if (a[mid] <= x) l = mid + 1;\n        else r = mid;\n    }\n    return l;\n}"
+          },
+          {
+            "type": "p",
+            "text": "main гаралтад хайсан зааг ба өмнөх индексийг өгч, equal_range-ийн хоёр заагийн ялгавраар давтамжийг гаргана. Хоосон vector-т гурван гаралт 0,−1,0."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n);\n    for (ll &v : a) cin >> v;\n    while (q--) {\n        ll x;\n        cin >> x;\n        int p = upperBound(a, x);\n        auto [l, r] = equal_range(a.begin(), a.end(), x);\n        cout << p << ' ' << p - 1 << ' ' << r - l << '\\n';\n    }\n}"
+          },
+          {
+            "type": "p",
+            "text": "Дээрх хэсгүүдийг яг энэ дарааллаар нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint upperBound(const vector<ll> &a, ll x) {\n    int l = 0, r = a.size();\n    while (l < r) {\n        int mid = l + (r - l) / 2;\n        if (a[mid] <= x) l = mid + 1;\n        else r = mid;\n    }\n    return l;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n);\n    for (ll &v : a) cin >> v;\n    while (q--) {\n        ll x;\n        cin >> x;\n        int p = upperBound(a, x);\n        auto [l, r] = equal_range(a.begin(), a.end(), x);\n        cout << p << ' ' << p - 1 << ' ' << r - l << '\\n';\n    }\n}"
+          }
+        ]
+      },
+      {
+        "key": "checks",
+        "title": "Заагийн тохиолдол ба өөрийгөө шалгах нь",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Бүх утга ижил $[2,2,2]$, хоосон массив, ганц элемент, эхний/сүүлийн утга, хүрээнээс гаднах $x$-ийг шалга. Эрэмбэлэгдээгүй оролтод энэ баталгаа үйлчлэхгүй. mid-г шинэ зааг хэвээр үлдээгээд давталтын муж багасахгүй бол хоёр хөрш дээр гацна. Зөвхөн < ба ≤-г цээжлэхийн оронд хоёр талд юу батлагдсаныг хэлж сур."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "$x$",
+              "lower",
+              "upper",
+              "тоо"
+            ],
+            "rows": [
+              [
+                "0",
+                "0",
+                "0",
+                "0"
+              ],
+              [
+                "2",
+                "1",
+                "4",
+                "3"
+              ],
+              [
+                "4",
+                "4",
+                "4",
+                "0"
+              ],
+              [
+                "5",
+                "4",
+                "5",
+                "1"
+              ],
+              [
+                "6",
+                "5",
+                "5",
+                "0"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Хүснэгт нь $[1,2,2,2,5]$ дээрх хариу. Өөрөө нэг мөрийг гараар мөрдөж батал. Хоосон массивт lower=upper=0. Эдгээр нь $n$-ээс нэг бага элементийн индексээр хязгаарлагдахгүй, $n$ хүртэлх ЗААГ байдаг."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "1. $[2,2,2]$ дээр $x=1,2,3$-ийн хоёр заагийг ол."
+          },
+          {
+            "type": "p",
+            "text": "2. Яагаад $p=n$ үед $a[p]$-д хүрч болохгүй вэ?"
+          },
+          {
+            "type": "p",
+            "text": "3. $[l,r)$ элемент ба $[l,r]$ хариуны заагийн ялгааг тайлбарла."
+          },
+          {
+            "type": "p",
+            "text": "4. Давталтын муж алхам бүрд багасахыг батал."
+          },
+          {
+            "type": "p",
+            "text": "Шалгах хариу: (0,0), (0,3), (3,3); $n$ нь массивын дараах байрлал; хоосорсон элементийн мужид ч нэг зааг үлдэнэ; шинэ l≥mid+1 эсвэл шинэ $r$=mid нь l<$r$ үед уртыг заавал бууруулна."
+          },
+          {
+            "type": "p",
+            "text": "Эхлээд доорх цөм дасгалын зааг, харьцуулалтыг өөрөө тодорхойл. Хайж буй нөхцөл яагаад нэг л удаа өөрчлөгдөхийг үндэслэ."
+          },
+          {
+            "type": "p",
+            "text": "Эрс их эхний оройг сонгох зааг ба овоолгын зөв нөхцөлийг шууд хэрэгжүүлэх цөм дасгал."
+          },
+          {
+            "type": "problem",
+            "problemKey": "322"
+          },
+          {
+            "type": "p",
+            "text": "Хосын эрс нөхцөлийг эрэмбэлэгдсэн дарааллын заагт хувиргаж тоолох цөм дасгал."
+          },
+          {
+            "type": "problem",
+            "problemKey": "26"
+          },
+          {
+            "type": "p",
+            "text": "Дараах бодлогуудыг бие дааж бодоод эхлээд эрэмбэ, дараа нь хайж буй заагаа бич. Өөр аргыг шаардсан бодлогыг заавал энэ кодод хүчээр тааруулахгүй."
+          },
+          {
+            "type": "problem",
+            "problemKey": "315"
+          },
+          {
+            "type": "problem",
+            "problemKey": "109"
+          },
+          {
+            "type": "problem",
+            "problemKey": "404"
+          },
+          {
+            "type": "problem",
+            "problemKey": "29"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Upper bound — the first value strictly greater than a target",
+        "summary": "Keep equal values on the left and safely find the first strictly greater value and its predecessor.",
+        "sections": [
+          {
+            "key": "meaning",
+            "title": "What boundary does Upper bound find?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Find the first value strictly greater than 2 in $[1,2,2,2,5]$: value 5 at index 4. A lower bound returns index 1; the difference is which side contains values equal to the target."
+              },
+              {
+                "type": "diagram",
+                "kind": "dp",
+                "rows": [
+                  [
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "1",
+                    "2",
+                    "2",
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "≤2",
+                    "≤2",
+                    "≤2",
+                    "≤2",
+                    ">2"
+                  ]
+                ],
+                "caption": "Indices, values and the two predicate regions."
+              },
+              {
+                "type": "p",
+                "text": "Define the result as the first index p with $a[p]>x$, or p=$n$ if none exists. The end position is a valid boundary, not an error. An empty array gives0=$n$. Returning a boundary does not assert equality with $x$."
+              }
+            ]
+          },
+          {
+            "key": "invariant",
+            "title": "Two known regions and the unknown interval",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Maintain that every value in $[0,l)$ satisfies $a[i]≤x$, and every value in $[r,n)$ satisfies $a[i]>x$. Initially l=0,$r$=$n$, so both known regions are empty. Unclassified ELEMENTS lie in $[l,r)$, while the ANSWER BOUNDARY lies in $[l,r]$. The distinction permits an answer at $r$=$n$."
+              },
+              {
+                "type": "p",
+                "text": "If $a[mid]\\le x$, skip equal values too with l=mid+1. Otherwise mid itself might be the first greater value, so set $r$=mid. Changing the lower-bound comparison from < to ≤ is the essential difference."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "l",
+                  "$r$",
+                  "mid",
+                  "a[mid]",
+                  "Next interval"
+                ],
+                "rows": [
+                  [
+                    "0",
+                    "5",
+                    "2",
+                    "2",
+                    "[3,5)"
+                  ],
+                  [
+                    "3",
+                    "5",
+                    "4",
+                    "5",
+                    "[3,4)"
+                  ],
+                  [
+                    "3",
+                    "4",
+                    "3",
+                    "2",
+                    "[4,4)"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Every step decreases $r$−l. At l=$r$ no unclassified element remains: everything left fails and everything from this boundary onward qualifies. Hence this is the first qualifying position. All-false input gives $n$; all-true input gives 0. Equal values still shrink the interval and terminate."
+              }
+            ]
+          },
+          {
+            "key": "library",
+            "title": "Library functions and neighboring positions",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "upper_bound returns the first strictly greater iterator, or end(). Then p−1 is the last not-greater index, absent when p=0. Do not implement upper_bound($x$) as lower_bound($x$+1): $x$+1 overflows at the maximum ll value. Use the correct comparison directly."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "auto l = lower_bound(a.begin(), a.end(), x);\nauto r = upper_bound(a.begin(), a.end(), x);\ncout << r - l << \"\\n\";"
+              },
+              {
+                "type": "p",
+                "text": "Equal values occupy $[lower(x),upper(x))$: here [1,4), so there are three. equal_range returns both iterators together. For s≤t the number of values in [s,t] is upper(t)−lower(s); define an inverted range s>t as zero separately. These are value constraints, not an input interval of array indices."
+              },
+              {
+                "type": "p",
+                "text": "With vector random-access iterators, each search takes $O(\\log(n+1))$ time and $O(1)$ extra space. Generic lower_bound on set/map iterators can require linear iterator movement despite logarithmic comparisons; use the container’s member lower_bound/upper_bound. The array must remain non-decreasing throughout the queries."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "Build the implementation in parts",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Do not sort again for each query. If needed, sorting is an $O(n\\log n)$ preprocessing step that changes original-index meaning. The program assumes an already non-decreasing input, with $0\\le n,q\\le200000$. Values and targets fit ll; sizes/indices use int, with feasible vector storage."
+              },
+              {
+                "type": "p",
+                "text": "Each query prints p, p−1 and equality count: first greater, last not-greater and the equal_range iterator difference."
+              },
+              {
+                "type": "p",
+                "text": "Values use ll, sizes/indices int. No $x$+1 arithmetic is needed for extreme targets."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+              },
+              {
+                "type": "p",
+                "text": "The ≤ branch moves equal values into the left region. The interval rules match lowerBound, but the goal is the first strictly greater position."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int upperBound(const vector<ll> &a, ll x) {\n    int l = 0, r = a.size();\n    while (l < r) {\n        int mid = l + (r - l) / 2;\n        if (a[mid] <= x) l = mid + 1;\n        else r = mid;\n    }\n    return l;\n}"
+              },
+              {
+                "type": "p",
+                "text": "main prints the boundary, its predecessor and the equal_range width. Empty input produces 0, −1, 0."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n);\n    for (ll &v : a) cin >> v;\n    while (q--) {\n        ll x;\n        cin >> x;\n        int p = upperBound(a, x);\n        auto [l, r] = equal_range(a.begin(), a.end(), x);\n        cout << p << ' ' << p - 1 << ' ' << r - l << '\\n';\n    }\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled from exactly the preceding parts:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint upperBound(const vector<ll> &a, ll x) {\n    int l = 0, r = a.size();\n    while (l < r) {\n        int mid = l + (r - l) / 2;\n        if (a[mid] <= x) l = mid + 1;\n        else r = mid;\n    }\n    return l;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n);\n    for (ll &v : a) cin >> v;\n    while (q--) {\n        ll x;\n        cin >> x;\n        int p = upperBound(a, x);\n        auto [l, r] = equal_range(a.begin(), a.end(), x);\n        cout << p << ' ' << p - 1 << ' ' << r - l << '\\n';\n    }\n}"
+              }
+            ]
+          },
+          {
+            "key": "checks",
+            "title": "Boundary cases and self-checks",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Check an equal array [2,2,2], empty/singleton inputs, first/last values and targets outside the range. The proof fails on unsorted input. Keeping mid without shrinking the interval can stall on adjacent endpoints. Explain the meaning of both known regions rather than memorize < versus ≤."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "$x$",
+                  "lower",
+                  "upper",
+                  "count"
+                ],
+                "rows": [
+                  [
+                    "0",
+                    "0",
+                    "0",
+                    "0"
+                  ],
+                  [
+                    "2",
+                    "1",
+                    "4",
+                    "3"
+                  ],
+                  [
+                    "4",
+                    "4",
+                    "4",
+                    "0"
+                  ],
+                  [
+                    "5",
+                    "4",
+                    "5",
+                    "1"
+                  ],
+                  [
+                    "6",
+                    "5",
+                    "5",
+                    "0"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "The table refers to [1,2,2,2,5]. Trace a row manually. An empty array has lower=upper=0. These are boundaries up to $n$, not only element indices up to $n$−1."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "1. Find both bounds for $x=1,2,3$ in $[2,2,2]$."
+              },
+              {
+                "type": "p",
+                "text": "2. Explain why $a[p]$ is invalid at $p=n$."
+              },
+              {
+                "type": "p",
+                "text": "3. Distinguish $[l,r)$ elements from $[l,r]$ answer boundaries."
+              },
+              {
+                "type": "p",
+                "text": "4. Prove strict progress on every iteration."
+              },
+              {
+                "type": "p",
+                "text": "Checks: (0,0),(0,3),(3,3); $n$ is past the array; an empty element interval can retain one boundary; l≥mid+1 or $r$=mid strictly reduces the length when l<$r$."
+              },
+              {
+                "type": "p",
+                "text": "First identify the boundary/comparison for the core practice below. Justify why the searched predicate changes only once."
+              },
+              {
+                "type": "p",
+                "text": "Core practice; explain the searched predicate and valid endpoints."
+              },
+              {
+                "type": "problem",
+                "problemKey": "322"
+              },
+              {
+                "type": "p",
+                "text": "Core practice; explain the searched predicate and valid endpoints."
+              },
+              {
+                "type": "problem",
+                "problemKey": "26"
+              },
+              {
+                "type": "p",
+                "text": "For independent practice, state the ordering and desired boundary first. Do not force this exact code onto a problem requiring a different method."
+              },
+              {
+                "type": "problem",
+                "problemKey": "315"
+              },
+              {
+                "type": "problem",
+                "problemKey": "109"
+              },
+              {
+                "type": "problem",
+                "problemKey": "404"
+              },
+              {
+                "type": "problem",
+                "problemKey": "29"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Non-decreasing sequences, zero-based indexing, half-open intervals and binary search."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Үл буурах дараалал, тэгээс эхэлсэн индекс, хагаст нээлттэй завсар, хоёртын хайлт.",
+    "priorityLevel": "high",
+    "priorityReason": "Эрс ба тэнцүүг зөв ялган давхардлын тоо, сүүлийн ихгүй утга, овоолгын сонголт зэрэг нийтлэг нөхцөлийг шийдэх суурь учраас High. Хүндрэлийн зэрэг биш.",
+    "prerequisiteIds": [
+      "binary-search"
+    ],
+    "learningRelations": {
+      "next": "two-pointers",
+      "practice": [
+        {
+          "key": "322",
+          "stage": "Warm-up",
+          "reason": "Эрс их эхний оройг сонгох зааг ба овоолгын зөв нөхцөлийг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "315",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "26",
+          "stage": "Observation",
+          "reason": "Хосын эрс нөхцөлийг эрэмбэлэгдсэн дарааллын заагт хувиргаж тоолох цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "109",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "404",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "29",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "lower-bound",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "binary-search-answer",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "status": "reviewed standalone handbook-aligned MN/EN; code/native gates passed; release/publication pending"
+}

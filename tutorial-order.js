@@ -6,7 +6,7 @@ export const handbookTutorialOrder = [
  'brute-force','recursion','greedy','binary-search-answer',
  'dynamic-programming','grid-dp','knapsack','lis','interval-dp',
  'two-pointers','sliding-window','monotonic-stack',
- 'prefix-sums','prefix-sums-2d','difference-array','sparse-table','fenwick-tree','segment-tree',
+ 'segment-tree','prefix-sums','prefix-sums-2d','difference-array','sparse-table','fenwick-tree',
  'bit-operations','bitmask-dp',
  'graph-basics','bfs','dfs','flood-fill','connected-components','bipartite',
  'dijkstra','bellman-ford','floyd-warshall','tree-basics','tree-dp','kruskal','dsu',
@@ -22,7 +22,7 @@ export function orderTutorials(input, fallbackOrder=[]) {
 // an explicit supplementary label, rather than shifting later chapter numbers.
 export const handbookChapterNumbers = Object.freeze({
  introduction:1,complexity:2,sorting:3,'set-map':4,'brute-force':5,greedy:6,
- 'dynamic-programming':7,'two-pointers':8,'prefix-sums':9,'bit-operations':10,
+ 'dynamic-programming':7,'two-pointers':8,'segment-tree':9,'bit-operations':10,
  'graph-basics':11,bfs:12,dijkstra:13,'tree-basics':14,kruskal:15,
  'topological-sort':16,scc:17,lca:18,'paths-circuits':19,'flows-cuts':20,
  'number-theory':21,combinatorics:22,matrices:23,probability:24,'game-theory':25,kmp:26,'sqrt-algorithms':27,'lazy-segment-tree':28,geometry:29,'sweep-line':30
