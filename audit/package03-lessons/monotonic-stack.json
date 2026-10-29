@@ -1,0 +1,1029 @@
+{
+  "id": "monotonic-stack",
+  "expected_revision": 6,
+  "expected_published": true,
+  "expected_body_md5": "da7aaa8592026655a06e68a80de7b8d7",
+  "expected_body_sha256": "9508a6f1256318d2cd959cd32f9374074abc84f53d6e1e82b56fc95dfb5c5152",
+  "reviewed_body_sha256": "ca151221934be1206c1e52ef9c5cad0afd7cfc53c2d73d56b2952c3012aa7de5",
+  "proposed_body_sha256": "ca151221934be1206c1e52ef9c5cad0afd7cfc53c2d73d56b2952c3012aa7de5",
+  "body": {
+    "id": "monotonic-stack",
+    "level": "Дунд шат",
+    "order": 28,
+    "title": "Монотон стек — ойрын хөрш, тэнцүү утга ба талбай",
+    "aliases": "monotonic-stack Monotonic stack — дараагийн том утга Monotonic stacks — the next greater value stack queue deque monotonic stack next greater next smaller стек дараалал",
+    "related": [
+      "stack-queue",
+      "dsu"
+    ],
+    "summary": "Ойрын бага/их хөршид нэр дэвшигч хасах баталгаа, тэнцүүгийн дүрэм ба хоёр талын нам заагаас histogram талбай олохыг бүрэн хэрэгжүүлнэ.",
+    "category": "Data structures",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "goal",
+        "title": "Хамгийн бага бус, хамгийн ойр бага",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Элемент бүрд зүүн талын өөрөөс нь эрс бага хамгийн ойр элементийн байрлалыг олъё. Энэ нь өмнөх бүх элементийн хамгийн бага утгыг олохтой адил биш. [1,3,4,2,5,3,4,2]-д 4-ийн өмнөх ойр бага нь 3, хэдийгээр түүнээс өмнө 1 байгаа. Байрлалыг гаралтдаа 1-ээс тоолно; байхгүй бол 0."
+          },
+          {
+            "type": "diagram",
+            "kind": "dp",
+            "rows": [
+              [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7"
+              ],
+              [
+                "1",
+                "3",
+                "4",
+                "2",
+                "5",
+                "3",
+                "4",
+                "2"
+              ]
+            ],
+            "caption": "Дээд мөр нь 0-ээс эхэлсэн индекс, доод нь утга."
+          },
+          {
+            "type": "p",
+            "text": "Шууд арга нь байрлал бүрээс зүүн тийш ухарч тохирох эхний утгыг олох. Эрс буурсан дараалалд байрлал бүр бараг бүх өмнөхөө үзэж $O(n^2)$ болно. Бүх хуучин индексийг үлдээхийн оронд ирээдүйд зөв хариу байж болох нэр дэвшигчдийг стект хадгалъя."
+          }
+        ]
+      },
+      {
+        "key": "invariant",
+        "title": "Хасалт яагаад ирээдүйн хариуг нуухгүй вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Стек дэх индексүүд ёроолоос орой руу өснө, утгууд нь эрс өснө. Шинэ a[$i$] ирэхэд оройн утга a[$i$]-аас их буюу тэнцүү бол хасна. Хасаж дуусаад орой үлдвэл $i$-ийн хамгийн ойрын эрс бага өмнөх индекс; хоосон бол тийм индекс алга. Эцэст нь $i$-г нэмнэ. “Монотон” гэдэг нь энд хадгалсан утгууд ийм нэг чигийн дараалалтай байгааг хэлнэ."
+          },
+          {
+            "type": "p",
+            "text": "Яагаад хуучин $j$-г бүрмөсөн хасаж болох вэ? $i$ нь $j$-ээс хойно, a[$i$]≤a[$j$] байна. Ирээдүйн a[t] нь $j$-г эрс бага гэж зөвшөөрөхөөр a[$j$]<a[t] байвал a[$i$]≤a[$j$]<a[t] мөн зөв, $i$ нь илүү ойр. Харин a[$j$]≥a[t] бол $j$ өөрөө тохирохгүй. Тиймээс шинэ $i$ нь ирээдүйд $j$-г орлох чадвартай, $j$ дахин хамгийн ойрын зөв хариу болохгүй."
+          },
+          {
+            "type": "p",
+            "text": "Оройн утга бага боллоо гэдэг нь зөвхөн “ямар нэг бага” олсны баталгаа биш. Хадгалсан индексүүд өссөн тул орой нь тэдний дундах хамгийн ойр. Өмнө нь хассан индекс бүр илүү ойр, ихгүй орлуулагчтай байсан; тэр орлуулагч цааш хасагдсан ч ийм орлуулах холбоос үргэлжилнэ. Иймээс стект үлдээгүй илүү ойр зөв хариу нуугдаагүй."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "$i$",
+              "a[$i$]",
+              "Хассан индекс",
+              "Хариу (1-ээс)",
+              "Стек индекс",
+              "Стек утга"
+            ],
+            "rows": [
+              [
+                "0",
+                "1",
+                "–",
+                "0",
+                "0",
+                "1"
+              ],
+              [
+                "1",
+                "3",
+                "–",
+                "1",
+                "0,1",
+                "1,3"
+              ],
+              [
+                "2",
+                "4",
+                "–",
+                "2",
+                "0,1,2",
+                "1,3,4"
+              ],
+              [
+                "3",
+                "2",
+                "2,1",
+                "1",
+                "0,3",
+                "1,2"
+              ],
+              [
+                "4",
+                "5",
+                "–",
+                "4",
+                "0,3,4",
+                "1,2,5"
+              ],
+              [
+                "5",
+                "3",
+                "4",
+                "4",
+                "0,3,5",
+                "1,2,3"
+              ],
+              [
+                "6",
+                "4",
+                "–",
+                "6",
+                "0,3,5,6",
+                "1,2,3,4"
+              ],
+              [
+                "7",
+                "2",
+                "6,5,3",
+                "1",
+                "0,7",
+                "1,2"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Эхний 1,3,4 дараалан орно. Шинэ 2 нь эхлээд 4, дараа нь 3-ыг хасаад 1-ийн дараа байрлана. Дараагийн 5 нэмэгдэнэ; шинэ 3 нь тэр 5-ыг хасаад 1,2,3 үлдээнэ, дараагийн 4 залгагдана. Эцсийн 2 нь 4,3 болон өмнөх тэнцүү 2-ыг хасаж, зөвхөн 1-ийн дараа орно. Хариуны байрлалууд 0,1,2,1,4,4,6,1."
+          }
+        ]
+      },
+      {
+        "key": "ties",
+        "title": "Тэнцүү утга ба хайх чиглэлээ сонгох",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өөр жишээ [2,5,1,4,4,3]. Тав дахь 4-ийн өмнөх 4 тэнцүү тул эрс бага биш, хасагдана. Түүний өмнөх ойр бага нь гурав дахь байрлалын 1. Хэрэв “бага буюу тэнцүү”-г асуувал тэнцүү 4-ийг хасахгүй, хариу дөрөв дэх байрлал болно. Нэг тэмдгийн ялгаа нь хүссэн математик харьцааны ялгаа."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Асуулт",
+              "Хасах нөхцөл",
+              "Үлдэх утгын дараалал"
+            ],
+            "rows": [
+              [
+                "өмнөх эрс бага / previous <",
+                "top >= current",
+                "эрс өсөх / strictly increasing"
+              ],
+              [
+                "өмнөх бага буюу тэнцүү / previous <=",
+                "top > current",
+                "үл буурах / nondecreasing"
+              ],
+              [
+                "дараах эрс их / next >",
+                "top <= current",
+                "эрс буурах / strictly decreasing"
+              ],
+              [
+                "дараах их буюу тэнцүү / next >=",
+                "top < current",
+                "үл өсөх / nonincreasing"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "[2,2,2]-д өмнөх эрс бага хариу 0,0,0; өмнөх бага буюу тэнцүү нь 0,1,2. Дараах эрс их нь 0,0,0; дараах их буюу тэнцүү нь 2,3,0. Стект зөвхөн утга бус индекс хадгалснаар ижил утгуудын аль нь ойр байгааг ялгана."
+          },
+          {
+            "type": "p",
+            "text": "Баруун талын дараах их элементийг олохдоо баруунаас зүүн явна. Стек нь одоогийн байрлалын баруун талын нэр дэвшигчид; хамгийн сүүлд нэмсэн, оройд үлдсэн индекс нь хамгийн ойр. Хуучны бага буюу тэнцүү утгыг шинэ илүү ойр их утга орлох тул эсрэг харьцуулалтаар хасна. Нэг кодыг анхны дарааллыг эрэмбэлж “урвуулахгүй”; зөвхөн боловсруулах чиглэл өөр."
+          }
+        ]
+      },
+      {
+        "key": "neighbors-code",
+        "title": "Ойрын бага/их хөршийн бүтэн хэрэгжүүлэлт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Дараах программ хоёр функцтэй. prevSmaller нь зүүн талын бага, nextGreater нь баруун талын ихийг олно. strict=true үед эрс харьцаа, false үед тэнцүүг зөвшөөрнө. strict нь зөвхөн while доторх нөхцөлийг сонгоно; бусад төлөв ба баталгаа ижил. Гаралт дөрвөн мөр: өмнөх <, өмнөх ≤, дараах >, дараах ≥. Бүгд 1-ээс эхэлсэн байрлал, байхгүй бол 0."
+          },
+          {
+            "type": "p",
+            "text": "Оролт 0≤$n$≤200000, |a[$i$]|≤10¹⁸. Утгуудыг ll-д хадгалж зөвхөн харьцуулна, үгүйсгэж −a[$i$] болгох шаардлагагүй. Индекс, хариуны байрлал int. $n$=0 үед дөрвөн хоосон мөр гарна; хоосон стекээс орой авахгүй."
+          },
+          {
+            "type": "p",
+            "text": "Стандарт сан ба ll утгын нэршил."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+          },
+          {
+            "type": "p",
+            "text": "Зүүнээс баруун функц. Хариуг $i$-г нэмэхээс ӨМНӨ авна, тэгэхгүй бол өөрийгөө хариу болгоно."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "vector<int> prevSmaller(const vector<ll> &a, bool strict) {\n    int n = a.size();\n    vector<int> ans(n), st;\n    for (int i = 0; i < n; i++) {\n        while (!st.empty() && (strict ? a[st.back()] >= a[i] : a[st.back()] > a[i])) {\n            st.pop_back();\n        }\n        if (!st.empty()) ans[i] = st.back() + 1;\n        st.push_back(i);\n    }\n    return ans;\n}"
+          },
+          {
+            "type": "p",
+            "text": "Баруунаас зүүн функц. strict нөхцөлд бага болон тэнцүүг хасна; false үед зөвхөн багыг хасна."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "vector<int> nextGreater(const vector<ll> &a, bool strict) {\n    int n = a.size();\n    vector<int> ans(n), st;\n    for (int i = n - 1; i >= 0; i--) {\n        while (!st.empty() && (strict ? a[st.back()] <= a[i] : a[st.back()] < a[i])) {\n            st.pop_back();\n        }\n        if (!st.empty()) ans[i] = st.back() + 1;\n        st.push_back(i);\n    }\n    return ans;\n}"
+          },
+          {
+            "type": "p",
+            "text": "main дөрвөн өөр гэрээг ил тод дуудна. Хариуны мөр бүрийн байрлалыг хэвлэнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    vector<vector<int>> ans = {\n        prevSmaller(a, true), prevSmaller(a, false),\n        nextGreater(a, true), nextGreater(a, false)\n    };\n    for (const auto &row : ans) {\n        for (int i : row) cout << i << ' ';\n        cout << '\\n';\n    }\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nvector<int> prevSmaller(const vector<ll> &a, bool strict) {\n    int n = a.size();\n    vector<int> ans(n), st;\n    for (int i = 0; i < n; i++) {\n        while (!st.empty() && (strict ? a[st.back()] >= a[i] : a[st.back()] > a[i])) {\n            st.pop_back();\n        }\n        if (!st.empty()) ans[i] = st.back() + 1;\n        st.push_back(i);\n    }\n    return ans;\n}\n\nvector<int> nextGreater(const vector<ll> &a, bool strict) {\n    int n = a.size();\n    vector<int> ans(n), st;\n    for (int i = n - 1; i >= 0; i--) {\n        while (!st.empty() && (strict ? a[st.back()] <= a[i] : a[st.back()] < a[i])) {\n            st.pop_back();\n        }\n        if (!st.empty()) ans[i] = st.back() + 1;\n        st.push_back(i);\n    }\n    return ans;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    vector<vector<int>> ans = {\n        prevSmaller(a, true), prevSmaller(a, false),\n        nextGreater(a, true), nextGreater(a, false)\n    };\n    for (const auto &row : ans) {\n        for (int i : row) cout << i << ' ';\n        cout << '\\n';\n    }\n}\n"
+          },
+          {
+            "type": "p",
+            "text": "Нэг функцэд индекс бүр яг нэг удаа push, хамгийн ихдээ нэг удаа pop. Нийт $O(n)$ стек үйлдэл, дөрвөн дуудлага ч $O(n)$. Нэг $i$ дээр олон pop болж болно; энэ нь бүх ажил квадрат гэсэн үг биш. Энэ хязгаар нь дурын зөв оролтод үйлчилнэ, санамсаргүй оролт эсвэл нэг үйлдлийн тогтмол хамгийн муу хугацаа гэж тайлбарлахгүй. Хариу ба стекийн нийт зай $O(n)$."
+          }
+        ]
+      },
+      {
+        "key": "histogram",
+        "title": "Хоёр талын нам заагаас тэгш өнцөгт гаргах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өндөр нь [2,1,5,6,2,3] гэсэн, өргөн нь тус бүр 1 баганад багтах хамгийн том тэгш өнцөгтийн талбайг олъё. Нэг өндөр a[$i$]-г доод өндөр гэж тогтоовол хоёр талын өөрөөс нь эрс нам эхний багана хүртэл тэлж болно. Зүүн намын индекс l[$i$], баруун намын индекс $r$[$i$] байг. Тэдний хоорондох өргөн $r$[$i$]−l[$i$]−1, талбай a[$i$] үржих тэр өргөн."
+          },
+          {
+            "type": "p",
+            "text": "Зүүнд байхгүй бол −1, баруунд байхгүй бол $n$ гэж 0-ээс эхэлсэн индексийн зааг авна. Хоёр талаас >= нөхцөлөөр pop хийж эрс нам зааг олно. Тэнцүү баганууд хоёр талаас ижил өргөнийг авч болно: бид хамгийн ИХ талбайг авч байгаа тул давтагдсан нэр дэвшигч хоргүй. Бүх дэд хэсгийг тоолох, минимумын нийлбэр авах өөр зорилгод энэ tie дүрмийг баталгаагүй хуулж болохгүй."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "$i$",
+              "Өндөр",
+              "l",
+              "$r$",
+              "Өргөн",
+              "Талбай"
+            ],
+            "rows": [
+              [
+                "0",
+                "2",
+                "-1",
+                "1",
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "1",
+                "-1",
+                "6",
+                "6",
+                "6"
+              ],
+              [
+                "2",
+                "5",
+                "1",
+                "4",
+                "2",
+                "10"
+              ],
+              [
+                "3",
+                "6",
+                "2",
+                "4",
+                "1",
+                "6"
+              ],
+              [
+                "4",
+                "2",
+                "1",
+                "6",
+                "4",
+                "8"
+              ],
+              [
+                "5",
+                "3",
+                "4",
+                "6",
+                "1",
+                "3"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Өндөр 5-тай $i$=2-ийн зааг l=1,$r$=4: өргөн 2, талбай 10. Өндөр 1 бүх зургааг хамрах боловч талбай 6. Хамгийн өндөр ганц багана 6 ч зөвхөн өргөн 1-тэй, талбай 6. Иймээс зөвхөн хамгийн нам эсвэл хамгийн өндөр баганыг харах хангалтгүй."
+          },
+          {
+            "type": "p",
+            "text": "Яагаад бүх тэгш өнцөгтийг орхихгүй вэ? Дурын зөв хэсгийн хамгийн нам нэг баганыг $i$ гэе. Тэр хэсэг хоёр талын эрс нам заагийг давж чадахгүй. Тэгэхээр бидний $i$-д тооцсон өргөн тэр хэсгээс багагүй, талбай ч багагүй. Нөгөө талаас тэр бүх өргөнд багануудын өндөр a[$i$]-аас бага биш тул нэр дэвшигч өөрөө боломжтой. Хамгийн их нэр дэвшигч яг оновчтой."
+          }
+        ]
+      },
+      {
+        "key": "histogram-code",
+        "title": "Histogram-ийн код ба аргын хязгаар",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Histogram кодын гэрээ 0≤$n$≤200000, 0≤a[$i$]≤10⁹. Сөрөг өндөр геометрийн энэ загварт орохгүй. Хоёр удаагийн шугаман стекээр l,$r$-г олоод нэг удаа талбай шалгана, нийт $O(n)$ хугацаа, $O(n)$ зай. Хоосон эсвэл бүх өндөр 0 бол хариу 0. Өндөр ба өргөнийг ll-д үржүүлэхэд 2×10¹⁴ хүртэл талбай аюулгүй; зөвхөн int үржүүлээд дараа нь ll-д хийх нь хангалтгүй."
+          },
+          {
+            "type": "p",
+            "text": "ll нь өндөр ба талбайд, int нь индекс ба заагт."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+          },
+          {
+            "type": "p",
+            "text": "l-г −1, $r$-г $n$-ээр эхлүүлнэ. Эдгээр нь жинхэнэ багана биш тул массивын индекс болгон уншихгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    vector<int> l(n, -1), r(n, n), st;"
+          },
+          {
+            "type": "p",
+            "text": "Хоёр чиглэлд тэнцүү болон өндөр баганыг хасна. Чиглэл солихын өмнө стекийн хуучин индексүүдийг цэвэрлэнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "for (int i = 0; i < n; i++) {\n        while (!st.empty() && a[st.back()] >= a[i]) st.pop_back();\n        if (!st.empty()) l[i] = st.back();\n        st.push_back(i);\n    }\n    st.clear();\n    for (int i = n - 1; i >= 0; i--) {\n        while (!st.empty() && a[st.back()] >= a[i]) st.pop_back();\n        if (!st.empty()) r[i] = st.back();\n        st.push_back(i);\n    }"
+          },
+          {
+            "type": "p",
+            "text": "Өргөнийг ll-д хадгалж, өндөртэй үржүүлээд нийт хамгийн ихийг хэвлэнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "ll ans = 0;\n    for (int i = 0; i < n; i++) {\n        ll width = r[i] - l[i] - 1;\n        ans = max(ans, a[i] * width);\n    }\n    cout << ans << '\\n';\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    vector<int> l(n, -1), r(n, n), st;\n    for (int i = 0; i < n; i++) {\n        while (!st.empty() && a[st.back()] >= a[i]) st.pop_back();\n        if (!st.empty()) l[i] = st.back();\n        st.push_back(i);\n    }\n    st.clear();\n    for (int i = n - 1; i >= 0; i--) {\n        while (!st.empty() && a[st.back()] >= a[i]) st.pop_back();\n        if (!st.empty()) r[i] = st.back();\n        st.push_back(i);\n    }\n    ll ans = 0;\n    for (int i = 0; i < n; i++) {\n        ll width = r[i] - l[i] - 1;\n        ans = max(ans, a[i] * width);\n    }\n    cout << ans << '\\n';\n}\n"
+          },
+          {
+            "type": "p",
+            "text": "Зөвхөн арын нэр дэвшигчийг хасах стек нь бүх өмнөх хэсгийн асуултад тохирно. Хэрэв хуучирсан зүүн заагтай цонх бол оройд хүрэхгүй хуучин индексийг урдаас гаргах deque хэрэгтэй. Тогтмол дарааллаар нэг удаа боловсруулах баталгааг дурын онлайн шинэчлэлт/асуултад шилжүүлж болохгүй; тэнд өөр бүтэц хэрэгтэй байж болно."
+          },
+          {
+            "type": "p",
+            "text": "Шалгахдаа хоосон, ганц утга, бүхэлдээ өссөн/буурсан, тэнцүү ихтэй, сөрөг утгатай хөршийн хайлт болон тэг өндөртэй histogram-ийг үз. Хөрш бүрийг шулуун хайлтаар, жижиг histogram-ийн бүх завсрыг хамгийн нам өндрөөр нь тулгаж болно. Pop болсон индексүүдийн нийт тоог тоолоод шугаман хязгаар ба нэг алхмын их хасалтыг ялга."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өөрийгөө шалга: 1. Өмнөх эрс багад тэнцүүг яагаад pop хийх вэ? 2. Хассан хуучин индексийг шинэ нь яагаад орлож чадна вэ? 3. [2,2,2]-ын дөрвөн хариу юу вэ? 4. Histogram-д хоёр талаас эрс нам зааг авч тэнцүүг давхар хамруулах нь яагаад зөв вэ?"
+          },
+          {
+            "type": "p",
+            "text": "Хариу: тэнцүү нь эрс бага биш; шинэ нь илүү ойр бөгөөд утгын хувьд муу биш; 0,0,0 / 0,1,2 / 0,0,0 / 2,3,0; хамгийн ихийг авахад нэг талбай давтагдах нь хариуг өөрчлөхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Сэдвийг эзэмших үндсэн бодлогууд"
+          },
+          {
+            "type": "p",
+            "text": "Nearest Smaller Values: индекс хадгалж, тэнцүүг хасаж, байхгүй хариуг 0 болго."
+          },
+          {
+            "type": "problem",
+            "problemKey": "101"
+          },
+          {
+            "type": "p",
+            "text": "Advertisement: хоёр талын эрс нам зааг ба ll талбайг бүрэн хэрэгжүүл."
+          },
+          {
+            "type": "problem",
+            "problemKey": "627"
+          },
+          {
+            "type": "p",
+            "text": "Бие даах ба ахиулах бодлогууд"
+          },
+          {
+            "type": "p",
+            "text": "Maximum Subarray Sum II: хуучирсан prefix эхлэлүүдийг гаргах цонхны нэмэлт бүтцийг ялга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "339"
+          },
+          {
+            "type": "p",
+            "text": "Sliding Window Minimum: давамгайллаас гадна хуучирсан индексийг урдаас гаргах deque ашигла."
+          },
+          {
+            "type": "problem",
+            "problemKey": "536"
+          },
+          {
+            "type": "p",
+            "text": "Maximum Building $I$: мөр бүрийг өндрийн histogram болгож, эндхийн талбайг дахин хэрэглэ."
+          },
+          {
+            "type": "problem",
+            "problemKey": "643"
+          },
+          {
+            "type": "p",
+            "text": "Increasing Array Queries: өсгөх зардал, олон асуултад нэмэлт нийлбэр/офлайн санаа хэрэгтэй."
+          },
+          {
+            "type": "problem",
+            "problemKey": "413"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Monotonic stacks — neighbors, ties and rectangles",
+        "summary": "Prove safe candidate removal for nearest smaller/greater queries, handle equality explicitly and implement histogram rectangles from both boundaries.",
+        "sections": [
+          {
+            "key": "goal",
+            "title": "Nearest smaller, not prefix minimum",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For each element find the nearest strictly smaller element on its left. This differs from the minimum of the entire prefix. In[1,3,4,2,5,3,4,2], the nearest smaller predecessor of 4 is 3, even though 1 also occurs earlier. Output positions one-based, or 0 if none exists."
+              },
+              {
+                "type": "diagram",
+                "kind": "dp",
+                "rows": [
+                  [
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7"
+                  ],
+                  [
+                    "1",
+                    "3",
+                    "4",
+                    "2",
+                    "5",
+                    "3",
+                    "4",
+                    "2"
+                  ]
+                ],
+                "caption": "Zero-based indices above the values."
+              },
+              {
+                "type": "p",
+                "text": "A direct method scans leftward from every position until a qualifying value appears. On a decreasing array it repeatedly visits almost the whole prefix, taking $O(n^2)$. Instead retain only candidates that could still answer a future query."
+              }
+            ]
+          },
+          {
+            "key": "invariant",
+            "title": "Why discarded candidates cannot hide future answers",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Stack indices increase from bottom to top, and their values strictly increase. On arrival of a[$i$], pop top values at least a[$i$]. The surviving top is its nearest strictly smaller predecessor; an empty stack means none. Finally push $i$. “Monotonic” here describes this one-direction ordering of retained values."
+              },
+              {
+                "type": "p",
+                "text": "Why permanently remove an old $j$? The newer $i$ satisfies a[$i$]≤a[$j$]. If a future a[t] accepts $j$ because a[$j$]<a[t], then a[$i$]≤a[$j$]<a[t] also qualifies and $i$ is nearer. Otherwise $j$ does not qualify at all. Thus $i$ replaces $j$ for any future query; $j$ can never again be the nearest valid answer."
+              },
+              {
+                "type": "p",
+                "text": "A smaller top is not merely some smaller value. Increasing retained indices make the top the nearest retained one. Every removed index had a newer no-larger replacement; if that replacement was later removed, the replacement chain continues. No nearer valid answer is hidden among removed entries."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "$i$",
+                  "a[$i$]",
+                  "Popped indices",
+                  "Answer (1-based)",
+                  "Stack indices",
+                  "Stack values"
+                ],
+                "rows": [
+                  [
+                    "0",
+                    "1",
+                    "–",
+                    "0",
+                    "0",
+                    "1"
+                  ],
+                  [
+                    "1",
+                    "3",
+                    "–",
+                    "1",
+                    "0,1",
+                    "1,3"
+                  ],
+                  [
+                    "2",
+                    "4",
+                    "–",
+                    "2",
+                    "0,1,2",
+                    "1,3,4"
+                  ],
+                  [
+                    "3",
+                    "2",
+                    "2,1",
+                    "1",
+                    "0,3",
+                    "1,2"
+                  ],
+                  [
+                    "4",
+                    "5",
+                    "–",
+                    "4",
+                    "0,3,4",
+                    "1,2,5"
+                  ],
+                  [
+                    "5",
+                    "3",
+                    "4",
+                    "4",
+                    "0,3,5",
+                    "1,2,3"
+                  ],
+                  [
+                    "6",
+                    "4",
+                    "–",
+                    "6",
+                    "0,3,5,6",
+                    "1,2,3,4"
+                  ],
+                  [
+                    "7",
+                    "2",
+                    "6,5,3",
+                    "1",
+                    "0,7",
+                    "1,2"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "The first 1,3,4 are pushed. New 2 removes 4 then 3 and follows 1. Then 5 enters; new 3 removes 5, leaving 1,2,3, and 4 is appended. Final 2 removes 4,3 and the earlier equal 2, leaving only 1 before it. The answer positions are 0,1,2,1,4,4,6,1."
+              }
+            ]
+          },
+          {
+            "key": "ties",
+            "title": "Equality rules and scan direction",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For[2,5,1,4,4,3], the fifth value 4 must discard the preceding equal 4 for a strictly-smaller query; its answer is 1 at position 3. A smaller-or-equal query keeps the equal 4 and answers position 4. The one-character difference reflects a different mathematical relation."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Query",
+                  "Pop condition",
+                  "Remaining value order"
+                ],
+                "rows": [
+                  [
+                    "өмнөх эрс бага / previous <",
+                    "top >= current",
+                    "эрс өсөх / strictly increasing"
+                  ],
+                  [
+                    "өмнөх бага буюу тэнцүү / previous <=",
+                    "top > current",
+                    "үл буурах / nondecreasing"
+                  ],
+                  [
+                    "дараах эрс их / next >",
+                    "top <= current",
+                    "эрс буурах / strictly decreasing"
+                  ],
+                  [
+                    "дараах их буюу тэнцүү / next >=",
+                    "top < current",
+                    "үл өсөх / nonincreasing"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "For[2,2,2], previous strictly smaller gives 0,0,0 and previous smaller-or-equal gives 0,1,2. Next strictly greater gives 0,0,0 and next greater-or-equal gives 2,3,0. Storing indices rather than only values distinguishes the nearest equal occurrences."
+              },
+              {
+                "type": "p",
+                "text": "To find a greater element on the right, scan right to left. Candidates now lie to the right; the most recently retained top is nearest. A newer closer greater value dominates an older smaller-or-equal candidate. Reverse the scan and comparison, not the original array’s ordering by sorting."
+              }
+            ]
+          },
+          {
+            "key": "neighbors-code",
+            "title": "Complete nearest smaller/greater implementation",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "The program has two functions: prevSmaller looks left for a smaller value; nextGreater looks right for a greater value. strict=true requests a strict relation; false allows equality. The flag only selects the pop predicate. Output four rows: previous<, previous≤, next>, next≥, all one-based positions with 0 for none."
+              },
+              {
+                "type": "p",
+                "text": "Require 0≤$n$≤200000 and |a[$i$]|≤10¹⁸. Store values as ll and compare them directly; no negation−a[$i$] is needed. Indices and answer positions are int. Empty input produces four empty lines and never reads an empty stack top."
+              },
+              {
+                "type": "p",
+                "text": "Standard facilities and the ll value alias."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+              },
+              {
+                "type": "p",
+                "text": "Left-to-right function: answer before pushing $i$, otherwise the element would answer itself."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "vector<int> prevSmaller(const vector<ll> &a, bool strict) {\n    int n = a.size();\n    vector<int> ans(n), st;\n    for (int i = 0; i < n; i++) {\n        while (!st.empty() && (strict ? a[st.back()] >= a[i] : a[st.back()] > a[i])) {\n            st.pop_back();\n        }\n        if (!st.empty()) ans[i] = st.back() + 1;\n        st.push_back(i);\n    }\n    return ans;\n}"
+              },
+              {
+                "type": "p",
+                "text": "Right-to-left function: strict pops smaller and equal values; false pops only smaller values."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "vector<int> nextGreater(const vector<ll> &a, bool strict) {\n    int n = a.size();\n    vector<int> ans(n), st;\n    for (int i = n - 1; i >= 0; i--) {\n        while (!st.empty() && (strict ? a[st.back()] <= a[i] : a[st.back()] < a[i])) {\n            st.pop_back();\n        }\n        if (!st.empty()) ans[i] = st.back() + 1;\n        st.push_back(i);\n    }\n    return ans;\n}"
+              },
+              {
+                "type": "p",
+                "text": "main explicitly requests the four contracts and prints each answer row."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    vector<vector<int>> ans = {\n        prevSmaller(a, true), prevSmaller(a, false),\n        nextGreater(a, true), nextGreater(a, false)\n    };\n    for (const auto &row : ans) {\n        for (int i : row) cout << i << ' ';\n        cout << '\\n';\n    }\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nvector<int> prevSmaller(const vector<ll> &a, bool strict) {\n    int n = a.size();\n    vector<int> ans(n), st;\n    for (int i = 0; i < n; i++) {\n        while (!st.empty() && (strict ? a[st.back()] >= a[i] : a[st.back()] > a[i])) {\n            st.pop_back();\n        }\n        if (!st.empty()) ans[i] = st.back() + 1;\n        st.push_back(i);\n    }\n    return ans;\n}\n\nvector<int> nextGreater(const vector<ll> &a, bool strict) {\n    int n = a.size();\n    vector<int> ans(n), st;\n    for (int i = n - 1; i >= 0; i--) {\n        while (!st.empty() && (strict ? a[st.back()] <= a[i] : a[st.back()] < a[i])) {\n            st.pop_back();\n        }\n        if (!st.empty()) ans[i] = st.back() + 1;\n        st.push_back(i);\n    }\n    return ans;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    vector<vector<int>> ans = {\n        prevSmaller(a, true), prevSmaller(a, false),\n        nextGreater(a, true), nextGreater(a, false)\n    };\n    for (const auto &row : ans) {\n        for (int i : row) cout << i << ' ';\n        cout << '\\n';\n    }\n}\n"
+              },
+              {
+                "type": "p",
+                "text": "Each function pushes every index once and pops it at most once. Total stack work is $O(n)$, and four calls remain $O(n)$. One position can trigger many pops without making total work quadratic. This deterministic bound is neither a random-input average nor constant worst-case time for each individual operation. Answers and stacks use $O(n)$ space."
+              }
+            ]
+          },
+          {
+            "key": "histogram",
+            "title": "Histogram rectangles from two shorter boundaries",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Find the largest rectangle under unit-width bars of heights[2,1,5,6,2,3]. For a chosen limiting height a[$i$], extend until the first strictly shorter bar on either side. If those indices are l[$i$],$r$[$i$], the width is $r$[$i$]−l[$i$]−1 and the area is a[$i$] times that width."
+              },
+              {
+                "type": "p",
+                "text": "Using zero-based indices, default the left boundary to−1 and the right to $n$. Pop≥ from both directions to find strictly shorter boundaries. Equal-height bars may obtain overlapping or identical widths; duplicate candidates are harmless when taking a maximum. Do not transfer this tie policy unproved to counting all subarrays or summing their minima."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "$i$",
+                  "Height",
+                  "l",
+                  "$r$",
+                  "Width",
+                  "Area"
+                ],
+                "rows": [
+                  [
+                    "0",
+                    "2",
+                    "-1",
+                    "1",
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "1",
+                    "-1",
+                    "6",
+                    "6",
+                    "6"
+                  ],
+                  [
+                    "2",
+                    "5",
+                    "1",
+                    "4",
+                    "2",
+                    "10"
+                  ],
+                  [
+                    "3",
+                    "6",
+                    "2",
+                    "4",
+                    "1",
+                    "6"
+                  ],
+                  [
+                    "4",
+                    "2",
+                    "1",
+                    "6",
+                    "4",
+                    "8"
+                  ],
+                  [
+                    "5",
+                    "3",
+                    "4",
+                    "6",
+                    "1",
+                    "3"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Height 5 at $i$=2 has boundaries 1 and 4, width 2 and area 10. Height 1 spans all six bars but gives area 6. The tallest individual bar 6 has width 1 and area 6. Examining only the minimum or maximum height is insufficient."
+              },
+              {
+                "type": "p",
+                "text": "For any valid rectangle, choose a minimum-height bar $i$ inside it. Its interval cannot cross either strictly shorter boundary, so our candidate width is at least as wide and its area no smaller. Conversely, every bar in our candidate span is at least a[$i$], making the candidate feasible. Taking the maximum therefore gives the exact optimum."
+              }
+            ]
+          },
+          {
+            "key": "histogram-code",
+            "title": "Histogram implementation and limits",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Histogram input requires 0≤$n$≤200000 and 0≤a[$i$]≤10⁹. Negative heights are outside this geometry model. Two linear stack passes find l,$r$ and one pass evaluates areas: $O(n)$ time and space. Empty or all-zero heights give 0. ll multiplication safely handles areas up to 2×10¹⁴; multiplying in int and converting afterward would be too late."
+              },
+              {
+                "type": "p",
+                "text": "Use ll for heights/areas and int for indices/boundaries."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+              },
+              {
+                "type": "p",
+                "text": "Initialize l to−1 and $r$ to $n$; these sentinel boundaries are never used to read an input bar."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    vector<int> l(n, -1), r(n, n), st;"
+              },
+              {
+                "type": "p",
+                "text": "Pop equal and taller bars in both directions, clearing old stack indices before reversing the scan."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "for (int i = 0; i < n; i++) {\n        while (!st.empty() && a[st.back()] >= a[i]) st.pop_back();\n        if (!st.empty()) l[i] = st.back();\n        st.push_back(i);\n    }\n    st.clear();\n    for (int i = n - 1; i >= 0; i--) {\n        while (!st.empty() && a[st.back()] >= a[i]) st.pop_back();\n        if (!st.empty()) r[i] = st.back();\n        st.push_back(i);\n    }"
+              },
+              {
+                "type": "p",
+                "text": "Store width as ll, multiply by the height and print the maximum."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "ll ans = 0;\n    for (int i = 0; i < n; i++) {\n        ll width = r[i] - l[i] - 1;\n        ans = max(ans, a[i] * width);\n    }\n    cout << ans << '\\n';\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    vector<int> l(n, -1), r(n, n), st;\n    for (int i = 0; i < n; i++) {\n        while (!st.empty() && a[st.back()] >= a[i]) st.pop_back();\n        if (!st.empty()) l[i] = st.back();\n        st.push_back(i);\n    }\n    st.clear();\n    for (int i = n - 1; i >= 0; i--) {\n        while (!st.empty() && a[st.back()] >= a[i]) st.pop_back();\n        if (!st.empty()) r[i] = st.back();\n        st.push_back(i);\n    }\n    ll ans = 0;\n    for (int i = 0; i < n; i++) {\n        ll width = r[i] - l[i] - 1;\n        ans = max(ans, a[i] * width);\n    }\n    cout << ans << '\\n';\n}\n"
+              },
+              {
+                "type": "p",
+                "text": "A stack discarding only the newest candidates fits prefix-neighbor queries. A window with an expiring left boundary needs a deque to remove old indices from the front. A one-pass fixed-order argument does not automatically support arbitrary online updates or queries, which may need another structure."
+              },
+              {
+                "type": "p",
+                "text": "Test empty/singleton, monotone and duplicate-heavy arrays, signed neighbor queries and zero-height histograms. Compare neighbors to direct scans and small histogram areas to all intervals with their minimum height. Count total pops to distinguish a linear execution bound from a costly individual update."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Check yourself:1. Why pop equals for previous strictly smaller?2. Why can a newer candidate replace an old one?3. What are the four rows for[2,2,2]?4. Why may equal histogram candidates overlap?"
+              },
+              {
+                "type": "p",
+                "text": "Answers: equals are not strictly smaller; the newer index is nearer and no worse in value;0,0,0 /0,1,2 /0,0,0 /2,3,0; duplicate feasible candidates do not affect a maximum."
+              },
+              {
+                "type": "p",
+                "text": "Core problems for mastering the topic"
+              },
+              {
+                "type": "p",
+                "text": "Nearest Smaller Values: store indices, pop equals and output 0 when absent."
+              },
+              {
+                "type": "problem",
+                "problemKey": "101"
+              },
+              {
+                "type": "p",
+                "text": "Advertisement: implement both strictly shorter boundaries and ll area."
+              },
+              {
+                "type": "problem",
+                "problemKey": "627"
+              },
+              {
+                "type": "p",
+                "text": "Independent practice and extensions"
+              },
+              {
+                "type": "p",
+                "text": "Maximum Subarray Sum II: distinguish the extra window structure for expiring prefix starts."
+              },
+              {
+                "type": "problem",
+                "problemKey": "339"
+              },
+              {
+                "type": "p",
+                "text": "Sliding Window Minimum: combine dominance with front expiration in a deque."
+              },
+              {
+                "type": "problem",
+                "problemKey": "536"
+              },
+              {
+                "type": "p",
+                "text": "Maximum Building $I$: transform each row into a histogram and reuse the rectangle routine."
+              },
+              {
+                "type": "problem",
+                "problemKey": "643"
+              },
+              {
+                "type": "p",
+                "text": "Increasing Array Queries: add cost/prefix or offline reasoning for multiple queries."
+              },
+              {
+                "type": "problem",
+                "problemKey": "413"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Stacks, indices, strict versus non-strict comparisons and loop conditions."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Стек, индекс, эрс ба тэнцүү харьцуулалт, давталтын нөхцөл.",
+    "priorityLevel": "high",
+    "priorityReason": "Ойр бага/их зааг, давхардлын эрс нөхцөл, нэг элементийн нийт зардлыг тооцох суурь. Histogram болон олон дарааллын бодлогод дахин хэрэглэгддэг тул High; хүндрэлийн үнэлгээ биш.",
+    "prerequisiteIds": [
+      "stack-queue"
+    ],
+    "learningRelations": {
+      "next": "connected-components",
+      "practice": [
+        {
+          "key": "101",
+          "stage": "Warm-up",
+          "reason": "Хасалт аюулгүй байх нөхцөл ба ойр бага заагаас хариу гаргахыг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "627",
+          "stage": "Standard",
+          "reason": "Хасалт аюулгүй байх нөхцөл ба ойр бага заагаас хариу гаргахыг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "339",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "536",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "643",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "413",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "stack-queue",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "dsu",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "status": "complete focused bilingual candidate; publication evidence separate"
+}
