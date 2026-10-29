@@ -1,12 +1,13 @@
+import {renderGridRows,prepareGridTable} from './tutorial-grid.js?v=61';
 import {refreshInlineMath} from './tutorial-math-layout.js?v=56';
 import {priorityLevel,priorityLabel,priorityRank} from './priority.js?v=52';
-import {renderExtendedBlock} from './tutorial-block-renderer.js?v=57';
+import {renderExtendedBlock} from './tutorial-block-renderer.js?v=61';
 import {clearMediaCache} from './tutorial-media.js?v=57';
-import {loadLearningContent,bodyHash} from './learning-model.js?v=60';
+import {loadLearningContent,bodyHash} from './learning-model.js?v=61';
 import {algorithmDemo} from './algorithm-demos.js?v=52';
 import {segmentTreeDemo} from './segment-tree-demo.js?v=52';
-import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=57';
-import {setupTutorialEditor} from './tutorial-editor.js?v=60';
+import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=61';
+import {setupTutorialEditor} from './tutorial-editor.js?v=61';
 const $=id=>document.getElementById(id);
 export const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
 let mathPromise=null,mathQueue=Promise.resolve();
@@ -27,7 +28,7 @@ export function renderBlock(b,parent,lang='mn',options={}){
  else if(b.type==='note'){const a=node(b.collapsible?'details':'aside',undefined,'tutorial-note'+(b.collapsible?' tutorial-disclosure':''));if(b.collapsible)a.append(node('summary',b.label||(lang==='en'?'Show explanation':'Тайлбар харах')));a.append(node('p',b.text));parent.append(a);}
  else if(b.type==='math')parent.append(node('div','$$'+b.tex+'$$','tutorial-math'));
  else if(b.type==='list'||b.type==='ordered'){const list=node(b.type==='list'?'ul':'ol');for(const x of b.items)list.append(node('li',x));parent.append(list);}
- else if(b.type==='table'){const wrap=node('div',undefined,'tutorial-table-wrap'),table=node('table'),head=node('thead'),row=node('tr');for(const h of b.headers){const th=node('th',h);th.scope='col';row.append(th);}head.append(row);table.append(head);const body=node('tbody');for(const cells of b.rows){const tr=node('tr');for(const c of cells)tr.append(node('td',c));body.append(tr);}table.append(body);wrap.append(table);parent.append(wrap);}
+ else if(b.type==='table'){const wrap=node('div',undefined,'tutorial-table-wrap'),table=node('table'),head=node('thead'),row=node('tr');for(const h of b.headers){const th=node('th',h);th.scope='col';row.append(th);}head.append(row);table.append(head);const body=node('tbody');if(b.gridPresentation!==undefined){prepareGridTable(table,b);renderGridRows(body,b);}else for(const cells of b.rows){const tr=node('tr');for(const c of cells)tr.append(node('td',c));body.append(tr);}table.append(body);wrap.append(table);parent.append(wrap);}
  else if(b.type==='code'&&['Input','Output'].includes(b.language))renderSample(b,parent,lang);
  else if(b.type==='code'){const cpp=!b.language||['C++17','cpp','C++'].includes(b.language),wrap=node('div',undefined,'tutorial-code'),bar=node('div',undefined,'code-toolbar'),pre=node('pre'),code=node('code',b.text||'',cpp?'language-cpp':'language-plaintext'),button=node('button',lang==='en'?(cpp?'Copy code':'Copy'):(cpp?'Код хуулах':'Хуулах'));button.type='button';button.onclick=()=>void copy(b.text||'',button,lang==='en'?'Copied':'Хуулагдлаа');bar.append(node('span',cpp?'C++17':b.language||'Text'),button);pre.append(code);wrap.append(bar,pre);parent.append(wrap);if(cpp)try{window.hljs?.highlightElement(code);}catch{/* Plain code remains readable. */}}
  else if(b.type==='links'){const list=node('ul',undefined,'tutorial-reading-links');for(const x of b.items){let u;try{u=new URL(x.url);}catch{continue;}if(u.protocol!=='https:'||u.username||u.password)continue;const li=node('li'),a=node('a',x.label);a.href=u.href;a.target='_blank';a.rel='noopener noreferrer';li.append(a);list.append(li);}parent.append(list);}

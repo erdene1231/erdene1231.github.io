@@ -1,7 +1,9 @@
+import {gridControls} from './tutorial-grid-editor.js?v=61';
+import {validateGridPresentation,validateGridDocument} from './tutorial-grid.js?v=61';
 import {graphControls} from './tutorial-graph.js?v=57';
-import {openProblemSelection} from './problem-selection-dialog.js?v=60';
-import {BLOCK_TYPES,TONES,createBlock,safeLink,validateExtendedBlock} from './tutorial-blocks.js?v=57';
-import {appendInline} from './tutorial-block-renderer.js?v=57';
+import {openProblemSelection} from './problem-selection-dialog.js?v=61';
+import {BLOCK_TYPES,TONES,createBlock,safeLink,validateExtendedBlock} from './tutorial-blocks.js?v=61';
+import {appendInline} from './tutorial-block-renderer.js?v=61';
 const make=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const names={p:'Текст',rich:'Formatting бүхий текст',heading:'Гарчиг H1–H4',code:'Код',math:'Томъёо',list:'Жагсаалт',ordered:'Дугаартай жагсаалт',checklist:'Checklist',table:'Хүснэгт',links:'Эх сурвалжийн холбоос',quote:'Эшлэл',callout:'Тайлбарын хайрцаг',note:'Нээж унших тайлбар',divider:'Тусгаарлагч',image:'Зураг upload',diagram:'Diagram',problem:'Бодлого',tutorial:'Хичээлийн холбоос'};
 function inlineFromDOM(root){
@@ -47,6 +49,9 @@ export function mountBlockEditor(root,sections,options={}){
    change(()=>Object.assign(b,result),b,true);note('Зураг upload хийгдлээ. Alt text болон caption-аа бөглөөрэй.');
   }catch(e){if(current())note(e.message||'Зургийг upload хийж чадсангүй.');}
  }
+ function gridRowsFit(b,rows){try{validateGridPresentation({...b,rows});return true;}catch{return false;}}
+ function validateGridBlock(b){if(b.type==='diagram')validateExtendedBlock(b);validateGridDocument(b);}
+ function presentationControls(container,b){const host=make('div');container.append(host);const refresh=()=>{host.replaceChildren();gridControls(host,b,change,{locked:()=>destroyed||!!options.locked?.()||!!container.querySelector('textarea:invalid'),validate:validateGridBlock});};refresh();return refresh;}
  function blockFields(container,b,si,bi){
   if(['p','rich'].includes(b.type)){richEditor(container,b,si,bi);return;}
   if(b.type==='heading'){select(container,'Гарчгийн түвшин',[['1','H1'],['2','H2'],['3','H3'],['4','H4']],String(b.level),v=>b.level=Number(v));field(container,'Гарчиг',b.text,v=>b.text=v,{rows:0});}
@@ -59,7 +64,7 @@ export function mountBlockEditor(root,sections,options={}){
    b.items.forEach((item,i)=>{const row=make('div',undefined,'editor-check-row'),check=make('input');check.type='checkbox';check.checked=item.checked;check.onchange=()=>change(()=>item.checked=check.checked,check);row.append(check);field(row,'Мөр '+(i+1),item.text,v=>item.text=v,{rows:0});row.append(button('Хасах',()=>{if(b.items.length>1)change(()=>b.items.splice(i,1),row,true);}));boundary(row.lastElementChild,b.items.length<=1);container.append(row);});const addItem=button('Checklist мөр нэмэх',()=>{if(b.items.length<100)change(()=>b.items.push({text:'Шинэ мөр',checked:false}),b,true);});boundary(addItem,b.items.length>=100);container.append(addItem);
   }
   else if(b.type==='table'){
-   const wrap=make('div',undefined,'editor-table-wrap'),table=make('table');[b.headers,...b.rows].forEach((row,i)=>{const tr=make('tr');row.forEach((cell,j)=>{const td=make(i===0?'th':'td'),input=make('input');input.value=cell;input.setAttribute('aria-label',(i===0?'Багана ':'Мөр '+i+' нүд ')+(j+1));input.oninput=()=>change(()=>row[j]=input.value,input);td.append(input);tr.append(td);});table.append(tr);});wrap.append(table);const addRow=button('+ Мөр',()=>{if(b.rows.length<100)change(()=>b.rows.push(b.headers.map(()=>'')),b,true);});boundary(addRow,b.rows.length>=100);container.append(wrap,addRow,button('+ Багана',()=>{if(b.headers.length>=8)return;change(()=>{b.headers.push('Гарчиг');b.rows.forEach(r=>r.push(''));},b,true);}),button('Сүүлийн мөр хасах',()=>{if(b.rows.length>1)change(()=>b.rows.pop(),b,true);}),button('Сүүлийн багана хасах',()=>{if(b.headers.length>1)change(()=>{b.headers.pop();b.rows.forEach(r=>r.pop());},b,true);}));boundary(addRow.nextElementSibling,b.headers.length>=8);boundary(addRow.nextElementSibling.nextElementSibling,b.rows.length<=1);boundary(container.lastElementChild,b.headers.length<=1);
+   let refreshGrid=()=>{};const wrap=make('div',undefined,'editor-table-wrap'),table=make('table');[b.headers,...b.rows].forEach((row,i)=>{const tr=make('tr');row.forEach((cell,j)=>{const td=make(i===0?'th':'td'),input=make('input');input.value=cell;input.setAttribute('aria-label',(i===0?'Багана ':'Мөр '+i+' нүд ')+(j+1));input.oninput=()=>{change(()=>row[j]=input.value,input);refreshGrid();};td.append(input);tr.append(td);});table.append(tr);});wrap.append(table);const addRow=button('+ Мөр',()=>{if(b.rows.length<100)change(()=>b.rows.push(b.headers.map(()=>'')),b,true);});boundary(addRow,b.rows.length>=100);container.append(wrap,addRow,button('+ Багана',()=>{if(b.headers.length>=8)return;change(()=>{b.headers.push('Гарчиг');b.rows.forEach(r=>r.push(''));},b,true);}),button('Сүүлийн мөр хасах',()=>{if(b.rows.length>1){if(!gridRowsFit(b,b.rows.slice(0,-1))){note('Таслагдах нүдний өнгө, нэгтгэлийг эхлээд арилгана уу.');return;}change(()=>b.rows.pop(),b,true);}}),button('Сүүлийн багана хасах',()=>{if(b.headers.length>1){if(!gridRowsFit(b,b.rows.map(r=>r.slice(0,-1)))){note('Таслагдах нүдний өнгө, нэгтгэлийг эхлээд арилгана уу.');return;}change(()=>{b.headers.pop();b.rows.forEach(r=>r.pop());},b,true);}}));boundary(addRow.nextElementSibling,b.headers.length>=8);boundary(addRow.nextElementSibling.nextElementSibling,b.rows.length<=1);boundary(container.lastElementChild,b.headers.length<=1);refreshGrid=presentationControls(container,b);
   }
   else if(b.type==='image'){
    if(!options.uploadImage){container.append(make('p','Зураг upload холболт шаардлагатай. Одоогийн зураг хадгалагдана.'));return;}
@@ -69,7 +74,11 @@ export function mountBlockEditor(root,sections,options={}){
   }
   else if(b.type==='diagram'){
    select(container,'Diagram төрөл',['array','dp','graph','tree'],b.kind,v=>{b.kind=v;if(['graph','tree'].includes(v)){b.nodes??=[{id:'1',label:'$1$'},{id:'2',label:'$2$'}];b.edges??=[['1','2']];}else b.rows??=[['$1$','$2$']];});
-   if(['array','dp'].includes(b.kind))field(container,'Мөр бүр нэг row; нүдүүдийг | тэмдэгтээр тусгаарла',b.rows.map(r=>r.join(' | ')).join('\n'),v=>b.rows=v.split('\n').map(r=>r.split('|').map(x=>x.trim())),{rows:5});
+   if(['array','dp'].includes(b.kind)){
+    let refreshGrid=()=>{};const input=field(container,'Мөр бүр нэг row; нүдүүдийг | тэмдэгтээр тусгаарла',b.rows.map(r=>r.join(' | ')).join('\n'),()=>{},{rows:5});
+    input.oninput=()=>{const rows=input.value.split('\n').map(r=>r.split('|').map(x=>x.trim()));try{validateGridPresentation({...b,rows});input.setCustomValidity('');change(()=>b.rows=rows,input);refreshGrid();}catch(e){input.setCustomValidity(e.message);note('Хэмжээ багасгахын өмнө таслагдах нүдний өнгө, нэгтгэлийг арилгана уу. '+e.message);refreshGrid();}};
+    refreshGrid=presentationControls(container,b);
+   }
    else {const nodesInput=field(container,'Орой бүр: id | label | x | y (x,y сонголттой, 5–95)',b.nodes.map(n=>[n.id,n.label,n.x??'',n.y??''].join(' | ')).join('\n'),v=>b.nodes=v.split('\n').filter(Boolean).map(line=>{const[id,label,x,y]=line.split('|').map(x=>x.trim()),n={...b.nodes.find(n=>n.id===id),id,label};if(x)n.x=Number(x);else delete n.x;if(y)n.y=Number(y);else delete n.y;return n;}),{rows:5});nodesInput.onchange=()=>render();const edgesInput=field(container,'Ирмэг бүр: эхлэл төгсгөл',b.edges.map(e=>e.join(' ')).join('\n'),v=>{const old=b.edges,styles=b.edgeStyles,used=new Set(),next=v.split('\n').filter(Boolean).map(s=>s.trim().split(/\s+/));if(styles)b.edgeStyles=next.map(e=>{const i=old.findIndex((x,j)=>!used.has(j)&&((x[0]===e[0]&&x[1]===e[1])||(!b.directed&&x[0]===e[1]&&x[1]===e[0])));if(i<0)return{};used.add(i);return styles[i]||{};});b.edges=next;},{rows:4});edgesInput.onchange=()=>render();graphControls(container,b,(fn,el,paint)=>{change(fn,el,paint);if(!paint)nodesInput.value=b.nodes.map(n=>[n.id,n.label,n.x??'',n.y??''].join(' | ')).join('\n');},validateExtendedBlock,render);}
    field(container,'Тодруулах ID-ууд — таслалаар (array: 0:1)',(b.highlights||[]).join(', '),v=>b.highlights=v.split(',').map(x=>x.trim()).filter(Boolean),{rows:0});field(container,'Diagram caption',b.caption,v=>b.caption=v,{rows:2});
   }
