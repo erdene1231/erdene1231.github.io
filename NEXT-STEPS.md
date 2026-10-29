@@ -1,3 +1,13 @@
+## Handbook focused compression/difference publication — 2026-10-29 23:34 UTC
+
+`hash-compression` revision 7/history 260 and `difference-array` revision 5/history 259 are published after tested PR #172 merge `96e8c320acbb512dd31ed2c4f467bb63eac62e50`. Exact anonymous MN/EN retrieval matches both reviewed bodies. Pages run 40973986168 succeeded; 16 deployed cache 75 closure/JSON files match under normal TLS. No runtime/editor/schema changes.
+
+One-time SQL SHA256 `75f55ada2061315f684f666e147ec5e5bac6a176d170875b385e837a9a586b1e` SUCCEEDED; NEVER REPLAY. Private scoped recovery/intent/result: `/workspace/package03-compression-difference-execution`; postchecks: `/workspace/package03-compression-difference-postpublish`. Safe receipt: `audit/PACKAGE03-COMPRESSION-DIFFERENCE-PUBLICATION-RECEIPT.json`. All 64 other catalog rows, all 8 private drafts/base revisions, Mongolia, 1010 problems, learner/profile/ACL/RLS/function fingerprints are unchanged. Prior publication jobs and migrations remain non-replayable.
+
+Both full C++17 programs passed UBSan and independent naive checks: 244 compression arrays, 253 difference arrays/37,303 overlapping updates, internal empty-range/rebuild/repeated-reconstruction checks, LL-extreme coordinates and maximum 200,000-size/update stress. 302 Node tests passed plus 3 final affected tests. Native reader cases 16 per candidate/public fixture, 4 MN/EN candidate editor round-trips and 2 exact-public-body round-trips passed; actual visible order, explicit sort controls and chapter 9 segment-tree numbering are preserved. Source printed 93–94 examples and complete reasoning are retained; differences use an explicit terminal cancellation boundary and compression preserves equality/order, not distances. No owner acceptance or authenticated live-browser fixture claimed.
+
+Original rewrite cycle now 38/55 published, 17 pending; 10 new lessons counted separately. All 65 public hashes match the reconciled inventory. Next focused pair: sparse-table and fenwick-tree. Preserve every remaining original ID and the eight pending new-topic groups. No package 5, deferred UI/progress features, problem statement/editorial authoring, access changes or GitHub APPROVE reviews.
+
 ## Current: Paths and circuits published — 2026-10-29 13:05 UTC
 
 New `paths-circuits` revision 1/history 231 is live after PR #132 merge `614c7fa002be0a736b64d5e1d2bd92d91bfcefa8`; Pages run 40878176728 succeeded, 15 v65 runtime/JSON assets match. Exact anonymous MN/EN body and all 58 prior catalog rows, eight private drafts, Mongolia, 1010 problems, learner/profile and authority fingerprints are verified. See `audit/PACKAGE03-PATHS-PUBLICATION-RECEIPT.json` and `audit/PACKAGE03-PATHS-REVIEW.md`.
