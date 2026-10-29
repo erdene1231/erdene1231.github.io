@@ -452,3 +452,8 @@ No actual tutorial/private draft/profile/progress content was edited. Complexity
 ## Latest handbook Introduction publication
 
 Introduction is live at revision 1/history 207 (PR 92, merge 4d618df, Pages 40804055352 success), before Complexity 11. New catalog 57 stored / 56 public;1010problems. Successful atomic one-time SQL SHA-256 61b9fdb72170a0c34f6a5ce9637ba531583afa5302b08a18d560d66398d0d668 MUST NOT BE REPLAYED. All 56 previous tutorial rows, all private drafts, learner/profile/progress data and authority fingerprints remained exact unchanged. See INTRODUCTION-PUBLICATION-RECEIPT and NEXT-STEPS. Owner resumed handbook rewriting; 54 existing lessons still pending plus compact new topics. Introduction is a new addition, not counted against 55 existing. No detailed owner acceptance implied. Preserve Mongolia/private drafts. GraphPR 91 and previous array/math fixes are deployed; all 3 deferred UI requests remain backlog-only.
+
+
+## Latest handbook Sorting publication
+
+Sorting revision 8/history 208 is live (PR 94, merge 11e1333, Pages 40807027628 success). Atomic SQL SHA-256 797836dae71e96247cd59f27e44b1e81ffb70da5092d38bd9e4435f0c9b0edb4 MUST NOT BE REPLAYED. All other 56 tutorial rows, every private draft, Mongolia, 1010 problems, learner/profile records and authority fingerprints stayed unchanged. Existing target draft base is untouched and requires explicit conflict handling if resumed. Catalog remains 57 stored/56 public. See SORTING-PUBLICATION-RECEIPT and NEXT-STEPS. Two of the 55 existing lessons have verified handbook-cycle publication; 53 remain, plus compact new topics. Introduction is a new addition, not existing-rewrite credit. Next chapter is Data structures; preserve stable IDs/private edits and all deferred UI boundaries.
