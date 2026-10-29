@@ -1,5 +1,5 @@
 import {validateTutorial} from './tutorial-model.js?v=63';
-import {validateRelations} from './learning-model.js?v=72';
+import {validateRelations} from './learning-model.js?v=73';
 export function publicationBody(draft,topics,problems){
  const body=structuredClone(draft);
  if(Object.hasOwn(body,'_draftRelationsText')){
