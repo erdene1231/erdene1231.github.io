@@ -1,0 +1,1446 @@
+{
+  "id": "fenwick-tree",
+  "expected_revision": 6,
+  "expected_published": true,
+  "expected_body_md5": "2da7dede7fffad4977e6880a6f2909f2",
+  "expected_body_sha256": "dd16208fe2c5c5d8fa45f09ff3f37a48a0617f20cb08abd8307fc0ffcc251b0a",
+  "reviewed_body_sha256": "4c45b7f458bf94bd3c03050c83d755ebd53864d5b8985a6159be0682bbf30ae4",
+  "proposed_body_sha256": "4c45b7f458bf94bd3c03050c83d755ebd53864d5b8985a6159be0682bbf30ae4",
+  "body": {
+    "id": "fenwick-tree",
+    "level": "Дунд шат",
+    "order": 35,
+    "title": "Фенвикийн мод — нэг нүдний өөрчлөлт ба завсрын нийлбэр",
+    "aliases": "fenwick-tree Fenwick tree — өөрчлөгддөг prefix sum Fenwick trees — prefix sums with updates fenwick tree bit binary indexed tree point update range sum",
+    "related": [
+      "prefix-sums",
+      "bit-operations",
+      "segment-tree"
+    ],
+    "summary": "Хадгалсан хэсгүүд, lowbit-ийн хоёр чиглэл, оноох үйлдлийн зөрүү болон 1-ээс эхэлсэн индексийг бүтэн мөрдөлт, C++17 кодоор тайлбарлана.",
+    "category": "Data structures",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "need",
+        "title": "Өөрчлөлт бүрд бүх prefix-ийг дахин бодохгүй",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хуримтлагдсан нийлбэрээр статик завсрын нийлбэрийг $O(1)$-д олдог. Гэхдээ a[$i$] өөрчлөгдвөл $i$-ээс хойших олон нийлбэрийг дахин засах хэрэгтэй. Асуулт ба өөрчлөлт ээлжилдэг үед бүх prefix-ийг шинэчлэхийн оронд богино хэсгүүдийн сонгосон нийлбэрүүдийг хадгалъя."
+          },
+          {
+            "type": "p",
+            "text": "Фенвикийн модыг binary indexed tree буюу BIT гэж бас нэрлэдэг. Нэр нь мод боловч кодод нэг массив байна. Нэг байрлалд нэмэх, эхний $k$ элементийн нийлбэр олох хоёр үйлдэл $O(\\log n)$; хоёр prefix-ийн ялгавраар завсрын нийлбэр олно. Энд бүх индекс 1-ээс эхэлнэ."
+          },
+          {
+            "type": "diagram",
+            "kind": "dp",
+            "rows": [
+              [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8"
+              ],
+              [
+                "1",
+                "3",
+                "4",
+                "8",
+                "6",
+                "1",
+                "4",
+                "2"
+              ],
+              [
+                "1",
+                "4",
+                "4",
+                "16",
+                "6",
+                "7",
+                "4",
+                "29"
+              ]
+            ],
+            "caption": "Дунд мөр a, доод мөр tree. tree нь a-ийн хуулбар ч биш, бүх prefix ч биш."
+          }
+        ]
+      },
+      {
+        "key": "structure",
+        "title": "Нэг нүдний хамрах хэсэг ба хамгийн бага 1 бит",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$lowbit(i)=i\\mathbin{\\&}(-i)$ нь эерэг $i$-г хуваадаг хамгийн том хоёрын зэрэг. Жишээ нь 6=110₂ тул lowbit(6)=2, 8=1000₂ тул lowbit(8)=8. Хамгийн баруун талын 1 битийг үлдээнэ. Манай эерэг, int-д багтах индексүүдэд энэ үйлдэл аюулгүй."
+          },
+          {
+            "type": "p",
+            "text": "$tree[i]=a[i-lowbit(i)+1]+\\cdots+a[i]$. Өөрөөр хэлбэл баруун үзүүр нь $i$, урт нь lowbit($i$). tree[6] зөвхөн a[5]+a[6]=6+1=7; харин эхний зургаан утгын нийлбэр 23. Нүдний утгыг шууд бүх prefix гэж уншвал буруу болно."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "$i$",
+              "Хоёртын бичлэг",
+              "lowbit",
+              "Хамрах хэсэг",
+              "tree[$i$]"
+            ],
+            "rows": [
+              [
+                "1",
+                "1",
+                "1",
+                "[1,1]",
+                "1"
+              ],
+              [
+                "2",
+                "10",
+                "2",
+                "[1,2]",
+                "4"
+              ],
+              [
+                "3",
+                "11",
+                "1",
+                "[3,3]",
+                "4"
+              ],
+              [
+                "4",
+                "100",
+                "4",
+                "[1,4]",
+                "16"
+              ],
+              [
+                "5",
+                "101",
+                "1",
+                "[5,5]",
+                "6"
+              ],
+              [
+                "6",
+                "110",
+                "2",
+                "[5,6]",
+                "7"
+              ],
+              [
+                "7",
+                "111",
+                "1",
+                "[7,7]",
+                "4"
+              ],
+              [
+                "8",
+                "1000",
+                "8",
+                "[1,8]",
+                "29"
+              ]
+            ]
+          },
+          {
+            "type": "diagram",
+            "kind": "dp",
+            "rows": [
+              [
+                "tree[i]",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8"
+              ],
+              [
+                "tree[1]",
+                "1",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·"
+              ],
+              [
+                "tree[2]",
+                "1",
+                "3",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·"
+              ],
+              [
+                "tree[3]",
+                "·",
+                "·",
+                "4",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·"
+              ],
+              [
+                "tree[4]",
+                "1",
+                "3",
+                "4",
+                "8",
+                "·",
+                "·",
+                "·",
+                "·"
+              ],
+              [
+                "tree[5]",
+                "·",
+                "·",
+                "·",
+                "·",
+                "6",
+                "·",
+                "·",
+                "·"
+              ],
+              [
+                "tree[6]",
+                "·",
+                "·",
+                "·",
+                "·",
+                "6",
+                "1",
+                "·",
+                "·"
+              ],
+              [
+                "tree[7]",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "·",
+                "4",
+                "·"
+              ],
+              [
+                "tree[8]",
+                "1",
+                "3",
+                "4",
+                "8",
+                "6",
+                "1",
+                "4",
+                "2"
+              ]
+            ],
+            "caption": "Мөр бүрийн будсан утгуудын нийлбэр тухайн tree[i]. Цэг нь энэ блокт ороогүй нүд.",
+            "gridPresentation": {
+              "colors": [
+                {
+                  "row": 1,
+                  "col": 1,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 2,
+                  "col": 1,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 2,
+                  "col": 2,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 3,
+                  "col": 3,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 4,
+                  "col": 1,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 4,
+                  "col": 2,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 4,
+                  "col": 3,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 4,
+                  "col": 4,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 5,
+                  "col": 5,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 6,
+                  "col": 5,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 6,
+                  "col": 6,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 7,
+                  "col": 7,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 8,
+                  "col": 1,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 8,
+                  "col": 2,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 8,
+                  "col": 3,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 8,
+                  "col": 4,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 8,
+                  "col": 5,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 8,
+                  "col": 6,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 8,
+                  "col": 7,
+                  "color": "#7db7d8"
+                },
+                {
+                  "row": 8,
+                  "col": 8,
+                  "color": "#7db7d8"
+                }
+              ]
+            }
+          },
+          {
+            "type": "p",
+            "text": "1,2,4,8 зэрэг хоёрын зэрэг индексүүд эхлэлээс өөр хүртэлх бүх утгыг хамарна. Сондгой индекс бүр ганц нүд хадгална. Энэ хүснэгтийг зурж чадвал дараах асуух, өөрчлөх хоёр чиглэлийн алхам санамсаргүй томьёо биш болно."
+          }
+        ]
+      },
+      {
+        "key": "query",
+        "title": "Баруун хэсгийг авч зүүн тийш явдаг асуулт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхний 7 элементийн нийлбэрийг асууя. tree[7] нь [7,7]-ийн 4. Түүнийг авсны дараа өмнөх үлдсэн хэсэг [1,6], тиймээс $i$=7−lowbit(7)=6. tree[6] нь [5,6]-ийн 7, дараа нь $i$=6−2=4. tree[4] нь [1,4]-ийн 16; $i$=4−4=0 болоход дуусна. Хариу 4+7+16=27."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Алхам $i$",
+              "Авсан хэсэг",
+              "Нэмэх утга",
+              "Дараах $i$"
+            ],
+            "rows": [
+              [
+                "7",
+                "[7,7]",
+                "4",
+                "6"
+              ],
+              [
+                "6",
+                "[5,6]",
+                "7",
+                "4"
+              ],
+              [
+                "4",
+                "[1,4]",
+                "16",
+                "0"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Алхам бүр үлдсэн prefix-ийн хамгийн баруун блокоор төгсөнө. Тэр блокийг авсны дараа үлдсэн зүүн хэсэгтэй давхцахгүй. Иймээс [1,$k$] нь яг нэг удаа тоологдсон хэсгүүдэд задарна. $i$-ээс lowbit($i$)-г хасахад хамгийн баруун 1 бит арилна; хамгийн ихдээ log₂ $n$+1 бит тул $O(\\log n)$ алхам."
+          },
+          {
+            "type": "p",
+            "text": "Хоёр үзүүр орсон $[l,r]$ завсрын нийлбэр $sum(r)-sum(l-1)$. Жишээний [3,7] нь 27−4=23. l=1 бол sum(0)=0, тусгай сөрөг индекс хэрэггүй. sum(0) хүчинтэй хоосон prefix, харин $n$-ээс их индексийг асуухгүй."
+          }
+        ]
+      },
+      {
+        "key": "update",
+        "title": "Нэмэх зам, утга оноох зөрүү ба тэг индекс",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "a[3]-д 3 нэмье. 3-ыг агуулсан tree нүдүүдийн индекс 3,4,8: tree[3] нь [3,3], tree[4] нь [1,4], tree[8] нь [1,8]. Өөрчлөгдөхгүй [5,6], [7,7] зэрэг хэсэгт хүрэхгүй. Индекс бүрээс $i$+=lowbit($i$) гэж дараагийн том хамрах хэсэг рүү очно."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Нүд",
+              "Өмнө",
+              "Дараа"
+            ],
+            "rows": [
+              [
+                "3",
+                "4",
+                "7"
+              ],
+              [
+                "4",
+                "16",
+                "19"
+              ],
+              [
+                "8",
+                "29",
+                "32"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Шинэ tree=[1,4,7,19,6,7,4,32]. sum(7) нь 4+7+19=30 болсон; a[3] эхний долоод багтдаг учраас яг 3 нэмэгдсэн. Индекс нэмэхэд дараагийн хамрах хэсгийн урт өсөх бөгөөд $n$-ээс давмагц зогсоно. Ингэж тухайн элементийг агуулдаг бүх сонгосон хэсэгт өөрчлөлт очиж, tree-ийн тодорхойлолт хадгалагдана."
+          },
+          {
+            "type": "p",
+            "text": "add($i$,$x$) нь $x$-ийг нэмдэг, a[$i$]=$x$ гэж оноодоггүй. Шинэ утга $x$ болгохдоо хуучин a[$i$]-г хадгалж, delta=$x$−a[$i$] нэмээд a[$i$]=$x$ гэж шинэчилнэ. Жишээ нь хуучин 4-ийг 7 болгоход +3, дараа нь 7-оос −2 болгоход −9 нэмнэ. $x$-ийг шууд add-д өгвөл өөр тоо гарна."
+          },
+          {
+            "type": "p",
+            "text": "Нэмэх үйлдлийг 0 индекст хэзээ ч эхлүүлэхгүй: lowbit(0)=0 тул $i$ өсөхгүй, давталт гацна. 1≤$i$≤$n$ гэрээг оролт ба дуудлага бүрд баримтал. Энэ нь sum(0)-ийн зөв хэрэглээнээс өөр нөхцөл. 0-ээс эхэлсэн оролтын индекс байвал add-д өгөхөөс ӨМНӨ 1 нэмнэ."
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "Оноох үйлдэлтэй таван элементийн бүтэн мөрдөлт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өмнөх жижиг жишээг мөн шалгая: a=[2,1,3,4,5] байхад tree=[2,3,3,10,5]. sum(5)=tree[5]+tree[4]=5+10=15, [2,4] нь 10−2=8. Гурав дахь утгыг 6 болговол +3 гэсэн зөрүү tree[3],tree[4]-т очно; дараагийн 8 нь $n$=5-аас хэтэрнэ."
+          },
+          {
+            "type": "diagram",
+            "kind": "dp",
+            "rows": [
+              [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+              ],
+              [
+                "2",
+                "1",
+                "3",
+                "4",
+                "5"
+              ],
+              [
+                "2",
+                "3",
+                "3",
+                "10",
+                "5"
+              ],
+              [
+                "2",
+                "3",
+                "6",
+                "13",
+                "5"
+              ]
+            ],
+            "caption": "Мөрүүд: индекс, анхны a, анхны tree, a[3]=6 болсны дараах tree."
+          },
+          {
+            "type": "p",
+            "text": "Шинэ tree=[2,3,6,13,5], [2,4]=13−2=11, бүх нийлбэр 5+13=18. Утгыг хоёр дахь удаагаа мөн 6 болговол delta=0; бүтэц өөрчлөгдөхгүй. Үүнийг шалгах нь add ба assignment андуурсан алдааг шууд илрүүлнэ."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "Struct-ийн бэлтгэл, үйлдлүүд ба бүтэн C++17",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Fenwick struct-д $n$ ба $n$+1 нүдтэй tree хадгална. Байгуулагч tree-г 0 утгаар үүсгэнэ; 0 дахь нүдийг өгөгдөлд ашиглахгүй. Анхны a[$i$] бүрийг add($i$,a[$i$])-ээр нэмэхэд бүх хамрах хэсэг зөв нийлбэртэй болно. Энд бэлтгэл $O(n \\log n)$; шугаман хугацааны тусгай build-ийг хэрэглээгүй."
+          },
+          {
+            "type": "p",
+            "text": "Программ $n$ q, дараа нь $n$ анхны утга уншина. Үйлдэл 1 $i$ $x$ нь $i$ дахь утгыг $x$ болгоно; үйлдэл 2 l $r$ нь хоёр үзүүр орсон [l,$r$]-ийн нийлбэрийг хэвлэнэ. 0≤$n$,q≤200000; $n$=0 бол q=0. Анхны болон оноох утгуудын абсолют хэмжээ 10⁹-өөс ихгүй. Нийлбэр 2×10¹⁴, оноох зөрүү 2×10⁹ хүртэл тул утга, delta, tree ба буцах хариу ll; индекс int."
+          },
+          {
+            "type": "p",
+            "text": "ll нь том нийлбэр, хасахаас өмнө ll болсон оноох утгуудыг хадгална."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+          },
+          {
+            "type": "p",
+            "text": "$n$+1 хэмжээ нь 1-ээс эхэлсэн индексийн нөөц. tree[0] өгөгдлийн нүд биш."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "struct Fenwick {\n    int n;\n    vector<ll> tree;\n\n    Fenwick(int _n) {\n        n = _n;\n        tree.resize(n + 1);\n    }"
+          },
+          {
+            "type": "p",
+            "text": "add-ийн гэрээ 1≤$i$≤$n$. $x$ сөрөг байж болно. $i$+=lowbit($i$) агуулдаг хэсгүүдийг шинэчилнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "void add(int i, ll x) {\n        for (; i <= n; i += i & -i) tree[i] += x;\n    }"
+          },
+          {
+            "type": "p",
+            "text": "sum эхний $i$ утгын нийлбэрийг давхцахгүй хэсгүүдээс авна. $i$=0 үед давталт орохгүй, 0 буцаана."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "ll sum(int i) const {\n        ll s = 0;\n        for (; i > 0; i -= i & -i) s += tree[i];\n        return s;\n    }"
+          },
+          {
+            "type": "p",
+            "text": "rangeSum нь хоёр prefix-ийг хасна. Гэрээ нь 1≤l≤$r$≤$n$, хоёр үзүүр орно."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "ll rangeSum(int l, int r) const {\n        return sum(r) - sum(l - 1);\n    }\n};"
+          },
+          {
+            "type": "p",
+            "text": "main хуучин a-г тусдаа хадгалдаг нь assignment-ийг delta болгоход хэрэгтэй. Шинэ утгыг a-д хадгалсны дараа дараагийн өөрчлөлт мөн зөв зөрүүтэй болно."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n + 1);\n    Fenwick fw(n);\n    for (int i = 1; i <= n; i++) {\n        cin >> a[i];\n        fw.add(i, a[i]);\n    }\n    while (q--) {\n        int type, l, r;\n        cin >> type;\n        if (type == 1) {\n            ll x;\n            cin >> l >> x;\n            fw.add(l, x - a[l]);\n            a[l] = x;\n        } else {\n            cin >> l >> r;\n            cout << fw.rangeSum(l, r) << '\\n';\n        }\n    }\n    return 0;\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Fenwick {\n    int n;\n    vector<ll> tree;\n\n    Fenwick(int _n) {\n        n = _n;\n        tree.resize(n + 1);\n    }\n\n    void add(int i, ll x) {\n        for (; i <= n; i += i & -i) tree[i] += x;\n    }\n\n    ll sum(int i) const {\n        ll s = 0;\n        for (; i > 0; i -= i & -i) s += tree[i];\n        return s;\n    }\n\n    ll rangeSum(int l, int r) const {\n        return sum(r) - sum(l - 1);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n + 1);\n    Fenwick fw(n);\n    for (int i = 1; i <= n; i++) {\n        cin >> a[i];\n        fw.add(i, a[i]);\n    }\n    while (q--) {\n        int type, l, r;\n        cin >> type;\n        if (type == 1) {\n            ll x;\n            cin >> l >> x;\n            fw.add(l, x - a[l]);\n            a[l] = x;\n        } else {\n            cin >> l >> r;\n            cout << fw.rangeSum(l, r) << '\\n';\n        }\n    }\n    return 0;\n}\n"
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Оролт",
+              "Гаралт"
+            ],
+            "rows": [
+              [
+                "5 4 / 2 1 3 4 5 / 2 2 4 / 1 3 6 / 2 2 4 / 2 1 5",
+                "8 / 11 / 18"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Асуулт бүр болон оноох өөрчлөлт бүр $O(\\log n)$, нийт O(($n$+q) log $n$) хугацаа, $O(n)$ санах ой. Индексийн алхмууд энэ хязгаарт int-д багтана. Зөвхөн add ашиглах өөр программд өөрчлөлтүүд хуримтлагдах тул ll хүрэлцэх эсэхийг тэр программын нийт нэмэлтийн хязгаараар дахин тооцно."
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "Нийлбэрийн нөхцөл, өргөтгөл ба шалгалт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэмэх нийлбэрт хоёр prefix-ийн ялгавар ажилладаг нь хасах урвуу үйлдэлтэй холбоотой. Minimum дээр sum($r$)−sum(l−1)-тэй адил дүрэм байхгүй: хоёр prefix хамгийн бага утга нь завсрын хамгийн бага утгыг тодорхойлохгүй. Энэ struct дурын min/max өөрчлөлтийг дэмждэг гэж ойлгож болохгүй."
+          },
+          {
+            "type": "p",
+            "text": "Ялгаврын массивыг Fenwick-д хадгалбал завсрын нэмэлт нь хоёр add, нэг утгын асуулт нь нэг prefix болно. Харин завсрын нэмэлт ба завсрын нийлбэрийг зэрэг дэмжихэд нэмэлт арга хэрэгтэй. Давтамжаас $k$ дахь элементийг хайхад сөрөг бус давтамж зэрэг өөр урьдчилсан нөхцөл орно; нийлбэрийн код дангаараа тэр үйлдэл биш."
+          },
+          {
+            "type": "p",
+            "text": "Жижиг массивт үйлдлүүдийг ээлжлүүлж, оноох бүрийн дараах бүх prefix, бүх завсрыг шууд нийлбэртэй тулга. Эхний/сүүлийн индекс, ижил утга дахин оноох, сөрөг утга, нийлбэр 32 битээс хэтрэх, sum(0), $n$=1, хоосон бүтэц ба q=0-ийг шалга. add(0)-г туршиж гацахын оронд дуудлагын индексийн гэрээг шалгана."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өөрийгөө шалга: tree[6] ямар нүдийг хамрах вэ? sum(7) ямар индексээр явах вэ? a[3]=6 байсан үед −2 оноох add хэд вэ? add(0) яагаад буруу вэ?"
+          },
+          {
+            "type": "p",
+            "text": "Хариу: [5,6]; 7→6→4→0; −8; индекс 0 хэвээр үлдэж давталт дуусахгүй. Эдгээрийг зөв тайлбарлаж, жижиг шууд загвартай тулгасны дараа хэрэглээний бодлогууд руу ор."
+          },
+          {
+            "type": "p",
+            "text": "Сэдвийг эзэмших үндсэн бодлогууд"
+          },
+          {
+            "type": "p",
+            "text": "Dynamic Range Sum Queries: main-ийн assignment→delta хөрвүүлэлтийг шууд хэрэглэ."
+          },
+          {
+            "type": "problem",
+            "problemKey": "397"
+          },
+          {
+            "type": "p",
+            "text": "Бие даах ба ахиулах бодлогууд"
+          },
+          {
+            "type": "p",
+            "text": "Range Update Queries: ялгаврын массив дээр хоёр нэмэлт, нэг prefix хэрэглэ; сүүлийн цуцлах заагийн хэмжээг анхаар."
+          },
+          {
+            "type": "problem",
+            "problemKey": "400"
+          },
+          {
+            "type": "p",
+            "text": "List Removals: 0/1 давтамжийн $k$ дахь амьд элементийг олох нэмэлт хайлт хэрэгтэй."
+          },
+          {
+            "type": "problem",
+            "problemKey": "403"
+          },
+          {
+            "type": "p",
+            "text": "Salary Queries: ирээдүйн утгыг шахаж, асуултын утгын хил ба хадгалсан координатыг ялга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "404"
+          },
+          {
+            "type": "p",
+            "text": "Distinct Values Queries: асуултуудыг дараалуулах, сүүлийн байрлалыг шинэчлэх нэмэлт санааг батал."
+          },
+          {
+            "type": "problem",
+            "problemKey": "411"
+          },
+          {
+            "type": "p",
+            "text": "Range Xor Queries: өөрчлөлтгүй асуултад prefix XOR хангалттай; нийлбэрээс өөр урвуу үйлдлийг харьцуул."
+          },
+          {
+            "type": "problem",
+            "problemKey": "399"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Fenwick tree — point changes and range sums",
+        "summary": "Trace stored intervals and both lowbit walks, distinguish assignment deltas, and implement one-based point changes and range sums in C++17.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "Avoid rebuilding every prefix after a change",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Prefix sums answer static range sums in $O(1)$, but changing a[$i$] invalidates many later prefixes. When queries alternate with changes, store selected short-block sums instead of updating every prefix."
+              },
+              {
+                "type": "p",
+                "text": "A Fenwick tree is also called a binary indexed tree, or BIT. Despite its name, the implementation is one array. Point addition and prefix sum each take $O(\\log n)$; subtracting two prefixes gives a range sum. All indices here are one-based."
+              },
+              {
+                "type": "diagram",
+                "kind": "dp",
+                "rows": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7",
+                    "8"
+                  ],
+                  [
+                    "1",
+                    "3",
+                    "4",
+                    "8",
+                    "6",
+                    "1",
+                    "4",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "4",
+                    "4",
+                    "16",
+                    "6",
+                    "7",
+                    "4",
+                    "29"
+                  ]
+                ],
+                "caption": "Middle row: a. Bottom row: tree, which is neither a copy of a nor an array of all prefixes."
+              }
+            ]
+          },
+          {
+            "key": "structure",
+            "title": "The interval in one cell and its lowest set bit",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For positive $i$, lowbit($i$)=$i$ & −$i$ is the largest power of two dividing $i$. For example, 6=110₂ has lowbit 2, and 8=1000₂ has lowbit 8. The operation isolates the rightmost set bit. It is safe for our positive int-sized indices."
+              },
+              {
+                "type": "p",
+                "text": "tree[$i$] sums a[$i$−lowbit($i$)+1] through a[$i$]: a block ending at $i$ with length lowbit($i$). Thus tree[6]=a[5]+a[6]=6+1=7, not the first six values’ sum 23. A single tree cell is generally not a whole prefix."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "$i$",
+                  "Binary",
+                  "lowbit",
+                  "Covered interval",
+                  "tree[$i$]"
+                ],
+                "rows": [
+                  [
+                    "1",
+                    "1",
+                    "1",
+                    "[1,1]",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "10",
+                    "2",
+                    "[1,2]",
+                    "4"
+                  ],
+                  [
+                    "3",
+                    "11",
+                    "1",
+                    "[3,3]",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "100",
+                    "4",
+                    "[1,4]",
+                    "16"
+                  ],
+                  [
+                    "5",
+                    "101",
+                    "1",
+                    "[5,5]",
+                    "6"
+                  ],
+                  [
+                    "6",
+                    "110",
+                    "2",
+                    "[5,6]",
+                    "7"
+                  ],
+                  [
+                    "7",
+                    "111",
+                    "1",
+                    "[7,7]",
+                    "4"
+                  ],
+                  [
+                    "8",
+                    "1000",
+                    "8",
+                    "[1,8]",
+                    "29"
+                  ]
+                ]
+              },
+              {
+                "type": "diagram",
+                "kind": "dp",
+                "rows": [
+                  [
+                    "tree[i]",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7",
+                    "8"
+                  ],
+                  [
+                    "tree[1]",
+                    "1",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·"
+                  ],
+                  [
+                    "tree[2]",
+                    "1",
+                    "3",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·"
+                  ],
+                  [
+                    "tree[3]",
+                    "·",
+                    "·",
+                    "4",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·"
+                  ],
+                  [
+                    "tree[4]",
+                    "1",
+                    "3",
+                    "4",
+                    "8",
+                    "·",
+                    "·",
+                    "·",
+                    "·"
+                  ],
+                  [
+                    "tree[5]",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "6",
+                    "·",
+                    "·",
+                    "·"
+                  ],
+                  [
+                    "tree[6]",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "6",
+                    "1",
+                    "·",
+                    "·"
+                  ],
+                  [
+                    "tree[7]",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "·",
+                    "4",
+                    "·"
+                  ],
+                  [
+                    "tree[8]",
+                    "1",
+                    "3",
+                    "4",
+                    "8",
+                    "6",
+                    "1",
+                    "4",
+                    "2"
+                  ]
+                ],
+                "caption": "Each row’s colored values sum to its tree[i]. Dots mark cells outside that block.",
+                "gridPresentation": {
+                  "colors": [
+                    {
+                      "row": 1,
+                      "col": 1,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 2,
+                      "col": 1,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 2,
+                      "col": 2,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 3,
+                      "col": 3,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 4,
+                      "col": 1,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 4,
+                      "col": 2,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 4,
+                      "col": 3,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 4,
+                      "col": 4,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 5,
+                      "col": 5,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 6,
+                      "col": 5,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 6,
+                      "col": 6,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 7,
+                      "col": 7,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 8,
+                      "col": 1,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 8,
+                      "col": 2,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 8,
+                      "col": 3,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 8,
+                      "col": 4,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 8,
+                      "col": 5,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 8,
+                      "col": 6,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 8,
+                      "col": 7,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "row": 8,
+                      "col": 8,
+                      "color": "#7db7d8"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "p",
+                "text": "Power-of-two indices 1,2,4,8 cover complete prefixes through themselves; odd indices store singletons. Understanding these intervals makes the query and update walks meaningful rather than arbitrary bit formulas."
+              }
+            ]
+          },
+          {
+            "key": "query",
+            "title": "Consume blocks from right to left",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Query the first 7 values. tree[7] contributes 4 from [7,7]; the remaining prefix ends at 7−lowbit(7)=6. tree[6] contributes 7 from [5,6], leaving endpoint 4. tree[4] contributes 16 from [1,4], and 4−4=0 ends the walk. The answer is 4+7+16=27."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Endpoint $i$",
+                  "Consumed block",
+                  "Contribution",
+                  "Next $i$"
+                ],
+                "rows": [
+                  [
+                    "7",
+                    "[7,7]",
+                    "4",
+                    "6"
+                  ],
+                  [
+                    "6",
+                    "[5,6]",
+                    "7",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "[1,4]",
+                    "16",
+                    "0"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Each step consumes the rightmost block of the remaining prefix. The leftover prefix is disjoint, so the blocks partition [1,$k$] exactly once. Subtracting lowbit removes the rightmost set bit; there are at most log₂ $n$+1 bits, giving $O(\\log n)$ steps."
+              },
+              {
+                "type": "p",
+                "text": "An inclusive range [l,$r$] has sum($r$)−sum(l−1). In the example [3,7] gives 27−4=23. If l=1, sum(0)=0 handles the empty prefix without a negative index. sum(0) is valid, but querying beyond $n$ is not."
+              }
+            ]
+          },
+          {
+            "key": "update",
+            "title": "Update paths, assignment deltas and index zero",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Add 3 to a[3]. The containing tree cells are 3,4,8: intervals [3,3], [1,4],[1,8]. Unrelated blocks such as [5,6] or [7,7] remain untouched. Move to the next containing block with $i$+=lowbit($i$)."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Cell",
+                  "Before",
+                  "After"
+                ],
+                "rows": [
+                  [
+                    "3",
+                    "4",
+                    "7"
+                  ],
+                  [
+                    "4",
+                    "16",
+                    "19"
+                  ],
+                  [
+                    "8",
+                    "29",
+                    "32"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "The new tree is [1,4,7,19,6,7,4,32]. sum(7)=4+7+19=30, exactly 3 more because a[3] belongs to that prefix. Update steps lead to larger containing blocks until the index exceeds $n$, preserving every stored block sum."
+              },
+              {
+                "type": "p",
+                "text": "add($i$,$x$) increases a value by $x$; it does not assign a[$i$]=$x$. To set a new value $x$, retain the old a[$i$], add delta=$x$−a[$i$], then store a[$i$]=$x$. Changing 4 to 7 adds 3; changing 7 to −2 adds −9. Passing $x$ directly to add would produce the wrong value."
+              },
+              {
+                "type": "p",
+                "text": "Never start an update at index 0: lowbit(0)=0 leaves $i$ unchanged and the loop never terminates. Maintain 1≤$i$≤$n$ at every update call. This differs from the valid sum(0) query. Convert a zero-based input index by adding 1 BEFORE calling add."
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "A complete five-value assignment trace",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Check a second small example: a=[2,1,3,4,5] gives tree=[2,3,3,10,5]. sum(5)=tree[5]+tree[4]=5+10=15, and [2,4] gives 10−2=8. Assigning 6 at position 3 adds delta 3 to tree[3],tree[4]; next index 8 is beyond $n$=5."
+              },
+              {
+                "type": "diagram",
+                "kind": "dp",
+                "rows": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "2",
+                    "1",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "2",
+                    "3",
+                    "3",
+                    "10",
+                    "5"
+                  ],
+                  [
+                    "2",
+                    "3",
+                    "6",
+                    "13",
+                    "5"
+                  ]
+                ],
+                "caption": "Rows: index, initial a, initial tree, tree after assigning a[3]=6."
+              },
+              {
+                "type": "p",
+                "text": "Now tree=[2,3,6,13,5], [2,4]=13−2=11, and the full sum is 5+13=18. Assigning 6 a second time has delta 0 and must not change the structure. This is a useful test for confusing addition with assignment."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "Struct initialization, operations and complete C++17",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Fenwick stores $n$ and a tree vector with $n$+1 entries. The constructor initializes zeros, leaving cell 0 unused as data. Adding each initial a[$i$] with add($i$,a[$i$]) establishes all block sums. This implementation builds in $O(n \\log n)$, not with a separate linear-time build."
+              },
+              {
+                "type": "p",
+                "text": "The program reads $n$ q, then $n$ initial values. Operation 1 $i$ $x$ assigns value $x$ at $i$; operation 2 l $r$ prints the inclusive range sum. Require 0≤$n$,q≤200000, with q=0 for $n$=0, and absolute initial/assigned values at most 10⁹. Sums can reach 2×10¹⁴ and assignment deltas 2×10⁹, so values, deltas, tree cells and answers use ll; indices use int."
+              },
+              {
+                "type": "p",
+                "text": "ll stores large sums and assignment values that are already ll before subtraction."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+              },
+              {
+                "type": "p",
+                "text": "The $n$+1 allocation reserves one-based indexing; tree[0] is not a data cell."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "struct Fenwick {\n    int n;\n    vector<ll> tree;\n\n    Fenwick(int _n) {\n        n = _n;\n        tree.resize(n + 1);\n    }"
+              },
+              {
+                "type": "p",
+                "text": "add requires 1≤$i$≤$n$. $x$ may be negative. $i$+=lowbit($i$) updates containing blocks."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "void add(int i, ll x) {\n        for (; i <= n; i += i & -i) tree[i] += x;\n    }"
+              },
+              {
+                "type": "p",
+                "text": "sum collects disjoint blocks of the first $i$ values. With $i$=0 the loop is skipped and returns 0."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "ll sum(int i) const {\n        ll s = 0;\n        for (; i > 0; i -= i & -i) s += tree[i];\n        return s;\n    }"
+              },
+              {
+                "type": "p",
+                "text": "rangeSum subtracts two prefixes for 1≤l≤$r$≤$n$, including both endpoints."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "ll rangeSum(int l, int r) const {\n        return sum(r) - sum(l - 1);\n    }\n};"
+              },
+              {
+                "type": "p",
+                "text": "main keeps the old array to convert assignments into deltas. Storing each new value ensures the next assignment computes the correct delta too."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n + 1);\n    Fenwick fw(n);\n    for (int i = 1; i <= n; i++) {\n        cin >> a[i];\n        fw.add(i, a[i]);\n    }\n    while (q--) {\n        int type, l, r;\n        cin >> type;\n        if (type == 1) {\n            ll x;\n            cin >> l >> x;\n            fw.add(l, x - a[l]);\n            a[l] = x;\n        } else {\n            cin >> l >> r;\n            cout << fw.rangeSum(l, r) << '\\n';\n        }\n    }\n    return 0;\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Fenwick {\n    int n;\n    vector<ll> tree;\n\n    Fenwick(int _n) {\n        n = _n;\n        tree.resize(n + 1);\n    }\n\n    void add(int i, ll x) {\n        for (; i <= n; i += i & -i) tree[i] += x;\n    }\n\n    ll sum(int i) const {\n        ll s = 0;\n        for (; i > 0; i -= i & -i) s += tree[i];\n        return s;\n    }\n\n    ll rangeSum(int l, int r) const {\n        return sum(r) - sum(l - 1);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n + 1);\n    Fenwick fw(n);\n    for (int i = 1; i <= n; i++) {\n        cin >> a[i];\n        fw.add(i, a[i]);\n    }\n    while (q--) {\n        int type, l, r;\n        cin >> type;\n        if (type == 1) {\n            ll x;\n            cin >> l >> x;\n            fw.add(l, x - a[l]);\n            a[l] = x;\n        } else {\n            cin >> l >> r;\n            cout << fw.rangeSum(l, r) << '\\n';\n        }\n    }\n    return 0;\n}\n"
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Input",
+                  "Output"
+                ],
+                "rows": [
+                  [
+                    "5 4 / 2 1 3 4 5 / 2 2 4 / 1 3 6 / 2 2 4 / 2 1 5",
+                    "8 / 11 / 18"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Queries and assignments each take $O(\\log n)$, for O(($n$+q) log $n$) total time and $O(n)$ memory. Index steps fit int under these bounds. A different program using arbitrary additions must separately bound accumulated values to ensure ll remains sufficient."
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "Sum assumptions, extensions and checks",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Subtracting prefixes works for sums because subtraction undoes addition. There is no analogous subtraction of two prefix minima: they do not determine a range minimum. This struct does not support arbitrary min/max updates."
+              },
+              {
+                "type": "p",
+                "text": "A Fenwick tree over differences turns range additions into two adds and point retrieval into one prefix query. Range additions together with range sums require another technique. Finding a kth element from frequencies additionally needs nonnegative counts; the sum code alone is not that operation."
+              },
+              {
+                "type": "p",
+                "text": "Interleave updates on small arrays and compare every prefix and range with direct sums after each assignment. Test first/last indices, repeated identical assignments, negatives, sums beyond 32 bits, sum(0), $n$=1 and an empty structure with q=0. Check update-call contracts rather than hanging a test by calling add(0)."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Check yourself: what interval does tree[6] cover? Which indices does sum(7) visit? What delta assigns −2 when a[3]=6? Why is add(0) invalid?"
+              },
+              {
+                "type": "p",
+                "text": "Answers: [5,6]; 7→6→4→0; −8; index 0 never advances. Explain these and compare with a small direct model before attempting applications."
+              },
+              {
+                "type": "p",
+                "text": "Core problems for mastering the topic"
+              },
+              {
+                "type": "p",
+                "text": "Dynamic Range Sum Queries: use the main program’s assignment-to-delta conversion."
+              },
+              {
+                "type": "problem",
+                "problemKey": "397"
+              },
+              {
+                "type": "p",
+                "text": "Independent practice and extensions"
+              },
+              {
+                "type": "p",
+                "text": "Range Update Queries: use two difference updates and one prefix query; allocate the cancellation boundary correctly."
+              },
+              {
+                "type": "problem",
+                "problemKey": "400"
+              },
+              {
+                "type": "p",
+                "text": "List Removals: finding the kth live element needs an additional search over 0/1 frequencies."
+              },
+              {
+                "type": "problem",
+                "problemKey": "403"
+              },
+              {
+                "type": "p",
+                "text": "Salary Queries: compress future values and distinguish query endpoints from stored coordinates."
+              },
+              {
+                "type": "problem",
+                "problemKey": "404"
+              },
+              {
+                "type": "p",
+                "text": "Distinct Values Queries: separately justify query ordering and last-position updates."
+              },
+              {
+                "type": "problem",
+                "problemKey": "411"
+              },
+              {
+                "type": "p",
+                "text": "Range Xor Queries: static queries only need prefix XOR; compare its inverse operation with sum subtraction."
+              },
+              {
+                "type": "problem",
+                "problemKey": "399"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Prefix sums, binary low bits and one-based indexing; a range sum is a difference of prefixes."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Урьдчилсан нийлбэр, хоёртын бичлэгийн бага бит, нэгээс эхэлсэн индекс. Завсрын нийлбэр хоёр эхний хэсгийн ялгавар.",
+    "priorityLevel": "high",
+    "priorityReason": "Өөрчлөгдөх массивын нийлбэр, давтамж, эрэмбийн тооллого зэрэг олон бодлогын жижиг үр ашигтай суурь. Хадгалсан хэсгийн утга ба индексийн алхмыг батлахад өндөр өгөөжтэй.",
+    "prerequisiteIds": [
+      "prefix-sums",
+      "bit-operations"
+    ],
+    "learningRelations": {
+      "next": "segment-tree",
+      "practice": [
+        {
+          "key": "397",
+          "stage": "Warm-up",
+          "reason": "Нэг утгын өөрчлөлт, хэсгийн нийлбэр эсвэл minimum-ийн нэгтгэл, саармаг утгыг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "400",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "403",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "404",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "411",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "399",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "prefix-sums",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "bit-operations",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "segment-tree",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "status": "complete focused bilingual candidate; publication evidence separate"
+}
