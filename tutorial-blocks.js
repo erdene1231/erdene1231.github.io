@@ -1,4 +1,4 @@
-import {validateGraphStyle} from './tutorial-graph.js?v=55';
+import {validateGraphStyle} from './tutorial-graph.js?v=57';
 // Typed content, never arbitrary HTML. Old block shapes stay valid.
 export const BLOCK_TYPES=['p','rich','heading','code','math','list','ordered','checklist','table','links','quote','callout','note','divider','image','diagram','problem','tutorial'];
 export const MARKS=['bold','italic','underline','strike','code'];
