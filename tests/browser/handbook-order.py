@@ -19,6 +19,7 @@ try:
    p.wait_for_function('n=>document.querySelectorAll("#tutorial-grid .tutorial-card").length===n',arg=len(rows))
    r=p.evaluate('''async()=>{const{orderTutorials,handbookChapterNumbers}=await import('/tutorial-order.js?v=67');const ids=[...document.querySelectorAll('#tutorial-grid .tutorial-card')].map(e=>e.hash.split('/')[1]);const expected=orderTutorials(ids.map(id=>({id}))).map(t=>t.id);if(JSON.stringify(ids)!==JSON.stringify(expected))throw Error('Visible order mismatch');for(const e of document.querySelectorAll('#tutorial-grid .tutorial-card')){const id=e.hash.split('/')[1],h=e.querySelector('h4').textContent,n=handbookChapterNumbers[id];if(n?!h.startsWith(n+'. '):!h.startsWith('Нэмэлт · '))throw Error('Chapter/supplement numbering mismatch '+id);}return{ids,numbering:true,overflow:document.documentElement.scrollWidth>innerWidth}}''')
    assert r['ids'][:2]==['introduction','complexity'] and not r['overflow']
+   assert r['ids'].index('greedy') < r['ids'].index('binary-search-answer') < r['ids'].index('dynamic-programming')
    assert r['ids'].index('segment-tree') < r['ids'].index('prefix-sums') < r['ids'].index('prefix-sums-2d')
    assert p.evaluate("async()=>{const{handbookChapterNumbers:n}=await import('/tutorial-order.js?v=75');return n['segment-tree']===9 && n['prefix-sums']===undefined}")
    p.locator('#tutorial-priority-sort').select_option('priority');p.wait_for_timeout(150)
