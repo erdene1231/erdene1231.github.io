@@ -1,4 +1,4 @@
-import {validateTutorial} from './tutorial-model.js?v=61';
+import {validateTutorial} from './tutorial-model.js?v=62';
 import {validateRelations} from './learning-model.js?v=61';
 export function publicationBody(draft,topics,problems){
  const body=structuredClone(draft);

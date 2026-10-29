@@ -1,5 +1,5 @@
 import {priorityLevel} from './priority.js?v=52';
-import {validateTutorial} from './tutorial-model.js?v=61';
+import {validateTutorial} from './tutorial-model.js?v=62';
 
 export function assertNewProblemRatingReady(problem) {
  if(!Number.isInteger(problem.rating)||problem.rating<800||problem.rating>4000||!['official','estimated'].includes(problem.ratingKind))throw new Error('Every new problem needs a numeric official or estimated rating.');
