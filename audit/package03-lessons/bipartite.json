@@ -1,0 +1,1212 @@
+{
+  "id": "bipartite",
+  "expected_revision": 2,
+  "expected_published": true,
+  "expected_body_md5": "7e4b92f0b64bea1260120d9280a1c807",
+  "expected_body_sha256": "cd38dc4428d91825f1b2851b119407755d86d61791107ffb2b59b219e02b8fb4",
+  "reviewed_body_sha256": "d9e6f0b23916fbfa5c1746aef3b6bf2ed418dec3c6602e4241badeb2f0d7f7de",
+  "proposed_body_sha256": "d9e6f0b23916fbfa5c1746aef3b6bf2ed418dec3c6602e4241badeb2f0d7f7de",
+  "body": {
+    "id": "bipartite",
+    "level": "Дунд шат",
+    "order": 48,
+    "title": "Хоёр өнгөөр будах — сондгой цикл ба бүтээсэн хуваалт",
+    "aliases": "bipartite Bipartite graph — хоёр өнгөний нөхцөл Bipartite graphs and two-colour constraints",
+    "related": [
+      "connected-components",
+      "dfs"
+    ],
+    "summary": "Бүх хэсгийн өнгийг хүчээр тогтоож, сондгой циклтэй яг тэнцүү зөрчлийг батлан, зөв багийн оноолтыг рекурсгүй байгуулна.",
+    "category": "Граф",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "meaning",
+        "title": "Хоёр бүлэг ба ирмэг бүрийн өнгийн нөхцөл",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Орой бүрийг хоёр бүлгийн нэгт хувааж, ирмэгийн хоёр төгсгөл үргэлж өөр бүлэгт байлгая. Ийм хуваалттай графыг bipartite гэдэг. Үүнийг хоёр өнгөөр будах гэж төсөөлж болно: бүлэг дотор ирмэггүй, бүх ирмэг хоёр өнгийн хооронд байна. Хоёр бүлгийн хэмжээ тэнцүү байх албагүй."
+          },
+          {
+            "type": "p",
+            "text": "Нэг хэсгийн эхлэлийг 0 өнгөтэй болговол хөршүүд нь 1, тэдний хөршүүд 0 гэх мэтээр хүчээр тогтоно. Будсан $u$ оройн хөрш $v$-д col[$v$]=col[$u$] XOR 1 хэрэгтэй. Өмнө будсан хөрш таарвал зүгээр алгасахгүй: ижил өнгөтэй эсэхийг заавал шалгана."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "1",
+                "label": "1",
+                "x": 15,
+                "y": 20
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 60,
+                "y": 20
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 86,
+                "y": 50
+              },
+              {
+                "id": "4",
+                "label": "4",
+                "x": 15,
+                "y": 80
+              },
+              {
+                "id": "5",
+                "label": "5",
+                "x": 60,
+                "y": 80
+              }
+            ],
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "4"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "2",
+                "5"
+              ],
+              [
+                "3",
+                "5"
+              ],
+              [
+                "4",
+                "5"
+              ]
+            ],
+            "directed": false,
+            "caption": "Энэ графт (4,5) доод ирмэг мөн бий. 2,3,5 гурвалжин нь хоёр өнгийг боломжгүй болгоно."
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оройн дугаарыг өнгөтэй бүү андуур. Кодод орой 1..$n$, харин өнгө 0/1. ",
+                "marks": []
+              },
+              {
+                "text": "col[v] == -1",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " бол хараахан будаагүй. Хариу хэвлэхдээ 1 нэмээд багийн дугаар 1/2 болгоно. Өнгө 0 хүчинтэй учир ",
+                "marks": []
+              },
+              {
+                "text": "if (!col[v])",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь будаагүйг шалгах зөв арга биш.",
+                "marks": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "source-example",
+        "title": "Нэг гурвалжны зөрчил хоёр өөр хайлтаар",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхлээд гүний хайлтын дарааллаар 1→2→3→5 явж үзье. 1 цэнхэр 0, 2 улаан 1, 3 цэнхэр 0, 5 улаан 1 болно. 5-ын хөрш 2 мөн улаан тул зөрчил илэрнэ. Энэ үед 4-ийг хараахан будаагүй байж болно; нэг зөрчил гарсан нь бүх графыг боломжгүй гэж дүгнэхэд хангалттай."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "1",
+                "label": "1",
+                "x": 15,
+                "y": 20,
+                "color": "#7db7d8",
+                "textColor": "#102a3a",
+                "annotation": "col=0",
+                "annotationDy": -30
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 60,
+                "y": 20,
+                "color": "#e7a1a1",
+                "textColor": "#102a3a",
+                "annotation": "col=1",
+                "annotationDy": -30
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 86,
+                "y": 50,
+                "color": "#7db7d8",
+                "textColor": "#102a3a",
+                "annotation": "col=0",
+                "annotationDy": -30
+              },
+              {
+                "id": "4",
+                "label": "4",
+                "x": 15,
+                "y": 80
+              },
+              {
+                "id": "5",
+                "label": "5",
+                "x": 60,
+                "y": 80,
+                "color": "#e7a1a1",
+                "textColor": "#102a3a",
+                "annotation": "col=1",
+                "annotationDy": -30
+              }
+            ],
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "4"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "2",
+                "5"
+              ],
+              [
+                "3",
+                "5"
+              ],
+              [
+                "4",
+                "5"
+              ]
+            ],
+            "directed": false,
+            "caption": "DFS-ийн завсрын төлөв: 2 ба 5 хоёулаа col=1. Өнгөгүй 4 нь алдаа биш, хайлт зөрчил дээр зогссон."
+          },
+          {
+            "type": "p",
+            "text": "Доорх программ харин дараалалтай BFS ашиглана. 1-ээс 2,4-т өнгө 1, дараа нь 2-оос 3,5-д өнгө 0 өгнө. Тэгээд (3,5) ирмэг ижил өнгөтэй болж зөрчил гарна. Шалгах эрэмбэ өөр учир зөрчил илэрсэн ирмэг, завсрын өнгө өөр байж болно; аль аль нь 2–3–5–2 гэсэн сондгой гурвалжны боломжгүй нөхцөлийг илрүүлж байна."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Хайлт",
+              "Завсрын өнгө (1..5)",
+              "Зөрчил"
+            ],
+            "rows": [
+              [
+                "DFS",
+                "0,1,0,−1,1",
+                "5–2"
+              ],
+              [
+                "BFS",
+                "0,1,0,1,0",
+                "3–5"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Нэг эхлэлийн өнгийг бүхэлд нь сольж 0↔1 болгоод зөрчлийг засахгүй. Ижил өнгөтэй хоёр төгсгөл хоёулаа солигдоод мөн ижил байна. Хоёр өнгө л байгаа учир ирмэг бүр дараагийн өнгийг хүчээр тогтоодог; өөр сонголт туршиж буцах шаардлагагүй."
+          }
+        ]
+      },
+      {
+        "key": "odd-cycles",
+        "title": "Сондгой циклтэй яг тэнцүү боломжгүй нөхцөл",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Циклийн ирмэгээр нэг алхах бүрд өнгө солигдоно. Сондгой тооны алхмын дараа эхлэлийн эсрэг өнгөнд очих боловч эхэлсэн оройдоо буцсан байх ёстой: боломжгүй. Иймээс зөв хоёр өнгийн хуваалттай граф сондгой урттай циклгүй. Тэгш урттай цикл бол өөрөө хориг биш."
+          },
+          {
+            "type": "p",
+            "text": "Эсрэг чиглэлийг хайлтаар баталъя. Хайлтын модны ирмэг бүрд өнгө ээлжилнэ. Ижил өнгөтэй $u$,$v$-ийн хооронд зөрчилтэй ирмэг олдвол эхлэлээс тэдэнд хүрсэн модны замуудын уртын паритет ижил. Нийтлэг эхлэлийг хоёр замаас арилгахад үлдэх $u$–$v$ модны зам тэгш урттай. Зөрчилтэй нэг ирмэгийг нэмэхэд сондгой цикл үүснэ."
+          },
+          {
+            "type": "p",
+            "text": "Тиймээс сондгой циклгүй графт хайлт зөрчил гаргаж чадахгүй, бүх орой хоёр өнгөтэй болж бүх ирмэгийн нөхцөл биелнэ. Ингээд “хоёр өнгөөр будаж болно” ⇔ “сондгой циклгүй” гэсэн хоёр чиглэлийн баталгаа бүрдлээ. Код цикл өөрөө хэвлэхгүй; шаардвал эцгийн замыг хадгалах нэмэлт хэрэгжилт хэрэгтэй."
+          },
+          {
+            "type": "p",
+            "text": "Өөртөө ирмэг ($v$,$v$) нь урт 1-тэй хориг: col[$v$] өөрөөсөө өөр байх боломжгүй. Нэг хосын давхар ирмэг ижил нөхцөлийг давтдаг болохоос шинээр сондгой шаардлага үүсгэхгүй. Энгийн 4 цикл хоёр өнгөөр будагдана."
+          }
+        ]
+      },
+      {
+        "key": "disconnected",
+        "title": "Тэгш цикл, салангид хэсэг ба бүтээсэн өнгө",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Зургаан оройн (1,2),(2,3),(3,4),(4,1),(5,6) графыг авъя. 1-д 0, хөрш 2,4-т 1, тэдний хөрш 3-т 0 өгнө. (4,3)-г шалгахад 1 ба 0 өөр тул зөв. Дараа нь тусдаа 5-аас шинээр эхэлж 5-д 0,6-д 1 өгнө. Гаралтын багууд 1,2,1,2,1,2."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "1",
+                "label": "1",
+                "x": 12,
+                "y": 20,
+                "color": "#7db7d8",
+                "textColor": "#102a3a",
+                "annotation": "team=1",
+                "annotationDy": -30
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 38,
+                "y": 20,
+                "color": "#e7a1a1",
+                "textColor": "#102a3a",
+                "annotation": "team=2",
+                "annotationDy": -30
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 38,
+                "y": 80,
+                "color": "#7db7d8",
+                "textColor": "#102a3a",
+                "annotation": "team=1",
+                "annotationDy": -30
+              },
+              {
+                "id": "4",
+                "label": "4",
+                "x": 12,
+                "y": 80,
+                "color": "#e7a1a1",
+                "textColor": "#102a3a",
+                "annotation": "team=2",
+                "annotationDy": -30
+              },
+              {
+                "id": "5",
+                "label": "5",
+                "x": 70,
+                "y": 20,
+                "color": "#7db7d8",
+                "textColor": "#102a3a",
+                "annotation": "team=1",
+                "annotationDy": -30
+              },
+              {
+                "id": "6",
+                "label": "6",
+                "x": 90,
+                "y": 80,
+                "color": "#e7a1a1",
+                "textColor": "#102a3a",
+                "annotation": "team=2",
+                "annotationDy": -30
+              }
+            ],
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "3",
+                "4"
+              ],
+              [
+                "4",
+                "1"
+              ],
+              [
+                "5",
+                "6"
+              ]
+            ],
+            "directed": false,
+            "caption": "Тэгш 4 цикл ба тусдаа хос. Гаднах тэмдэг нь хэвлэх багийн дугаар 1/2."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Орой",
+              "Дотоод col",
+              "Хэвлэх баг",
+              "Олдсон ирмэг"
+            ],
+            "rows": [
+              [
+                "1",
+                "0",
+                "1",
+                "эхлэл / root"
+              ],
+              [
+                "2",
+                "1",
+                "2",
+                "1–2"
+              ],
+              [
+                "4",
+                "1",
+                "2",
+                "1–4"
+              ],
+              [
+                "3",
+                "0",
+                "1",
+                "2–3"
+              ],
+              [
+                "5",
+                "0",
+                "1",
+                "шинэ эхлэл / new root"
+              ],
+              [
+                "6",
+                "1",
+                "2",
+                "5–6"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Өмнөх зөв будалтад (1,3) нэмбэл ижил өнгөтэй төгсгөлүүдийг холбоно; 1–2–3–1 гурвалжин бий. Өнгүүдийг шинээр сонгосон ч тэр гурвалжин арилахгүй. Харин хоёр дахь хэсгийн бүх өнгийг сольж болно: 5,6-ын аль нь 0 байх нь эхний хэсэгт нөлөөлөхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Ганц 1-ээс хайгаад амжилттай боллоо гэж зогсож болохгүй: өөр хэсэгт сондгой цикл байж болно. Гаднах 1..$n$ давталт будаагүй орой бүрээс эхэлнэ, ирмэггүй оройд ч өнгө өгнө. Өмнөх хэсгийн өнгийг арилгахгүй."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "Байгуулагч, бүх хэсгийн BFS ба бүтэн C++17",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Bipartite struct нь adj ба col хадгална. Байгуулагч $n$+1 жагсаалт, −1 утгатай өнгийн хүснэгт бэлдэнэ. fill эхлэлийг 0 болгоод дараалалд хийнэ. Шинэ хөршийг эсрэг өнгөтэй болгосны ДАРАА оруулна; ингэснээр дараалалд нэг удаа орно. Өмнө будсан хөрштэй ижил өнгөтэй бол зөрчил тул шийдэл боломжгүй."
+          },
+          {
+            "type": "p",
+            "text": "Оролт $n$ $m$, дараа нь $m$ чиглэлгүй ирмэг, оройнууд 1..$n$. 0≤$n$,$m$≤200000; $n$=0 бол $m$=0. Боломжгүй бол IMPOSSIBLE, боломжтой бол орой бүрийн баг 1/2-г хэвлэнэ. Хоосон графын хоосон будалт зөв; программ хоосон мөр хэвлэнэ. Өөртөө, давхар ирмэгийг нууж арилгахгүй, дүрмээр нь шалгана."
+          },
+          {
+            "type": "p",
+            "text": "queue ашигласан BFS нь системийн рекурсийн стек хэрэглэхгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;"
+          },
+          {
+            "type": "p",
+            "text": "−1 нь будаагүй, 0 ба 1 нь хоёр хүчинтэй өнгө. Байгуулагч энэ ялгааг тогтооно."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "struct Bipartite {\n    int n;\n    vector<vector<int>> adj;\n    vector<int> col;\n\n    Bipartite(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        col.assign(n + 1, -1);\n    }"
+          },
+          {
+            "type": "p",
+            "text": "Өнгийг ээлжлэн өгч, өмнө будсан хөршид тэнцүү өнгийн зөрчлийг шалгана. col[$v$] XOR 1 нь зөвхөн 0/1-д эсрэг өнгө өгнө."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "bool fill(int s) {\n        queue<int> q;\n        col[s] = 0;\n        q.push(s);\n        while (!q.empty()) {\n            int v = q.front();\n            q.pop();\n            for (int u : adj[v]) {\n                if (col[u] == -1) {\n                    col[u] = col[v] ^ 1;\n                    q.push(u);\n                } else if (col[u] == col[v]) {\n                    return false;\n                }\n            }\n        }\n        return true;\n    }"
+          },
+          {
+            "type": "p",
+            "text": "run бүх хэсгийг шалгана. Нэг зөрчил гарвал false, бусад тохиолдолд бүрэн хуваалттай true."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "bool run() {\n        for (int v = 1; v <= n; v++) {\n            if (col[v] == -1 && !fill(v)) return false;\n        }\n        return true;\n    }\n};"
+          },
+          {
+            "type": "p",
+            "text": "main ирмэгийг хоёр талд нэмээд зөвхөн амжилттай үед бүтэн өнгийг хэвлэнэ. Зөрчил гарсан хэсэгчилсэн col-г хариу гэж хэвлэхгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    Bipartite bp(n);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        bp.adj[a].push_back(b);\n        bp.adj[b].push_back(a);\n    }\n    if (!bp.run()) {\n        cout << \"IMPOSSIBLE\\n\";\n        return 0;\n    }\n    for (int v = 1; v <= n; v++) cout << bp.col[v] + 1 << ' ';\n    cout << '\\n';\n    return 0;\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct Bipartite {\n    int n;\n    vector<vector<int>> adj;\n    vector<int> col;\n\n    Bipartite(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        col.assign(n + 1, -1);\n    }\n\n    bool fill(int s) {\n        queue<int> q;\n        col[s] = 0;\n        q.push(s);\n        while (!q.empty()) {\n            int v = q.front();\n            q.pop();\n            for (int u : adj[v]) {\n                if (col[u] == -1) {\n                    col[u] = col[v] ^ 1;\n                    q.push(u);\n                } else if (col[u] == col[v]) {\n                    return false;\n                }\n            }\n        }\n        return true;\n    }\n\n    bool run() {\n        for (int v = 1; v <= n; v++) {\n            if (col[v] == -1 && !fill(v)) return false;\n        }\n        return true;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    Bipartite bp(n);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        bp.adj[a].push_back(b);\n        bp.adj[b].push_back(a);\n    }\n    if (!bp.run()) {\n        cout << \"IMPOSSIBLE\\n\";\n        return 0;\n    }\n    for (int v = 1; v <= n; v++) cout << bp.col[v] + 1 << ' ';\n    cout << '\\n';\n    return 0;\n}\n"
+          },
+          {
+            "type": "p",
+            "text": "Бүх ирмэгээ оруулаад run-ийг нэг удаа дуудах статик интерфейс. Орой бүр нэг удаа дараалалд орж, 2m хөршийн бичлэгийг нэг удаа шалгана: $O(n+m)$ хугацаа, графтайгаа $O(n+m)$ зай. col ба дараалал $O(n)$; int хангалттай, нийлбэр жин бодохгүй."
+          }
+        ]
+      },
+      {
+        "key": "checks",
+        "title": "Өнгийг шалгах ба өөр бодлогуудтай андуурахгүй байх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Амжилттай гаралтыг батлах хамгийн шууд арга нь орой бүр өнгөтэй, ирмэг бүрийн төгсгөлүүд өөр эсэхийг шалгах. Боломжгүйг жижиг $n$-д бүх 2ⁿ будалтыг туршиж тулгаж болно. Ганц орой, тусгаар олон орой, мод, тэгш/сондгой цикл, өөр хэсэг дэх зөрчил, өөртөө/давхар ирмэгийг заавал оруул."
+          },
+          {
+            "type": "p",
+            "text": "Хоёр өнгийн хуваалт нь хамгийн их хослол эсвэл хөршгүй олонлогийн тоо биш. Өөрчлөгдөх графт хуучин өнгө автоматаар шинэчлэгдэхгүй; энгийн холбоост хэсгийн DSU ч өнгийн паритет хадгалахгүй. Гурван өнгийн ерөнхий бодлогод энэ “эсрэг өнгө нь ганц” дүрэм алга: 3 өнгөөр будах нь NP-hard ангиллын бодлого бөгөөд энэ шугаман аргыг шууд сунгаж болохгүй."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өөрийгөө шалга: 4 цикл байвал боломжгүй юу? Өөртөө ирмэгийг яагаад зөвшөөрөхгүй вэ? Нэг хэсэгт өнгө солих нь бусад хэсэгт нөлөөлөх үү? Өмнө будсан хөршийг шалгалтгүй алгасвал юу алдах вэ?"
+          },
+          {
+            "type": "p",
+            "text": "Хариу: үгүй; нэг орой өөрөөсөө өөр өнгөтэй байж чадахгүй; үгүй; сондгой циклийн зөрчлийг анзаарахгүй өнгөрч болно."
+          },
+          {
+            "type": "p",
+            "text": "Сэдвийг эзэмших үндсэн бодлого"
+          },
+          {
+            "type": "p",
+            "text": "Building Teams: бүх хэсэгт эсрэг өнгө өгч, будсан хөршийн зөрчлийг заавал шалга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "364"
+          },
+          {
+            "type": "p",
+            "text": "Бие даах ба ахиулах бодлогууд"
+          },
+          {
+            "type": "p",
+            "text": "Building Roads: хэсгийн дугаар нь хоёр өнгийн нөхцөл биш гэдгийг ялга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "362"
+          },
+          {
+            "type": "p",
+            "text": "Round Trip: ямар нэг цикл олох ба сондгой циклээр боломжгүйг батлах өөр зорилго."
+          },
+          {
+            "type": "problem",
+            "problemKey": "365"
+          },
+          {
+            "type": "p",
+            "text": "School Dance: хоёр тал өгөгдсөн ч хамгийн их хослолд нэмэлт алгоритм хэрэгтэй."
+          },
+          {
+            "type": "problem",
+            "problemKey": "393"
+          },
+          {
+            "type": "p",
+            "text": "Road Construction: динамик холбоост хэсэг ба өнгийн паритет өөр мэдээлэл."
+          },
+          {
+            "type": "problem",
+            "problemKey": "381"
+          },
+          {
+            "type": "p",
+            "text": "Independent Set: хоёр өнгөөр будах нь хөршгүй оройн олонлог тоолохтой адил биш; модны DP-ийн зорилгыг ялга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "692"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Bipartite graphs — odd cycles and a constructed partition",
+        "summary": "Propagate colors in every component, prove the odd-cycle equivalence and construct a valid team assignment without recursion.",
+        "sections": [
+          {
+            "key": "meaning",
+            "title": "Two groups and one color constraint per edge",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Partition vertices into two groups so every edge joins different groups. A graph admitting this partition is bipartite. Equivalently, color vertices with two colors, with no edge within one color. The groups need not have equal sizes."
+              },
+              {
+                "type": "p",
+                "text": "Giving a component’s root color 0 forces its neighbors to 1, their neighbors to 0, and so on. An edge requires col[$v$]=col[$u$] XOR 1. When a neighbor is already colored, do not simply skip it: check whether the colors conflict."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 15,
+                    "y": 20
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 60,
+                    "y": 20
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 86,
+                    "y": 50
+                  },
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 15,
+                    "y": 80
+                  },
+                  {
+                    "id": "5",
+                    "label": "5",
+                    "x": 60,
+                    "y": 80
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "3",
+                    "5"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ]
+                ],
+                "directed": false,
+                "caption": "The bottom edge (4,5) is present too. Triangle 2,3,5 makes two-coloring impossible."
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Do not confuse vertex numbers with colors. Vertices are 1..$n$; internal colors are 0/1, and ",
+                    "marks": []
+                  },
+                  {
+                    "text": "col[v] == -1",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " means uncolored. Print color+1 as team 1/2. Since 0 is a valid color, ",
+                    "marks": []
+                  },
+                  {
+                    "text": "!col[v]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " is not an uncolored test.",
+                    "marks": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "source-example",
+            "title": "The same triangle conflict under two traversal orders",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "First trace the depth-first order 1→2→3→5: colors are blue 0, red 1, blue 0, red 1. Neighbor 2 of vertex 5 is also red, exposing a conflict. Vertex 4 may still be uncolored; one conflict is enough to reject the whole graph."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 15,
+                    "y": 20,
+                    "color": "#7db7d8",
+                    "textColor": "#102a3a",
+                    "annotation": "col=0",
+                    "annotationDy": -30
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 60,
+                    "y": 20,
+                    "color": "#e7a1a1",
+                    "textColor": "#102a3a",
+                    "annotation": "col=1",
+                    "annotationDy": -30
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 86,
+                    "y": 50,
+                    "color": "#7db7d8",
+                    "textColor": "#102a3a",
+                    "annotation": "col=0",
+                    "annotationDy": -30
+                  },
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 15,
+                    "y": 80
+                  },
+                  {
+                    "id": "5",
+                    "label": "5",
+                    "x": 60,
+                    "y": 80,
+                    "color": "#e7a1a1",
+                    "textColor": "#102a3a",
+                    "annotation": "col=1",
+                    "annotationDy": -30
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "3",
+                    "5"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ]
+                ],
+                "directed": false,
+                "caption": "DFS intermediate state: 2 and 5 both have col=1. Uncolored 4 is expected because the search stopped at the conflict."
+              },
+              {
+                "type": "p",
+                "text": "The implementation below instead uses BFS: from 1 color 2,4 with 1, then from 2 color 3,5 with 0. Edge (3,5) now exposes equal colors. Different traversal order may produce different partial colors and conflict edges on an impossible graph; both detect the odd triangle 2–3–5–2."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Search",
+                  "Partial colors (vertices 1..5)",
+                  "Conflict"
+                ],
+                "rows": [
+                  [
+                    "DFS",
+                    "0,1,0,−1,1",
+                    "5–2"
+                  ],
+                  [
+                    "BFS",
+                    "0,1,0,1,0",
+                    "3–5"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Swapping 0↔1 throughout a component cannot fix a conflict: equal endpoints remain equal. With only two colors, every edge forces the next color, so no backtracking over alternative choices is needed."
+              }
+            ]
+          },
+          {
+            "key": "odd-cycles",
+            "title": "Odd cycles are exactly the obstruction",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Every edge on a cycle flips the color. After an odd number of flips the color is opposite, yet a cycle returns to its starting vertex: impossible. Thus a bipartite graph has no odd-length cycle. An even cycle alone is not an obstruction."
+              },
+              {
+                "type": "p",
+                "text": "For the converse, tree edges alternate colors. If an edge joins equally colored $u$,$v$, their root-to-vertex tree paths have equal length parity. Remove their common initial path: the remaining tree path from $u$ to $v$ has even length. Adding the conflicting edge creates an odd cycle."
+              },
+              {
+                "type": "p",
+                "text": "Therefore a graph with no odd cycle cannot produce a conflict: the traversal completes a valid coloring. This proves both directions of bipartite ⇔ no odd cycle. The program does not output a cycle witness; doing so would require additional parent-path reconstruction."
+              },
+              {
+                "type": "p",
+                "text": "A self-loop ($v$,$v$) is a length-one obstruction: col[$v$] cannot differ from itself. Parallel copies of an edge repeat the same constraint without introducing a new odd requirement. A simple four-cycle is two-colorable."
+              }
+            ]
+          },
+          {
+            "key": "disconnected",
+            "title": "Even cycles, disconnected components and a constructed coloring",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Take six vertices with edges (1,2),(2,3),(3,4),(4,1),(5,6). Color 1 with 0, its neighbors 2,4 with 1, then 3 with 0. Edge (4,3) has opposite colors, so it is valid. Start separately at 5, giving 5 color 0 and 6 color 1. Printed teams are 1,2,1,2,1,2."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 12,
+                    "y": 20,
+                    "color": "#7db7d8",
+                    "textColor": "#102a3a",
+                    "annotation": "team=1",
+                    "annotationDy": -30
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 38,
+                    "y": 20,
+                    "color": "#e7a1a1",
+                    "textColor": "#102a3a",
+                    "annotation": "team=2",
+                    "annotationDy": -30
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 38,
+                    "y": 80,
+                    "color": "#7db7d8",
+                    "textColor": "#102a3a",
+                    "annotation": "team=1",
+                    "annotationDy": -30
+                  },
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 12,
+                    "y": 80,
+                    "color": "#e7a1a1",
+                    "textColor": "#102a3a",
+                    "annotation": "team=2",
+                    "annotationDy": -30
+                  },
+                  {
+                    "id": "5",
+                    "label": "5",
+                    "x": 70,
+                    "y": 20,
+                    "color": "#7db7d8",
+                    "textColor": "#102a3a",
+                    "annotation": "team=1",
+                    "annotationDy": -30
+                  },
+                  {
+                    "id": "6",
+                    "label": "6",
+                    "x": 90,
+                    "y": 80,
+                    "color": "#e7a1a1",
+                    "textColor": "#102a3a",
+                    "annotation": "team=2",
+                    "annotationDy": -30
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "1"
+                  ],
+                  [
+                    "5",
+                    "6"
+                  ]
+                ],
+                "directed": false,
+                "caption": "An even four-cycle and a separate pair. Outer annotations show printed team numbers 1/2."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Vertex",
+                  "Internal col",
+                  "Printed team",
+                  "Discovery edge"
+                ],
+                "rows": [
+                  [
+                    "1",
+                    "0",
+                    "1",
+                    "эхлэл / root"
+                  ],
+                  [
+                    "2",
+                    "1",
+                    "2",
+                    "1–2"
+                  ],
+                  [
+                    "4",
+                    "1",
+                    "2",
+                    "1–4"
+                  ],
+                  [
+                    "3",
+                    "0",
+                    "1",
+                    "2–3"
+                  ],
+                  [
+                    "5",
+                    "0",
+                    "1",
+                    "шинэ эхлэл / new root"
+                  ],
+                  [
+                    "6",
+                    "1",
+                    "2",
+                    "5–6"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Adding (1,3) joins equal colors in the previous coloring and creates triangle 1–2–3–1. Rechoosing colors cannot eliminate that obstruction. By contrast, swapping both colors in the separate pair 5,6 is always valid and does not affect the first component."
+              },
+              {
+                "type": "p",
+                "text": "Do not stop after successfully coloring only the component of 1: another component may contain an odd cycle. The outer loop starts from every uncolored vertex, including isolated vertices, without clearing earlier colors."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "Constructor, all-component BFS and complete C++17",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Bipartite stores adj and col. Its constructor allocates $n$+1 adjacency lists and colors initialized to −1. fill colors the root 0 and enqueues it. Color a new neighbor oppositely BEFORE insertion so it enters once. An already-colored neighbor violating the edge constraint makes the whole instance impossible."
+              },
+              {
+                "type": "p",
+                "text": "Input $n$ $m$ and $m$ undirected edges on vertices 1..$n$, with 0≤$n$,$m$≤200000 and $m$=0 when $n$=0. Print IMPOSSIBLE or team 1/2 for every vertex. The empty graph has a valid empty coloring, printed as an empty line. Self-loops and parallel edges are handled by the constraint rather than silently deleted."
+              },
+              {
+                "type": "p",
+                "text": "A queue-based BFS avoids the process recursion stack."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;"
+              },
+              {
+                "type": "p",
+                "text": "The constructor distinguishes uncolored −1 from valid colors 0 and 1."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "struct Bipartite {\n    int n;\n    vector<vector<int>> adj;\n    vector<int> col;\n\n    Bipartite(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        col.assign(n + 1, -1);\n    }"
+              },
+              {
+                "type": "p",
+                "text": "Alternate colors and check conflicts even at previously colored neighbors. XOR 1 flips a valid 0/1 color."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "bool fill(int s) {\n        queue<int> q;\n        col[s] = 0;\n        q.push(s);\n        while (!q.empty()) {\n            int v = q.front();\n            q.pop();\n            for (int u : adj[v]) {\n                if (col[u] == -1) {\n                    col[u] = col[v] ^ 1;\n                    q.push(u);\n                } else if (col[u] == col[v]) {\n                    return false;\n                }\n            }\n        }\n        return true;\n    }"
+              },
+              {
+                "type": "p",
+                "text": "run checks every component, returning false at a conflict and true with a complete partition otherwise."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "bool run() {\n        for (int v = 1; v <= n; v++) {\n            if (col[v] == -1 && !fill(v)) return false;\n        }\n        return true;\n    }\n};"
+              },
+              {
+                "type": "p",
+                "text": "main stores both directions and prints the full coloring only on success, never a partial failed assignment."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    Bipartite bp(n);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        bp.adj[a].push_back(b);\n        bp.adj[b].push_back(a);\n    }\n    if (!bp.run()) {\n        cout << \"IMPOSSIBLE\\n\";\n        return 0;\n    }\n    for (int v = 1; v <= n; v++) cout << bp.col[v] + 1 << ' ';\n    cout << '\\n';\n    return 0;\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct Bipartite {\n    int n;\n    vector<vector<int>> adj;\n    vector<int> col;\n\n    Bipartite(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        col.assign(n + 1, -1);\n    }\n\n    bool fill(int s) {\n        queue<int> q;\n        col[s] = 0;\n        q.push(s);\n        while (!q.empty()) {\n            int v = q.front();\n            q.pop();\n            for (int u : adj[v]) {\n                if (col[u] == -1) {\n                    col[u] = col[v] ^ 1;\n                    q.push(u);\n                } else if (col[u] == col[v]) {\n                    return false;\n                }\n            }\n        }\n        return true;\n    }\n\n    bool run() {\n        for (int v = 1; v <= n; v++) {\n            if (col[v] == -1 && !fill(v)) return false;\n        }\n        return true;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    Bipartite bp(n);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        bp.adj[a].push_back(b);\n        bp.adj[b].push_back(a);\n    }\n    if (!bp.run()) {\n        cout << \"IMPOSSIBLE\\n\";\n        return 0;\n    }\n    for (int v = 1; v <= n; v++) cout << bp.col[v] + 1 << ' ';\n    cout << '\\n';\n    return 0;\n}\n"
+              },
+              {
+                "type": "p",
+                "text": "This is a static interface: read all edges, then call run once. Every vertex is queued once and each of 2m adjacency entries examined once, giving $O(n+m)$ time and total space. Colors and queue use $O(n)$; int suffices without weighted sums."
+              }
+            ]
+          },
+          {
+            "key": "checks",
+            "title": "Validate the coloring and distinguish other tasks",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Validate a successful output directly: every vertex is colored and every edge has unequal endpoints. On small $n$, exhaust all 2ⁿ colorings to verify impossibility. Include singletons, isolated vertices, trees, even/odd cycles, a conflict outside the first component, self-loops and parallel edges."
+              },
+              {
+                "type": "p",
+                "text": "A two-color partition is not a maximum matching or a count of independent sets. Colors do not automatically update in a changing graph, and ordinary connectivity DSU stores no color parity. With three colors there is no single forced opposite color: general 3-coloring is NP-hard, so this linear method does not extend directly."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Check yourself: does a four-cycle force failure? Why does a self-loop fail? Does swapping one component affect others? What is lost by skipping already colored neighbors without checking?"
+              },
+              {
+                "type": "p",
+                "text": "Answers: no; a vertex cannot differ from its own color; no; an odd-cycle conflict may go unnoticed."
+              },
+              {
+                "type": "p",
+                "text": "Core problem for mastery"
+              },
+              {
+                "type": "p",
+                "text": "Building Teams: color every component and check already colored neighbors."
+              },
+              {
+                "type": "problem",
+                "problemKey": "364"
+              },
+              {
+                "type": "p",
+                "text": "Independent practice and extensions"
+              },
+              {
+                "type": "p",
+                "text": "Building Roads: component IDs are not a two-color constraint."
+              },
+              {
+                "type": "problem",
+                "problemKey": "362"
+              },
+              {
+                "type": "p",
+                "text": "Round Trip: finding any cycle differs from proving an odd-cycle obstruction."
+              },
+              {
+                "type": "problem",
+                "problemKey": "365"
+              },
+              {
+                "type": "p",
+                "text": "School Dance: maximum matching requires another algorithm even when the two sides are supplied."
+              },
+              {
+                "type": "problem",
+                "problemKey": "393"
+              },
+              {
+                "type": "p",
+                "text": "Road Construction: dynamic connectivity and color parity are different information."
+              },
+              {
+                "type": "problem",
+                "problemKey": "381"
+              },
+              {
+                "type": "p",
+                "text": "Independent Set: two-coloring does not count independent vertex sets; distinguish the tree-DP objective."
+              },
+              {
+                "type": "problem",
+                "problemKey": "692"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Undirected graphs, BFS and components; colors label groups rather than ordering values."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Чиглэлгүй граф, BFS, холбоост бүрэлдэхүүн. Өнгө нь хоёр бүлгийн дугаар бөгөөд утгын эрэмбэ биш.",
+    "priorityLevel": "high",
+    "priorityReason": "Хоёр бүлгийн хязгаар, замын паритет, сондгой циклийн саадыг нэгтгэх суурь. Бүрэлдэхүүн бүрд нөхцөлөө шалгах, өөр зөв хариуг хүлээн зөвшөөрөхөд өндөр ач холбогдолтой.",
+    "prerequisiteIds": [
+      "graph-basics",
+      "bfs"
+    ],
+    "learningRelations": {
+      "next": "dynamic-programming",
+      "practice": [
+        {
+          "key": "364",
+          "stage": "Warm-up",
+          "reason": "Бүх бүрэлдэхүүний хайлт, үндсэн нөхцөл ба зөв хариуны баталгааг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "362",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "365",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "393",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "381",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "692",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "connected-components",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "dfs",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "status": "complete focused bilingual candidate; publication evidence separate"
+}
