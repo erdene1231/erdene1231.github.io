@@ -1,0 +1,46 @@
+# Package 3 final audit
+
+The agreed tutorial content and bounded native-editor scope is complete: **55 original rewrites and 18 additions, 73 published lessons**. All 73 current anonymous bodies, revisions and matching history IDs reconcile to their publication receipts. There are 74 stored rows including the excluded, unchanged Mongolia draft test. This is a verified implementation/publication result, not an assertion of owner acceptance or full CS Academy feature parity.
+
+## Content and source coverage
+
+`PACKAGE03-FINAL-INVENTORY.json` lists every stable ID, URL, current revision, history ID, body SHA-256, priority and receipt. The historical original-55 closure remains unchanged. No successful publication was repeated during this audit.
+
+`PACKAGE03-FINAL-SOURCE-COVERAGE.json` maps all **30 chapters / 118 TOC subtopics** of the supplied July 3, 2018 handbook to current published sections and their reviewed-body receipts. The baseline is the existing full-chapter source/editorial reviews, compiled implementations and independent oracle evidence, tied back to unchanged public bodies; the final audit does not claim a new line-by-line translation or independent proof of every algorithm. Fresh representative reading confirmed the causal explanations, concrete traces and implementation walkthroughs in complexity, sorting, LCA/static paths and Z rather than accepting heading counts alone.
+
+- Introduction precedes complexity. The latter retains Calculation rules, Complexity classes, Estimating efficiency and Maximum subarray sum, followed by practice. The source examples and progression are retained.
+- Native listing tests verify the exact 73-ID default order, chapter numbers 1–30, unnumbered nearby supplements and explicit priority sorting/filtering. Chapter 9 belongs to `segment-tree`, not `prefix-sums`.
+- The deliberate chapter-18 exception remains: LCA definition/example first, then jump tables/ancestors/LCA, then static path aggregates. Edge versus vertex values, LCA counted once, negative weights, empty edge paths, root/same-vertex cases, static-only limits, prefix sums and order-sensitive operations are explained. Existing six-program independent tree-oracle evidence remains tied to the current body.
+- Sorting uses recursive merge sort, explains divide/solve/combine and recursion levels, and distinguishes it from `std::sort`. Lambda custom ordering includes secondary keys and strict comparison. Its `<=` stable merge choice is explicitly distinguished from a sort comparator.
+- KMP/prefix function and Z are both in `kmp`; probabilistic rolling hashing is in `string-hashing` and the containing string chapter. HLD, Aho–Corasick and suffix array/Kasai LCP have distinct published lessons. Doubling is accurately O(n log² n), not linear construction.
+- All 73 lessons have MN/EN corresponding section keys, native model/publication validation, justified Low/Medium/High tutorial priority and valid staged practice references. Source attribution is centralized at Tutorials, not repeated as book/edition narration inside teaching prose. The glossary distinguishes verified language evidence from unverified national terminology claims.
+
+One coverage bookkeeping error was corrected: **28.4 Two-dimensionality was already fully taught** inside the inner two-dimensional heading of `lazy-segment-tree`'s `structures` section. Its source grid, column trees, reasoning, fragments and complete program were present. The existing TOC links to that containing section; it does not provide a separate link to every inner heading. This audit records that limitation rather than inventing a content omission or reshuffling existing part URLs. No lesson SQL was needed.
+
+## Code and editor compatibility
+
+- Fresh full Node suite: **362 passed, 0 failed** after the bounded adapter fix below.
+- Fresh C++17 `-Wall -Wextra -fsyntax-only`: **241 unique full programs passed**, extracted from exact public MN/EN bodies. Of these, 237 match stored reviewed `.cpp` bytes, three differ only in whitespace, and one is the empty teaching skeleton. This compile pass is distinct from prior algorithm runtime/oracle/UBSan evidence; it does not claim every input was freshly executed.
+- All 478 occurrences of full programs longer than 15 lines have preceding meaningful code fragments matching the final program after whitespace normalization. Short skeletons/illustrative snippets are not falsely counted as complete taught algorithms. Existing chapter tests additionally verify exact fragment concatenation and walkthrough placement for the reviewed programs.
+- No global `#define int long long` or tabs in public code blocks. The source/style reviews retain int for bounded indices, ll for required value ranges and promoted arithmetic. Segment tree and DSU use compact structs with constructors and initialization explained; the basic segment tree is recursive. Syntax and source matching supplement, rather than replace, those substantive correctness reviews.
+- Fresh actual-public reader fixtures: 48 MN/EN language/viewport cases across complexity, sorting, LCA, advanced segment trees, interactive/communication and DP optimizations. Ten native editor edit/serialize/reload cases include four English editors; an additional 32 English-wrapper reader cases pass. Math, code, TOC anchors, problem actions, unknown metadata and media/practice references survive. Mobile, desktop and both themes pass without document overflow. These use local native UI with read-only RPC fixtures, not real-user mutations.
+
+The audit found and fixed one real data-preservation defect: `publicationBody` normalized supported relationship fields by replacing the whole object, dropping supplemental top-level `related`/`prerequisites` metadata in the published DP optimizations lesson if later edited/published through the app. It now preserves supplemental fields while still validating/normalizing supported relationships. Regression coverage proves preservation, clone independence and continued rejection of invalid known references. All 73 actual bodies pass the updated adapter, with only the existing benign missing-`next` → null normalization. No public body, private draft, relationship or access setting was changed to test this.
+
+The prose scanner flagged `I` in the legitimate problem title “Subarray Sums I”; contextual inspection confirmed a false positive, not a missing math delimiter. No blind replacement was applied.
+
+## Released diagram features
+
+Fresh native checks pass: graph color/annotation/position round trips (4), actual graph JSON transfer and refusal/undo cases (12), table merge/color/unmerge (4), array highlighted-boundary pixel regressions (24), and the exact corrected domino letter/geometry mapping (8). The latter is `ABBCDDE / AFFCGHE / IIJJGHK / LLMMNNK`, 14 dominoes, no missing/overlapping cells. Native screenshots were visually inspected, including phone/light graph labels, phone/dark merged dominoes and representative public reader views.
+
+Implemented graph controls are the existing **row-based** Diagram graph/tree editor: independent custom node/edge colors, inside labels, separate outside annotations and colors/offsets, edge labels/offsets, manual node positions, directed/undirected rendering, duplication and local JSON import/export. Structured data and legacy/unknown metadata survive native editing. Colors/labels are safely validated and rendered as data.
+
+**Not implemented:** a CS Academy-style mouse draw/drag canvas, automatic layouts, or SVG/PNG image export. These broader designer follow-ups are not included in the bounded released feature claim. The CS Academy certificate failure was not bypassed, and its unobserved live behavior is not claimed researched successfully.
+
+## Preservation, deployment and recommendation
+
+Fresh stored catalog, publication metadata and state fingerprints exactly match the last verified interactive publication capture: **Mongolia, all eight private drafts and bases, 1010 problems, learner/progress/profile records, history 285 and checked functions/ACL/RLS/triggers are unchanged**. There were zero production SQL writes or migrations in this audit. The three completion-date/profile-chart/weekly-progress requests remain DEFERRED; only cache URLs changed in their existing surrounding modules. No new access rights, credentials, APPROVE reviews or new package work.
+
+Before this audit release, main/PR207 was `8eb4d880c78796a5dd21c14b0d1cef22eb4b2f4a`; Pages run 41021428826 succeeded, all 16 runtime/JSON closure files plus six graph/grid/model/style/config support files matched deployed bytes under ordinary TLS validation. The audit release uses cache version 84 for the adapter fix; its exact PR/head/Pages/deployed-byte receipt is recorded in `PACKAGE03-FINAL-RELEASE.json` after merge. Live authenticated browser save and live Chromium visuals remain unclaimed because of the previously recorded certificate limitation; no TLS/security workaround was used.
+
+**Recommendation:** close package 3's agreed content and bounded native-editor work with the above explicit limits. No requested lesson additions remain. Keep broader graph-designer follow-ups and the three deferred UI requests separate; do not automatically start another package. Owner acceptance is not inferred.

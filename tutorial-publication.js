@@ -1,5 +1,5 @@
 import {validateTutorial} from './tutorial-model.js?v=63';
-import {validateRelations} from './learning-model.js?v=83';
+import {validateRelations} from './learning-model.js?v=84';
 export function publicationBody(draft,topics,problems){
  const body=structuredClone(draft);
  if(Object.hasOwn(body,'_draftRelationsText')){
@@ -9,7 +9,7 @@ export function publicationBody(draft,topics,problems){
   if(rel.practice.length||rel.variants.length||rel.next)body.learningRelations=rel;else delete body.learningRelations;
   delete body._draftRelationsText;
  }
- if(body.learningRelations)body.learningRelations=validateRelations(body.learningRelations,body.id,topics,problems);
+ if(body.learningRelations)body.learningRelations={...body.learningRelations,...validateRelations(body.learningRelations,body.id,topics,problems)};
  if(body.translations?.en){const en=body.translations.en;if(!en.title?.trim()&&!en.summary?.trim()&&!en.prerequisites?.trim()&&!en.sections?.length)delete body.translations.en;}
  body.related??=[];body.prerequisiteIds??=[];
  validateTutorial(body);return body;
