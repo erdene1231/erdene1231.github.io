@@ -1,0 +1,1211 @@
+{
+  "id": "heavy-light-decomposition",
+  "expected_absent": true,
+  "reviewed_body_sha256": "a100f778eb183c7533a0fed35f5642409b7bc27dbeff326c7b167b06eff6a85c",
+  "proposed_body_sha256": "a100f778eb183c7533a0fed35f5642409b7bc27dbeff326c7b167b06eff6a85c",
+  "body": {
+    "id": "heavy-light-decomposition",
+    "level": "Ахисан шат",
+    "order": 33,
+    "title": "Heavy-light decomposition — өөрчлөлттэй модон зам",
+    "aliases": "HLD heavy light decomposition chain path query мод гинж",
+    "related": [
+      "lca",
+      "segment-tree",
+      "tree-basics"
+    ],
+    "summary": "Дэд модны хэмжээгээр гинж сонгож, өөрчлөлттэй зам ба дэд модны асуултыг массивын интервалд хувиргана.",
+    "category": "Graphs",
+    "levelKey": "advanced",
+    "sections": [
+      {
+        "key": "idea",
+        "title": "Өөрчлөгддөг утгатай модон зам",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Орой бүр дээр тоо бичсэн мод өгөгдөв. Нэг оройн утгыг сольсны дараа дурын хоёр оройн хоорондох замын нийлбэрийг асууна. LCA нь зам хаана хоёр салахаа хэлж өгнө. Гэвч зам дээрх бүх тоог нэг бүрчлэн цуглуулбал гинжин модонд нэг асуулт $O(n)$ хэвээр. Утгууд өөрчлөгдөж байгаа тул статик binary lifting хүснэгтэд хадгалсан нийлбэрүүдийг шууд ашиглаж болохгүй."
+          },
+          {
+            "type": "p",
+            "text": "Heavy-light decomposition буюу HLD нь модыг хэдэн урт гинжид хуваана. Нэг гинжийн оройнуудыг массивт залгаа байрлуулбал замын хэсэг нь интервал болно. Дурын зам цөөн интервалд задардаг учраас өмнө үзсэн segment tree тэдгээрийн нийлбэрийг олно. Модны холбоос, үндэс хэвээр; өөрчлөгдөх зүйл нь зөвхөн хадгалсан утгууд."
+          },
+          {
+            "type": "p",
+            "text": "Энд үндэс 1, оройнууд 1..$n$. Мод гэдэг нь холбоост, чиглэлгүй, циклгүй граф: $n$−1 ирмэгтэй. LCA болон рекурсив segment tree-ийн суурь ойлголтыг мэддэг гэж үзнэ. HLD өөрөө нийлбэр хадгалах бүтэц биш; модны замыг массивын интервалд хувиргах арга юм."
+          }
+        ]
+      },
+      {
+        "key": "heavy",
+        "title": "Хамгийн том хүүхэд ба цөөн гинжийн баталгаа",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "sz[$u$] нь $u$-ийн дэд модны оройн тоо, өөрийг нь багтаана. Хүүхдүүдийн хэмжээг олсны дараа хамгийн их sz-тэй нэг хүүхдийг heavy[$u$] гэж сонгоно. Түүн рүү очих ирмэгийг H, бусад хүүхэд рүү очих ирмэгийг $L$ гэж тэмдэглэе. Ижил хэмжээтэй бол алийг нь ч сонгож болно; код хөршийн жагсаалтад түрүүлж таарсныг авна. Навчинд heavy[$u$]=0."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "directed": false,
+            "nodes": [
+              {
+                "id": "1",
+                "label": "1",
+                "x": 50,
+                "y": 15,
+                "annotation": "sz=9",
+                "annotationDx": 42,
+                "annotationDy": 0
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 28,
+                "y": 37,
+                "annotation": "sz=5",
+                "annotationDx": 42,
+                "annotationDy": 0
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 75,
+                "y": 37,
+                "annotation": "sz=3",
+                "annotationDx": 42,
+                "annotationDy": 0
+              },
+              {
+                "id": "4",
+                "label": "4",
+                "x": 17,
+                "y": 59,
+                "annotation": "sz=3",
+                "annotationDx": 42,
+                "annotationDy": 0
+              },
+              {
+                "id": "5",
+                "label": "5",
+                "x": 43,
+                "y": 59,
+                "annotation": "sz=1",
+                "annotationDx": 42,
+                "annotationDy": 0
+              },
+              {
+                "id": "6",
+                "label": "6",
+                "x": 8,
+                "y": 81,
+                "annotation": "sz=1",
+                "annotationDx": 0,
+                "annotationDy": 30
+              },
+              {
+                "id": "7",
+                "label": "7",
+                "x": 28,
+                "y": 81,
+                "annotation": "sz=1",
+                "annotationDx": 0,
+                "annotationDy": 30
+              },
+              {
+                "id": "8",
+                "label": "8",
+                "x": 75,
+                "y": 59,
+                "annotation": "sz=2",
+                "annotationDx": 42,
+                "annotationDy": 0
+              },
+              {
+                "id": "9",
+                "label": "9",
+                "x": 75,
+                "y": 81,
+                "annotation": "sz=1",
+                "annotationDx": 0,
+                "annotationDy": 30
+              }
+            ],
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "3"
+              ],
+              [
+                "2",
+                "4"
+              ],
+              [
+                "2",
+                "5"
+              ],
+              [
+                "4",
+                "6"
+              ],
+              [
+                "4",
+                "7"
+              ],
+              [
+                "3",
+                "8"
+              ],
+              [
+                "8",
+                "9"
+              ]
+            ],
+            "edgeStyles": [
+              {
+                "color": "#e67e22",
+                "label": "H",
+                "labelDx": 0,
+                "labelDy": 0
+              },
+              {
+                "color": "#64748b",
+                "label": "L",
+                "labelDx": 0,
+                "labelDy": 0
+              },
+              {
+                "color": "#e67e22",
+                "label": "H",
+                "labelDx": 0,
+                "labelDy": 0
+              },
+              {
+                "color": "#64748b",
+                "label": "L",
+                "labelDx": 0,
+                "labelDy": 0
+              },
+              {
+                "color": "#e67e22",
+                "label": "H",
+                "labelDx": 0,
+                "labelDy": 0
+              },
+              {
+                "color": "#64748b",
+                "label": "L",
+                "labelDx": 0,
+                "labelDy": 0
+              },
+              {
+                "color": "#e67e22",
+                "label": "H",
+                "labelDx": 28,
+                "labelDy": 0
+              },
+              {
+                "color": "#e67e22",
+                "label": "H",
+                "labelDx": 28,
+                "labelDy": 0
+              }
+            ],
+            "caption": "Оройн дотор дугаар, гадна дэд модны хэмжээ. H нь сонгосон хүүхдийн ирмэг, L нь бусад. 4-ийн ижил хэмжээтэй хүүхдээс 6-г сонгов."
+          },
+          {
+            "type": "p",
+            "text": "Жишээнд 1-ийн хүүхэд 2-ын хэмжээ 5, хүүхэд 3-ынх 3 тул heavy[1]=2. Дараа нь heavy[2]=4, heavy[4]=6. Нөгөө талд heavy[3]=8, heavy[8]=9. H ирмэгүүдийг дагахад 1–2–4–6 ба 3–8–9 гэсэн гинжүүд гарна. 5 болон 7 тус бүр өөрийн ганц оройтой гинж болно."
+          },
+          {
+            "type": "p",
+            "text": "Яагаад ийм сонголт ашигтай вэ? $L$ ирмэгийн хүүхэд $v$-ээс багагүй хэмжээтэй өөр хүүхэд заавал бий. Тэгвэл sz[$u$]≥1+2sz[$v$], өөрөөр хэлбэл sz[$v$]≤(sz[$u$]−1)/2. Үндсээс доош явахдаа $L$ ирмэг бүр дэд модны хэмжээг дор хаяж хоёр дахин багасгана. Тийм ирмэг $O(\\log n)$-оос олон байж чадахгүй. Дурын $u$–$v$ зам нь LCA хүртэлх хоёр хэсэгтэй тул хоёуланд нь энэ хязгаар үйлчилнэ. Энэ нь дундаж биш, зам бүрд үйлчлэх баталгаа."
+          }
+        ]
+      },
+      {
+        "key": "mapping",
+        "title": "Гинжийн эхлэл ба массивын байрлал",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "head[$u$] нь $u$-ийн гинжийн хамгийн дээрх орой, pos[$u$] нь шулуун массив дахь 1-ээс эхэлсэн байрлал. Гинжийг дээрээс доош дугаарлахад гүн нэмэгдэх бүрд байрлал нэгээр нэмэгдэнэ. Гинжийг дундаас нь өөр салбартай хольж дугаарлаж болохгүй."
+          },
+          {
+            "type": "p",
+            "text": "Бид H хүүхдийг түрүүлж бүрэн боловсруулдаг DFS-ийн дарааллаар дугаарлана. H гинжийг шууд дагаж, $L$ хүүхдийн шинэ гинжүүдийг стект хадгална. Гинжийн доод оройноос хойшлуулсан салбарыг түрүүлж гаргана. Иймд нэг дэд модыг бүхэлд нь дуусахаас өмнө түүний өвгийн өөр салбар руу орохгүй. Зөвхөн гинжүүдийг дурын дарааллаар залгахад дэд модны залгаа байх чанар автоматаар үүсэхгүй."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Орой $u$",
+              "sz[$u$]",
+              "heavy[$u$]",
+              "head[$u$]",
+              "pos[$u$]"
+            ],
+            "rows": [
+              [
+                "1",
+                "9",
+                "2",
+                "1",
+                "1"
+              ],
+              [
+                "2",
+                "5",
+                "4",
+                "1",
+                "2"
+              ],
+              [
+                "3",
+                "3",
+                "8",
+                "3",
+                "7"
+              ],
+              [
+                "4",
+                "3",
+                "6",
+                "1",
+                "3"
+              ],
+              [
+                "5",
+                "1",
+                "0",
+                "5",
+                "6"
+              ],
+              [
+                "6",
+                "1",
+                "0",
+                "1",
+                "4"
+              ],
+              [
+                "7",
+                "1",
+                "0",
+                "7",
+                "5"
+              ],
+              [
+                "8",
+                "2",
+                "9",
+                "3",
+                "8"
+              ],
+              [
+                "9",
+                "1",
+                "0",
+                "3",
+                "9"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Энэ хүснэгт дээр массивын оройн дараалал [1,2,4,6,7,5,3,8,9]. a[$u$]=$u$ байвал хадгалсан b массив ч эдгээр утгатай. 4-ийн дэд мод {4,6,7} нь [3,5], 2-ын дэд мод {2,4,6,7,5} нь [2,6]. Ерөнхийдөө дэд модны интервал [pos[$u$],pos[$u$]+sz[$u$]−1]. Замын интервалын хязгаартай андуурч болохгүй."
+          }
+        ]
+      },
+      {
+        "key": "path",
+        "title": "Замыг интервалд задлах ба бүтэн мөрдөлт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$u$, $v$ өөр гинжид байхад head нь илүү гүн байгаа төгсгөлийг сонгоно. Тэр талын [pos[head[$u$]],pos[$u$]] интервалыг аваад $u$=par[head[$u$]] гэж дээшилнэ. Шалгуур нь dep[$u$] ба dep[$v$] биш, гинжийн ЭХЛЭЛҮҮДИЙН гүн. Учир нь бид нэг орой бус бүтэн гинжийн хэсгийг хасаж байгаа."
+          },
+          {
+            "type": "p",
+            "text": "Ингэж хассан хэсэгт одоогийн LCA байхгүй: нөгөө талын гинжийн эхлэл түүнээс дээш эсвэл ижил гүнд байна. Тиймээс гинжийн эхлэлийн эцэг рүү шилжихэд замын хэрэгтэй хэсгийг алгасахгүй. Хассан оройнууд дахин тоологдохгүй, хоёр төгсгөлийн хооронд үлдсэн зам дараагийн алхамд хадгалагдана. Үндэстэй гинжээс дээш 0 рүү гарахгүй: үндэсний head хамгийн бага гүнтэй тул өөр гинж үлдсэн үед нөгөө тал сонгогдоно."
+          },
+          {
+            "type": "p",
+            "text": "Хоёр head тэнцүү болмогц оройнууд нэг гинжид байна. Гүехэн төгсгөл нь энэ замын LCA. Оройн утгын нийлбэрт [pos[гүехэн],pos[гүн]] интервалыг бүхэлд нь авна. Ингэснээр LCA яг нэг удаа орно. Тусдаа LCA асуулт дуудах шаардлагагүй боловч өмнө үзсэн LCA ойлголт нь зөв болохыг тайлбарлаж байна."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Алхам",
+              "Авсан оройнууд",
+              "b интервал",
+              "Нийлбэр"
+            ],
+            "rows": [
+              [
+                "1",
+                "7",
+                "[5,5]",
+                "7"
+              ],
+              [
+                "2",
+                "3,8,9",
+                "[7,9]",
+                "20"
+              ],
+              [
+                "3",
+                "1,2,4",
+                "[1,3]",
+                "7"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "7–9 замыг мөрдвөл эхлээд head[7]=7 нь head[9]=3-аас гүн тул 7-г авна, $u$=4 болно. Дараа нь 3-ын гинжийн эхлэл 1-ээс гүн тул 3–8–9-ийг авна; тэр тал 1-д ирнэ. Эцэст нь 4–2–1 нэг гинж. Нийлбэр 7+20+7=34; бодит зам 7–4–2–1–3–8–9. Мөрдөх хүснэгтэд цуглуулсан дараалал нь замаар алхах дараалал биш гэдгийг анзаар."
+          },
+          {
+            "type": "p",
+            "text": "Дээрх зөвлөмжөөр нэг удаа $L$ ирмэг давна; нэг асуултад $O(\\log n)$ интервал, интервал бүрд $O(\\log n)$ segment tree асуулт орно. Иймд замын асуулт $O(\\log^2 n)$, нэг оройн утга солих $O(\\log n)$. Хэмжээ, гинж, байрлал болон segment tree-ийг бэлтгэх нийт хугацаа $O(n)$, санах ой $O(n)$. Дэд модны асуулт ганц интервал тул $O(\\log n)$."
+          }
+        ]
+      },
+      {
+        "key": "edge",
+        "title": "Оройн утга, ирмэгийн утга ба үйлчлэх хүрээ",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Ирмэгийн утгыг массивт хадгалахдаа (par[$u$],$u$) ирмэгийн утгыг хүүхэд $u$-ийн байрлалд тавина. Үндэсний байрлал бодит ирмэг илэрхийлэхгүй. Өөр гинжийн хэсгийг авах үед head[$u$]-д хадгалсан утгыг БАГТААНА: head[$u$]-ийн эцэг рүү очих ирмэг замын нэг хэсэг мөн."
+          },
+          {
+            "type": "p",
+            "text": "Харин сүүлчийн нэг гинжийн хэсэгт гүехэн орой LCA тул түүний эцэгтэй холбосон ирмэг замд орохгүй. Зүүн хязгаарыг pos[LCA]+1 болгоно. $u$=$v$ үед хоосон интервалын нийлбэр 0. Дэд модны ДОТОРХ ирмэгийн нийлбэрт ч [pos[$u$]+1,pos[$u$]+sz[$u$]−1] хэрэглэнэ: $u$-г эцэгтэй нь холбосон ирмэг дэд модны дотор биш."
+          },
+          {
+            "type": "p",
+            "text": "Жишээний хүүхэд $u$-д ирмэгийн жин $u$ гэж өгвөл 7–9 замын жин 33: өмнөх 34-өөс LCA=1-ийн хуурамч утгыг хасна. 4–4 зам оройн горимд 4, ирмэгийн горимд 0. 4-ийн дэд мод оройн горимд 4+6+7=17, ирмэгийн горимд 6+7=13."
+          },
+          {
+            "type": "p",
+            "text": "Нийлбэр, minimum, maximum зэрэгт хэсгүүдийн дарааллыг сольж болно. Гэвч мөр залгах, матриц үржүүлэхэд сольж болохгүй. Доорх swap хийж ганц ans-д нэмдэг хувилбар зөвхөн дараалал үл хамаарах нийлбэрт зориулагдсан. Дараалал хамаарах үед хоёр төгсгөлийн хэсгийг тусад нь, зөв чиглэлээр цуглуулж, segment tree-д урагш/урвуу нэгтгэсэн утга хадгалах шаардлагатай. Зөвхөн + тэмдгийг өөр үйлдлээр солих нь хангалтгүй."
+          },
+          {
+            "type": "p",
+            "text": "Модны бүтэц өөрчлөгдөхгүй: ирмэг нэмэх/устгахыг энэ HLD дэмжихгүй. Замын бүх утгыг зэрэг өөрчлөх код энд байхгүй; тийм хувилбарт тохирсон lazy segment tree хэрэгтэй. Харин ганц утга солиход гинж, хэмжээ, байрлалыг дахин бэлтгэхгүй."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "Итератив бэлтгэл ба рекурсив Segtree бүхий C++17",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Дараах программын оролт $n$ q mode, дараа нь $n$ утга, $n$−1 ирмэг, q үйлдэл. mode=$V$ бол оройн утга; mode=E бол хүүхэд бүрийн орж ирэх ирмэгийн утга, a[1] үл хэрэглэгдэнэ. 1 $u$ $x$ нь утгыг $x$ БОЛГОНО; нэмж байгаа биш. 2 $u$ $v$ нь замын нийлбэр, 3 $u$ нь дэд модны оройнуудын эсвэл доторх ирмэгүүдийн нийлбэр. E горимд $u$=1-ийн утгыг өөрчилсөн ч бодит ирмэгийн хариунд нөлөөлөхгүй."
+          },
+          {
+            "type": "p",
+            "text": "1≤$n$≤200000, 0≤q≤200000, |a[$u$]| болон |$x$|≤10⁹ гэж авна. Индекс, гүн, хэмжээ int-д багтана. Хамгийн их нийлбэрийн абсолют утга 2·10¹⁴ тул ll=long long хэрэглэнэ. Модны бэлтгэлд рекурс ашиглахгүй. Segment tree-ийн рекурсийн гүн $O(\\log n)$ тул 200000 урт гинжийн гүнтэй адил биш."
+          },
+          {
+            "type": "p",
+            "text": "Segtree($n$) нь массивын урт $n$-ийг хадгалж, рекурсив зүүн/баруун хүүхдийн дугаарлалтад 4n+5 зай нээнэ. vector-ийн анхны утга 0 нь нийлбэрийн саармаг элемент. HLD-ийн оройн тоо, segment tree-ийн навчны тоо хоёулаа $n$ боловч бүтцийн оройнуудыг хольж болохгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Segtree {\n    int n;\n    vector<ll> t;\n    Segtree(int _n) {\n        n = _n;\n        t.resize(4 * n + 5);\n    }"
+          },
+          {
+            "type": "p",
+            "text": "build нь b массивыг навчдад тавиад хүүхдийн нийлбэрээр дотоод утгуудыг олно. b[pos[$u$]]=a[$u$] учраас модны дугаар бус HLD байрлалаар хандана."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "void build(int v, int tl, int tr, const vector<ll>& a) {\n        if (tl == tr) {\n            t[v] = a[tl];\n            return;\n        }\n        int tm = tl + (tr - tl) / 2;\n        build(v * 2, tl, tm, a);\n        build(v * 2 + 1, tm + 1, tr, a);\n        t[v] = t[v * 2] + t[v * 2 + 1];\n    }"
+          },
+          {
+            "type": "p",
+            "text": "update нь сонгосон навчид $x$ оноогоод үндэс хүртэлх нийлбэрүүдийг сэргээнэ. Нэг утга солиход $O(\\log n)$ орой өөрчлөгдөнө."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "void update(int v, int tl, int tr, int p, ll x) {\n        if (tl == tr) {\n            t[v] = x;\n            return;\n        }\n        int tm = tl + (tr - tl) / 2;\n        if (p <= tm) update(v * 2, tl, tm, p, x);\n        else update(v * 2 + 1, tm + 1, tr, p, x);\n        t[v] = t[v * 2] + t[v * 2 + 1];\n    }"
+          },
+          {
+            "type": "p",
+            "text": "query хоосон l>$r$ үед 0 буцаана. Бусад үед интервалыг хоёр хүүхдийн заагт хувааж, яг таарсан хэсгийг шууд авна. Энэ хоосон интервалын дүрэм E горимын ганц оройн зам, навчны дэд модыг зөв хариулна."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "ll query(int v, int tl, int tr, int l, int r) {\n        if (l > r) return 0;\n        if (l == tl && r == tr) return t[v];\n        int tm = tl + (tr - tl) / 2;\n        return query(v * 2, tl, tm, l, min(r, tm))\n             + query(v * 2 + 1, tm + 1, tr, max(l, tm + 1), r);\n    }\n};"
+          },
+          {
+            "type": "p",
+            "text": "HLD($n$) нь хөршийн жагсаалт болон par,dep,sz,heavy,head,pos массивуудыг $n$+1 хэмжээтэй бэлдэнэ. 0 нь эцэг/хүүхэд байхгүй тэмдэг. add чиглэлгүй ирмэгийг хоёр талд хадгална."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "struct HLD {\n    int n, timer = 0;\n    vector<vector<int>> adj;\n    vector<int> par, dep, sz, heavy, head, pos;\n    HLD(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        par.resize(n + 1);\n        dep.resize(n + 1);\n        sz.resize(n + 1);\n        heavy.resize(n + 1);\n        head.resize(n + 1);\n        pos.resize(n + 1);\n    }\n    void add(int u, int v) {\n        adj[u].push_back(v);\n        adj[v].push_back(u);\n    }"
+          },
+          {
+            "type": "p",
+            "text": "Эхний давталтад эцэг хүүхдээсээ өмнө order-д орно. Зөв мод гэсэн урьдчилсан нөхцөлтэй тул эцгээ алгасахад дахин оролт үүсэхгүй. Энэ нь ерөнхий циклтэй графыг шалгах код биш. build дахин дуудахад ажиллах массивуудыг шинээр бэлдэнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "void build() {\n        timer = 0;\n        fill(par.begin(), par.end(), 0);\n        fill(dep.begin(), dep.end(), 0);\n        fill(sz.begin(), sz.end(), 1);\n        fill(heavy.begin(), heavy.end(), 0);\n        vector<int> order = {1};\n        for (int i = 0; i < n; i++) {\n            int u = order[i];\n            for (int v : adj[u]) {\n                if (v == par[u]) continue;\n                par[v] = u;\n                dep[v] = dep[u] + 1;\n                order.push_back(v);\n            }\n        }"
+          },
+          {
+            "type": "p",
+            "text": "order-ийг урвуулбал хүүхдийн sz эхэлж бэлэн болно. Хүүхдийн хэмжээг $u$-д нэмээд хамгийн томыг нь сонгоно. > ашигласан тул тэнцүү үед өмнөх сонголт хэвээр."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "for (int i = n - 1; i >= 0; i--) {\n            int u = order[i];\n            for (int v : adj[u]) {\n                if (par[v] != u) continue;\n                sz[u] += sz[v];\n                if (!heavy[u] || sz[v] > sz[heavy[u]]) heavy[u] = v;\n            }\n        }"
+          },
+          {
+            "type": "p",
+            "text": "Ил стек дээр (шинэ гинжийн эхлэл, head) хос хадгална. Нэг гинжийг heavy дагаж залгаа дугаарлана; хойшлуулсан $L$ хүүхдүүд шинэ гинж эхлүүлнэ. $L$ салбаруудыг LIFO дарааллаар гаргах нь дээр тайлбарласан дэд модны залгаа байдлыг хадгална."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "vector<pair<int, int>> st = {{1, 1}};\n        while (!st.empty()) {\n            auto [u, h] = st.back();\n            st.pop_back();\n            for (; u; u = heavy[u]) {\n                head[u] = h;\n                pos[u] = ++timer;\n                for (int v : adj[u]) {\n                    if (par[v] == u && v != heavy[u]) st.push_back({v, v});\n                }\n            }\n        }\n    }"
+          },
+          {
+            "type": "p",
+            "text": "path нь гүн head-тэй талыг авч дээшлүүлнэ. Сүүлийн интервалын эхэнд edge нь bool тул $V$ үед 0, E үед 1 нэмэгдэнэ. subtree ч ижил ялгааг хэрэглэнэ. Query-ийн нийлбэр ll; pos болон sz нь int."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "ll path(int u, int v, Segtree& seg, bool edge) {\n        ll ans = 0;\n        while (head[u] != head[v]) {\n            if (dep[head[u]] < dep[head[v]]) swap(u, v);\n            ans += seg.query(1, 1, n, pos[head[u]], pos[u]);\n            u = par[head[u]];\n        }\n        if (dep[u] > dep[v]) swap(u, v);\n        return ans + seg.query(1, 1, n, pos[u] + edge, pos[v]);\n    }\n    ll subtree(int u, Segtree& seg, bool edge) {\n        return seg.query(1, 1, n, pos[u] + edge, pos[u] + sz[u] - 1);\n    }\n};"
+          },
+          {
+            "type": "p",
+            "text": "main нь модны байрлалыг бэлдээд b массивт утгуудыг шилжүүлж, дараа нь segment tree байгуулна. Бүх өөрчлөлт pos[$u$] дээр хийгдэнэ. Доорх E/$V$ формат нь сургалтын программын формат; CSES-ийн бодлогуудын оролт, үйлдэл, нэгтгэх утгад тохируулж хэрэглэнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    char mode;\n    cin >> n >> q >> mode;\n    bool edge = mode == 'E';\n    vector<ll> a(n + 1), b(n + 1);\n    for (int u = 1; u <= n; u++) cin >> a[u];\n    HLD hld(n);\n    for (int i = 1, u, v; i < n; i++) {\n        cin >> u >> v;\n        hld.add(u, v);\n    }\n    hld.build();\n    for (int u = 1; u <= n; u++) b[hld.pos[u]] = a[u];\n    Segtree seg(n);\n    seg.build(1, 1, n, b);\n    while (q--) {\n        int type, u;\n        cin >> type >> u;\n        if (type == 1) {\n            ll x;\n            cin >> x;\n            seg.update(1, 1, n, hld.pos[u], x);\n        } else if (type == 2) {\n            int v;\n            cin >> v;\n            cout << hld.path(u, v, seg, edge) << '\\n';\n        } else {\n            cout << hld.subtree(u, seg, edge) << '\\n';\n        }\n    }\n}"
+          },
+          {
+            "type": "p",
+            "text": "Дээр тайлбарласан бүх хэсгийг дарааллаар нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Segtree {\n    int n;\n    vector<ll> t;\n    Segtree(int _n) {\n        n = _n;\n        t.resize(4 * n + 5);\n    }\n    void build(int v, int tl, int tr, const vector<ll>& a) {\n        if (tl == tr) {\n            t[v] = a[tl];\n            return;\n        }\n        int tm = tl + (tr - tl) / 2;\n        build(v * 2, tl, tm, a);\n        build(v * 2 + 1, tm + 1, tr, a);\n        t[v] = t[v * 2] + t[v * 2 + 1];\n    }\n    void update(int v, int tl, int tr, int p, ll x) {\n        if (tl == tr) {\n            t[v] = x;\n            return;\n        }\n        int tm = tl + (tr - tl) / 2;\n        if (p <= tm) update(v * 2, tl, tm, p, x);\n        else update(v * 2 + 1, tm + 1, tr, p, x);\n        t[v] = t[v * 2] + t[v * 2 + 1];\n    }\n    ll query(int v, int tl, int tr, int l, int r) {\n        if (l > r) return 0;\n        if (l == tl && r == tr) return t[v];\n        int tm = tl + (tr - tl) / 2;\n        return query(v * 2, tl, tm, l, min(r, tm))\n             + query(v * 2 + 1, tm + 1, tr, max(l, tm + 1), r);\n    }\n};\n\nstruct HLD {\n    int n, timer = 0;\n    vector<vector<int>> adj;\n    vector<int> par, dep, sz, heavy, head, pos;\n    HLD(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        par.resize(n + 1);\n        dep.resize(n + 1);\n        sz.resize(n + 1);\n        heavy.resize(n + 1);\n        head.resize(n + 1);\n        pos.resize(n + 1);\n    }\n    void add(int u, int v) {\n        adj[u].push_back(v);\n        adj[v].push_back(u);\n    }\n    void build() {\n        timer = 0;\n        fill(par.begin(), par.end(), 0);\n        fill(dep.begin(), dep.end(), 0);\n        fill(sz.begin(), sz.end(), 1);\n        fill(heavy.begin(), heavy.end(), 0);\n        vector<int> order = {1};\n        for (int i = 0; i < n; i++) {\n            int u = order[i];\n            for (int v : adj[u]) {\n                if (v == par[u]) continue;\n                par[v] = u;\n                dep[v] = dep[u] + 1;\n                order.push_back(v);\n            }\n        }\n        for (int i = n - 1; i >= 0; i--) {\n            int u = order[i];\n            for (int v : adj[u]) {\n                if (par[v] != u) continue;\n                sz[u] += sz[v];\n                if (!heavy[u] || sz[v] > sz[heavy[u]]) heavy[u] = v;\n            }\n        }\n        vector<pair<int, int>> st = {{1, 1}};\n        while (!st.empty()) {\n            auto [u, h] = st.back();\n            st.pop_back();\n            for (; u; u = heavy[u]) {\n                head[u] = h;\n                pos[u] = ++timer;\n                for (int v : adj[u]) {\n                    if (par[v] == u && v != heavy[u]) st.push_back({v, v});\n                }\n            }\n        }\n    }\n    ll path(int u, int v, Segtree& seg, bool edge) {\n        ll ans = 0;\n        while (head[u] != head[v]) {\n            if (dep[head[u]] < dep[head[v]]) swap(u, v);\n            ans += seg.query(1, 1, n, pos[head[u]], pos[u]);\n            u = par[head[u]];\n        }\n        if (dep[u] > dep[v]) swap(u, v);\n        return ans + seg.query(1, 1, n, pos[u] + edge, pos[v]);\n    }\n    ll subtree(int u, Segtree& seg, bool edge) {\n        return seg.query(1, 1, n, pos[u] + edge, pos[u] + sz[u] - 1);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    char mode;\n    cin >> n >> q >> mode;\n    bool edge = mode == 'E';\n    vector<ll> a(n + 1), b(n + 1);\n    for (int u = 1; u <= n; u++) cin >> a[u];\n    HLD hld(n);\n    for (int i = 1, u, v; i < n; i++) {\n        cin >> u >> v;\n        hld.add(u, v);\n    }\n    hld.build();\n    for (int u = 1; u <= n; u++) b[hld.pos[u]] = a[u];\n    Segtree seg(n);\n    seg.build(1, 1, n, b);\n    while (q--) {\n        int type, u;\n        cin >> type >> u;\n        if (type == 1) {\n            ll x;\n            cin >> x;\n            seg.update(1, 1, n, hld.pos[u], x);\n        } else if (type == 2) {\n            int v;\n            cin >> v;\n            cout << hld.path(u, v, seg, edge) << '\\n';\n        } else {\n            cout << hld.subtree(u, seg, edge) << '\\n';\n        }\n    }\n}\n"
+          },
+          {
+            "type": "p",
+            "text": "Бага жишээ: $n$=3, ирмэгүүд 1–2, 1–3, утгууд [10,20,30]. $V$ горимд 2–3 зам 60, 1-ийн дэд мод 60; 1 2 -5 хийсний дараа зам 35. E горимд 2–3 зам эхэндээ 50, өөрчлөлтийн дараа 25; 2–2 зам үргэлж 0. Эдгээр нь нэг оройг хоёр удаа тоолох, үндэсний хуурамч ирмэгийг багтаах алдааг илрүүлнэ."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Дасгал: жишээний H хүүхдийг сонгохдоо 4→7 гэж тэнцүү сонголтыг соль. pos хүснэгт өөрчлөгдөх боловч 7–9 замын нийлбэр 34 хэвээр гэдгийг шалга. Дараа нь pos биш оройн дугаараар segment tree асуувал ямар буруу хариу гарахыг бод. Гинжин, од хэлбэрийн модонд хэдэн гинж үүсэхийг гараар гарга."
+          },
+          {
+            "type": "p",
+            "text": "Зөвийг бие даан шалгахдаа HLD хэрэглэхгүй: эцгийн массиваар хоёр төгсгөлийг нэг нэгээр нь дээшлүүлж замын оройнуудыг цуглуул. Дэд модыг бүх орой дээр өвөг мөн эсэхээр шалгаж болно. Санамсаргүй жижиг модод утга солих болон $V$/E асуултыг ээлжлүүлж харьцуул; сөрөг утга, |нийлбэр|>2³¹, үндэс, ижил орой, навчийг заавал оруул."
+          },
+          {
+            "type": "p",
+            "text": "Сэдвийг эзэмших бодлогууд"
+          },
+          {
+            "type": "problem",
+            "problemKey": "430"
+          },
+          {
+            "type": "p",
+            "text": "Path Queries: үндсээс өгсөн орой хүртэлх нийлбэр. Манай 2 $u$ $v$-г 2 1 $v$ хэлбэрээр хэрэглэж болох ч бодлогын оролтын форматыг тохируул."
+          },
+          {
+            "type": "problem",
+            "problemKey": "431"
+          },
+          {
+            "type": "p",
+            "text": "Path Queries II: замын MAXIMUM асуудаг, нийлбэр биш. Segtree-ийн build/update/query болон path-ийн бүх нэгтгэлийг max болго; хоосон хэсгийн 0-ийг боломжит утгын хүрээнд зөв саармаг утгаар соль. Сөрөг тоо зөвшөөрвөл 0 буруу тул −∞ хэрэгтэй. Шууд дээрх программыг өөрчлөлтгүй илгээхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Бие даах ба харьцуулах бодлогууд"
+          },
+          {
+            "type": "problem",
+            "problemKey": "429"
+          },
+          {
+            "type": "p",
+            "text": "Subtree Queries: дэд модны нэг интервалын нийлбэр. HLD заавал хэрэггүй; энгийн DFS дугаарлалттай харьцуул."
+          },
+          {
+            "type": "problem",
+            "problemKey": "427"
+          },
+          {
+            "type": "p",
+            "text": "Distance Queries: утгууд тогтмол, нэг ирмэгийн урт 1. LCA ба гүн ашигласан энгийн аргаар эхэл."
+          },
+          {
+            "type": "problem",
+            "problemKey": "428"
+          },
+          {
+            "type": "p",
+            "text": "Counting Paths: замуудыг нэг дор тоолдог offline бодлого. HLD-аар бүх оройг нэг бүрчлэн шинэчлэхээс өмнө LCA ба модны ялгаврын аргыг харьцуул."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Heavy-light decomposition — dynamic values on tree paths",
+        "summary": "Choose chains by subtree sizes and map changing tree-path and subtree aggregates to array intervals.",
+        "sections": [
+          {
+            "key": "idea",
+            "title": "Tree paths with changing values",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "A tree has a value at every vertex. After assigning a new value to a vertex, we ask for the sum on a path between any two vertices. LCA identifies where the path branches, but walking along it still takes $O(n)$ on a chain. Values change, so aggregates stored in a static binary-lifting table cannot simply be reused."
+              },
+              {
+                "type": "p",
+                "text": "Heavy-light decomposition (HLD) partitions a tree into chains. Consecutive vertices in a chain occupy consecutive array positions, turning a chain segment into an interval. Any path splits into few such intervals, so a segment tree can aggregate them. The topology and root stay fixed; only stored values change."
+              },
+              {
+                "type": "p",
+                "text": "We root the tree at 1 and number vertices 1..$n$. The input must be a connected, undirected, acyclic graph with $n$−1 edges. Familiarity with LCA and a recursive segment tree is assumed. HLD is a mapping from tree paths to array intervals, not an aggregate storage structure by itself."
+              }
+            ]
+          },
+          {
+            "key": "heavy",
+            "title": "Largest children and the logarithmic chain bound",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "sz[$u$] counts vertices in the subtree of $u$, including $u$. After computing child sizes, choose one child with maximum size as heavy[$u$]. Label its edge H and all other child edges $L$. Ties can be broken arbitrarily; the code retains the first maximum in adjacency order. A leaf has heavy[$u$]=0."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "directed": false,
+                "nodes": [
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 50,
+                    "y": 15,
+                    "annotation": "sz=9",
+                    "annotationDx": 42,
+                    "annotationDy": 0
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 28,
+                    "y": 37,
+                    "annotation": "sz=5",
+                    "annotationDx": 42,
+                    "annotationDy": 0
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 75,
+                    "y": 37,
+                    "annotation": "sz=3",
+                    "annotationDx": 42,
+                    "annotationDy": 0
+                  },
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 17,
+                    "y": 59,
+                    "annotation": "sz=3",
+                    "annotationDx": 42,
+                    "annotationDy": 0
+                  },
+                  {
+                    "id": "5",
+                    "label": "5",
+                    "x": 43,
+                    "y": 59,
+                    "annotation": "sz=1",
+                    "annotationDx": 42,
+                    "annotationDy": 0
+                  },
+                  {
+                    "id": "6",
+                    "label": "6",
+                    "x": 8,
+                    "y": 81,
+                    "annotation": "sz=1",
+                    "annotationDx": 0,
+                    "annotationDy": 30
+                  },
+                  {
+                    "id": "7",
+                    "label": "7",
+                    "x": 28,
+                    "y": 81,
+                    "annotation": "sz=1",
+                    "annotationDx": 0,
+                    "annotationDy": 30
+                  },
+                  {
+                    "id": "8",
+                    "label": "8",
+                    "x": 75,
+                    "y": 59,
+                    "annotation": "sz=2",
+                    "annotationDx": 42,
+                    "annotationDy": 0
+                  },
+                  {
+                    "id": "9",
+                    "label": "9",
+                    "x": 75,
+                    "y": 81,
+                    "annotation": "sz=1",
+                    "annotationDx": 0,
+                    "annotationDy": 30
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "4"
+                  ],
+                  [
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "4",
+                    "6"
+                  ],
+                  [
+                    "4",
+                    "7"
+                  ],
+                  [
+                    "3",
+                    "8"
+                  ],
+                  [
+                    "8",
+                    "9"
+                  ]
+                ],
+                "edgeStyles": [
+                  {
+                    "color": "#e67e22",
+                    "label": "H",
+                    "labelDx": 0,
+                    "labelDy": 0
+                  },
+                  {
+                    "color": "#64748b",
+                    "label": "L",
+                    "labelDx": 0,
+                    "labelDy": 0
+                  },
+                  {
+                    "color": "#e67e22",
+                    "label": "H",
+                    "labelDx": 0,
+                    "labelDy": 0
+                  },
+                  {
+                    "color": "#64748b",
+                    "label": "L",
+                    "labelDx": 0,
+                    "labelDy": 0
+                  },
+                  {
+                    "color": "#e67e22",
+                    "label": "H",
+                    "labelDx": 0,
+                    "labelDy": 0
+                  },
+                  {
+                    "color": "#64748b",
+                    "label": "L",
+                    "labelDx": 0,
+                    "labelDy": 0
+                  },
+                  {
+                    "color": "#e67e22",
+                    "label": "H",
+                    "labelDx": 28,
+                    "labelDy": 0
+                  },
+                  {
+                    "color": "#e67e22",
+                    "label": "H",
+                    "labelDx": 28,
+                    "labelDy": 0
+                  }
+                ],
+                "caption": "Inside: vertex ID; outside: subtree size. H marks a selected heavy edge, L a light edge. The tie between the children of 4 selects 6."
+              },
+              {
+                "type": "p",
+                "text": "At 1, child 2 has size 5 and child 3 has size 3, so heavy[1]=2. Then heavy[2]=4 and heavy[4]=6; on the other side, heavy[3]=8 and heavy[8]=9. Following H edges forms chains 1–2–4–6 and 3–8–9. Vertices 5 and 7 each form a singleton chain."
+              },
+              {
+                "type": "p",
+                "text": "Why choose a largest child? For a light child $v$, another child has size at least sz[$v$]. Thus sz[$u$]≥1+2sz[$v$], or sz[$v$]≤(sz[$u$]−1)/2. Every downward light edge at least halves the remaining subtree size, so a root path crosses only $O(\\log n)$ light edges. An arbitrary $u$–$v$ path consists of two paths to its LCA, and both obey this bound. This is a worst-case guarantee, not an average-case claim."
+              }
+            ]
+          },
+          {
+            "key": "mapping",
+            "title": "Chain heads and array positions",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "head[$u$] is the top vertex of the chain containing $u$; pos[$u$] is its 1-based array position. Along a chain, increasing depth increases the position by one. Interleaving another branch in the middle would destroy this interval property."
+              },
+              {
+                "type": "p",
+                "text": "Number vertices in a heavy-first DFS order. Follow the H chain immediately and defer new light-child chains on a stack. Branches deferred deeper in the current chain are popped first, so a subtree finishes before a different branch of an ancestor begins. Merely concatenating chains in an arbitrary order would not automatically make whole subtrees contiguous."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Vertex $u$",
+                  "sz[$u$]",
+                  "heavy[$u$]",
+                  "head[$u$]",
+                  "pos[$u$]"
+                ],
+                "rows": [
+                  [
+                    "1",
+                    "9",
+                    "2",
+                    "1",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "5",
+                    "4",
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "3",
+                    "3",
+                    "8",
+                    "3",
+                    "7"
+                  ],
+                  [
+                    "4",
+                    "3",
+                    "6",
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "5",
+                    "1",
+                    "0",
+                    "5",
+                    "6"
+                  ],
+                  [
+                    "6",
+                    "1",
+                    "0",
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "7",
+                    "1",
+                    "0",
+                    "7",
+                    "5"
+                  ],
+                  [
+                    "8",
+                    "2",
+                    "9",
+                    "3",
+                    "8"
+                  ],
+                  [
+                    "9",
+                    "1",
+                    "0",
+                    "3",
+                    "9"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "The array order is [1,2,4,6,7,5,3,8,9]. If a[$u$]=$u$, the stored array b contains those same values. The subtree of 4, {4,6,7}, occupies [3,5], and the subtree of 2 occupies [2,6]. In general its interval is [pos[$u$],pos[$u$]+sz[$u$]−1]. Do not confuse this subtree endpoint with the endpoint of a path query."
+              }
+            ]
+          },
+          {
+            "key": "path",
+            "title": "Decomposing paths and a complete trace",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "While $u$ and $v$ have different chain heads, process the endpoint whose head is deeper. Query [pos[head[$u$]],pos[$u$]], then move to $u$=par[head[$u$]]. Compare the depths of the HEADS, not just the endpoint depths, because an entire chain segment is removed at once."
+              },
+              {
+                "type": "p",
+                "text": "The removed segment cannot contain the current LCA: the other chain head is at an equal or smaller depth. Moving to the parent of the deeper head therefore skips no needed path vertex. Removed vertices are not counted again, and the remaining path lies between the new endpoints. The algorithm cannot jump above the root to vertex 0: the root chain has minimum head depth, so while another chain remains, that other side is chosen."
+              },
+              {
+                "type": "p",
+                "text": "Once the heads agree, the endpoints lie on one chain. Its shallower endpoint is the LCA of the remaining path. For vertex sums, query the full interval from the shallower position to the deeper position, including the LCA exactly once. No separate LCA query is needed, although the LCA concept explains why this final step is correct."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Step",
+                  "Removed vertices",
+                  "b interval",
+                  "Sum"
+                ],
+                "rows": [
+                  [
+                    "1",
+                    "7",
+                    "[5,5]",
+                    "7"
+                  ],
+                  [
+                    "2",
+                    "3,8,9",
+                    "[7,9]",
+                    "20"
+                  ],
+                  [
+                    "3",
+                    "1,2,4",
+                    "[1,3]",
+                    "7"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "For path 7–9, head[7]=7 is deeper than head[9]=3, so remove 7 and move to 4. Next, head 3 is deeper than head 1, so remove 3–8–9 and move that endpoint to 1. The remaining 4–2–1 lies in one chain. The sum is 7+20+7=34, along actual path 7–4–2–1–3–8–9. Notice that collection order in the table is not traversal order along the path."
+              },
+              {
+                "type": "p",
+                "text": "Each loop iteration crosses one light edge. A path has $O(\\log n)$ intervals, each answered by a segment-tree query in $O(\\log n)$, giving $O(\\log^2 n)$ per path and $O(\\log n)$ per point assignment. Computing sizes, chains, positions and building the segment tree takes $O(n)$ time and memory. A subtree query uses one interval and takes $O(\\log n)$."
+              }
+            ]
+          },
+          {
+            "key": "edge",
+            "title": "Vertex values, edge values and scope",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For edge values, store the value of edge (par[$u$],$u$) at the child position pos[$u$]. The root position represents no real edge. During a cross-chain step, INCLUDE the value at head[$u$], because the edge from that head to its parent belongs to the path."
+              },
+              {
+                "type": "p",
+                "text": "In the final same-chain segment, however, the shallower vertex is the LCA, so its incoming edge is outside the path. Start at pos[LCA]+1. For $u$=$v$ this is an empty interval with sum 0. Edges wholly INSIDE a subtree similarly occupy [pos[$u$]+1,pos[$u$]+sz[$u$]−1], excluding the incoming edge of $u$."
+              },
+              {
+                "type": "p",
+                "text": "If the edge entering child $u$ has weight $u$, path 7–9 has weight 33: exclude the dummy value at LCA 1 from the previous 34. Path 4–4 returns 4 in vertex mode and 0 in edge mode. Subtree 4 returns 4+6+7=17 for vertices and 6+7=13 for its internal edges."
+              },
+              {
+                "type": "p",
+                "text": "Sum, minimum and maximum permit reordering segments. String concatenation and matrix multiplication do not. The implementation below swaps endpoints and uses one accumulator, so it supports a commutative sum only. Order-sensitive queries need separate endpoint accumulators, correct directions and forward/reverse aggregates in the segment tree. Merely replacing the + operator is insufficient."
+              },
+              {
+                "type": "p",
+                "text": "The topology is fixed: this HLD does not support linking or cutting edges. The code also does not perform updates on entire paths; those require a suitable lazy segment tree. Point assignments do not change sizes, chains or positions, so preprocessing is not repeated."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "Iterative preprocessing and recursive Segtree in C++17",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Input is $n$ q mode, then $n$ values, $n$−1 edges and q operations. $V$ uses vertex values. E uses the incoming-edge value at each child, with a[1] unused. Operation 1 $u$ $x$ ASSIGNS $x$, rather than adding it. Operation 2 $u$ $v$ queries a path; 3 $u$ queries subtree vertices or internal edges. Updating vertex 1 in E mode has no effect on any real-edge answer."
+              },
+              {
+                "type": "p",
+                "text": "Assume 1≤$n$≤200000, 0≤q≤200000, and |a[$u$]|, |$x$|≤10⁹. Indices, depths and sizes fit int. A sum can have magnitude 2·10¹⁴, requiring ll=long long. Tree preprocessing is iterative; segment-tree recursion has depth $O(\\log n)$, not the depth of a 200000-vertex chain."
+              },
+              {
+                "type": "p",
+                "text": "Segtree($n$) stores the array length and allocates 4n+5 slots for the recursive child-index layout. Zero-initialized vector entries match the sum identity. The tree has $n$ vertices and the segment tree has $n$ leaves, but their node indices are different."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Segtree {\n    int n;\n    vector<ll> t;\n    Segtree(int _n) {\n        n = _n;\n        t.resize(4 * n + 5);\n    }"
+              },
+              {
+                "type": "p",
+                "text": "build places b at the leaves and sums child results into internal nodes. Because b[pos[$u$]]=a[$u$], access uses the HLD position rather than the vertex ID."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "void build(int v, int tl, int tr, const vector<ll>& a) {\n        if (tl == tr) {\n            t[v] = a[tl];\n            return;\n        }\n        int tm = tl + (tr - tl) / 2;\n        build(v * 2, tl, tm, a);\n        build(v * 2 + 1, tm + 1, tr, a);\n        t[v] = t[v * 2] + t[v * 2 + 1];\n    }"
+              },
+              {
+                "type": "p",
+                "text": "update assigns $x$ at one leaf and recomputes ancestor sums. A point assignment changes $O(\\log n)$ segment-tree nodes."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "void update(int v, int tl, int tr, int p, ll x) {\n        if (tl == tr) {\n            t[v] = x;\n            return;\n        }\n        int tm = tl + (tr - tl) / 2;\n        if (p <= tm) update(v * 2, tl, tm, p, x);\n        else update(v * 2 + 1, tm + 1, tr, p, x);\n        t[v] = t[v * 2] + t[v * 2 + 1];\n    }"
+              },
+              {
+                "type": "p",
+                "text": "query returns 0 when l>$r$. Otherwise it splits at the child boundary or uses a fully matching node. This empty-interval rule handles a same-vertex edge path and a leaf subtree in E mode."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "ll query(int v, int tl, int tr, int l, int r) {\n        if (l > r) return 0;\n        if (l == tl && r == tr) return t[v];\n        int tm = tl + (tr - tl) / 2;\n        return query(v * 2, tl, tm, l, min(r, tm))\n             + query(v * 2 + 1, tm + 1, tr, max(l, tm + 1), r);\n    }\n};"
+              },
+              {
+                "type": "p",
+                "text": "HLD($n$) allocates adjacency lists and the par,dep,sz,heavy,head,pos arrays with $n$+1 entries. Zero denotes an absent parent or child. add stores an undirected edge in both directions."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "struct HLD {\n    int n, timer = 0;\n    vector<vector<int>> adj;\n    vector<int> par, dep, sz, heavy, head, pos;\n    HLD(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        par.resize(n + 1);\n        dep.resize(n + 1);\n        sz.resize(n + 1);\n        heavy.resize(n + 1);\n        head.resize(n + 1);\n        pos.resize(n + 1);\n    }\n    void add(int u, int v) {\n        adj[u].push_back(v);\n        adj[v].push_back(u);\n    }"
+              },
+              {
+                "type": "p",
+                "text": "The first loop puts parents before children in order. Under the tree precondition, skipping the parent prevents revisiting; this is not a validator for arbitrary cyclic graphs. build resets its working arrays so repeated preprocessing is supported."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "void build() {\n        timer = 0;\n        fill(par.begin(), par.end(), 0);\n        fill(dep.begin(), dep.end(), 0);\n        fill(sz.begin(), sz.end(), 1);\n        fill(heavy.begin(), heavy.end(), 0);\n        vector<int> order = {1};\n        for (int i = 0; i < n; i++) {\n            int u = order[i];\n            for (int v : adj[u]) {\n                if (v == par[u]) continue;\n                par[v] = u;\n                dep[v] = dep[u] + 1;\n                order.push_back(v);\n            }\n        }"
+              },
+              {
+                "type": "p",
+                "text": "Reversing order makes child sizes available first. Add them to sz[$u$] and choose a largest child. Using > retains the earlier choice on ties."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "for (int i = n - 1; i >= 0; i--) {\n            int u = order[i];\n            for (int v : adj[u]) {\n                if (par[v] != u) continue;\n                sz[u] += sz[v];\n                if (!heavy[u] || sz[v] > sz[heavy[u]]) heavy[u] = v;\n            }\n        }"
+              },
+              {
+                "type": "p",
+                "text": "An explicit stack holds (start vertex, head) pairs. Follow heavy links to assign one contiguous chain; deferred light children start new chains. Popping those branches in LIFO order preserves the subtree-contiguity property explained above."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "vector<pair<int, int>> st = {{1, 1}};\n        while (!st.empty()) {\n            auto [u, h] = st.back();\n            st.pop_back();\n            for (; u; u = heavy[u]) {\n                head[u] = h;\n                pos[u] = ++timer;\n                for (int v : adj[u]) {\n                    if (par[v] == u && v != heavy[u]) st.push_back({v, v});\n                }\n            }\n        }\n    }"
+              },
+              {
+                "type": "p",
+                "text": "path repeatedly processes the side with a deeper head. In the final interval, bool edge contributes 0 in $V$ mode and 1 in E mode. subtree applies the same distinction. Query sums use ll; positions and sizes use int."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "ll path(int u, int v, Segtree& seg, bool edge) {\n        ll ans = 0;\n        while (head[u] != head[v]) {\n            if (dep[head[u]] < dep[head[v]]) swap(u, v);\n            ans += seg.query(1, 1, n, pos[head[u]], pos[u]);\n            u = par[head[u]];\n        }\n        if (dep[u] > dep[v]) swap(u, v);\n        return ans + seg.query(1, 1, n, pos[u] + edge, pos[v]);\n    }\n    ll subtree(int u, Segtree& seg, bool edge) {\n        return seg.query(1, 1, n, pos[u] + edge, pos[u] + sz[u] - 1);\n    }\n};"
+              },
+              {
+                "type": "p",
+                "text": "main builds the mapping, transfers values into b and builds the segment tree. Every assignment targets pos[$u$]. This E/$V$ input format belongs to the teaching program; adapt input, operations and aggregates for the linked CSES tasks."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    char mode;\n    cin >> n >> q >> mode;\n    bool edge = mode == 'E';\n    vector<ll> a(n + 1), b(n + 1);\n    for (int u = 1; u <= n; u++) cin >> a[u];\n    HLD hld(n);\n    for (int i = 1, u, v; i < n; i++) {\n        cin >> u >> v;\n        hld.add(u, v);\n    }\n    hld.build();\n    for (int u = 1; u <= n; u++) b[hld.pos[u]] = a[u];\n    Segtree seg(n);\n    seg.build(1, 1, n, b);\n    while (q--) {\n        int type, u;\n        cin >> type >> u;\n        if (type == 1) {\n            ll x;\n            cin >> x;\n            seg.update(1, 1, n, hld.pos[u], x);\n        } else if (type == 2) {\n            int v;\n            cin >> v;\n            cout << hld.path(u, v, seg, edge) << '\\n';\n        } else {\n            cout << hld.subtree(u, seg, edge) << '\\n';\n        }\n    }\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled from the explained fragments in order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Segtree {\n    int n;\n    vector<ll> t;\n    Segtree(int _n) {\n        n = _n;\n        t.resize(4 * n + 5);\n    }\n    void build(int v, int tl, int tr, const vector<ll>& a) {\n        if (tl == tr) {\n            t[v] = a[tl];\n            return;\n        }\n        int tm = tl + (tr - tl) / 2;\n        build(v * 2, tl, tm, a);\n        build(v * 2 + 1, tm + 1, tr, a);\n        t[v] = t[v * 2] + t[v * 2 + 1];\n    }\n    void update(int v, int tl, int tr, int p, ll x) {\n        if (tl == tr) {\n            t[v] = x;\n            return;\n        }\n        int tm = tl + (tr - tl) / 2;\n        if (p <= tm) update(v * 2, tl, tm, p, x);\n        else update(v * 2 + 1, tm + 1, tr, p, x);\n        t[v] = t[v * 2] + t[v * 2 + 1];\n    }\n    ll query(int v, int tl, int tr, int l, int r) {\n        if (l > r) return 0;\n        if (l == tl && r == tr) return t[v];\n        int tm = tl + (tr - tl) / 2;\n        return query(v * 2, tl, tm, l, min(r, tm))\n             + query(v * 2 + 1, tm + 1, tr, max(l, tm + 1), r);\n    }\n};\n\nstruct HLD {\n    int n, timer = 0;\n    vector<vector<int>> adj;\n    vector<int> par, dep, sz, heavy, head, pos;\n    HLD(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        par.resize(n + 1);\n        dep.resize(n + 1);\n        sz.resize(n + 1);\n        heavy.resize(n + 1);\n        head.resize(n + 1);\n        pos.resize(n + 1);\n    }\n    void add(int u, int v) {\n        adj[u].push_back(v);\n        adj[v].push_back(u);\n    }\n    void build() {\n        timer = 0;\n        fill(par.begin(), par.end(), 0);\n        fill(dep.begin(), dep.end(), 0);\n        fill(sz.begin(), sz.end(), 1);\n        fill(heavy.begin(), heavy.end(), 0);\n        vector<int> order = {1};\n        for (int i = 0; i < n; i++) {\n            int u = order[i];\n            for (int v : adj[u]) {\n                if (v == par[u]) continue;\n                par[v] = u;\n                dep[v] = dep[u] + 1;\n                order.push_back(v);\n            }\n        }\n        for (int i = n - 1; i >= 0; i--) {\n            int u = order[i];\n            for (int v : adj[u]) {\n                if (par[v] != u) continue;\n                sz[u] += sz[v];\n                if (!heavy[u] || sz[v] > sz[heavy[u]]) heavy[u] = v;\n            }\n        }\n        vector<pair<int, int>> st = {{1, 1}};\n        while (!st.empty()) {\n            auto [u, h] = st.back();\n            st.pop_back();\n            for (; u; u = heavy[u]) {\n                head[u] = h;\n                pos[u] = ++timer;\n                for (int v : adj[u]) {\n                    if (par[v] == u && v != heavy[u]) st.push_back({v, v});\n                }\n            }\n        }\n    }\n    ll path(int u, int v, Segtree& seg, bool edge) {\n        ll ans = 0;\n        while (head[u] != head[v]) {\n            if (dep[head[u]] < dep[head[v]]) swap(u, v);\n            ans += seg.query(1, 1, n, pos[head[u]], pos[u]);\n            u = par[head[u]];\n        }\n        if (dep[u] > dep[v]) swap(u, v);\n        return ans + seg.query(1, 1, n, pos[u] + edge, pos[v]);\n    }\n    ll subtree(int u, Segtree& seg, bool edge) {\n        return seg.query(1, 1, n, pos[u] + edge, pos[u] + sz[u] - 1);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    char mode;\n    cin >> n >> q >> mode;\n    bool edge = mode == 'E';\n    vector<ll> a(n + 1), b(n + 1);\n    for (int u = 1; u <= n; u++) cin >> a[u];\n    HLD hld(n);\n    for (int i = 1, u, v; i < n; i++) {\n        cin >> u >> v;\n        hld.add(u, v);\n    }\n    hld.build();\n    for (int u = 1; u <= n; u++) b[hld.pos[u]] = a[u];\n    Segtree seg(n);\n    seg.build(1, 1, n, b);\n    while (q--) {\n        int type, u;\n        cin >> type >> u;\n        if (type == 1) {\n            ll x;\n            cin >> x;\n            seg.update(1, 1, n, hld.pos[u], x);\n        } else if (type == 2) {\n            int v;\n            cin >> v;\n            cout << hld.path(u, v, seg, edge) << '\\n';\n        } else {\n            cout << hld.subtree(u, seg, edge) << '\\n';\n        }\n    }\n}\n"
+              },
+              {
+                "type": "p",
+                "text": "Small check: $n$=3 with edges 1–2, 1–3 and values [10,20,30]. In $V$ mode, path 2–3 and subtree 1 both sum to 60; after 1 2 -5 the path sums to 35. In E mode, path 2–3 changes from 50 to 25, and path 2–2 is always 0. These cases detect double counting and inclusion of the dummy root edge."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery exercises and independent practice",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Exercise: break the tie at 4 by choosing 7 instead of 6. Recompute positions and verify that path 7–9 still sums to 34. Then consider what fails if segment-tree queries use vertex IDs instead of positions. Work out chain counts for a path and a star."
+              },
+              {
+                "type": "p",
+                "text": "For an independent oracle, do not use HLD: climb one parent at a time and explicitly collect path vertices. Test subtree membership by walking parent links. Compare mixed assignments and $V$/E queries on small random trees, including negative values, sums exceeding 2³¹, the root, identical endpoints and leaves."
+              },
+              {
+                "type": "p",
+                "text": "Core mastery problems"
+              },
+              {
+                "type": "problem",
+                "problemKey": "430"
+              },
+              {
+                "type": "p",
+                "text": "Path Queries asks root-to-vertex sums. The teaching path operation can be used with endpoints 1 and $v$, after adapting the input format."
+              },
+              {
+                "type": "problem",
+                "problemKey": "431"
+              },
+              {
+                "type": "p",
+                "text": "Path Queries II asks for a path MAXIMUM, not a sum. Change every combination in build/update/query/path to max, and choose the empty identity for the permitted value domain. Zero is wrong when negative values are allowed; use −∞. Do not submit the teaching program unchanged."
+              },
+              {
+                "type": "p",
+                "text": "Independent practice and comparisons"
+              },
+              {
+                "type": "problem",
+                "problemKey": "429"
+              },
+              {
+                "type": "p",
+                "text": "Subtree Queries uses one interval sum; HLD is not necessary. Compare ordinary DFS flattening."
+              },
+              {
+                "type": "problem",
+                "problemKey": "427"
+              },
+              {
+                "type": "p",
+                "text": "Distance Queries has fixed unit-length edges. Begin with the simpler LCA-and-depth solution."
+              },
+              {
+                "type": "problem",
+                "problemKey": "428"
+              },
+              {
+                "type": "p",
+                "text": "Counting Paths is an offline path-counting task. Compare LCA/tree differences before updating each path vertex individually."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "LCA and a recursive segment tree"
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "LCA болон рекурсив segment tree",
+    "priorityLevel": "medium",
+    "priorityReason": "Өөрчлөлттэй модон замын чухал арга боловч DFS/LCA/segment tree-ийн дараах тусгай хэрэглээ тул дунд эрэмбэ.",
+    "prerequisiteIds": [
+      "lca",
+      "segment-tree"
+    ],
+    "learningRelations": {
+      "next": "lazy-segment-tree",
+      "variants": [
+        {
+          "tutorialId": "lca",
+          "description": "Статик замын binary lifting-ийг өөрчлөлттэй HLD-тэй харьцуул.",
+          "descriptionEn": "Compare static binary lifting with HLD for changing values."
+        },
+        {
+          "tutorialId": "segment-tree",
+          "description": "Массивын интервалыг нэгтгэх бүтцийг давт.",
+          "descriptionEn": "Review the interval aggregation structure."
+        }
+      ],
+      "practice": [
+        {
+          "key": "430",
+          "stage": "Warm-up",
+          "priority": true,
+          "reason": "Өөрчлөлттэй үндэс–оройн нийлбэрийг дадлагажуул; HLD ажиллана, Euler tour ашигласан энгийн өөр арга ч бий."
+        },
+        {
+          "key": "431",
+          "stage": "Standard",
+          "priority": true,
+          "reason": "Дурын замд утга өөрчлөх HLD-ийг дадлагажуул. Нийлбэрийг maximum болгон бүх нэгтгэл, саармаг утгыг зөв өөрчил."
+        },
+        {
+          "key": "429",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "427",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "428",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    }
+  }
+}

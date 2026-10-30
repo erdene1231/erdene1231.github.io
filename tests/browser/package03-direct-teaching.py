@@ -37,7 +37,8 @@ try:
      assert result['sections']==len(doc['sections']) and result['toc']==len(doc['sections']),result
      assert result['math']>0 and result['mathErrors']==0,result
      expected_code=sum(1 for section in doc['sections'] for block in section['blocks'] if block.get('type')=='code' and block.get('language','').lower() in ['c++','c++17','cpp'])
-     assert expected_code>=5 and result['code']==expected_code and result['practice']>=6 and result['openedAll'],result
+     expected_practice=len(doc.get('learningRelations',{}).get('practice',[]))
+     assert expected_code>=5 and result['code']==expected_code and expected_practice>0 and result['practice']==expected_practice and result['openedAll'],result
      assert not result['overflow'],result
      if mobile:assert result['articleWidth']>=width-70 and not result['contentsOpen'],result
      cases.append({'lesson':doc['id'],'lang':lang,'width':width,'mobile':mobile,'theme':theme,**result})
