@@ -1,152 +1,95 @@
-# Handbook curriculum reconciliation — 2026-10-29
+# Handbook original curriculum closure
 
-The original read-only 65-lesson audit is updated through verified arithmetic PR188, DSU PR186 and Tree DP PR184. Only explicitly receipted original IDs count as rewritten. No private drafts, learner records, problem content or access settings were changed. Mongolia remains excluded.
+All 55 original stable IDs were rewritten and verified published. Ten separate additions give 65 public lessons; 66 stored records include the untouched Mongolia draft test. All original IDs match their actual receipt files, current anonymous bodies/revisions and current database history. All ten additions also match actual receipts and public content. This does not claim owner acceptance.
 
-55 originals = 52 newly rewritten + 3 still pre-handbook standalone bodies. Ten separate additions yield 65 public lessons; 66 stored including the verified excluded Mongolia. **The counts are consistent.** All 62 rewritten/new live bodies exactly match their latest successful receipts. All 3 remaining bodies exactly match the pre-Introduction recovery snapshot: concept coverage elsewhere has not rewritten these IDs. Previous package2 quality work is historical, not new-cycle credit.
+Package 3 remains incomplete because eight requested addition groups remain. No new topic is counted by this closure; all three deferred UI/progress requests remain deferred.
 
-## The 52 rewritten original IDs
+## All 55 original IDs
 
-| Stable ID | Live revision | Source chapter | Latest matching receipt |
-|---|---:|---:|---|
-| `complexity` | 12 | 2 | [PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json](PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json) |
-| `sorting` | 9 | 3 | [PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json](PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json) |
-| `binary-search` | 9 | 3 | [PACKAGE03-SEARCH-PUBLICATION-RECEIPT.json](PACKAGE03-SEARCH-PUBLICATION-RECEIPT.json) |
-| `lower-bound` | 3 | 3 | [PACKAGE03-SEARCH-PUBLICATION-RECEIPT.json](PACKAGE03-SEARCH-PUBLICATION-RECEIPT.json) |
-| `upper-bound` | 3 | 3 | [PACKAGE03-SEARCH-PUBLICATION-RECEIPT.json](PACKAGE03-SEARCH-PUBLICATION-RECEIPT.json) |
-| `hash-compression` | 7 | 9.4 supplement | [PACKAGE03-COMPRESSION-DIFFERENCE-PUBLICATION-RECEIPT.json](PACKAGE03-COMPRESSION-DIFFERENCE-PUBLICATION-RECEIPT.json) |
-| `binary-search-answer` | 5 | 3 | [PACKAGE03-ANSWER-PUBLICATION-RECEIPT.json](PACKAGE03-ANSWER-PUBLICATION-RECEIPT.json) |
-| `set-map` | 6 | 4 | [PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json](PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json) |
-| `stack-queue` | 5 | 4 | [PACKAGE03-CONTAINERS-PUBLICATION-RECEIPT.json](PACKAGE03-CONTAINERS-PUBLICATION-RECEIPT.json) |
-| `priority-queue` | 5 | 4 | [PACKAGE03-CONTAINERS-PUBLICATION-RECEIPT.json](PACKAGE03-CONTAINERS-PUBLICATION-RECEIPT.json) |
-| `brute-force` | 5 | 5 | [PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json](PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json) |
-| `recursion` | 5 | 5 supplement | [PACKAGE03-RECURSION-PUBLICATION-RECEIPT.json](PACKAGE03-RECURSION-PUBLICATION-RECEIPT.json) |
-| `greedy` | 9 | 6 | [PACKAGE03-GREEDY-PUBLICATION-RECEIPT.json](PACKAGE03-GREEDY-PUBLICATION-RECEIPT.json) |
-| `dynamic-programming` | 9 | 7 | [PACKAGE03-DOMINO-PUBLICATION-RECEIPT.json](PACKAGE03-DOMINO-PUBLICATION-RECEIPT.json) |
-| `grid-dp` | 5 | 7.3 supplement | [PACKAGE03-GRID-KNAPSACK-PUBLICATION-RECEIPT.json](PACKAGE03-GRID-KNAPSACK-PUBLICATION-RECEIPT.json) |
-| `knapsack` | 7 | 7.4 supplement | [PACKAGE03-GRID-KNAPSACK-PUBLICATION-RECEIPT.json](PACKAGE03-GRID-KNAPSACK-PUBLICATION-RECEIPT.json) |
-| `lis` | 7 | 7.2 supplement | [PACKAGE03-LIS-INTERVAL-PUBLICATION-RECEIPT.json](PACKAGE03-LIS-INTERVAL-PUBLICATION-RECEIPT.json) |
-| `interval-dp` | 3 | 7 supplement | [PACKAGE03-LIS-INTERVAL-PUBLICATION-RECEIPT.json](PACKAGE03-LIS-INTERVAL-PUBLICATION-RECEIPT.json) |
-| `two-pointers` | 7 | 8 | [PACKAGE03-AMORTIZED-PUBLICATION-RECEIPT.json](PACKAGE03-AMORTIZED-PUBLICATION-RECEIPT.json) |
-| `sliding-window` | 3 | 8.1/8.3 supplement | [PACKAGE03-WINDOW-STACK-PUBLICATION-RECEIPT.json](PACKAGE03-WINDOW-STACK-PUBLICATION-RECEIPT.json) |
-| `monotonic-stack` | 7 | 8.2 supplement | [PACKAGE03-WINDOW-STACK-PUBLICATION-RECEIPT.json](PACKAGE03-WINDOW-STACK-PUBLICATION-RECEIPT.json) |
-| `segment-tree` | 7 | 9 | [PACKAGE03-RANGE-PUBLICATION-RECEIPT.json](PACKAGE03-RANGE-PUBLICATION-RECEIPT.json) |
-| `prefix-sums` | 7 | 9.1 supplement | [PACKAGE03-PREFIXES-PUBLICATION-RECEIPT.json](PACKAGE03-PREFIXES-PUBLICATION-RECEIPT.json) |
-| `prefix-sums-2d` | 5 | 9.1 supplement | [PACKAGE03-PREFIXES-PUBLICATION-RECEIPT.json](PACKAGE03-PREFIXES-PUBLICATION-RECEIPT.json) |
-| `difference-array` | 5 | 9.4 supplement | [PACKAGE03-COMPRESSION-DIFFERENCE-PUBLICATION-RECEIPT.json](PACKAGE03-COMPRESSION-DIFFERENCE-PUBLICATION-RECEIPT.json) |
-| `sparse-table` | 7 | 9.1 supplement | [PACKAGE03-SPARSE-FENWICK-PUBLICATION-RECEIPT.json](PACKAGE03-SPARSE-FENWICK-PUBLICATION-RECEIPT.json) |
-| `fenwick-tree` | 7 | 9.2 supplement | [PACKAGE03-SPARSE-FENWICK-PUBLICATION-RECEIPT.json](PACKAGE03-SPARSE-FENWICK-PUBLICATION-RECEIPT.json) |
-| `bit-operations` | 6 | 10 | [PACKAGE03-BITS-PUBLICATION-RECEIPT.json](PACKAGE03-BITS-PUBLICATION-RECEIPT.json) |
-| `bitmask-dp` | 7 | 10.5 + 7 supplement | [PACKAGE03-BITMASK-PUBLICATION-RECEIPT.json](PACKAGE03-BITMASK-PUBLICATION-RECEIPT.json) |
-| `graph-basics` | 5 | 11 | [PACKAGE03-GRAPHS-PUBLICATION-RECEIPT.json](PACKAGE03-GRAPHS-PUBLICATION-RECEIPT.json) |
-| `bfs` | 7 | 12 | [PACKAGE03-TRAVERSAL-PUBLICATION-RECEIPT.json](PACKAGE03-TRAVERSAL-PUBLICATION-RECEIPT.json) |
-| `dfs` | 7 | 12.1 supplement | [PACKAGE03-DFS-FILL-PUBLICATION-RECEIPT.json](PACKAGE03-DFS-FILL-PUBLICATION-RECEIPT.json) |
-| `flood-fill` | 7 | 12.1–12.3 grid supplement | [PACKAGE03-DFS-FILL-PUBLICATION-RECEIPT.json](PACKAGE03-DFS-FILL-PUBLICATION-RECEIPT.json) |
-| `connected-components` | 3 | 12.3 supplement | [PACKAGE03-COMPONENTS-BIPARTITE-PUBLICATION-RECEIPT.json](PACKAGE03-COMPONENTS-BIPARTITE-PUBLICATION-RECEIPT.json) |
-| `bipartite` | 3 | 12.3 supplement | [PACKAGE03-COMPONENTS-BIPARTITE-PUBLICATION-RECEIPT.json](PACKAGE03-COMPONENTS-BIPARTITE-PUBLICATION-RECEIPT.json) |
-| `dijkstra` | 7 | 13 | [PACKAGE03-SHORTEST-PUBLICATION-RECEIPT.json](PACKAGE03-SHORTEST-PUBLICATION-RECEIPT.json) |
-| `bellman-ford` | 3 | 13 supplement | [PACKAGE03-BELLMAN-FLOYD-PUBLICATION-RECEIPT.json](PACKAGE03-BELLMAN-FLOYD-PUBLICATION-RECEIPT.json) |
-| `floyd-warshall` | 5 | 13 supplement | [PACKAGE03-BELLMAN-FLOYD-PUBLICATION-RECEIPT.json](PACKAGE03-BELLMAN-FLOYD-PUBLICATION-RECEIPT.json) |
-| `tree-basics` | 5 | 14 | [PACKAGE03-TREES-PUBLICATION-RECEIPT.json](PACKAGE03-TREES-PUBLICATION-RECEIPT.json) |
-| `tree-dp` | 3 | 14 supplement | [PACKAGE03-TREE-DP-PUBLICATION-RECEIPT.json](PACKAGE03-TREE-DP-PUBLICATION-RECEIPT.json) |
-| `kruskal` | 5 | 15 | [PACKAGE03-SPANNING-PUBLICATION-RECEIPT.json](PACKAGE03-SPANNING-PUBLICATION-RECEIPT.json) |
-| `dsu` | 7 | 15 supplement | [PACKAGE03-DSU-PUBLICATION-RECEIPT.json](PACKAGE03-DSU-PUBLICATION-RECEIPT.json) |
-| `topological-sort` | 8 | 16 | [PACKAGE03-DIRECTED-PUBLICATION-RECEIPT.json](PACKAGE03-DIRECTED-PUBLICATION-RECEIPT.json) |
-| `lca` | 7 | 18 | [PACKAGE03-TREE-QUERY-PUBLICATION-RECEIPT.json](PACKAGE03-TREE-QUERY-PUBLICATION-RECEIPT.json) |
-| `number-theory` | 7 | 21 | [PACKAGE03-NUMBER-PUBLICATION-RECEIPT.json](PACKAGE03-NUMBER-PUBLICATION-RECEIPT.json) |
-| `gcd` | 5 | 21 supplement | [PACKAGE03-ARITHMETIC-PUBLICATION-RECEIPT.json](PACKAGE03-ARITHMETIC-PUBLICATION-RECEIPT.json) |
-| `sieve` | 5 | 21 supplement | [PACKAGE03-ARITHMETIC-PUBLICATION-RECEIPT.json](PACKAGE03-ARITHMETIC-PUBLICATION-RECEIPT.json) |
-| `fast-power` | 5 | 21 supplement | [PACKAGE03-ARITHMETIC-PUBLICATION-RECEIPT.json](PACKAGE03-ARITHMETIC-PUBLICATION-RECEIPT.json) |
-| `combinatorics` | 7 | 22 | [PACKAGE03-COMBINATORICS-PUBLICATION-RECEIPT.json](PACKAGE03-COMBINATORICS-PUBLICATION-RECEIPT.json) |
-| `kmp` | 7 | 26 | [PACKAGE03-STRINGS-PUBLICATION-RECEIPT.json](PACKAGE03-STRINGS-PUBLICATION-RECEIPT.json) |
-| `string-hashing` | 3 | 26 | [PACKAGE03-STRINGS-PUBLICATION-RECEIPT.json](PACKAGE03-STRINGS-PUBLICATION-RECEIPT.json) |
-| `lazy-segment-tree` | 7 | 28 | [PACKAGE03-SEGREVISIT-PUBLICATION-RECEIPT.json](PACKAGE03-SEGREVISIT-PUBLICATION-RECEIPT.json) |
+| Stable ID | Live revision | Matching receipt |
+|---|---:|---|
+| [complexity](https://erdeneclub.com/#tutorial/complexity) | 12 | [PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json](PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json) |
+| [sorting](https://erdeneclub.com/#tutorial/sorting) | 9 | [PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json](PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json) |
+| [binary-search](https://erdeneclub.com/#tutorial/binary-search) | 9 | [PACKAGE03-SEARCH-PUBLICATION-RECEIPT.json](PACKAGE03-SEARCH-PUBLICATION-RECEIPT.json) |
+| [lower-bound](https://erdeneclub.com/#tutorial/lower-bound) | 3 | [PACKAGE03-SEARCH-PUBLICATION-RECEIPT.json](PACKAGE03-SEARCH-PUBLICATION-RECEIPT.json) |
+| [upper-bound](https://erdeneclub.com/#tutorial/upper-bound) | 3 | [PACKAGE03-SEARCH-PUBLICATION-RECEIPT.json](PACKAGE03-SEARCH-PUBLICATION-RECEIPT.json) |
+| [hash-compression](https://erdeneclub.com/#tutorial/hash-compression) | 7 | [PACKAGE03-COMPRESSION-DIFFERENCE-PUBLICATION-RECEIPT.json](PACKAGE03-COMPRESSION-DIFFERENCE-PUBLICATION-RECEIPT.json) |
+| [set-map](https://erdeneclub.com/#tutorial/set-map) | 6 | [PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json](PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json) |
+| [stack-queue](https://erdeneclub.com/#tutorial/stack-queue) | 5 | [PACKAGE03-CONTAINERS-PUBLICATION-RECEIPT.json](PACKAGE03-CONTAINERS-PUBLICATION-RECEIPT.json) |
+| [priority-queue](https://erdeneclub.com/#tutorial/priority-queue) | 5 | [PACKAGE03-CONTAINERS-PUBLICATION-RECEIPT.json](PACKAGE03-CONTAINERS-PUBLICATION-RECEIPT.json) |
+| [brute-force](https://erdeneclub.com/#tutorial/brute-force) | 5 | [PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json](PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json) |
+| [recursion](https://erdeneclub.com/#tutorial/recursion) | 5 | [PACKAGE03-RECURSION-PUBLICATION-RECEIPT.json](PACKAGE03-RECURSION-PUBLICATION-RECEIPT.json) |
+| [greedy](https://erdeneclub.com/#tutorial/greedy) | 9 | [PACKAGE03-GREEDY-PUBLICATION-RECEIPT.json](PACKAGE03-GREEDY-PUBLICATION-RECEIPT.json) |
+| [binary-search-answer](https://erdeneclub.com/#tutorial/binary-search-answer) | 5 | [PACKAGE03-ANSWER-PUBLICATION-RECEIPT.json](PACKAGE03-ANSWER-PUBLICATION-RECEIPT.json) |
+| [dynamic-programming](https://erdeneclub.com/#tutorial/dynamic-programming) | 9 | [PACKAGE03-DOMINO-PUBLICATION-RECEIPT.json](PACKAGE03-DOMINO-PUBLICATION-RECEIPT.json) |
+| [grid-dp](https://erdeneclub.com/#tutorial/grid-dp) | 5 | [PACKAGE03-GRID-KNAPSACK-PUBLICATION-RECEIPT.json](PACKAGE03-GRID-KNAPSACK-PUBLICATION-RECEIPT.json) |
+| [knapsack](https://erdeneclub.com/#tutorial/knapsack) | 7 | [PACKAGE03-GRID-KNAPSACK-PUBLICATION-RECEIPT.json](PACKAGE03-GRID-KNAPSACK-PUBLICATION-RECEIPT.json) |
+| [lis](https://erdeneclub.com/#tutorial/lis) | 7 | [PACKAGE03-LIS-INTERVAL-PUBLICATION-RECEIPT.json](PACKAGE03-LIS-INTERVAL-PUBLICATION-RECEIPT.json) |
+| [interval-dp](https://erdeneclub.com/#tutorial/interval-dp) | 3 | [PACKAGE03-LIS-INTERVAL-PUBLICATION-RECEIPT.json](PACKAGE03-LIS-INTERVAL-PUBLICATION-RECEIPT.json) |
+| [two-pointers](https://erdeneclub.com/#tutorial/two-pointers) | 7 | [PACKAGE03-AMORTIZED-PUBLICATION-RECEIPT.json](PACKAGE03-AMORTIZED-PUBLICATION-RECEIPT.json) |
+| [sliding-window](https://erdeneclub.com/#tutorial/sliding-window) | 3 | [PACKAGE03-WINDOW-STACK-PUBLICATION-RECEIPT.json](PACKAGE03-WINDOW-STACK-PUBLICATION-RECEIPT.json) |
+| [monotonic-stack](https://erdeneclub.com/#tutorial/monotonic-stack) | 7 | [PACKAGE03-WINDOW-STACK-PUBLICATION-RECEIPT.json](PACKAGE03-WINDOW-STACK-PUBLICATION-RECEIPT.json) |
+| [prefix-sums](https://erdeneclub.com/#tutorial/prefix-sums) | 7 | [PACKAGE03-PREFIXES-PUBLICATION-RECEIPT.json](PACKAGE03-PREFIXES-PUBLICATION-RECEIPT.json) |
+| [prefix-sums-2d](https://erdeneclub.com/#tutorial/prefix-sums-2d) | 5 | [PACKAGE03-PREFIXES-PUBLICATION-RECEIPT.json](PACKAGE03-PREFIXES-PUBLICATION-RECEIPT.json) |
+| [difference-array](https://erdeneclub.com/#tutorial/difference-array) | 5 | [PACKAGE03-COMPRESSION-DIFFERENCE-PUBLICATION-RECEIPT.json](PACKAGE03-COMPRESSION-DIFFERENCE-PUBLICATION-RECEIPT.json) |
+| [sparse-table](https://erdeneclub.com/#tutorial/sparse-table) | 7 | [PACKAGE03-SPARSE-FENWICK-PUBLICATION-RECEIPT.json](PACKAGE03-SPARSE-FENWICK-PUBLICATION-RECEIPT.json) |
+| [fenwick-tree](https://erdeneclub.com/#tutorial/fenwick-tree) | 7 | [PACKAGE03-SPARSE-FENWICK-PUBLICATION-RECEIPT.json](PACKAGE03-SPARSE-FENWICK-PUBLICATION-RECEIPT.json) |
+| [segment-tree](https://erdeneclub.com/#tutorial/segment-tree) | 7 | [PACKAGE03-RANGE-PUBLICATION-RECEIPT.json](PACKAGE03-RANGE-PUBLICATION-RECEIPT.json) |
+| [bit-operations](https://erdeneclub.com/#tutorial/bit-operations) | 6 | [PACKAGE03-BITS-PUBLICATION-RECEIPT.json](PACKAGE03-BITS-PUBLICATION-RECEIPT.json) |
+| [bitmask-dp](https://erdeneclub.com/#tutorial/bitmask-dp) | 7 | [PACKAGE03-BITMASK-PUBLICATION-RECEIPT.json](PACKAGE03-BITMASK-PUBLICATION-RECEIPT.json) |
+| [graph-basics](https://erdeneclub.com/#tutorial/graph-basics) | 5 | [PACKAGE03-GRAPHS-PUBLICATION-RECEIPT.json](PACKAGE03-GRAPHS-PUBLICATION-RECEIPT.json) |
+| [bfs](https://erdeneclub.com/#tutorial/bfs) | 7 | [PACKAGE03-TRAVERSAL-PUBLICATION-RECEIPT.json](PACKAGE03-TRAVERSAL-PUBLICATION-RECEIPT.json) |
+| [dfs](https://erdeneclub.com/#tutorial/dfs) | 7 | [PACKAGE03-DFS-FILL-PUBLICATION-RECEIPT.json](PACKAGE03-DFS-FILL-PUBLICATION-RECEIPT.json) |
+| [flood-fill](https://erdeneclub.com/#tutorial/flood-fill) | 7 | [PACKAGE03-DFS-FILL-PUBLICATION-RECEIPT.json](PACKAGE03-DFS-FILL-PUBLICATION-RECEIPT.json) |
+| [connected-components](https://erdeneclub.com/#tutorial/connected-components) | 3 | [PACKAGE03-COMPONENTS-BIPARTITE-PUBLICATION-RECEIPT.json](PACKAGE03-COMPONENTS-BIPARTITE-PUBLICATION-RECEIPT.json) |
+| [bipartite](https://erdeneclub.com/#tutorial/bipartite) | 3 | [PACKAGE03-COMPONENTS-BIPARTITE-PUBLICATION-RECEIPT.json](PACKAGE03-COMPONENTS-BIPARTITE-PUBLICATION-RECEIPT.json) |
+| [dijkstra](https://erdeneclub.com/#tutorial/dijkstra) | 7 | [PACKAGE03-SHORTEST-PUBLICATION-RECEIPT.json](PACKAGE03-SHORTEST-PUBLICATION-RECEIPT.json) |
+| [bellman-ford](https://erdeneclub.com/#tutorial/bellman-ford) | 3 | [PACKAGE03-BELLMAN-FLOYD-PUBLICATION-RECEIPT.json](PACKAGE03-BELLMAN-FLOYD-PUBLICATION-RECEIPT.json) |
+| [floyd-warshall](https://erdeneclub.com/#tutorial/floyd-warshall) | 5 | [PACKAGE03-BELLMAN-FLOYD-PUBLICATION-RECEIPT.json](PACKAGE03-BELLMAN-FLOYD-PUBLICATION-RECEIPT.json) |
+| [tree-basics](https://erdeneclub.com/#tutorial/tree-basics) | 5 | [PACKAGE03-TREES-PUBLICATION-RECEIPT.json](PACKAGE03-TREES-PUBLICATION-RECEIPT.json) |
+| [tree-dp](https://erdeneclub.com/#tutorial/tree-dp) | 3 | [PACKAGE03-TREE-DP-PUBLICATION-RECEIPT.json](PACKAGE03-TREE-DP-PUBLICATION-RECEIPT.json) |
+| [kruskal](https://erdeneclub.com/#tutorial/kruskal) | 5 | [PACKAGE03-SPANNING-PUBLICATION-RECEIPT.json](PACKAGE03-SPANNING-PUBLICATION-RECEIPT.json) |
+| [dsu](https://erdeneclub.com/#tutorial/dsu) | 7 | [PACKAGE03-DSU-PUBLICATION-RECEIPT.json](PACKAGE03-DSU-PUBLICATION-RECEIPT.json) |
+| [topological-sort](https://erdeneclub.com/#tutorial/topological-sort) | 8 | [PACKAGE03-DIRECTED-PUBLICATION-RECEIPT.json](PACKAGE03-DIRECTED-PUBLICATION-RECEIPT.json) |
+| [lca](https://erdeneclub.com/#tutorial/lca) | 7 | [PACKAGE03-TREE-QUERY-PUBLICATION-RECEIPT.json](PACKAGE03-TREE-QUERY-PUBLICATION-RECEIPT.json) |
+| [number-theory](https://erdeneclub.com/#tutorial/number-theory) | 7 | [PACKAGE03-NUMBER-PUBLICATION-RECEIPT.json](PACKAGE03-NUMBER-PUBLICATION-RECEIPT.json) |
+| [gcd](https://erdeneclub.com/#tutorial/gcd) | 5 | [PACKAGE03-ARITHMETIC-PUBLICATION-RECEIPT.json](PACKAGE03-ARITHMETIC-PUBLICATION-RECEIPT.json) |
+| [sieve](https://erdeneclub.com/#tutorial/sieve) | 5 | [PACKAGE03-ARITHMETIC-PUBLICATION-RECEIPT.json](PACKAGE03-ARITHMETIC-PUBLICATION-RECEIPT.json) |
+| [fast-power](https://erdeneclub.com/#tutorial/fast-power) | 5 | [PACKAGE03-ARITHMETIC-PUBLICATION-RECEIPT.json](PACKAGE03-ARITHMETIC-PUBLICATION-RECEIPT.json) |
+| [combinatorics](https://erdeneclub.com/#tutorial/combinatorics) | 7 | [PACKAGE03-COMBINATORICS-PUBLICATION-RECEIPT.json](PACKAGE03-COMBINATORICS-PUBLICATION-RECEIPT.json) |
+| [kmp](https://erdeneclub.com/#tutorial/kmp) | 7 | [PACKAGE03-STRINGS-PUBLICATION-RECEIPT.json](PACKAGE03-STRINGS-PUBLICATION-RECEIPT.json) |
+| [string-hashing](https://erdeneclub.com/#tutorial/string-hashing) | 3 | [PACKAGE03-STRINGS-PUBLICATION-RECEIPT.json](PACKAGE03-STRINGS-PUBLICATION-RECEIPT.json) |
+| [lazy-segment-tree](https://erdeneclub.com/#tutorial/lazy-segment-tree) | 7 | [PACKAGE03-SEGREVISIT-PUBLICATION-RECEIPT.json](PACKAGE03-SEGREVISIT-PUBLICATION-RECEIPT.json) |
+| [invariant](https://erdeneclub.com/#tutorial/invariant) | 3 | [PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json](PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json) |
+| [debugging](https://erdeneclub.com/#tutorial/debugging) | 3 | [PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json](PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json) |
+| [subtask-strategy](https://erdeneclub.com/#tutorial/subtask-strategy) | 3 | [PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json](PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json) |
 
+## Ten separately published additions
 
-## The 3 remaining originals — preserve every ID
+| Stable ID | Revision |
+|---|---:|
+| `introduction` | 2 |
+| `scc` | 1 |
+| `paths-circuits` | 1 |
+| `flows-cuts` | 1 |
+| `matrices` | 1 |
+| `probability` | 1 |
+| `game-theory` | 1 |
+| `sqrt-algorithms` | 1 |
+| `geometry` | 1 |
+| `sweep-line` | 1 |
 
-“Covered by” identifies already published concepts, not completion of the standalone rewrite. Each body was inspected for its current goal/section structure; this bounded inventory is not a new complete semantic/code review.
+## Remaining requested additions
 
-| Stable ID | Live revision | Source mapping / covered by | Standalone work still needed |
-|---|---:|---|---|
-| `invariant` | 2 | methodology supplement; no source subsection → `greedy` | Existing smallest-unformable-sum proof; source correctness reasoning as benchmark, not invented chapter. |
-| `debugging` | 2 | methodology supplement; no full source stress-test subsection → `introduction` | Counterexamples/oracles/sanitizers and existing broken-prefix example; preserve useful extra teaching. |
-| `subtask-strategy` | 2 | 5.5 plus contest-methodology supplement → `brute-force#meet-in-the-middle` | Source meet-in-the-middle plus existing subtask strategy; not a claim the source has a whole subtask chapter. |
+- bridges-articulation
+- heavy-light-decomposition
+- centroid-decomposition
+- digit-dp
+- dp-optimizations
+- aho-corasick
+- suffix-array-with-LCP
+- interactive-communication
 
-## Ten published additions
+Preserve handbook default chapter order and unnumbered supplementary placement. Do not duplicate completed Z/KMP/rolling hash, functional graph, 2-SAT, matching/flow, Euler or static binary-lifting coverage. No package 5, problem statement/editorial authoring, security expansion or GitHub APPROVE reviews.
 
-| ID | Revision | Chapter | Matching receipt |
-|---|---:|---:|---|
-| `introduction` | 2 | 1 | [PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json](PACKAGE03-DIRECT-TEACHING-PUBLICATION-RECEIPT.json) |
-| `scc` | 1 | 17 | [PACKAGE03-SCC-PUBLICATION-RECEIPT.json](PACKAGE03-SCC-PUBLICATION-RECEIPT.json) |
-| `paths-circuits` | 1 | 19 | [PACKAGE03-PATHS-PUBLICATION-RECEIPT.json](PACKAGE03-PATHS-PUBLICATION-RECEIPT.json) |
-| `flows-cuts` | 1 | 20 | [PACKAGE03-FLOWS-PUBLICATION-RECEIPT.json](PACKAGE03-FLOWS-PUBLICATION-RECEIPT.json) |
-| `matrices` | 1 | 23 | [PACKAGE03-MATRICES-PUBLICATION-RECEIPT.json](PACKAGE03-MATRICES-PUBLICATION-RECEIPT.json) |
-| `probability` | 1 | 24 | [PACKAGE03-PROBABILITY-PUBLICATION-RECEIPT.json](PACKAGE03-PROBABILITY-PUBLICATION-RECEIPT.json) |
-| `game-theory` | 1 | 25 | [PACKAGE03-GAME-PUBLICATION-RECEIPT.json](PACKAGE03-GAME-PUBLICATION-RECEIPT.json) |
-| `sqrt-algorithms` | 1 | 27 | [PACKAGE03-SQRT-PUBLICATION-RECEIPT.json](PACKAGE03-SQRT-PUBLICATION-RECEIPT.json) |
-| `geometry` | 1 | 29 | [PACKAGE03-GEOMETRY-PUBLICATION-RECEIPT.json](PACKAGE03-GEOMETRY-PUBLICATION-RECEIPT.json) |
-| `sweep-line` | 1 | 30 | [PACKAGE03-SWEEP-PUBLICATION-RECEIPT.json](PACKAGE03-SWEEP-PUBLICATION-RECEIPT.json) |
-
-## Requested additions and extensions — actual state
-
-| Requirement | Status | Evidence and remaining scope |
-|---|---|---|
-| sweep/offline queries | covered | `sweep-line; sqrt-algorithms#mo; lca#offline-lca`. Events/Fenwick, Mo and guarded offline tree applications are published; no extra generic duplicate needed. |
-| SCC | covered | `scc#kosaraju`. Full Kosaraju and applications published. |
-| bridges/articulation | pending | `no public lesson/implementation`. Backlog bridges-articulation only. Directed DP low[] keyword hits are path-length bounds, not low-link bridges. |
-| Euler paths | covered | `paths-circuits#euler`. Full directed/undirected Euler implementation and source applications. |
-| functional graphs | covered | `topological-sort#successor and #cycle`. Read successor-jump and Floyd/visited cycle programs; a separate new top-level duplicate is unnecessary. |
-| matching/flow/mincut | covered | `flows-cuts#flow,#matching,#covers`. Actual maxflow/mincut, matching and applications present; old network-flow/bipartite-matching backlog labels are stale duplicates. |
-| 2-SAT | covered | `scc#2sat`. Actual clause/implication/SCC-assignment teaching and full program, not a passing mention. |
-| HLD | pending | `no public ID/title/body HLD match`. heavy-light-decomposition is a backlog entry only. Existing LCA path queries are static binary lifting, not HLD. |
-| centroid decomposition | pending | `no public lesson/body coverage`. centroid-decomposition backlog only. |
-| digit DP | pending | `no public lesson/body coverage`. digit-dp backlog only; subset/profile DP is different. |
-| DP optimizations | pending | `no substantial published optimization algorithm`. interval-dp has a future heading only; grouped focused addition still needed. Do not turn every old advanced backlog item into a mandatory new lesson. |
-| trie/Aho | partial | `kmp#trie published; Aho absent`. Basic trie has four explained/full code blocks; Aho failure links/multipattern matching unimplemented. |
-| geometry | covered | `geometry`. Complete chapter 29 published. |
-| game theory | covered | `game-theory`. Complete chapter 25 published. |
-| interactive/communication tutorial | pending | `introduction#input-output contains flushing caveat only`. Problem-bank classifications/imports are complete historical work, not a substitute for the requested tutorial. |
-| suffix array/LCP | pending | `no suffix-array lesson or construction program`. kmp#hashing has general substring LCP comparison; it is not a suffix array or Kasai adjacent-LCP algorithm. |
-| Z function | covered | `kmp#z`. Actual Z implementation and examples already published; do not republish just to create an extra ID. |
-| KMP/prefix function extension | covered | `kmp#prefix-kmp`. Four code blocks incl explained complete prefix/KMP program. |
-| rolling hash extension | covered | `kmp#hashing; string-hashing#rolling/#palindrome`. Actual rolling/substrings/palindrome implementations with honest collision limitations. |
-| LCA-first / binary jump static paths | covered | `lca#lca-first → #ancestors → #static-paths`. Actual min/max/sum for edge/vertex values, single LCA inclusion, static/no-update and directional caveats read. |
-
-## Visible ordering and bookkeeping
-
-The 118-entry source-subtopic ledger had stale unfinished statuses for chapters18–23 and 27–30, plus an intermediate DP revision. Its publication fields are now reconciled locally to current containing-topic IDs/revisions/hashes/receipts. This fixes bookkeeping only; it does not mark any of the 10 focused originals rewritten.
-
-All 30 chapter labels occur in increasing handbook order, Introduction first. Focused extras use “Нэмэлт”, not invented chapter numbers. The fresh-catalog native reader test checks actual listing, numbering, explicit priority sort/filter and 390/1200px layouts; deployed order/runtime/curriculum bytes match cache75 under normal TLS. These are local native and deployed-file checks, not a certificate-bypassed live-browser claim.
-
-Historical audit issue resolved by PR156: chapter 9 now belongs to the complete Range queries lesson `segment-tree`; prefixes remain unnumbered supplements. Native default-order regression rechecked this mapping for the current batch.
-
-`binary-search-answer` retains its existing Greedy prerequisite and post-Greedy supplement placement after review. Full source3.3 is already in Sorting, so no prerequisite is moved behind its dependent lesson. Compression beside Sorting is defensible, with a9.4 cross-link. Methodology lessons remain unnumbered after the book. New HLD/centroid/etc should be unnumbered near prerequisites, not chapters31 onward.
-
-Backlog placeholders are not a completion ledger: network-flow/bipartite-matching, Mo/offline and persistent trees already have real containing-section implementations. Reconcile their labels later rather than create duplicate lessons. In particular a `low` length array in Directed graphs is NOT bridge low-link, generic substring LCP is NOT suffix-array/LCP, and an I/O flush caveat is NOT a complete interactive/communication lesson.
-
-## Prioritized continuation — handbook order
-
-| Batch | Order | Existing IDs | Plan |
-|---|---|---|---|
-| A | 3 Sorting supplements | Complete | All four focused originals published. Do not repeat them or Sorting. |
-| B | 4 Containers | Complete | Both focused originals published; do not repeat them or set-map. |
-| C | 5 Complete-search foundation | complete | Focused recursion supplement published; preserve Complete search. |
-| D | 7 DP supplements | complete | Grid DP, knapsack, LIS and interval DP published; preserve each distinct original. |
-| E | 8 Amortized supplements | complete | Sliding window and monotonic stack published; preserve assumptions, equality choices and total-operation proofs. |
-| F | 9 Range-query supplements | Complete | All six focused originals published; preserve chapter9 numbering and stable IDs. |
-| G | 10 Subset-state DP | Complete | Source 10.5 selection/elevator/SOS and original matching published, with safe submask iteration. |
-| H | 12 Traversal supplements | Complete | All four original supplements published; bridge/articulation remains a separate pending addition. |
-| I | 13 Shortest-path supplements | Complete | Both focused originals published; selective cycle influence and finite reconstruction verified. |
-| J | 14 Tree DP | Complete | Conditional counting and iterative rerooting verified; preserve stable ID. |
-| K | 15 Union-find | Complete | Compact DSU with constructor, size/count and path halving verified published. |
-| L | 21 Arithmetic supplements | Complete | Safe GCD/LCM, SPF sieve and modular power originals published. |
-| M | 26 Explicit string additions | Explicit additions only | Suffix-array/LCP and Aho as focused supplements; Z/KMP/rolling hash are done, no duplicate lessons. |
-| N | Unnumbered contest/methodology supplements | `invariant`, `debugging`, `subtask-strategy` | Keep clearly supplemental, with relevant book links. Interactive/communication teaching is a separate modest supplement. |
-
-**Next concrete batch:** `invariant`, `debugging`, `subtask-strategy`. Preserve chapter9 segment-tree numbering, distinct original IDs and learner data. All six range-query supplements are published; never replay completed jobs.
-
-Remaining focused new groups: bridges/articulation; HLD; centroid decomposition; digit DP; grouped DP optimizations; Aho; suffix array with adjacent LCP; interactive/communication. Place according to prerequisites. Z, KMP, rolling hash, functional graphs,2SAT, matching/flow, Euler and static binary lifting are already substantively covered. Do not add duplicate top-level lessons.
-
-Book chapter 30 is final; no next numbered chapter. All 3 remaining originals plus explicit requested additions still need tracked execution, and package3 is not complete. No package5, deferred progress/profile UI, problem statements/editorials, security expansion or approval review. Every future completed unit still needs real bilingual teaching review, correct compact CP code, native editor/reader checks and fresh guarded publication; source attribution stays centralized.
-
-Machine-readable identities, hashes, receipt links, mapping and bounds: [PACKAGE03-CURRICULUM-RECONCILIATION.json](PACKAGE03-CURRICULUM-RECONCILIATION.json).
+Machine-readable full mapping remains in [PACKAGE03-CURRICULUM-RECONCILIATION.json](PACKAGE03-CURRICULUM-RECONCILIATION.json). Per-ID receipt/public/history proof is in [PACKAGE03-ORIGINAL55-CLOSURE.json](PACKAGE03-ORIGINAL55-CLOSURE.json).
