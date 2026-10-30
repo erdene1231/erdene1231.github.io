@@ -1,7 +1,7 @@
 import {priorityLevel} from './priority.js?v=52';
 import {validateTutorial} from './tutorial-model.js?v=63';
-import {drawArticle,typeset} from './tutorials.js?v=79';
-import {mountBlockEditor} from './tutorial-block-editor.js?v=79';
+import {drawArticle,typeset} from './tutorials.js?v=80';
+import {mountBlockEditor} from './tutorial-block-editor.js?v=80';
 import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=63';
 const node=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const clearMath=root=>{try{window.MathJax?.typesetClear?.([root]);}catch{}};

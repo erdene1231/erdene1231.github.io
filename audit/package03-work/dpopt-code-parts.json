@@ -1,0 +1,28 @@
+{
+  "partition-slow": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    vector<ll> s(n + 1);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        s[i] = s[i - 1] + x;\n    }\n",
+    "    const ll INF = 1LL << 62;\n    vector<ll> pr(n + 1, INF), cur(n + 1);\n    pr[0] = 0;\n",
+    "    for (int g = 1; g <= k; g++) {\n        fill(cur.begin(), cur.end(), INF);\n        for (int i = g; i <= n; i++) {\n            for (int j = g - 1; j < i; j++) {\n                if (pr[j] == INF) continue;\n                ll sum = s[i] - s[j];\n                cur[i] = min(cur[i], pr[j] + sum * sum);\n            }\n        }\n        swap(pr, cur);\n    }\n",
+    "    cout << pr[n] << '\\n';\n}\n"
+  ],
+  "divide": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct DivideDP {\n    static constexpr ll INF = 1LL << 62;\n    int n;\n    vector<ll> s, pr, cur;\n    DivideDP(int _n) {\n        n = _n;\n        s.resize(n + 1);\n        pr.resize(n + 1);\n        cur.resize(n + 1);\n    }\n",
+    "    void calc(int l, int r, int ql, int qr) {\n        if (l > r) return;\n        int mid = l + (r - l) / 2;\n        int opt = ql;\n        ll best = INF;\n",
+    "        for (int j = ql; j <= min(mid - 1, qr); j++) {\n            if (pr[j] == INF) continue;\n            ll sum = s[mid] - s[j];\n            ll val = pr[j] + sum * sum;\n            if (val <= best) {\n                best = val;\n                opt = j;\n            }\n        }\n",
+    "        cur[mid] = best;\n        calc(l, mid - 1, ql, opt);\n        calc(mid + 1, r, opt, qr);\n    }\n",
+    "    ll run(int k) {\n        fill(pr.begin(), pr.end(), INF);\n        pr[0] = 0;\n        for (int g = 1; g <= k; g++) {\n            fill(cur.begin(), cur.end(), INF);\n            calc(g, n, g - 1, n - 1);\n            swap(pr, cur);\n        }\n        return pr[n];\n    }\n};\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    DivideDP dp(n);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        dp.s[i] = dp.s[i - 1] + x;\n    }\n    cout << dp.run(k) << '\\n';\n}\n"
+  ],
+  "merge-slow": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<ll> s(n + 1);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        s[i] = s[i - 1] + x;\n    }\n",
+    "    vector<vector<ll>> dp(n + 1, vector<ll>(n + 1));\n    const ll INF = 1LL << 62;\n",
+    "    for (int len = 2; len <= n; len++) {\n        for (int l = 1; l + len - 1 <= n; l++) {\n            int r = l + len - 1;\n            dp[l][r] = INF;\n            for (int j = l; j < r; j++) {\n                ll val = dp[l][j] + dp[j + 1][r] + s[r] - s[l - 1];\n                dp[l][r] = min(dp[l][r], val);\n            }\n        }\n    }\n",
+    "    cout << dp[1][n] << '\\n';\n}\n"
+  ],
+  "knuth": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Knuth {\n    static constexpr ll INF = 1LL << 62;\n    int n;\n    vector<ll> s;\n    vector<vector<ll>> dp;\n    vector<vector<int>> opt;\n    Knuth(int _n) {\n        n = _n;\n        s.resize(n + 1);\n        dp.assign(n + 1, vector<ll>(n + 1));\n        opt.assign(n + 1, vector<int>(n + 1));\n        for (int i = 1; i <= n; i++) opt[i][i] = i;\n    }\n",
+    "    ll run() {\n        for (int len = 2; len <= n; len++) {\n            for (int l = 1; l + len - 1 <= n; l++) {\n                int r = l + len - 1;\n                int ql = opt[l][r - 1];\n                int qr = min(r - 1, opt[l + 1][r]);\n                dp[l][r] = INF;\n",
+    "                for (int j = ql; j <= qr; j++) {\n                    ll val = dp[l][j] + dp[j + 1][r] + s[r] - s[l - 1];\n                    if (val <= dp[l][r]) {\n                        dp[l][r] = val;\n                        opt[l][r] = j;\n                    }\n                }\n            }\n        }\n        return dp[1][n];\n    }\n};\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    Knuth dp(n);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        dp.s[i] = dp.s[i - 1] + x;\n    }\n    cout << dp.run() << '\\n';\n}\n"
+  ]
+}
