@@ -1,0 +1,954 @@
+{
+  "id": "connected-components",
+  "expected_revision": 2,
+  "expected_published": true,
+  "expected_body_md5": "44571aaf1501d3931405fb747aa8fe80",
+  "expected_body_sha256": "5944123614a469db3080cc90b59c77cfaf895a2511ba32a8a1c4d348de1a4257",
+  "reviewed_body_sha256": "b007614ca5992990409bb02179cea07d7f1d4f9077f6852892117c19dc3d8a7b",
+  "proposed_body_sha256": "b007614ca5992990409bb02179cea07d7f1d4f9077f6852892117c19dc3d8a7b",
+  "body": {
+    "id": "connected-components",
+    "level": "Дунд шат",
+    "order": 47,
+    "title": "Холбоост хэсгүүд — бүрэн бүлэглэх ба шинэ зам",
+    "aliases": "connected-components Connected components — холбоотой хэсгүүд Connected components",
+    "related": [
+      "bipartite",
+      "dfs"
+    ],
+    "summary": "Чиглэлгүй графын бүх хэсэг, хэмжээ, төлөөлөгчийг рекурсгүй олж, хамгийн цөөн нэмэх замыг баталгаатай байгуулна.",
+    "category": "Граф",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "meaning",
+        "title": "Чиглэлгүй графын хамгийн том холбоост бүлгүүд",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Чиглэлгүй графт хоёр оройг холбосон зам байвал тэд нэг холбоост хэсэгт орно. Холбоост хэсэг буюу connected component нь хоорондоо хүрч болох бүх оройг багтаасан, цааш томруулах боломжгүй бүлэг. Нэг бүлгийн оройгоос эхэлсэн DFS эсвэл BFS тэр бүлгийн бүх оройд хүрнэ, бусад бүлэгт хүрэхгүй."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "1",
+                "label": "1",
+                "x": 18,
+                "y": 20,
+                "color": "#7db7d8",
+                "textColor": "#102a3a"
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 82,
+                "y": 20
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 48,
+                "y": 50,
+                "color": "#7db7d8",
+                "textColor": "#102a3a"
+              },
+              {
+                "id": "4",
+                "label": "4",
+                "x": 18,
+                "y": 80,
+                "color": "#7db7d8",
+                "textColor": "#102a3a"
+              },
+              {
+                "id": "5",
+                "label": "5",
+                "x": 82,
+                "y": 80
+              }
+            ],
+            "edges": [
+              [
+                "1",
+                "3"
+              ],
+              [
+                "1",
+                "4"
+              ],
+              [
+                "3",
+                "4"
+              ],
+              [
+                "2",
+                "5"
+              ]
+            ],
+            "directed": false,
+            "caption": "1-ээс эхлэхэд {1,3,4}-т хүрнэ. {2,5} өөр холбоост хэсэг."
+          },
+          {
+            "type": "p",
+            "text": "Энэ таван оройн графт 1-ээс хайхад 3,4 олдоно, харин 2,5 олдохгүй. Иймээс бүх граф холбоост биш. Хайлтыг дуусгасны дараа “бүх оройг үзсэн үү?” гэж шалгах нь нэг граф холбоост эсэхийг шийднэ. Бүх хэсгийг олохын тулд үлдсэн оройнуудаас дахин эхлэх хэрэгтэй."
+          },
+          {
+            "type": "p",
+            "text": "Ирмэггүй ганц орой өөрөө нэг хэсэг. Өөртөө ирмэг нэмэх нь хоёр өөр оройг холбохгүй, давхар ирмэг бүлгийн хуваалтыг өөрчлөхгүй. Энд $n$=0 графт хэсгийн тоог 0 гэж авна; “бүх граф холбоост” гэсэн тайлбарыг хоосон графт автоматаар хэрэглэхгүй."
+          }
+        ]
+      },
+      {
+        "key": "traversal",
+        "title": "Нэг хайлтаар бус, бүх эхлэлээр бүрэн бүлэглэх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "id[$v$]=−1 бол орой хараахан бүлэгт ороогүй. Гаднах давталт 1..$n$ оройгоор явж, олдоогүй $v$ бүрээс fill($v$) эхлүүлнэ. Шинэ хэсэг c дугаартай, эхлэлийн оройг rep[c]-д, хэмжээг sz[c]-д хадгална. Стек рүү хийхдээ id-г тавих тул нэг оройг хоёр хөрш давхар оруулахгүй."
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Хэсгийн 0 дугаар хүчинтэй. Тиймээс ",
+                "marks": []
+              },
+              {
+                "text": "if (!id[v])",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гэж үзээгүй эсэхийг шалгаж болохгүй; ",
+                "marks": []
+              },
+              {
+                "text": "id[v] == -1",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гэж шалгана. Эхлэл солигдох бүрд бүх тэмдгийг арилгахгүй. Өмнөх хэсгийн тэмдгийг хадгалдаг учир нэг хэсгийг дахин шинээр тоолохгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "p",
+            "text": "fill-ээр орсон орой бүр бодит ирмэгээр эхлэлээс хүрнэ. Хүрч болох боловч ороогүй $u$ байсан гэвэл зам дээрх өмнөх олдсон орой түүнийг хөршөө шалгахдаа оруулах ёстой. Иймээс хайлт яг нэг бүтэн хэсгийг олно. Шинэ олдоогүй эхлэл өмнөх хэсэгт байсан бол өмнө нь олдох байсан тул гаднах давталт шинэ хэсгийг нэг л удаа эхлүүлнэ."
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "Долоон хотын бүх бүлэг, хэмжээ, төлөөлөгч",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Долоон хотод (1,2),(2,3),(4,5),(5,6) зам байг. 1-ээс эхэлж {1,2,3}-т id=0 өгнө. Гаднах давталт 2,3-ыг алгасаад 4-өөс {4,5,6}-г id=1 болгоно. Дараа нь ганц 7-д id=2. Гишүүнчлэл нь хайлтын стек эсвэл дарааллаас хамаарахгүй; бүлгийн дугаарын нэр бол зөвхөн тэмдэг."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "1",
+                "label": "1",
+                "x": 12,
+                "y": 20
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 32,
+                "y": 20
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 52,
+                "y": 20
+              },
+              {
+                "id": "4",
+                "label": "4",
+                "x": 12,
+                "y": 72
+              },
+              {
+                "id": "5",
+                "label": "5",
+                "x": 32,
+                "y": 72
+              },
+              {
+                "id": "6",
+                "label": "6",
+                "x": 52,
+                "y": 72
+              },
+              {
+                "id": "7",
+                "label": "7",
+                "x": 85,
+                "y": 48
+              }
+            ],
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "6"
+              ]
+            ],
+            "directed": false,
+            "caption": "{1,2,3}, {4,5,6}, {7}; төлөөлөгчид 1,4,7."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "c (0-ээс)",
+              "Гишүүд",
+              "sz[c]",
+              "rep[c]"
+            ],
+            "rows": [
+              [
+                "0",
+                "1,2,3",
+                "3",
+                "1"
+              ],
+              [
+                "1",
+                "4,5,6",
+                "3",
+                "4"
+              ],
+              [
+                "2",
+                "7",
+                "1",
+                "7"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Шалгах шинжүүд: орой бүр яг нэг дугаартай, хэмжээнүүдийн нийлбэр $n$, ирмэг бүрийн хоёр төгсгөлийн id ижил. Зөвхөн “бүх орой дугаартай” нь хангалтгүй: бүхнийг нэг дугаарт буруу нийлүүлж болно. Өөр хэсгийн хоёр орой хоорондоо замгүйг ч баталж, жижиг графт хүрэлтийн тусдаа загвартай тулгана."
+          }
+        ]
+      },
+      {
+        "key": "roads",
+        "title": "Бүх хэсгийг хамгийн цөөн шинэ замаар холбох",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$k$ хэсгийг бүхэлд нь нэг сүлжээ болгохын тулд хэдэн зам хэрэгтэй вэ? Өөр хоёр хэсгийн хооронд нэг зам нэмэхэд хэсгийн тоо хамгийн ихдээ нэгээр буурна. $k$≥1 үед нэг хэсэгт хүрэхэд дор хаяж $k$−1 зам шаардлагатай. Нэг хэсгийн доторх зам шинэ бүлэг холбохгүй."
+          },
+          {
+            "type": "p",
+            "text": "Бүтээх арга: rep[0]-ийг rep[1],…,rep[$k$−1] бүртэй холбоно. Бүлэг дотор өмнө нь замтай, шинэ замуудаар бүх бүлэг rep[0]-д хүрэх тул бүх орой холбогдоно. Яг $k$−1 зам хэрэглэсэн нь доод хязгаартай тэнцэж оновчтой. Жишээнд (1,4),(1,7) хоёр зам хангалттай. $k$=0 эсвэл $k$=1 үед 0 зам хэвлэнэ."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Оролтын граф",
+              "Нэмэх зам"
+            ],
+            "rows": [
+              [
+                "7 орой, (1,2),(2,3),(4,5),(5,6)",
+                "2 зам: (1,4),(1,7)"
+              ],
+              [
+                "$n$>0, нэг хэсэг / one component",
+                "0"
+              ],
+              [
+                "$n$=0,$m$=0",
+                "0"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "Байгуулагч, хэсгийн хайлт ба бүтэн C++17",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Components struct-д adj, id, sz, rep байна. Байгуулагч 1-ээс эхэлсэн оройд $n$+1 нүд бэлдэж id-г −1 болгоно; sz,rep эхэндээ хоосон. fill шинэ c-г rep.size()-аас авч, төлөөлөгч ба 0 хэмжээг нэмээд орой бүрийг авахдаа sz[c]-г өсгөнө. run нь бүх эхлэлийг шалгана."
+          },
+          {
+            "type": "p",
+            "text": "Оролт $n$ $m$, дараа нь $m$ чиглэлгүй ирмэг; 0≤$n$,$m$≤200000, оройнууд 1..$n$, $n$=0 бол $m$=0. Гаралт нь хэсгийн тоо биш, НЭМЭХ замын тоо болон тэдгээрийн хосууд. Бүтэц доторх $k$, id, sz нь хүсвэл өөр зорилгод ашиглах үр дүн; үндсэн программ Building Roads-ийн гаралтын хэлбэртэй."
+          },
+          {
+            "type": "p",
+            "text": "vector ба оролт/гаралтын стандарт хэрэгслүүд."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;"
+          },
+          {
+            "type": "p",
+            "text": "Хэмжээ авдаг байгуулагч $n$+1 хөршийн жагсаалт, −1 дугаарыг бэлдэнэ. 0 нь орой биш."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "struct Components {\n    int n;\n    vector<vector<int>> adj;\n    vector<int> id, sz, rep;\n\n    Components(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        id.assign(n + 1, -1);\n    }"
+          },
+          {
+            "type": "p",
+            "text": "Шинэ хэсгийн дугаар, хэмжээ, төлөөлөгчийг зэрэг үүсгээд тэмдэглэж оруулах ил стек ашиглана."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "void fill(int s) {\n        int c = rep.size();\n        rep.push_back(s);\n        sz.push_back(0);\n        vector<int> st = {s};\n        id[s] = c;\n        while (!st.empty()) {\n            int v = st.back();\n            st.pop_back();\n            sz[c]++;\n            for (int u : adj[v]) {\n                if (id[u] == -1) {\n                    id[u] = c;\n                    st.push_back(u);\n                }\n            }\n        }\n    }"
+          },
+          {
+            "type": "p",
+            "text": "Гаднах давталт ирмэггүй оройг ч алгасахгүй. Бүх ирмэгээ уншсаны дараа run-ийг дуудна."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "void run() {\n        for (int v = 1; v <= n; v++) {\n            if (id[v] == -1) fill(v);\n        }\n    }\n};"
+          },
+          {
+            "type": "p",
+            "text": "main ирмэгийг хоёр чиглэлд нэмнэ. $k$=0 үед rep[0]-г огт уншихгүй; зам хэвлэх давталт эхлэхгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    Components cc(n);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        cc.adj[a].push_back(b);\n        cc.adj[b].push_back(a);\n    }\n    cc.run();\n    int k = cc.rep.size();\n    cout << (k == 0 ? 0 : k - 1) << '\\n';\n    for (int i = 1; i < k; i++) {\n        cout << cc.rep[0] << ' ' << cc.rep[i] << '\\n';\n    }\n    return 0;\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct Components {\n    int n;\n    vector<vector<int>> adj;\n    vector<int> id, sz, rep;\n\n    Components(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        id.assign(n + 1, -1);\n    }\n\n    void fill(int s) {\n        int c = rep.size();\n        rep.push_back(s);\n        sz.push_back(0);\n        vector<int> st = {s};\n        id[s] = c;\n        while (!st.empty()) {\n            int v = st.back();\n            st.pop_back();\n            sz[c]++;\n            for (int u : adj[v]) {\n                if (id[u] == -1) {\n                    id[u] = c;\n                    st.push_back(u);\n                }\n            }\n        }\n    }\n\n    void run() {\n        for (int v = 1; v <= n; v++) {\n            if (id[v] == -1) fill(v);\n        }\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    Components cc(n);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        cc.adj[a].push_back(b);\n        cc.adj[b].push_back(a);\n    }\n    cc.run();\n    int k = cc.rep.size();\n    cout << (k == 0 ? 0 : k - 1) << '\\n';\n    for (int i = 1; i < k; i++) {\n        cout << cc.rep[0] << ' ' << cc.rep[i] << '\\n';\n    }\n    return 0;\n}\n"
+          },
+          {
+            "type": "p",
+            "text": "Орой бүр нэг удаа стект орж, хөршийн бичлэг бүр нэг удаа шалгагдах тул $O(n+m)$ хугацаа. adj нь $O(n+m)$, id,sz,rep,стек нь $O(n)$ зайтай. Индекс, хэмжээ, хэсгийн тоо int-д багтана; нийлбэр жин бодохгүй учир ll шаардлагагүй. Стек vector-д хадгалагдаж, урт гинжид системийн рекурсийн гүнээс хамаарахгүй."
+          }
+        ]
+      },
+      {
+        "key": "scope",
+        "title": "Чиглэл, шинэчлэлт ба өөр зорилгуудын ялгаа",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Энэ бүлэглэх дүрэм чиглэлгүй графт хамаарна. Чиглэлт 1→2 графт 1-ээс 2-т хүрэх ч 2-оос 1-д хүрэхгүй: хүрэлт тэгш хэмтэй биш. Нэг чиглэлт хайлт эсвэл хэдэн DFS эхлэл гарсныг хүчтэй холбоост хэсэг гэж нэрлэж болохгүй. Чиглэлийг арилгасан сул холбоост бүлэг, харилцан хүрэх SCC, нэг эхлэлийн хүрэлт гурван өөр ойлголт."
+          },
+          {
+            "type": "p",
+            "text": "Граф өөрчлөгдвөл өмнөх id автоматаар шинэчлэгдэхгүй. Зам нэмэх бүрд бүлгийн тоо, хамгийн их хэмжээ асуухад DSU тохиромжтой. Цикл олох, хоёр өнгөөр будах, хослол олох нь ижил бүлгийг мэдэхээс илүү мэдээлэл шаарддаг. Эдгээрийг зөвхөн $k$ эсвэл sz-ээс дүгнэж болохгүй."
+          },
+          {
+            "type": "p",
+            "text": "Жижиг графт бүх хос оройн хүрэлтийг тусад нь бодоод id[$u$]==id[$v$] яг хүрэлттэй тэнцэж буйг шалга. Хэвлэсэн замыг үнэхээр нэмээд нэг сүлжээ болсон, тоо нь max(0,$k$−1) гэдгийг тулга. Хоосон, ганц, бүх орой тусгаар, цикл, давхар/өөртөө ирмэг болон том гинжийг турш."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өөрийгөө шалга: id=0 нь үзээгүй юу? Нэг орой ирмэггүй байвал хэсэг мөн үү? Яагаад $k$ хэсэгт нэг замаар бүгдийг холбож болохгүй вэ?"
+          },
+          {
+            "type": "p",
+            "text": "Хариу: үгүй, −1 л үзээгүй; тийм; нэг шинэ зам хэсгийн тоог хамгийн ихдээ нэгээр бууруулна."
+          },
+          {
+            "type": "p",
+            "text": "Сэдвийг эзэмших үндсэн бодлого"
+          },
+          {
+            "type": "p",
+            "text": "Counting Rooms: далд торны зөвшөөрсөн хөршөөр бүх хэсгийг ол; зөвхөн нэг эхлэлээр бүү зогс."
+          },
+          {
+            "type": "problem",
+            "problemKey": "360"
+          },
+          {
+            "type": "p",
+            "text": "Building Roads: төлөөлөгчдийн $k$−1 замын бүтээл ба доод хязгаарыг хамт хэрэгжүүл."
+          },
+          {
+            "type": "problem",
+            "problemKey": "362"
+          },
+          {
+            "type": "p",
+            "text": "Бие даах ба ахиулах бодлогууд"
+          },
+          {
+            "type": "p",
+            "text": "Road Construction: нэмэгддэг ирмэгийн дараах мэдээлэлд DSU хэрэгтэй; статик id-г шинэчлэхгүй орхиж болохгүй."
+          },
+          {
+            "type": "problem",
+            "problemKey": "381"
+          },
+          {
+            "type": "p",
+            "text": "Building Teams: хэсэг бүр дээр хоёр өнгийн нэмэлт нөхцөл шалга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "364"
+          },
+          {
+            "type": "p",
+            "text": "Round Trip: хэсгийн дугаараас цикл шууд гарахгүй; сэргээх төлөв хэрэгтэй."
+          },
+          {
+            "type": "problem",
+            "problemKey": "365"
+          },
+          {
+            "type": "p",
+            "text": "School Dance: өгөгдсөн хоёр талд хослол олох нь бүлэг тоолохоос өөр алгоритм."
+          },
+          {
+            "type": "problem",
+            "problemKey": "393"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Connected components — a complete partition and new roads",
+        "summary": "Find every undirected component, size and representative without recursion, then construct a provably minimum set of connecting roads.",
+        "sections": [
+          {
+            "key": "meaning",
+            "title": "Maximal connected groups in an undirected graph",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "In an undirected graph, vertices joined by a path belong to the same connected component: a maximal group of mutually reachable vertices. DFS or BFS from any vertex finds its entire component and cannot reach another component."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 18,
+                    "y": 20,
+                    "color": "#7db7d8",
+                    "textColor": "#102a3a"
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 82,
+                    "y": 20
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 48,
+                    "y": 50,
+                    "color": "#7db7d8",
+                    "textColor": "#102a3a"
+                  },
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 18,
+                    "y": 80,
+                    "color": "#7db7d8",
+                    "textColor": "#102a3a"
+                  },
+                  {
+                    "id": "5",
+                    "label": "5",
+                    "x": 82,
+                    "y": 80
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "2",
+                    "5"
+                  ]
+                ],
+                "directed": false,
+                "caption": "Starting at 1 reaches {1,3,4}; {2,5} is a separate component."
+              },
+              {
+                "type": "p",
+                "text": "In this five-vertex graph, a search from 1 finds 3,4 but misses 2,5, so the graph is not connected. Checking whether one search visited every vertex answers connectivity. Finding all components additionally requires new searches from the remaining vertices."
+              },
+              {
+                "type": "p",
+                "text": "An isolated vertex is a component by itself. A self-loop connects no distinct vertices, and parallel edges do not change the partition. We define an empty graph’s component count as 0; do not silently equate that convention with a claim about empty-graph connectedness."
+              }
+            ]
+          },
+          {
+            "key": "traversal",
+            "title": "Partition every vertex with an outer root loop",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "id[$v$]=−1 means the vertex has not been assigned. Scan vertices 1..$n$ and start fill($v$) at each unassigned vertex. Give the new component ID c, save its root in rep[c] and its size in sz[c]. Assign id before pushing so different neighbors cannot insert a vertex twice."
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Component ID 0 is valid. Test ",
+                    "marks": []
+                  },
+                  {
+                    "text": "id[v] == -1",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", not ",
+                    "marks": []
+                  },
+                  {
+                    "text": "!id[v]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Never clear all marks between roots: retaining earlier assignments prevents counting the same component again.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Every vertex inserted by fill is reachable from its root along real edges. If a reachable $u$ were omitted, its discovered predecessor on a path would insert it while scanning neighbors. Thus a fill finds exactly one whole component. A later undiscovered root cannot lie in an earlier component, so the outer scan starts each component exactly once."
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "Seven cities: membership, sizes and representatives",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Seven cities have roads (1,2),(2,3),(4,5),(5,6). Starting at 1 labels {1,2,3} with ID 0. Skip 2,3, then start at 4 to label {4,5,6} with ID 1. Isolated 7 gets ID 2. Membership is independent of stack/queue order; component numbers are merely labels."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 12,
+                    "y": 20
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 32,
+                    "y": 20
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 52,
+                    "y": 20
+                  },
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 12,
+                    "y": 72
+                  },
+                  {
+                    "id": "5",
+                    "label": "5",
+                    "x": 32,
+                    "y": 72
+                  },
+                  {
+                    "id": "6",
+                    "label": "6",
+                    "x": 52,
+                    "y": 72
+                  },
+                  {
+                    "id": "7",
+                    "label": "7",
+                    "x": 85,
+                    "y": 48
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "6"
+                  ]
+                ],
+                "directed": false,
+                "caption": "Components {1,2,3}, {4,5,6}, {7}; representatives 1,4,7."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "c (zero-based)",
+                  "Members",
+                  "sz[c]",
+                  "rep[c]"
+                ],
+                "rows": [
+                  [
+                    "0",
+                    "1,2,3",
+                    "3",
+                    "1"
+                  ],
+                  [
+                    "1",
+                    "4,5,6",
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "2",
+                    "7",
+                    "1",
+                    "7"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Useful checks: every vertex has one ID, sizes sum to $n$, and both endpoints of every edge share an ID. Labeling every vertex is not sufficient alone: incorrectly assigning one ID to everything would pass that weak check. Also verify that distinct components have no connecting path using an independent small-graph reachability model."
+              }
+            ]
+          },
+          {
+            "key": "roads",
+            "title": "Connect components with the minimum number of new roads",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "How many roads connect $k$ components into one network? One added edge between different components reduces the component count by at most one, so for $k$≥1 at least $k$−1 roads are necessary. An edge within one component does not join groups."
+              },
+              {
+                "type": "p",
+                "text": "Construct a star from rep[0] to every rep[1],…,rep[$k$−1]. Existing paths connect vertices within each component, while new roads connect every group to rep[0]. This uses exactly $k$−1 roads and meets the lower bound. The example needs (1,4),(1,7). Print zero roads when $k$=0 or $k$=1."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Input graph",
+                  "Added roads"
+                ],
+                "rows": [
+                  [
+                    "7 орой, (1,2),(2,3),(4,5),(5,6)",
+                    "2 зам: (1,4),(1,7)"
+                  ],
+                  [
+                    "$n$>0, нэг хэсэг / one component",
+                    "0"
+                  ],
+                  [
+                    "$n$=0,$m$=0",
+                    "0"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "Constructor, component search and complete C++17",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Components stores adj,id,sz,rep. Its constructor allocates $n$+1 entries for one-based vertices and initializes IDs to −1, leaving sz,rep empty. fill obtains c from rep.size(), appends its root and zero size, then increments sz[c] when removing each vertex from the stack. run checks all possible roots."
+              },
+              {
+                "type": "p",
+                "text": "Input $n$ $m$ and $m$ undirected edges, with 0≤$n$,$m$≤200000, vertices 1..$n$, and $m$=0 if $n$=0. Output the number of NEW roads and their endpoints, not the component count. Internal $k$,id,sz remain available for other uses; main follows the Building Roads output format."
+              },
+              {
+                "type": "p",
+                "text": "Standard vector and $I$/O tools."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;"
+              },
+              {
+                "type": "p",
+                "text": "The size constructor prepares $n$+1 adjacency lists and unassigned IDs; 0 is not a vertex."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "struct Components {\n    int n;\n    vector<vector<int>> adj;\n    vector<int> id, sz, rep;\n\n    Components(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        id.assign(n + 1, -1);\n    }"
+              },
+              {
+                "type": "p",
+                "text": "Create ID, size and representative together, then use a discovery-marked explicit stack."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "void fill(int s) {\n        int c = rep.size();\n        rep.push_back(s);\n        sz.push_back(0);\n        vector<int> st = {s};\n        id[s] = c;\n        while (!st.empty()) {\n            int v = st.back();\n            st.pop_back();\n            sz[c]++;\n            for (int u : adj[v]) {\n                if (id[u] == -1) {\n                    id[u] = c;\n                    st.push_back(u);\n                }\n            }\n        }\n    }"
+              },
+              {
+                "type": "p",
+                "text": "The outer loop includes isolated vertices. Call run after reading all edges."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "void run() {\n        for (int v = 1; v <= n; v++) {\n            if (id[v] == -1) fill(v);\n        }\n    }\n};"
+              },
+              {
+                "type": "p",
+                "text": "main stores both directions. For $k$=0, it never reads rep[0] because the road loop does not run."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    Components cc(n);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        cc.adj[a].push_back(b);\n        cc.adj[b].push_back(a);\n    }\n    cc.run();\n    int k = cc.rep.size();\n    cout << (k == 0 ? 0 : k - 1) << '\\n';\n    for (int i = 1; i < k; i++) {\n        cout << cc.rep[0] << ' ' << cc.rep[i] << '\\n';\n    }\n    return 0;\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct Components {\n    int n;\n    vector<vector<int>> adj;\n    vector<int> id, sz, rep;\n\n    Components(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        id.assign(n + 1, -1);\n    }\n\n    void fill(int s) {\n        int c = rep.size();\n        rep.push_back(s);\n        sz.push_back(0);\n        vector<int> st = {s};\n        id[s] = c;\n        while (!st.empty()) {\n            int v = st.back();\n            st.pop_back();\n            sz[c]++;\n            for (int u : adj[v]) {\n                if (id[u] == -1) {\n                    id[u] = c;\n                    st.push_back(u);\n                }\n            }\n        }\n    }\n\n    void run() {\n        for (int v = 1; v <= n; v++) {\n            if (id[v] == -1) fill(v);\n        }\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    Components cc(n);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        cc.adj[a].push_back(b);\n        cc.adj[b].push_back(a);\n    }\n    cc.run();\n    int k = cc.rep.size();\n    cout << (k == 0 ? 0 : k - 1) << '\\n';\n    for (int i = 1; i < k; i++) {\n        cout << cc.rep[0] << ' ' << cc.rep[i] << '\\n';\n    }\n    return 0;\n}\n"
+              },
+              {
+                "type": "p",
+                "text": "Each vertex enters the stack once and each adjacency entry is scanned once: $O(n+m)$ time. adj takes $O(n+m)$ space; IDs,sizes,representatives and stack take $O(n)$. Counts and indices fit int; there are no weighted sums needing ll. Vector storage avoids process recursion depth on a long chain."
+              }
+            ]
+          },
+          {
+            "key": "scope",
+            "title": "Direction, updates and different objectives",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "This partition rule is for undirected graphs. With directed edge 1→2, 1 reaches 2 but not conversely. Directed reachability is not symmetric, so a search or count of DFS roots is not an SCC decomposition. Weak components after ignoring direction, mutually reachable SCCs, and one-source reachability are distinct concepts."
+              },
+              {
+                "type": "p",
+                "text": "Old IDs do not update themselves when the graph changes. DSU is useful for tracking component count and largest size under added roads. Cycles, two-coloring and matching need more information than component membership; $k$ and sz alone do not answer those tasks."
+              },
+              {
+                "type": "p",
+                "text": "On small graphs independently compute all-pairs reachability and compare it with id equality. Actually add the printed roads and check that the network becomes connected with max(0,$k$−1) additions. Test empty/singleton/isolated graphs, cycles, parallel edges, self-loops and a long chain."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Check yourself: does id=0 mean unvisited? Is an isolated vertex a component? Why can one road not generally connect all $k$ components?"
+              },
+              {
+                "type": "p",
+                "text": "Answers: no, only −1 is unassigned; yes; one edge decreases the component count by at most one."
+              },
+              {
+                "type": "p",
+                "text": "Core problem for mastery"
+              },
+              {
+                "type": "p",
+                "text": "Counting Rooms: traverse every implicit-grid component under its allowed-neighbor rule."
+              },
+              {
+                "type": "problem",
+                "problemKey": "360"
+              },
+              {
+                "type": "p",
+                "text": "Building Roads: implement the $k$−1 representative construction and prove its lower bound."
+              },
+              {
+                "type": "problem",
+                "problemKey": "362"
+              },
+              {
+                "type": "p",
+                "text": "Independent practice and extensions"
+              },
+              {
+                "type": "p",
+                "text": "Road Construction: added edges call for DSU rather than stale static IDs."
+              },
+              {
+                "type": "problem",
+                "problemKey": "381"
+              },
+              {
+                "type": "p",
+                "text": "Building Teams: impose the additional two-color constraint in every component."
+              },
+              {
+                "type": "problem",
+                "problemKey": "364"
+              },
+              {
+                "type": "p",
+                "text": "Round Trip: component IDs alone do not reconstruct cycles."
+              },
+              {
+                "type": "problem",
+                "problemKey": "365"
+              },
+              {
+                "type": "p",
+                "text": "School Dance: matching across the given two sides requires a different algorithm."
+              },
+              {
+                "type": "problem",
+                "problemKey": "393"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Undirected graphs, adjacency lists, FIFO BFS and marking on insertion."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Чиглэлгүй граф, хөршийн жагсаалт, BFS-ийн FIFO дараалал, нэмэхдээ тэмдэглэх зарчим.",
+    "priorityLevel": "high",
+    "priorityReason": "Холбоогүй графын бүх оройг зөв боловсруулах, хүрэх байдлын бүлэг ба доод хязгаарын баталгааг гаргах суурь. Олон графын бодлогод өндөр ач холбогдолтой.",
+    "prerequisiteIds": [
+      "graph-basics",
+      "bfs"
+    ],
+    "learningRelations": {
+      "next": "bipartite",
+      "practice": [
+        {
+          "key": "360",
+          "stage": "Warm-up",
+          "reason": "Бүх бүрэлдэхүүний хайлт, үндсэн нөхцөл ба зөв хариуны баталгааг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "362",
+          "stage": "Standard",
+          "reason": "Бүх бүрэлдэхүүний хайлт, үндсэн нөхцөл ба зөв хариуны баталгааг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "381",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "364",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "365",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "393",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "bipartite",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "dfs",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "status": "complete focused bilingual candidate; publication evidence separate"
+}

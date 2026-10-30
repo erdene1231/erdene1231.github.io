@@ -1,0 +1,16 @@
+{
+  "components": [
+    "#include <bits/stdc++.h>\nusing namespace std;\n\n",
+    "struct Components {\n    int n;\n    vector<vector<int>> adj;\n    vector<int> id, sz, rep;\n\n    Components(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        id.assign(n + 1, -1);\n    }\n\n",
+    "    void fill(int s) {\n        int c = rep.size();\n        rep.push_back(s);\n        sz.push_back(0);\n        vector<int> st = {s};\n        id[s] = c;\n        while (!st.empty()) {\n            int v = st.back();\n            st.pop_back();\n            sz[c]++;\n            for (int u : adj[v]) {\n                if (id[u] == -1) {\n                    id[u] = c;\n                    st.push_back(u);\n                }\n            }\n        }\n    }\n\n",
+    "    void run() {\n        for (int v = 1; v <= n; v++) {\n            if (id[v] == -1) fill(v);\n        }\n    }\n};\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    Components cc(n);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        cc.adj[a].push_back(b);\n        cc.adj[b].push_back(a);\n    }\n    cc.run();\n    int k = cc.rep.size();\n    cout << (k == 0 ? 0 : k - 1) << '\\n';\n    for (int i = 1; i < k; i++) {\n        cout << cc.rep[0] << ' ' << cc.rep[i] << '\\n';\n    }\n    return 0;\n}\n"
+  ],
+  "bipartite": [
+    "#include <bits/stdc++.h>\nusing namespace std;\n\n",
+    "struct Bipartite {\n    int n;\n    vector<vector<int>> adj;\n    vector<int> col;\n\n    Bipartite(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        col.assign(n + 1, -1);\n    }\n\n",
+    "    bool fill(int s) {\n        queue<int> q;\n        col[s] = 0;\n        q.push(s);\n        while (!q.empty()) {\n            int v = q.front();\n            q.pop();\n            for (int u : adj[v]) {\n                if (col[u] == -1) {\n                    col[u] = col[v] ^ 1;\n                    q.push(u);\n                } else if (col[u] == col[v]) {\n                    return false;\n                }\n            }\n        }\n        return true;\n    }\n\n",
+    "    bool run() {\n        for (int v = 1; v <= n; v++) {\n            if (col[v] == -1 && !fill(v)) return false;\n        }\n        return true;\n    }\n};\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    Bipartite bp(n);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        bp.adj[a].push_back(b);\n        bp.adj[b].push_back(a);\n    }\n    if (!bp.run()) {\n        cout << \"IMPOSSIBLE\\n\";\n        return 0;\n    }\n    for (int v = 1; v <= n; v++) cout << bp.col[v] + 1 << ' ';\n    cout << '\\n';\n    return 0;\n}\n"
+  ]
+}
