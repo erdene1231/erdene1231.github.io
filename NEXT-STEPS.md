@@ -6,7 +6,7 @@ Tree DP revision 3/history 270 is published after PR184 merge f20c0d4f820be3c4d1
 
 SQL SHA256795ba21d3cf62672809725b59e93d39b54f0c6e0c644d03113342516e5b2cc10 SUCCEEDED: NEVER REPLAY. Private recovery/intent/result: /workspace/package03-tree-dp-execution. Verification: /workspace/package03-tree-dp-postpublish. Safe receipt: audit/PACKAGE03-TREE-DP-PUBLICATION-RECEIPT.json.
 
-48/55 originals published;7 remain: dsu,gcd,sieve,fast-power,invariant,debugging,subtask-strategy.10 new lessons separate. DSU next. The full reconciliation ledger still records47 and needs this single-row receipt reconciliation next; no other completion credit. Preserve drafts/Mongolia/progress and all deferred features. No owner acceptance inferred.
+48/55 originals published;7 remain: dsu,gcd,sieve,fast-power,invariant,debugging,subtask-strategy.10 new lessons separate. DSU next. The Tree DP ledger row is reconciled to its verified receipt; no other completion credit. Preserve drafts/Mongolia/progress and all deferred features. No owner acceptance inferred.
 
 ## Handbook focused Bellman–Ford/Floyd–Warshall publication — 2026-10-30 01:42 UTC
 
