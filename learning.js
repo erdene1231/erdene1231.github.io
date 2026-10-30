@@ -1,9 +1,9 @@
 import {priorityLevel,priorityLabel} from './priority.js?v=52';
-import {CHECKS,canonicalKey,problemIndex,resolvePractice,tutorialMastery,dayCompletion,buildStatistics,weekStatistics,dateKey,addDays,monday,loadLearningContent,validateRelations,withArchivedProblems} from './learning-model.js?v=75';
+import {CHECKS,canonicalKey,problemIndex,resolvePractice,tutorialMastery,dayCompletion,buildStatistics,weekStatistics,dateKey,addDays,monday,loadLearningContent,validateRelations,withArchivedProblems} from './learning-model.js?v=76';
 import {createLearningStore} from './learning-store.js?v=52';
 import {ratingLabel,difficultyLabel} from './catalog.js?v=52';
 import {avatarUrl} from './accounts.js?v=52';
-import {typeset} from './tutorials.js?v=75';
+import {typeset} from './tutorials.js?v=76';
 import {view} from './tutorial-model.js?v=63';
 const $=id=>document.getElementById(id);
 const el=(tag,text,cls)=>{const x=document.createElement(tag);if(text!==undefined)x.textContent=text;if(cls)x.className=cls;return x;};
