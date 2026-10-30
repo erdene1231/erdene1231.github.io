@@ -4,7 +4,7 @@ export const handbookTutorialOrder = [
  'introduction','complexity','sorting','binary-search','lower-bound','upper-bound','hash-compression',
  'set-map','stack-queue','priority-queue',
  'brute-force','recursion','greedy','binary-search-answer',
- 'dynamic-programming','grid-dp','knapsack','lis','interval-dp',
+ 'dynamic-programming','grid-dp','knapsack','lis','interval-dp','digit-dp',
  'two-pointers','sliding-window','monotonic-stack',
  'segment-tree','prefix-sums','prefix-sums-2d','difference-array','sparse-table','fenwick-tree',
  'bit-operations','bitmask-dp',
