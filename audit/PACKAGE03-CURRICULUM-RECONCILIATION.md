@@ -1,8 +1,8 @@
 # Handbook original curriculum closure
 
-All 55 original stable IDs were rewritten and verified published. Seventeen separate additions give 72 public lessons; 73 stored records include the untouched Mongolia draft test. All original IDs match their actual receipt files, current anonymous bodies/revisions and current database history. All seventeen additions also match actual receipts and public content. This does not claim owner acceptance.
+All 55 original stable IDs were rewritten and verified published. Eighteen separate additions give 73 public lessons; 74 stored records include the untouched Mongolia draft test. All original IDs match their actual receipt files, current anonymous bodies/revisions and current database history. All eighteen additions also match actual receipts and public content. This does not claim owner acceptance.
 
-Package 3 remains incomplete because one requested addition group remains. The original55 closure remains historical; Suffix array/LCP revision1/history284 is the latest separately verified addition; all three deferred UI/progress requests remain deferred.
+All requested lesson additions are published. Package 3 remains open for the bounded final acceptance/feature audit. The original55 closure remains historical; Interactive/communication revision1/history285 is the latest separately verified addition; all three deferred UI/progress requests remain deferred.
 
 ## All 55 original IDs
 
@@ -64,7 +64,7 @@ Package 3 remains incomplete because one requested addition group remains. The o
 | [debugging](https://erdeneclub.com/#tutorial/debugging) | 3 | [PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json](PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json) |
 | [subtask-strategy](https://erdeneclub.com/#tutorial/subtask-strategy) | 3 | [PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json](PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json) |
 
-## Seventeen separately published additions
+## Eighteen separately published additions
 
 | Stable ID | Revision |
 |---|---:|
@@ -85,10 +85,17 @@ Package 3 remains incomplete because one requested addition group remains. The o
 | `dp-optimizations` | 1 |
 | `aho-corasick` | 1 |
 | `suffix-array` | 1 |
+| `interactive-communication` | 1 |
 
-## Remaining requested additions
+## Remaining final audit
 
-- interactive-communication
+No requested lesson additions remain. Package completion is not yet claimed.
+
+- Bounded all55+18 ID/revision/hash/history/priority/practice reconciliation against current public catalog and existing receipts; no blanket reauthoring
+- Targeted explicit requirements: recursive merge sort/std::sort/lambda, recursive Segtree and DSU constructor/init, early LCA then jump/static aggregates, actual KMP/Z/rolling hash/HLD/Aho/suffix/LCP coverage
+- Default handbook order/source numbering, internal TOC/mobile anchors and one centralized source acknowledgment; no nested tutorial feature
+- Existing native graph color/inside-outside-label/position persistence and cell color/merge/unmerge plus array-border fixes: reconcile released evidence and relevant safe native tests, no real-user fixtures
+- Fresh protected-state preservation and accurate remaining limits; all three deferred UI/progress requests stay deferred, no package5 or abandoned statement/editorial work
 
 Preserve handbook default chapter order and unnumbered supplementary placement. Do not duplicate completed Z/KMP/rolling hash, functional graph, 2-SAT, matching/flow, Euler or static binary-lifting coverage. No package 5, problem statement/editorial authoring, security expansion or GitHub APPROVE reviews.
 
