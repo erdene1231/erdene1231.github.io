@@ -1,0 +1,21 @@
+{
+  "gcd": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "ll euclid(ll a, ll b) {\n    a = abs(a);\n    b = abs(b);\n    while (b) {\n        ll r = a % b;\n        a = b;\n        b = r;\n    }\n    return a;\n}\n\n",
+    "bool safe_lcm(ll a, ll b, ll &ans) {\n    a = abs(a);\n    b = abs(b);\n    if (a == 0 || b == 0) {\n        ans = 0;\n        return true;\n    }\n    ll x = a / euclid(a, b);\n    if (x > LLONG_MAX / b) return false;\n    ans = x * b;\n    return true;\n}\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int q;\n    cin >> q;\n    while (q--) {\n        ll a, b, c;\n        cin >> a >> b;\n        cout << euclid(a, b) << ' ';\n        if (safe_lcm(a, b, c)) cout << c << '\\n';\n        else cout << \"OVERFLOW\\n\";\n    }\n}\n"
+  ],
+  "sieve": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "struct Sieve {\n    int n;\n    vector<int> spf;\n    Sieve(int _n) {\n        n = _n;\n        spf.assign(n + 1, 0);\n        for (int p = 2; p <= n; p++) {\n            if (spf[p]) continue;\n            spf[p] = p;\n            if (1LL * p * p > n) continue;\n            for (ll j = 1LL * p * p; j <= n; j += p) {\n                if (!spf[j]) spf[j] = p;\n            }\n        }\n    }\n",
+    "    bool prime(int x) {\n        return x >= 2 && spf[x] == x;\n    }\n    vector<pair<int, int>> factor(int x) {\n        vector<pair<int, int>> f;\n        while (x > 1) {\n            int p = spf[x], e = 0;\n            while (x % p == 0) {\n                x /= p;\n                e++;\n            }\n            f.push_back({p, e});\n        }\n        return f;\n    }\n",
+    "    int divisors(int x) {\n        int ans = 1;\n        for (auto [p, e] : factor(x)) ans *= e + 1;\n        return ans;\n    }\n};\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    Sieve s(n);\n    while (q--) {\n        int x;\n        cin >> x;\n        cout << s.prime(x) << ' ' << s.divisors(x) << '\\n';\n    }\n}\n"
+  ],
+  "power": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\n",
+    "ll modpow(ll a, ll e, ll m) {\n    a %= m;\n    if (a < 0) a += m;\n    ll r = 1 % m;\n",
+    "    while (e) {\n        if (e & 1) r = r * a % m;\n        a = a * a % m;\n        e /= 2;\n    }\n    return r;\n}\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int q;\n    cin >> q;\n    while (q--) {\n        ll a, e, m;\n        cin >> a >> e >> m;\n        cout << modpow(a, e, m) << '\\n';\n    }\n}\n"
+  ]
+}
