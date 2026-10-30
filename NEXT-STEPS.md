@@ -1,3 +1,11 @@
+## Bridges/articulation published — 2026-10-30 04:08 UTC
+
+PR192 merged at 0ec6fa67b67873c66b55f54ee800a2a878de8bfe. New bridges-articulation revision1/history278 is verified through anonymous retrieval and exact body hash. SQL SHA256 d91da9d8541a204248154a90fd67a335548db34a5b60f5af2fdb77a2305e6ffd SUCCEEDED; NEVER REPLAY. Private once-only intent/result and recovery: /workspace/package03-bridges-execution; final preflight: /workspace/package03-bridges-preflight-final; postchecks: /workspace/package03-bridges-postpublish.
+
+333 Node tests pass. Iterative C++17 Lowlink passed UBSan/removal oracles on1305 graphs and200000-vertex path/star/parallel-edge stress. Complete MN/EN lesson covers low trace, bridge versus articulation inequality, DFS-root rule, edge IDs, self-loops and disconnected graphs. Native reader/editor and responsive order checks pass; Pages41001156772 succeeded and16 v76 deployed assets byte-match with default TLS. Live authenticated browser visuals are not claimed.
+
+All66 old stored rows,8 private drafts,1010 problems and learner/profile/access/function fingerprints remain unchanged. All55 original receipt revisions and hashes still match. Public66/stored67 including untouched Mongolia; original55/55 complete,11 additions separately published. Seven requested groups remain: HLD,centroid decomposition,digit DP,DP optimizations,Aho–Corasick,suffix array/LCP,interactive/communication. Next coherent addition: HLD. Evidence: audit/PACKAGE03-BRIDGES-PUBLICATION-RECEIPT.json. Owner acceptance not inferred. No migration/security change, problem priority change, deferred UI feature or APPROVE review.
+
 ## Original 55 rewrite cycle closed — 2026-10-30
 
 PR190 merged at 1751c14fc2a1d3b28804a0c8c2851f70355872bf. Debugging revision3/history275, invariant revision3/history276 and subtask-strategy revision3/history277 are verified published. SQL SHA256 00c5da21b82fdf50a7c7266851f0feff837cd87db4abdd90dc7da38f65a26303 SUCCEEDED; NEVER REPLAY. Private recovery/intent/result: /workspace/package03-methodology-execution; postchecks: /workspace/package03-methodology-postpublish.
