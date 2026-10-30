@@ -1,3 +1,13 @@
+## Tree DP verified publication — 2026-10-30
+
+Tree DP revision 3/history 270 is published after PR184 merge f20c0d4f820be3c4d1a170e18759b6f9a9fccd49. Anonymous MN/EN bodies match exactly. Pages40989256357 succeeded;16 deployed files match with TLS validation. All65 non-target rows,8 private drafts,1010 problems and learner/profile/access fingerprints remain unchanged.
+
+320 Node tests,2 C++17/UBSan programs,328 independent small-tree cases and every output on200000-node chains/stars pass. Native MN/EN reader and editor checks plus actual-public-body8 reader cases/1 editor roundtrip pass. Independent sets, subtree summaries, maximum-distance rerooting and distance sums are explained with full traces and exact code fragments before full programs.
+
+SQL SHA256795ba21d3cf62672809725b59e93d39b54f0c6e0c644d03113342516e5b2cc10 SUCCEEDED: NEVER REPLAY. Private recovery/intent/result: /workspace/package03-tree-dp-execution. Verification: /workspace/package03-tree-dp-postpublish. Safe receipt: audit/PACKAGE03-TREE-DP-PUBLICATION-RECEIPT.json.
+
+48/55 originals published;7 remain: dsu,gcd,sieve,fast-power,invariant,debugging,subtask-strategy.10 new lessons separate. DSU next. The full reconciliation ledger still records47 and needs this single-row receipt reconciliation next; no other completion credit. Preserve drafts/Mongolia/progress and all deferred features. No owner acceptance inferred.
+
 ## Handbook focused Bellman–Ford/Floyd–Warshall publication — 2026-10-30 01:42 UTC
 
 `bellman-ford` revision 3/history 268 and `floyd-warshall` revision 5/history 269 are published after tested PR #182 merge `7626d7f12178b523fb64875a6f8a33d389683d61`. Exact anonymous MN/EN bodies match the reviewed candidates. Pages run 40987405286 succeeded; all 16 cache 75 runtime/JSON files match under normal TLS. Actual public bodies passed local native reader/editor checks; no authenticated live-user visual claim or certificate bypass.
