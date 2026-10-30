@@ -1,3 +1,13 @@
+## Handbook focused DSU publication — 2026-10-30 02:20 UTC
+
+`dsu` revision 7/history 271 is published after tested PR #186 merge `4a964ae07319c3c4baaf4c653784b23f3b6bcfef`. Anonymous MN/EN bodies exactly match the reviewed candidate. Pages run 40990973872 succeeded; 16 cache 75 runtime/JSON files match under default TLS. Actual public bodies passed local native reader/editor checks, with no authenticated live-user visual claim or certificate bypass.
+
+One-time SQL SHA256 `1c8c1f3cfc60587e820b4201044be6cfd8ea14efbf63378d7ff8378266a6d8c0` SUCCEEDED; NEVER REPLAY. Recovery/intent/result: `/workspace/package03-dsu-execution`; postchecks: `/workspace/package03-dsu-postpublish`. Safe receipt: `audit/PACKAGE03-DSU-PUBLICATION-RECEIPT.json`. All 65 non-target catalog rows, all 8 private drafts/base revisions, Mongolia, 1010 problems and learner/profile/ACL/RLS/function fingerprints remain exact. No migration, previous publication job or Tree DP SQL was replayed.
+
+323 Node tests pass. The compact C++17 DSU program and query harness passed UBSan against an independent relabeling model: 152 sequences, 7,510 operations, every size/pair query, repeated/self unions and a 200,000-vertex stress. Eight MN/EN candidate reader cases, two candidate editor round-trips, eight actual-public-body reader cases and one public editor round-trip pass. Source eight-element representative trees/merge and the old five-city redundant-road trace are preserved. Constructor, root sizes, count/largest, union by size, actual path halving, logarithmic versus amortized cost and limitations are explicitly explained before full code. Practice/core flags remain exact.
+
+The previously pending Tree DP ledger row is reconciled. Original rewrite cycle is now 49/55 published, 6 remaining; 10 new lessons separate. All 65 public hashes match the complete ledger, and all 6 remaining standalone bodies match their pre-Introduction snapshots. Next arithmetic batch: gcd, sieve, fast-power; then invariant, debugging, subtask-strategy. Eight pending addition groups and all three deferred UI/progress items remain separate. No owner acceptance, package 5, problem statement/editorial authoring, access expansion or GitHub APPROVE review is inferred.
+
 ## Tree DP verified publication — 2026-10-30
 
 Tree DP revision 3/history 270 is published after PR184 merge f20c0d4f820be3c4d1a170e18759b6f9a9fccd49. Anonymous MN/EN bodies match exactly. Pages40989256357 succeeded;16 deployed files match with TLS validation. All65 non-target rows,8 private drafts,1010 problems and learner/profile/access fingerprints remain unchanged.
