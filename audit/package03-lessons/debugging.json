@@ -1,0 +1,752 @@
+{
+  "id": "debugging",
+  "expected_revision": 2,
+  "expected_published": true,
+  "expected_body_md5": "fa08b045e8a43c463a687cb4ac2e6531",
+  "expected_body_sha256": "c7fcd1c5bcbc7b424b532851522ed40a89d45b3f5657d3f65b63ef5777f98949",
+  "reviewed_body_sha256": "a50bf87b40a3fe4a596db4d324044ae6a4b8016640badefb4a5979deed7e4393",
+  "proposed_body_sha256": "a50bf87b40a3fe4a596db4d324044ae6a4b8016640badefb4a5979deed7e4393",
+  "body": {
+    "id": "debugging",
+    "level": "Дунд шат",
+    "order": 54,
+    "title": "Алдаа засах — дахин гаргах, багасгах, бие даан тулгах",
+    "aliases": "debugging Counterexample ба stress testing Counterexamples and stress testing",
+    "related": [
+      "invariant",
+      "subtask-strategy"
+    ],
+    "summary": "Жижиг эсрэг жишээнээс шалтгааныг олж, зөв лавлах, тогтмол seed, assert ба sanitizer-аар засвараа шалгана.",
+    "category": "Бодлого бодох арга",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "reproduce",
+        "title": "Алдааг яг дахин гаргах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "“Хариу буруу” гэдэг нь засвар хийхэд хангалтгүй мэдээлэл. Бодлогын гэрээ, яг дахин гаргах оролт, хүлээсэн ба бодит хариу, алдаа гарах эхний мөчийг тусад нь тогтоо. Нэг таамаг гаргаад нэг өөрчлөлтөөр шалга; олон мөрийг зэрэг өөрчлөөд санамсаргүй зөв болохыг хүлээхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Жишээ бодлого: урт $n$ массивын нийлбэр нь $n$-д хуваагдах хоосон биш үргэлжилсэн хэсгүүдийг тоол. $n$≥1, утгууд сөрөг байж болно. [0] дээр хариу 1; [-1,1] дээр зөвхөн бүтэн хэсэг тохирч хариу мөн 1. Эдгээрийг гараар тоолох боломжтой тул эхний шалгалтад тохирно."
+          }
+        ]
+      },
+      {
+        "key": "solution",
+        "title": "Зөв лавлах утгатай хурдан программ",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Угтварын нийлбэрийг $s_0=0,s_1,\\ldots,s_n$ гэе. Хэсгийн нийлбэр $s_r-s_l$ нь $n$-д хуваагдах нь хоёр угтвар ижил үлдэгдэлтэй гэсэн үг. Одоогийн угтвараас ӨМНӨ байсан ижил үлдэгдлийн тоог хариунд нэмээд, дараа нь одоогийн давтамжийг өсгөнө."
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Хоосон угтварын 0 үлдэгдлийг эхлээд нэг удаа бүртгэнэ: ",
+                "marks": []
+              },
+              {
+                "text": "f[0]=1",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ". Энэ нь хоосон хэсэг тоолж байгаа биш; массивын эхлэлээс эхэлсэн хэсгийн зүүн зааг. Харин өөрийг нь эхлээд оруулбал одоогийн угтварыг өөртэй нь хослуулж хоосон хэсэг тоолно.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Оролтын мөч",
+              "Нормчилсон үлдэгдэл",
+              "Өмнөх ижил тоо",
+              "Нийт хариу"
+            ],
+            "rows": [
+              [
+                "эхлэл",
+                "0",
+                "$f$[0]=1",
+                "0"
+              ],
+              [
+                "-1",
+                "1",
+                "0",
+                "0"
+              ],
+              [
+                "1",
+                "0",
+                "1",
+                "1"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "C++-д сөрөг тооны % сөрөг байж болно. s=(s+$x$)%$n$-ийн дараа s<0 бол $n$ нэмэхэд 0..$n$−1 индекс болно. Давталтын өмнө $f$ нь зөвхөн өмнөх угтваруудын давтамж гэдэг инвариант хадгалагдана. Тохирох угтварын хос бүр өөрийн баруун зааг дээр нэг удаа тоологдох тул арга зөв."
+          },
+          {
+            "type": "p",
+            "text": "Оролт $n$ ба $n$ ширхэг утга,1≤$n$≤200000,|aᵢ|≤10⁹. Хариу ихдээ $n$($n$+1)/2=20,000,100,000 тул ll; угтварын үлдэгдэл ба $f$-ийн тооллогод ч ll хэрэглэнэ. Хурдан арга $O(n)$ хугацаа, $O(n)$ зайтай. Дараах нь шүүгчид өгөх бодлогын программ."
+          },
+          {
+            "type": "p",
+            "text": "64 битийн тооллого ба стандарт сангууд."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+          },
+          {
+            "type": "p",
+            "text": "$n$ эерэг гэдгийг локал assert шалгаж, өмнөх хоосон угтварыг бүртгэнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "ll fast(const vector<ll> &a) {\n    int n = (int)a.size();\n    assert(n > 0);\n    vector<ll> f(n, 0);\n    f[0] = 1;\n    ll s = 0, ans = 0;"
+          },
+          {
+            "type": "p",
+            "text": "Үлдэгдлийг нормчилж индексийн нөхцөлийг шалгаад, асуух→нэмэх дарааллаар ажиллана."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "for (ll x : a) {\n        s = (s + x) % n;\n        if (s < 0) s += n;\n        assert(0 <= s && s < n);\n        ans += f[s];\n        f[s]++;\n    }\n    return ans;\n}"
+          },
+          {
+            "type": "p",
+            "text": "main зөвшөөрсөн хэмжээний массивыг уншиж ганц хариу хэвлэнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    assert(1 <= n && n <= 200000);\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    cout << fast(a) << '\\n';\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nll fast(const vector<ll> &a) {\n    int n = (int)a.size();\n    assert(n > 0);\n    vector<ll> f(n, 0);\n    f[0] = 1;\n    ll s = 0, ans = 0;\n    for (ll x : a) {\n        s = (s + x) % n;\n        if (s < 0) s += n;\n        assert(0 <= s && s < n);\n        ans += f[s];\n        f[s]++;\n    }\n    return ans;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    assert(1 <= n && n <= 200000);\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    cout << fast(a) << '\\n';\n}\n"
+          }
+        ]
+      },
+      {
+        "key": "oracle",
+        "title": "Хоёр аргыг тулгаж ялгааг олох",
+        "blocks": [
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Одоо зөв кодоос ",
+                "marks": []
+              },
+              {
+                "text": "f[0]=1",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " мөрийг зориуд орхисон хувилбарыг авч үзье. [0] дээр нийлбэр 0 боловч өмнөх 0 угтвар бүртгэгдээгүй учир 0 буцаана. Зөв хариу 1. Энэ бол индексээс хэтрээгүй, бүх арифметик зөв боловч санааны нэг нөхцөл алдагдсан алдаа; sanitizer үүнийг өөрөө илрүүлэхгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Хамааралгүй лавлах аргаа бич: зүүн l ба баруун $r$ бүрийг авч, нийлбэрийг шууд нэмэн $n$-д хуваагдах эсэхийг шалга. $O(n^2)$ учраас зөвхөн жижиг массивт ашиглана. Хурдан аргын ижил $f$ хүснэгт, ижил угтварын эхлэлийг лавлахад хуулбал нэг алдааг хоёулаа давтаж болно."
+          },
+          {
+            "type": "p",
+            "text": "Урт 1..6, утга бүр −2..2 бүх массив 5¹+…+5⁶=19,530. Дээр нь үүсгэгчийн тогтмол эхлэлийн утга (seed)-тай жижиг санамсаргүй массив нэмнэ. Ижил хөрвүүлсэн программ, seed, үүсгэгчтэй бол дахин гаргана; өөр орчинд бүрэн найдвартай сэргээхийн тулд seed-ээс гадна БҮТЭН оролтыг хадгал. Туршилтын тоо нь баталгааны оронд биш, яг ямар хүрээ шалгасны баримт."
+          }
+        ]
+      },
+      {
+        "key": "shrink-harness",
+        "title": "Эсрэг жишээг багасгах бүтэн локал программ",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Урт эсрэг жишээг ойлгоход амар болгож багасга. Элемент хасах бүрд оролт хүчинтэй, алдаа хэвээр эсэхийг дахин шалга; энд урт солигдоход хуваах $n$ ч солигдоно. Дараа нь утгыг 0 болгох зэрэг хялбаршуулалт турш. Хамгийн анхны амжилттай засварыг аван давтвал нэг жижиг жишээ олдоно, гэхдээ ерөнхийдөө дэлхий дээрх хамгийн жижиг жишээг олсон гэсэн баталгаа биш."
+          },
+          {
+            "type": "p",
+            "text": "Энэ алдаанд [3,0,−3]-аас эхлээд [0] хүртэл багасгаж болно. [0] нь гэрээний хамгийн бага урттай оролт; хоосон болгож цааш багасгах нь $n$≥1 нөхцөлийг зөрчинө. Дараах shrink нь зөвхөн зориудын broken функцийн алдааг багасгах үзүүлэн. Жинхэнэ өөр алдаанд fails-ийн харьцуулах функцийг тохируулна."
+          },
+          {
+            "type": "p",
+            "text": "Тестийн программын оролт seed rounds: seed нь unsigned төрлийн хүрээнд,0≤rounds≤10000. Эхлээд зориудын алдааны багасгасан жишээг хэвлээд, зөв fast-ыг brute-тэй бүх жижиг болон rounds санамсаргүй массив дээр тулгана. Зөрүү гарвал бүтэн оролт/хүлээсэн/бодит хариуг stderr-т бичиж return 1; бүх шалгалт таарвал шалгасан тоог хэвлэнэ. Энэ нь бодлогын шүүгчид өгөх программ биш."
+          },
+          {
+            "type": "p",
+            "text": "Өмнөх зөв fast функц бүтнээр орсон; нэгтгэх нэмэлт код эсвэл гаднах файл шаардахгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nll fast(const vector<ll> &a) {\n    int n = (int)a.size();\n    assert(n > 0);\n    vector<ll> f(n, 0);\n    f[0] = 1;\n    ll s = 0, ans = 0;\n    for (ll x : a) {\n        s = (s + x) % n;\n        if (s < 0) s += n;\n        assert(0 <= s && s < n);\n        ans += f[s];\n        f[s]++;\n    }\n    return ans;\n}"
+          },
+          {
+            "type": "p",
+            "text": "brute нь бүх хоосон биш хэсгийг шууд шалгана."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "ll brute(const vector<ll> &a) {\n    int n = (int)a.size();\n    ll ans = 0;\n    for (int l = 0; l < n; l++) {\n        ll s = 0;\n        for (int r = l; r < n; r++) {\n            s += a[r];\n            if (s % n == 0) ans++;\n        }\n    }\n    return ans;\n}"
+          },
+          {
+            "type": "p",
+            "text": "broken бол зөвхөн үзүүлэнгийн зориудын алдаа: хоосон угтвар орхигдсон. Үүнийг бодлогын шийдэл гэж бүү ашигла."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "// Deliberately wrong: used only to demonstrate a reproducible failure.\nll broken(const vector<ll> &a) {\n    int n = (int)a.size();\n    vector<ll> f(n, 0);\n    ll s = 0, ans = 0;\n    for (ll x : a) {\n        s = (s + x) % n;\n        if (s < 0) s += n;\n        ans += f[s];\n        f[s]++;\n    }\n    return ans;\n}"
+          },
+          {
+            "type": "p",
+            "text": "fails ба shrink нь алдаа хадгалагдсан үед л хасалт/0 болголтыг зөвшөөрнө."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "bool fails(const vector<ll> &a) {\n    return brute(a) != broken(a);\n}\nvector<ll> shrink(vector<ll> a) {\n    bool changed = true;\n    while (changed && a.size() > 1) {\n        changed = false;\n        for (int i = 0; i < (int)a.size(); i++) {\n            auto b = a;\n            b.erase(b.begin() + i);\n            if (fails(b)) {\n                a = move(b);\n                changed = true;\n                break;\n            }\n        }\n    }\n    for (int i = 0; i < (int)a.size(); i++) {\n        auto b = a;\n        b[i] = 0;\n        if (fails(b)) a = move(b);\n    }\n    return a;\n}"
+          },
+          {
+            "type": "p",
+            "text": "check нь зөв хурдан аргын зөрүүг бүрэн оролттой нь хадгална."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "bool check(const vector<ll> &a) {\n    ll want = brute(a), got = fast(a);\n    if (want == got) return true;\n    cerr << \"input:\\n\" << a.size() << '\\n';\n    for (ll x : a) cerr << x << ' ';\n    cerr << \"\\nexpected \" << want << \" actual \" << got << '\\n';\n    return false;\n}"
+          },
+          {
+            "type": "p",
+            "text": "main бүх жижиг массивыг тоочоод тогтмол seed-тэй туршилт нэмнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    unsigned seed;\n    int rounds;\n    cin >> seed >> rounds;\n    assert(0 <= rounds && rounds <= 10000);\n    auto small = shrink({3, 0, -3});\n    cout << \"broken example:\\n\" << small.size() << '\\n';\n    for (ll x : small) cout << x << ' ';\n    cout << \"\\nexpected \" << brute(small) << \" actual \" << broken(small) << '\\n';\n    int tested = 0;\n    for (int n = 1; n <= 6; n++) {\n        int total = 1;\n        for (int i = 0; i < n; i++) total *= 5;\n        for (int mask = 0; mask < total; mask++) {\n            int z = mask;\n            vector<ll> a(n);\n            for (ll &x : a) {\n                x = z % 5 - 2;\n                z /= 5;\n            }\n            if (!check(a)) return 1;\n            tested++;\n        }\n    }\n    mt19937 rng(seed);\n    for (int t = 0; t < rounds; t++) {\n        int n = uniform_int_distribution<int>(1, 30)(rng);\n        vector<ll> a(n);\n        for (ll &x : a) x = uniform_int_distribution<int>(-100, 100)(rng);\n        if (!check(a)) {\n            cerr << \"seed \" << seed << \" round \" << t << '\\n';\n            return 1;\n        }\n        tested++;\n    }\n    cout << \"checked \" << tested << '\\n';\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nll fast(const vector<ll> &a) {\n    int n = (int)a.size();\n    assert(n > 0);\n    vector<ll> f(n, 0);\n    f[0] = 1;\n    ll s = 0, ans = 0;\n    for (ll x : a) {\n        s = (s + x) % n;\n        if (s < 0) s += n;\n        assert(0 <= s && s < n);\n        ans += f[s];\n        f[s]++;\n    }\n    return ans;\n}\n\nll brute(const vector<ll> &a) {\n    int n = (int)a.size();\n    ll ans = 0;\n    for (int l = 0; l < n; l++) {\n        ll s = 0;\n        for (int r = l; r < n; r++) {\n            s += a[r];\n            if (s % n == 0) ans++;\n        }\n    }\n    return ans;\n}\n\n// Deliberately wrong: used only to demonstrate a reproducible failure.\nll broken(const vector<ll> &a) {\n    int n = (int)a.size();\n    vector<ll> f(n, 0);\n    ll s = 0, ans = 0;\n    for (ll x : a) {\n        s = (s + x) % n;\n        if (s < 0) s += n;\n        ans += f[s];\n        f[s]++;\n    }\n    return ans;\n}\n\nbool fails(const vector<ll> &a) {\n    return brute(a) != broken(a);\n}\nvector<ll> shrink(vector<ll> a) {\n    bool changed = true;\n    while (changed && a.size() > 1) {\n        changed = false;\n        for (int i = 0; i < (int)a.size(); i++) {\n            auto b = a;\n            b.erase(b.begin() + i);\n            if (fails(b)) {\n                a = move(b);\n                changed = true;\n                break;\n            }\n        }\n    }\n    for (int i = 0; i < (int)a.size(); i++) {\n        auto b = a;\n        b[i] = 0;\n        if (fails(b)) a = move(b);\n    }\n    return a;\n}\n\nbool check(const vector<ll> &a) {\n    ll want = brute(a), got = fast(a);\n    if (want == got) return true;\n    cerr << \"input:\\n\" << a.size() << '\\n';\n    for (ll x : a) cerr << x << ' ';\n    cerr << \"\\nexpected \" << want << \" actual \" << got << '\\n';\n    return false;\n}\n\nint main() {\n    unsigned seed;\n    int rounds;\n    cin >> seed >> rounds;\n    assert(0 <= rounds && rounds <= 10000);\n    auto small = shrink({3, 0, -3});\n    cout << \"broken example:\\n\" << small.size() << '\\n';\n    for (ll x : small) cout << x << ' ';\n    cout << \"\\nexpected \" << brute(small) << \" actual \" << broken(small) << '\\n';\n    int tested = 0;\n    for (int n = 1; n <= 6; n++) {\n        int total = 1;\n        for (int i = 0; i < n; i++) total *= 5;\n        for (int mask = 0; mask < total; mask++) {\n            int z = mask;\n            vector<ll> a(n);\n            for (ll &x : a) {\n                x = z % 5 - 2;\n                z /= 5;\n            }\n            if (!check(a)) return 1;\n            tested++;\n        }\n    }\n    mt19937 rng(seed);\n    for (int t = 0; t < rounds; t++) {\n        int n = uniform_int_distribution<int>(1, 30)(rng);\n        vector<ll> a(n);\n        for (ll &x : a) x = uniform_int_distribution<int>(-100, 100)(rng);\n        if (!check(a)) {\n            cerr << \"seed \" << seed << \" round \" << t << '\\n';\n            return 1;\n        }\n        tested++;\n    }\n    cout << \"checked \" << tested << '\\n';\n}\n"
+          },
+          {
+            "type": "p",
+            "text": "41872 500 оролтод багасгасан жишээ $n$=1, утга 0, expected 1 actual 0; төгсгөлд checked 20030 гарна. “broken example” мөр нь олдох ёстой үзүүлэнгийн алдаа, харин check дотор fast/brute зөрөх нь жинхэнэ амжилтгүй шалгалт."
+          }
+        ]
+      },
+      {
+        "key": "tools",
+        "title": "Анхааруулга, assert ба sanitizer",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Кодыг solve.cpp гэж хадгалсан бол анхааруулга ба sanitizer-тай локал хувилбар үүсгэж болно. -Wall,-Wextra,-Wshadow нь сэжигтэй хэрэглээг анхааруулна; анхааруулга бүрийг унш. AddressSanitizer нь олон төрлийн санах ойн буруу хандалт, UndefinedBehaviorSanitizer нь signed халилт, тэгээр хуваах зэрэг тодорхойгүй үйлдлийг илрүүлэхэд тусалдаг. Бүх алдааг заавал барихгүй, алгоритм зөвийг нотлохгүй."
+          },
+          {
+            "type": "code",
+            "language": "sh",
+            "text": "g++ -std=c++17 -O1 -g -Wall -Wextra -Wshadow \\\n    -fsanitize=address,undefined -fno-sanitize-recover=all solve.cpp -o solve-check\n./solve-check < case.txt\n"
+          },
+          {
+            "type": "p",
+            "text": "assert нь локал таамгийг тухайн мөрөнд шалгана. s-ийн хүрээг индекс ашиглахаас өмнө шалгасан нь сөрөг үлдэгдлийн алдааг ойрхон илрүүлнэ. Харин -DNDEBUG үед assert алга болдог тул шаардлагатай шинэчлэлтээ assert дотор бүү хий. Санитизертэй хувилбар-ийн хугацааг эцсийн -O2 хувилбартай адил гэж үзэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Засварын дараа анхны алдаатай оролтыг байнгын давтан шалгалт (regression test) болгож хадгал. Дараа нь ойролцоо нөхцөл, жижиг бүх оролт, том хэмжээний хугацаа ба 64 битийн хариуг тус тус шалга. Өөр зөв байрлал үүсгэж болох байгуулалтын бодлогод гаралтын (stdout) мөрийг яг тулгах бус, нөхцөл хангаж байгаа эсэхийг бие даан шалга."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Сэдвийг эзэмших үндсэн бодлого"
+          },
+          {
+            "type": "p",
+            "text": "Subarray Divisibility: хоосон угтвар, сөрөг үлдэгдэл, асуух→нэмэх дарааллыг удаан лавлахтай тулга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "106"
+          },
+          {
+            "type": "p",
+            "text": "Бие даах ба ахиулах бодлогууд"
+          },
+          {
+            "type": "p",
+            "text": "Жижиг хүснэгт, диагональ, квадратын заагт томьёогоо гараар шалга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "87"
+          },
+          {
+            "type": "p",
+            "text": "Жижиг бүх сонголтын модоор DP-ийн төлөвийн утгыг шалга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "81"
+          },
+          {
+            "type": "p",
+            "text": "Үл мэдэгдэх утга, хөршийн нөхцөлтэй жижиг бүх массивыг тооч."
+          },
+          {
+            "type": "problem",
+            "problemKey": "111"
+          },
+          {
+            "type": "p",
+            "text": "Шинэчлэлт бүрийн дараа хэсгийн нийлбэрүүдийг шууд бодсон лавлахтай тулга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "409"
+          },
+          {
+            "type": "p",
+            "text": "Байгуулалтын хариунд урт, давхардал, хөршийн нөхцөлийг шалга; зөв хоёр хариу ялгаатай байж болно."
+          },
+          {
+            "type": "problem",
+            "problemKey": "18"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Debugging — reproduce, reduce and compare independently",
+        "summary": "Find causes from small counterexamples and verify fixes using independent oracles, fixed seeds, assertions and sanitizers.",
+        "sections": [
+          {
+            "key": "reproduce",
+            "title": "Making a failure reproducible",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "“Wrong answer” is not enough information to repair a program. Identify the contract, exact reproducible input, expected versus actual output and the first divergence. Test one hypothesis with one change instead of editing many lines and hoping for a lucky result."
+              },
+              {
+                "type": "p",
+                "text": "Example task: count nonempty contiguous subarrays whose sum is divisible by array length $n$. Require $n$≥1 and allow negative values. Array [0] has answer 1; for [-1,1], only the whole array qualifies, also giving 1. These are useful initial tests because their answers can be checked by hand."
+              }
+            ]
+          },
+          {
+            "key": "solution",
+            "title": "A fast program with a precise invariant",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Let s₀=0,s₁,…,sₙ be prefix sums. A subarray sum sᵣ−sₗ is divisible by $n$ exactly when the two prefixes have the same residue. Add the number of matching EARLIER prefixes, then insert the current prefix."
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Insert the empty prefix once with ",
+                    "marks": []
+                  },
+                  {
+                    "text": "f[0]=1",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". This does not count an empty subarray: it represents the left boundary of a nonempty subarray starting at the beginning. Inserting the current prefix first would pair it with itself and count an empty subarray.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Stage",
+                  "Normalized residue",
+                  "Earlier matches",
+                  "Answer"
+                ],
+                "rows": [
+                  [
+                    "initial",
+                    "0",
+                    "$f$[0]=1",
+                    "0"
+                  ],
+                  [
+                    "-1",
+                    "1",
+                    "0",
+                    "0"
+                  ],
+                  [
+                    "1",
+                    "0",
+                    "1",
+                    "1"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "C++ remainder can be negative. After s=(s+$x$)%$n$, add $n$ if s<0 to obtain an index in 0..$n$−1. Before each iteration, $f$ contains exactly the earlier prefixes. Every qualifying pair is counted once at its right endpoint, proving the algorithm."
+              },
+              {
+                "type": "p",
+                "text": "Input $n$ and $n$ values, with 1≤$n$≤200000 and |aᵢ|≤10⁹. The answer can reach $n$($n$+1)/2=20,000,100,000, so use ll for the count, residue and frequencies. Time and space are $O(n)$. The following is the actual solution program for judge input."
+              },
+              {
+                "type": "p",
+                "text": "Standard headers and 64-bit counts."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;"
+              },
+              {
+                "type": "p",
+                "text": "A local assertion checks positive $n$, and the empty prefix is registered."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "ll fast(const vector<ll> &a) {\n    int n = (int)a.size();\n    assert(n > 0);\n    vector<ll> f(n, 0);\n    f[0] = 1;\n    ll s = 0, ans = 0;"
+              },
+              {
+                "type": "p",
+                "text": "Normalize the residue, assert the index range, then query before inserting."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "for (ll x : a) {\n        s = (s + x) % n;\n        if (s < 0) s += n;\n        assert(0 <= s && s < n);\n        ans += f[s];\n        f[s]++;\n    }\n    return ans;\n}"
+              },
+              {
+                "type": "p",
+                "text": "main reads the allowed array size and prints one answer."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    assert(1 <= n && n <= 200000);\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    cout << fast(a) << '\\n';\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nll fast(const vector<ll> &a) {\n    int n = (int)a.size();\n    assert(n > 0);\n    vector<ll> f(n, 0);\n    f[0] = 1;\n    ll s = 0, ans = 0;\n    for (ll x : a) {\n        s = (s + x) % n;\n        if (s < 0) s += n;\n        assert(0 <= s && s < n);\n        ans += f[s];\n        f[s]++;\n    }\n    return ans;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    assert(1 <= n && n <= 200000);\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    cout << fast(a) << '\\n';\n}\n"
+              }
+            ]
+          },
+          {
+            "key": "oracle",
+            "title": "Differential testing against an independent oracle",
+            "blocks": [
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Now deliberately omit ",
+                    "marks": []
+                  },
+                  {
+                    "text": "f[0]=1",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". On [0], the residue is zero but no earlier zero prefix is registered, so the result is 0 instead of 1. Indexing and arithmetic remain valid: this is a missing logical condition that a sanitizer cannot detect by itself.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Write an independent oracle: enumerate every left and right endpoint, directly accumulate its sum and test divisibility. This costs $O(n^2)$, so use small arrays. Reusing the fast method’s frequency table and initialization could make both versions repeat the same mistake."
+              },
+              {
+                "type": "p",
+                "text": "All arrays of lengths 1..6 with values −2..2 total 5¹+…+5⁶=19,530. Add small pseudorandom arrays with a fixed seed. The same build, seed and generator reproduce them; saving the FULL input as well gives reliable reproduction across environments. Counts describe tested coverage, not a proof for all inputs."
+              }
+            ]
+          },
+          {
+            "key": "shrink-harness",
+            "title": "A complete local harness and counterexample reducer",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Reduce a long counterexample into something understandable. After each deletion, recheck validity and whether the failure survives; here changing length also changes the modulus $n$. Then try simplifying values, such as replacing them by zero. Greedy accepted reductions find a small example, but generally do not prove global minimality."
+              },
+              {
+                "type": "p",
+                "text": "For this bug, [3,0,−3] can reduce to [0]. It already has the smallest permitted length; deleting its final element violates $n$≥1. The shrink function below demonstrates reduction specifically for broken. For a different real bug, adapt the comparison used by fails."
+              },
+              {
+                "type": "p",
+                "text": "The test program reads seed rounds, with an unsigned seed and 0≤rounds≤10000. It first prints the reduced deliberate bug, then compares correct fast with brute on every small array and rounds random arrays. On a mismatch it writes full input and expected/actual values to stderr and returns 1; otherwise it prints the tested count. This is a local harness, not a judge submission."
+              },
+              {
+                "type": "p",
+                "text": "The previous correct fast function is included completely; no omitted glue or external file is needed."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nll fast(const vector<ll> &a) {\n    int n = (int)a.size();\n    assert(n > 0);\n    vector<ll> f(n, 0);\n    f[0] = 1;\n    ll s = 0, ans = 0;\n    for (ll x : a) {\n        s = (s + x) % n;\n        if (s < 0) s += n;\n        assert(0 <= s && s < n);\n        ans += f[s];\n        f[s]++;\n    }\n    return ans;\n}"
+              },
+              {
+                "type": "p",
+                "text": "brute directly enumerates every nonempty subarray."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "ll brute(const vector<ll> &a) {\n    int n = (int)a.size();\n    ll ans = 0;\n    for (int l = 0; l < n; l++) {\n        ll s = 0;\n        for (int r = l; r < n; r++) {\n            s += a[r];\n            if (s % n == 0) ans++;\n        }\n    }\n    return ans;\n}"
+              },
+              {
+                "type": "p",
+                "text": "broken is a deliberately faulty demonstration omitting the empty prefix, not a usable solution."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "// Deliberately wrong: used only to demonstrate a reproducible failure.\nll broken(const vector<ll> &a) {\n    int n = (int)a.size();\n    vector<ll> f(n, 0);\n    ll s = 0, ans = 0;\n    for (ll x : a) {\n        s = (s + x) % n;\n        if (s < 0) s += n;\n        ans += f[s];\n        f[s]++;\n    }\n    return ans;\n}"
+              },
+              {
+                "type": "p",
+                "text": "fails and shrink accept deletions or zero replacements only if the failure remains."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "bool fails(const vector<ll> &a) {\n    return brute(a) != broken(a);\n}\nvector<ll> shrink(vector<ll> a) {\n    bool changed = true;\n    while (changed && a.size() > 1) {\n        changed = false;\n        for (int i = 0; i < (int)a.size(); i++) {\n            auto b = a;\n            b.erase(b.begin() + i);\n            if (fails(b)) {\n                a = move(b);\n                changed = true;\n                break;\n            }\n        }\n    }\n    for (int i = 0; i < (int)a.size(); i++) {\n        auto b = a;\n        b[i] = 0;\n        if (fails(b)) a = move(b);\n    }\n    return a;\n}"
+              },
+              {
+                "type": "p",
+                "text": "check reports a mismatch of the correct fast method with its complete input."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "bool check(const vector<ll> &a) {\n    ll want = brute(a), got = fast(a);\n    if (want == got) return true;\n    cerr << \"input:\\n\" << a.size() << '\\n';\n    for (ll x : a) cerr << x << ' ';\n    cerr << \"\\nexpected \" << want << \" actual \" << got << '\\n';\n    return false;\n}"
+              },
+              {
+                "type": "p",
+                "text": "main enumerates all small arrays, then adds fixed-seed random trials."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    unsigned seed;\n    int rounds;\n    cin >> seed >> rounds;\n    assert(0 <= rounds && rounds <= 10000);\n    auto small = shrink({3, 0, -3});\n    cout << \"broken example:\\n\" << small.size() << '\\n';\n    for (ll x : small) cout << x << ' ';\n    cout << \"\\nexpected \" << brute(small) << \" actual \" << broken(small) << '\\n';\n    int tested = 0;\n    for (int n = 1; n <= 6; n++) {\n        int total = 1;\n        for (int i = 0; i < n; i++) total *= 5;\n        for (int mask = 0; mask < total; mask++) {\n            int z = mask;\n            vector<ll> a(n);\n            for (ll &x : a) {\n                x = z % 5 - 2;\n                z /= 5;\n            }\n            if (!check(a)) return 1;\n            tested++;\n        }\n    }\n    mt19937 rng(seed);\n    for (int t = 0; t < rounds; t++) {\n        int n = uniform_int_distribution<int>(1, 30)(rng);\n        vector<ll> a(n);\n        for (ll &x : a) x = uniform_int_distribution<int>(-100, 100)(rng);\n        if (!check(a)) {\n            cerr << \"seed \" << seed << \" round \" << t << '\\n';\n            return 1;\n        }\n        tested++;\n    }\n    cout << \"checked \" << tested << '\\n';\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nll fast(const vector<ll> &a) {\n    int n = (int)a.size();\n    assert(n > 0);\n    vector<ll> f(n, 0);\n    f[0] = 1;\n    ll s = 0, ans = 0;\n    for (ll x : a) {\n        s = (s + x) % n;\n        if (s < 0) s += n;\n        assert(0 <= s && s < n);\n        ans += f[s];\n        f[s]++;\n    }\n    return ans;\n}\n\nll brute(const vector<ll> &a) {\n    int n = (int)a.size();\n    ll ans = 0;\n    for (int l = 0; l < n; l++) {\n        ll s = 0;\n        for (int r = l; r < n; r++) {\n            s += a[r];\n            if (s % n == 0) ans++;\n        }\n    }\n    return ans;\n}\n\n// Deliberately wrong: used only to demonstrate a reproducible failure.\nll broken(const vector<ll> &a) {\n    int n = (int)a.size();\n    vector<ll> f(n, 0);\n    ll s = 0, ans = 0;\n    for (ll x : a) {\n        s = (s + x) % n;\n        if (s < 0) s += n;\n        ans += f[s];\n        f[s]++;\n    }\n    return ans;\n}\n\nbool fails(const vector<ll> &a) {\n    return brute(a) != broken(a);\n}\nvector<ll> shrink(vector<ll> a) {\n    bool changed = true;\n    while (changed && a.size() > 1) {\n        changed = false;\n        for (int i = 0; i < (int)a.size(); i++) {\n            auto b = a;\n            b.erase(b.begin() + i);\n            if (fails(b)) {\n                a = move(b);\n                changed = true;\n                break;\n            }\n        }\n    }\n    for (int i = 0; i < (int)a.size(); i++) {\n        auto b = a;\n        b[i] = 0;\n        if (fails(b)) a = move(b);\n    }\n    return a;\n}\n\nbool check(const vector<ll> &a) {\n    ll want = brute(a), got = fast(a);\n    if (want == got) return true;\n    cerr << \"input:\\n\" << a.size() << '\\n';\n    for (ll x : a) cerr << x << ' ';\n    cerr << \"\\nexpected \" << want << \" actual \" << got << '\\n';\n    return false;\n}\n\nint main() {\n    unsigned seed;\n    int rounds;\n    cin >> seed >> rounds;\n    assert(0 <= rounds && rounds <= 10000);\n    auto small = shrink({3, 0, -3});\n    cout << \"broken example:\\n\" << small.size() << '\\n';\n    for (ll x : small) cout << x << ' ';\n    cout << \"\\nexpected \" << brute(small) << \" actual \" << broken(small) << '\\n';\n    int tested = 0;\n    for (int n = 1; n <= 6; n++) {\n        int total = 1;\n        for (int i = 0; i < n; i++) total *= 5;\n        for (int mask = 0; mask < total; mask++) {\n            int z = mask;\n            vector<ll> a(n);\n            for (ll &x : a) {\n                x = z % 5 - 2;\n                z /= 5;\n            }\n            if (!check(a)) return 1;\n            tested++;\n        }\n    }\n    mt19937 rng(seed);\n    for (int t = 0; t < rounds; t++) {\n        int n = uniform_int_distribution<int>(1, 30)(rng);\n        vector<ll> a(n);\n        for (ll &x : a) x = uniform_int_distribution<int>(-100, 100)(rng);\n        if (!check(a)) {\n            cerr << \"seed \" << seed << \" round \" << t << '\\n';\n            return 1;\n        }\n        tested++;\n    }\n    cout << \"checked \" << tested << '\\n';\n}\n"
+              },
+              {
+                "type": "p",
+                "text": "For input 41872 500, the reduced case is $n$=1, value 0, expected 1 actual 0, followed finally by checked 20030. The “broken example” line is an expected demonstration; a fast/brute mismatch inside check is an actual test failure."
+              }
+            ]
+          },
+          {
+            "key": "tools",
+            "title": "Warnings, assertions and sanitizers",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "With the solution saved as solve.cpp, build a local warning/sanitizer version. -Wall,-Wextra,-Wshadow highlight suspicious usage; read the diagnostics. AddressSanitizer detects many invalid memory accesses, while UndefinedBehaviorSanitizer helps with undefined operations such as signed overflow and division by zero. Neither catches every bug or proves algorithmic correctness."
+              },
+              {
+                "type": "code",
+                "language": "sh",
+                "text": "g++ -std=c++17 -O1 -g -Wall -Wextra -Wshadow \\\n    -fsanitize=address,undefined -fno-sanitize-recover=all solve.cpp -o solve-check\n./solve-check < case.txt\n"
+              },
+              {
+                "type": "p",
+                "text": "Assertions check local assumptions at a precise line. Checking s before indexing brings a negative-remainder failure close to its cause. Since -DNDEBUG removes assertions, never put necessary state changes inside them. Sanitized timing is not representative of the final -O2 build."
+              },
+              {
+                "type": "p",
+                "text": "Keep the original failing input as a regression test after the fix. Then test nearby conditions, exhaustive small cases, large performance and 64-bit limits separately. For constructions with multiple valid outputs, validate the constraints independently rather than demanding identical output text."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Core problem for mastery"
+              },
+              {
+                "type": "p",
+                "text": "Subarray Divisibility: compare the empty prefix, signed remainder and query-before-insert order against a slow oracle."
+              },
+              {
+                "type": "problem",
+                "problemKey": "106"
+              },
+              {
+                "type": "p",
+                "text": "Independent practice and extensions"
+              },
+              {
+                "type": "p",
+                "text": "Check formula boundaries by hand on small tables, diagonals and squares."
+              },
+              {
+                "type": "problem",
+                "problemKey": "87"
+              },
+              {
+                "type": "p",
+                "text": "Use small exhaustive choice trees to check DP state meanings."
+              },
+              {
+                "type": "problem",
+                "problemKey": "81"
+              },
+              {
+                "type": "p",
+                "text": "Enumerate small arrays with unknown entries and adjacent-value constraints."
+              },
+              {
+                "type": "problem",
+                "problemKey": "111"
+              },
+              {
+                "type": "p",
+                "text": "After every update compare range sums with direct recomputation."
+              },
+              {
+                "type": "problem",
+                "problemKey": "409"
+              },
+              {
+                "type": "p",
+                "text": "Validate a construction’s size, uniqueness and neighbor conditions; two valid outputs may differ."
+              },
+              {
+                "type": "problem",
+                "problemKey": "18"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Exhaustive search, complexity, arrays and prefix sums."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Бүрэн хайлт, хугацааны үнэлгээ, массив ба угтварын нийлбэр.",
+    "priorityLevel": "high",
+    "priorityReason": "Өөрийн таамгийг няцаах оролт олох, шалтгаан ба шинж тэмдгийг ялгах, засварыг дахин шалгах өдөр тутмын суурь чадвар. Бүх алгоритмд хэрэглэгддэг тул High; тестийг баталгаатай андуурахгүй.",
+    "prerequisiteIds": [
+      "brute-force",
+      "complexity"
+    ],
+    "learningRelations": {
+      "next": "subtask-strategy",
+      "practice": [
+        {
+          "key": "87",
+          "stage": "Warm-up",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "106",
+          "stage": "Standard",
+          "reason": "Хичээлийн үндсэн нөхцөл, баталгаа эсвэл жижиг зөв лавлахаас ахих аргыг шууд дадлагажуулах цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "81",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "111",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "409",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "18",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "invariant",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "subtask-strategy",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "status": "complete focused bilingual candidate; publication evidence separate"
+}
