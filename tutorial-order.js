@@ -10,7 +10,7 @@ export const handbookTutorialOrder = [
  'bit-operations','bitmask-dp',
  'graph-basics','bfs','dfs','flood-fill','connected-components','bridges-articulation','bipartite',
  'dijkstra','bellman-ford','floyd-warshall','tree-basics','tree-dp','kruskal','dsu',
- 'topological-sort','scc','lca','heavy-light-decomposition','paths-circuits','flows-cuts',
+ 'topological-sort','scc','lca','heavy-light-decomposition','centroid-decomposition','paths-circuits','flows-cuts',
  'number-theory','gcd','sieve','fast-power','combinatorics','matrices','probability','game-theory','kmp','string-hashing','sqrt-algorithms','lazy-segment-tree','geometry','sweep-line',
  'invariant','debugging','subtask-strategy'
 ];
