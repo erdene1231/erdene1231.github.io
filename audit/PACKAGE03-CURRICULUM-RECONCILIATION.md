@@ -1,8 +1,8 @@
 # Handbook original curriculum closure
 
-All 55 original stable IDs were rewritten and verified published. Sixteen separate additions give 71 public lessons; 72 stored records include the untouched Mongolia draft test. All original IDs match their actual receipt files, current anonymous bodies/revisions and current database history. All sixteen additions also match actual receipts and public content. This does not claim owner acceptance.
+All 55 original stable IDs were rewritten and verified published. Seventeen separate additions give 72 public lessons; 73 stored records include the untouched Mongolia draft test. All original IDs match their actual receipt files, current anonymous bodies/revisions and current database history. All seventeen additions also match actual receipts and public content. This does not claim owner acceptance.
 
-Package 3 remains incomplete because two requested addition groups remain. The original55 closure remains historical; Aho–Corasick revision1/history283 is the latest separately verified addition; all three deferred UI/progress requests remain deferred.
+Package 3 remains incomplete because one requested addition group remains. The original55 closure remains historical; Suffix array/LCP revision1/history284 is the latest separately verified addition; all three deferred UI/progress requests remain deferred.
 
 ## All 55 original IDs
 
@@ -64,7 +64,7 @@ Package 3 remains incomplete because two requested addition groups remain. The o
 | [debugging](https://erdeneclub.com/#tutorial/debugging) | 3 | [PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json](PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json) |
 | [subtask-strategy](https://erdeneclub.com/#tutorial/subtask-strategy) | 3 | [PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json](PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json) |
 
-## Sixteen separately published additions
+## Seventeen separately published additions
 
 | Stable ID | Revision |
 |---|---:|
@@ -84,10 +84,10 @@ Package 3 remains incomplete because two requested addition groups remain. The o
 | `digit-dp` | 1 |
 | `dp-optimizations` | 1 |
 | `aho-corasick` | 1 |
+| `suffix-array` | 1 |
 
 ## Remaining requested additions
 
-- suffix-array-with-LCP
 - interactive-communication
 
 Preserve handbook default chapter order and unnumbered supplementary placement. Do not duplicate completed Z/KMP/rolling hash, functional graph, 2-SAT, matching/flow, Euler or static binary-lifting coverage. No package 5, problem statement/editorial authoring, security expansion or GitHub APPROVE reviews.
