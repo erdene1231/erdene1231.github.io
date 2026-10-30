@@ -1,0 +1,1380 @@
+{
+  "id": "dsu",
+  "expected_revision": 6,
+  "expected_published": true,
+  "expected_body_md5": "1ee9d9ae5c75b9572c9c22d0984c8559",
+  "expected_body_sha256": "bcf7425b47351f08d349249faaa45065ce35feb5c7fcab2774e92f0f9493c2cb",
+  "reviewed_body_sha256": "cb963ea48191a43dd4968d65a7f6c771773296dbf9428253f7e1e499d5223f60",
+  "proposed_body_sha256": "cb963ea48191a43dd4968d65a7f6c771773296dbf9428253f7e1e499d5223f60",
+  "body": {
+    "id": "dsu",
+    "level": "Дунд шат",
+    "order": 29,
+    "title": "Үл давхцах олонлогууд — төлөөлөгч, нэгтгэл ба зам богиносгох",
+    "aliases": "dsu DSU — бүлгүүдийг нэгтгэх DSU — merging groups dsu union find холбоост компонент disjoint set path compression",
+    "related": [
+      "tree-basics",
+      "kruskal"
+    ],
+    "summary": "Хэмжээгээр нэгтгэж, зам хагаслан бүлгийн холбогдол, хэмжээ, тоог хурдан хадгална; төлөөлөгчийн мод ба эх графын замыг ялгана.",
+    "category": "Data structures",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "partition",
+        "title": "Шинэ холбоосоос олонлогийн хуваалт руу",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Таван хот эхэндээ хоорондоо замгүй байг. 1–2,3–4,2–3,1–4,5–4 зам дараалан нэмнэ. Шинэ зам бүрийн дараа хэдэн холбоост бүрэлдэхүүн үлдсэн, хамгийн том бүрэлдэхүүнд хэдэн хот байгааг мэдэх хэрэгтэй. Бүх ирмэгийг хадгалаад дахин BFS хийвэл зөв боловч зам бүрийн дараа ижил хэсгүүдийг ахин шалгана."
+          },
+          {
+            "type": "p",
+            "text": "Зам зөвхөн нэмэгдэж байгаа учир өмнөх бүрэлдэхүүн задардаггүй. Шинэ ирмэг хоёр өөр бүрэлдэхүүнийг нийлүүлнэ, эсвэл нэг бүрэлдэхүүний дотор нэмэгдэж холбогдлыг өөрчлөхгүй. Иймээс бүх замыг биш, оройнуудын одоогийн хуваалтыг хадгалахад хангалттай."
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Үл давхцах олонлогуудын бүтэц буюу DSU (disjoint-set union, мөн union-find) нь элемент бүрийг яг нэг олонлогт хадгална. ",
+                "marks": []
+              },
+              {
+                "text": "find(v)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь $v$-ийн олонлогийн төлөөлөгчийг олно; ",
+                "marks": []
+              },
+              {
+                "text": "unite(a,b)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь a,b-гийн олонлогуудыг нэгтгэнэ. ",
+                "marks": []
+              },
+              {
+                "text": "same(a,b)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь хоёр төлөөлөгч тэнцүү эсэхийг шалгана. Графын ирмэгийг нэгтгэл гэж үзвэл олонлогууд нь яг холбоост бүрэлдэхүүнүүд болно.",
+                "marks": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "representation",
+        "title": "Төлөөлөгч, эцгийн заагч ба хэмжээ",
+        "blocks": [
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Олонлог бүрийг үндэстэй модоор дүрсэлье. ",
+                "marks": []
+              },
+              {
+                "text": "par[v]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь $v$-ийн эцэг; үндэст ",
+                "marks": []
+              },
+              {
+                "text": "par[v]=v",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ". Эцгийн заагчийг дагасаар хүрэх үндэс нь олонлогийн төлөөлөгч. Нэг үндэст хүрдэг элементүүд нэг олонлогт байна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Жишээ нь {1,4,7}, {5}, {2,3,6,8} олонлогуудыг төлөөлөгч 4,5,2-той дүрсэлж болно. 6→3→2 холбоосоор find(6)=2; find(8)=2 учир 6,8 нэг олонлогт. Харин find(1)=4 тул 1,6 одоогоор өөр олонлогт. Энэ зураг нь зөв дүрслэлийн жишээ; доорх нэгтгэх дүрэм яг энэ эцгийн модыг үүсгэнэ гэж шаардахгүй."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "4",
+                "label": "4",
+                "x": 18,
+                "y": 14
+              },
+              {
+                "id": "1",
+                "label": "1",
+                "x": 7,
+                "y": 45
+              },
+              {
+                "id": "7",
+                "label": "7",
+                "x": 29,
+                "y": 45
+              },
+              {
+                "id": "5",
+                "label": "5",
+                "x": 42,
+                "y": 83
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 68,
+                "y": 14
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 68,
+                "y": 45
+              },
+              {
+                "id": "6",
+                "label": "6",
+                "x": 58,
+                "y": 83
+              },
+              {
+                "id": "8",
+                "label": "8",
+                "x": 83,
+                "y": 83
+              }
+            ],
+            "edges": [
+              [
+                "1",
+                "4"
+              ],
+              [
+                "7",
+                "4"
+              ],
+              [
+                "3",
+                "2"
+              ],
+              [
+                "6",
+                "3"
+              ],
+              [
+                "8",
+                "3"
+              ]
+            ],
+            "directed": true,
+            "caption": "Сум нь элементээс эцэг рүү. Үндэс 4,5,2; өөрийгөө заасан холбоосуудыг зураагүй."
+          },
+          {
+            "type": "p",
+            "text": "Энэ мод нь эх графын бодит зам биш. Жишээлбэл unite(1,6) хийхэд дотоод холбоос 4→2 болж болно, харин эх графт 4–2 ирмэг огт нэмээгүй. DSU нь холбогдсон эсэхийг хадгална; ямар замаар холбогдсоныг хадгалахгүй. Төлөөлөгч нь хамгийн бага дугаартай орой байх албагүй, нэгтгэхэд өөрчлөгдөж ч болно."
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Хэмжээ ",
+                "marks": []
+              },
+              {
+                "text": "sz[r]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-г зөвхөн үндэс $r$ дээр хүчинтэй гэж үзнэ. $v$-ийн олонлогийн хэмжээг ",
+                "marks": []
+              },
+              {
+                "text": "sz[find(v)]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гэж уншина. Үндэс байхаа больсон оройн хуучин sz-ыг шууд уншвал буруу хариу гарч болно.",
+                "marks": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "union",
+        "title": "Жижиг олонлогийг томд нэгтгэх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэгтгэхдээ эхлээд a,b-г үндсүүдээр нь солино. Ижил үндэстэй бол аль хэдийн нэг олонлог: false буцааж, хэмжээ ба бүлгийн тоог хэвээр үлдээнэ. Өөр үндэстэй бол нэг үндсийг нөгөөгийн доор холбоно. Үндэс биш дурын оройг залгавал хуучин бүлгийн хэсгийг салгах эсвэл цикл үүсгэх аюултай."
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Жижиг олонлогийн үндсийг томын үндэст залгана. Өмнөх жишээнд 4-ийн олонлог 3, 2-ын олонлог 4 элементтэй тул ",
+                "marks": []
+              },
+              {
+                "text": "par[4]=2",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", ",
+                "marks": []
+              },
+              {
+                "text": "sz[2]=7",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ". Үр дүн {1,2,3,4,6,7,8} нэг олонлог, {5} тусдаа. Хэмжээ тэнцүү бол аль нэгийг нь сонгож болно; хариу нь хуваалт болохоос тодорхой үндэсний дугаар биш.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "4",
+                "label": "4",
+                "x": 18,
+                "y": 14
+              },
+              {
+                "id": "1",
+                "label": "1",
+                "x": 7,
+                "y": 45
+              },
+              {
+                "id": "7",
+                "label": "7",
+                "x": 29,
+                "y": 45
+              },
+              {
+                "id": "5",
+                "label": "5",
+                "x": 42,
+                "y": 83
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 68,
+                "y": 14
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 68,
+                "y": 45
+              },
+              {
+                "id": "6",
+                "label": "6",
+                "x": 58,
+                "y": 83
+              },
+              {
+                "id": "8",
+                "label": "8",
+                "x": 83,
+                "y": 83
+              }
+            ],
+            "edges": [
+              [
+                "1",
+                "4"
+              ],
+              [
+                "7",
+                "4"
+              ],
+              [
+                "4",
+                "2"
+              ],
+              [
+                "3",
+                "2"
+              ],
+              [
+                "6",
+                "3"
+              ],
+              [
+                "8",
+                "3"
+              ]
+            ],
+            "directed": true,
+            "caption": "Нэгтгэсний дараа 4→2. Шинэ олонлогийн хэмжээ 7; 5 тусдаа хэвээр."
+          },
+          {
+            "type": "p",
+            "text": "Яагаад хэмжээгээр нэгтгэх хэрэгтэй вэ? Хэрэв үндсүүдийг дур мэдэн залгавал урт гинж үүсэж, find нэг удаа $n$ хүртэл алхаж болно. Жижиг талын оройн гүн нэгээр нэмэгдэх бүрд түүний шинэ олонлог өмнөхөөсөө ядаж хоёр дахин том болно. Нийт хэмжээ $n$-ээс хэтрэхгүй тул ийм өсөлт log₂n-ээс олон удаа болохгүй. Зам богиносголгүй байсан ч гүн $O(\\log n)$."
+          },
+          {
+            "type": "p",
+            "text": "Хэмжээний оронд rank гэж модны өндрийн дээд хязгаар хадгалан нэгтгэдэг хувилбар бас бий. Гэхдээ энд хэмжээг ашиглана: энэ нь бүлгийн хэмжээний асуултад ч хэрэгтэй. Rank ба sz-ыг адил утга гэж үзэхгүй, зам богиносгосны дараа rank нь бодит өндөртэй заавал тэнцэхгүй."
+          }
+        ]
+      },
+      {
+        "key": "compression",
+        "title": "Зам богиносгох ба хорогдуулсан өртөг",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Нэг үндсийг дахин дахин олоход ижил урт замаар явах шаардлагагүй. Find-ийн явцад эцгийн заагчийг өвөг рүү нь шилжүүлж замыг богиносгож болно. Өвөг нь өмнөхтэй ижил үндэст хүрдэг тул олонлогийн гишүүнчлэл өөрчлөгдөхгүй. Хэмжээ, бүлгийн тоог ч өөрчлөхгүй."
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Доорх код path halving буюу замын уртыг хагаслах хувилбартай. ",
+                "marks": []
+              },
+              {
+                "text": "par[v] = par[par[v]]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь $v$-г өвөөтэй нь холбоод, ",
+                "marks": []
+              },
+              {
+                "text": "v = par[v]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " тийш хоёр хуучин алхам урагшлуулна. 6→3→2 жишээнд find(6) хийсний дараа 6→2 болно. Урт замын үзсэн орой бүрийг заавал үндэс рүү шууд холбоно гэж ойлгож болохгүй: энэ нь бүх замыг нэг дор үндэст холбодог бүрэн compression-оос ялгаатай боловч мөн үр дүнтэй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Хэмжээгээр нэгтгэх ба зам богиносгохыг хамтад нь хэрэглэвэл үйлдлүүдийн дарааллын нийт өртөг маш бага: эхлүүлэх $O(n)$-ээс гадна q үйлдэл $O(q \\alpha(n))$ хорогдуулсан хугацаатай. α нь маш удаан өсөх урвуу Аккерманы функц. Энэ нь санамсаргүй оролтын дундаж биш, дурын үйлдлийн дарааллын нийт баталгаа. Нэг үйлдэл бүр яг $O(1)$ гэсэн үг биш; ганц хайлт логарифм урттай зам дагаж болно."
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "Давтагдсан холбоосыг ялгах бүтэн жишээ",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Таван хотын замуудыг одоо дарааллаар нь бодъё. Эхэндээ cnt=5, mx=1. Нэгтгэл амжилттай үед cnt-ийг нэгээр бууруулж, шинэ үндэсний хэмжээг mx-тэй харьцуулна. Давтагдсан зам, өөртэйгөө холбосон зам амжилтгүй нэгтгэл болох тул эдгээр утгыг өөрчлөхгүй."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Нэмсэн зам",
+              "Одоогийн бүлгүүд",
+              "cnt",
+              "mx"
+            ],
+            "rows": [
+              [
+                "эхлэл",
+                "{1},{2},{3},{4},{5}",
+                "5",
+                "1"
+              ],
+              [
+                "1–2",
+                "{1,2},{3},{4},{5}",
+                "4",
+                "2"
+              ],
+              [
+                "3–4",
+                "{1,2},{3,4},{5}",
+                "3",
+                "2"
+              ],
+              [
+                "2–3",
+                "{1,2,3,4},{5}",
+                "2",
+                "4"
+              ],
+              [
+                "1–4",
+                "{1,2,3,4},{5}",
+                "2",
+                "4"
+              ],
+              [
+                "5–4",
+                "{1,2,3,4,5}",
+                "1",
+                "5"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Ирмэг бүрийн дараах зөвийг индукцээр харж болно. Эхний ганц элементтэй олонлогууд ирмэггүй графын бүрэлдэхүүнүүдтэй таарна. Өөр бүрэлдэхүүний хооронд ирмэг нэмбэл яг тэр хоёр нийлнэ; нэг бүрэлдэхүүний дотор нэмбэл хуваалт хэвээр. Үндсүүд л холбогддог тул дотоод заагчид циклгүй, харин зам хагаслах нь ижил үндсийг хадгална. Хоёр олонлог үл давхцах тул хэмжээг нэмэх, амжилттай нэгтгэлд тоог нэгээр хасах нь зөв."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "Struct, байгуулагч ба бүтэн C++17",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Оролт $n$ $m$, дараа нь $m$ ширхэг чиглэлгүй a b ирмэг. 1≤$n$≤200000,0≤$m$≤200000; a,b нь 1..$n$. Давхар ирмэг, өөртэйгөө ирмэг зөвшөөрнө. Зам бүрийн дараа cnt ба mx хэвлэнэ. Оролт циклгүй байх шаардлагагүй; бүх орой холбоостой болох албагүй. $m$=0 бол хэвлэх мөр байхгүй."
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "DSU struct нь par,sz массив болон cnt,mx хураангуйтай. Хэмжээ авдаг байгуулагч $n$+1 зай бэлдэнэ, учир нь оройнууд 1-ээс дугаарлагдана. ",
+                "marks": []
+              },
+              {
+                "text": "iota",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь par[$i$]=$i$; ",
+                "marks": []
+              },
+              {
+                "text": "sz.assign(n+1,1)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь эхний ганц элементтэй олонлогуудыг үүсгэнэ. 0 индекс ашиглахгүй. Тоо, хэмжээ, индекс бүгд $n$-ээс хэтрэхгүй тул int хангалттай; энд шаардлагагүй ll оруулахгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Стандарт сангууд ба нэрийн орон зай."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;"
+          },
+          {
+            "type": "p",
+            "text": "Эцгийн заагч, үндэсний хэмжээ, олонлогийн тоо, хамгийн том хэмжээ. Байгуулагч орой бүрийг өөрийн төлөөлөгч болгож эхлүүлнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "struct DSU {\n    vector<int> par, sz;\n    int cnt, mx;\n    DSU(int n) {\n        par.resize(n + 1);\n        iota(par.begin(), par.end(), 0);\n        sz.assign(n + 1, 1);\n        cnt = n;\n        mx = 1;\n    }"
+          },
+          {
+            "type": "p",
+            "text": "find давталттай зам хагаслана. same төлөөлөгчдийг харьцуулна. size нь шууд sz[$v$] бус, эхлээд олсон үндэсний хэмжээг уншина."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int find(int v) {\n        while (par[v] != v) {\n            par[v] = par[par[v]];\n            v = par[v];\n        }\n        return v;\n    }\n    bool same(int a, int b) {\n        return find(a) == find(b);\n    }\n    int size(int v) {\n        return sz[find(v)];\n    }"
+          },
+          {
+            "type": "p",
+            "text": "unite үндсүүдийг олж, ижил бол гарна. Хэмжээгээр байр сольсны дараа жижиг үндэс b-г a-д залгаж, тоо ба хамгийн том хэмжээг шинэчилнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "bool unite(int a, int b) {\n        a = find(a);\n        b = find(b);\n        if (a == b) return false;\n        if (sz[a] < sz[b]) swap(a, b);\n        par[b] = a;\n        sz[a] += sz[b];\n        cnt--;\n        mx = max(mx, sz[a]);\n        return true;\n    }\n};"
+          },
+          {
+            "type": "p",
+            "text": "main DSU $d$($n$) объектоо үүсгэж, зам бүрийг нэгтгэл болгон оруулна. cnt,mx-ыг unite өөрөө зөв үед шинэчилсэн тул main дахин хасахгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    DSU d(n);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        d.unite(a, b);\n        cout << d.cnt << ' ' << d.mx << '\\n';\n    }\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct DSU {\n    vector<int> par, sz;\n    int cnt, mx;\n    DSU(int n) {\n        par.resize(n + 1);\n        iota(par.begin(), par.end(), 0);\n        sz.assign(n + 1, 1);\n        cnt = n;\n        mx = 1;\n    }\n    int find(int v) {\n        while (par[v] != v) {\n            par[v] = par[par[v]];\n            v = par[v];\n        }\n        return v;\n    }\n    bool same(int a, int b) {\n        return find(a) == find(b);\n    }\n    int size(int v) {\n        return sz[find(v)];\n    }\n    bool unite(int a, int b) {\n        a = find(a);\n        b = find(b);\n        if (a == b) return false;\n        if (sz[a] < sz[b]) swap(a, b);\n        par[b] = a;\n        sz[a] += sz[b];\n        cnt--;\n        mx = max(mx, sz[a]);\n        return true;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    DSU d(n);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        d.unite(a, b);\n        cout << d.cnt << ' ' << d.mx << '\\n';\n    }\n}\n"
+          },
+          {
+            "type": "p",
+            "text": "Жишээ оролт ба мөр бүрийн гаралтыг тулга:"
+          },
+          {
+            "type": "code",
+            "language": "text",
+            "text": "5 5\n1 2\n3 4\n2 3\n1 4\n5 4\n"
+          },
+          {
+            "type": "code",
+            "language": "text",
+            "text": "4 2\n3 2\n2 4\n2 4\n1 5\n"
+          },
+          {
+            "type": "p",
+            "text": "Эхлүүлэх $O(n)$, бүх $m$ ирмэг боловсруулах $O(m \\alpha(n))$ хорогдуулсан хугацаа, хадгалалт $O(n)$. find рекурсгүй тул call stack-ийн гүн өсөхгүй. Нэгтгэсний дараа хуучин төлөөлөгчийг хадгалаад дараагийн асуултад мөн үндэс гэж үзэхгүй: шаардлагатай болгонд find-ээр шалгана."
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "Хэрэглэх нөхцөл ба хязгаар",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "DSU-д “энэ ирмэгийг устга” гэсэн энгийн үйлдэл байхгүй. Нэг холбоосыг устгахад бүлэг хоёр салж ч болох, өөр замаар холбогдсон хэвээр ч байж болно; зөвхөн төлөөлөгч ба хэмжээнээс үүнийг тогтоохгүй. Устгалтай бодлогод урвуугаар боловсруулах эсвэл rollback зэрэг тусгай арга хэрэгтэй. Эндхийн path halving хуучин заагчдыг өөрчилдөг тул өөрчлөлтүүдээ бүртгэлгүйгээр буцааж болохгүй."
+          },
+          {
+            "type": "p",
+            "text": "Энэ нь чиглэлтэй хүрэлтийн бүтэц биш: a-гаас b хүрдэг нь b-гээс a хүрнэ гэсэн үг биш. Мөн эх графын зам, зай, диаметрийг DSU-гийн эцгийн модноос олж болохгүй. Статик графын бүрэлдэхүүнийг ганц удаа олох бол BFS/DFS шугаман хугацаатай, замын мэдээлэл ч өгч болно."
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Крускалын аргад ирмэгийг жингээр эрэмбэлээд ",
+                "marks": []
+              },
+              {
+                "text": "unite(a,b)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " амжилттай бол сонгоно. DSU нь цикл үүсэх эсэхийг хурдан ялгадаг хэсэг; жингийн сонголт яагаад оновчтойг тусдаа батална. Бүлгийн нийлбэр, хамгийн бага утгыг үндэст нэмж хадгалж болох ч орой хоорондын зөрүү, parity зэрэгт нэмэлт төлөв ба шинэчлэх дүрэм шаардлагатай.",
+                "marks": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өөрийгөө шалга: find хийхэд олонлогийн тоо өөрчлөгдөх үү? Нэг замыг хоёр удаа нэмбэл хэмжээ хоёр дахин өсөх үү? sz[хуучин үндэс]-ийг шууд уншиж болох уу? Хариу: үгүй, үгүй, үгүй. Үндсийг дахин ол; давтагдсан нэгтгэлд ямар ч орой шинээр нэмэгдэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "Жижиг графт ирмэг бүрийн дараа BFS хийж бүрэлдэхүүнийг шинээр ол. DSU-гийн same(a,b), бүх оройн size, cnt,mx-ыг лавлахтай тулга. Эцгийн массив яг адил байх шаардлагагүй: ижил хуваалт байхад өөр төлөөлөгч зөв. Нэг орой, $m$=0, өөртэйгөө ирмэг, давхар ирмэг, тусгаар бүлэг, бүх орой нийлсний дараах олон асуултыг шалга."
+          },
+          {
+            "type": "p",
+            "text": "Сэдвийг эзэмших үндсэн бодлого"
+          },
+          {
+            "type": "p",
+            "text": "Road Construction: амжилттай нэгтгэлд л cnt бууруулж, mx шинэчил. Давхар ирмэг дээр мөр бүрийн хариугаа шалга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "381"
+          },
+          {
+            "type": "p",
+            "text": "Бие даах ба ахиулах бодлогууд"
+          },
+          {
+            "type": "p",
+            "text": "Building Roads: статик бүрэлдэхүүнийг DSU-гаар олж, төлөөлөгчдийг холбох аргыг DFS/BFS шийдэлтэй харьцуул."
+          },
+          {
+            "type": "problem",
+            "problemKey": "362"
+          },
+          {
+            "type": "p",
+            "text": "Road Reparation: Крускалын жингийн сонголтын баталгаа ба DSU-гийн холбогдол шалгалтыг тусад нь тайлбарла."
+          },
+          {
+            "type": "problem",
+            "problemKey": "380"
+          },
+          {
+            "type": "p",
+            "text": "Өгөгдсөн холбоосоос ямар элементүүд заавал нэг бүлэгт байхыг эхлээд загварчил; дараа нь төлөөлөгчөөр тоол."
+          },
+          {
+            "type": "problem",
+            "problemKey": "65"
+          },
+          {
+            "type": "p",
+            "text": "Будсан нүдийг идэвхтэй болгох төлөв нэмээд зөвхөн идэвхтэй хөршүүдийг нэгтгэ. Эхний $n$ ганц олонлогийг бүгд будсан гэж андуурахгүй."
+          },
+          {
+            "type": "problem",
+            "problemKey": "757"
+          },
+          {
+            "type": "p",
+            "text": "Босгоор асуулт ба холбоосыг эрэмбэлж, олонлогууд зөвхөн нийлдэг дарааллаар боловсруул."
+          },
+          {
+            "type": "problem",
+            "problemKey": "741"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Disjoint sets — representatives, union and path shortening",
+        "summary": "Maintain connectivity, sizes and component counts with union by size and path halving, distinguishing internal parent trees from graph paths.",
+        "sections": [
+          {
+            "key": "partition",
+            "title": "From new connections to a partition",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Five cities initially have no roads. Add roads 1–2,3–4,2–3,1–4,5–4 in that order. After each addition, report the number of connected components and the largest component size. Storing every road and rerunning BFS is correct, but repeatedly scans old components."
+              },
+              {
+                "type": "p",
+                "text": "Because roads are only added, existing components never split. A new edge either joins two different components or lies inside one component and changes no connectivity. It is enough to maintain the current partition of vertices rather than every road."
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Disjoint-set union (DSU), also called union-find, keeps each element in exactly one set. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "find(v)",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " returns its set representative, ",
+                    "marks": []
+                  },
+                  {
+                    "text": "unite(a,b)",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " joins the sets containing a and b, and ",
+                    "marks": []
+                  },
+                  {
+                    "text": "same(a,b)",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " compares their representatives. Treating graph edges as unions makes the sets exactly the connected components.",
+                    "marks": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "representation",
+            "title": "Representatives, parent pointers and sizes",
+            "blocks": [
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Represent each set by a rooted tree. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "par[v]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " is $v$’s parent; a root satisfies ",
+                    "marks": []
+                  },
+                  {
+                    "text": "par[v]=v",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Following parent pointers reaches the set representative. Two elements belong to the same set exactly when they reach the same root.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "p",
+                "text": "For example, sets {1,4,7}, {5}, {2,3,6,8} can have representatives 4,5,2. The chain 6→3→2 gives find(6)=2; find(8)=2, so 6 and 8 share a set. But find(1)=4, so 1 and 6 are currently separate. This illustrates a valid representation, not a requirement that the later union policy constructs these exact parent trees."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 18,
+                    "y": 14
+                  },
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 7,
+                    "y": 45
+                  },
+                  {
+                    "id": "7",
+                    "label": "7",
+                    "x": 29,
+                    "y": 45
+                  },
+                  {
+                    "id": "5",
+                    "label": "5",
+                    "x": 42,
+                    "y": 83
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 68,
+                    "y": 14
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 68,
+                    "y": 45
+                  },
+                  {
+                    "id": "6",
+                    "label": "6",
+                    "x": 58,
+                    "y": 83
+                  },
+                  {
+                    "id": "8",
+                    "label": "8",
+                    "x": 83,
+                    "y": 83
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "7",
+                    "4"
+                  ],
+                  [
+                    "3",
+                    "2"
+                  ],
+                  [
+                    "6",
+                    "3"
+                  ],
+                  [
+                    "8",
+                    "3"
+                  ]
+                ],
+                "directed": true,
+                "caption": "Arrows point from child to parent. Roots are 4,5,2; self-pointers are omitted."
+              },
+              {
+                "type": "p",
+                "text": "This is not a tree of actual graph paths. A call unite(1,6) may create internal pointer 4→2 even though no road 4–2 was added. DSU preserves connectivity, not the route witnessing it. The representative need not be the smallest numbered vertex and may change after a union."
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Only a root $r$ has an authoritative ",
+                    "marks": []
+                  },
+                  {
+                    "text": "sz[r]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Read $v$’s component size as ",
+                    "marks": []
+                  },
+                  {
+                    "text": "sz[find(v)]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". A non-root may retain an obsolete size, so reading its entry directly can be wrong.",
+                    "marks": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "union",
+            "title": "Union by size",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "First replace a and b by their roots. If equal, the elements already share a set: return false without changing sizes or component count. Otherwise attach one root below the other. Reattaching an arbitrary non-root instead can detach part of an old component or create a cycle."
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Attach the smaller set’s root under the larger one. In the example, root 4 has size 3 and root 2 size 4, so set ",
+                    "marks": []
+                  },
+                  {
+                    "text": "par[4]=2",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " and ",
+                    "marks": []
+                  },
+                  {
+                    "text": "sz[2]=7",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Now {1,2,3,4,6,7,8} is one set and {5} remains separate. On equal sizes either root is valid: the partition matters, not a particular root ID.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 18,
+                    "y": 14
+                  },
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 7,
+                    "y": 45
+                  },
+                  {
+                    "id": "7",
+                    "label": "7",
+                    "x": 29,
+                    "y": 45
+                  },
+                  {
+                    "id": "5",
+                    "label": "5",
+                    "x": 42,
+                    "y": 83
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 68,
+                    "y": 14
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 68,
+                    "y": 45
+                  },
+                  {
+                    "id": "6",
+                    "label": "6",
+                    "x": 58,
+                    "y": 83
+                  },
+                  {
+                    "id": "8",
+                    "label": "8",
+                    "x": 83,
+                    "y": 83
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "7",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "2"
+                  ],
+                  [
+                    "3",
+                    "2"
+                  ],
+                  [
+                    "6",
+                    "3"
+                  ],
+                  [
+                    "8",
+                    "3"
+                  ]
+                ],
+                "directed": true,
+                "caption": "After union, 4→2. The merged size is 7; vertex 5 stays separate."
+              },
+              {
+                "type": "p",
+                "text": "Why union by size? Arbitrary root attachment can form a long chain, making one find take up to $n$ steps. Whenever a vertex on the smaller side gains one level, its new set is at least twice as large. Since a set has at most $n$ elements, this can happen at most log₂n times. Even without compression, depth is $O(\\log n)$."
+              },
+              {
+                "type": "p",
+                "text": "Another policy uses a rank, an upper bound on tree height, instead of size. Here use sizes, which also answer component-size queries. Rank is not set size and need not equal the actual height after path shortening."
+              }
+            ]
+          },
+          {
+            "key": "compression",
+            "title": "Path shortening and amortized cost",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Repeated finds need not follow the same long path. During find, redirect parent pointers toward ancestors to shorten future searches. An ancestor reaches the same root, so set membership is unchanged. Sizes and component count also remain unchanged."
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The code uses path halving: ",
+                    "marks": []
+                  },
+                  {
+                    "text": "par[v] = par[par[v]]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " links $v$ to its grandparent, and ",
+                    "marks": []
+                  },
+                  {
+                    "text": "v = par[v]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " advances by two old edges. Chain 6→3→2 becomes 6→2 after find(6). It need not attach every visited vertex directly to the root; it differs from full compression but still efficiently shortens paths.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Combining union by size with path shortening gives very low total cost: beyond $O(n)$ initialization, q operations take $O(q \\alpha(n))$ amortized time, where α is the extremely slowly growing inverse Ackermann function. This bounds any sequence, not an average over random inputs. It does not mean each individual operation is literally $O(1)$; a single find may still follow a logarithmic-length path."
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "A complete trace with a redundant edge",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Process the five-city roads in order. Initially cnt=5 and mx=1. Only a successful union decreases cnt and compares the merged root size with mx. A redundant road or self-loop causes an unsuccessful union and changes neither value."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Added road",
+                  "Current sets",
+                  "cnt",
+                  "mx"
+                ],
+                "rows": [
+                  [
+                    "initial",
+                    "{1},{2},{3},{4},{5}",
+                    "5",
+                    "1"
+                  ],
+                  [
+                    "1–2",
+                    "{1,2},{3},{4},{5}",
+                    "4",
+                    "2"
+                  ],
+                  [
+                    "3–4",
+                    "{1,2},{3,4},{5}",
+                    "3",
+                    "2"
+                  ],
+                  [
+                    "2–3",
+                    "{1,2,3,4},{5}",
+                    "2",
+                    "4"
+                  ],
+                  [
+                    "1–4",
+                    "{1,2,3,4},{5}",
+                    "2",
+                    "4"
+                  ],
+                  [
+                    "5–4",
+                    "{1,2,3,4,5}",
+                    "1",
+                    "5"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Correctness follows by induction over edges. Initially singleton sets match the edgeless graph. An edge between different components merges precisely those two; an edge within a component leaves the partition unchanged. Linking roots preserves acyclic parent trees, and path halving preserves roots. Since merged sets are disjoint, adding their sizes and decreasing the count once is correct."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "The struct, constructor and complete C++17 program",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Input $n$ $m$ followed by $m$ undirected edges a b, with 1≤$n$≤200000, 0≤$m$≤200000 and endpoints in 1..$n$. Parallel edges and self-loops are allowed. Print cnt and mx after every edge. The graph need not be acyclic or connected; $m$=0 produces no output lines."
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The DSU struct contains par, sz, cnt and mx. Its size constructor allocates $n$+1 entries for 1-based vertices. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "iota",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " sets par[$i$]=$i$ and ",
+                    "marks": []
+                  },
+                  {
+                    "text": "sz.assign(n+1,1)",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " initializes singleton sizes; index 0 is unused. Counts, sizes and indices never exceed $n$, so int suffices without unnecessary ll.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Standard headers and namespace."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;"
+              },
+              {
+                "type": "p",
+                "text": "Parent pointers, root sizes, set count and largest size. The constructor makes every vertex its own representative."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "struct DSU {\n    vector<int> par, sz;\n    int cnt, mx;\n    DSU(int n) {\n        par.resize(n + 1);\n        iota(par.begin(), par.end(), 0);\n        sz.assign(n + 1, 1);\n        cnt = n;\n        mx = 1;\n    }"
+              },
+              {
+                "type": "p",
+                "text": "find iteratively halves paths. same compares roots; size reads the root’s size rather than blindly using sz[$v$]."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int find(int v) {\n        while (par[v] != v) {\n            par[v] = par[par[v]];\n            v = par[v];\n        }\n        return v;\n    }\n    bool same(int a, int b) {\n        return find(a) == find(b);\n    }\n    int size(int v) {\n        return sz[find(v)];\n    }"
+              },
+              {
+                "type": "p",
+                "text": "unite finds roots and returns early if equal. After swapping by size, attach smaller root b to a and update the summaries."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "bool unite(int a, int b) {\n        a = find(a);\n        b = find(b);\n        if (a == b) return false;\n        if (sz[a] < sz[b]) swap(a, b);\n        par[b] = a;\n        sz[a] += sz[b];\n        cnt--;\n        mx = max(mx, sz[a]);\n        return true;\n    }\n};"
+              },
+              {
+                "type": "p",
+                "text": "main constructs DSU $d$($n$) and processes each road as a union. unite already updates cnt and mx when appropriate; main must not decrement again."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    DSU d(n);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        d.unite(a, b);\n        cout << d.cnt << ' ' << d.mx << '\\n';\n    }\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct DSU {\n    vector<int> par, sz;\n    int cnt, mx;\n    DSU(int n) {\n        par.resize(n + 1);\n        iota(par.begin(), par.end(), 0);\n        sz.assign(n + 1, 1);\n        cnt = n;\n        mx = 1;\n    }\n    int find(int v) {\n        while (par[v] != v) {\n            par[v] = par[par[v]];\n            v = par[v];\n        }\n        return v;\n    }\n    bool same(int a, int b) {\n        return find(a) == find(b);\n    }\n    int size(int v) {\n        return sz[find(v)];\n    }\n    bool unite(int a, int b) {\n        a = find(a);\n        b = find(b);\n        if (a == b) return false;\n        if (sz[a] < sz[b]) swap(a, b);\n        par[b] = a;\n        sz[a] += sz[b];\n        cnt--;\n        mx = max(mx, sz[a]);\n        return true;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    DSU d(n);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        d.unite(a, b);\n        cout << d.cnt << ' ' << d.mx << '\\n';\n    }\n}\n"
+              },
+              {
+                "type": "p",
+                "text": "Compare the sample input with each output line:"
+              },
+              {
+                "type": "code",
+                "language": "text",
+                "text": "5 5\n1 2\n3 4\n2 3\n1 4\n5 4\n"
+              },
+              {
+                "type": "code",
+                "language": "text",
+                "text": "4 2\n3 2\n2 4\n2 4\n1 5\n"
+              },
+              {
+                "type": "p",
+                "text": "Initialization costs $O(n)$, $m$ edges cost $O(m \\alpha(n))$ amortized, and storage is $O(n)$. Iterative find does not grow the call stack. Do not cache an old representative and assume it remains a root after later unions; call find when needed."
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "When to use DSU and its limitations",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Ordinary DSU has no simple delete-edge operation. Removing an edge may split a component or leave it connected through another route; roots and sizes alone cannot tell which. Deletions need a separate method, such as reverse processing or rollback. Path halving changes old pointers, so undo requires deliberately tracking such changes."
+              },
+              {
+                "type": "p",
+                "text": "DSU does not answer directed reachability: reaching b from a need not imply reaching a from b. Nor can its parent trees reveal graph routes, distances or diameters. For components of a fixed graph, one BFS/DFS pass is linear and can additionally provide traversal paths."
+              },
+              {
+                "type": "p",
+                "text": "In Kruskal’s algorithm, sort edges by weight and select an edge if unite succeeds. DSU is the fast cycle/connectivity check; optimality of the weight choices needs its own proof. Root summaries can include a sum or minimum, while pairwise differences or parity require additional state and update rules."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Check yourself: does find change the set count? Does adding the same road twice double its size? May you directly read the size at an old root? No, no and no. Find the current root; a redundant union adds no new vertices."
+              },
+              {
+                "type": "p",
+                "text": "For small graphs, recompute components with BFS after every edge. Compare every same(a,b), vertex size, cnt and mx. Exact parent arrays need not agree: different representatives can describe the same correct partition. Test one vertex, $m$=0, self-loops, repeated edges, isolated groups and many operations after everything is connected."
+              },
+              {
+                "type": "p",
+                "text": "Core problem for mastery"
+              },
+              {
+                "type": "p",
+                "text": "Road Construction: decrement cnt and update mx only on successful union; verify every line on repeated roads."
+              },
+              {
+                "type": "problem",
+                "problemKey": "381"
+              },
+              {
+                "type": "p",
+                "text": "Independent practice and extensions"
+              },
+              {
+                "type": "p",
+                "text": "Building Roads: obtain static components with DSU and compare connecting their representatives with the BFS/DFS solution."
+              },
+              {
+                "type": "problem",
+                "problemKey": "362"
+              },
+              {
+                "type": "p",
+                "text": "Road Reparation: separate Kruskal’s weight-choice proof from the DSU connectivity check."
+              },
+              {
+                "type": "problem",
+                "problemKey": "380"
+              },
+              {
+                "type": "p",
+                "text": "First model which elements must share a component, then count using representatives."
+              },
+              {
+                "type": "problem",
+                "problemKey": "65"
+              },
+              {
+                "type": "p",
+                "text": "Track whether a cell is active and unite only active neighbors; initial singleton sets do not mean every cell has been painted."
+              },
+              {
+                "type": "problem",
+                "problemKey": "757"
+              },
+              {
+                "type": "p",
+                "text": "Sort threshold queries and connections so processing only needs merging, never splitting."
+              },
+              {
+                "type": "problem",
+                "problemKey": "741"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Rooted trees, parent pointers and connected components. DSU parent links are not paths in the original graph."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Үндэстэй мод, эцгийн заагч, холбоост бүрэлдэхүүн. Эндхийн эцгийн холбоос нь эх графын зам биш.",
+    "priorityLevel": "high",
+    "priorityReason": "Холбоос нэмэгдэх үеийн холбогдол, бүрэлдэхүүний хэмжээ, хамгийн бага холбох мод зэрэг олон бодлогын суурь. Төлөөлөгчийн мод ба эх графыг ялгах нь аргыг аюулгүй хэрэглэхэд чухал.",
+    "prerequisiteIds": [
+      "tree-basics"
+    ],
+    "learningRelations": {
+      "next": "kruskal",
+      "practice": [
+        {
+          "key": "362",
+          "stage": "Warm-up",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "381",
+          "stage": "Standard",
+          "reason": "Үндсэн төлөв ба шинэчлэлтийн дарааллыг бие даан хэрэгжүүлэх шууд цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "380",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "65",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "757",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "741",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "tree-basics",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "kruskal",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "status": "complete focused bilingual candidate; publication evidence separate"
+}
