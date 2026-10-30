@@ -1,10 +1,10 @@
 # Handbook curriculum reconciliation — 2026-10-29
 
-Original read-only audit of the fresh anonymous 65-lesson catalog and successful publication receipts, now updated with verified search publications PR156/158 and container publication PR160 and recursion PR162 plus grid/knapsack PR164 and LIS/interval PR166 plus window/stack PR168 and prefixes PR170 plus compression/difference PR172 and sparse/Fenwick PR174 plus bitmask PR176 and DFS/fill PR178. Only those twenty-two target bodies/history changed; no private draft/learner/problem/access change. Mongolia remains excluded; no private draft bodies were inspected by this audit.
+Original read-only audit of the fresh anonymous 65-lesson catalog and successful publication receipts, now updated with verified search publications PR156/158 and container publication PR160 and recursion PR162 plus grid/knapsack PR164 and LIS/interval PR166 plus window/stack PR168 and prefixes PR170 plus compression/difference PR172 and sparse/Fenwick PR174 plus bitmask PR176 and DFS/fill PR178 plus components/bipartite PR180. Only those twenty-four target bodies/history changed; no private draft/learner/problem/access change. Mongolia remains excluded; no private draft bodies were inspected by this audit.
 
-55 originals = 43 newly rewritten + 12 still pre-handbook standalone bodies. Ten separate additions yield 65 public lessons; 66 stored including the verified excluded Mongolia. **The counts are consistent.** All 53 rewritten/new live bodies exactly match their latest successful receipts. All 12 remaining bodies exactly match the pre-Introduction recovery snapshot: concept coverage elsewhere has not rewritten these IDs. Previous package2 quality work is historical, not new-cycle credit.
+55 originals = 45 newly rewritten + 10 still pre-handbook standalone bodies. Ten separate additions yield 65 public lessons; 66 stored including the verified excluded Mongolia. **The counts are consistent.** All 55 rewritten/new live bodies exactly match their latest successful receipts. All 10 remaining bodies exactly match the pre-Introduction recovery snapshot: concept coverage elsewhere has not rewritten these IDs. Previous package2 quality work is historical, not new-cycle credit.
 
-## The 43 rewritten original IDs
+## The 45 rewritten original IDs
 
 | Stable ID | Live revision | Source chapter | Latest matching receipt |
 |---|---:|---:|---|
@@ -41,6 +41,8 @@ Original read-only audit of the fresh anonymous 65-lesson catalog and successful
 | `bfs` | 7 | 12 | [PACKAGE03-TRAVERSAL-PUBLICATION-RECEIPT.json](PACKAGE03-TRAVERSAL-PUBLICATION-RECEIPT.json) |
 | `dfs` | 7 | 12.1 supplement | [PACKAGE03-DFS-FILL-PUBLICATION-RECEIPT.json](PACKAGE03-DFS-FILL-PUBLICATION-RECEIPT.json) |
 | `flood-fill` | 7 | 12.1–12.3 grid supplement | [PACKAGE03-DFS-FILL-PUBLICATION-RECEIPT.json](PACKAGE03-DFS-FILL-PUBLICATION-RECEIPT.json) |
+| `connected-components` | 3 | 12.3 supplement | [PACKAGE03-COMPONENTS-BIPARTITE-PUBLICATION-RECEIPT.json](PACKAGE03-COMPONENTS-BIPARTITE-PUBLICATION-RECEIPT.json) |
+| `bipartite` | 3 | 12.3 supplement | [PACKAGE03-COMPONENTS-BIPARTITE-PUBLICATION-RECEIPT.json](PACKAGE03-COMPONENTS-BIPARTITE-PUBLICATION-RECEIPT.json) |
 | `dijkstra` | 7 | 13 | [PACKAGE03-SHORTEST-PUBLICATION-RECEIPT.json](PACKAGE03-SHORTEST-PUBLICATION-RECEIPT.json) |
 | `tree-basics` | 5 | 14 | [PACKAGE03-TREES-PUBLICATION-RECEIPT.json](PACKAGE03-TREES-PUBLICATION-RECEIPT.json) |
 | `kruskal` | 5 | 15 | [PACKAGE03-SPANNING-PUBLICATION-RECEIPT.json](PACKAGE03-SPANNING-PUBLICATION-RECEIPT.json) |
@@ -53,14 +55,12 @@ Original read-only audit of the fresh anonymous 65-lesson catalog and successful
 | `lazy-segment-tree` | 7 | 28 | [PACKAGE03-SEGREVISIT-PUBLICATION-RECEIPT.json](PACKAGE03-SEGREVISIT-PUBLICATION-RECEIPT.json) |
 
 
-## The 12 remaining originals — preserve every ID
+## The 10 remaining originals — preserve every ID
 
 “Covered by” identifies already published concepts, not completion of the standalone rewrite. Each body was inspected for its current goal/section structure; this bounded inventory is not a new complete semantic/code review.
 
 | Stable ID | Live revision | Source mapping / covered by | Standalone work still needed |
 |---|---:|---|---|
-| `connected-components` | 2 | 12.3 → `bfs#applications` | Traverse every unvisited root, components and minimum connecting-edge argument. |
-| `bipartite` | 2 | 12.3 → `bfs#applications` | Two-coloring/odd-cycle criterion; not matching, handle disconnected/self-loop cases. |
 | `bellman-ford` | 2 | 13.1 → `dijkstra#bellman-ford` | Focused negative-cycle influence/reachability supplements full chapter; preserve affected-target semantics. |
 | `floyd-warshall` | 4 | 13.3 → `dijkstra#floyd` | All-pairs intermediate-vertex invariant, unreachable and parallel edges, negative-cycle conditions. |
 | `tree-dp` | 2 | 14.1/14.3 supplement → `tree-basics#traversal` | Existing independent-set counting is supplemental; connect to subtree states and reroot/all-longest paths without dropping its goal. |
@@ -114,7 +114,7 @@ Original read-only audit of the fresh anonymous 65-lesson catalog and successful
 
 ## Visible ordering and bookkeeping
 
-The 118-entry source-subtopic ledger had stale unfinished statuses for chapters18–23 and 27–30, plus an intermediate DP revision. Its publication fields are now reconciled locally to current containing-topic IDs/revisions/hashes/receipts. This fixes bookkeeping only; it does not mark any of the 12 focused originals rewritten.
+The 118-entry source-subtopic ledger had stale unfinished statuses for chapters18–23 and 27–30, plus an intermediate DP revision. Its publication fields are now reconciled locally to current containing-topic IDs/revisions/hashes/receipts. This fixes bookkeeping only; it does not mark any of the 10 focused originals rewritten.
 
 All 30 chapter labels occur in increasing handbook order, Introduction first. Focused extras use “Нэмэлт”, not invented chapter numbers. The fresh-catalog native reader test checks actual listing, numbering, explicit priority sort/filter and 390/1200px layouts; deployed order/runtime/curriculum bytes match cache75 under normal TLS. These are local native and deployed-file checks, not a certificate-bypassed live-browser claim.
 
@@ -135,7 +135,7 @@ Backlog placeholders are not a completion ledger: network-flow/bipartite-matchin
 | E | 8 Amortized supplements | complete | Sliding window and monotonic stack published; preserve assumptions, equality choices and total-operation proofs. |
 | F | 9 Range-query supplements | Complete | All six focused originals published; preserve chapter9 numbering and stable IDs. |
 | G | 10 Subset-state DP | Complete | Source 10.5 selection/elevator/SOS and original matching published, with safe submask iteration. |
-| H | 12 Traversal supplements | `connected-components`, `bipartite` | DFS/fill published. Finish standalone components and two-coloring; bridge/articulation remains a separate pending addition. |
+| H | 12 Traversal supplements | Complete | All four original supplements published; bridge/articulation remains a separate pending addition. |
 | I | 13 Shortest-path supplements | `bellman-ford`, `floyd-warshall` | Preserve useful target-negative-cycle and all-pairs contracts. |
 | J | 14 Tree DP | `tree-dp` | Keep independent-set goal and align subtree reasoning; later HLD/centroid supplements beside14/18. |
 | K | 15 Union-find | `dsu` | Apply constructor/init/struct style and existing component-size practice. |
@@ -143,10 +143,10 @@ Backlog placeholders are not a completion ledger: network-flow/bipartite-matchin
 | M | 26 Explicit string additions | Explicit additions only | Suffix-array/LCP and Aho as focused supplements; Z/KMP/rolling hash are done, no duplicate lessons. |
 | N | Unnumbered contest/methodology supplements | `invariant`, `debugging`, `subtask-strategy` | Keep clearly supplemental, with relevant book links. Interactive/communication teaching is a separate modest supplement. |
 
-**Next concrete batch:** `connected-components`, `bipartite`. Preserve chapter9 segment-tree numbering, distinct original IDs and learner data. All six range-query supplements are published; never replay completed jobs.
+**Next concrete batch:** `bellman-ford`, `floyd-warshall`. Preserve chapter9 segment-tree numbering, distinct original IDs and learner data. All six range-query supplements are published; never replay completed jobs.
 
 Remaining focused new groups: bridges/articulation; HLD; centroid decomposition; digit DP; grouped DP optimizations; Aho; suffix array with adjacent LCP; interactive/communication. Place according to prerequisites. Z, KMP, rolling hash, functional graphs,2SAT, matching/flow, Euler and static binary lifting are already substantively covered. Do not add duplicate top-level lessons.
 
-Book chapter 30 is final; no next numbered chapter. All 12 originals plus explicit requested additions still need tracked execution, and package3 is not complete. No package5, deferred progress/profile UI, problem statements/editorials, security expansion or approval review. Every future completed unit still needs real bilingual teaching review, correct compact CP code, native editor/reader checks and fresh guarded publication; source attribution stays centralized.
+Book chapter 30 is final; no next numbered chapter. All 10 originals plus explicit requested additions still need tracked execution, and package3 is not complete. No package5, deferred progress/profile UI, problem statements/editorials, security expansion or approval review. Every future completed unit still needs real bilingual teaching review, correct compact CP code, native editor/reader checks and fresh guarded publication; source attribution stays centralized.
 
 Machine-readable identities, hashes, receipt links, mapping and bounds: [PACKAGE03-CURRICULUM-RECONCILIATION.json](PACKAGE03-CURRICULUM-RECONCILIATION.json).
