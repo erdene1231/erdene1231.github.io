@@ -47,6 +47,9 @@ try:
       target=max(0,min(args.capture_part if args.capture_part is not None else 7,len(doc['sections'])-1))
       page.locator('#tutorial-toc a').nth(target).click()
       page.wait_for_function("p=>location.hash.endsWith('/part/'+p)",arg=target)
+      # Hash assignment precedes the hashchange handler; wait for actual reader navigation.
+      page.wait_for_function("p=>{const a=document.querySelectorAll('#tutorial-toc a')[p],s=document.querySelectorAll('#tutorial-content>section')[p];if(a?.getAttribute('aria-current')!=='step'||!s)return false;const r=s.getBoundingClientRect();return r.top<innerHeight&&r.bottom>0}",arg=target)
+      cases[-1]['toc_anchor_visible']=True
       if width in [375,1200]:page.screenshot(path=f'/tmp/p02-rewrite-code-{doc["id"]}-{width}.png')
       if mobile:assert not page.locator('#tutorial-contents-panel').evaluate('(e)=>e.open')
       page.locator('#tutorial-reading-mode').select_option('step')
