@@ -12,7 +12,7 @@ export const handbookTutorialOrder = [
  'dijkstra','bellman-ford','floyd-warshall','tree-basics','tree-dp','kruskal','dsu',
  'topological-sort','scc','lca','heavy-light-decomposition','centroid-decomposition','paths-circuits','flows-cuts',
  'number-theory','gcd','sieve','fast-power','combinatorics','matrices','probability','game-theory','kmp','string-hashing','aho-corasick','suffix-array','sqrt-algorithms','lazy-segment-tree','geometry','sweep-line',
- 'invariant','debugging','subtask-strategy'
+ 'invariant','debugging','subtask-strategy','interactive-communication'
 ];
 export function orderTutorials(input, fallbackOrder=[]) {
  const rank=new Map([...handbookTutorialOrder,...fallbackOrder.filter(id=>!handbookTutorialOrder.includes(id))].map((id,i)=>[id,i]));

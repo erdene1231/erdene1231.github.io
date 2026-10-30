@@ -1,0 +1,1276 @@
+{
+  "id": "interactive-communication",
+  "expected_absent": true,
+  "reviewed_body_sha256": "50d5297af3188b1d4c8e5b41410e0e9b19719aedf73be72d1297c4b03acbcb6d",
+  "proposed_body_sha256": "50d5297af3188b1d4c8e5b41410e0e9b19719aedf73be72d1297c4b03acbcb6d",
+  "body": {
+    "id": "interactive-communication",
+    "level": "Ахисан шат",
+    "order": 91,
+    "title": "Interactive ба communication бодлого",
+    "aliases": "interactive communication protocol flushing encoder decoder output only интерактив мэдээлэл дамжуулах",
+    "related": [
+      "binary-search",
+      "bit-operations",
+      "debugging"
+    ],
+    "summary": "Протокол, query ба bit-ийн төсвийг баталж, бодит mock judge болон тусдаа encoder/decoder-оор шалгана.",
+    "category": "Methods",
+    "levelKey": "advanced",
+    "sections": [
+      {
+        "key": "types",
+        "title": "Гурван өөр оролт, гаралтын загвар",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Зарим бодлогод бүх оролтыг нэг дор авч эцсийн хариуг хэвлэх боломжгүй. Та асуулт илгээгээд түүний хариунаас дараагийн асуултаа сонгоно. Харин мэдээлэл дамжуулах бодлогод хоёр тал өөр өөр мэдээлэлтэй, зөвшөөрсөн сувгаас өөр аргаар түүнийгээ хуваалцахгүй. Эдгээрийг ердийн grader функцтэй бодлоготой андуурч болохгүй."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Төрөл",
+              "Ямар мэдээлэлтэй вэ?",
+              "Юуг гаргах вэ?"
+            ],
+            "rows": [
+              [
+                "Interactive",
+                "Асуултын дараа шинэ хариу",
+                "Протоколын query ба final"
+              ],
+              [
+                "Output-only",
+                "Өгөгдсөн оролтын файлууд",
+                "Тэдгээрт зориулсан хариу файл"
+              ],
+              [
+                "Communication",
+                "Encoder ба decoder өөр оролттой",
+                "Төсөвт багтсан мессеж"
+              ],
+              [
+                "Ordinary library",
+                "Ердийн функцийн аргумент",
+                "Return утга"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Төрлүүд давхардаж болно: sender пакет илгээсний дараа feedback авдаг communication бодлого бас interactive шинжтэй. Харин зөвхөн функцийн нэр, mirror-ийн badge-аас төрөл тогтоохгүй; яг ямар мэдээлэл хэзээ ирдэг, хоёр тал юу мэддэгийг унш. Output-only нь online judge-тэй ярилцах гэсэн үг биш."
+          }
+        ]
+      },
+      {
+        "key": "protocol",
+        "title": "Протоколыг яг уншиж тогтоох",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Код бичихээс өмнө дараах гэрээг тэмдэглэ: эхний оролтыг хэн өгдөг; асуултын тэмдэг, аргумент, индексийн зааг; ямар хариу ирдэг; асуулт эсвэл bit-ийн төсөв; final хэлбэр; алдаа болон төгсгөлийн үед хэзээ зогсох. Adaptive judge өмнөх үйлдлүүдээс хамаарч болох тул зөвхөн нэг тогтмол жишээнд ажиллах стратеги хангалтгүй."
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Доорх нь зөвхөн энэ хичээлийн сургалтын протокол. Эхлээд judge $n$-г өгнө, 1≤$n$≤10⁹. Нууц $x$ нь [1,$n$]-д байна. ",
+                "marks": []
+              },
+              {
+                "text": "? y",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " асуултад $x$<$y$ бол ",
+                "marks": []
+              },
+              {
+                "text": "<",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", $x$=$y$ бол ",
+                "marks": []
+              },
+              {
+                "text": "=",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", $x$>$y$ бол ",
+                "marks": []
+              },
+              {
+                "text": ">",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " ирнэ. ",
+                "marks": []
+              },
+              {
+                "text": "-1",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь алдаа. Олбол ",
+                "marks": []
+              },
+              {
+                "text": "! x",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хэвлээд энэ сургалтын judge-ийн ",
+                "marks": []
+              },
+              {
+                "text": "OK",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " баталгааг уншин зогсоно. Бодит бодлого final-ийн дараа шууд гарахыг шаардвал OK уншихгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Жишээ нь CSES Hidden Integer нь анхны $n$ өгөхгүй, YES/NO хариутай, final-ийн дараа шууд зогсоно. AtCoder Last Rook нь дөрвөн аргументтай тэгш өнцөгт асуулттай. Тиймээс эндхийн тоо хайх main-ийг тэдгээрт шууд хуулж болохгүй; санаа ба бодит протоколын гэрээг салгаж ойлго."
+          }
+        ]
+      },
+      {
+        "key": "strategy",
+        "title": "Стратеги, invariant ба асуултын төсөв",
+        "blocks": [
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Боломжит нууц тоонуудыг [l,$r$] интервалд хадгалъя. Эхэндээ [1,$n$]. mid=l+($r$−l)/2-г асууна. ",
+                "marks": []
+              },
+              {
+                "text": "<",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " бол $r$=mid−1, ",
+                "marks": []
+              },
+              {
+                "text": ">",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " бол l=mid+1, ",
+                "marks": []
+              },
+              {
+                "text": "=",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " бол олдсон. Нууц $x$ үргэлж хадгалсан интервалд байна: хариугаар няцаасан талд $x$ байхгүй, харин үлдсэн талд түүнийг хаяагүй. Энэ нь binary search-ийн invariant.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Тэнцүү биш хариу бүрт үлдэх элементийн тоо хамгийн ихдээ өмнөхийн талын бүхэл хэсэг. Сүүлчийн ганц тоог мөн асууж тэнцүү гэсэн хариу авч дуусгана. Иймд асуултын тоо доорх Q-оос ихгүй; $n$≤10⁹ үед 30. Энэ нь $O(\\log n)$ гэж ерөнхий хэлэхээс илүү чухал: бодлого яг 30 асуулт зөвшөөрч байвал тогтмолыг ч шалгана."
+          },
+          {
+            "type": "math",
+            "tex": "Q=\\lfloor\\log_2 n\\rfloor+1=\\lceil\\log_2(n+1)\\rceil"
+          },
+          {
+            "type": "p",
+            "text": "Нэг хариунд тэнцүү гэсэн гурав дахь утга байгаа ч интервалын хоёр үлдсэн салааны хамгийн муу тохиолдлыг тоолж байна. Энэ дээд хязгаарыг өөр төрлийн асуултын мэдээллийн хэмжээнд автоматаар хэрэглэхгүй. Нэг асуултаар ямар ялгаатай хариунууд авч болохыг эхлээд тодорхойл."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Алхам",
+              "[l,$r$]",
+              "? mid",
+              "Хариу",
+              "Үлдэх интервал"
+            ],
+            "rows": [
+              [
+                "1",
+                "[1,20]",
+                "10",
+                ">",
+                "[11,20]"
+              ],
+              [
+                "2",
+                "[11,20]",
+                "15",
+                "<",
+                "[11,14]"
+              ],
+              [
+                "3",
+                "[11,14]",
+                "12",
+                ">",
+                "[13,14]"
+              ],
+              [
+                "4",
+                "[13,14]",
+                "13",
+                "=",
+                "! 13 → OK"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Энэ мөрдөлтөд $n$=20,$x$=13, нийт 4 асуулт; баталсан дээд хязгаар 5. Тэнцүү олдсон дараа дахин асуухгүй. Хэрэв хариунууд l>$r$ болговол үнэн хариу гэсэн нөхцөл зөрчигдсөн тул таамагласан final хэвлэхгүй зогсоно."
+          }
+        ]
+      },
+      {
+        "key": "interactive-code",
+        "title": "Flush, алдаа ба бүтэн интерактив код",
+        "blocks": [
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Гаралт buffer-д үлдвэл програм хариу хүлээж, judge хараахан ирээгүй асуулт хүлээгээд хоёул гацна. ",
+                "marks": []
+              },
+              {
+                "text": "endl",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь шинэ мөр нэмж flush хийнэ; ",
+                "marks": []
+              },
+              {
+                "text": "\n",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " дангаараа үргэлж flush хийхгүй. ",
+                "marks": []
+              },
+              {
+                "text": "cin.tie(nullptr)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хийсэн тул уншихаас өмнө автоматаар flush болно гэж найдахгүй. Асуулт болон final бүрийг зориуд flush хийнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Stdout дээр зөвхөн протоколын мөрүүд байна. ",
+                "marks": []
+              },
+              {
+                "text": "mid=...",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", progress log эсвэл буруу хоосон мөр judge-ийн parser-ийг эвдэж болно. Локал debug хэрэгтэй бол stderr хэрэглэж, submit хийхээс өмнө шаардлагагүй логийг арилга. Алдаа −1, танихгүй token, EOF буюу оролтын төгсгөл ирвэл дахин асуухгүй зогсоно; хуучин response хувьсагчийг дахин ашиглахгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Анхны $n$-г уншиж хүрээг шалгана. Индекс ба ялгавар 10⁹-д багтах тул int хангалттай. Sync/tie тохиргоо flush-ийн хариуцлагыг кодод үлдээнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    if (!(cin >> n) || n < 1 || n > 1000000000) return 1;"
+          },
+          {
+            "type": "p",
+            "text": "Одоогийн интервалын mid-г хэтрэхгүй томьёогоор олж асуултаа endl-ээр flush хийнэ. cin амжилтгүй эсвэл −1 бол шууд буцна."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int l = 1, r = n;\n    while (l <= r) {\n        int mid = l + (r - l) / 2;\n        cout << \"? \" << mid << endl;\n        string s;\n        if (!(cin >> s) || s == \"-1\") return 1;"
+          },
+          {
+            "type": "p",
+            "text": "= үед final-ийг flush хийгээд зөвхөн сургалтын протоколд заасан OK-г уншина. EOF эсвэл өөр баталгаа бол алдааны exit code, нэмэлт stdout байхгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "if (s == \"=\") {\n            cout << \"! \" << mid << endl;\n            if (!(cin >> s) || s != \"OK\") return 1;\n            return 0;\n        }"
+          },
+          {
+            "type": "p",
+            "text": "< ба > хоёр л интервал шинэчилнэ. Бусад token болон хоосорсон интервалд final зохиохгүй. l>$r$ бол давталтаас гарч алдаатай дуусна."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "if (s == \"<\") r = mid - 1;\n        else if (s == \">\") l = mid + 1;\n        else return 1;\n    }\n    return 1;\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    if (!(cin >> n) || n < 1 || n > 1000000000) return 1;\n    int l = 1, r = n;\n    while (l <= r) {\n        int mid = l + (r - l) / 2;\n        cout << \"? \" << mid << endl;\n        string s;\n        if (!(cin >> s) || s == \"-1\") return 1;\n        if (s == \"=\") {\n            cout << \"! \" << mid << endl;\n            if (!(cin >> s) || s != \"OK\") return 1;\n            return 0;\n        }\n        if (s == \"<\") r = mid - 1;\n        else if (s == \">\") l = mid + 1;\n        else return 1;\n    }\n    return 1;\n}\n"
+          }
+        ]
+      },
+      {
+        "key": "mock",
+        "title": "Локал mock judge-ээр бодитоор ярилцуулах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Ердийн input.txt-ийг програмд өгөөд interactive ажиллагааг бүрэн шалгаж болохгүй. Mock judge нь child process эхлүүлж stdin/stdout pipe-аар ярилцана: $n$ илгээнэ, нэг бүтэн query мөрийг хугацаанд нь хүлээнэ, аргумент ба төсвийг шалгана, нууц $x$-аар response бодож буцаана. Final зөв бол OK илгээгээд процесс цааш гаралтгүй зогссоныг шалгана."
+          },
+          {
+            "type": "p",
+            "text": "Жижиг $n$ бүрийн бүх $x$-г турш. Дараа нь $n$=10⁹-ийн хоёр зах, дунд утга, −1, танихгүй response, query-ийн EOF, final-ийн EOF ба буруу баталгааг зориуд өг. Flush алдагдсаныг илрүүлэхийн тулд хариугаа query ирэхээс өмнө бэлэн stdin-д хийж болохгүй. Timeout нь орчныг хүлээх хязгаар болохоос алгоритмын баталгаа биш."
+          },
+          {
+            "type": "p",
+            "text": "Library interactive бодлогод текст pipe-ийн оронд grader API-ийн local stub хэрэгтэй байж болно. Stub асуултын тоо, аргумент ба зөвхөн зөвшөөрсөн мэдээлэл буцааж буйг шалгана. API function байгаа нь дангаараа interactive гэсэн үг биш; hidden state-тай query юу эсвэл жирийн аргументтай function юу гэдгийг ялга."
+          }
+        ]
+      },
+      {
+        "key": "communication",
+        "title": "Encoder ба decoder-ийн тусдаа мэдээлэл",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Одоо асуулт асуухгүй, нэг талын мэдээлэл дамжуулах загвар авъя. Encoder л $x$∈[0,4095]-г мэднэ. Decoder зөвхөн илгээгдсэн bit мөрийг авна; $x$ эсвэл encoder-ийн глобал хувьсагчийг уншихгүй. Нэг frame буюу урт нь тогтсон блок яг 13 bit, зааг ба уртыг хоёр тал урьдчилан мэднэ гэж үзнэ. Хамгийн ихдээ нэг bit солигдож болох сувагт өөрчлөлт илэрсэн эсэхийг мэдээд, өөрчлөлтгүй бол $x$-г сэргээнэ."
+          },
+          {
+            "type": "p",
+            "text": "Эхний 12 bit-д $x$-ийн хоёртын бичлэгийг бага орны bit-ээс эхлэн тавина. 13 дахь bit нь эхний 12-ын XOR буюу parity. Ингэхэд бүх 13 bit-ийн XOR=0. Энэ нь энгийн шалгах bit; алдааг засах, мэдээллийг нууцлах, дурын олон өөрчлөлтийг илрүүлэх арга биш."
+          },
+          {
+            "type": "math",
+            "tex": "x=\\sum_{i=0}^{11}b_i2^i"
+          },
+          {
+            "type": "math",
+            "tex": "p=b_0\\oplus b_1\\oplus\\cdots\\oplus b_{11}"
+          },
+          {
+            "type": "table",
+            "headers": [
+              "$x$",
+              "Өгөгдлийн 12 bit, багаас их рүү",
+              "parity",
+              "Илгээх 13 bit"
+            ],
+            "rows": [
+              [
+                "0",
+                "000000000000",
+                "0",
+                "0000000000000"
+              ],
+              [
+                "1",
+                "100000000000",
+                "1",
+                "1000000000001"
+              ],
+              [
+                "13",
+                "101100000000",
+                "1",
+                "1011000000001"
+              ],
+              [
+                "4095",
+                "111111111111",
+                "0",
+                "1111111111110"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "$x$=13=1+4+8 тул 0,2,3 байрлалд 1 байна. Decoder эхний 12 bit-ийг ижил эрэмбээр нийлүүлж $x$-г олно. Encoder ба decoder bit-ийн дарааллыг өөрөөр ойлговол parity зөв байсан ч утга буруу болно. Тиймээс bit-ийн чиглэл нь протоколын нэг хэсэг."
+          }
+        ]
+      },
+      {
+        "key": "bit-proof",
+        "title": "Bit-ийн төсөв, баталгаа ба хязгаар",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "12 bit нь 2¹²=4096 боломжит утгыг ялгана. Өөрчлөлтгүй сэргээхэд дор хаяж 12 bit хэрэгтэй: үүнээс цөөн bit-ийн боломжит мөр 4096-аас цөөн. 12 bit-ээр бүх утгыг кодолбол бүх bit мөр хүчинтэй болно; нэг bit солигдоход бас өөр хүчинтэй мөр үүсэх тул өөрчлөлтийг бүгдийг илрүүлэх боломжгүй. Манай тогтмол урттай binary загварт нэг bit-ийн өөрчлөлтийг заавал илрүүлэхийн тулд 13 bit хэрэгтэй бөгөөд parity үүнийг хүргэнэ."
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Нэг bit солигдоход нийт XOR 0-ээс 1 болно, data эсвэл parity аль нь өөрчлөгдсөнөөс үл хамаарна. Тиймээс decoder INVALID гэж буцаана. Гэхдээ яг аль bit буруу гэдгийг ганц parity хэлэхгүй. 0-ийн frame-ийн эхний хоёр bit-ийг хоёуланг соливол ",
+                "marks": []
+              },
+              {
+                "text": "1100000000000",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", XOR дахин 0, decoder 3 гэж авна. Энэ эсрэг жишээ нь “ямар ч алдааг илрүүлнэ” гэсэн буруу дүгнэлтийг үгүйсгэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "p",
+            "text": "IOI Message шиг communication бодлогод sender нэмэлт мэдээлэл мэдэх, илгээсний дараа feedback авах, decoder өөр process-д ажиллах, packet-ийн гэмтэх загвар өөр байх боломжтой. Эндхийн 13-bit жишээ нь тэдгээрийн бодлогын шийдэл биш. Ямар алдаа зөвшөөрсөн, хэний мэдэх мэдээлэл, хэдэн bit/packet төсөвтэйг тус бүр шинээр батална."
+          }
+        ]
+      },
+      {
+        "key": "encode-code",
+        "title": "Encoder-ийн хэсгүүд ба бүтэн код",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "encode-ийн $x$ нь main-д 0…4095 хүрээгээр шалгагдсан байна. s нь гарах bit мөр, parity нь 0-ээс эхэлсэн XOR."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstring encode(int x) {\n    string s;\n    int parity = 0;"
+          },
+          {
+            "type": "p",
+            "text": "$i$=0…11 дээр бага орны bit-ээс эхэлж авна. 1 bit-ийг 0/1 тэмдэгт болгон нэмээд XOR-д оруулна. Энд shift-ийн хэмжээ 12-оос бага, сөрөг тоо shift хийхгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "for (int i = 0; i < 12; i++) {\n        int b = (x >> i) & 1;\n        s += char('0' + b);\n        parity ^= b;\n    }"
+          },
+          {
+            "type": "p",
+            "text": "Сүүлийн parity bit-ийг нэмээд нийт 13 тэмдэгт буцаана. ll хэрэггүй: $x$<4096, $i$≤11 ба parity∈{0,1} бүгд int-д багтана."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "s += char('0' + parity);\n    return s;\n}"
+          },
+          {
+            "type": "p",
+            "text": "Энэ нь encoder-ийн тусдаа console main. Алдаатай тоо эсвэл input failure-д INVALID; зөв бол зөвхөн frame хэвлэнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    int x;\n    if (!(cin >> x) || x < 0 || x >= 4096) {\n        cout << \"INVALID\\n\";\n        return 0;\n    }\n    cout << encode(x) << '\\n';\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstring encode(int x) {\n    string s;\n    int parity = 0;\n    for (int i = 0; i < 12; i++) {\n        int b = (x >> i) & 1;\n        s += char('0' + b);\n        parity ^= b;\n    }\n    s += char('0' + parity);\n    return s;\n}\n\nint main() {\n    int x;\n    if (!(cin >> x) || x < 0 || x >= 4096) {\n        cout << \"INVALID\\n\";\n        return 0;\n    }\n    cout << encode(x) << '\\n';\n}\n"
+          }
+        ]
+      },
+      {
+        "key": "decode-code",
+        "title": "Decoder-ийн шалгалт ба бүтэн код",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "decode нь зөвхөн message авна. Яг 13 тэмдэгт биш бол nullopt; энэ нь амжилттай 0 гэсэн утгаас өөр “хариугүй” төлөв."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\noptional<int> decode(const string& s) {\n    if (s.size() != 13) return nullopt;\n    int x = 0, parity = 0;"
+          },
+          {
+            "type": "p",
+            "text": "Бүх тэмдэгт 0/1 эсэхийг шалгаад нийт parity тооцно. Зөвхөн эхний 12 байрлалыг $x$-д bit OR-оор нийлүүлнэ; parity bit нь тооны хэсэг биш."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "for (int i = 0; i < 13; i++) {\n        if (s[i] != '0' && s[i] != '1') return nullopt;\n        int b = s[i] - '0';\n        parity ^= b;\n        if (i < 12) x |= b << i;\n    }"
+          },
+          {
+            "type": "p",
+            "text": "Нийт parity 0 биш бол nullopt, зөв бол $x$. optional<int> нь C++17-ийн боломж: хүчинтэй 0-г алдаа гэж андуурахгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "if (parity != 0) return nullopt;\n    return x;\n}"
+          },
+          {
+            "type": "p",
+            "text": "Decoder main тусдаа процесст ажиллана. Оролтгүй эсвэл decode амжилтгүй үед INVALID, зөв үед *$x$-г хэвлэнэ. Encoder-ийн санах ойд хандах зүйл байхгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    string s;\n    if (!(cin >> s)) {\n        cout << \"INVALID\\n\";\n        return 0;\n    }\n    auto x = decode(s);\n    if (!x) cout << \"INVALID\\n\";\n    else cout << *x << '\\n';\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\noptional<int> decode(const string& s) {\n    if (s.size() != 13) return nullopt;\n    int x = 0, parity = 0;\n    for (int i = 0; i < 13; i++) {\n        if (s[i] != '0' && s[i] != '1') return nullopt;\n        int b = s[i] - '0';\n        parity ^= b;\n        if (i < 12) x |= b << i;\n    }\n    if (parity != 0) return nullopt;\n    return x;\n}\n\nint main() {\n    string s;\n    if (!(cin >> s)) {\n        cout << \"INVALID\\n\";\n        return 0;\n    }\n    auto x = decode(s);\n    if (!x) cout << \"INVALID\\n\";\n    else cout << *x << '\\n';\n}\n"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Локал round-trip ба дасгалууд",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Round-trip шалгалт: бүх 4096 утгад decode(encode($x$))=$x$. Дараа нь утга бүрийн 13 байрлал бүрийг ганц удаа солин 53248 өөрчлөлт бүгд INVALID болохыг шалга. Урт буруу, 0/1 биш тэмдэгт, 0,4095 захууд, encoder-ийн хүрээнээс гарсан оролтыг бас шалгана. Эцэст нь encoder-ийн executable-ийн stdout-ийг decoder-ийн өөр executable-д stdin болгон өг; ижил процессийн глобал төлөвт санамсаргүй тулгуурлаагүйг ингэж шалгана."
+          },
+          {
+            "type": "p",
+            "text": "Эзэмших үндсэн бодлогууд"
+          },
+          {
+            "type": "problem",
+            "problemKey": "546"
+          },
+          {
+            "type": "p",
+            "text": "Hidden Integer: эндхийн 3-хариутай toy main-ээс ялгаатай. Эхний $n$ байхгүй, YES/NO хариу ба final-ийн дараах шууд зогсолтыг унш."
+          },
+          {
+            "type": "problem",
+            "problemKey": "48"
+          },
+          {
+            "type": "p",
+            "text": "Chocolate Bunny: өөр төрлийн query-тай. Протоколын аргумент, response-ийн тайлбар ба нийт query тоог тусад нь гарга."
+          },
+          {
+            "type": "p",
+            "text": "Бие даах communication бодлогууд"
+          },
+          {
+            "type": "problem",
+            "problemKey": "935"
+          },
+          {
+            "type": "p",
+            "text": "Message (IOI 2024): communication ба interactive feedback зэрэг байна; sender/receiver-ийн салангид process ба packet-ийн алдааны загварыг унш. Parity жишээг шууд шийдэл гэж үзэхгүй."
+          },
+          {
+            "type": "problem",
+            "problemKey": "736"
+          },
+          {
+            "type": "p",
+            "text": "EGOI Laser Strike: хоёр талын мэдэх мэдээлэл, зөвшөөрсөн дамжуулалт ба төсвийг тэмдэглээд encoder/decoder-ийн correctness-ийг тус тус батал."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Interactive and communication tasks",
+        "summary": "Prove query and bit budgets, implement exact protocols, and test a mock judge plus independent encoder/decoder programs.",
+        "sections": [
+          {
+            "key": "types",
+            "title": "Three different input/output models",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Some tasks do not provide all input upfront: you issue a query and use the response to choose the next query. In communication tasks, two parties hold different information and must exchange it only through the allowed channel. Neither category should be confused with an ordinary task merely exposing a grader function."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Type",
+                  "Available information",
+                  "Required output"
+                ],
+                "rows": [
+                  [
+                    "Interactive",
+                    "New response after each query",
+                    "Queries and final answer"
+                  ],
+                  [
+                    "Output-only",
+                    "Known input files",
+                    "Answer files"
+                  ],
+                  [
+                    "Communication",
+                    "Parties have separate inputs",
+                    "Bounded message"
+                  ],
+                  [
+                    "Ordinary library",
+                    "Ordinary function arguments",
+                    "Return value"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Categories can overlap: a sender receiving feedback after each packet participates in an interactive communication protocol. Classify by the actual information flow and timing, not function names or mirror badges. Output-only is not an online dialogue with a judge."
+              }
+            ]
+          },
+          {
+            "key": "protocol",
+            "title": "Reading the exact protocol",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Before coding, record who sends initial input, query syntax and index bounds, response values, query/bit budget, final-answer syntax, and error/termination behavior. An adaptive judge may depend on previous actions, so a strategy working for one fixed transcript is insufficient."
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The following is a teaching protocol, not a universal judge format. The judge first supplies $n$, 1≤$n$≤10⁹, with hidden $x$ in [1,$n$]. Query ",
+                    "marks": []
+                  },
+                  {
+                    "text": "? y",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " returns ",
+                    "marks": []
+                  },
+                  {
+                    "text": "<",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " when $x$<$y$, ",
+                    "marks": []
+                  },
+                  {
+                    "text": "=",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " when equal, and ",
+                    "marks": []
+                  },
+                  {
+                    "text": ">",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " when $x$>$y$. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "-1",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " is an error. After ",
+                    "marks": []
+                  },
+                  {
+                    "text": "! x",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", this teaching judge sends ",
+                    "marks": []
+                  },
+                  {
+                    "text": "OK",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", which the program reads before exiting. A real task requiring immediate exit after the final answer must not read this acknowledgment.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "p",
+                "text": "For example, CSES Hidden Integer supplies no initial $n$, uses YES/NO responses and requires exit after the final answer. AtCoder Last Rook uses four-argument rectangle queries. Do not submit this teaching main unchanged to either task; distinguish the strategy from the actual protocol contract."
+              }
+            ]
+          },
+          {
+            "key": "strategy",
+            "title": "Strategy, invariant and query budget",
+            "blocks": [
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Maintain candidate interval [l,$r$], initially [1,$n$], and query mid=l+($r$−l)/2. On ",
+                    "marks": []
+                  },
+                  {
+                    "text": "<",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", set $r$=mid−1; on ",
+                    "marks": []
+                  },
+                  {
+                    "text": ">",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", set l=mid+1; on ",
+                    "marks": []
+                  },
+                  {
+                    "text": "=",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", finish. The invariant is that $x$ remains in the interval: a truthful response excludes only the impossible side.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Every nonequal response leaves at most half the previous candidates, rounded down. The final singleton is also queried to obtain equality. Thus the query count is at most Q below, and at most 30 for $n$≤10⁹. A precise budget matters more than merely saying $O(\\log n)$ when the judge permits exactly 30 queries."
+              },
+              {
+                "type": "math",
+                "tex": "Q=\\lfloor\\log_2 n\\rfloor+1=\\lceil\\log_2(n+1)\\rceil"
+              },
+              {
+                "type": "p",
+                "text": "Although equality is a third response, the bound follows the worst remaining branch of the ordered interval. Do not transfer it automatically to other query types; first identify what information each response can convey."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Step",
+                  "[l,$r$]",
+                  "? mid",
+                  "Response",
+                  "Remaining interval"
+                ],
+                "rows": [
+                  [
+                    "1",
+                    "[1,20]",
+                    "10",
+                    ">",
+                    "[11,20]"
+                  ],
+                  [
+                    "2",
+                    "[11,20]",
+                    "15",
+                    "<",
+                    "[11,14]"
+                  ],
+                  [
+                    "3",
+                    "[11,14]",
+                    "12",
+                    ">",
+                    "[13,14]"
+                  ],
+                  [
+                    "4",
+                    "[13,14]",
+                    "13",
+                    "=",
+                    "! 13 → OK"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "For $n$=20,$x$=13 the transcript uses four queries, below the bound five. Do not ask again after equality. If responses make l>$r$, the truthful-response assumption has been violated: stop instead of inventing a final answer."
+              }
+            ]
+          },
+          {
+            "key": "interactive-code",
+            "title": "Flushing, errors and complete interactive code",
+            "blocks": [
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "If a query stays in an output buffer, the program waits for a reply while the judge waits for the unseen query. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "endl",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " writes a newline and flushes; ",
+                    "marks": []
+                  },
+                  {
+                    "text": "\n",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " alone does not guarantee flushing. With ",
+                    "marks": []
+                  },
+                  {
+                    "text": "cin.tie(nullptr)",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", do not rely on input automatically flushing output. Explicitly flush every query and final answer.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Stdout contains only protocol messages. Debug text such as mid=..., progress logs or an unexpected blank line may break the judge parser. Use stderr for local debugging and remove unnecessary logs before submission. On −1, unknown tokens or EOF, stop without further queries; never reuse a previous response after failed input."
+              },
+              {
+                "type": "p",
+                "text": "Read and validate initial $n$. int holds indices and differences through 10⁹. The sync/tie setup leaves flushing explicitly under program control."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    if (!(cin >> n) || n < 1 || n > 1000000000) return 1;"
+              },
+              {
+                "type": "p",
+                "text": "Compute an overflow-safe midpoint and flush the query with endl. Exit immediately on failed input or −1."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int l = 1, r = n;\n    while (l <= r) {\n        int mid = l + (r - l) / 2;\n        cout << \"? \" << mid << endl;\n        string s;\n        if (!(cin >> s) || s == \"-1\") return 1;"
+              },
+              {
+                "type": "p",
+                "text": "On equality, flush the final answer and read only the teaching protocol’s specified OK. EOF or a wrong acknowledgment yields a failure exit code without extra stdout."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "if (s == \"=\") {\n            cout << \"! \" << mid << endl;\n            if (!(cin >> s) || s != \"OK\") return 1;\n            return 0;\n        }"
+              },
+              {
+                "type": "p",
+                "text": "Only < and > update the interval. An unknown token or an emptied interval produces no fabricated final; l>$r$ exits with failure."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "if (s == \"<\") r = mid - 1;\n        else if (s == \">\") l = mid + 1;\n        else return 1;\n    }\n    return 1;\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    if (!(cin >> n) || n < 1 || n > 1000000000) return 1;\n    int l = 1, r = n;\n    while (l <= r) {\n        int mid = l + (r - l) / 2;\n        cout << \"? \" << mid << endl;\n        string s;\n        if (!(cin >> s) || s == \"-1\") return 1;\n        if (s == \"=\") {\n            cout << \"! \" << mid << endl;\n            if (!(cin >> s) || s != \"OK\") return 1;\n            return 0;\n        }\n        if (s == \"<\") r = mid - 1;\n        else if (s == \">\") l = mid + 1;\n        else return 1;\n    }\n    return 1;\n}\n"
+              }
+            ]
+          },
+          {
+            "key": "mock",
+            "title": "Testing a real dialogue with a local mock judge",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "A static input.txt does not fully test interaction. A mock judge launches the solution as a child process with stdin/stdout pipes: send $n$, wait for a complete query line within a timeout, validate syntax/arguments/budget, then compute the response from hidden $x$. After a correct final, send OK and verify that the process exits without additional output."
+              },
+              {
+                "type": "p",
+                "text": "Exhaust all secrets for small $n$, then test large endpoints/midpoints, −1, unknown responses, EOF at a query, and EOF/wrong acknowledgment after the final. To detect missing flushes, do not prefeed replies before seeing the query. A timeout bounds the local wait; it is not a proof of algorithm correctness."
+              },
+              {
+                "type": "p",
+                "text": "Library-interactive tasks may need a local grader stub rather than text pipes. The stub validates query counts and arguments and returns only permitted information. An API function alone does not make a task interactive: distinguish a query into hidden state from ordinary function arguments."
+              }
+            ]
+          },
+          {
+            "key": "communication",
+            "title": "Separate information at encoder and decoder",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Now consider one-way communication without queries. Only the encoder knows $x$∈[0,4095]. The decoder receives only the transmitted bit string, never $x$ or the encoder’s globals. Both parties know a fixed frame length of 13 bits. On a channel changing at most one bit, detect corruption and recover $x$ when no bit changed."
+              },
+              {
+                "type": "p",
+                "text": "Put $x$’s 12 binary digits into the first 12 positions, least significant bit first. The thirteenth bit is their XOR parity, making the XOR of all 13 bits zero. This check bit detects errors; it does not correct them, encrypt the value or detect arbitrary multiple changes."
+              },
+              {
+                "type": "math",
+                "tex": "x=\\sum_{i=0}^{11}b_i2^i"
+              },
+              {
+                "type": "math",
+                "tex": "p=b_0\\oplus b_1\\oplus\\cdots\\oplus b_{11}"
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "$x$",
+                  "12 data bits, low to high",
+                  "Parity",
+                  "13-bit frame"
+                ],
+                "rows": [
+                  [
+                    "0",
+                    "000000000000",
+                    "0",
+                    "0000000000000"
+                  ],
+                  [
+                    "1",
+                    "100000000000",
+                    "1",
+                    "1000000000001"
+                  ],
+                  [
+                    "13",
+                    "101100000000",
+                    "1",
+                    "1011000000001"
+                  ],
+                  [
+                    "4095",
+                    "111111111111",
+                    "0",
+                    "1111111111110"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "For $x$=13=1+4+8, positions 0,2,3 are one. The decoder reconstructs $x$ using the same ordering. A mismatched bit order can yield a wrong value even with correct parity; ordering is part of the protocol."
+              }
+            ]
+          },
+          {
+            "key": "bit-proof",
+            "title": "Bit budget, proof and limitations",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Twelve bits distinguish 2¹²=4096 values. Lossless recovery needs at least 12 bits by counting possible messages. If exactly 12 bits encode all values, every binary word is valid; a one-bit change becomes another valid word and cannot always be detected. In this fixed-length binary model, guaranteed single-bit detection therefore needs at least 13 bits, achieved by parity."
+              },
+              {
+                "type": "p",
+                "text": "Flipping one bit changes total XOR from zero to one, whether the changed bit is data or parity, so decoding returns INVALID. Parity does not identify which bit changed. Flipping the first two bits of the zero frame gives 1100000000000, whose XOR is zero and decodes as 3. This counterexample rules out a claim of detecting every error."
+              },
+              {
+                "type": "p",
+                "text": "Communication tasks such as IOI Message may give extra information to the sender, return packet feedback, run decoding in a separate process, and use a different corruption model. This 13-bit example is not their solution. Reestablish the information available, allowed errors and bit/packet budget for each task."
+              }
+            ]
+          },
+          {
+            "key": "encode-code",
+            "title": "Encoder parts and complete program",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "main validates encode’s precondition 0…4095. s accumulates the frame and parity starts at XOR identity zero."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstring encode(int x) {\n    string s;\n    int parity = 0;"
+              },
+              {
+                "type": "p",
+                "text": "For $i$=0…11 extract low-order bits, append the character 0/1 and accumulate XOR. Shift amounts are below 12 and inputs are nonnegative."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "for (int i = 0; i < 12; i++) {\n        int b = (x >> i) & 1;\n        s += char('0' + b);\n        parity ^= b;\n    }"
+              },
+              {
+                "type": "p",
+                "text": "Append the parity bit and return 13 characters. int suffices for $x$<4096, $i$≤11 and parity∈{0,1}; ll is unnecessary."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "s += char('0' + parity);\n    return s;\n}"
+              },
+              {
+                "type": "p",
+                "text": "This is a separate encoder executable: invalid numeric input or input failure prints INVALID; a valid value prints only the frame."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    int x;\n    if (!(cin >> x) || x < 0 || x >= 4096) {\n        cout << \"INVALID\\n\";\n        return 0;\n    }\n    cout << encode(x) << '\\n';\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstring encode(int x) {\n    string s;\n    int parity = 0;\n    for (int i = 0; i < 12; i++) {\n        int b = (x >> i) & 1;\n        s += char('0' + b);\n        parity ^= b;\n    }\n    s += char('0' + parity);\n    return s;\n}\n\nint main() {\n    int x;\n    if (!(cin >> x) || x < 0 || x >= 4096) {\n        cout << \"INVALID\\n\";\n        return 0;\n    }\n    cout << encode(x) << '\\n';\n}\n"
+              }
+            ]
+          },
+          {
+            "key": "decode-code",
+            "title": "Decoder validation and complete program",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "decode receives only the message. A length other than 13 returns nullopt, a missing result distinct from the valid value zero."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\noptional<int> decode(const string& s) {\n    if (s.size() != 13) return nullopt;\n    int x = 0, parity = 0;"
+              },
+              {
+                "type": "p",
+                "text": "Validate every character as 0/1 and accumulate total parity. Only the first 12 positions contribute to $x$ via bit OR; the parity bit is not part of the value."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "for (int i = 0; i < 13; i++) {\n        if (s[i] != '0' && s[i] != '1') return nullopt;\n        int b = s[i] - '0';\n        parity ^= b;\n        if (i < 12) x |= b << i;\n    }"
+              },
+              {
+                "type": "p",
+                "text": "Nonzero parity returns nullopt; otherwise return $x$. C++17 optional<int> keeps the valid result zero distinct from failure."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "if (parity != 0) return nullopt;\n    return x;\n}"
+              },
+              {
+                "type": "p",
+                "text": "The decoder main runs independently. Missing input or failed decoding prints INVALID; otherwise print *$x$. No encoder memory is available."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    string s;\n    if (!(cin >> s)) {\n        cout << \"INVALID\\n\";\n        return 0;\n    }\n    auto x = decode(s);\n    if (!x) cout << \"INVALID\\n\";\n    else cout << *x << '\\n';\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\noptional<int> decode(const string& s) {\n    if (s.size() != 13) return nullopt;\n    int x = 0, parity = 0;\n    for (int i = 0; i < 13; i++) {\n        if (s[i] != '0' && s[i] != '1') return nullopt;\n        int b = s[i] - '0';\n        parity ^= b;\n        if (i < 12) x |= b << i;\n    }\n    if (parity != 0) return nullopt;\n    return x;\n}\n\nint main() {\n    string s;\n    if (!(cin >> s)) {\n        cout << \"INVALID\\n\";\n        return 0;\n    }\n    auto x = decode(s);\n    if (!x) cout << \"INVALID\\n\";\n    else cout << *x << '\\n';\n}\n"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Local round trips and practice",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Round-trip every one of the 4096 values: decode(encode($x$))=$x$. Flip each of 13 positions in every frame and verify all 53248 corruptions are rejected. Also test invalid lengths/characters, endpoints 0 and 4095, and out-of-range encoder input. Finally pipe encoder output into a separate decoder executable, ensuring no accidental reliance on shared global state."
+              },
+              {
+                "type": "p",
+                "text": "Core mastery problems"
+              },
+              {
+                "type": "problem",
+                "problemKey": "546"
+              },
+              {
+                "type": "p",
+                "text": "Hidden Integer differs from the three-response teaching main: no initial $n$, YES/NO answers, and immediate exit after final."
+              },
+              {
+                "type": "problem",
+                "problemKey": "48"
+              },
+              {
+                "type": "p",
+                "text": "Chocolate Bunny uses a different query type. Derive its argument/response contract and total query budget separately."
+              },
+              {
+                "type": "p",
+                "text": "Independent communication practice"
+              },
+              {
+                "type": "problem",
+                "problemKey": "935"
+              },
+              {
+                "type": "p",
+                "text": "Message (IOI 2024) combines communication with feedback; inspect separate sender/receiver processes and the packet corruption model. The parity example is not its solution."
+              },
+              {
+                "type": "problem",
+                "problemKey": "736"
+              },
+              {
+                "type": "p",
+                "text": "EGOI Laser Strike: identify each party’s information, permitted communication and budget, then prove encoder/decoder correctness under those rules."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Binary-search invariant, bit operations and C++ I/O"
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Binary search invariant, bit үйлдлүүд, C++ оролт/гаралт",
+    "priorityLevel": "medium",
+    "priorityReason": "Тусгай протоколтой тэмцээний бодлогод хэрэгтэй, суурь алгоритм ба I/O-ийн дараах дунд ач холбогдолтой чадвар.",
+    "prerequisiteIds": [
+      "binary-search",
+      "bit-operations"
+    ],
+    "learningRelations": {
+      "prerequisites": [
+        "binary-search",
+        "bit-operations"
+      ],
+      "related": [
+        "binary-search",
+        "bit-operations",
+        "debugging"
+      ],
+      "variants": [
+        {
+          "tutorialId": "debugging",
+          "description": "Давтагдах local тест ба алдааны гэрээг ашигла.",
+          "descriptionEn": "Use reproducible local tests and explicit failure contracts."
+        }
+      ],
+      "practice": [
+        {
+          "key": "546",
+          "stage": "Warm-up",
+          "priority": true,
+          "reason": "Тухайн YES/NO протокол, 30 асуултын төсөв ба flush-ийг яг хэрэгжүүл."
+        },
+        {
+          "key": "48",
+          "stage": "Standard",
+          "priority": true,
+          "reason": "Асуултын аргумент ба төсвийг бодлогын өөрийн дүрмээр батал; local judge хэрэглэ."
+        },
+        {
+          "key": "935",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "736",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    }
+  }
+}
