@@ -1,0 +1,1280 @@
+{
+  "id": "dfs",
+  "expected_revision": 6,
+  "expected_published": true,
+  "expected_body_md5": "e6070fa51c71a4a9aaf82ef89978329d",
+  "expected_body_sha256": "416ceae86f1350365ec5115c66eb35bd851f73b43e815eab8b4df9d0d2446039",
+  "reviewed_body_sha256": "1f68dcb95bf9d91576d7c7ec3e8e62d1f4a5d9663d3950c1be4a249652f15524",
+  "proposed_body_sha256": "1f68dcb95bf9d91576d7c7ec3e8e62d1f4a5d9663d3950c1be4a249652f15524",
+  "body": {
+    "id": "dfs",
+    "level": "Анхан шат",
+    "order": 18,
+    "title": "DFS — салаагаар хайх, буцах ба ил стек",
+    "aliases": "dfs DFS — нэг салаагаар гүн рүү орох DFS — following one branch deeply dfs depth first search гүнээр холбоост connected component traversal subtree recursion",
+    "related": [
+      "graph-basics",
+      "recursion",
+      "flood-fill"
+    ],
+    "summary": "Гүний хайлтын орох/дуусах явцыг рекурс ба түүнтэй ижил хүрээтэй стекээр тайлбарлаж, салангид графт зөв хэрэгжүүлнэ.",
+    "category": "Graphs",
+    "levelKey": "beginner",
+    "sections": [
+      {
+        "key": "idea",
+        "title": "Нэг салааг дуусгаад буцаж ирэх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Графын нэг оройгоос замаар хүрч болох бүх оройг олъё. Гүний хайлт буюу DFS нь шинэ орой олдох бүрд тэр салааг цааш үргэлжлүүлнэ. Цааш явах шинэ хөршгүй болоход өмнөх орой руу буцаж, үлдсэн хөршүүдийг нь шалгана. Нэг салааг дуусгах энэ дараалал нь өргөний хайлтаас ялгаатай."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "1",
+                "label": "1",
+                "x": 15,
+                "y": 20
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 60,
+                "y": 20
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 86,
+                "y": 50
+              },
+              {
+                "id": "4",
+                "label": "4",
+                "x": 15,
+                "y": 80
+              },
+              {
+                "id": "5",
+                "label": "5",
+                "x": 60,
+                "y": 80
+              }
+            ],
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "4"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "2",
+                "5"
+              ],
+              [
+                "3",
+                "5"
+              ]
+            ],
+            "directed": false,
+            "caption": "Эхлэл 1. Хөршүүдийг (1,2),(1,4),(2,3),(2,5),(3,5) оролтын дарааллаар нэмнэ."
+          },
+          {
+            "type": "p",
+            "text": "1→2→3→5 гэж явна. 5-ын хөрш 2,3 хоёрыг аль хэдийн олсон тул буцна. 3-ын, дараа нь 2-ын үлдсэн хөршүүд ч олдсон. 1 дээр буцаж ирээд 4-ийг үзнэ. Орох дараалал 1,2,3,5,4; дуусах дараалал 5,3,2,4,1. Хөршийн жагсаалтын дарааллыг өөрчилбөл эдгээр өөрчлөгдөж болно, харин хүрч болох олонлог хэвээр."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "1",
+                "label": "1",
+                "x": 15,
+                "y": 20,
+                "color": "#7db7d8",
+                "textColor": "#102a3a"
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 60,
+                "y": 20,
+                "color": "#7db7d8",
+                "textColor": "#102a3a"
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 86,
+                "y": 50,
+                "color": "#7db7d8",
+                "textColor": "#102a3a"
+              },
+              {
+                "id": "4",
+                "label": "4",
+                "x": 15,
+                "y": 80
+              },
+              {
+                "id": "5",
+                "label": "5",
+                "x": 60,
+                "y": 80,
+                "color": "#7db7d8",
+                "textColor": "#102a3a"
+              }
+            ],
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "4"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "2",
+                "5"
+              ],
+              [
+                "3",
+                "5"
+              ]
+            ],
+            "directed": false,
+            "caption": "1,2,3,5 олдсон; 5-аас буцсаны дараа 1-ийн үлдсэн хөрш 4 рүү очно."
+          }
+        ]
+      },
+      {
+        "key": "recursion",
+        "title": "Орох тэмдэг, буцах үйлдэл ба дуудлагын стек",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Оройг олсон даруй тэмдэглэнэ, бүх хөршийг нь дуусгасны дараа биш. Эс тэгвэл 2→3→5→2 циклээр хязгааргүй дахин орж болно. Тэмдэг нь “энэ оройг хайлтдаа оруулсан” гэсэн утгатай; “бүх ажлыг дуусгасан” гэсэн утга биш."
+          },
+          {
+            "type": "p",
+            "text": "tin[$v$] нь орох цаг, tout[$v$] нь дуусах цаг. Анх хоёулаа 0. Ороход tin[$v$]=++timer, дуусахад tout[$v$]=++timer. tin[$v$]>0,tout[$v$]=0 бол одоо идэвхтэй; tout[$v$]>0 бол дууссан. pre нь орсон, post нь дууссан оройнуудын дараалал. par[$v$] нь анх олсон эцэг; эхлэлийн эцэг 0."
+          },
+          {
+            "type": "p",
+            "text": "Рекурсийн дуудлага $v$-г боловсруулж байхдаа дараагийн шалгах хөршөө санана. Шинэ $u$ руу орвол $v$-ийн ажил түр зогсоно; $u$ дуусахад $v$-ийн хөршийн давталт үлдсэн газраасаа үргэлжилнэ. Хөрш бүрийн дуудлага дууссаны дараа л $v$-ийн дуусах цаг тавигдана."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Алхам",
+              "Дуудлагын идэвхтэй зам",
+              "Үйл явдал"
+            ],
+            "rows": [
+              [
+                "1",
+                "1",
+                "tin[1]=1"
+              ],
+              [
+                "2",
+                "1→2",
+                "tin[2]=2"
+              ],
+              [
+                "3",
+                "1→2→3",
+                "tin[3]=3"
+              ],
+              [
+                "4",
+                "1→2→3→5",
+                "tin[5]=4"
+              ],
+              [
+                "5",
+                "1→2→3",
+                "tout[5]=5"
+              ],
+              [
+                "6",
+                "1→2",
+                "tout[3]=6"
+              ],
+              [
+                "7",
+                "1",
+                "tout[2]=7"
+              ],
+              [
+                "8",
+                "1→4",
+                "tin[4]=8"
+              ],
+              [
+                "9",
+                "1",
+                "tout[4]=9"
+              ],
+              [
+                "10",
+                "–",
+                "tout[1]=10"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Дараах рекурсийн программ нь дуудлагын энэ явцыг жижиг графт харуулах туслах жишээ. Оролт 0≤$n$≤200, оройнууд 1..$n$; ирмэгүүд чиглэлгүй. Системийн дуудлагын стек хязгаартай, бүх орчинд ижил аюулгүй гүн гэж байхгүй. Том графын үндсэн шийдэл нь дараагийн ил стекээр ажиллах хувилбар; 200000 урт гинжийг рекурсээр шалгуулахгүй."
+          },
+          {
+            "type": "p",
+            "text": "Хөршийн жагсаалт, vector ба оролт/гаралтын стандарт хэрэгслүүд."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;"
+          },
+          {
+            "type": "p",
+            "text": "DFS struct-ийн байгуулагч $n$+1 нүд үүсгэж, tin,tout,par-ыг 0 болгоно. 0 дахь нүд орой биш; эхлэлийн эцгийн тэмдэг."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "struct DFS {\n    int n, timer;\n    vector<vector<int>> adj;\n    vector<int> tin, tout, par, pre, post;\n\n    DFS(int _n) {\n        n = _n;\n        timer = 0;\n        adj.resize(n + 1);\n        tin.resize(n + 1);\n        tout.resize(n + 1);\n        par.resize(n + 1);\n    }"
+          },
+          {
+            "type": "p",
+            "text": "visit орох тэмдэг тавиад зөвхөн олдоогүй хөршид орно. Рекурсээс буцсаны дараа үргэлжлүүлж, бүх хөрш дуусахад гарах цагийг бичнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "void visit(int v) {\n        tin[v] = ++timer;\n        pre.push_back(v);\n        for (int u : adj[v]) {\n            if (!tin[u]) {\n                par[u] = v;\n                visit(u);\n            }\n        }\n        tout[v] = ++timer;\n        post.push_back(v);\n    }"
+          },
+          {
+            "type": "p",
+            "text": "run бүх оройгоор явж, олдоогүй орой бүрээс шинэ мод эхлүүлнэ. Энэ нь чиглэлгүй графын бүх хэсгийг хамарна."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int run() {\n        int comps = 0;\n        for (int v = 1; v <= n; v++) {\n            if (!tin[v]) {\n                comps++;\n                visit(v);\n            }\n        }\n        return comps;\n    }\n};"
+          },
+          {
+            "type": "p",
+            "text": "main нь хэсгийн тоо, pre, post, дараа нь орой бүрийн par,tin,tout-ыг хэвлэнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    DFS walk(n);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        walk.adj[a].push_back(b);\n        walk.adj[b].push_back(a);\n    }\n    cout << walk.run() << '\\n';\n    for (int v : walk.pre) cout << v << ' ';\n    cout << '\\n';\n    for (int v : walk.post) cout << v << ' ';\n    cout << '\\n';\n    for (int v = 1; v <= n; v++) {\n        cout << walk.par[v] << ' ' << walk.tin[v] << ' ' << walk.tout[v] << '\\n';\n    }\n    return 0;\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct DFS {\n    int n, timer;\n    vector<vector<int>> adj;\n    vector<int> tin, tout, par, pre, post;\n\n    DFS(int _n) {\n        n = _n;\n        timer = 0;\n        adj.resize(n + 1);\n        tin.resize(n + 1);\n        tout.resize(n + 1);\n        par.resize(n + 1);\n    }\n\n    void visit(int v) {\n        tin[v] = ++timer;\n        pre.push_back(v);\n        for (int u : adj[v]) {\n            if (!tin[u]) {\n                par[u] = v;\n                visit(u);\n            }\n        }\n        tout[v] = ++timer;\n        post.push_back(v);\n    }\n\n    int run() {\n        int comps = 0;\n        for (int v = 1; v <= n; v++) {\n            if (!tin[v]) {\n                comps++;\n                visit(v);\n            }\n        }\n        return comps;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    DFS walk(n);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        walk.adj[a].push_back(b);\n        walk.adj[b].push_back(a);\n    }\n    cout << walk.run() << '\\n';\n    for (int v : walk.pre) cout << v << ' ';\n    cout << '\\n';\n    for (int v : walk.post) cout << v << ' ';\n    cout << '\\n';\n    for (int v = 1; v <= n; v++) {\n        cout << walk.par[v] << ' ' << walk.tin[v] << ' ' << walk.tout[v] << '\\n';\n    }\n    return 0;\n}\n"
+          }
+        ]
+      },
+      {
+        "key": "frames",
+        "title": "Том графт дуудлагын хүрээг ил стекээр орлуулах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Рекурсийг орлуулахдаа зөвхөн одоогийн оройг биш, дараагийн шалгах хөршийн байрлалыг хадгалъя. st-ийн нэг хүрээ ($v$,$i$): $v$ одоо идэвхтэй, adj[$v$][0..$i$−1] аль хэдийн шалгагдсан, $i$ нь дараагийн хөрш. Доод хүрээнүүд түр зогссон дуудлагууд, орой дээрх хүрээ одоо ажиллаж буй дуудлага."
+          },
+          {
+            "type": "p",
+            "text": "Хөрш үлдсэн бол эхлээд тухайн хүрээний $i$-г өсгөнө. Хөрш олдоогүй байвал par, tin, pre-г бичээд ($u$,0) хүрээ нэмнэ. Тэр дуусаж хасагдахад өмнөх хүрээ дараагийн хөршөөс үргэлжилнэ. Хөрш дууссан бол tout, post-г бичээд хүрээг хасна. Ингэснээр ижил оролтын хөршийн дараалалд рекурсийн бүх орох/дуусах үйлдэл яг давтагдана."
+          },
+          {
+            "type": "p",
+            "text": "Бүх хөршийг нэг дор оройн стек рүү хийдэг энгийн хувилбар хүрэх олонлогийг зөв олж болно. Гэхдээ оруулахдаа тэмдэглэсэн хөршүүд нэг нэгнийхээ дэд мод болж чадахгүй тул эцэг, орох/дуусах дараалал рекурсийнхтэй заавал таарахгүй. Энэ хичээлийн цаг, буцах явцыг хадгалах шаардлагад хүрээтэй стек хэрэглэж байна."
+          },
+          {
+            "type": "p",
+            "text": "Үндсэн программын гэрээ: 0≤$n$,$m$≤200000, орой 1..$n$, $n$=0 бол $m$=0. Өөртөө ирмэг, давхар ирмэгтэй ч хүрэлт зөв: нэг оройг ганц удаа оруулна. Timer хамгийн ихдээ 2n тул int хангалттай. Хөршүүдийг оролтын дарааллаар хадгална, эрэмбэлэхгүй. Объектыг байгуулж ирмэгээ оруулаад run-ийг нэг удаа дуудна."
+          },
+          {
+            "type": "p",
+            "text": "Рекурсийн хувилбартай ижил стандарт хэрэгслүүд."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;"
+          },
+          {
+            "type": "p",
+            "text": "Ижил талбар, байгуулагчтай учир хоёр хувилбарын par,tin,tout,pre,post-ыг шууд тулгаж болно."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "struct DFS {\n    int n, timer;\n    vector<vector<int>> adj;\n    vector<int> tin, tout, par, pre, post;\n\n    DFS(int _n) {\n        n = _n;\n        timer = 0;\n        adj.resize(n + 1);\n        tin.resize(n + 1);\n        tout.resize(n + 1);\n        par.resize(n + 1);\n    }"
+          },
+          {
+            "type": "p",
+            "text": "$v$,$i$-г локал хуулбараар авна. Шинэ хүрээ нэмэхээс өмнө өмнөх хүрээний индексийг өсгөж, vector-ийн өөрчлөлтийн дараа хуучин reference ашиглахгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "void visit(int s) {\n        vector<pair<int, int>> st;\n        tin[s] = ++timer;\n        pre.push_back(s);\n        st.push_back({s, 0});\n        while (!st.empty()) {\n            int v = st.back().first;\n            int i = st.back().second;\n            if (i == (int)adj[v].size()) {\n                tout[v] = ++timer;\n                post.push_back(v);\n                st.pop_back();\n                continue;\n            }\n            st.back().second++;\n            int u = adj[v][i];\n            if (tin[u]) continue;\n            par[u] = v;\n            tin[u] = ++timer;\n            pre.push_back(u);\n            st.push_back({u, 0});\n        }\n    }"
+          },
+          {
+            "type": "p",
+            "text": "Гаднах давталт ижил тул тусгаар орой, салангид хэсэг алгасагдахгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int run() {\n        int comps = 0;\n        for (int v = 1; v <= n; v++) {\n            if (!tin[v]) {\n                comps++;\n                visit(v);\n            }\n        }\n        return comps;\n    }\n};"
+          },
+          {
+            "type": "p",
+            "text": "Оролт $n$ $m$, дараа нь $m$ хос ирмэг. Гаралтын эхний мөр хэсгийн тоо; дараагийн хоёр мөр орох ба дуусах дараалал; үлдсэн $n$ мөр par tin tout."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    DFS walk(n);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        walk.adj[a].push_back(b);\n        walk.adj[b].push_back(a);\n    }\n    cout << walk.run() << '\\n';\n    for (int v : walk.pre) cout << v << ' ';\n    cout << '\\n';\n    for (int v : walk.post) cout << v << ' ';\n    cout << '\\n';\n    for (int v = 1; v <= n; v++) {\n        cout << walk.par[v] << ' ' << walk.tin[v] << ' ' << walk.tout[v] << '\\n';\n    }\n    return 0;\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct DFS {\n    int n, timer;\n    vector<vector<int>> adj;\n    vector<int> tin, tout, par, pre, post;\n\n    DFS(int _n) {\n        n = _n;\n        timer = 0;\n        adj.resize(n + 1);\n        tin.resize(n + 1);\n        tout.resize(n + 1);\n        par.resize(n + 1);\n    }\n\n    void visit(int s) {\n        vector<pair<int, int>> st;\n        tin[s] = ++timer;\n        pre.push_back(s);\n        st.push_back({s, 0});\n        while (!st.empty()) {\n            int v = st.back().first;\n            int i = st.back().second;\n            if (i == (int)adj[v].size()) {\n                tout[v] = ++timer;\n                post.push_back(v);\n                st.pop_back();\n                continue;\n            }\n            st.back().second++;\n            int u = adj[v][i];\n            if (tin[u]) continue;\n            par[u] = v;\n            tin[u] = ++timer;\n            pre.push_back(u);\n            st.push_back({u, 0});\n        }\n    }\n\n    int run() {\n        int comps = 0;\n        for (int v = 1; v <= n; v++) {\n            if (!tin[v]) {\n                comps++;\n                visit(v);\n            }\n        }\n        return comps;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    DFS walk(n);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        walk.adj[a].push_back(b);\n        walk.adj[b].push_back(a);\n    }\n    cout << walk.run() << '\\n';\n    for (int v : walk.pre) cout << v << ' ';\n    cout << '\\n';\n    for (int v : walk.post) cout << v << ' ';\n    cout << '\\n';\n    for (int v = 1; v <= n; v++) {\n        cout << walk.par[v] << ' ' << walk.tin[v] << ' ' << walk.tout[v] << '\\n';\n    }\n    return 0;\n}\n"
+          }
+        ]
+      },
+      {
+        "key": "forest",
+        "title": "Салангид граф, эцгийн зам ба орох/дуусах цаг",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Долоон оройн ирмэгүүд (1,2),(1,3),(2,4),(3,4),(5,6). 1→2→4→3 салааг дуусгасны дараа 5→6, эцэст нь тусгаар 7-г үзнэ. Шинэ эхлэл бүрт өмнөх tin-үүдийг арилгахгүй. Ингэснээр нийт гурван хэсэг гарна."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "nodes": [
+              {
+                "id": "1",
+                "label": "1",
+                "x": 12,
+                "y": 18
+              },
+              {
+                "id": "2",
+                "label": "2",
+                "x": 35,
+                "y": 18
+              },
+              {
+                "id": "3",
+                "label": "3",
+                "x": 12,
+                "y": 60
+              },
+              {
+                "id": "4",
+                "label": "4",
+                "x": 35,
+                "y": 60
+              },
+              {
+                "id": "5",
+                "label": "5",
+                "x": 65,
+                "y": 18
+              },
+              {
+                "id": "6",
+                "label": "6",
+                "x": 85,
+                "y": 18
+              },
+              {
+                "id": "7",
+                "label": "7",
+                "x": 75,
+                "y": 75
+              }
+            ],
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "3"
+              ],
+              [
+                "2",
+                "4"
+              ],
+              [
+                "3",
+                "4"
+              ],
+              [
+                "5",
+                "6"
+              ]
+            ],
+            "directed": false,
+            "caption": "1..4, 5..6 ба тусгаар 7 гэсэн гурван хэсэг."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Орой",
+              "Эцэг",
+              "Орох",
+              "Дуусах"
+            ],
+            "rows": [
+              [
+                "1",
+                "0",
+                "1",
+                "8"
+              ],
+              [
+                "2",
+                "1",
+                "2",
+                "7"
+              ],
+              [
+                "3",
+                "4",
+                "4",
+                "5"
+              ],
+              [
+                "4",
+                "2",
+                "3",
+                "6"
+              ],
+              [
+                "5",
+                "0",
+                "9",
+                "12"
+              ],
+              [
+                "6",
+                "5",
+                "10",
+                "11"
+              ],
+              [
+                "7",
+                "0",
+                "13",
+                "14"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Орох дараалал 1,2,4,3,5,6,7; дуусах дараалал 3,4,2,1,6,5,7. 3-ын эцгийн зам 1→2→4→3, гурван ирмэгтэй. Гэтэл (1,3) шууд ирмэг бий. DFS хүрэх зам өгдөг ч жингүй графын хамгийн богино замыг батлахгүй; тийм зорилгод BFS сонгоно."
+          },
+          {
+            "type": "p",
+            "text": "Модны эцэг $v$-ийн идэвхтэй дуудлага дотор хүүхдийн бүх ажил явагддаг тул хүүхэд $u$-д $tin[v]<tin[u]<tout[u]<tout[v]$. Тусдаа салааны цагийн завсрууд давхцахгүй. Ижил цагийг хоёр оройд өгөхгүй; нийт 1..2n цаг бүр яг нэг орох эсвэл дуусах үйл явдал."
+          },
+          {
+            "type": "p",
+            "text": "Нэг эхлэлээс олдсон орой бүр бодит ирмэгээр олдсон тул хүрч болно. Эсрэгээр, хүрэх зам дээр олдоогүй анхны орой байсан гэвэл өмнөх олдсон орой бүх хөршөө шалгахдаа түүнийг олох ёстой: зөрчил. Тиймээс нэг дуудлага яг тухайн холбоост хэсгийг хамарна. Дараагийн олдоогүй эхлэл өөр хэсэгт байх учир гаднах давталт хэсэг бүрийг нэг удаа эхлүүлнэ."
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "Зардал, рекурсийн хязгаар ба андуурч болох зорилгууд",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Орой бүр нэг удаа орж, хөршийн жагсаалтын бичлэг бүр нэг удаа шалгагдана. Чиглэлгүй $m$ ирмэг 2m бичлэгтэй тул хугацаа $O(n+m)$. Граф хадгалах зай $O(n+m)$, талбарууд ба хамгийн урт идэвхтэй замын стек $O(n)$. Хүрээтэй хувилбар гүн гинжид ч системийн рекурсийн стек ашиглахгүй; шаардлагатай $O(n)$ санах ойг устгахгүй, vector-д шилжүүлнэ."
+          },
+          {
+            "type": "p",
+            "text": "Үзсэн хөрш олдлоо гээд шууд цикл гэж дүгнэхгүй: чиглэлгүй графт эцгийн ирмэг буцаад харагдана. Давхар ирмэгтэй үед эцэг оройн дугаарыг л алгасах нь ирмэгүүдийг ялгахгүй. Чиглэлт циклд идэвхтэй ба дууссан орой ялгаатай. Эдгээр хэрэглээнд нэмэлт зөв төлөв хэрэгтэй; эндэх run-ийн тоог чиглэлт графын хүчтэй холбоост хэсгийн тоо гэж үзэж болохгүй."
+          },
+          {
+            "type": "p",
+            "text": "Жижиг цикльтэй, салангид графт BFS-ийн хүрэх олонлогтой тулга. Ижил хөршийн дарааллаар рекурс ба хүрээтэй хувилбарын бүх гаралт тэнцэх ёстой. $n$=0, ганц орой, зөвхөн тусгаар орой, өөртөө/давхар ирмэгийг шалга. Том 200000 оройн гинжийг зөвхөн итератив хувилбарт өгч гүний аюулгүй байдлыг шалгана."
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Өөрийгөө шалга: оройг тэмдэглэхээ буцах хүртэл хойшлуулбал яах вэ? Нэг эхлэл бүх салангид хэсгийг хамрах уу? Яагаад хүрээнд дараагийн хөршийн индекс хэрэгтэй вэ?"
+          },
+          {
+            "type": "p",
+            "text": "Хариу: цикл дээр дахин орж дуусахгүй байж болно; үгүй; өмнөх дуудлагыг яг зогссон газраас нь үргэлжлүүлж, дуусах үйл явдлыг зөв гаргахын тулд."
+          },
+          {
+            "type": "p",
+            "text": "Сэдвийг эзэмших үндсэн бодлого"
+          },
+          {
+            "type": "p",
+            "text": "Building Roads: шинэ эхлэл бүрийн төлөөлөгчөөр хэсгүүдийг холбоход $k$−1 ирмэг яагаад хэрэгтэйг батал."
+          },
+          {
+            "type": "problem",
+            "problemKey": "362"
+          },
+          {
+            "type": "p",
+            "text": "Бие даах ба ахиулах бодлогууд"
+          },
+          {
+            "type": "p",
+            "text": "Counting Rooms: нээлттэй нүдийг орой гэж үзэх дараагийн хичээлд хөршийн дүрмээ тодорхойл."
+          },
+          {
+            "type": "problem",
+            "problemKey": "360"
+          },
+          {
+            "type": "p",
+            "text": "Round Trip: цикл сэргээх эцэг/ирмэгийн төлөвийг тусад нь гарга; оролт энгийн граф эсэхийг шалга."
+          },
+          {
+            "type": "problem",
+            "problemKey": "365"
+          },
+          {
+            "type": "p",
+            "text": "Round Trip II: идэвхтэй ба дууссан оройг ялгаж чиглэлт цикл сэргээ."
+          },
+          {
+            "type": "problem",
+            "problemKey": "372"
+          },
+          {
+            "type": "p",
+            "text": "Flight Routes Check: эх граф болон урвуу графын хүрэлтийн хоёр шалгалтын утгыг батал."
+          },
+          {
+            "type": "problem",
+            "problemKey": "382"
+          },
+          {
+            "type": "p",
+            "text": "IOI 2019 Split the Attractions: DFS мод дээр хэмжээтэй бүлэг байгуулах нэмэлт баталгаа хэрэгтэй; хайлт дангаараа хуваалтыг батлахгүй."
+          },
+          {
+            "type": "problem",
+            "problemKey": "928"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "DFS — branches, returns and explicit frames",
+        "summary": "Trace discovery and completion with recursion and equivalent explicit frames, preserving exact order across disconnected graphs.",
+        "sections": [
+          {
+            "key": "idea",
+            "title": "Finish one branch before returning",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Find all vertices reachable from a starting vertex. Depth-first search, or DFS, follows a branch whenever it discovers a new vertex. When no unvisited neighbor remains, it returns to the previous vertex and resumes its remaining neighbors. Completing one branch before another distinguishes it from breadth-first search."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 15,
+                    "y": 20
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 60,
+                    "y": 20
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 86,
+                    "y": 50
+                  },
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 15,
+                    "y": 80
+                  },
+                  {
+                    "id": "5",
+                    "label": "5",
+                    "x": 60,
+                    "y": 80
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "3",
+                    "5"
+                  ]
+                ],
+                "directed": false,
+                "caption": "Start at 1. Add edges in order (1,2),(1,4),(2,3),(2,5),(3,5)."
+              },
+              {
+                "type": "p",
+                "text": "Follow 1→2→3→5. Both neighbors of 5, vertices 2 and 3, have already been discovered, so return. The remaining neighbors of 3 and then 2 are also known. Back at 1, visit 4. Entry order is 1,2,3,5,4; finish order is 5,3,2,4,1. Changing adjacency-list order may change these orders, but not reachability."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 15,
+                    "y": 20,
+                    "color": "#7db7d8",
+                    "textColor": "#102a3a"
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 60,
+                    "y": 20,
+                    "color": "#7db7d8",
+                    "textColor": "#102a3a"
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 86,
+                    "y": 50,
+                    "color": "#7db7d8",
+                    "textColor": "#102a3a"
+                  },
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 15,
+                    "y": 80
+                  },
+                  {
+                    "id": "5",
+                    "label": "5",
+                    "x": 60,
+                    "y": 80,
+                    "color": "#7db7d8",
+                    "textColor": "#102a3a"
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "3",
+                    "5"
+                  ]
+                ],
+                "directed": false,
+                "caption": "Vertices 1,2,3,5 are discovered; after returning from 5, visit the remaining neighbor 4 of vertex 1."
+              }
+            ]
+          },
+          {
+            "key": "recursion",
+            "title": "Discovery, returns and the call stack",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Mark a vertex immediately on discovery, not after finishing all its neighbors. Otherwise cycle 2→3→5→2 can recurse forever. The mark means the vertex has entered the search, not that all its work is complete."
+              },
+              {
+                "type": "p",
+                "text": "tin[$v$] is the entry time and tout[$v$] the finish time, initially zero. Set tin[$v$]=++timer on entry and tout[$v$]=++timer on completion. A discovered but unfinished vertex has tin[$v$]>0,tout[$v$]=0; a finished vertex has tout[$v$]>0. pre and post store entry and finish order. par[$v$] is the discovery parent, or 0 at a root."
+              },
+              {
+                "type": "p",
+                "text": "A recursive call processing $v$ remembers which neighbor comes next. Calling a new $u$ suspends $v$; after $u$ returns, $v$’s loop resumes where it stopped. Assign $v$’s finish time only after every neighbor call has returned."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Step",
+                  "Active call path",
+                  "Event"
+                ],
+                "rows": [
+                  [
+                    "1",
+                    "1",
+                    "tin[1]=1"
+                  ],
+                  [
+                    "2",
+                    "1→2",
+                    "tin[2]=2"
+                  ],
+                  [
+                    "3",
+                    "1→2→3",
+                    "tin[3]=3"
+                  ],
+                  [
+                    "4",
+                    "1→2→3→5",
+                    "tin[5]=4"
+                  ],
+                  [
+                    "5",
+                    "1→2→3",
+                    "tout[5]=5"
+                  ],
+                  [
+                    "6",
+                    "1→2",
+                    "tout[3]=6"
+                  ],
+                  [
+                    "7",
+                    "1",
+                    "tout[2]=7"
+                  ],
+                  [
+                    "8",
+                    "1→4",
+                    "tin[4]=8"
+                  ],
+                  [
+                    "9",
+                    "1",
+                    "tout[4]=9"
+                  ],
+                  [
+                    "10",
+                    "–",
+                    "tout[1]=10"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "The recursive program below illustrates this execution on small graphs: 0≤$n$≤200, vertices 1..$n$ and undirected edges. The process call stack is limited and has no universal portable safe depth. The explicit-stack version in the next section is the main large-graph solution; do not run a 200000-vertex chain recursively."
+              },
+              {
+                "type": "p",
+                "text": "Standard tools for adjacency lists, vectors and $I$/O."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;"
+              },
+              {
+                "type": "p",
+                "text": "The DFS constructor allocates $n$+1 entries and zeros tin,tout,par. Index 0 is not a vertex; it is the root-parent sentinel."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "struct DFS {\n    int n, timer;\n    vector<vector<int>> adj;\n    vector<int> tin, tout, par, pre, post;\n\n    DFS(int _n) {\n        n = _n;\n        timer = 0;\n        adj.resize(n + 1);\n        tin.resize(n + 1);\n        tout.resize(n + 1);\n        par.resize(n + 1);\n    }"
+              },
+              {
+                "type": "p",
+                "text": "visit marks entry before exploring undiscovered neighbors, resumes after recursive returns, and records completion after all neighbors."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "void visit(int v) {\n        tin[v] = ++timer;\n        pre.push_back(v);\n        for (int u : adj[v]) {\n            if (!tin[u]) {\n                par[u] = v;\n                visit(u);\n            }\n        }\n        tout[v] = ++timer;\n        post.push_back(v);\n    }"
+              },
+              {
+                "type": "p",
+                "text": "run starts a new tree at each undiscovered vertex, covering every component of an undirected graph."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int run() {\n        int comps = 0;\n        for (int v = 1; v <= n; v++) {\n            if (!tin[v]) {\n                comps++;\n                visit(v);\n            }\n        }\n        return comps;\n    }\n};"
+              },
+              {
+                "type": "p",
+                "text": "main prints component count, pre, post, then par,tin,tout for each vertex."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    DFS walk(n);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        walk.adj[a].push_back(b);\n        walk.adj[b].push_back(a);\n    }\n    cout << walk.run() << '\\n';\n    for (int v : walk.pre) cout << v << ' ';\n    cout << '\\n';\n    for (int v : walk.post) cout << v << ' ';\n    cout << '\\n';\n    for (int v = 1; v <= n; v++) {\n        cout << walk.par[v] << ' ' << walk.tin[v] << ' ' << walk.tout[v] << '\\n';\n    }\n    return 0;\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct DFS {\n    int n, timer;\n    vector<vector<int>> adj;\n    vector<int> tin, tout, par, pre, post;\n\n    DFS(int _n) {\n        n = _n;\n        timer = 0;\n        adj.resize(n + 1);\n        tin.resize(n + 1);\n        tout.resize(n + 1);\n        par.resize(n + 1);\n    }\n\n    void visit(int v) {\n        tin[v] = ++timer;\n        pre.push_back(v);\n        for (int u : adj[v]) {\n            if (!tin[u]) {\n                par[u] = v;\n                visit(u);\n            }\n        }\n        tout[v] = ++timer;\n        post.push_back(v);\n    }\n\n    int run() {\n        int comps = 0;\n        for (int v = 1; v <= n; v++) {\n            if (!tin[v]) {\n                comps++;\n                visit(v);\n            }\n        }\n        return comps;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    DFS walk(n);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        walk.adj[a].push_back(b);\n        walk.adj[b].push_back(a);\n    }\n    cout << walk.run() << '\\n';\n    for (int v : walk.pre) cout << v << ' ';\n    cout << '\\n';\n    for (int v : walk.post) cout << v << ' ';\n    cout << '\\n';\n    for (int v = 1; v <= n; v++) {\n        cout << walk.par[v] << ' ' << walk.tin[v] << ' ' << walk.tout[v] << '\\n';\n    }\n    return 0;\n}\n"
+              }
+            ]
+          },
+          {
+            "key": "frames",
+            "title": "Simulating call frames explicitly for large graphs",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "To replace recursion, store both the active vertex and its next neighbor position. One frame ($v$,$i$) means neighbors adj[$v$][0..$i$−1] are already processed and $i$ is next. Lower frames are suspended calls; the top frame is the current call."
+              },
+              {
+                "type": "p",
+                "text": "When a neighbor remains, advance the current frame’s $i$ first. If the neighbor is new, record par,tin,pre and push ($u$,0). When it finishes and is popped, the previous frame resumes at its next neighbor. With no neighbors left, record tout,post and pop. For the same adjacency order, this reproduces recursive entry and finish events exactly."
+              },
+              {
+                "type": "p",
+                "text": "A simple stack that pushes all neighbors can correctly find the reachable set. However, neighbors marked on insertion may no longer become one another’s descendants, so parent and entry/finish order need not match recursion. We use frames because this lesson preserves those exact events."
+              },
+              {
+                "type": "p",
+                "text": "Main-program contract: 0≤$n$,$m$≤200000, vertices 1..$n$, and $m$=0 if $n$=0. Self-loops and parallel edges do not break reachability because discovery happens once. The timer reaches at most 2n and fits int. Preserve input adjacency order without sorting. Construct the object, add edges and call run once."
+              },
+              {
+                "type": "p",
+                "text": "The same standard tools as the recursive illustration."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;"
+              },
+              {
+                "type": "p",
+                "text": "Identical fields and initialization allow direct comparison of par,tin,tout,pre,post."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "struct DFS {\n    int n, timer;\n    vector<vector<int>> adj;\n    vector<int> tin, tout, par, pre, post;\n\n    DFS(int _n) {\n        n = _n;\n        timer = 0;\n        adj.resize(n + 1);\n        tin.resize(n + 1);\n        tout.resize(n + 1);\n        par.resize(n + 1);\n    }"
+              },
+              {
+                "type": "p",
+                "text": "Read $v$,$i$ as local copies. Advance the frame before pushing and avoid retaining a reference across vector growth."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "void visit(int s) {\n        vector<pair<int, int>> st;\n        tin[s] = ++timer;\n        pre.push_back(s);\n        st.push_back({s, 0});\n        while (!st.empty()) {\n            int v = st.back().first;\n            int i = st.back().second;\n            if (i == (int)adj[v].size()) {\n                tout[v] = ++timer;\n                post.push_back(v);\n                st.pop_back();\n                continue;\n            }\n            st.back().second++;\n            int u = adj[v][i];\n            if (tin[u]) continue;\n            par[u] = v;\n            tin[u] = ++timer;\n            pre.push_back(u);\n            st.push_back({u, 0});\n        }\n    }"
+              },
+              {
+                "type": "p",
+                "text": "The same outer loop includes isolated vertices and disconnected components."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int run() {\n        int comps = 0;\n        for (int v = 1; v <= n; v++) {\n            if (!tin[v]) {\n                comps++;\n                visit(v);\n            }\n        }\n        return comps;\n    }\n};"
+              },
+              {
+                "type": "p",
+                "text": "Input $n$ $m$ and $m$ undirected edges. Output component count, entry/finish order on two lines, then $n$ lines of par tin tout."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    DFS walk(n);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        walk.adj[a].push_back(b);\n        walk.adj[b].push_back(a);\n    }\n    cout << walk.run() << '\\n';\n    for (int v : walk.pre) cout << v << ' ';\n    cout << '\\n';\n    for (int v : walk.post) cout << v << ' ';\n    cout << '\\n';\n    for (int v = 1; v <= n; v++) {\n        cout << walk.par[v] << ' ' << walk.tin[v] << ' ' << walk.tout[v] << '\\n';\n    }\n    return 0;\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled in the explained order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct DFS {\n    int n, timer;\n    vector<vector<int>> adj;\n    vector<int> tin, tout, par, pre, post;\n\n    DFS(int _n) {\n        n = _n;\n        timer = 0;\n        adj.resize(n + 1);\n        tin.resize(n + 1);\n        tout.resize(n + 1);\n        par.resize(n + 1);\n    }\n\n    void visit(int s) {\n        vector<pair<int, int>> st;\n        tin[s] = ++timer;\n        pre.push_back(s);\n        st.push_back({s, 0});\n        while (!st.empty()) {\n            int v = st.back().first;\n            int i = st.back().second;\n            if (i == (int)adj[v].size()) {\n                tout[v] = ++timer;\n                post.push_back(v);\n                st.pop_back();\n                continue;\n            }\n            st.back().second++;\n            int u = adj[v][i];\n            if (tin[u]) continue;\n            par[u] = v;\n            tin[u] = ++timer;\n            pre.push_back(u);\n            st.push_back({u, 0});\n        }\n    }\n\n    int run() {\n        int comps = 0;\n        for (int v = 1; v <= n; v++) {\n            if (!tin[v]) {\n                comps++;\n                visit(v);\n            }\n        }\n        return comps;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    DFS walk(n);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        walk.adj[a].push_back(b);\n        walk.adj[b].push_back(a);\n    }\n    cout << walk.run() << '\\n';\n    for (int v : walk.pre) cout << v << ' ';\n    cout << '\\n';\n    for (int v : walk.post) cout << v << ' ';\n    cout << '\\n';\n    for (int v = 1; v <= n; v++) {\n        cout << walk.par[v] << ' ' << walk.tin[v] << ' ' << walk.tout[v] << '\\n';\n    }\n    return 0;\n}\n"
+              }
+            ]
+          },
+          {
+            "key": "forest",
+            "title": "Disconnected graphs, parent paths and event times",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "For seven vertices with edges (1,2),(1,3),(2,4),(3,4),(5,6), finish branch 1→2→4→3, then 5→6, then isolated vertex 7. Do not clear discovery marks between roots. There are three components."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "nodes": [
+                  {
+                    "id": "1",
+                    "label": "1",
+                    "x": 12,
+                    "y": 18
+                  },
+                  {
+                    "id": "2",
+                    "label": "2",
+                    "x": 35,
+                    "y": 18
+                  },
+                  {
+                    "id": "3",
+                    "label": "3",
+                    "x": 12,
+                    "y": 60
+                  },
+                  {
+                    "id": "4",
+                    "label": "4",
+                    "x": 35,
+                    "y": 60
+                  },
+                  {
+                    "id": "5",
+                    "label": "5",
+                    "x": 65,
+                    "y": 18
+                  },
+                  {
+                    "id": "6",
+                    "label": "6",
+                    "x": 85,
+                    "y": 18
+                  },
+                  {
+                    "id": "7",
+                    "label": "7",
+                    "x": 75,
+                    "y": 75
+                  }
+                ],
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "4"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "5",
+                    "6"
+                  ]
+                ],
+                "directed": false,
+                "caption": "Three components: 1..4, 5..6 and isolated 7."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Vertex",
+                  "Parent",
+                  "Entry",
+                  "Finish"
+                ],
+                "rows": [
+                  [
+                    "1",
+                    "0",
+                    "1",
+                    "8"
+                  ],
+                  [
+                    "2",
+                    "1",
+                    "2",
+                    "7"
+                  ],
+                  [
+                    "3",
+                    "4",
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "4",
+                    "2",
+                    "3",
+                    "6"
+                  ],
+                  [
+                    "5",
+                    "0",
+                    "9",
+                    "12"
+                  ],
+                  [
+                    "6",
+                    "5",
+                    "10",
+                    "11"
+                  ],
+                  [
+                    "7",
+                    "0",
+                    "13",
+                    "14"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Entry order is 1,2,4,3,5,6,7; finish order is 3,4,2,1,6,5,7. The parent path to 3 is 1→2→4→3 with three edges, although edge (1,3) exists. DFS gives a path, not necessarily a shortest unweighted path; use BFS for that objective."
+              },
+              {
+                "type": "p",
+                "text": "A child’s complete call runs inside its parent’s active call, giving tin[$v$]<tin[$u$]<tout[$u$]<tout[$v$] for a child $u$ of $v$. Separate branches have disjoint time intervals. Every time 1..2n belongs to one entry or finish event."
+              },
+              {
+                "type": "p",
+                "text": "Each discovered vertex is reached along real edges. Conversely, if a reachable vertex were missed, take the first missed vertex on a path; its discovered predecessor would discover it when scanning every neighbor, a contradiction. Thus one root covers exactly its connected component, and each later undiscovered root starts a different component."
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "Cost, stack limits and different objectives",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Each vertex is entered once and each adjacency entry scanned once. An undirected graph has 2m entries, giving $O(n+m)$ time. Graph storage is $O(n+m)$; fields and the longest active-path stack use $O(n)$. Frames remove dependence on the process recursion stack, not the inherent $O(n)$ memory requirement."
+              },
+              {
+                "type": "p",
+                "text": "An already visited neighbor alone does not prove a cycle: an undirected parent edge is seen again. With parallel edges, skipping only the parent vertex fails to distinguish edges. Directed cycle detection distinguishes active from finished vertices. Such applications require additional state; this run count is not the number of strongly connected components of a directed graph."
+              },
+              {
+                "type": "p",
+                "text": "Compare reachable sets with BFS on small cyclic/disconnected graphs. For the same adjacency order the recursive and frame versions should produce identical complete outputs. Test $n$=0, singletons, isolated vertices, self-loops and parallel edges. Test a 200000-vertex chain only with the iterative version."
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Check yourself: what if marking waits until return? Does one root cover all disconnected components? Why store the next neighbor position in a frame?"
+              },
+              {
+                "type": "p",
+                "text": "Answers: a cycle can cause nontermination; no; to resume the suspended call exactly where it stopped and record completion correctly."
+              },
+              {
+                "type": "p",
+                "text": "Core problem for mastery"
+              },
+              {
+                "type": "p",
+                "text": "Building Roads: justify why representatives of $k$ components require $k$−1 connecting edges."
+              },
+              {
+                "type": "problem",
+                "problemKey": "362"
+              },
+              {
+                "type": "p",
+                "text": "Independent practice and extensions"
+              },
+              {
+                "type": "p",
+                "text": "Counting Rooms: model open cells as vertices and define neighbors in the next lesson."
+              },
+              {
+                "type": "problem",
+                "problemKey": "360"
+              },
+              {
+                "type": "p",
+                "text": "Round Trip: separately derive parent/edge state for cycle reconstruction and inspect the simple-graph assumption."
+              },
+              {
+                "type": "problem",
+                "problemKey": "365"
+              },
+              {
+                "type": "p",
+                "text": "Round Trip II: distinguish active/finished vertices to reconstruct a directed cycle."
+              },
+              {
+                "type": "problem",
+                "problemKey": "372"
+              },
+              {
+                "type": "p",
+                "text": "Flight Routes Check: justify reachability checks in the original and reversed graphs."
+              },
+              {
+                "type": "problem",
+                "problemKey": "382"
+              },
+              {
+                "type": "p",
+                "text": "IOI 2019 Split the Attractions: constructing sized groups on a DFS tree needs additional reasoning; traversal alone does not guarantee the partition."
+              },
+              {
+                "type": "problem",
+                "problemKey": "928"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know adjacency lists, recursive returns, stacks and reference parameters."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Графын хөршийн жагсаалт, рекурсийн буцах дараалал, стек болон холбоосыг мэддэг байна.",
+    "priorityLevel": "high",
+    "priorityReason": "Мод, дэд мод, цикл, дуусах дараалал болон байгуулах олон аргын суурь. Дуусаагүй дуудлагын үргэлжлэл, эцэг ба орох/дуусах төлөвийг ил гаргаж батлах нь гүний хайлтын зөв байдал, зайны хэрэглээг ойлгуулдаг.",
+    "prerequisiteIds": [
+      "graph-basics",
+      "recursion"
+    ],
+    "learningRelations": {
+      "next": "flood-fill",
+      "practice": [
+        {
+          "key": "360",
+          "stage": "Warm-up",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "362",
+          "stage": "Standard",
+          "reason": "DFS-ээр бүх холбоост хэсгийг давхардалгүй олж, хэсэг бүрийн төлөөлөгчөөр хамгийн цөөн зам байгуулах баталгааг хэрэгжүүлэх шууд цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "365",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "372",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "382",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "928",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "graph-basics",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "recursion",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "flood-fill",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  },
+  "status": "complete focused bilingual candidate; publication evidence separate"
+}
