@@ -2,9 +2,9 @@
 
 Original read-only audit of the fresh anonymous 65-lesson catalog and successful publication receipts, now updated with verified search publications PR156/158 and container publication PR160 and recursion PR162 plus grid/knapsack PR164 and LIS/interval PR166 plus window/stack PR168 and prefixes PR170 plus compression/difference PR172 and sparse/Fenwick PR174 plus bitmask PR176 and DFS/fill PR178 plus components/bipartite PR180 and Bellman/Floyd PR182. Only those twenty-six target bodies/history changed; no private draft/learner/problem/access change. Mongolia remains excluded; no private draft bodies were inspected by this audit.
 
-55 originals = 47 newly rewritten + 8 still pre-handbook standalone bodies. Ten separate additions yield 65 public lessons; 66 stored including the verified excluded Mongolia. **The counts are consistent.** All 57 rewritten/new live bodies exactly match their latest successful receipts. All 8 remaining bodies exactly match the pre-Introduction recovery snapshot: concept coverage elsewhere has not rewritten these IDs. Previous package2 quality work is historical, not new-cycle credit.
+55 originals = 48 newly rewritten + 7 still pre-handbook standalone bodies. Ten separate additions yield 65 public lessons; 66 stored including the verified excluded Mongolia. **The counts are consistent.** All 58 rewritten/new live bodies exactly match their latest successful receipts. All 7 remaining bodies exactly match the pre-Introduction recovery snapshot: concept coverage elsewhere has not rewritten these IDs. Previous package2 quality work is historical, not new-cycle credit.
 
-## The 47 rewritten original IDs
+## The 48 rewritten original IDs
 
 | Stable ID | Live revision | Source chapter | Latest matching receipt |
 |---|---:|---:|---|
@@ -47,6 +47,7 @@ Original read-only audit of the fresh anonymous 65-lesson catalog and successful
 | `bellman-ford` | 3 | 13 supplement | [PACKAGE03-BELLMAN-FLOYD-PUBLICATION-RECEIPT.json](PACKAGE03-BELLMAN-FLOYD-PUBLICATION-RECEIPT.json) |
 | `floyd-warshall` | 5 | 13 supplement | [PACKAGE03-BELLMAN-FLOYD-PUBLICATION-RECEIPT.json](PACKAGE03-BELLMAN-FLOYD-PUBLICATION-RECEIPT.json) |
 | `tree-basics` | 5 | 14 | [PACKAGE03-TREES-PUBLICATION-RECEIPT.json](PACKAGE03-TREES-PUBLICATION-RECEIPT.json) |
+| `tree-dp` | 3 | 14 supplement | [PACKAGE03-TREE-DP-PUBLICATION-RECEIPT.json](PACKAGE03-TREE-DP-PUBLICATION-RECEIPT.json) |
 | `kruskal` | 5 | 15 | [PACKAGE03-SPANNING-PUBLICATION-RECEIPT.json](PACKAGE03-SPANNING-PUBLICATION-RECEIPT.json) |
 | `topological-sort` | 8 | 16 | [PACKAGE03-DIRECTED-PUBLICATION-RECEIPT.json](PACKAGE03-DIRECTED-PUBLICATION-RECEIPT.json) |
 | `lca` | 7 | 18 | [PACKAGE03-TREE-QUERY-PUBLICATION-RECEIPT.json](PACKAGE03-TREE-QUERY-PUBLICATION-RECEIPT.json) |
@@ -57,13 +58,12 @@ Original read-only audit of the fresh anonymous 65-lesson catalog and successful
 | `lazy-segment-tree` | 7 | 28 | [PACKAGE03-SEGREVISIT-PUBLICATION-RECEIPT.json](PACKAGE03-SEGREVISIT-PUBLICATION-RECEIPT.json) |
 
 
-## The 8 remaining originals — preserve every ID
+## The 7 remaining originals — preserve every ID
 
 “Covered by” identifies already published concepts, not completion of the standalone rewrite. Each body was inspected for its current goal/section structure; this bounded inventory is not a new complete semantic/code review.
 
 | Stable ID | Live revision | Source mapping / covered by | Standalone work still needed |
 |---|---:|---|---|
-| `tree-dp` | 2 | 14.1/14.3 supplement → `tree-basics#traversal` | Existing independent-set counting is supplemental; connect to subtree states and reroot/all-longest paths without dropping its goal. |
 | `dsu` | 6 | 15.2 → `kruskal#dsu` | Compact struct with par[i]=i, sz[i]=1, constructor, compression and union by size. |
 | `gcd` | 4 | 21.1/21.3 → `number-theory` | Euclidean gcd plus extended-Euclidean connection; retain zero/numeric contracts. |
 | `sieve` | 4 | 21.1 → `number-theory` | Prime/SPF preprocessing and factorization, start-at-square/bounds and actual complexity. |
@@ -137,16 +137,16 @@ Backlog placeholders are not a completion ledger: network-flow/bipartite-matchin
 | G | 10 Subset-state DP | Complete | Source 10.5 selection/elevator/SOS and original matching published, with safe submask iteration. |
 | H | 12 Traversal supplements | Complete | All four original supplements published; bridge/articulation remains a separate pending addition. |
 | I | 13 Shortest-path supplements | Complete | Both focused originals published; selective cycle influence and finite reconstruction verified. |
-| J | 14 Tree DP | `tree-dp` | Keep independent-set goal and align subtree reasoning; later HLD/centroid supplements beside14/18. |
+| J | 14 Tree DP | Complete | Conditional counting and iterative rerooting verified; preserve stable ID. |
 | K | 15 Union-find | `dsu` | Apply constructor/init/struct style and existing component-size practice. |
 | L | 21 Arithmetic supplements | `gcd`, `sieve`, `fast-power` | Align21.1–21.3 without repeating whole number-theory. |
 | M | 26 Explicit string additions | Explicit additions only | Suffix-array/LCP and Aho as focused supplements; Z/KMP/rolling hash are done, no duplicate lessons. |
 | N | Unnumbered contest/methodology supplements | `invariant`, `debugging`, `subtask-strategy` | Keep clearly supplemental, with relevant book links. Interactive/communication teaching is a separate modest supplement. |
 
-**Next concrete batch:** `tree-dp`, followed by `dsu`. Preserve chapter9 segment-tree numbering, distinct original IDs and learner data. All six range-query supplements are published; never replay completed jobs.
+**Next concrete batch:** `dsu`. Preserve chapter9 segment-tree numbering, distinct original IDs and learner data. All six range-query supplements are published; never replay completed jobs.
 
 Remaining focused new groups: bridges/articulation; HLD; centroid decomposition; digit DP; grouped DP optimizations; Aho; suffix array with adjacent LCP; interactive/communication. Place according to prerequisites. Z, KMP, rolling hash, functional graphs,2SAT, matching/flow, Euler and static binary lifting are already substantively covered. Do not add duplicate top-level lessons.
 
-Book chapter 30 is final; no next numbered chapter. All 8 remaining originals plus explicit requested additions still need tracked execution, and package3 is not complete. No package5, deferred progress/profile UI, problem statements/editorials, security expansion or approval review. Every future completed unit still needs real bilingual teaching review, correct compact CP code, native editor/reader checks and fresh guarded publication; source attribution stays centralized.
+Book chapter 30 is final; no next numbered chapter. All 7 remaining originals plus explicit requested additions still need tracked execution, and package3 is not complete. No package5, deferred progress/profile UI, problem statements/editorials, security expansion or approval review. Every future completed unit still needs real bilingual teaching review, correct compact CP code, native editor/reader checks and fresh guarded publication; source attribution stays centralized.
 
 Machine-readable identities, hashes, receipt links, mapping and bounds: [PACKAGE03-CURRICULUM-RECONCILIATION.json](PACKAGE03-CURRICULUM-RECONCILIATION.json).
