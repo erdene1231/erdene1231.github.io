@@ -1,0 +1,756 @@
+{
+  "id": "digit-dp",
+  "expected_absent": true,
+  "reviewed_body_sha256": "9e85f977792ebe06545a1181a4e655f00caf4a44827448c28b68e8508ad7d9b3",
+  "proposed_body_sha256": "9e85f977792ebe06545a1181a4e655f00caf4a44827448c28b68e8508ad7d9b3",
+  "body": {
+    "id": "digit-dp",
+    "level": "Ахисан шат",
+    "order": 35,
+    "title": "Digit DP — хязгаар доторх тоонуудыг цифрээр тоолох",
+    "aliases": "digit dp tight started previous digit bound цифрийн динамик программчлал",
+    "related": [
+      "dynamic-programming",
+      "recursion",
+      "bit-operations"
+    ],
+    "summary": "Ижил дагавартай угтваруудыг нэгтгэн, том мужийн нөхцөл хангасан тоонуудыг хязгаарын цифрийн тоогоор ажиллан тоолно.",
+    "category": "Dynamic programming",
+    "levelKey": "advanced",
+    "sections": [
+      {
+        "key": "bound",
+        "title": "Том мужийг цөөн цифрээр тоолох",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "0-ээс $x$ хүртэлх бүх тоог шалгахын оронд цифрүүдийг нь зүүнээс баруун тийш сонговол яах вэ? $x$ нь 10¹⁸ байхад тоо бүрийг шалгаж амжихгүй ч өөрөө ердөө 19 цифртэй. Ижил төрлийн угтваруудын үлдсэн боломжийг нэгтгэж тоолдог аргыг Digit DP гэнэ. Хариу асар том байж болно, харин тооцоолох төлөвийн тоо жижиг байна."
+          },
+          {
+            "type": "p",
+            "text": "Бүтэн жишээ болгон [a,b] дотор аравтын бичлэгийн залгаа хоёр цифр нь ижил биш тоонуудыг тоолъё. 7, 10, 101 зөв; 11, 100 буруу. Энд 0-ийг зөв тоо гэж БАГТААНА: нэг цифртэй тул зөрчилдөх залгаа хос байхгүй. Нөхцөл зөвхөн бодит аравтын бичлэгт үйлчилнэ, тоолохын тулд урд нь нэмсэн тэгүүдэд биш."
+          },
+          {
+            "type": "p",
+            "text": "$F$($x$)-ийг 0≤$v$≤$x$ нөхцөлтэй зөв тоонуудын тоо гэе. Эхлээд ганц дээд хязгаартай $F$($x$)-ийг олно. Дараа нь хоёр төгсгөлийг багтаасан [a,b] мужийн хариу $F$(b)−$F$(a−1) болно. Тоонуудыг өөрсдийг нь хадгалах шаардлагагүй; хэдэн боломж байгааг л буцаана."
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "Хязгаар, эхэлсэн эсэх ба өмнөх цифр",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Хязгаарыг s мөр болгон хадгалъя. pos нь дараагийн сонгох байрлал, 0-ээс эхэлнэ. tight=true бол сонгосон угтвар s-ийн угтвартай яг тэнцүү; дараагийн цифр s[pos]-оос их байж болохгүй. tight=false бол угтвар аль хэдийн бага болсон тул дараагийн цифр 0..9-ийн аль нь ч байж болно. Хязгаараас давсан угтвар огт үүсгэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "started=true бол эхний тэг биш цифр аль хэдийн сонгогдсон. started=false үед сонгосон тэгүүд нь зөвхөн уртын нөхөөс; залгаа цифрийн дүрэмд оролцохгүй. Бодит цифр эхэлсний дараах 0 бол жинхэнэ цифр мөн. Иймээс 00101 нь 101-ийг илэрхийлж зөв, харин 00100 нь 100-ийг илэрхийлж буруу."
+          },
+          {
+            "type": "p",
+            "text": "prev нь хамгийн сүүлд орсон бодит цифр. Эхлээгүй үед prev=10 гэсэн тусгай тэмдэг хэрэглэнэ; энэ нь аравтын цифр биш. Шинэ $d$ цифрийг started=true, $d$=prev үед хориглоно. pos, tight, started дангаараа хангалтгүй: 12 ба 13 угтварын дараа 2 сонгох боломж өөр тул сүүлийн цифрийг ялган хадгалах хэрэгтэй."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Төлөв",
+              "Утга"
+            ],
+            "rows": [
+              [
+                "pos",
+                "0 .. $D$−1"
+              ],
+              [
+                "prev",
+                "0..9; 10 = эхлээгүй"
+              ],
+              [
+                "tight",
+                "угтвар = хязгаарын угтвар"
+              ],
+              [
+                "started",
+                "бодит цифр эхэлсэн"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Ерөнхий Digit DP бүрт prev хэрэгтэй гэсэн үг биш. Өөр бодлогод цифрийн нийлбэрийн үлдэгдэл, тооны өөрийн үлдэгдэл эсвэл тодорхой цифр орсон эсэх хэрэгтэй байж болно. Цифрийн нийлбэрт үлдэгдэл ($r$+$d$) mod $m$, тооны өөрийн үлдэгдэлд (10r+$d$) mod $m$ гэж шинэчлэгдэнэ: хоёр өөр мэдээлэл. Төлөвт зөвхөн цаашдын зөв эсэх, боломжийн тоонд нөлөөлөх мэдээллийг хадгал. Эндхүү код зөвхөн залгаа цифрийн нөхцөлийг хэрэгжүүлнэ."
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "F(25)-ийн бүтэн мөрдөлт ба эхний тэгүүд",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Бүх тоог хязгаартай ижил $D$ оронтой болгон урд нь тэгээр нөхнө. Энэ нь нэг тоог олон удаа тоолохгүй: $D$ тогтмол үед тоо бүр яг ганц нөхсөн бичлэгтэй. Жишээ нь $F$(25)-д 7 нь 07, 0 нь 00; тусдаа 7 эсвэл 0 гэсэн өөр урттай салбар нэмж тоолохгүй."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Эхний цифр",
+              "Боломжит хоёр дахь цифр",
+              "Нийт"
+            ],
+            "rows": [
+              [
+                "0",
+                "0..9",
+                "10"
+              ],
+              [
+                "1",
+                "0,2,3,4,5,6,7,8,9",
+                "9"
+              ],
+              [
+                "2",
+                "0,1,3,4,5",
+                "5"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Эхний $d$=0 үед угтвар 2-оос бага, started=false хэвээр. Дараагийн 0..9 бүгд зөв: тэг нь 0-ийг, бусад нь 1..9-ийг өгнө. $d$=1 үед tight=false боловч started=true, prev=1 тул дараагийн 1 хориотой. $d$=2 үед tight=true учраас дараагийн цифр 5-аас хэтрэхгүй; prev=2 тул 2-г бас хасна. Иймд $F$(25)=10+9+5=24."
+          },
+          {
+            "type": "table",
+            "headers": [
+              "Үлдсэн төлөв",
+              "prev",
+              "tight",
+              "started",
+              "Хариу"
+            ],
+            "rows": [
+              [
+                "pos=1, угтвар 0",
+                "10",
+                "0",
+                "0",
+                "10"
+              ],
+              [
+                "pos=1, угтвар 1",
+                "1",
+                "0",
+                "1",
+                "9"
+              ],
+              [
+                "pos=1, угтвар 2",
+                "2",
+                "1",
+                "1",
+                "5"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "text": "Бүх $D$ байрлалыг бөглөсөн бол 1 боломж олдсон гэж буцаана. Зөрчилтэй хос бүрийг өмнө нь хассан тул дууссан салбар болгон зөв. Эхлээгүй хэвээр дуусах цорын ганц салбар нь дан нөхөөс тэгүүд бөгөөд 0-ийг нэг удаа тоолно. Хэрэв бодлого зөвхөн эерэг тоо хүсвэл энэ төгсгөлийн нөхцөл эсвэл тэгийн тооцоог зориуд өөрчилнө; 0 бүх бодлогод автоматаар зөв гэж үзэхгүй."
+          },
+          {
+            "type": "p",
+            "text": "101 гэсэн хязгаарт эхний 0 салбар 0..99-ийн 91 зөв тоог өгнө. 1-ээр эхэлбэл дараа нь зөвхөн 0 сонгож болно; сүүлчийн 0 нь өмнөх 0-той давхцах тул хасагдаж, 1 нь үлдэнэ. Тиймээс $F$(100)=91, $F$(101)=92. Нөхөөс тэгийг зөвшөөрөх ба тоо эхэлсний дараах давхар 0-ийг хориглох ялгааг энэ жишээ ил гаргана."
+          }
+        ]
+      },
+      {
+        "key": "memo",
+        "title": "Ижил дагаврыг нэг удаа тоолох",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "DFS-ийн буцаах утга нь одоо сонгосон угтварын тоо биш, түүнийг гүйцээх зөв дагаврын тоо. tight=false болсон үед өмнөх бүтэн угтвар ямар байсан нь хэрэггүй: pos, prev, started ижил бол үлдсэн боломж ижил. Үр дүнг dp[pos][prev][started]-д хадгална."
+          },
+          {
+            "type": "p",
+            "text": "Дөрвөн цифрийн хязгаар 9876 байг. 13 ба 23 угтварын дараа pos=2, prev=3, started=true, tight=false ижил. Үлдсэн хоёр цифрийн эхнийх 3-аас бусад 9 сонголт, дараагийнх өмнөхөөсөө бусад 9 сонголттой тул хоёр салбар хоёулаа 81 гүйцээлттэй. Бүтэн угтвар бүрт дахин тооцохын оронд нэг төлөвийг хуваалцана."
+          },
+          {
+            "type": "p",
+            "text": "tight=true үед үлдсэн цифрүүд хязгаарын дагаварт баригдана. Манай хүснэгт tight түлхүүр агуулаагүй тул зөвхөн tight=false төлөвийг хадгалж, уншина. Хязгаартай төлөвийн утгыг сул төлөвийнхтэй хольж болохгүй. Хүснэгт −1 бол тооцоогүй, 0 бол тооцсон боловч боломжгүй гэсэн хоёр өөр утгатай."
+          },
+          {
+            "type": "p",
+            "text": "$F$($x$) дуудах бүрд хүснэгтийг шинэчилнэ. Учир нь pos нь зүүнээс тоолсон байрлал: хязгаарын урт солигдоход үлдсэн цифрийн тоо өөр болно. Ижил урт, ижил дүрэмтэй сул төлөвүүдийг онолын хувьд дахин ашиглаж болох ч энд алдаа багатайгаар дуудлага бүрд цэвэрлэнэ. $F$(b)-ийн хүснэгтийг өөр урттай $F$(a−1)-д шууд үлдээж болохгүй."
+          },
+          {
+            "type": "p",
+            "text": "$D$ цифрт хамгийн ихдээ $D$·11·2 сул төлөв, төлөв бүрт 10 цифр туршина. Хугацаа $O(D·11·2·10)$, санах ой $O(D·11·2)$, рекурсийн гүн $O(D)$. 10¹⁸-д $D$=19 тул тоонуудын тоогоор бус цифрийн тоогоор ажиллаж байна."
+          }
+        ]
+      },
+      {
+        "key": "range",
+        "title": "Мужийн хасалт, зөвийн баталгаа ба тооны хүрээ",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "$F$(b) нь [0,b]-ийн зөв тоонууд, $F$(a−1) нь түүн доторх [0,a−1]-ийн зөв тоонууд. Хоёр дахь багцыг хасахад [a,b] үлдэнэ. Жишээ нь [10,25]-д 24−10=14. [0,0]-д $F$(0)−$F$(−1)=1−0=1, [1,9]-д $F$(9)−$F$(0)=10−1=9."
+          },
+          {
+            "type": "p",
+            "text": "a=0 үед a−1=−1 болно. $F$($x$) нь $x$<0 үед шууд 0 буцааж, хязгаарыг цифрийн мөр болгохгүй. a,b-г unsigned төрөлд авбал 0−1 нь сөрөг болохын оронд маш том утга руу ороож болзошгүй; энд signed ll ашиглана. Мөн эхлээд $F$(b), дараа нь $F$(a−1)-ийг тусдаа хувьсагчид авч, хоёр эхлүүлэлтийг ил харуулна."
+          },
+          {
+            "type": "p",
+            "text": "Зөв болохыг байрлалын тоогоор баталж болно. Нэг байрлалд tight зөвшөөрсөн бүх цифрийг яг нэг удаа туршиж, зөвхөн бодит ижил залгаа хосыг хасна. Дараагийн төлөв шинэ угтварын хязгаар, эхэлсэн эсэх, сүүлийн цифрийг яг хадгална. Өөр цифрийн салбарууд давхцахгүй, бүх зөв бичлэг тэдгээрийн нэгэнд багтана. Төгсгөл бүрийн 1-ийг нэмэх нь зөв тоо бүрийг нэг удаа тоолно; memo нь ижил дэд бодлогыг л дахин ашигладаг."
+          },
+          {
+            "type": "p",
+            "text": "Оролтын хүрээ 0≤a≤b≤10¹⁸. Хариу b+1-ээс ихгүй тул signed 64-bit ll-д багтана, харин int-д багтах албагүй. Индекс, цифр, логик төлөвт int/bool хангалттай. Жишээ нь $F$(10¹⁸)=168856464709124011; энэ тоог int эсвэл нарийвчлал алдах хөвөгч цэгийн төрөлд хадгалахгүй. Энэ программ боломжийн яг тоог хэвлэнэ, үлдэгдэл авч багасгахгүй."
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "Төлөвөөс бүтэн C++17 программ хүртэл",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "DigitDP нь одоогийн хязгаарын s мөр ба memo хүснэгтийг нэг газар хадгална. Хамгийн урт хязгаар 19 цифртэй тул 20 байрлал, prev=0..10, started=0/1 хэмжээтэй хүснэгт хангалттай. count нь дуудлага бүрд эхлүүлэлт хийнэ; dfs-ийг эхлүүлэлтгүй шууд дуудахгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct DigitDP {\n    string s;\n    ll dp[20][11][2];"
+          },
+          {
+            "type": "p",
+            "text": "Бүх байрлал дууссан үед 1 буцаана. Сул төлөв өмнө тооцогдсон эсэхийг −1-тэй харьцуулж шалгана. tight=true бол хүснэгт уншихгүй."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "ll dfs(int pos, int prev, bool tight, bool started) {\n        if (pos == (int)s.size()) return 1;\n        if (!tight && dp[pos][prev][started] != -1) {\n            return dp[pos][prev][started];\n        }"
+          },
+          {
+            "type": "p",
+            "text": "Тухайн байрлалын дээд цифрийг сонгоод 0-ээс limit хүртэл туршина. Тоо эхэлсэн бөгөөд $d$=prev үед салбарыг тэр дор нь хасна. Тэгэхгүй бол залгаа нөхцөл зөв хэвээр."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int limit = tight ? s[pos] - '0' : 9;\n        ll ans = 0;\n        for (int d = 0; d <= limit; d++) {\n            if (started && d == prev) continue;"
+          },
+          {
+            "type": "p",
+            "text": "nt нь өмнө tight байсан БА шинэ цифр хязгаарын цифртэй тэнцүү үед л true. Нэгэнт бага болсон угтвар дахин tight болохгүй. ns нэгэнт true бол буцаад false болохгүй. np нь дараагийн prev: бодит цифр эхэлсэн бол $d$, үгүй бол 10."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "bool nt = tight && d == s[pos] - '0';\n            bool ns = started || d != 0;\n            int np = ns ? d : 10;\n            ans += dfs(pos + 1, np, nt, ns);\n        }"
+          },
+          {
+            "type": "p",
+            "text": "Гүйцээлтүүдийн ll нийлбэрийг зөвхөн сул төлөвт хадгална. Дараа нь дээд түвшинд буцаана."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "if (!tight) dp[pos][prev][started] = ans;\n        return ans;\n    }"
+          },
+          {
+            "type": "p",
+            "text": "count нь сөрөг $x$-д 0 буцаана. Бусад $x$-г мөр болгохдоо хөвөгч цэгийн log10 эсвэл pow ашиглахгүй, to_string яг цифрүүдийг өгнө."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "ll count(ll x) {\n        if (x < 0) return 0;\n        s = to_string(x);"
+          },
+          {
+            "type": "p",
+            "text": "Memo-ийн нүд бүрийг −1 болгож шинэчилнэ. Эхний төлөв pos=0, prev=10, tight=true, started=false: угтвар хоосон тул хязгаартай тэнцүү, бодит цифр эхлээгүй байна."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "for (auto& row : dp) {\n            for (auto& cell : row) cell[0] = cell[1] = -1;\n        }\n        return dfs(0, 10, true, false);\n    }\n};"
+          },
+          {
+            "type": "p",
+            "text": "main нь a,b-г ll-ээр уншиж, дээд хязгаар хүртэлх ба доод хязгаарын өмнөх тооллогыг тусад нь хийж хасна. Нэг DigitDP объектыг дахин хэрэглэж байгаа ч count бүр memo болон мөрөө шинэчилдэг."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    ll a, b;\n    cin >> a >> b;\n    DigitDP digit;\n    ll hi = digit.count(b);\n    ll lo = digit.count(a - 1);\n    cout << hi - lo << '\\n';\n}"
+          },
+          {
+            "type": "p",
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нэгтгэсэн бүтэн C++17 программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct DigitDP {\n    string s;\n    ll dp[20][11][2];\n    ll dfs(int pos, int prev, bool tight, bool started) {\n        if (pos == (int)s.size()) return 1;\n        if (!tight && dp[pos][prev][started] != -1) {\n            return dp[pos][prev][started];\n        }\n        int limit = tight ? s[pos] - '0' : 9;\n        ll ans = 0;\n        for (int d = 0; d <= limit; d++) {\n            if (started && d == prev) continue;\n            bool nt = tight && d == s[pos] - '0';\n            bool ns = started || d != 0;\n            int np = ns ? d : 10;\n            ans += dfs(pos + 1, np, nt, ns);\n        }\n        if (!tight) dp[pos][prev][started] = ans;\n        return ans;\n    }\n    ll count(ll x) {\n        if (x < 0) return 0;\n        s = to_string(x);\n        for (auto& row : dp) {\n            for (auto& cell : row) cell[0] = cell[1] = -1;\n        }\n        return dfs(0, 10, true, false);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    ll a, b;\n    cin >> a >> b;\n    DigitDP digit;\n    ll hi = digit.count(b);\n    ll lo = digit.count(a - 1);\n    cout << hi - lo << '\\n';\n}\n"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал, лавлах шалгалт ба бие даалт",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эзэмших дасгал: $F$(11), $F$(99), $F$(100), $F$(101)-ийг гараар гарга. Хариунууд 11,91,91,92. Дараа нь [11,11], [100,100], [101,101] мужуудад 0,0,1 гарахыг шалга. started-ийг хасаад урд талын 0-үүдэд залгаа нөхцөл тавибал 0 болон богино тоонууд яагаад алга болохыг тайлбарла."
+          },
+          {
+            "type": "p",
+            "text": "Бие даасан лавлахад жижиг мужийн тоо бүрийг мөр болгон хувиргаад жинхэнэ залгаа хосуудыг шалга. Digit DP-ийн рекурс, tight эсвэл memo-г давтаж бичихгүй. 0, нэг оронтой тоонууд, 10-ын зэрэг орчмын мужууд, 11…1, 99…9 давтагдсан цифрүүд, урт нь солигддог ээлжилсэн count дуудлагуудыг оруул."
+          },
+          {
+            "type": "p",
+            "text": "Том хязгаарын нэмэлт шалгалт: $10^k-1$ хүртэл 0 нэг удаа, $i$ оронтой зөв тоо $9^i$ ширхэг. Эхний цифрт 1..9-ийн 9 сонголт, дараагийнх бүр өмнөхөөсөө бусад 9 сонголттой. Иймээс $F(10^k-1)=1+9+9^2+\\cdots+9^k$. Энэ нь memo-оос үл хамаарах том хариуны лавлах болно."
+          },
+          {
+            "type": "p",
+            "text": "Сэдвийг эзэмших үндсэн бодлого"
+          },
+          {
+            "type": "problem",
+            "problemKey": "358"
+          },
+          {
+            "type": "p",
+            "text": "Counting Numbers: дээрх программын яг хэрэгжүүлсэн нөхцөл, хүрээтэй. Эхлээд жижиг мужид шууд тоолсон лавлахтай тулгаад 10¹⁸ хязгаарыг шалга."
+          },
+          {
+            "type": "p",
+            "text": "Бие даах ба төлөвөө өргөжүүлэх бодлогууд"
+          },
+          {
+            "type": "problem",
+            "problemKey": "552"
+          },
+          {
+            "type": "p",
+            "text": "Counting Bits: хоёртын цифрүүд дэх 1-ийн нийт тоог асуудаг өөр нэгтгэл. Зөв тоонуудын тоо ба 1-үүдийн нийлбэрийг ялга; зөвхөн аравтын 10 сонголтыг хоёр болгосноор энэ программ шууд шийдэхгүй."
+          },
+          {
+            "type": "problem",
+            "problemKey": "695"
+          },
+          {
+            "type": "p",
+            "text": "AtCoder DP S — Digit Sum: цифрийн нийлбэрийн үлдэгдэл, зөвхөн эерэг тоо, modulo 10⁹+7 хэрэгтэй. $K$ нь 10000 хүртэл цифртэй байж болох тул ll рүү хөрвүүлэхгүй; энэ 19 цифрийн рекурсийг уртасгахын оронд тохирсон итератив DP хэрэглэ."
+          },
+          {
+            "type": "problem",
+            "problemKey": "947"
+          },
+          {
+            "type": "p",
+            "text": "Magic Numbers: цифрийн бодит байрлалын дүрэм болон тооны $m$-д хуваах үлдэгдэл хэрэгтэй. Хязгаарууд ижил урттай, эерэг, 2000 хүртэл цифртэй; нөхөөс тэг, modulo хариу, доод хязгаарын боловсруулалтыг өөрийн нөхцөлд дахин тодорхойл. Энэ exact-count программыг өөрчлөлтгүй хэрэглэхгүй."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Digit DP — counting numbers under a bound",
+        "summary": "Merge prefixes with equivalent suffixes to count valid numbers using the bound’s digit length rather than its numeric size.",
+        "sections": [
+          {
+            "key": "bound",
+            "title": "Counting a large range through a few digits",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Instead of examining every integer from 0 through $x$, choose its digits from left to right. A bound of 10¹⁸ is far too large to enumerate, but has only 19 digits. Digit DP combines prefixes that admit the same valid suffixes. The answer may be huge while the number of computational states stays small."
+              },
+              {
+                "type": "p",
+                "text": "Our complete example counts integers in [a,b] with no equal adjacent digits in their decimal representation. Values 7, 10 and 101 are valid; 11 and 100 are not. We INCLUDE zero: its one-digit representation has no adjacent pair. The condition applies to real digits, not the padding zeros used while counting."
+              },
+              {
+                "type": "p",
+                "text": "Let $F$($x$) count valid $v$ with 0≤$v$≤$x$. First solve the single-upper-bound problem. The inclusive range answer is then $F$(b)−$F$(a−1). We need not store the numbers themselves, only the number of possibilities."
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "The bound flag, started flag and previous digit",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Store the bound as a string s. pos is the next position, starting at 0. tight=true means the chosen prefix equals the bound prefix, so the next digit cannot exceed s[pos]. tight=false means the prefix is already smaller, allowing any digit 0..9. We never construct an oversized prefix."
+              },
+              {
+                "type": "p",
+                "text": "started=true means a nonzero digit has already begun the actual number. Zeros chosen while started=false are length padding and do not participate in adjacency checks. A zero AFTER the number starts is a real digit. Thus padded 00101 represents valid 101, while 00100 represents invalid 100."
+              },
+              {
+                "type": "p",
+                "text": "prev stores the last real digit. Before starting, prev=10 is a sentinel, not a decimal digit. Reject a new digit $d$ when started=true and $d$=prev. Position, tightness and started status alone are insufficient: appending 2 is forbidden after 12 but allowed after 13, so the last digit matters."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "State",
+                  "Meaning"
+                ],
+                "rows": [
+                  [
+                    "pos",
+                    "0 .. $D$−1"
+                  ],
+                  [
+                    "prev",
+                    "0..9; 10 = not started"
+                  ],
+                  [
+                    "tight",
+                    "prefix = bound prefix"
+                  ],
+                  [
+                    "started",
+                    "a real digit has begun"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Not every digit DP needs prev. Another predicate might require a digit-sum remainder, the number’s remainder, or a flag indicating whether a digit has appeared. A digit-sum remainder updates as ($r$+$d$) mod $m$; a numeric remainder updates as (10r+$d$) mod $m$. These are different summaries. Store the information that changes the admissible suffixes. Our implementation handles only the adjacent-digit predicate."
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "Tracing F(25) and handling leading zeros",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Pad every number to the bound’s fixed length $D$. This does not count a number repeatedly: for one fixed $D$, each integer has exactly one padded representation. In $F$(25), 7 is 07 and zero is 00. We do not additionally count separate shorter representations."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "First digit",
+                  "Allowed second digits",
+                  "Count"
+                ],
+                "rows": [
+                  [
+                    "0",
+                    "0..9",
+                    "10"
+                  ],
+                  [
+                    "1",
+                    "0,2,3,4,5,6,7,8,9",
+                    "9"
+                  ],
+                  [
+                    "2",
+                    "0,1,3,4,5",
+                    "5"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "Choosing first digit 0 makes the prefix smaller than 2 while started remains false. Every second digit 0..9 is valid, representing zero through nine. Choosing 1 makes tight=false but started=true and prev=1, so a second 1 is forbidden. Choosing 2 keeps tight=true, limiting the second digit to 5, and prev=2 additionally forbids 2. Therefore $F$(25)=10+9+5=24."
+              },
+              {
+                "type": "table",
+                "headers": [
+                  "Remaining state",
+                  "prev",
+                  "tight",
+                  "started",
+                  "Ways"
+                ],
+                "rows": [
+                  [
+                    "pos=1, prefix 0",
+                    "10",
+                    "0",
+                    "0",
+                    "10"
+                  ],
+                  [
+                    "pos=1, prefix 1",
+                    "1",
+                    "0",
+                    "1",
+                    "9"
+                  ],
+                  [
+                    "pos=1, prefix 2",
+                    "2",
+                    "1",
+                    "1",
+                    "5"
+                  ]
+                ]
+              },
+              {
+                "type": "p",
+                "text": "When all $D$ positions are filled, return one completed number. Invalid adjacent pairs were pruned earlier, so every completed branch is valid. The unique branch that never starts consists only of padding zeros and counts zero once. A positive-only problem must deliberately change this acceptance rule or remove zero; zero is not automatically valid for every predicate."
+              },
+              {
+                "type": "p",
+                "text": "For bound 101, first digit 0 contributes the 91 valid values through 99. Starting with 1 forces the next digit to 0; the final 0 repeats that real zero and is rejected, while 1 survives. Hence $F$(100)=91 and $F$(101)=92. This distinguishes harmless padding from repeated zeros inside an actual number."
+              }
+            ]
+          },
+          {
+            "key": "memo",
+            "title": "Memoizing equivalent suffixes",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "The DFS return value counts valid ways to finish the current prefix, not the prefix itself. Once tight=false, its full history is irrelevant: equal pos, prev and started admit equal suffixes. Cache this result in dp[pos][prev][started]."
+              },
+              {
+                "type": "p",
+                "text": "For four-digit bound 9876, prefixes 13 and 23 reach the same pos=2, prev=3, started=true, tight=false state. Each has 9 choices for the next digit and 9 for the last, giving 81 completions. One cached state replaces recomputing the full suffix for both prefixes."
+              },
+              {
+                "type": "p",
+                "text": "A tight state remains constrained by the bound’s suffix. Our table has no tight dimension, so read and write it only when tight=false. Never mix a constrained result with an unrestricted one. The sentinel −1 means uncomputed; zero is a computed state with no valid completions."
+              },
+              {
+                "type": "p",
+                "text": "Reset the table for every $F$($x$) call. pos is an absolute index from the left, so changing the bound length changes the remaining digit count. Loose states of the same length and predicate could be shared in principle, but clearing on each call is simpler and safer. Do not reuse $F$(b)’s position-indexed table for a different-length $F$(a−1)."
+              },
+              {
+                "type": "p",
+                "text": "For $D$ digits, there are at most $D$·11·2 loose states with 10 transitions each. Time is $O(D·11·2·10)$, memory $O(D·11·2)$, and recursion depth $O(D)$. At 10¹⁸, $D$=19: the running time depends on the digit count rather than the numeric interval length."
+              }
+            ]
+          },
+          {
+            "key": "range",
+            "title": "Range subtraction, correctness and numeric bounds",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "$F$(b) counts valid values in [0,b], and $F$(a−1) counts its valid subset [0,a−1]. Subtracting leaves [a,b]. For [10,25], the answer is 24−10=14. For [0,0], it is $F$(0)−$F$(−1)=1−0=1; for [1,9], $F$(9)−$F$(0)=10−1=9."
+              },
+              {
+                "type": "p",
+                "text": "If a=0, then a−1=−1. Return zero immediately for $x$<0, before converting it to a digit string. Unsigned input types could wrap 0−1 into a huge positive value, so use signed ll. Store $F$(b) and $F$(a−1) separately to make the two initializations explicit."
+              },
+              {
+                "type": "p",
+                "text": "Induct on the remaining positions. At each step, try every digit allowed by tight exactly once and reject precisely the equal real-adjacent pairs. The next state retains the new prefix’s bound relation, started status and last digit. Branches with different next digits are disjoint, and every valid representation belongs to one branch. Summing one per valid completion therefore counts each number once; memoization only reuses identical subproblems."
+              },
+              {
+                "type": "p",
+                "text": "Assume 0≤a≤b≤10¹⁸. The answer is at most b+1, fitting signed 64-bit ll but not necessarily int. Positions, digits and flags need only int/bool. For example $F$(10¹⁸)=168856464709124011; do not store this in int or an imprecise floating-point type. This program returns an exact count, not a modular one."
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "From the states to a complete C++17 program",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "DigitDP groups the current bound string and memo table. The bound has at most 19 digits; 20 positions, prev=0..10 and started=0/1 suffice. count initializes each call; dfs is not called directly before initialization."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct DigitDP {\n    string s;\n    ll dp[20][11][2];"
+              },
+              {
+                "type": "p",
+                "text": "Return one when all positions are filled. Compare against −1 to detect a cached loose state. A tight state never reads this table."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "ll dfs(int pos, int prev, bool tight, bool started) {\n        if (pos == (int)s.size()) return 1;\n        if (!tight && dp[pos][prev][started] != -1) {\n            return dp[pos][prev][started];\n        }"
+              },
+              {
+                "type": "p",
+                "text": "Choose the digit limit and try 0 through limit. If the number has started and $d$=prev, reject immediately; otherwise the adjacency condition remains valid."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int limit = tight ? s[pos] - '0' : 9;\n        ll ans = 0;\n        for (int d = 0; d <= limit; d++) {\n            if (started && d == prev) continue;"
+              },
+              {
+                "type": "p",
+                "text": "nt is true only if the old prefix was tight AND the new digit equals the bound digit. A smaller prefix never becomes tight again. Once started is true it stays true. np is the next prev: $d$ once started, otherwise sentinel 10."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "bool nt = tight && d == s[pos] - '0';\n            bool ns = started || d != 0;\n            int np = ns ? d : 10;\n            ans += dfs(pos + 1, np, nt, ns);\n        }"
+              },
+              {
+                "type": "p",
+                "text": "Cache the ll sum only for a loose state, then return it to the caller."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "if (!tight) dp[pos][prev][started] = ans;\n        return ans;\n    }"
+              },
+              {
+                "type": "p",
+                "text": "count returns zero for negative $x$. For other bounds, to_string gives exact digits without floating-point log10 or pow."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "ll count(ll x) {\n        if (x < 0) return 0;\n        s = to_string(x);"
+              },
+              {
+                "type": "p",
+                "text": "Reset every memo cell to −1. Start from pos=0, prev=10, tight=true, started=false: the empty prefix equals the bound’s empty prefix, and no actual digit has begun."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "for (auto& row : dp) {\n            for (auto& cell : row) cell[0] = cell[1] = -1;\n        }\n        return dfs(0, 10, true, false);\n    }\n};"
+              },
+              {
+                "type": "p",
+                "text": "main reads a,b as ll, computes the upper and lower prefix counts separately and subtracts. Reusing one DigitDP object is safe because each count resets the table and bound string."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    ll a, b;\n    cin >> a >> b;\n    DigitDP digit;\n    ll hi = digit.count(b);\n    ll lo = digit.count(a - 1);\n    cout << hi - lo << '\\n';\n}"
+              },
+              {
+                "type": "p",
+                "text": "The complete C++17 program, assembled from the explained fragments in order:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct DigitDP {\n    string s;\n    ll dp[20][11][2];\n    ll dfs(int pos, int prev, bool tight, bool started) {\n        if (pos == (int)s.size()) return 1;\n        if (!tight && dp[pos][prev][started] != -1) {\n            return dp[pos][prev][started];\n        }\n        int limit = tight ? s[pos] - '0' : 9;\n        ll ans = 0;\n        for (int d = 0; d <= limit; d++) {\n            if (started && d == prev) continue;\n            bool nt = tight && d == s[pos] - '0';\n            bool ns = started || d != 0;\n            int np = ns ? d : 10;\n            ans += dfs(pos + 1, np, nt, ns);\n        }\n        if (!tight) dp[pos][prev][started] = ans;\n        return ans;\n    }\n    ll count(ll x) {\n        if (x < 0) return 0;\n        s = to_string(x);\n        for (auto& row : dp) {\n            for (auto& cell : row) cell[0] = cell[1] = -1;\n        }\n        return dfs(0, 10, true, false);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    ll a, b;\n    cin >> a >> b;\n    DigitDP digit;\n    ll hi = digit.count(b);\n    ll lo = digit.count(a - 1);\n    cout << hi - lo << '\\n';\n}\n"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery exercises, independent checks and further practice",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Mastery exercise: derive $F$(11), $F$(99), $F$(100), $F$(101) by hand; they are 11,91,91,92. Then verify singleton ranges [11,11], [100,100], [101,101] return 0,0,1. Explain why removing started and checking padding zeros would lose zero and shorter values."
+              },
+              {
+                "type": "p",
+                "text": "For an independent small-range oracle, convert each integer to a string and test its actual adjacent pairs. Do not reproduce digit-DP recursion, tightness or memoization. Include zero, single digits, ranges around powers of ten, repeated-digit bounds and calls alternating between different digit lengths."
+              },
+              {
+                "type": "p",
+                "text": "A large-bound check: through $10^k-1$, count zero once and $9^i$ valid values of each length $i$. The first digit has 9 choices in 1..9; each later digit has 9 choices excluding its predecessor. Thus $F(10^k-1)=1+9+9^2+\\cdots+9^k$, providing a large-answer check independent of memoization."
+              },
+              {
+                "type": "p",
+                "text": "Core mastery problem"
+              },
+              {
+                "type": "problem",
+                "problemKey": "358"
+              },
+              {
+                "type": "p",
+                "text": "Counting Numbers matches the implemented predicate and bounds. First compare small ranges with enumeration, then test the 10¹⁸ limit."
+              },
+              {
+                "type": "p",
+                "text": "Independent practice and state extensions"
+              },
+              {
+                "type": "problem",
+                "problemKey": "552"
+              },
+              {
+                "type": "p",
+                "text": "Counting Bits aggregates the total number of one-bits, a different quantity. Distinguish the count of numbers from the sum of their set bits; merely changing ten digit choices to two does not adapt this program."
+              },
+              {
+                "type": "problem",
+                "problemKey": "695"
+              },
+              {
+                "type": "p",
+                "text": "AtCoder DP S — Digit Sum needs a digit-sum remainder, positive-only counting and modulo 10⁹+7. $K$ can have up to 10000 digits, so do not convert it to ll or simply extend this 19-digit recursion; use a suitable iterative DP."
+              },
+              {
+                "type": "problem",
+                "problemKey": "947"
+              },
+              {
+                "type": "p",
+                "text": "Magic Numbers needs real-position restrictions and the numeric remainder modulo $m$. Its positive bounds have equal lengths up to 2000 digits. Revisit padding, modular counts and lower-bound handling for that predicate; this exact-count program is not a drop-in solution."
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Dynamic-programming states and recursion"
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Динамик программчлалын төлөв ба рекурс",
+    "priorityLevel": "medium",
+    "priorityReason": "Том хязгаартай тооллогын бодлогод хэрэгтэй нийтлэг ахисан арга боловч суурь DP-ийн дараах тусгай хэрэглээ тул дунд ач холбогдолтой.",
+    "prerequisiteIds": [
+      "dynamic-programming",
+      "recursion"
+    ],
+    "learningRelations": {
+      "variants": [
+        {
+          "tutorialId": "dynamic-programming",
+          "description": "Ижил үлдсэн бодлоготой угтваруудыг нэг төлөвт нэгтгэх санааг харьцуул.",
+          "descriptionEn": "Compare merging prefixes with equivalent remaining subproblems."
+        },
+        {
+          "tutorialId": "bit-operations",
+          "description": "Аравтын болон хоёртын цифрийн тооллогыг ялга.",
+          "descriptionEn": "Compare decimal-digit and binary-digit counting."
+        }
+      ],
+      "practice": [
+        {
+          "key": "358",
+          "stage": "Warm-up",
+          "priority": true,
+          "reason": "pos/tight/started/prev төлөв, тэг ба мужийн хасалтыг бүтэн хэрэгжүүл."
+        },
+        {
+          "key": "552",
+          "stage": "Observation",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "695",
+          "stage": "Application",
+          "priority": false,
+          "reason": ""
+        },
+        {
+          "key": "947",
+          "stage": "Challenge",
+          "priority": false,
+          "reason": ""
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "digit": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct DigitDP {\n    string s;\n    ll dp[20][11][2];\n",
+    "    ll dfs(int pos, int prev, bool tight, bool started) {\n        if (pos == (int)s.size()) return 1;\n        if (!tight && dp[pos][prev][started] != -1) {\n            return dp[pos][prev][started];\n        }\n",
+    "        int limit = tight ? s[pos] - '0' : 9;\n        ll ans = 0;\n        for (int d = 0; d <= limit; d++) {\n            if (started && d == prev) continue;\n",
+    "            bool nt = tight && d == s[pos] - '0';\n            bool ns = started || d != 0;\n            int np = ns ? d : 10;\n            ans += dfs(pos + 1, np, nt, ns);\n        }\n",
+    "        if (!tight) dp[pos][prev][started] = ans;\n        return ans;\n    }\n",
+    "    ll count(ll x) {\n        if (x < 0) return 0;\n        s = to_string(x);\n",
+    "        for (auto& row : dp) {\n            for (auto& cell : row) cell[0] = cell[1] = -1;\n        }\n        return dfs(0, 10, true, false);\n    }\n};\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    ll a, b;\n    cin >> a >> b;\n    DigitDP digit;\n    ll hi = digit.count(b);\n    ll lo = digit.count(a - 1);\n    cout << hi - lo << '\\n';\n}\n"
+  ]
+}
