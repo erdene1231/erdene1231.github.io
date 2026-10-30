@@ -1,0 +1,12 @@
+{
+  "suffix": [
+    "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct SuffixArray {\n    int n;\n    vector<int> sa, rank, lcp;\n    SuffixArray(const string& s) {\n        n = (int)s.size();\n        sa.resize(n);\n        rank.resize(n);\n        for (int i = 0; i < n; i++) {\n            sa[i] = i;\n            rank[i] = (unsigned char)s[i];\n        }\n",
+    "        vector<int> nr(n);\n        for (int len = 1; len < n; ) {\n            auto key = [&](int i) {\n                return pair<int, int>{rank[i], i < n - len ? rank[i + len] : -1};\n            };\n",
+    "            sort(sa.begin(), sa.end(), [&](int a, int b) {\n                return key(a) < key(b);\n            });\n            nr[sa[0]] = 0;\n            for (int i = 1; i < n; i++) {\n                nr[sa[i]] = nr[sa[i - 1]] + (key(sa[i - 1]) != key(sa[i]));\n            }\n",
+    "            rank.swap(nr);\n            if (rank[sa[n - 1]] == n - 1 || len >= n - len) break;\n            len *= 2;\n        }\n",
+    "        for (int i = 0; i < n; i++) rank[sa[i]] = i;\n        lcp.assign(n, 0);\n        int h = 0;\n        for (int i = 0; i < n; i++) {\n            int r = rank[i];\n            if (r == 0) {\n                h = 0;\n                continue;\n            }\n",
+    "            int j = sa[r - 1];\n            while (i + h < n && j + h < n && s[i + h] == s[j + h]) h++;\n            lcp[r] = h;\n            if (h > 0) h--;\n        }\n    }\n",
+    "    ll distinct() const {\n        ll ans = 1LL * n * (n + 1) / 2;\n        for (int x : lcp) ans -= x;\n        return ans;\n    }\n};\n\n",
+    "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string s;\n    getline(cin, s);\n    SuffixArray a(s);\n    for (int i = 0; i < a.n; i++) {\n        cout << a.sa[i] << ' ' << a.lcp[i] << '\\n';\n    }\n    cout << a.distinct() << '\\n';\n}\n"
+  ]
+}
