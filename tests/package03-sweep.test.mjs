@@ -13,7 +13,7 @@ test('chapter30 full native MN/EN source traces and synchronized programs',()=>{
  }
  const e=read('audit/PACKAGE03-SWEEP-EXAMPLES.json');assert.equal(e.source_upper_trace.length,20);
  assert.equal(handbookChapterNumbers['sweep-line'],30);assert.deepEqual(orderTutorials([{id:'sweep-line'},{id:'geometry'}]).map(x=>x.id),['geometry','sweep-line']);
- const c=read('curriculum.json');assert.deepEqual(c.lessons['sweep-line'].practice,d.body.learningRelations.practice);assert(!c.backlog.some(x=>x.id==='sweep-line'));assert(c.backlog.some(x=>x.id==='suffix-array'));assert(c.lessons['aho-corasick']);assert(!c.backlog.some(x=>x.id==='aho-corasick'));
+ const c=read('curriculum.json');assert.deepEqual(c.lessons['sweep-line'].practice,d.body.learningRelations.practice);assert(!c.backlog.some(x=>x.id==='sweep-line'));assert(c.lessons['suffix-array']);assert(!c.backlog.some(x=>x.id==='suffix-array'));assert(c.lessons['aho-corasick']);assert(!c.backlog.some(x=>x.id==='aho-corasick'));
 });
 async function fixture(){const db=(await foundationDatabase()).db;const g=read('audit/package03-lessons/geometry.json').body;await db.query('insert into tutorial_catalog(id,body,revision,published) values($1,$2,1,true)',['geometry',g]);return db;}
 async function guard(db){return{...await localOwnerGuard(db),...(await db.query(`select(select count(*)::int from tutorial_catalog)catalog_count,(select md5(jsonb_agg(to_jsonb(t)order by id)::text)from tutorial_catalog t)catalog_fingerprint,(select md5(coalesce(jsonb_agg(to_jsonb(x)order by tutorial_id,editor_id)::text,'[]'))from tutorial_drafts x)all_drafts_fingerprint`)).rows[0]};}
