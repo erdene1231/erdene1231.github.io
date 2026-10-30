@@ -1,8 +1,8 @@
 # Handbook original curriculum closure
 
-All 55 original stable IDs were rewritten and verified published. Ten separate additions give 65 public lessons; 66 stored records include the untouched Mongolia draft test. All original IDs match their actual receipt files, current anonymous bodies/revisions and current database history. All ten additions also match actual receipts and public content. This does not claim owner acceptance.
+All 55 original stable IDs were rewritten and verified published. Eleven separate additions give 66 public lessons; 67 stored records include the untouched Mongolia draft test. All original IDs match their actual receipt files, current anonymous bodies/revisions and current database history. All eleven additions also match actual receipts and public content. This does not claim owner acceptance.
 
-Package 3 remains incomplete because eight requested addition groups remain. No new topic is counted by this closure; all three deferred UI/progress requests remain deferred.
+Package 3 remains incomplete because seven requested addition groups remain. The original55 closure remains historical; bridges/articulation revision1/history278 is the latest separately verified addition; all three deferred UI/progress requests remain deferred.
 
 ## All 55 original IDs
 
@@ -64,7 +64,7 @@ Package 3 remains incomplete because eight requested addition groups remain. No 
 | [debugging](https://erdeneclub.com/#tutorial/debugging) | 3 | [PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json](PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json) |
 | [subtask-strategy](https://erdeneclub.com/#tutorial/subtask-strategy) | 3 | [PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json](PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json) |
 
-## Ten separately published additions
+## Eleven separately published additions
 
 | Stable ID | Revision |
 |---|---:|
@@ -78,10 +78,10 @@ Package 3 remains incomplete because eight requested addition groups remain. No 
 | `sqrt-algorithms` | 1 |
 | `geometry` | 1 |
 | `sweep-line` | 1 |
+| `bridges-articulation` | 1 |
 
 ## Remaining requested additions
 
-- bridges-articulation
 - heavy-light-decomposition
 - centroid-decomposition
 - digit-dp
