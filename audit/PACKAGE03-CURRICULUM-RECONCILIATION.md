@@ -1,8 +1,8 @@
 # Handbook original curriculum closure
 
-All 55 original stable IDs were rewritten and verified published. Fourteen separate additions give 69 public lessons; 70 stored records include the untouched Mongolia draft test. All original IDs match their actual receipt files, current anonymous bodies/revisions and current database history. All fourteen additions also match actual receipts and public content. This does not claim owner acceptance.
+All 55 original stable IDs were rewritten and verified published. Fifteen separate additions give 70 public lessons; 71 stored records include the untouched Mongolia draft test. All original IDs match their actual receipt files, current anonymous bodies/revisions and current database history. All fifteen additions also match actual receipts and public content. This does not claim owner acceptance.
 
-Package 3 remains incomplete because four requested addition groups remain. The original55 closure remains historical; Digit DP revision1/history281 is the latest separately verified addition; all three deferred UI/progress requests remain deferred.
+Package 3 remains incomplete because three requested addition groups remain. The original55 closure remains historical; DP optimizations revision1/history282 is the latest separately verified addition; all three deferred UI/progress requests remain deferred.
 
 ## All 55 original IDs
 
@@ -64,7 +64,7 @@ Package 3 remains incomplete because four requested addition groups remain. The 
 | [debugging](https://erdeneclub.com/#tutorial/debugging) | 3 | [PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json](PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json) |
 | [subtask-strategy](https://erdeneclub.com/#tutorial/subtask-strategy) | 3 | [PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json](PACKAGE03-METHODOLOGY-PUBLICATION-RECEIPT.json) |
 
-## Fourteen separately published additions
+## Fifteen separately published additions
 
 | Stable ID | Revision |
 |---|---:|
@@ -82,10 +82,10 @@ Package 3 remains incomplete because four requested addition groups remain. The 
 | `heavy-light-decomposition` | 1 |
 | `centroid-decomposition` | 1 |
 | `digit-dp` | 1 |
+| `dp-optimizations` | 1 |
 
 ## Remaining requested additions
 
-- dp-optimizations
 - aho-corasick
 - suffix-array-with-LCP
 - interactive-communication
