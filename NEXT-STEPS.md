@@ -1,3 +1,13 @@
+## Handbook focused DFS/flood-fill publication — 2026-10-30 00:37 UTC
+
+`dfs` revision 7/history 264 and `flood-fill` revision 7/history 265 are published after tested PR #178 merge `17a283979c11308a75d8696544a9c7d4ea4ae14f`. Exact anonymous MN/EN retrieval matches both reviewed bodies. Pages run 40980790820 succeeded; 16 cache 75 closure/JSON files match under normal TLS. Actual public-body native checks are local; no authenticated live-browser claim or certificate bypass.
+
+One-time SQL SHA256 `07d9445b7b8b7cc230cbfc99ae289ef4df2d013d6d67c4ba82c930b8d1c1fe05` SUCCEEDED; NEVER REPLAY. Private scoped recovery/intent/result: `/workspace/package03-dfs-fill-execution`; postchecks: `/workspace/package03-dfs-fill-postpublish`. Safe receipt: `audit/PACKAGE03-DFS-FILL-PUBLICATION-RECEIPT.json`. All 64 other catalog rows, all 8 private drafts/base revisions, Mongolia, 1010 problems and learner/profile/ACL/RLS/function fingerprints remain unchanged. Prior jobs/migrations remain non-replayable.
+
+Three C++17 programs passed UBSan: small-input recursive DFS, primary explicit-frame DFS and iterative grid fill. Independent models check 1,240 graphs against BFS connectivity plus parent/timestamp invariants and exact recursive/frame agreement; 809 grids against BFS and geometric unit-edge cancellation. A 200,000-vertex chain runs only iteratively; million-cell open/wall grids, corridors, checkerboard, holes, diagonal separation, self-loops/multiedges and empty/singleton cases pass. 311 Node tests, native candidate/public reader cases 16 each, 4 MN/EN candidate editor and 2 public editor round-trips pass. A test-only hashchange synchronization fix waits for the real active/visible TOC target before screenshot; no runtime navigation change. Original graph timestamps and grid areas 3/6/4, perimeters 8/12/10 are retained. All metadata/practice flags remain exact.
+
+Original handbook rewrite cycle: 43/55 published, 12 pending; 10 additions separately. All 65 public hashes match the ledger. Next pair: connected-components and bipartite. Preserve all remaining original IDs, eight pending additions and the three deferred UI/progress items. No owner acceptance inferred, package 5, new problem statements/editorials, access changes or GitHub APPROVE reviews.
+
 ## Handbook focused bitmask-DP publication — 2026-10-30 00:11 UTC
 
 `bitmask-dp` revision 7/history 263 is published after tested PR #176 merge `e79a8cdab2276a1178f4d7b36973709e908239ff`. Exact anonymous MN/EN retrieval matches the reviewed body. Pages run 40978019416 succeeded; 16 cache 75 runtime/JSON closure files match under normal TLS. Actual public-body native fixtures are checked locally without certificate bypass or authenticated live-user claims.
