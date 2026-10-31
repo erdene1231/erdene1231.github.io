@@ -1,0 +1,1876 @@
+[
+  {
+    "id": "task-784",
+    "number": 784,
+    "ref": "typical90_bh",
+    "expected_revision": 3,
+    "expected_body_sha256": "1f9d73ee5f93f318d100d50da35a1799f18253cfa20854b4dcfd85893c981501",
+    "editorial_sha256": "91e7af6e35f45cfffe1dd8f98ef729f75e2ee2fdccf748fce940bd096f27bde2",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_bh",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-bh",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Chimera — Бодолт",
+      "sections": [
+        {
+          "title": "Хоёр чиглэлийн LIS",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$L_i$-г $i$ дээр төгсөх strictly increasing subsequence-ийн хамгийн их урт гэе. Массивыг урвуулж мөн тооцоод буцааж харгалзуулбал $R_i$ нь $i$ дээрээс эхлэх strictly decreasing subsequence-ийн хамгийн их урт болно. Оргил $i$ үед хариу $L_i+R_i-1$."
+            }
+          ]
+        },
+        {
+          "title": "Binary Search ба жишээ",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "tail[t]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь одоог хүртэлх prefix дотор урт $t+1$ increasing subsequence-ийн хамгийн бага төгсгөлийн утга. $a_i$-аас багагүй анхны байрлалыг lower_bound-аар олоод сольж эсвэл сунгана. Тэр байрлал дээр нэгийг нэмсэн нь яг $i$ дээр төгсөх урт; ",
+                  "marks": []
+                },
+                {
+                  "text": "tail.size()",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь prefix-ийн нийт optimum тул түүнийг $L_i$ гэж хадгалж болохгүй.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "p",
+              "text": "$[1,4,2,3,2]$-оос $[1,2,3,2]$ сонгож урт $4$ авна. Бүх утга $2$ бол strictly нөхцөлөөс хариу $1$. Оргил нь эхний эсвэл сүүлийн сонгосон элемент байж болно."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Урт $t$-ийн төгсгөлийг жижиг байлгах нь дараа нь сунгах боломжийг хэзээ ч багасгахгүй. lower_bound-ийн өмнөх бүх төгсгөл $a_i$-аас бага тул олдсон байрлалын урттай subsequence дээр $a_i$-г залгаж чадна. Илүү урт өмнөх subsequence-ийн хамгийн бага төгсгөл хүртэл $a_i$-аас бага биш тул түүнээс сунгах боломжгүй. Иймээс хадгалсан урт яг зөв; ижил утга уртыг нэмэхгүй."
+            },
+            {
+              "type": "p",
+              "text": "Урвуу массивын increasing subsequence нь анхны массивт баруун тийш decreasing subsequence болно. Оргилын зүүн талын индексүүд $i$-аас бага, баруун талынх их тул хоёр optimum-ийг $i$ дээр нийлүүлж болно. Оргилыг нэг удаа тоолохын тулд нэгийг хасна. Ямар ч хүчинтэй сонголт өөрийн оргил дээрээ энэ нийлбэрээс хэтрэхгүй, харин нийлбэр бүр хүрч болох тул maximum нь optimum."
+            }
+          ]
+        },
+        {
+          "title": "Complexity",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хугацаа $O(N\\log N)$, санах ой $O(N)$. Source-ийн $N\\le300000$, $1\\le A_i\\le N$ тул утга, урт, индекс int-д багтана."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Minimal tail ба тухайн индексийн урт"
+            },
+            {
+              "type": "p",
+              "text": "lower_bound нь ижил утгыг сольдог. Ингэснээр strict LIS-ийг хадгална."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<int> lisLengths(const vector<int> &a) {\n    vector<int> tail, length(a.size());\n    for (int i = 0; i < int(a.size()); ++i) {\n        auto it = lower_bound(tail.begin(), tail.end(), a[i]);\n        int pos = int(it - tail.begin());\n        if (it == tail.end()) tail.push_back(a[i]);\n        else *it = a[i];\n        length[i] = pos + 1;\n    }\n    return length;\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Оргил бүрийг нэгтгэх"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Урвуу талын $i$ индекс нь ",
+                  "marks": []
+                },
+                {
+                  "text": "n-1-i",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " байрлалтай харгалзана.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "auto left = lisLengths(a);\nreverse(a.begin(), a.end());\nauto right = lisLengths(a);\nint ans = 0;\nfor (int i = 0; i < n; ++i) ans = max(ans, left[i] + right[n - 1 - i] - 1);\ncout << ans << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bh"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvector<int> lisLengths(const vector<int> &a) {\n    vector<int> tail, length(a.size());\n    for (int i = 0; i < int(a.size()); ++i) {\n        auto it = lower_bound(tail.begin(), tail.end(), a[i]);\n        int pos = int(it - tail.begin());\n        if (it == tail.end()) tail.push_back(a[i]);\n        else *it = a[i];\n        length[i] = pos + 1;\n    }\n    return length;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<int> a(n);\n    for (int &x : a) cin >> x;\n    auto left = lisLengths(a);\n    reverse(a.begin(), a.end());\n    auto right = lisLengths(a);\n    int ans = 0;\n    for (int i = 0; i < n; ++i) ans = max(ans, left[i] + right[n - 1 - i] - 1);\n    cout << ans << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Chimera — Editorial",
+          "sections": [
+            {
+              "title": "LIS from both directions",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Let $L_i$ be the longest strictly increasing subsequence ending at $i$. Apply the same computation to the reversed array and map indices back to obtain $R_i$, the longest strictly decreasing subsequence starting at $i$. A peak at $i$ gives $L_i+R_i-1$."
+                }
+              ]
+            },
+            {
+              "title": "Binary Search and example",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Maintain ",
+                      "marks": []
+                    },
+                    {
+                      "text": "tail[t]",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ", the smallest ending value of an increasing subsequence of length $t+1$ in the processed prefix. Replace the first value at least $a_i$, found by lower_bound, or append. Its position plus one is the length ending specifically at $i$; the overall prefix optimum ",
+                      "marks": []
+                    },
+                    {
+                      "text": "tail.size()",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " is not that value.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "p",
+                  "text": "From $[1,4,2,3,2]$, select $[1,2,3,2]$ of length four. An all-two array gives one because inequalities are strict. The peak may be the first or last selected element."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Keeping the smallest endpoint of a given length never reduces future extension opportunities. Every tail before the lower_bound position is smaller than $a_i$, so the preceding length can be extended by $a_i$. Even the smallest endpoint for a longer predecessor length is not smaller than $a_i$, ruling out a longer extension. Thus the recorded ending length is exact; equal values do not extend it."
+                },
+                {
+                  "type": "p",
+                  "text": "Increasing subsequences in reverse correspond to decreasing subsequences to the right in the original array. The optimal left and right parts use disjoint index ranges except for their common peak, so they can be joined, subtracting one duplicate count. Every valid selection is bounded by this sum at its peak, and every such sum is attainable. Taking the maximum is therefore optimal."
+                }
+              ]
+            },
+            {
+              "title": "Complexity",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Time is $O(N\\log N)$ and space $O(N)$. The source bounds $N\\le300000$ and $1\\le A_i\\le N$ keep values, lengths and indices within int."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Minimal tails and per-index lengths"
+                },
+                {
+                  "type": "p",
+                  "text": "lower_bound replaces an equal value, preserving strict LIS semantics."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<int> lisLengths(const vector<int> &a) {\n    vector<int> tail, length(a.size());\n    for (int i = 0; i < int(a.size()); ++i) {\n        auto it = lower_bound(tail.begin(), tail.end(), a[i]);\n        int pos = int(it - tail.begin());\n        if (it == tail.end()) tail.push_back(a[i]);\n        else *it = a[i];\n        length[i] = pos + 1;\n    }\n    return length;\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Combine each possible peak"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The original index $i$ corresponds to ",
+                      "marks": []
+                    },
+                    {
+                      "text": "n-1-i",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " in the reversed result.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "auto left = lisLengths(a);\nreverse(a.begin(), a.end());\nauto right = lisLengths(a);\nint ans = 0;\nfor (int i = 0; i < n; ++i) ans = max(ans, left[i] + right[n - 1 - i] - 1);\ncout << ans << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bh"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nvector<int> lisLengths(const vector<int> &a) {\n    vector<int> tail, length(a.size());\n    for (int i = 0; i < int(a.size()); ++i) {\n        auto it = lower_bound(tail.begin(), tail.end(), a[i]);\n        int pos = int(it - tail.begin());\n        if (it == tail.end()) tail.push_back(a[i]);\n        else *it = a[i];\n        length[i] = pos + 1;\n    }\n    return length;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<int> a(n);\n    for (int &x : a) cin >> x;\n    auto left = lisLengths(a);\n    reverse(a.begin(), a.end());\n    auto right = lisLengths(a);\n    int ans = 0;\n    for (int i = 0; i < n; ++i) ans = max(ans, left[i] + right[n - 1 - i] - 1);\n    cout << ans << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-785",
+    "number": 785,
+    "ref": "typical90_bi",
+    "expected_revision": 3,
+    "expected_body_sha256": "94ac05759f83355fb6f4286a571f7c337297c926c466179aacd437ce985af199",
+    "editorial_sha256": "1439ceb9ce69d3a4e8d42be697781ecf515164082f7ad35f7d2d44d751b1c7da",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_bi",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-bi",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Deck — Бодолт",
+      "sections": [
+        {
+          "title": "Deque сонгох",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Хөзрийг дээрээс нь доош дарааллаар deque-д хадгална. Type 1 нь push_front, type 2 нь push_back, type 3-ын $x$ дахь хөзөр нь zero-based ",
+                  "marks": []
+                },
+                {
+                  "text": "d[x-1]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ". Унших query хөзрийг авахгүй, дараалал хэвээр үлдэнэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Жишээ ба зөв байдал",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Дээр $3$, доор $5$, дараа нь дээр $2$ нэмбэл дараалал $[2,3,5]$. Хоёр дахь утгыг уншихад $3$, дахин уншихад мөн $3$."
+            },
+            {
+              "type": "p",
+              "text": "Эхэнд deque хоосон тул дүрслэл зөв. Дээр нэмэхэд эхэнд, доор нэмэхэд төгсгөлд оруулах нь бодит дараалалтай яг таарна. Унших үед дараалал өөрчлөхгүй, зөвхөн нэгээр бууруулсан индекст хандана. Query бүрийн дараа invariant хадгалагдах тул бүх хариу зөв. Source нь унших индекс хүчинтэй, дор хаяж нэг нэмэх ба нэг унших query байна гэж батална."
+            }
+          ]
+        },
+        {
+          "title": "Complexity",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "C++ deque хоёр төгсгөлд нэмэх болон random access-ийг $O(1)$-д дэмждэг. Нийт хугацаа $O(Q)$, санах ой $O(Q)$. $Q\\le10^5$, хөзрийн утга $10^9$-өөс ихгүй тул int хангалттай."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Төлөвийг хадгалах"
+            },
+            {
+              "type": "p",
+              "text": "vector-ийн эхэнд оруулахад элементүүд шилжинэ; deque энэ үйлдлийг тогтмол хугацаанд хийдэг."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "deque<int> d;"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Гурван query"
+            },
+            {
+              "type": "p",
+              "text": "Type 3 дээр pop хийхгүй. Source-ийн баталгаанаас индексийг шууд уншиж болно."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "while (q--) {\n    int type, x;\n    cin >> type >> x;\n    if (type == 1) d.push_front(x);\n    else if (type == 2) d.push_back(x);\n    else cout << d[x - 1] << '\\n';\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bi"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int q;\n    cin >> q;\n    deque<int> d;\n    while (q--) {\n        int type, x;\n        cin >> type >> x;\n        if (type == 1) d.push_front(x);\n        else if (type == 2) d.push_back(x);\n        else cout << d[x - 1] << '\\n';\n    }\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Deck — Editorial",
+          "sections": [
+            {
+              "title": "Use a deque",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Store cards in top-to-bottom order. Type 1 uses push_front, type 2 uses push_back, and the $x$-th card requested by type 3 is ",
+                      "marks": []
+                    },
+                    {
+                      "text": "d[x-1]",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ". Reading does not remove a card.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Example and correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Insert $3$ at the top, $5$ at the bottom, then $2$ at the top: the order is $[2,3,5]$. Reading position two returns $3$, and a repeated read still returns $3$."
+                },
+                {
+                  "type": "p",
+                  "text": "Initially the empty deque matches the empty deck. Front and back insertion preserve the physical top-to-bottom order. Reading leaves that order unchanged and accesses the correct zero-based index. Induction over queries proves every answer correct. The source guarantees valid read indices and at least one insertion and one read."
+                }
+              ]
+            },
+            {
+              "title": "Complexity",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "C++ deque supports end insertions and random access in $O(1)$. Total time and space are $O(Q)$. With $Q\\le10^5$ and card values at most $10^9$, int is sufficient."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Store the state"
+                },
+                {
+                  "type": "p",
+                  "text": "A deque avoids shifting the entire sequence on front insertion."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "deque<int> d;"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Three query types"
+                },
+                {
+                  "type": "p",
+                  "text": "Type 3 performs no pop. The source guarantees that the requested index exists."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "while (q--) {\n    int type, x;\n    cin >> type >> x;\n    if (type == 1) d.push_front(x);\n    else if (type == 2) d.push_back(x);\n    else cout << d[x - 1] << '\\n';\n}"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bi"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int q;\n    cin >> q;\n    deque<int> d;\n    while (q--) {\n        int type, x;\n        cin >> type >> x;\n        if (type == 1) d.push_front(x);\n        else if (type == 2) d.push_back(x);\n        else cout << d[x - 1] << '\\n';\n    }\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-786",
+    "number": 786,
+    "ref": "typical90_bl",
+    "expected_revision": 3,
+    "expected_body_sha256": "2ba5eaa6b8dff64c57c6cb012e461e199b31a1221eb245ad3b3971855edf6d45",
+    "editorial_sha256": "e9744445d1a98a80140be799a08a6f4f34e7760363dbc8acbf061c91c9c2f269",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_bl",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-bl",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Uplift — Бодолт",
+      "sections": [
+        {
+          "title": "Difference array",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$d_i=A_{i+1}-A_i$ гэж $1\\le i<N$-д тодорхойлъё. Inconvenience нь $\\sum_{i=1}^{N-1}|d_i|$. $[L,R]$ бүх утгад $V$ нэмэхэд доторх хөршүүд хоёулаа адил өөрчлөгдөх тул difference хэвээр."
+            }
+          ]
+        },
+        {
+          "title": "Хоёр boundary ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$L>1$ бол $d_{L-1}$ дээр $V$ нэмнэ. $R<N$ бол $d_R$-ээс $V$ хасна. Өөрчлөхдөө өмнөх absolute contribution-ийг answer-аас хасаад, difference-ийг шинэчилж, шинэ contribution-ийг нэмнэ."
+            },
+            {
+              "type": "p",
+              "text": "$[1,3,2]$-ийн inconvenience $3$. $[2,3]$ хэсэгт $4$ нэмбэл $[1,7,6]$ болж $7$. Бүтэн массивт ижил утга нэмэхэд хариу өөрчлөгдөхгүй. $N=1$ үед хөршийн хос байхгүй тул бүх хариу $0$."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Query-ийн гаднах хөршүүд өөрчлөгдөхгүй; доторх хосын хоёр гишүүнд ижил $V$ нэмэгдэх тул ялгавар цуцлагдана. Зөвхөн зүүн boundary-ийн баруун гишүүн, баруун boundary-ийн зүүн гишүүн тус тус өөрчлөгдөнө. Энэ нь дээрх нэмэх ба хасах тэмдгийг өгнө."
+            },
+            {
+              "type": "p",
+              "text": "Initialization бүх absolute difference-ийг зөв нэмнэ. Өөрчлөгдсөн difference бүрийн хуучин contribution-ийг шинэ contribution-ээр солиход нийт нийлбэрийн invariant хадгалагдана. Иймээс давхарласан болон сөрөг query-үүдийн дараа ч answer яг одоогийн inconvenience байна."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эхлэл $O(N)$, query бүр $O(1)$, санах ой $O(N)$. $N,Q\\le10^5$, $|A_i|,|V_i|\\le10^9$; шинэчлэлтүүд хуримтлагддаг. int хангалтгүй. Difference бүр $2\\cdot10^9+Q10^9$-өөс ихгүй, харин answer эхэнд $2(N-1)10^9$, query бүр хамгийн ихдээ $2|V|$-ээр нэмэгдэнэ. Энэ нь ll-д хангалттай."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Contribution солих helper"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Lambda нь ",
+                  "marks": []
+                },
+                {
+                  "text": "ans",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " болон ",
+                  "marks": []
+                },
+                {
+                  "text": "d",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-г reference-ээр ашиглаж, нэг өөрчлөлтийн invariant-ийг нэг газарт хадгална.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "auto change = [&](int i, ll delta) {\n    ans -= abs(d[i]);\n    d[i] += delta;\n    ans += abs(d[i]);\n};"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Хил байгаа эсэхийг шалгах"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "N=1",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " болон бүтэн range үед аль ч boundary байхгүй. ",
+                  "marks": []
+                },
+                {
+                  "text": "l/r",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь индекс тул int, ",
+                  "marks": []
+                },
+                {
+                  "text": "v",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь хуримтлагдах өндөртэй ажиллах тул ll.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "while (q--) {\n    int l, r;\n    ll v;\n    cin >> l >> r >> v;\n    if (l > 1) change(l - 1, v);\n    if (r < n) change(r, -v);\n    cout << ans << '\\n';\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bl"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n + 1), d(n + 1);\n    for (int i = 1; i <= n; ++i) cin >> a[i];\n    ll ans = 0;\n    for (int i = 1; i < n; ++i) {\n        d[i] = a[i + 1] - a[i];\n        ans += abs(d[i]);\n    }\n    auto change = [&](int i, ll delta) {\n        ans -= abs(d[i]);\n        d[i] += delta;\n        ans += abs(d[i]);\n    };\n    while (q--) {\n        int l, r;\n        ll v;\n        cin >> l >> r >> v;\n        if (l > 1) change(l - 1, v);\n        if (r < n) change(r, -v);\n        cout << ans << '\\n';\n    }\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Uplift — Editorial",
+          "sections": [
+            {
+              "title": "Difference array",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Define $d_i=A_{i+1}-A_i$ for $1\\le i<N$. Inconvenience is $\\sum_{i=1}^{N-1}|d_i|$. Adding $V$ throughout $[L,R]$ cancels in differences between two interior elements."
+                }
+              ]
+            },
+            {
+              "title": "Two boundaries and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "If $L>1$, add $V$ to $d_{L-1}$. If $R<N$, subtract $V$ from $d_R$. For each change, subtract its old absolute contribution, update the difference, and add its new contribution."
+                },
+                {
+                  "type": "p",
+                  "text": "Array $[1,3,2]$ has inconvenience three. Adding four on $[2,3]$ gives $[1,7,6]$ and inconvenience seven. A whole-array addition changes nothing. For $N=1$ there are no adjacent pairs, so every answer is zero."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Pairs outside the range are unchanged. For an interior pair both values gain the same amount, which cancels. Only the right member of the left boundary and the left member of the right boundary change, giving the stated opposite signs."
+                },
+                {
+                  "type": "p",
+                  "text": "Initialization sums every absolute difference. Replacing each affected old contribution with its new contribution preserves the total-sum invariant. This remains true for overlapping and negative updates, so each reported answer equals the current inconvenience."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Initialization takes $O(N)$, each query $O(1)$, and space is $O(N)$. The source has $N,Q\\le10^5$ and $|A_i|,|V_i|\\le10^9$; updates accumulate, requiring ll. A difference is bounded by $2\\cdot10^9+Q10^9$. The answer starts at most $2(N-1)10^9$ and increases by at most $2|V|$ per query, also safely within ll."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Replace a contribution"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The lambda captures ",
+                      "marks": []
+                    },
+                    {
+                      "text": "ans",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " and ",
+                      "marks": []
+                    },
+                    {
+                      "text": "d",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " by reference and keeps the contribution update in one place.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "auto change = [&](int i, ll delta) {\n    ans -= abs(d[i]);\n    d[i] += delta;\n    ans += abs(d[i]);\n};"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Check whether each boundary exists"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Neither boundary exists for ",
+                      "marks": []
+                    },
+                    {
+                      "text": "N=1",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " or a whole-range update. Indices use int; ",
+                      "marks": []
+                    },
+                    {
+                      "text": "v",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " and accumulated heights use ll.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "while (q--) {\n    int l, r;\n    ll v;\n    cin >> l >> r >> v;\n    if (l > 1) change(l - 1, v);\n    if (r < n) change(r, -v);\n    cout << ans << '\\n';\n}"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bl"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n + 1), d(n + 1);\n    for (int i = 1; i <= n; ++i) cin >> a[i];\n    ll ans = 0;\n    for (int i = 1; i < n; ++i) {\n        d[i] = a[i + 1] - a[i];\n        ans += abs(d[i]);\n    }\n    auto change = [&](int i, ll delta) {\n        ans -= abs(d[i]);\n        d[i] += delta;\n        ans += abs(d[i]);\n    };\n    while (q--) {\n        int l, r;\n        ll v;\n        cin >> l >> r >> v;\n        if (l > 1) change(l - 1, v);\n        if (r < n) change(r, -v);\n        cout << ans << '\\n';\n    }\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-787",
+    "number": 787,
+    "ref": "typical90_bo",
+    "expected_revision": 3,
+    "expected_body_sha256": "877a64cb6dc682931f4432f15c7e89e43928103e03fe0fc000594d40e25e904a",
+    "editorial_sha256": "9b9e5f292fddad31c9a6c75bf0509bd4d53b2fc60fb447515baec1c0f772206d",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_bo",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-bo",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Base 8 to 9 — Бодолт",
+      "sections": [
+        {
+          "title": "Мөрөөр simulation хийх",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Оролтыг octal цифрийн string хэлбэрээр авна. Нэг алхамд эхлээд тэр мөрийг base 8 бүхэл утга болгоно; дараа нь base 9 цифрүүдэд задалж, гарсан бүх $8$ цифрийг $5$ болгоно. Энэ шинэ мөрийг дараагийн алхамд дахин base 8 гэж уншина."
+            }
+          ]
+        },
+        {
+          "title": "Жишээ ба тэг",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Octal ",
+                  "marks": []
+                },
+                {
+                  "text": "10",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь decimal $8$, base 9-д ",
+                  "marks": []
+                },
+                {
+                  "text": "8",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ", солисны дараа ",
+                  "marks": []
+                },
+                {
+                  "text": "5",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ". Octal ",
+                  "marks": []
+                },
+                {
+                  "text": "100",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь $64$, base 9-д ",
+                  "marks": []
+                },
+                {
+                  "text": "71",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "; дараагийн алхамд octal ",
+                  "marks": []
+                },
+                {
+                  "text": "71",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь $57$, base 9-д ",
+                  "marks": []
+                },
+                {
+                  "text": "63",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ".",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "p",
+              "text": "Цифрүүдийг үлдэгдлээр бага орноос гаргадаг тул эцэст reverse хийнэ. $0$-д ч нэг цифр гаргах do-while хэрэгтэй; хоосон мөр болгож болохгүй."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Base 8 parse-ийн prefix invariant нь одоог хүртэл уншсан цифрүүдийн утга. Base 9-д давтан $9$-д хуваахад үлдэгдлүүд яг багаас их оронгийн цифрүүд болно; $8$-ыг $5$ болгохыг цифр бүрд хийдэг. Reverse-ийн дараах мөр иймээс заасан нэг алхмын яг үр дүн. $K$ удаа давтахад induction-оор эцсийн мөр зөв."
+            },
+            {
+              "type": "p",
+              "text": "Overflow-ийг шалгая. Нэг алхмын эхний утга $v=\\sum_j d_j9^j$, сольсны дараах octal утга $v'=\\sum_j c_j8^j$, энд $0\\le c_j\\le d_j$. Тэгвэл $v'\\le v$. Эхний octal тоо $8^{20}=2^{60}$-аас бага тул бүх алхам ll-д багтана. Солисны дараа бүх цифр $0\\ldots7$ учир дахин octal гэж унших нь хүчинтэй."
+            }
+          ]
+        },
+        {
+          "title": "Complexity",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Цифрийн тоог $D$ гэвэл хугацаа $O(KD)$, санах ой $O(D)$. Source-д $K\\le100$, эхний тоо 20 хүртэл octal цифртэй, leading zero байхгүй; тэгийг ганц ",
+                  "marks": []
+                },
+                {
+                  "text": "0",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " гэж өгнө. Decimal int болгон шууд уншиж болохгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Octal parse"
+            },
+            {
+              "type": "p",
+              "text": "Цифр нэмэхээсээ өмнө хуримтлагдсан утгыг 8-аар үржүүлнэ."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "ll value = 0;\nfor (char c : s) value = value * 8 + (c - '0');"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Base 9 цифр ба replacement"
+            },
+            {
+              "type": "p",
+              "text": "Replacement нь base 9 expansion-ийн дараа хийгдэнэ. Шинэ цифрүүдийг base 9 гэж буцааж parse хийхгүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "string next;\ndo {\n    int digit = int(value % 9);\n    if (digit == 8) digit = 5;\n    next.push_back(char('0' + digit));\n    value /= 9;\n} while (value > 0);\nreverse(next.begin(), next.end());\ns = next;"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bo"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string s;\n    int k;\n    cin >> s >> k;\n    while (k--) {\n        ll value = 0;\n        for (char c : s) value = value * 8 + (c - '0');\n        string next;\n        do {\n            int digit = int(value % 9);\n            if (digit == 8) digit = 5;\n            next.push_back(char('0' + digit));\n            value /= 9;\n        } while (value > 0);\n        reverse(next.begin(), next.end());\n        s = next;\n    }\n    cout << s << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Base 8 to 9 — Editorial",
+          "sections": [
+            {
+              "title": "Simulate using a string",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Read the input as an octal digit string. In each operation, parse it in base eight, expand that value in base nine, and replace every digit eight with five. Interpret the resulting string in base eight again on the next operation."
+                }
+              ]
+            },
+            {
+              "title": "Example and zero",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Octal ",
+                      "marks": []
+                    },
+                    {
+                      "text": "10",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " is decimal eight, whose base-nine form is ",
+                      "marks": []
+                    },
+                    {
+                      "text": "8",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": "; replacement produces ",
+                      "marks": []
+                    },
+                    {
+                      "text": "5",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ". Octal ",
+                      "marks": []
+                    },
+                    {
+                      "text": "100",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " is decimal 64, giving ",
+                      "marks": []
+                    },
+                    {
+                      "text": "71",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": "; in the next operation octal ",
+                      "marks": []
+                    },
+                    {
+                      "text": "71",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " is decimal 57, giving ",
+                      "marks": []
+                    },
+                    {
+                      "text": "63",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ".",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "p",
+                  "text": "Remainders produce digits from least to most significant, so reverse them afterward. A do-while emits one digit even for zero, avoiding an empty result."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "During base-eight parsing, the accumulator equals the value of the processed prefix. Repeated division by nine produces precisely the base-nine digits in reverse order, and each eight is replaced with five. Reversal therefore gives exactly one specified operation. Induction over $K$ iterations proves the final string correct."
+                },
+                {
+                  "type": "p",
+                  "text": "For overflow safety, write the old value as $v=\\sum_j d_j9^j$ and the next octal value as $v'=\\sum_j c_j8^j$, where replacement ensures $0\\le c_j\\le d_j$. Thus $v'\\le v$. Initially the value is less than $8^{20}=2^{60}$, so every iteration fits ll. All resulting digits lie in $0\\ldots7$, making the next octal parse valid."
+                }
+              ]
+            },
+            {
+              "title": "Complexity",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "With $D$ digits, time is $O(KD)$ and space $O(D)$. The source has $K\\le100$, up to 20 initial octal digits, and no leading zero except the single digit ",
+                      "marks": []
+                    },
+                    {
+                      "text": "0",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ". Do not read the digit string as a decimal int.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Octal parse"
+                },
+                {
+                  "type": "p",
+                  "text": "Multiply the accumulated prefix by eight before appending a digit."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "ll value = 0;\nfor (char c : s) value = value * 8 + (c - '0');"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Base-nine digits and replacement"
+                },
+                {
+                  "type": "p",
+                  "text": "Replacement follows base-nine expansion. The new string is not parsed back in base nine."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "string next;\ndo {\n    int digit = int(value % 9);\n    if (digit == 8) digit = 5;\n    next.push_back(char('0' + digit));\n    value /= 9;\n} while (value > 0);\nreverse(next.begin(), next.end());\ns = next;"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bo"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string s;\n    int k;\n    cin >> s >> k;\n    while (k--) {\n        ll value = 0;\n        for (char c : s) value = value * 8 + (c - '0');\n        string next;\n        do {\n            int digit = int(value % 9);\n            if (digit == 8) digit = 5;\n            next.push_back(char('0' + digit));\n            value /= 9;\n        } while (value > 0);\n        reverse(next.begin(), next.end());\n        s = next;\n    }\n    cout << s << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-788",
+    "number": 788,
+    "ref": "typical90_bq",
+    "expected_revision": 3,
+    "expected_body_sha256": "4072e51b46fb7f9c637003002be1864fba3bd31c9d1fb572211c786cbafd9575",
+    "editorial_sha256": "c49bfbd088ee1c1f05d5c296f14e36eb0f473afadf160cb80d5b6757ebcfe73f",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_bq",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-bq",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Colorful Blocks — Бодолт",
+      "sections": [
+        {
+          "title": "Хоёр өмнөх өнгө",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Зай нь $1$ эсвэл $2$ байрлалын өнгөнүүд ялгаатай байх ёстой. Эхний байрлалд $K$, хоёр дахь байрлалд $K-1$ сонголт. Гурав дахь байрлалаас эхлэн өмнөх хоёр өнгө хоорондоо ялгаатай тул яг $K-2$ өнгийг сонгож болно. Бүх өнгийг заавал ашиглах шаардлагагүй."
+            }
+          ]
+        },
+        {
+          "title": "Том N ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$N\\ge3,K\\ge3$ бол хариу $K(K-1)(K-2)^{N-2}\\bmod(10^9+7)$. Exponent-ийг Binary Exponentiation-аар бодно. $N=1$ үед $K$, $N=2$ үед $K(K-1)$; $N\\ge3,K<3$ бол $0$."
+            },
+            {
+              "type": "p",
+              "text": "$N=3,K=3$ бол гурван өнгө бүгд ялгаатай байх $6$ хувилбар. $N=4,K=3$ үед эхний гурав сонгогдмогц дөрөв дэх өнгө эхнийхтэй ижил байх ёстой тул мөн $6$."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Өмнөх хүчинтэй prefix-ийн сүүлийн хоёр өнгө заавал ялгаатай. Шинэ өнгө зөвхөн тэдгээрээс ялгаатай байх ёстой; түүнээс хол байрлалтай constraint байхгүй. Тиймээс prefix бүр яг $K-2$ хүчинтэй сунгалттай. Эхний хоёр байрлалын тоотой үржүүлэх нь бүх мөрийг давхардалгүй тоолно."
+            },
+            {
+              "type": "p",
+              "text": "Binary Exponentiation-д odd exponent үед одоогийн base-ийг result-д оруулж, дараа нь base-ийг квадратлан exponent-ийг хоёр дахин багасгана. Энэ нь exponent-ийн binary цифр бүрийн хүчин зүйлийг нэг удаа оруулдаг. Mod нь үржүүлэлттэй нийцдэг тул эцсийн residue зөв."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Хугацаа $O(\\log N)$, нэмэлт санах ой $O(1)$. $N\\le10^{18}$ тул ",
+                  "marks": []
+                },
+                {
+                  "text": "n",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " болон exponent ll. $K\\le10^9$, residue-үүд $10^9+7$-оос бага учир хоёр үржигдэхүүний үржвэр ll-д багтана. Гурван хүчин зүйлийг нэг дор mod-гүй үржүүлэхгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Binary Exponentiation"
+            },
+            {
+              "type": "p",
+              "text": "e-г нэг bit-ээр багасгах бүрд base-ийг квадратлана."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "ll power(ll a, ll e) {\n    ll result = 1;\n    while (e > 0) {\n        if (e & 1) result = result * a % mod;\n        a = a * a % mod;\n        e >>= 1;\n    }\n    return result;\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Жижиг N ба өнгө хүрэлцэх эсэх"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "N=1,2",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " branch-ийг түрүүлж шалгаснаар сөрөг exponent болон ",
+                  "marks": []
+                },
+                {
+                  "text": "K=1",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " үед буруу томьёоноос хамгаална.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "if (n == 1) cout << k % mod << '\\n';\nelse if (n == 2) cout << k * (k - 1) % mod << '\\n';\nelse if (k < 3) cout << 0 << '\\n';\nelse cout << k * (k - 1) % mod * power(k - 2, n - 2) % mod << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bq"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\nconst ll mod = 1000000007;\n\nll power(ll a, ll e) {\n    ll result = 1;\n    while (e > 0) {\n        if (e & 1) result = result * a % mod;\n        a = a * a % mod;\n        e >>= 1;\n    }\n    return result;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    ll n, k;\n    cin >> n >> k;\n    if (n == 1) cout << k % mod << '\\n';\n    else if (n == 2) cout << k * (k - 1) % mod << '\\n';\n    else if (k < 3) cout << 0 << '\\n';\n    else cout << k * (k - 1) % mod * power(k - 2, n - 2) % mod << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Colorful Blocks — Editorial",
+          "sections": [
+            {
+              "title": "The previous two colors",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Positions at distance one or two must have different colors. The first position has $K$ choices and the second $K-1$. Thereafter the preceding two colors are distinct, so exactly $K-2$ choices remain. Colors need not all be used."
+                }
+              ]
+            },
+            {
+              "title": "Large N and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "For $N\\ge3,K\\ge3$, the answer is $K(K-1)(K-2)^{N-2}\\bmod(10^9+7)$, computed with Binary Exponentiation. Handle $N=1$ by $K$ and $N=2$ by $K(K-1)$; for $N\\ge3,K<3$, return zero."
+                },
+                {
+                  "type": "p",
+                  "text": "With $N=3,K=3$, all three colors must differ, giving six sequences. With $N=4,K=3$, the fourth color is forced to equal the first after the first three are chosen, so the count remains six."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "The final two colors of any valid prefix are distinct. A new color must avoid exactly those two; there is no constraint involving more distant positions. Each prefix therefore has exactly $K-2$ valid extensions. Multiplying these counts with those for the first two positions counts every valid sequence once."
+                },
+                {
+                  "type": "p",
+                  "text": "Binary Exponentiation includes the current base in the result for an odd exponent, then squares the base and halves the exponent. Each binary digit contributes its factor exactly once. Modular reduction preserves multiplication, giving the required residue."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Time is $O(\\log N)$ and auxiliary space $O(1)$. Since $N\\le10^{18}$, ",
+                      "marks": []
+                    },
+                    {
+                      "text": "n",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " and the exponent use ll. The source has $K\\le10^9$; products of two residues below $10^9+7$ fit ll. Reduce between multiplications rather than multiplying three raw factors.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Binary Exponentiation"
+                },
+                {
+                  "type": "p",
+                  "text": "Each right shift of e accompanies squaring the current base."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "ll power(ll a, ll e) {\n    ll result = 1;\n    while (e > 0) {\n        if (e & 1) result = result * a % mod;\n        a = a * a % mod;\n        e >>= 1;\n    }\n    return result;\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Small lengths and insufficient colors"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Check lengths one and two first, avoiding negative exponents and invalid general-case counts for ",
+                      "marks": []
+                    },
+                    {
+                      "text": "K=1",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ".",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "if (n == 1) cout << k % mod << '\\n';\nelse if (n == 2) cout << k * (k - 1) % mod << '\\n';\nelse if (k < 3) cout << 0 << '\\n';\nelse cout << k * (k - 1) % mod * power(k - 2, n - 2) % mod << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bq"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\nconst ll mod = 1000000007;\n\nll power(ll a, ll e) {\n    ll result = 1;\n    while (e > 0) {\n        if (e & 1) result = result * a % mod;\n        a = a * a % mod;\n        e >>= 1;\n    }\n    return result;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    ll n, k;\n    cin >> n >> k;\n    if (n == 1) cout << k % mod << '\\n';\n    else if (n == 2) cout << k * (k - 1) % mod << '\\n';\n    else if (k < 3) cout << 0 << '\\n';\n    else cout << k * (k - 1) % mod * power(k - 2, n - 2) % mod << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-789",
+    "number": 789,
+    "ref": "typical90_br",
+    "expected_revision": 3,
+    "expected_body_sha256": "2c3b634826bbcae99023ed7638dbe6f390fca406602b8c8574a9f5b786440101",
+    "editorial_sha256": "0296802520dc4b81ecbd4d5701ca2bdbfdad3e5c8ef1823ed1403ff3e935f47c",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_br",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-br",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Plant Planning — Бодолт",
+      "sections": [
+        {
+          "title": "Координат бүрийг тусад нь",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Нийт Manhattan зай $\\sum_i|x_i-X|+\\sum_i|y_i-Y|$. $X$ ба $Y$ хоорондоо хамааралгүй тул тус бүрийг 1D minimum absolute-deviation бодлого болгон шийднэ. Sort хийгээд median-ийг сонгоно; код even $N$ үед upper median авдаг."
+            }
+          ]
+        },
+        {
+          "title": "Жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$(0,4),(2,0),(4,2)$ цэгүүдэд координатын median $(2,2)$. Зайнууд $4,2,2$, нийт $8$. Энэ цэг оролтын аль ч цэгтэй адил биш байж болно; бодлого байршлыг заавал өгөгдсөн цэгээс сонгохыг шаардахгүй."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Нэг хэмжээсийн sorted утгуудыг хамгийн бага ба их, дараагийн бага ба их гэх мэт хослуулъя. $u\\le v$ хосын хувьд $|u-X|+|v-X|\\ge v-u$, тэнцэл $X\\in[u,v]$ үед биелнэ."
+            },
+            {
+              "type": "p",
+              "text": "Бүх хосын interval-д median багтана. Odd $N$ үед үлдсэн гол элемент дээр $X$-г тавихад түүний нэмэлт зардал $0$; even $N$ үед хоёр гол элементийн хоорондох дурын $X$ бүх хосын доод хязгаарт хүрнэ. Тиймээс median 1D optimum."
+            },
+            {
+              "type": "p",
+              "text": "Хоёр координатын нийлбэр тус тусын minimum-оос бага байж чадахгүй. Координат бүрийн median-ийг сонгоход хоёр minimum-д зэрэг хүрдэг тул тэдгээрийн нийлбэр global optimum."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хугацаа $O(N\\log N)$, санах ой $O(N)$. $N\\le10^5$, координат $[-10^9,10^9]$. Нэг тэнхлэгийн зөрөө $2\\cdot10^9$ хүртэл, нийт answer int-ээс хэтэрнэ. Код координат, median, нийлбэрийг ll-д хадгалж, absolute value авахаас өмнөх subtraction-ийг ч ll-д хийдэг."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Координатыг тус тусад нь sort хийх"
+            },
+            {
+              "type": "p",
+              "text": "Цэгүүдийн хослолыг sort-ийн дараа хадгалах шаардлагагүй: objective хоёр тусдаа нийлбэр болсон."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "sort(x.begin(), x.end());\nsort(y.begin(), y.end());"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Median дээрх нийт зай"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "n/2",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь zero-based upper median. Хариунд байрлал бус зөвхөн minimum зардлыг хэвлэнэ.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "ll mx = x[n / 2], my = y[n / 2], ans = 0;\nfor (int i = 0; i < n; ++i) ans += abs(x[i] - mx) + abs(y[i] - my);\ncout << ans << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_br"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<ll> x(n), y(n);\n    for (int i = 0; i < n; ++i) cin >> x[i] >> y[i];\n    sort(x.begin(), x.end());\n    sort(y.begin(), y.end());\n    ll mx = x[n / 2], my = y[n / 2], ans = 0;\n    for (int i = 0; i < n; ++i) ans += abs(x[i] - mx) + abs(y[i] - my);\n    cout << ans << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Plant Planning — Editorial",
+          "sections": [
+            {
+              "title": "Separate the coordinates",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Total Manhattan distance is $\\sum_i|x_i-X|+\\sum_i|y_i-Y|$. The choices of $X$ and $Y$ are independent, so minimize each one-dimensional absolute-deviation sum separately. Sort and choose a median; the code uses the upper median for even $N$."
+                }
+              ]
+            },
+            {
+              "title": "Example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "For points $(0,4),(2,0),(4,2)$, the coordinatewise median is $(2,2)$. Distances are $4,2,2$, totaling eight. The chosen location need not be an input point."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "In one sorted coordinate list, pair the smallest with the largest, then the next smallest with the next largest. A pair $u\\le v$ satisfies $|u-X|+|v-X|\\ge v-u$, with equality whenever $X\\in[u,v]$."
+                },
+                {
+                  "type": "p",
+                  "text": "A median belongs to every such pair interval. For odd $N$, choosing the unpaired middle value also makes its contribution zero. For even $N$, every point between the two middle values attains every pair’s lower bound. Thus a median minimizes the one-dimensional sum."
+                },
+                {
+                  "type": "p",
+                  "text": "The two-coordinate total cannot beat the sum of their separate minima. Choosing both coordinate medians attains those minima simultaneously, proving global optimality."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Time is $O(N\\log N)$ and space $O(N)$. The source has $N\\le10^5$ and coordinates in $[-10^9,10^9]$. A single-axis difference can reach $2\\cdot10^9$ and the total exceeds int. Coordinates, medians and the sum use ll, so subtraction is widened before taking the absolute value."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Sort each coordinate independently"
+                },
+                {
+                  "type": "p",
+                  "text": "Point pairings need not survive sorting because the objective has separated into two sums."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "sort(x.begin(), x.end());\nsort(y.begin(), y.end());"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Total distance at the medians"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Index ",
+                      "marks": []
+                    },
+                    {
+                      "text": "n/2",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " is the zero-based upper median. Output the minimum cost, not the location.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "ll mx = x[n / 2], my = y[n / 2], ans = 0;\nfor (int i = 0; i < n; ++i) ans += abs(x[i] - mx) + abs(y[i] - my);\ncout << ans << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_br"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<ll> x(n), y(n);\n    for (int i = 0; i < n; ++i) cin >> x[i] >> y[i];\n    sort(x.begin(), x.end());\n    sort(y.begin(), y.end());\n    ll mx = x[n / 2], my = y[n / 2], ans = 0;\n    for (int i = 0; i < n; ++i) ans += abs(x[i] - mx) + abs(y[i] - my);\n    cout << ans << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+]
