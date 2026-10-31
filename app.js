@@ -7,7 +7,7 @@ import {canonicalProblemUrl} from './problem-url.js?v=52';
 import {priorityLevel,priorityLabel,isHighPriority,ratingClass} from './priority.js?v=52';
 import {setupLearning} from './learning.js?v=89';
 import {setupTutorials,typeset} from './tutorials.js?v=87';
-import {setupGroups} from './groups.js?v=52';
+import {setupGroups} from './groups.js?v=90';
 let tutorialUI, learningUI=null,hintRenderTurn=0,problemEditorialUI,problemStatementUI,learningProgressStore;
 import {CURRENT_EMPTY,cleanProgress,parseCurrentBackup,progressRows} from './progress.js?v=52';
 import {getSolvers} from './community.js?v=52';
@@ -258,7 +258,7 @@ async function init() {
   $('problem-share').onclick=async()=>{if(!selectedProblem)return;const url=location.origin+location.pathname+'#problem/'+encodeURIComponent(selectedProblem.id);try{await navigator.clipboard.writeText(url);$('problem-share-message').textContent='Бодлогын холбоос хуулагдлаа.';}catch{$('problem-share-url').hidden=false;$('problem-share-url').value=url;$('problem-share-url').select();$('problem-share-message').textContent='Холбоосыг сонгон хуулна уу.';}};
   window.addEventListener('hashchange',syncProblemRoute);
   $('account').onclick=()=>{updateAccount();$('auth').showModal();};
-  groupUI=setupGroups({client:()=>client,user:()=>user,openAccount:()=>{$('account').onclick();}});
+  groupUI=setupGroups({client:()=>client,user:()=>user,problems:()=>data.problems,openAccount:()=>{$('account').onclick();}});
   problemStatementUI=setupProblemStatement($('problem-statement'),{client:()=>client,user:()=>user,active:id=>selectedProblem?.id===id&&problemPageActive()});
   problemEditorialUI=setupProblemEditorial($('problem-editorial'),{client:()=>client,user:()=>user,active:id=>selectedProblem?.id===id&&problemPageActive()});
   social=setupSocial({client:()=>client,user:()=>user,problems:()=>data.problems,openProblem,viewProfile:id=>{if(learningUI)location.hash='#profile/'+id;else void social?.openProfile(id);},openAccount:()=>{$('account').onclick();},notice});

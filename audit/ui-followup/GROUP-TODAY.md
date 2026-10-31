@@ -1,0 +1,11 @@
+# Explicit today activity in group reports
+
+Only the signed-in student's own report offers the two requested opt-ins. Problem additions use actual committed first-solved timestamps and solved status; tutorial additions use server view days/viewed timestamps or actual completion timestamps. The existing Mongolia day is explicit alongside the selected report date, including backdated reports. Unknown legacy dates are excluded.
+
+Existing own-user SELECT routes are paginated500 rows in stable primary-key order, failing closed on missing/error/later-page responses. Tutorial titles come from the existing published get_tutorials route. No migration, grant, membership rule or report-save permission changes. Another student's report editor never offers the additions. Late actor/group/form generation or midnight changes invalidate the response.
+
+Each addition reads the current field after async loading, preserves every existing character/whitespace, and appends canonical problem/tutorial links. Recognizable stable fragment IDs and original problem source links are deduplicated across repeats, host changes and save/reload. Problems enter solved_problems; tutorials enter the existing topics field. Count, difficulty and notes remain untouched. Exceeding a field limit changes nothing. The existing explicit report Submit, revision guard and normal review/edit remain required; no auto-submit or progress mutation.
+
+Validation:3 focused model tests cover exact Mongolia midnight bounds, actual dates/status/legacy exclusion, stable-ID/source-link dedup, literal whitespace/field limits and later-page error. Actual Groups browser composition covers repeated adds, explicit save and true page reload through synthetic existing RPC storage, existing field preservation, empty/partial/error cases, edits during load, form-generation invalidation, actor isolation and midnight rejection. Four375/1200 light/dark contexts have no dialog/page overflow; actual screenshots were inspected. See group-today-browser.json. No real-user fixture mutation or authenticated live-user browser claim.
+
+The sole remaining authorized UI item is Minimalist-only status/columns, preserving all other modes and existing save/user isolation.
