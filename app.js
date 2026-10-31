@@ -1,12 +1,12 @@
 import {setupAdminProfiles} from './admin-profile.js?v=52';
-import {createLearningStore} from './learning-store.js?v=52';
+import {createLearningStore} from './learning-store.js?v=87';
 import {setupProblemStatement} from './problem-statement.js?v=86';
 import {setupProblemEditorial} from './problem-editorial.js?v=86';
 import {appendHintText} from './hint-content.js?v=52';
 import {canonicalProblemUrl} from './problem-url.js?v=52';
 import {priorityLevel,priorityLabel,isHighPriority,ratingClass} from './priority.js?v=52';
-import {setupLearning} from './learning.js?v=84';
-import {setupTutorials,typeset} from './tutorials.js?v=84';
+import {setupLearning} from './learning.js?v=87';
+import {setupTutorials,typeset} from './tutorials.js?v=87';
 import {setupGroups} from './groups.js?v=52';
 let tutorialUI, learningUI=null,hintRenderTurn=0,problemEditorialUI,problemStatementUI,learningProgressStore;
 import {CURRENT_EMPTY,cleanProgress,parseCurrentBackup,progressRows} from './progress.js?v=52';
