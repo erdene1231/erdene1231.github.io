@@ -958,3 +958,32 @@ All 48 publications committed in 16 guarded batches; history 358–405. NEVER RE
 Fresh anonymous retrieval matches all 73 reviewed bodies. All 74 stored identities, native reader order/order fields, eight private drafts/base revisions, Mongolia unpublished, 1,010 problems and learner/profile/progress/access/function/trigger fingerprints remain unchanged. English translations, executable/inline code, math, numeric examples and diagram/table data are intact. The original contextual editorial ledger and already committed histories 286–357 remain historical evidence and must not be replayed.
 
 Validation: 368 Node tests and three final focused tests; 192 bilingual native-reader cases and 96 actual native-editor round trips, plus final six-lesson 24/12 cases. All 48 replacements pass 16 local guarded SQL batches. All 2,498 executable blocks and 241 prior compiled program hashes are exact; no new compilation claim. Source Pages 41181747459 succeeded; 16 cache-84 runtime/JSON assets match with normal TLS. Read audit/CONVENTIONAL-ALGORITHM-NAMES.md and audit/conventional-names/publication-receipt.json. No migration, credentials/access change, APPROVE review, private-draft publication, owner acceptance or deferred UI work.
+
+## EGOI oj.uz URL update — committed 2026-10-31
+
+The user's URL-only request matched 36 of 45 existing EGOI problems against
+https://oj.uz/problems/source/egoi, all five linked 2022–2026 year listings and
+each individual matched problem page. Nine absent tasks (seven from 2021,
+Garden Decorations and Census) retain their old URLs. Infinite Race uses the
+verified `EGOI24_infiniterace2` alias. No problems were added. Source PR #214
+merged at `75fb7f7d10110957fd560a14d3f37c694ad1fc72`; the three matching offline
+fallback URLs are synchronized with the authoritative live catalog.
+
+The fresh-guarded owner URL-only statement succeeded exactly once: problem edit
+history 960–995, SQL SHA256
+`5e045288ca6347a26976ce1f3b5805e09e95f401493454a5010d5961fae4ec3b`.
+NEVER REPLAY. Recovery, one-time intent/result and postchecks are under
+`/workspace/egoi-urls/`. Only `body.url`, normal revision increments and
+timestamps changed; all other 974 problem rows are exact. Anonymous readback
+verifies all 36 replacements and nine unchanged unmatched tasks. All 1,010
+problems, 74 stored/73 public tutorials, eight private drafts and protected
+learner/profile/access/function fingerprints are preserved. Tutorial history
+through 405 remains committed and must never be replayed.
+
+Fourteen focused mapping/model/relationship/atomic checks pass. The separate
+1,010-row rehearsal uses current live validator definitions and verifies late
+rollback and replay rejection. Pages 41184931265 succeeded; 17 deployed
+runtime/JSON files match with normal TLS. Evidence and exact before/after URLs:
+`audit/EGOI-OJUZ-URLS.md`, `audit/egoi-ojuz/manifest.json` and
+`audit/egoi-ojuz/publication-receipt.json`. No migration, new problem import,
+tutorial publication, credentials/access change or APPROVE review occurred.

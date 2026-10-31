@@ -41,4 +41,16 @@ catalog parsing and relationships, unchanged absent/fallback tasks, URL field
 scope, history, stale revisions, protected drift, allowlist tampering, rollback
 after 18 updates, and replay rejection. A separate rehearsal uses all 1,010
 freshly captured production problem rows and current live validator definitions.
-Publication/readback/deployment results are recorded in the final receipt.
+The live operation succeeded exactly once, with edit history 960–995. Fresh
+readback confirms all 36 URL replacements and normal revision increments, all
+974 other problem rows exact, 74 stored/73 public tutorials and eight private
+drafts unchanged, and identical protected learner/profile and access/function
+fingerprints. Anonymous `get_catalog()` returns all 1,010 records with the exact
+36 new URLs and the nine unchanged unmatched URLs.
+
+Source PR [#214](https://github.com/erdene1231/erdene1231.github.io/pull/214)
+merged as `75fb7f7d10110957fd560a14d3f37c694ad1fc72`. Pages run 41184931265
+succeeded; 17 deployed runtime/JSON files match the repository with normal TLS.
+See [the publication receipt](egoi-ojuz/publication-receipt.json) for hashes,
+fingerprints and full evidence. No tutorial publication, new problem import,
+schema migration or access change occurred. Never replay the committed SQL.
