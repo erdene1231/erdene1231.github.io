@@ -138,3 +138,8 @@ DDL rollback rehearsals pass. Legacy dates remain unknown; server-recorded view
 days preserve past weeks; mastery checks stay independent. A refreshed full Node
 aggregate covers the final concurrent-field preservation hardening. No live040
 write/activation yet. Remaining five UI items continue after this release.
+
+Dated-reading prerequisite:040 installed exactly once as20261031172833 after
+source PR240; full1064-row/protected/history/allocator and old81-function/access
+readback exact. Only2private invoker helpers/2learning triggers added; no legacy
+date backfill. Feature1 activation receipt/deployment is in progress.
