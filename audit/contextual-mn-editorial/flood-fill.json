@@ -1,0 +1,928 @@
+{
+  "body": {
+    "id": "flood-fill",
+    "level": "Анхан шат",
+    "order": 19,
+    "title": "Flood fill — торны хэсэг, талбай ба хүрээ",
+    "aliases": "flood-fill Flood fill — grid доторх холбоотой хэсэг Flood fill — connected regions in a grid",
+    "related": [
+      "bfs",
+      "dfs",
+      "greedy"
+    ],
+    "summary": "Дөрвөн хөрштэй далд графыг рекурсгүй үзэж, нээлттэй нүд бүрийг нэг удаа тоолон хэсгийн талбай, бүх хүрээг зөв олно.",
+    "category": "Graphs",
+    "levelKey": "beginner",
+    "sections": [
+      {
+        "key": "model",
+        "title": "Торыг хөршийн жагсаалтгүй граф гэж харах",
+        "blocks": [
+          {
+            "text": "Газрын зургийн нээлттэй нүднүүдийг тал нийлсэн алхмаар холбож, хэдэн тусдаа хэсэг байгааг олъё. Цэг “.” нь нээлттэй, “#” нь хана. Дээш, доош, зүүн, баруун гэсэн дөрвөн хөршөөр л явна. Диагоналиар шүргэлцсэн нүднүүд энд холбогдохгүй.",
+            "type": "p"
+          },
+          {
+            "kind": "dp",
+            "rows": [
+              [
+                ".",
+                ".",
+                "#",
+                ".",
+                "."
+              ],
+              [
+                ".",
+                "#",
+                "#",
+                ".",
+                "."
+              ],
+              [
+                "#",
+                "#",
+                ".",
+                "#",
+                "."
+              ],
+              [
+                ".",
+                ".",
+                ".",
+                "#",
+                "."
+              ]
+            ],
+            "type": "diagram",
+            "caption": "4 мөр, 5 багана. Мөр y, багана x хоёулаа 0-ээс эхэлнэ."
+          },
+          {
+            "text": "Нэг нээлттэй нүдийг орой, тал нийлсэн хоёр нүдийг ирмэг гэж үзвэл энэ нь графын хүрэлтийн бодлого. Гэхдээ хөршийн жагсаалтыг бүх нүдэд байгуулах шаардлагагүй: ($y$−1,$x$),($y$+1,$x$),($y$,$x$−1),($y$,$x$+1) гэж хэрэгтэй үед нь гаргана. Ийм далд графын нэг хэсгийг бүрэн үзэхийг flood fill буюу хэсгийг дүүргэн хайх гэж нэрлэдэг.",
+            "type": "p"
+          },
+          {
+            "text": "Хэсэг бүрийн талбай A нь нүдний тоо. Хүрээний урт P нь хана эсвэл зургийн гаднах талбайтай нийлсэн нэгж талуудын тоо. Нүд нэгж квадрат гэж үзнэ. Бид хэсгийн тооноос гадна A,P-г олно; бодлого зөвхөн өрөөний тоо асуувал нэмэлт гаралтуудыг хэвлэхгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "discovery",
+        "title": "Стек рүү оруулахдаа тэмдэглэх",
+        "blocks": [
+          {
+            "text": "id[$y$][$x$]=−1 нь хараахан ороогүй гэсэн тэмдэг. Гэхдээ хана ч −1 хэвээр байх тул шинэ эхлэл сонгохдоо a[$y$][$x$]==“.” нөхцөл давхар шалгана. Шинэ хэсэгт c дугаар өгч эхлэлийн нүдийг стек рүү хийхээсээ ӨМНӨ id=c болгоно. Олдсон нээлттэй хөрш бүрийг мөн оруулахдаа тэмдэглэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "Ингэснээр хоёр өөр нүд нэг хөршийг стекээс гарахаас нь өмнө олсон ч хоёр удаа оруулахгүй. Стекээс авах бүрд талбайг нэгээр нэмэхэд нүд бүр яг нэг удаа тоологдоно. Рекурсийн дуудлагын оронд координатын ил стек ашиглаж байгаа тул урт нарийн өрөө, бүхэл нээлттэй зурагт системийн дуудлагын гүнээс хамаарахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Энд дуусах цаг, рекурсийн яг ижил дараалал хэрэггүй. Тиймээс DFS хичээлийн (орой, дараагийн хөрш) хүрээний оронд зөвхөн ($y$,$x$) хадгалах энгийн стек хангалттай. Дараалал ашигласан BFS мөн ижил хэсгийг олно; харин аль алинд нь хөрш, хана, тэмдгийн дүрэм адил байх ёстой.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "(0,0)",
+                "id=A, stack руу / push",
+                "дараа pop хийхэд 1 / once on pop"
+              ],
+              [
+                "(1,0), (0,1)",
+                "нээлттэй хөршүүдийг тэмдэглэж push / mark and push",
+                "тус бүр нэг / one each"
+              ],
+              [
+                "(0,0)-ийг дахин харах / see again",
+                "id аль хэдийн A / already marked",
+                "дахин нэмэхгүй / no repeat"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Эхний алхам",
+              "Үйлдэл",
+              "Талбайд орох эсэх"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "boundary",
+        "title": "Талбай ба хүрээг өөр дүрмээр тоолох",
+        "blocks": [
+          {
+            "text": "Нэг нүдний дөрвөн талыг шалгана. Хөршийн координат гадна бол хүрээнд +1. Дотор боловч хана бол мөн +1. Доторх нээлттэй нүд бол хүрээ нэмэхгүй: олдоогүй үед л хайлтдаа нэмнэ. Аль хэдийн үзсэн нээлттэй нүдийг хана гэж тоолж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Эхлээд 0≤ny<$n$, 0≤nx<$m$ эсэхийг шалгаж байж a[ny][nx]-г уншина. Кодын || нь зүүнээс баруун тийш богино холболттой тул гадна координатын үед массивт хандахгүй. Мөр/баганын $n$,$m$-г сольбол дөрвөлжин бус зураг дээр заагийн алдаа гарна.",
+            "type": "p"
+          },
+          {
+            "text": "Нэг хэсгийн A нүд бүр дөрвөн талтай. Доторх E хос тал нийлсэн бол тэр холбоосын хоёр тал хүрээ биш. Иймээс $P=4A-2E$. Хайлт дээр тал тус бүрийн гаднах/хана нөхцөл үүнийг шууд тоолдог. Энд нүхний дотор хүрээ ч орно: 3×3 зурагт зөвхөн голын нүд хана бол A=8,P=16. Зөвхөн гаднах хүрээ хүсвэл тусдаа гадна талын шинжилгээ хэрэгтэй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "Гурван хэсгийг тоо, шошго, зургаар тулгах",
+        "blocks": [
+          {
+            "kind": "dp",
+            "rows": [
+              [
+                "A",
+                "A",
+                "#",
+                "B",
+                "B"
+              ],
+              [
+                "A",
+                "#",
+                "#",
+                "B",
+                "B"
+              ],
+              [
+                "#",
+                "#",
+                "C",
+                "#",
+                "B"
+              ],
+              [
+                "C",
+                "C",
+                "C",
+                "#",
+                "B"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "A, B, C нь тусдаа хэсгийн шошго; өнгө нь нэмэлт ялгалт. “#” нь хана.",
+            "gridPresentation": {
+              "colors": [
+                {
+                  "col": 0,
+                  "row": 0,
+                  "color": "#7db7d8"
+                },
+                {
+                  "col": 1,
+                  "row": 0,
+                  "color": "#7db7d8"
+                },
+                {
+                  "col": 3,
+                  "row": 0,
+                  "color": "#9dca9c"
+                },
+                {
+                  "col": 4,
+                  "row": 0,
+                  "color": "#9dca9c"
+                },
+                {
+                  "col": 0,
+                  "row": 1,
+                  "color": "#7db7d8"
+                },
+                {
+                  "col": 3,
+                  "row": 1,
+                  "color": "#9dca9c"
+                },
+                {
+                  "col": 4,
+                  "row": 1,
+                  "color": "#9dca9c"
+                },
+                {
+                  "col": 2,
+                  "row": 2,
+                  "color": "#e7ba79"
+                },
+                {
+                  "col": 4,
+                  "row": 2,
+                  "color": "#9dca9c"
+                },
+                {
+                  "col": 0,
+                  "row": 3,
+                  "color": "#e7ba79"
+                },
+                {
+                  "col": 1,
+                  "row": 3,
+                  "color": "#e7ba79"
+                },
+                {
+                  "col": 2,
+                  "row": 3,
+                  "color": "#e7ba79"
+                },
+                {
+                  "col": 4,
+                  "row": 3,
+                  "color": "#9dca9c"
+                }
+              ]
+            }
+          },
+          {
+            "text": "Зүүн дээд A нь (0,0),(0,1),(1,0): A=3, дотор холбоос E=2 тул P=12−4=8. Баруун B зургаан нүдтэй, дотор холбоос 6 тул P=24−12=12. C нь (2,2) ба доод мөрийн эхний гурван нүд: A=4,E=3,P=16−6=10.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "[0, 0]",
+                "3",
+                "8"
+              ],
+              [
+                "[0, 3]",
+                "6",
+                "12"
+              ],
+              [
+                "[2, 2]",
+                "4",
+                "10"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Эхлэх ($y$,$x$)",
+              "Талбай A",
+              "Хүрээ P"
+            ]
+          },
+          {
+            "text": "Нийт талбай 3+6+4=13; гурван хэсэг байна. A ба C диагоналиар ойр боловч тал нийлээгүй. Нэг хайлт дууссаны дараа id-г арилгахгүй, мөрөөр нь үргэлжлүүлж дараагийн олдоогүй нээлттэй нүднээс шинэ хэсэг эхлүүлнэ. Стект хөрш оруулах дараалал талбай, хүрээ, хэсгийн хуваалтыг өөрчлөхгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "Grid-ийн байгуулагч, fill, run ба бүтэн C++17",
+        "blocks": [
+          {
+            "text": "Grid struct-ийн байгуулагч $n$ мөр, $m$ багана болон −1 утгатай id хүснэгтийг бэлдэнэ. a нь өөрчлөхгүй газрын зураг, stats нь олсон хэсэг бүрийн (талбай,хүрээ). c=stats.size() нь шинэ хэсгийн 0-ээс эхэлсэн дугаар; fill дуусахад статистикийг нэмнэ. run мөрөөр скан хийж хэсэг бүрийг нэг удаа эхлүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "Оролт $n$ $m$, дараа нь тус бүр $m$ тэмдэгтэй $n$ мөр; зөвхөн “.”, “#”. 0≤$n$,$m$≤1000. $m$=0 бол тэмдэгт мөр уншихгүй, $n$=0 эсвэл $m$=0 бол хэсгийн тоо 0. Гаралтын эхний мөр хэсгийн тоо; дараа нь мөрөөр скан хийхэд олдсон дарааллаарх A P хосууд. Хамгийн ихдээ 10⁶ нүд, хүрээ 4×10⁶-өөс ихгүй тул int хангалттай; хэрэггүй ll хүснэгт үүсгэхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "vector, string болон C++17-ийн хос утга задлах боломжийг ашиглана.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Байгуулагч id-г −1-ээр үүсгэнэ. a-гийн мөрүүдийг main дараа нь уншиж нөхнө.",
+            "type": "p"
+          },
+          {
+            "text": "struct Grid {\n    int n, m;\n    vector<string> a;\n    vector<vector<int>> id;\n    vector<pair<int, int>> stats;\n\n    Grid(int _n, int _m) {\n        n = _n;\n        m = _m;\n        a.resize(n);\n        id.assign(n, vector<int>(m, -1));\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "fill эхлэлийг тэмдэглээд стек ашиглана. Талыг гадна/хана/нээлттэй гэж ялгах нь хүрээ ба давхардсан тооллогын алдаанаас сэргийлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "void fill(int sy, int sx) {\n        const int dy[4] = {-1, 1, 0, 0};\n        const int dx[4] = {0, 0, -1, 1};\n        int c = stats.size();\n        int area = 0, per = 0;\n        vector<pair<int, int>> st;\n        id[sy][sx] = c;\n        st.push_back({sy, sx});\n        while (!st.empty()) {\n            auto [y, x] = st.back();\n            st.pop_back();\n            area++;\n            for (int d = 0; d < 4; d++) {\n                int ny = y + dy[d], nx = x + dx[d];\n                if (ny < 0 || ny >= n || nx < 0 || nx >= m || a[ny][nx] == '#') {\n                    per++;\n                    continue;\n                }\n                if (id[ny][nx] == -1) {\n                    id[ny][nx] = c;\n                    st.push_back({ny, nx});\n                }\n            }\n        }\n        stats.push_back({area, per});\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "run зөвхөн нээлттэй бөгөөд олдоогүй нүдээр шинэ хэсэг эхлүүлнэ. Хана дээр fill дуудахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "void run() {\n        for (int y = 0; y < n; y++) {\n            for (int x = 0; x < m; x++) {\n                if (a[y][x] == '.' && id[y][x] == -1) fill(y, x);\n            }\n        }\n    }\n};",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "main бүх статистикийг хэвлэнэ. Counting Rooms бодлогод зөвхөн эхний мөр шаардлагатайг ялга.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    Grid grid(n, m);\n    if (m > 0) {\n        for (string &row : grid.a) cin >> row;\n    }\n    grid.run();\n    cout << grid.stats.size() << '\\n';\n    for (auto [area, per] : grid.stats) cout << area << ' ' << per << '\\n';\n    return 0;\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct Grid {\n    int n, m;\n    vector<string> a;\n    vector<vector<int>> id;\n    vector<pair<int, int>> stats;\n\n    Grid(int _n, int _m) {\n        n = _n;\n        m = _m;\n        a.resize(n);\n        id.assign(n, vector<int>(m, -1));\n    }\n\n    void fill(int sy, int sx) {\n        const int dy[4] = {-1, 1, 0, 0};\n        const int dx[4] = {0, 0, -1, 1};\n        int c = stats.size();\n        int area = 0, per = 0;\n        vector<pair<int, int>> st;\n        id[sy][sx] = c;\n        st.push_back({sy, sx});\n        while (!st.empty()) {\n            auto [y, x] = st.back();\n            st.pop_back();\n            area++;\n            for (int d = 0; d < 4; d++) {\n                int ny = y + dy[d], nx = x + dx[d];\n                if (ny < 0 || ny >= n || nx < 0 || nx >= m || a[ny][nx] == '#') {\n                    per++;\n                    continue;\n                }\n                if (id[ny][nx] == -1) {\n                    id[ny][nx] = c;\n                    st.push_back({ny, nx});\n                }\n            }\n        }\n        stats.push_back({area, per});\n    }\n\n    void run() {\n        for (int y = 0; y < n; y++) {\n            for (int x = 0; x < m; x++) {\n                if (a[y][x] == '.' && id[y][x] == -1) fill(y, x);\n            }\n        }\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    Grid grid(n, m);\n    if (m > 0) {\n        for (string &row : grid.a) cin >> row;\n    }\n    grid.run();\n    cout << grid.stats.size() << '\\n';\n    for (auto [area, per] : grid.stats) cout << area << ' ' << per << '\\n';\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Нүд бүр нэг удаа стект орж, дөрвөн хөрш шалгагдана: $O(nm)$ хугацаа. Оролт, id, стек, хэсгүүдийн статистик нийт $O(nm)$ зай. Энэ нь рекурсийн гүнээс хамаарахгүй ч санах ойн хязгааргүй гэсэн үг биш. Зөвхөн талбайн нийлбэр эсвэл хэсгийн тоо хэрэгтэй бол хадгалах статистикаа багасгаж болно.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "checks",
+        "title": "Зөв болох нь, захын жишээнүүд ба өөр зорилгууд",
+        "blocks": [
+          {
+            "text": "Нэг хайлтад нэмсэн нүд бүр эхлэлээс зөвшөөрсөн алхмаар хүрнэ. Хүрч болох ч орхигдсон нүд байсан гэвэл зам дээрх өмнөх олдсон нүд түүнийг шалгаж нэмэх ёстой. Иймээс fill яг нэг холбоост хэсгийг олно. Гаднах скан үлдсэн бүх хэсгийг эхлүүлнэ; тэмдэглэсэн нүд дахин эхлэл болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Ганц нээлттэй нүдний хариу 1 хэсэг, A=1,P=4. Бүх нүд хана бол 0. Бүхэл нээлттэй $n$×$m$ зураг $n$,$m$>0 үед нэг хэсэг, A=nm,P=2n+2m. “.# / #.” хоёр мөртэй зураг хоёр тусдаа ганц нүдтэй; диагональ нэмбэл өөр бодлого болно. Нүхтэй, урт хонгилтой, нэг мөр/баганатай зургийг мөн шалга.",
+            "type": "p"
+          },
+          {
+            "text": "Зай буюу хамгийн богино зам хэрэгтэй үед DFS-ийн олсон дарааллыг алхмын зай гэж авч болохгүй. Нүд нэмэх/хаах өөрчлөлттэй үед нэг удаагийн fill-ийн id автоматаар шинэчлэгдэхгүй. Торны хөдөлгөөн өөр утга эсвэл хугацааны нөхцөлтэй бол хөрш рүү орох дүрмийг тэр бодлогод нь шинээр батална.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "text": "Өөрийгөө шалга: үзсэн нээлттэй хөрш хүрээ мөн үү? Хана дээр id=−1 байгаа нь шинэ хэсэг эхлүүлэх үү? Диагональ хоёр нүд холбогдох уу? 3×3 хүрээтэй, голдоо ханатай зурагт P хэд вэ?",
+            "type": "p"
+          },
+          {
+            "text": "Хариу: үгүй; үгүй, нээлттэй нөхцөл давхар шаардлагатай; үгүй; 16. Жижиг бүх зургаар BFS-ийн хэсгүүдтэй тулгаж, хүрээг нүдний талуудын тусдаа тооллогоор шалга.",
+            "type": "p"
+          },
+          {
+            "text": "Сэдвийг эзэмших үндсэн бодлого",
+            "type": "p"
+          },
+          {
+            "text": "Counting Rooms: дөрвөн чигийн хэсгийг ол; бодлого талбай/хүрээ хэвлүүлэхгүй тул гаралтыг тохируул.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "360"
+          },
+          {
+            "text": "Бие даах ба ахиулах бодлогууд",
+            "type": "p"
+          },
+          {
+            "text": "Building Roads: ил граф ба далд торны хэсгийн нэг ижил утгыг харьцуул.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "362"
+          },
+          {
+            "text": "Labyrinth: хамгийн богино замд BFS, зай, өмнөх хөдөлгөөн хадгалах шаардлагатай.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "361"
+          },
+          {
+            "text": "Monsters: аюулын хүрэх цагийг эхэлж тооцоод хүний зөвшөөрсөн алхмыг хугацаагаар шалга.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "366"
+          },
+          {
+            "text": "Red Painting: нүд нэмэгддэг динамик холбоосыг DSU сурсны дараа судал; статик id-г хуулж болохгүй.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "757"
+          },
+          {
+            "text": "IOI 2009 Mecho: зөгий, баавгайн хугацаа ба хүлээлтийн нөхцөлтэй; олон эхлэлтэй BFS, боломж шалгах, хоёртын хайлтын нэмэлт баталгаа хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "132"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Flood fill — grid regions, area and perimeter",
+        "summary": "Traverse a four-neighbor implicit graph without recursion, count each open cell once and compute every region’s area and full perimeter.",
+        "sections": [
+          {
+            "key": "model",
+            "title": "View a grid as an implicit graph",
+            "blocks": [
+              {
+                "text": "Find the connected open regions of a map. A dot “.” is open and “#” is a wall. Move only up, down, left and right; touching diagonally does not connect cells here.",
+                "type": "p"
+              },
+              {
+                "kind": "dp",
+                "rows": [
+                  [
+                    ".",
+                    ".",
+                    "#",
+                    ".",
+                    "."
+                  ],
+                  [
+                    ".",
+                    "#",
+                    "#",
+                    ".",
+                    "."
+                  ],
+                  [
+                    "#",
+                    "#",
+                    ".",
+                    "#",
+                    "."
+                  ],
+                  [
+                    ".",
+                    ".",
+                    ".",
+                    "#",
+                    "."
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "A 4×5 map, with zero-based row y and column x."
+              },
+              {
+                "text": "Treat each open cell as a vertex and side adjacency as an edge: this is graph reachability. There is no need to build an adjacency list; generate ($y$−1,$x$),($y$+1,$x$),($y$,$x$−1),($y$,$x$+1) when needed. Visiting one complete region of this implicit graph is called flood fill.",
+                "type": "p"
+              },
+              {
+                "text": "For each region, area A is the cell count and perimeter P counts unit sides bordering a wall or the outside of the map. Cells are unit squares. We compute A,P as well as the number of regions; adapt output if a task asks only for a room count.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "discovery",
+            "title": "Mark cells when inserting them",
+            "blocks": [
+              {
+                "text": "id[$y$][$x$]=−1 means not yet entered. Walls also remain −1, so a new root additionally requires a[$y$][$x$]==“.”. Assign component c to the root BEFORE pushing it. Mark each newly found open neighbor when it is inserted too.",
+                "type": "p"
+              },
+              {
+                "text": "Two different cells may encounter the same neighbor before it is popped, but discovery-time marking prevents duplicate insertion. Incrementing area on each pop counts every cell once. An explicit coordinate stack avoids process recursion-depth dependence in long corridors or a fully open map.",
+                "type": "p"
+              },
+              {
+                "text": "We do not need finish events or the exact recursive order here, so a simple ($y$,$x$) stack suffices instead of DFS call frames. A BFS queue finds the same region provided the neighbor, wall and marking rules agree.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "(0,0)",
+                    "id=A, stack руу / push",
+                    "дараа pop хийхэд 1 / once on pop"
+                  ],
+                  [
+                    "(1,0), (0,1)",
+                    "нээлттэй хөршүүдийг тэмдэглэж push / mark and push",
+                    "тус бүр нэг / one each"
+                  ],
+                  [
+                    "(0,0)-ийг дахин харах / see again",
+                    "id аль хэдийн A / already marked",
+                    "дахин нэмэхгүй / no repeat"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Early step",
+                  "Action",
+                  "Area contribution"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "boundary",
+            "title": "Area and perimeter use different counting rules",
+            "blocks": [
+              {
+                "text": "Inspect all four sides of each cell. A neighbor outside the grid contributes 1 to perimeter; a wall inside also contributes 1. An open neighbor contributes no boundary, whether newly discovered or already visited. Never treat a visited open cell as a wall.",
+                "type": "p"
+              },
+              {
+                "text": "Check 0≤ny<$n$ and 0≤nx<$m$ before reading a[ny][nx]. The code’s left-to-right short-circuit || avoids indexing when coordinates are outside. Swapping row/column bounds $n$,$m$ fails on nonsquare maps.",
+                "type": "p"
+              },
+              {
+                "text": "Each of A cells has four sides; each of E internal adjacencies removes two boundary sides, so P=4A−2E. The wall/outside checks count precisely these remaining sides. Hole boundaries are included: a 3×3 grid with only its center blocked has A=8,P=16. Computing only the exterior perimeter requires a different outside-region analysis.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "Trace three regions with values and labels",
+            "blocks": [
+              {
+                "kind": "dp",
+                "rows": [
+                  [
+                    "A",
+                    "A",
+                    "#",
+                    "B",
+                    "B"
+                  ],
+                  [
+                    "A",
+                    "#",
+                    "#",
+                    "B",
+                    "B"
+                  ],
+                  [
+                    "#",
+                    "#",
+                    "C",
+                    "#",
+                    "B"
+                  ],
+                  [
+                    "C",
+                    "C",
+                    "C",
+                    "#",
+                    "B"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "A, B and C label distinct regions; color is supplementary. “#” is a wall.",
+                "gridPresentation": {
+                  "colors": [
+                    {
+                      "col": 0,
+                      "row": 0,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "col": 1,
+                      "row": 0,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "col": 3,
+                      "row": 0,
+                      "color": "#9dca9c"
+                    },
+                    {
+                      "col": 4,
+                      "row": 0,
+                      "color": "#9dca9c"
+                    },
+                    {
+                      "col": 0,
+                      "row": 1,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "col": 3,
+                      "row": 1,
+                      "color": "#9dca9c"
+                    },
+                    {
+                      "col": 4,
+                      "row": 1,
+                      "color": "#9dca9c"
+                    },
+                    {
+                      "col": 2,
+                      "row": 2,
+                      "color": "#e7ba79"
+                    },
+                    {
+                      "col": 4,
+                      "row": 2,
+                      "color": "#9dca9c"
+                    },
+                    {
+                      "col": 0,
+                      "row": 3,
+                      "color": "#e7ba79"
+                    },
+                    {
+                      "col": 1,
+                      "row": 3,
+                      "color": "#e7ba79"
+                    },
+                    {
+                      "col": 2,
+                      "row": 3,
+                      "color": "#e7ba79"
+                    },
+                    {
+                      "col": 4,
+                      "row": 3,
+                      "color": "#9dca9c"
+                    }
+                  ]
+                }
+              },
+              {
+                "text": "Top-left region A is (0,0),(0,1),(1,0): area 3, two internal adjacencies, perimeter 12−4=8. Region B has six cells and six internal adjacencies, giving 24−12=12. Region C consists of (2,2) and the first three bottom-row cells: area 4, three internal adjacencies, perimeter 16−6=10.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "[0, 0]",
+                    "3",
+                    "8"
+                  ],
+                  [
+                    "[0, 3]",
+                    "6",
+                    "12"
+                  ],
+                  [
+                    "[2, 2]",
+                    "4",
+                    "10"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Root ($y$,$x$)",
+                  "Area A",
+                  "Perimeter P"
+                ]
+              },
+              {
+                "text": "Total area is 3+6+4=13 across three regions. A and C approach diagonally but share no side. Keep id after each fill and resume the row-major scan at the next undiscovered open cell. Neighbor insertion order does not change area, perimeter or the partition.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "Grid constructor, fill, run and complete C++17",
+            "blocks": [
+              {
+                "text": "The Grid constructor prepares $n$ rows, $m$ columns and an id table initialized to −1. a keeps the unchanged map; stats stores each region’s (area,perimeter). c=stats.size() is the new zero-based region ID; append its statistics after fill completes. run scans rows and starts each region once.",
+                "type": "p"
+              },
+              {
+                "text": "Input $n$ $m$ and $n$ rows of exactly $m$ characters, only “.” and “#”, with 0≤$n$,$m$≤1000. With $m$=0 no character rows are read; either zero dimension means zero regions. Output the region count followed by A P pairs in row-major discovery order. There are at most 10⁶ cells and perimeter at most 4×10⁶, so int suffices without an unnecessary ll table.",
+                "type": "p"
+              },
+              {
+                "text": "Use vectors, strings and C++17 structured bindings.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Initialize id to −1 in the constructor; main then reads the map rows.",
+                "type": "p"
+              },
+              {
+                "text": "struct Grid {\n    int n, m;\n    vector<string> a;\n    vector<vector<int>> id;\n    vector<pair<int, int>> stats;\n\n    Grid(int _n, int _m) {\n        n = _n;\n        m = _m;\n        a.resize(n);\n        id.assign(n, vector<int>(m, -1));\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "fill marks the root and uses a stack. Distinguishing outside/wall/open sides prevents perimeter and duplicate-counting errors.",
+                "type": "p"
+              },
+              {
+                "text": "void fill(int sy, int sx) {\n        const int dy[4] = {-1, 1, 0, 0};\n        const int dx[4] = {0, 0, -1, 1};\n        int c = stats.size();\n        int area = 0, per = 0;\n        vector<pair<int, int>> st;\n        id[sy][sx] = c;\n        st.push_back({sy, sx});\n        while (!st.empty()) {\n            auto [y, x] = st.back();\n            st.pop_back();\n            area++;\n            for (int d = 0; d < 4; d++) {\n                int ny = y + dy[d], nx = x + dx[d];\n                if (ny < 0 || ny >= n || nx < 0 || nx >= m || a[ny][nx] == '#') {\n                    per++;\n                    continue;\n                }\n                if (id[ny][nx] == -1) {\n                    id[ny][nx] = c;\n                    st.push_back({ny, nx});\n                }\n            }\n        }\n        stats.push_back({area, per});\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "run starts only from open undiscovered cells, never walls.",
+                "type": "p"
+              },
+              {
+                "text": "void run() {\n        for (int y = 0; y < n; y++) {\n            for (int x = 0; x < m; x++) {\n                if (a[y][x] == '.' && id[y][x] == -1) fill(y, x);\n            }\n        }\n    }\n};",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "main prints all statistics; Counting Rooms requires only the first line.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    Grid grid(n, m);\n    if (m > 0) {\n        for (string &row : grid.a) cin >> row;\n    }\n    grid.run();\n    cout << grid.stats.size() << '\\n';\n    for (auto [area, per] : grid.stats) cout << area << ' ' << per << '\\n';\n    return 0;\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct Grid {\n    int n, m;\n    vector<string> a;\n    vector<vector<int>> id;\n    vector<pair<int, int>> stats;\n\n    Grid(int _n, int _m) {\n        n = _n;\n        m = _m;\n        a.resize(n);\n        id.assign(n, vector<int>(m, -1));\n    }\n\n    void fill(int sy, int sx) {\n        const int dy[4] = {-1, 1, 0, 0};\n        const int dx[4] = {0, 0, -1, 1};\n        int c = stats.size();\n        int area = 0, per = 0;\n        vector<pair<int, int>> st;\n        id[sy][sx] = c;\n        st.push_back({sy, sx});\n        while (!st.empty()) {\n            auto [y, x] = st.back();\n            st.pop_back();\n            area++;\n            for (int d = 0; d < 4; d++) {\n                int ny = y + dy[d], nx = x + dx[d];\n                if (ny < 0 || ny >= n || nx < 0 || nx >= m || a[ny][nx] == '#') {\n                    per++;\n                    continue;\n                }\n                if (id[ny][nx] == -1) {\n                    id[ny][nx] = c;\n                    st.push_back({ny, nx});\n                }\n            }\n        }\n        stats.push_back({area, per});\n    }\n\n    void run() {\n        for (int y = 0; y < n; y++) {\n            for (int x = 0; x < m; x++) {\n                if (a[y][x] == '.' && id[y][x] == -1) fill(y, x);\n            }\n        }\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    Grid grid(n, m);\n    if (m > 0) {\n        for (string &row : grid.a) cin >> row;\n    }\n    grid.run();\n    cout << grid.stats.size() << '\\n';\n    for (auto [area, per] : grid.stats) cout << area << ' ' << per << '\\n';\n    return 0;\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Each cell is inserted once and checks four neighbors: $O(nm)$ time. Input, labels, stack and component statistics use $O(nm)$ total space. Avoiding recursion depth does not mean unlimited memory. Store fewer statistics if only area totals or component count are needed.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "checks",
+            "title": "Correctness, boundaries and different objectives",
+            "blocks": [
+              {
+                "text": "Every inserted cell is reachable from the root by allowed moves. If a reachable cell were missed, its discovered predecessor on a path would inspect and insert it. Thus fill finds exactly one connected region. The outer scan starts every remaining region, and marked cells never become new roots.",
+                "type": "p"
+              },
+              {
+                "text": "One open cell gives one region with A=1,P=4; all walls give zero regions. A fully open $n$×$m$ grid with positive dimensions has one region, area nm and perimeter 2n+2m. Rows “.#” and “#.” form two separate singletons; allowing diagonals changes the problem. Also test holes, long corridors and single rows/columns.",
+                "type": "p"
+              },
+              {
+                "text": "Do not treat DFS discovery order as shortest-path distance. Previously computed IDs do not automatically update when cells open or close. If movement has value or timing constraints, separately justify the allowed-neighbor rule for that task.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "text": "Check yourself: is a visited open neighbor a boundary? Does id=−1 on a wall start a region? Are diagonal cells connected? What is P for a 3×3 ring with a blocked center?",
+                "type": "p"
+              },
+              {
+                "text": "Answers: no; no, the cell must also be open; no; 16. Compare small maps against BFS components and independently count geometric boundary sides.",
+                "type": "p"
+              },
+              {
+                "text": "Core problem for mastery",
+                "type": "p"
+              },
+              {
+                "text": "Counting Rooms: find four-neighbor components and adapt output to count only, not areas/perimeters.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "360"
+              },
+              {
+                "text": "Independent practice and extensions",
+                "type": "p"
+              },
+              {
+                "text": "Building Roads: compare explicit-graph and implicit-grid components.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "362"
+              },
+              {
+                "text": "Labyrinth: shortest paths require BFS, distances and predecessor moves.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "361"
+              },
+              {
+                "text": "Monsters: compute danger arrival times first and validate human moves against time.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "366"
+              },
+              {
+                "text": "Red Painting: study dynamic openings with DSU; static IDs do not update themselves.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "757"
+              },
+              {
+                "text": "IOI 2009 Mecho: bee/bear timing and waiting require multi-source BFS, feasibility and binary-search reasoning.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "132"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know BFS/DFS, components, row/column indices and bounds checks."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "BFS, DFS, холбоост хэсэг, мөр-баганын индекс болон координатын хил шалгахыг мэддэг байна.",
+    "priorityLevel": "high",
+    "priorityReason": "Торны олон бодлогын суурь нь нүдний төрөл, зөв хөрш, холбоост хэсгийг бүрэн үзэх болон нэг хэсгийн мэдээллийг хуримтлуулах. Хил шалгалт, үзсэн төлөв, нийт ажлын тооцоог зөв хэрэглэх чадвар тогтмол шаардлагатай.",
+    "prerequisiteIds": [
+      "bfs",
+      "dfs"
+    ],
+    "learningRelations": {
+      "next": "bit-operations",
+      "practice": [
+        {
+          "key": "360",
+          "stage": "Warm-up",
+          "reason": "Дөрвөн чигийн далд граф, зөв нээлттэй нүдний нөхцөл, тэмдэглэх үе болон бүх хэсгийг бүрэн тоолохыг бие даан хэрэгжүүлэх шууд цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "362",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "361",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "366",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "757",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "132",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "bfs",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "dfs",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "greedy",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  }
+}

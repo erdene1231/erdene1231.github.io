@@ -1,0 +1,1163 @@
+{
+  "body": {
+    "id": "string-hashing",
+    "level": "Ахисан шат",
+    "order": 52,
+    "title": "Rolling hash — цонх, урвуу индекс ба баталгаажуулалт",
+    "aliases": "string-hashing String hashing — substring-ийн fingerprint String hashing — substring fingerprints rolling hash rabin karp palindrome reverse hashing",
+    "related": [
+      "kmp",
+      "binary-search"
+    ],
+    "summary": "Гулсах цонхны шинэчлэлт, кодлол ба завсрын хил, урвуу текстийн палиндром асуулт, зөвхөн хэштэй ба яг шалгалтын ялгааг тайлбартай C++17-оор сурна.",
+    "category": "String",
+    "levelKey": "advanced",
+    "sections": [
+      {
+        "key": "purpose",
+        "title": "Хоёр төрлийн хураангуй",
+        "blocks": [
+          {
+            "text": "Үндсэн тэмдэгт мөрийн хичээл дэх угтвар хэш нь дурын завсрын хураангуйг бэлтгэсэн хүснэгтээс авдаг. Энд тогтмол урттай цонхыг нэг байрлал урагшлуулахад хэшийг шууд шинэчлэх rolling hash болон урвуу мөрийн индексээр палиндром шалгахыг нарийвчилна. Ижил хэш яг ижил мөр гэсэн баталгаа болохгүй; энэ ялгаа хэрэгжүүлэлт бүрийн гаралтад харагдана.",
+            "type": "p"
+          },
+          {
+            "text": "Угтвар хүснэгт ба гулсах цонх хоёрын ялгааг эхэлж тогтоо. Эхнийх нь урт нь өөр олон завсарт хэрэгтэй; хоёр дахь нь нэг тогтмол урттай хэсэг дараалан шилжихэд өмнөх цонхныхоо утгыг ашигладаг. Хоёр арга ижил олон гишүүнтийн томьёоноос гардаг.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "encoding",
+        "title": "Кодлол, урт ба хил",
+        "blocks": [
+          {
+            "text": "Кодлол ба хилийг ижил байлгах",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Жижиг тоотой тусдаа жишээнд ",
+                "marks": []
+              },
+              {
+                "text": "a=1,b=2,...,z=26",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", суурь $31$ гэж сонговол ",
+                "marks": []
+              },
+              {
+                "text": "aba",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь $1\\cdot31^2+2\\cdot31+1=1024$, ",
+                "marks": []
+              },
+              {
+                "text": "bab",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь $1955$, ",
+                "marks": []
+              },
+              {
+                "text": "ababa",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь $984127$. Доорх программууд байтын шууд код хэрэглэдэг тул эдгээр тоог тэдгээрийн шууд гаралттай андуурч болохгүй. Хоёр хэшийг харьцуулахын тулд кодлол, суурь, модуль, зэргийн чиглэл, урт бүгд ижил байх ёстой.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "rows": [
+              [
+                "[1,3]",
+                "[0,3)",
+                "1024"
+              ],
+              [
+                "[3,5]",
+                "[2,5)",
+                "1024"
+              ],
+              [
+                "[2,4]",
+                "[1,4)",
+                "1955"
+              ],
+              [
+                "[1,5]",
+                "[0,5)",
+                "984127"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Нэгээс эхэлсэн $[L,R]$",
+              "Кодын $[l,r)$",
+              "Жишээний утга"
+            ]
+          },
+          {
+            "text": "Нэгээс эхэлсэн $[L,R]$ асуултыг $[L-1,R)$ болгоно; хоёр захаас зэрэг нэгийг хасахгүй. Урт $R-L+1$. Угтвар хэшийн томьёо $h[r]-h[l]p[r-l]$-г модулиар сөрөг биш үлдэгдэл болгон авна. Сөрөг үлдэгдэл, тэг урт, эхний/сүүлийн тэмдэгт тус бүрийг шалгах нь нийтлэг алдааг илрүүлнэ.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "rolling",
+        "title": "Цонхны хэшийг шилжүүлэх",
+        "blocks": [
+          {
+            "text": "$m>0$ урттай цонхны эхний код $c_{out}$, дараа залгах код $c_{in}$ байг. Эхний тэмдэгт $A^{m-1}$ жинтэй тул түүний хувь нэмрийг хасна. Үлдсэнийг $A$-гаар үржүүлж нэг байрлал зөөгөөд, шинэ кодыг нэмнэ. Энэ нь хуучин цонхыг эхнээс нь дахин хэшлэхгүй.",
+            "type": "p"
+          },
+          {
+            "tex": "H_{next}=\\bigl((H_{old}-c_{out}A^{m-1})A+c_{in}\\bigr)\\bmod B",
+            "type": "math"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Жишээ нь ASCII-ийн кодлол, $A=3,B=97$ үед ",
+                "marks": []
+              },
+              {
+                "text": "ALLEY",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " доторх гурван тэмдэгттэй цонхуудын хэш ",
+                "marks": []
+              },
+              {
+                "text": "ALL",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-д $16$, ",
+                "marks": []
+              },
+              {
+                "text": "LLE",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-д $11$, ",
+                "marks": []
+              },
+              {
+                "text": "LEY",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-д $10$. Эхний шилжилтэд $16-65\\cdot9$-ийг модульд оруулаад $3$-аар үржүүлж $69$-ийг нэмэхэд $11$ гарна. Хоёр дахь шилжилтэд гарах код $76$, орж ирэх нь $89$.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Window(s,m)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь эхний $m$ байтын хоёр хэш болон $A^{m-1}$ зэргийг бэлтгэнэ. ",
+                "marks": []
+              },
+              {
+                "text": "shift",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь ижил шинэчлэлтийг хоёр модульд хийнэ. Хасалтын дараа модулиар сөрөг биш үлдэгдэл болгосны дараа үржүүлдэг тул хүрээ тодорхой; параметрүүд $10^9$ орчим учраас ",
+                "marks": []
+              },
+              {
+                "text": "ll",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хангалттай. Дотоод төлөв тогтмол хэмжээтэй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Window {\n    static constexpr array<ll, 2> mod = {1000000007, 1000000009};\n    static constexpr array<ll, 2> base = {911382323, 97266353};\n    array<ll, 2> h = {}, p = {1, 1};\n    Window(const string &s, int m) {\n        for (int i = 0; i < m; i++) {\n            for (int j = 0; j < 2; j++) {\n                h[j] = (h[j] * base[j] + (unsigned char)s[i]) % mod[j];\n                if (i + 1 < m) p[j] = p[j] * base[j] % mod[j];\n            }\n        }\n    }\n    void shift(unsigned char out, unsigned char in) {\n        for (int j = 0; j < 2; j++) {\n            h[j] = (h[j] - out * p[j] % mod[j] + mod[j]) % mod[j];\n            h[j] = (h[j] * base[j] + in) % mod[j];\n        }\n    }\n};",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Эхний цонхны дараа нэг тэмдэгтийг гаргаж нэгийг оруулна. Хоосон загвар, текстээс урт загварыг бүтэц үүсгэхээс өмнө салгасан. Хэш таараад ",
+                "marks": []
+              },
+              {
+                "text": "verify",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " үнэн бол яг харьцуулна. Зөвхөн хэштэй үед $O(n+m)$ хугацаа, цонхны нэмэлт зай $O(1)$; хариуны жагсаалт $O(n)$. Баталгаажуулалттай үед хамгийн муу хугацаа $O(nm)$ хэвээр.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "vector<int> matches(const string &s, const string &p, bool verify) {\n    int n = (int)s.size(), m = (int)p.size();\n    vector<int> ans;\n    if (m == 0) {\n        for (int i = 0; i <= n; i++) ans.push_back(i);\n        return ans;\n    }\n    if (m > n) return ans;\n    Window window(s, m), target(p, m);\n    for (int i = 0; i + m <= n; i++) {\n        if (i) window.shift(s[i - 1], s[i + m - 1]);\n        if (window.h == target.h && (!verify || s.compare(i, m, p) == 0)) ans.push_back(i);\n    }\n    return ans;\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт ",
+                "marks": []
+              },
+              {
+                "text": "C",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " эсвэл ",
+                "marks": []
+              },
+              {
+                "text": "V",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", текст, загвар гэсэн гурван мөр; нийлбэр урт $10^6$-аас ихгүй. ",
+                "marks": []
+              },
+              {
+                "text": "CANDIDATES count positions",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " ба ",
+                "marks": []
+              },
+              {
+                "text": "EXACT count positions",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гэдгийг ялгана. Байрлал $0$-ээс эхэлнэ. ",
+                "marks": []
+              },
+              {
+                "text": "#",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", зай, хоосон мөрөөр ч ажиллана. Давхцсан таарц алдагдахгүй: цонхыг бүтэн загварын уртаар бус нэг байраар урагшлуулна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    char mode;\n    cin >> mode;\n    cin.ignore(numeric_limits<streamsize>::max(), '\\n');\n    string s, p;\n    getline(cin, s);\n    getline(cin, p);\n    auto ans = matches(s, p, mode == 'V');\n    cout << (mode == 'V' ? \"EXACT\" : \"CANDIDATES\") << ' ' << ans.size();\n    for (int x : ans) cout << ' ' << x;\n    cout << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг нэгтгэв. Бүтэн программуудыг тус тусдаа файлд хөрвүүлж ажиллуулна.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Window {\n    static constexpr array<ll, 2> mod = {1000000007, 1000000009};\n    static constexpr array<ll, 2> base = {911382323, 97266353};\n    array<ll, 2> h = {}, p = {1, 1};\n    Window(const string &s, int m) {\n        for (int i = 0; i < m; i++) {\n            for (int j = 0; j < 2; j++) {\n                h[j] = (h[j] * base[j] + (unsigned char)s[i]) % mod[j];\n                if (i + 1 < m) p[j] = p[j] * base[j] % mod[j];\n            }\n        }\n    }\n    void shift(unsigned char out, unsigned char in) {\n        for (int j = 0; j < 2; j++) {\n            h[j] = (h[j] - out * p[j] % mod[j] + mod[j]) % mod[j];\n            h[j] = (h[j] * base[j] + in) % mod[j];\n        }\n    }\n};\n\nvector<int> matches(const string &s, const string &p, bool verify) {\n    int n = (int)s.size(), m = (int)p.size();\n    vector<int> ans;\n    if (m == 0) {\n        for (int i = 0; i <= n; i++) ans.push_back(i);\n        return ans;\n    }\n    if (m > n) return ans;\n    Window window(s, m), target(p, m);\n    for (int i = 0; i + m <= n; i++) {\n        if (i) window.shift(s[i - 1], s[i + m - 1]);\n        if (window.h == target.h && (!verify || s.compare(i, m, p) == 0)) ans.push_back(i);\n    }\n    return ans;\n}\n\nint main() {\n    char mode;\n    cin >> mode;\n    cin.ignore(numeric_limits<streamsize>::max(), '\\n');\n    string s, p;\n    getline(cin, s);\n    getline(cin, p);\n    auto ans = matches(s, p, mode == 'V');\n    cout << (mode == 'V' ? \"EXACT\" : \"CANDIDATES\") << ' ' << ans.size();\n    for (int x : ans) cout << ' ' << x;\n    cout << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "palindrome",
+        "title": "Урвуу индекс ба палиндром",
+        "blocks": [
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "$s[l\\ldots r)$ дэд мөрийн урвуу нь урвуу текстэд $[n-r,n-l)$ завсарт байна. Хоёр хэш тэнцүү байх нь палиндромын нэр дэвшигч гэсэн үг; өөр бол палиндром биш нь баттай. Жишээ нь ",
+                "marks": []
+              },
+              {
+                "text": "ababa",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " дотор $[0,3)$ нь ",
+                "marks": []
+              },
+              {
+                "text": "aba",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", урвуу текстийн $[2,5)$ нь мөн ",
+                "marks": []
+              },
+              {
+                "text": "aba",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ". Хоосон болон нэг байт урттай хэсэг палиндром.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "tex": "s[l,r)\\ \\longleftrightarrow\\ reverse(s)[n-r,n-l)",
+            "type": "math"
+          },
+          {
+            "text": "Энэ программ байтын палиндром шалгана. UTF-8 Монгол үсэг хэд хэдэн байтаас тогтдог тул үсгийн палиндромыг байт урвуулж шалгахгүй; тийм шаардлагад Unicode-ийг зөв авч үздэг өөр төлөөлөл хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "text": "Угтвар хоёр хэшийн ижил бүтцийг текст ба урвуу текстэд тус бүр байгуулна. Энэ нь цонхны бүтэц биш: урт нь өөр олон асуултад бэлэн байдаг.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Hash {\n    int base, mod;\n    vector<int> h, p;\n    Hash(const string &s, int _base, int _mod) : base(_base), mod(_mod), h(s.size() + 1), p(s.size() + 1, 1) {\n        for (int i = 0; i < (int)s.size(); i++) {\n            h[i + 1] = (1LL * h[i] * base + (unsigned char)s[i]) % mod;\n            p[i + 1] = 1LL * p[i] * base % mod;\n        }\n    }\n    int get(int l, int r) const {\n        return (h[r] - 1LL * h[l] * p[r - l] % mod + mod) % mod;\n    }\n};\n\nstruct DHash {\n    Hash a, b;\n    DHash(const string &s) : a(s, 911382323, 1000000007), b(s, 97266353, 1000000009) {}\n    pair<int, int> get(int l, int r) const {\n        return {a.get(l, r), b.get(l, r)};\n    }\n};",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт горим, текст, $q$ асуулт, дараа нь $[l,r)$ завсрууд. $n\\le10^6$, $q\\le10^5$. ",
+                "marks": []
+              },
+              {
+                "text": "C",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-д ",
+                "marks": []
+              },
+              {
+                "text": "POSSIBLE",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " эсвэл ",
+                "marks": []
+              },
+              {
+                "text": "NO",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "; ",
+                "marks": []
+              },
+              {
+                "text": "V",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-д hash таарсан хэсгийг хоёр үзүүрээс нь яг шалгаад ",
+                "marks": []
+              },
+              {
+                "text": "YES/NO",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ". Бэлтгэл $O(n)$, hash асуулт $O(1)$, зай $O(n)$; баталгаажуулах зардал хэсгийн уртад хүрч болно. Текст өөрчлөгдөхгүй гэсэн нөхцөлтэй. Өөрчлөлттэй Palindrome Queries-д энэ хүснэгт дангаараа хангалтгүй, динамик бүтэц эсвэл өөр арга хэрэгтэй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    char mode;\n    cin >> mode;\n    cin.ignore(numeric_limits<streamsize>::max(), '\\n');\n    string s;\n    getline(cin, s);\n    string rev = s;\n    reverse(rev.begin(), rev.end());\n    DHash a(s), b(rev);\n    int n = (int)s.size(), q;\n    cin >> q;\n    while (q--) {\n        int l, r;\n        cin >> l >> r;\n        bool same = a.get(l, r) == b.get(n - r, n - l);\n        if (same && mode == 'V') {\n            for (int i = l, j = r - 1; i < j; i++, j--) {\n                if (s[i] != s[j]) {\n                    same = false;\n                    break;\n                }\n            }\n        }\n        cout << (same ? mode == 'V' ? \"YES\" : \"POSSIBLE\" : \"NO\") << '\\n';\n    }\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг нэгтгэв. Бүтэн программуудыг тус тусдаа файлд хөрвүүлж ажиллуулна.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Hash {\n    int base, mod;\n    vector<int> h, p;\n    Hash(const string &s, int _base, int _mod) : base(_base), mod(_mod), h(s.size() + 1), p(s.size() + 1, 1) {\n        for (int i = 0; i < (int)s.size(); i++) {\n            h[i + 1] = (1LL * h[i] * base + (unsigned char)s[i]) % mod;\n            p[i + 1] = 1LL * p[i] * base % mod;\n        }\n    }\n    int get(int l, int r) const {\n        return (h[r] - 1LL * h[l] * p[r - l] % mod + mod) % mod;\n    }\n};\n\nstruct DHash {\n    Hash a, b;\n    DHash(const string &s) : a(s, 911382323, 1000000007), b(s, 97266353, 1000000009) {}\n    pair<int, int> get(int l, int r) const {\n        return {a.get(l, r), b.get(l, r)};\n    }\n};\n\nint main() {\n    char mode;\n    cin >> mode;\n    cin.ignore(numeric_limits<streamsize>::max(), '\\n');\n    string s;\n    getline(cin, s);\n    string rev = s;\n    reverse(rev.begin(), rev.end());\n    DHash a(s), b(rev);\n    int n = (int)s.size(), q;\n    cin >> q;\n    while (q--) {\n        int l, r;\n        cin >> l >> r;\n        bool same = a.get(l, r) == b.get(n - r, n - l);\n        if (same && mode == 'V') {\n            for (int i = l, j = r - 1; i < j; i++, j--) {\n                if (s[i] != s[j]) {\n                    same = false;\n                    break;\n                }\n            }\n        }\n        cout << (same ? mode == 'V' ? \"YES\" : \"POSSIBLE\" : \"NO\") << '\\n';\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "Ямар баталгаа өгч байгаагаа ялгах",
+        "blocks": [
+          {
+            "text": "Хэшийн параметрүүдийг сольсон ч мөргөлдөөний боломж тэг болохгүй. Нэг удаагийн харьцуулалт, нэгийг олон мөртэй харьцуулах, бүх хосыг харьцуулах гурван эрсдэл өөр; үндсэн хичээлийн хүснэгтийг энэ нөхцөлтэй нь хэрэглэнэ. Тогтмол хоёр хэшийг криптограф хамгаалалт гэж үзэхгүй. Алгоритмын гэрээ нь нэр дэвшигч өгч байгаа юу, яг хариу өгч байгаа юу гэдгийг гаралтын нэрээс нь эхлээд ялга.",
+            "type": "p"
+          },
+          {
+            "text": "Наив шалгалттай жижиг санамсаргүй тест төдийгүй ижил тэмдэгт давтсан, давхцсан загвар, хоосон хэсэг, эхний/сүүлийн хил, зориуд мөргөлдөх жижиг параметрийг шалга. Баталгаажуулсан горим бүх ийм оролтод зөв байх ёстой; зөвхөн хэштэй горимд буруу таарц илрэх нь өөрөө алгоритмын амласан баталгааг зөрчөөгүй. Харин түүнийг “яг” гэж нэрлэх нь буруу.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Дасгал ба бие даах бодлогууд",
+        "blocks": [
+          {
+            "text": "Сэдвийг эзэмших дасгал",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "ALLEY",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийн гурван цонхны хэшийг томьёо ба шууд олон гишүүнтээр хоёулангаар нь гарга. ",
+                "marks": []
+              },
+              {
+                "text": "aba",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " жижиг кодлолтой жишээг байтын шууд хэштэй яагаад харьцуулж болохгүй вэ? $[L,R]$ ба $[l,r)$-ийн хөрвүүлэлтийг эхний, сүүлийн, нэг тэмдэгттэй хэсгээр шалга. Урвуу мөрийн хоёр зах яагаад байр солигдож байгааг зурж тайлбарла.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "Эзэмших ба бие даах бодлогууд",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "String Matching: угтвар хэш, rolling hash, Z, KMP-ийн зөв байдал ба зардлыг ялга.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "474"
+          },
+          {
+            "text": "Finding Borders: хэшийн нэр дэвшигчийг яг угтварын функцтэй тулга.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "475"
+          },
+          {
+            "text": "Finding Periods: хэш мөргөлдвөл ямар үе худал эерэг болохыг бод.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "476"
+          },
+          {
+            "text": "Longest Palindrome: төв, радиус, хилийн нөхцөл ба шалгалтын баталгааг тусад нь гарга.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "478"
+          },
+          {
+            "text": "Palindrome Queries: өөрчлөлттэй нөхцөлд статик хүснэгт яагаад хангалтгүйг тогтоо.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "481"
+          },
+          {
+            "text": "Distinct Substrings: уртыг хамт хадгалж, бүх хос/олон нэр дэвшигчийн мөргөлдөөний эрсдэлийг үнэл.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "485"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Rolling hash — windows,reverse indices and verification",
+        "summary": "Sliding-window updates,encoding and interval conventions,reverse-text palindrome queries and candidate-versus-exact guarantees with explained C++17.",
+        "sections": [
+          {
+            "key": "purpose",
+            "title": "Two ways to reuse a hash",
+            "blocks": [
+              {
+                "text": "The main string lesson answers arbitrary substring hashes using prefix arrays. This companion develops rolling updates for a fixed-width window and palindrome queries through reverse-string indices. Equal hashes are not proof of equal strings; every program’s output makes that distinction explicit.",
+                "type": "p"
+              },
+              {
+                "text": "Distinguish prefix tables from rolling windows. Prefix tables serve many intervals of varying lengths; a rolling window reuses the previous hash as a fixed-length interval advances. Both follow from the same polynomial.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "encoding",
+            "title": "Encoding,length and boundaries",
+            "blocks": [
+              {
+                "text": "Keep encoding and interval conventions consistent",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "As a separate small-number example, encoding ",
+                    "marks": []
+                  },
+                  {
+                    "text": "a=1,b=2,...,z=26",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " with base31 gives ",
+                    "marks": []
+                  },
+                  {
+                    "text": "aba",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " hash $1\\cdot31^2+2\\cdot31+1=1024$, ",
+                    "marks": []
+                  },
+                  {
+                    "text": "bab",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " hash1955 and ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ababa",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " hash984127. The programs below use raw bytes, so these numbers are not their direct outputs. Comparing hashes requires the same encoding,base,modulus,power direction and length.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "rows": [
+                  [
+                    "[1,3]",
+                    "[0,3)",
+                    "1024"
+                  ],
+                  [
+                    "[3,5]",
+                    "[2,5)",
+                    "1024"
+                  ],
+                  [
+                    "[2,4]",
+                    "[1,4)",
+                    "1955"
+                  ],
+                  [
+                    "[1,5]",
+                    "[0,5)",
+                    "984127"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "One-based $[L,R]$",
+                  "Code $[l,r)$",
+                  "Example value"
+                ]
+              },
+              {
+                "text": "Convert one-based inclusive $[L,R]$ into $[L-1,R)$, not by subtracting one from both ends. Length is $R-L+1$. Normalize $h[r]-h[l]p[r-l]$ modulo the modulus. Check negative intermediate remainders,empty ranges and the first/last characters independently.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "rolling",
+            "title": "Rolling the window hash",
+            "blocks": [
+              {
+                "text": "For a width-$m>0$ window, let the outgoing first byte be $c_{out}$ and the incoming byte $c_{in}$. Subtract the first byte’s contribution with weight $A^{m-1}$, multiply the remainder by $A$ to shift it, and add the incoming byte. The previous window is not rehashed from scratch.",
+                "type": "p"
+              },
+              {
+                "tex": "H_{next}=\\bigl((H_{old}-c_{out}A^{m-1})A+c_{in}\\bigr)\\bmod B",
+                "type": "math"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "With raw ASCII, $A=3,B=97$, width-three windows in ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ALLEY",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " hash to16 for ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ALL",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ",11 for ",
+                    "marks": []
+                  },
+                  {
+                    "text": "LLE",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ",and10 for ",
+                    "marks": []
+                  },
+                  {
+                    "text": "LEY",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". For the first shift, normalize $16-65\\cdot9$, multiply by three and add69 to obtain11. The next shift removes76 and inserts89.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The constructor prepares two hashes of the first $m$ bytes and their powers $A^{m-1}$. The shift applies the same update modulo both moduli. Normalize after subtraction before multiplying, keeping bounded intermediates. Parameters near $10^9$ fit ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ll",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": "; internal window state has constant size.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Window {\n    static constexpr array<ll, 2> mod = {1000000007, 1000000009};\n    static constexpr array<ll, 2> base = {911382323, 97266353};\n    array<ll, 2> h = {}, p = {1, 1};\n    Window(const string &s, int m) {\n        for (int i = 0; i < m; i++) {\n            for (int j = 0; j < 2; j++) {\n                h[j] = (h[j] * base[j] + (unsigned char)s[i]) % mod[j];\n                if (i + 1 < m) p[j] = p[j] * base[j] % mod[j];\n            }\n        }\n    }\n    void shift(unsigned char out, unsigned char in) {\n        for (int j = 0; j < 2; j++) {\n            h[j] = (h[j] - out * p[j] % mod[j] + mod[j]) % mod[j];\n            h[j] = (h[j] * base[j] + in) % mod[j];\n        }\n    }\n};",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "After the first window, remove one byte and insert the next. Handle empty patterns and patterns longer than the text before constructing windows. Optionally verify hash candidates exactly. Hash-only time is $O(n+m)$ with $O(1)$ window state plus $O(n)$ output storage. Verification can still take $O(nm)$ worst-case time.",
+                "type": "p"
+              },
+              {
+                "text": "vector<int> matches(const string &s, const string &p, bool verify) {\n    int n = (int)s.size(), m = (int)p.size();\n    vector<int> ans;\n    if (m == 0) {\n        for (int i = 0; i <= n; i++) ans.push_back(i);\n        return ans;\n    }\n    if (m > n) return ans;\n    Window window(s, m), target(p, m);\n    for (int i = 0; i + m <= n; i++) {\n        if (i) window.shift(s[i - 1], s[i + m - 1]);\n        if (window.h == target.h && (!verify || s.compare(i, m, p) == 0)) ans.push_back(i);\n    }\n    return ans;\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Input three lines: mode ",
+                    "marks": []
+                  },
+                  {
+                    "text": "C",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " or ",
+                    "marks": []
+                  },
+                  {
+                    "text": "V",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ",text,and pattern,with total length at most $10^6$. Distinguish ",
+                    "marks": []
+                  },
+                  {
+                    "text": "CANDIDATES count positions",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " from ",
+                    "marks": []
+                  },
+                  {
+                    "text": "EXACT count positions",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Positions are zero-based; spaces,",
+                    "marks": []
+                  },
+                  {
+                    "text": "#",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " and empty lines work. Advancing one position rather than one pattern length preserves overlapping matches.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    char mode;\n    cin >> mode;\n    cin.ignore(numeric_limits<streamsize>::max(), '\\n');\n    string s, p;\n    getline(cin, s);\n    getline(cin, p);\n    auto ans = matches(s, p, mode == 'V');\n    cout << (mode == 'V' ? \"EXACT\" : \"CANDIDATES\") << ' ' << ans.size();\n    for (int x : ans) cout << ' ' << x;\n    cout << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Combine the preceding parts. Compile and run the complete programs in separate files.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Window {\n    static constexpr array<ll, 2> mod = {1000000007, 1000000009};\n    static constexpr array<ll, 2> base = {911382323, 97266353};\n    array<ll, 2> h = {}, p = {1, 1};\n    Window(const string &s, int m) {\n        for (int i = 0; i < m; i++) {\n            for (int j = 0; j < 2; j++) {\n                h[j] = (h[j] * base[j] + (unsigned char)s[i]) % mod[j];\n                if (i + 1 < m) p[j] = p[j] * base[j] % mod[j];\n            }\n        }\n    }\n    void shift(unsigned char out, unsigned char in) {\n        for (int j = 0; j < 2; j++) {\n            h[j] = (h[j] - out * p[j] % mod[j] + mod[j]) % mod[j];\n            h[j] = (h[j] * base[j] + in) % mod[j];\n        }\n    }\n};\n\nvector<int> matches(const string &s, const string &p, bool verify) {\n    int n = (int)s.size(), m = (int)p.size();\n    vector<int> ans;\n    if (m == 0) {\n        for (int i = 0; i <= n; i++) ans.push_back(i);\n        return ans;\n    }\n    if (m > n) return ans;\n    Window window(s, m), target(p, m);\n    for (int i = 0; i + m <= n; i++) {\n        if (i) window.shift(s[i - 1], s[i + m - 1]);\n        if (window.h == target.h && (!verify || s.compare(i, m, p) == 0)) ans.push_back(i);\n    }\n    return ans;\n}\n\nint main() {\n    char mode;\n    cin >> mode;\n    cin.ignore(numeric_limits<streamsize>::max(), '\\n');\n    string s, p;\n    getline(cin, s);\n    getline(cin, p);\n    auto ans = matches(s, p, mode == 'V');\n    cout << (mode == 'V' ? \"EXACT\" : \"CANDIDATES\") << ' ' << ans.size();\n    for (int x : ans) cout << ' ' << x;\n    cout << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "palindrome",
+            "title": "Reverse indices and palindromes",
+            "blocks": [
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The reverse of $s[l\\ldots r)$ occupies interval $[n-r,n-l)$ in the reversed text. Equal hashes identify a palindrome candidate; unequal hashes prove it is not one. In ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ababa",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", interval $[0,3)$ is ",
+                    "marks": []
+                  },
+                  {
+                    "text": "aba",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ",matching reversed interval $[2,5)$. Empty and single-byte intervals are palindromes.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "tex": "s[l,r)\\ \\longleftrightarrow\\ reverse(s)[n-r,n-l)",
+                "type": "math"
+              },
+              {
+                "text": "This program tests byte palindromes. A Mongolian letter in UTF-8 occupies multiple bytes; reversing bytes does not test a letter-level palindrome. That requirement needs an appropriate Unicode-aware representation.",
+                "type": "p"
+              },
+              {
+                "text": "Prepare the same double-prefix-hash component for both forward and reversed text. This differs from a fixed-width window and serves arbitrary query lengths.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Hash {\n    int base, mod;\n    vector<int> h, p;\n    Hash(const string &s, int _base, int _mod) : base(_base), mod(_mod), h(s.size() + 1), p(s.size() + 1, 1) {\n        for (int i = 0; i < (int)s.size(); i++) {\n            h[i + 1] = (1LL * h[i] * base + (unsigned char)s[i]) % mod;\n            p[i + 1] = 1LL * p[i] * base % mod;\n        }\n    }\n    int get(int l, int r) const {\n        return (h[r] - 1LL * h[l] * p[r - l] % mod + mod) % mod;\n    }\n};\n\nstruct DHash {\n    Hash a, b;\n    DHash(const string &s) : a(s, 911382323, 1000000007), b(s, 97266353, 1000000009) {}\n    pair<int, int> get(int l, int r) const {\n        return {a.get(l, r), b.get(l, r)};\n    }\n};",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Input a mode,text,$q$ and half-open intervals. Bounds are $n\\le10^6$, $q\\le10^5$. Mode ",
+                    "marks": []
+                  },
+                  {
+                    "text": "C",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " returns ",
+                    "marks": []
+                  },
+                  {
+                    "text": "POSSIBLE",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " or ",
+                    "marks": []
+                  },
+                  {
+                    "text": "NO",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": "; mode ",
+                    "marks": []
+                  },
+                  {
+                    "text": "V",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " checks candidate endpoints directly and returns ",
+                    "marks": []
+                  },
+                  {
+                    "text": "YES/NO",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Preprocessing is $O(n)$,hash queries $O(1)$,space $O(n)$; verification may scan the interval. The text is static. This table alone does not solve update-enabled Palindrome Queries; a dynamic structure or another method is needed.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    char mode;\n    cin >> mode;\n    cin.ignore(numeric_limits<streamsize>::max(), '\\n');\n    string s;\n    getline(cin, s);\n    string rev = s;\n    reverse(rev.begin(), rev.end());\n    DHash a(s), b(rev);\n    int n = (int)s.size(), q;\n    cin >> q;\n    while (q--) {\n        int l, r;\n        cin >> l >> r;\n        bool same = a.get(l, r) == b.get(n - r, n - l);\n        if (same && mode == 'V') {\n            for (int i = l, j = r - 1; i < j; i++, j--) {\n                if (s[i] != s[j]) {\n                    same = false;\n                    break;\n                }\n            }\n        }\n        cout << (same ? mode == 'V' ? \"YES\" : \"POSSIBLE\" : \"NO\") << '\\n';\n    }\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Combine the preceding parts. Compile and run the complete programs in separate files.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Hash {\n    int base, mod;\n    vector<int> h, p;\n    Hash(const string &s, int _base, int _mod) : base(_base), mod(_mod), h(s.size() + 1), p(s.size() + 1, 1) {\n        for (int i = 0; i < (int)s.size(); i++) {\n            h[i + 1] = (1LL * h[i] * base + (unsigned char)s[i]) % mod;\n            p[i + 1] = 1LL * p[i] * base % mod;\n        }\n    }\n    int get(int l, int r) const {\n        return (h[r] - 1LL * h[l] * p[r - l] % mod + mod) % mod;\n    }\n};\n\nstruct DHash {\n    Hash a, b;\n    DHash(const string &s) : a(s, 911382323, 1000000007), b(s, 97266353, 1000000009) {}\n    pair<int, int> get(int l, int r) const {\n        return {a.get(l, r), b.get(l, r)};\n    }\n};\n\nint main() {\n    char mode;\n    cin >> mode;\n    cin.ignore(numeric_limits<streamsize>::max(), '\\n');\n    string s;\n    getline(cin, s);\n    string rev = s;\n    reverse(rev.begin(), rev.end());\n    DHash a(s), b(rev);\n    int n = (int)s.size(), q;\n    cin >> q;\n    while (q--) {\n        int l, r;\n        cin >> l >> r;\n        bool same = a.get(l, r) == b.get(n - r, n - l);\n        if (same && mode == 'V') {\n            for (int i = l, j = r - 1; i < j; i++, j--) {\n                if (s[i] != s[j]) {\n                    same = false;\n                    break;\n                }\n            }\n        }\n        cout << (same ? mode == 'V' ? \"YES\" : \"POSSIBLE\" : \"NO\") << '\\n';\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "Separate the guarantees",
+            "blocks": [
+              {
+                "text": "Changing parameters never makes collisions impossible. One comparison,one-versus-many and all-pairs have different risks; use the main lesson’s table only under its stated model. Two fixed hashes are not cryptographic protection. State whether the algorithm returns candidates or exact answers,starting with the output labels.",
+                "type": "p"
+              },
+              {
+                "text": "Test not only small random inputs but repeated characters,overlaps,empty ranges,first/last boundaries and deliberately colliding small parameters. Verified mode must remain correct. A false positive in hash-only mode is within its stated limitation; calling that output exact would be incorrect.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Exercises and independent practice",
+            "blocks": [
+              {
+                "text": "Exercises to master the topic",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Derive the three ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ALLEY",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " window hashes both by rolling updates and direct polynomial evaluation. Why cannot the small-code ",
+                    "marks": []
+                  },
+                  {
+                    "text": "aba",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " example be compared with raw-byte hashes? Test interval conversion at the first,last and single-character ranges. Draw why reverse-string endpoints swap roles.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "Mastery and independent practice",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "String Matching: distinguish prefix/rolling hash from exact Z/KMP and compare costs.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "474"
+              },
+              {
+                "text": "Finding Borders: compare hash candidates with exact prefix-function borders.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "475"
+              },
+              {
+                "text": "Finding Periods: reason about false-positive periods caused by collisions.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "476"
+              },
+              {
+                "text": "Longest Palindrome: derive center,radius,boundaries and verification guarantees separately.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "478"
+              },
+              {
+                "text": "Palindrome Queries: identify why a static table is insufficient with updates.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "481"
+              },
+              {
+                "text": "Distinct Substrings: retain lengths and assess many-candidate/all-pairs collision risk.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "485"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Prefix preprocessing,modular arithmetic and precomputed powers. Each example specifies encoding and interval conventions."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Угтварын нийлбэрийн санаа, модулийн арифметик, зэрэг бэлтгэх. Кодын хилийн нөхцөл ба кодлолыг жишээ бүрд заана.",
+    "priorityLevel": "medium",
+    "priorityReason": "Дэд мөрийн хурдан хураангуй, олон харьцуулалтын хэрэгтэй туслах арга. Мөргөлдөөнөөс шалтгаалан яг тэнцүү гэсэн баталгаанд нэмэлт шалгалт эсвэл өөр алгоритм шаарддаг тул нөхцөлтэй дунд ач холбогдолтой.",
+    "prerequisiteIds": [
+      "prefix-sums",
+      "fast-power"
+    ],
+    "learningRelations": {
+      "next": null,
+      "practice": [
+        {
+          "key": "474",
+          "stage": "Warm-up",
+          "reason": "Хэшийн шүүлтийг KMP-ийн яг шийдэлтэй харьцуулж, мөргөлдөөн ба баталгаажуулалтын зардлыг тайлбарлах цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "475",
+          "stage": "Standard",
+          "reason": "Хэшийн шүүлтийг KMP-ийн яг шийдэлтэй харьцуулж, мөргөлдөөн ба баталгаажуулалтын зардлыг тайлбарлах цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "476",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "478",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "481",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "485",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "kmp",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "binary-search",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  }
+}

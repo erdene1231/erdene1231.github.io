@@ -1,0 +1,1357 @@
+{
+  "body": {
+    "id": "dp-optimizations",
+    "level": "Ахисан шат",
+    "order": 36,
+    "title": "DP оновчлол — divide-and-conquer ба Knuth",
+    "aliases": "DP optimizations divide conquer Knuth Monge quadrangle monotone opt оновчлол хуваах цэг",
+    "related": [
+      "dynamic-programming",
+      "interval-dp",
+      "prefix-sums"
+    ],
+    "summary": "Хуваах цэгийн үл буурах чанарыг баталж, бүх сонголтыг шалгах DP-ийг хоёр өөр хэлбэрт хурдлуулна.",
+    "category": "Dynamic programming",
+    "levelKey": "advanced",
+    "sections": [
+      {
+        "key": "idea",
+        "title": "Шилжилт бүрийн бүх сонголтыг шалгах шаардлагатай юу?",
+        "blocks": [
+          {
+            "text": "DP-ийн төлөв зөв боловч төлөв бүрд бүх хуваах цэгийг шалгаад удаж болно. Энэ бүлэгт хайлтын интервалыг баталгаатай багасгадаг хоёр ойр аргыг үзнэ: нэг мөрийн хуваах цэгүүд үл буурах үед divide-and-conquer, хоёр төгсгөлөөс хязгаарлагдах интервал DP-д Knuth оновчлол. Хурдан давталт бичихээс өмнө ямар сонголтыг хаяж болохыг батлах нь гол ажил.",
+            "type": "p"
+          },
+          {
+            "text": "Энэ хоёр арга дурын DP-д автоматаар үйлчлэхгүй. Эхлээд энгийн шилжилт, суурь төлөв, тоон хүрээг тогтооно. Дараа нь хэрэглэгдэх нөхцөлийг баталж, хурдан хувилбарыг энгийн DP-тай тулгана. Төлөвийн санах ойг багасгах зөвхөн хэрэгтэй мөрүүдийг ээлжлэн хадгалах арга нь дангаараа шилжилтийн тоог багасгахгүй гэдгийг ялга.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "partition",
+        "title": "Яг k хэсгийн энгийн DP",
+        "blocks": [
+          {
+            "text": "Сөрөг биш a₁…aₙ дарааллыг яг $k$ ширхэг хоосон биш, залгаа хэсэгт хуваая. Хэсгийн зардал нь нийлбэрийн квадрат, нийт зардлыг хамгийн бага болгоно. Sᵢ нь эхний $i$ элементийн нийлбэр, S₀=0. $j$-ийн дараа шинэ хэсэг эхэлбэл түүний зардал C($j$,$i$)=(Sᵢ−Sⱼ)². Энд $j$<$i$ тул хоосон хэсэг үүсэхгүй.",
+            "type": "p"
+          },
+          {
+            "tex": "D_g(i)=\\min_{g-1\\le j<i}\\{D_{g-1}(j)+C(j,i)\\}",
+            "type": "math"
+          },
+          {
+            "text": "D_g($i$) нь эхний $i$ элементийг g хэсэгт хуваах хамгийн бага зардал. D₀(0)=0, D₀($i$>0)=∞, $i$<g үед боломжгүй. Сүүлийн хэсгийн өмнөх $j$ элемент g−1 хэсэгт хуваагдах ёстой тул $j$≥g−1. Нэг мөрийн бүх $i$ дээр бүх $j$-г шалгавал $O(n^2)$, $k$ мөр нийт $O(kn^2)$. C-г эхний элементүүдийн нийлбэрээр $O(1)$-д олох нь энэ давталтыг дангаараа арилгахгүй.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "aᵢ",
+                "1",
+                "2",
+                "3",
+                "4",
+                "2",
+                "1"
+              ],
+              [
+                "Sᵢ",
+                "1",
+                "3",
+                "6",
+                "10",
+                "12",
+                "13"
+              ],
+              [
+                "D₁($i$)",
+                "1",
+                "9",
+                "36",
+                "100",
+                "144",
+                "169"
+              ],
+              [
+                "D₂($i$)",
+                "–",
+                "5",
+                "18",
+                "52",
+                "72",
+                "85"
+              ],
+              [
+                "D₃($i$)",
+                "–",
+                "–",
+                "14",
+                "34",
+                "54",
+                "61"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "$i$",
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6"
+            ]
+          },
+          {
+            "text": "Жишээнд $k$=3-ийн хариу 61: [1,2,3], [4], [2,1] хэсгүүдийн зардал 36+16+9. Хоёр дахь мөрийн $i$=4 төлөвт $j$=1,2,3 сонголтын утгууд 82,58,52 тул $j$=3-ыг авна. Энэ тооцоо дараах хоёр программын ижил суурь бодлого байна.",
+            "type": "p"
+          },
+          {
+            "text": "Оролт $n$,$k$ ба $n$ элемент. s нь ll эхний элементүүдийн нийлбэр; $x$-ийн хүрээ int-д багтсан ч нийлбэрийг ll-д хадгална.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    vector<ll> s(n + 1);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        s[i] = s[i - 1] + x;\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "pr нь өмнөх мөр, cur нь одоогийн мөр. Боломжгүй төлөв INF; зөвхөн pr[0]=0 эхэлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "const ll INF = 1LL << 62;\n    vector<ll> pr(n + 1, INF), cur(n + 1);\n    pr[0] = 0;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Мөр бүрд cur-ийг шинэчилж, $i$≥g ба g−1≤$j$<$i$ сонголтуудыг шалгана. INF дээр нэмэхгүй. sum-ийг ll болгосны дараа үржүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "for (int g = 1; g <= k; g++) {\n        fill(cur.begin(), cur.end(), INF);\n        for (int i = g; i <= n; i++) {\n            for (int j = g - 1; j < i; j++) {\n                if (pr[j] == INF) continue;\n                ll sum = s[i] - s[j];\n                cur[i] = min(cur[i], pr[j] + sum * sum);\n            }\n        }\n        swap(pr, cur);\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "$k$ мөр дууссаны дараах pr[$n$] нь хариу. Энэ нь жижиг оролтын бие даасан лавлах программ; том хязгаарт удаан.",
+            "type": "p"
+          },
+          {
+            "text": "cout << pr[n] << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    vector<ll> s(n + 1);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        s[i] = s[i - 1] + x;\n    }\n    const ll INF = 1LL << 62;\n    vector<ll> pr(n + 1, INF), cur(n + 1);\n    pr[0] = 0;\n    for (int g = 1; g <= k; g++) {\n        fill(cur.begin(), cur.end(), INF);\n        for (int i = g; i <= n; i++) {\n            for (int j = g - 1; j < i; j++) {\n                if (pr[j] == INF) continue;\n                ll sum = s[i] - s[j];\n                cur[i] = min(cur[i], pr[j] + sum * sum);\n            }\n        }\n        swap(pr, cur);\n    }\n    cout << pr[n] << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "monge",
+        "title": "Хуваах цэг яагаад үл буурах вэ?",
+        "blocks": [
+          {
+            "text": "K_g($i$)-ийг D_g($i$)-ийн хамгийн бага утгад хүргэдэг хамгийн баруун $j$ гэе. Хэрэв K_g($i$)≤K_g($i$+1) гэдгийг баталсан бол мөрийн дундах mid-ийн хуваах цэг q-г олсны дараа зүүн талын төлөвүүдэд q-ээс баруун сонголт, баруун талд q-ээс зүүн сонголтыг шалгах шаардлагагүй. Тэнцүү зардлын үед ижил дүрэм хэрэглэхгүй бол энэ баталгааг кодтой тулгаж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Яагаад манай зардал энэ шинжтэй вэ? a≤b≤c≤$d$ гэсэн нийлбэрийн массивын байрлалууд авъя. A=S_b−S_a, B=S_c−S_b, C=S_d−S_c гэж тавивал A,C≥0. Квадратуудыг задлахад дараах ялгавар гарна.",
+            "type": "p"
+          },
+          {
+            "tex": "C(a,d)+C(b,c)-C(a,c)-C(b,d)=2AC\\ge0",
+            "type": "math"
+          },
+          {
+            "text": "Өөрөөр хэлбэл C(a,c)+C(b,$d$)≤C(a,$d$)+C(b,c). Үүнийг Monge нөхцөл гэдэг: эрэмбээр байрласан дөрвөн индексийн зардлуудын хооронд ийм тэнцэтгэл биш биелнэ. Өмнөх мөрийн D_{g−1}($j$)-г нэмэхэд ижил $j$-ийн гишүүд хоёр талд цуцлагдана, тиймээс $M$($j$,$i$)=D_{g−1}($j$)+C($j$,$i$) мөн уг нөхцөлтэй. Зөвхөн зардлууд сөрөг биш байгаагаар нь дурын хүснэгтийг Monge гэж үзэж болохгүй; энд тодорхой квадрат томьёог задлан баталсан.",
+            "type": "p"
+          },
+          {
+            "text": "Үл буурах чанарын баталгаа: i₁<i₂ боловч эхний сонголт p, дараагийнх q, p>q гэж зөрчүүлэн үзье. Хоёул i₁-д ч, i₂-д ч зөвшөөрөгдөх сонголтууд. Monge-оос $M$(q,i₁)+$M$(p,i₂)≤$M$(q,i₂)+$M$(p,i₁). Харин p нь эхний, q нь хоёр дахь төлөвийн хамгийн бага утгыг өгөх хуваах цэг тул эсрэг чиглэлийн хоёр харьцуулалт бас үнэн. Ингэхэд бүх утга тэнцэж, p нь i₂-ийн хамгийн бага утгыг өгөх хуваах цэг мөн болно. p>q учраас q нь хамгийн бага утгыг өгөх хамгийн баруун хуваах цэг байсан гэдэгтэй зөрчилдөнө. Иймд K_g үл буурах дараалал.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "divide",
+        "title": "Divide-and-conquer: хайлтын интервал ба бүтэн код",
+        "blocks": [
+          {
+            "text": "calc(l,$r$,ql,qr) нь одоогийн мөрийн $i$∈[l,$r$]-г, хуваах цэг нь [ql,qr]-д байна гэсэн баталгаатай бодно. mid=(l+$r$)/2 дээр $j$-г ql-ээс min(mid−1,qr) хүртэл шалгана. Олдсон opt-оор зүүн ба баруун дуудлагын хайлтын интервалыг хязгаарлана. Мөр доторх cur-ээс уншихгүй: pr бүхэлдээ өмнө бэлэн байна.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "4",
+                "1..3",
+                "52",
+                "3"
+              ],
+              [
+                "2",
+                "1",
+                "5",
+                "1"
+              ],
+              [
+                "3",
+                "1..2",
+                "18",
+                "2"
+              ],
+              [
+                "5",
+                "3..4",
+                "72",
+                "3"
+              ],
+              [
+                "6",
+                "3..5",
+                "85",
+                "3"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "mid",
+              "Туршсан $j$",
+              "cur[mid]",
+              "opt"
+            ]
+          },
+          {
+            "text": "Энэ нь [1,2,3,4,2,1]-ийн g=2 мөрийг бодох бодит дараалал. Эхлээд mid=4, opt=3; зүүн [2,3] нь $j$≤3, баруун [5,6] нь $j$≥3. $i$=6-д бүх 1..5 бус зөвхөн 3..5-ыг шалгана. Хариу өөрчлөгдөөгүй: мөр нь 5,18,52,72,85, хамгийн баруун хуваах цэгүүд 1,2,3,3,3.",
+            "type": "p"
+          },
+          {
+            "text": "Нэг рекурсийн түвшний хайлтын интервалууд зөвхөн заагийн цэгүүдээр давхцана. Нийт шалгах хэмжээ $O(n)$, гүн $O(\\log n)$ тул нэг мөр $O(n \\log n)$, нийт $O(kn \\log n)$. pr,cur,S гурван массив $O(n)$ зайтай. Энэ хувилбар зөвхөн хамгийн бага зардлыг хэвлэнэ; бүх хуваалтыг сэргээхийн тулд өмнөх мөрүүдийн сонголтыг хадгалах эсвэл тусдаа сэргээх арга хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "text": "DivideDP($n$) нь $n$-ийг хадгалаад s,pr,cur-ийг $n$+1 хэмжээтэй бэлдэнэ. 0 prefix нь хоосон эхлэл.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct DivideDP {\n    static constexpr ll INF = 1LL << 62;\n    int n;\n    vector<ll> s, pr, cur;\n    DivideDP(int _n) {\n        n = _n;\n        s.resize(n + 1);\n        pr.resize(n + 1);\n        cur.resize(n + 1);\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Хоосон [l,$r$]-д буцна. mid-ийг аюулгүй ялгавраар олж, тухайн төлөвийн шилдэг зардлыг INF-ээс эхлүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "void calc(int l, int r, int ql, int qr) {\n        if (l > r) return;\n        int mid = l + (r - l) / 2;\n        int opt = ql;\n        ll best = INF;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "mid−1 хязгаар нь хоосон шинэ хэсгээс хамгаална. pr[$j$] боломжгүй бол алгасна. <= нь ижил утгын хамгийн баруун $j$-г сонгоно.",
+            "type": "p"
+          },
+          {
+            "text": "for (int j = ql; j <= min(mid - 1, qr); j++) {\n            if (pr[j] == INF) continue;\n            ll sum = s[mid] - s[j];\n            ll val = pr[j] + sum * sum;\n            if (val <= best) {\n                best = val;\n                opt = j;\n            }\n        }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "cur[mid]-ийг хадгалсны дараа баталсан монотон чанараар хоёр талын хайлтыг багасгана. Анхны calc(g,$n$,g−1,$n$−1) нь бүх боломжит сонголтыг агуулна.",
+            "type": "p"
+          },
+          {
+            "text": "cur[mid] = best;\n        calc(l, mid - 1, ql, opt);\n        calc(mid + 1, r, opt, qr);\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "run нь мөр бүрд cur-ийг INF болгож, дууссаны дараа л pr-тэй солино. Эхний pr[0]=0 нь суурь нөхцөл.",
+            "type": "p"
+          },
+          {
+            "text": "ll run(int k) {\n        fill(pr.begin(), pr.end(), INF);\n        pr[0] = 0;\n        for (int g = 1; g <= k; g++) {\n            fill(cur.begin(), cur.end(), INF);\n            calc(g, n, g - 1, n - 1);\n            swap(pr, cur);\n        }\n        return pr[n];\n    }\n};",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Оролт энгийн хувилбартай ижил. s-ийн утгуудыг бэлдээд $k$ мөр бодно. Рекурсийн гүн массивын урт биш $O(\\log n)$.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    DivideDP dp(n);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        dp.s[i] = dp.s[i - 1] + x;\n    }\n    cout << dp.run(k) << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct DivideDP {\n    static constexpr ll INF = 1LL << 62;\n    int n;\n    vector<ll> s, pr, cur;\n    DivideDP(int _n) {\n        n = _n;\n        s.resize(n + 1);\n        pr.resize(n + 1);\n        cur.resize(n + 1);\n    }\n    void calc(int l, int r, int ql, int qr) {\n        if (l > r) return;\n        int mid = l + (r - l) / 2;\n        int opt = ql;\n        ll best = INF;\n        for (int j = ql; j <= min(mid - 1, qr); j++) {\n            if (pr[j] == INF) continue;\n            ll sum = s[mid] - s[j];\n            ll val = pr[j] + sum * sum;\n            if (val <= best) {\n                best = val;\n                opt = j;\n            }\n        }\n        cur[mid] = best;\n        calc(l, mid - 1, ql, opt);\n        calc(mid + 1, r, opt, qr);\n    }\n    ll run(int k) {\n        fill(pr.begin(), pr.end(), INF);\n        pr[0] = 0;\n        for (int g = 1; g <= k; g++) {\n            fill(cur.begin(), cur.end(), INF);\n            calc(g, n, g - 1, n - 1);\n            swap(pr, cur);\n        }\n        return pr[n];\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    DivideDP dp(n);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        dp.s[i] = dp.s[i - 1] + x;\n    }\n    cout << dp.run(k) << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Хүрээ: 1≤$k$≤$n$≤3000, 0≤aᵢ≤10⁵. Sₙ≤3·10⁸, квадрат ≤9·10¹⁶ тул ll хэрэгтэй. sum нь үржүүлэхээс өмнө ll байна. Индекс, $k$, aᵢ нь int-д багтана. INF=2⁶² дээр нэмэхгүй; бүх бодит зардал үүнээс бага. Нийт $O(kn^2)$ энгийн хувилбарыг том хязгаарт цагт багтана гэж үзэхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Нөхцөл зөрчих эсрэг жишээ: a=[−3,1,−2,−2], g=2 үед $i$=2,3,4-ийн хамгийн сайн хуваах цэгүүд 1,2,1, утгууд 10,8,18. Сүүлийн хоёр хамгийн бага утга цорын ганц боловч сонголт ухарч байна. Divide-and-conquer-ийг нотолгоогүй хэрэглэвэл mid=3 дээрх 2-оос баруун хайж, сүүлийн хариуг 20 гэж буруу гаргана. Сөрөг оролт бүр заавал алдаа өгнө гэсэн үг биш; дээрх баталгаа тэдгээрт үйлчлэхгүй гэсэн үг.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "interval",
+        "title": "Залгаа хэсгүүдийг нийлүүлэх энгийн интервал DP",
+        "blocks": [
+          {
+            "text": "Одоо дарааллын залгаа хоёр хэсгийг нийлүүлэхэд нийлсэн хэсгийн нийт жинтэй тэнцүү зардал төлнө гэж үзье. Бүх дарааллыг нэг хэсэг болгох хамгийн бага зардлыг олно. Дурын хоёр хэсгийг бус зөвхөн залгаа хэсгийг нийлүүлнэ. Үүнийг урвуугаар нь харвал бүхэл интервалыг ганц элементүүд болтол хоёр хуваахтай ижил хоёртын мод, ижил нийт зардалтай.",
+            "type": "p"
+          },
+          {
+            "tex": "D(l,r)=w(l,r)+\\min_{l\\le j<r}\\{D(l,j)+D(j+1,r)\\}",
+            "type": "math"
+          },
+          {
+            "tex": "w(l,r)=S_r-S_{l-1},\\qquad D(i,i)=0",
+            "type": "math"
+          },
+          {
+            "text": "Сүүлчийн нийлүүлэлт [l,$j$] ба [$j$+1,$r$]-ийн хооронд байна. Хоёр дэд интервалын дараалал өөрчлөгдөхгүй тул тэдгээрийн optimum-уудыг нэгтгэж болно. Уртын эрс өсөх дарааллаар бодвол хэрэгтэй хоёр утга аль хэдийн бэлэн. $O(n^2)$ интервал бүр $O(n)$ хуваах цэгтэй тул нийт $O(n³)$, санах ой $O(n^2)$.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "1",
+                "0",
+                "6",
+                "14",
+                "20"
+              ],
+              [
+                "2",
+                "–",
+                "0",
+                "5",
+                "10"
+              ],
+              [
+                "3",
+                "–",
+                "–",
+                "0",
+                "4"
+              ],
+              [
+                "4",
+                "–",
+                "–",
+                "–",
+                "0"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "l / $r$",
+              "1",
+              "2",
+              "3",
+              "4"
+            ]
+          },
+          {
+            "text": "Жин [4,2,3,1] үед дээрх нь $D$ хүснэгт. [4,2]-ыг 6, [3,1]-ийг 4 зардлаар нийлүүлж, дараа нь 10 төлөхөд нийт 20. Ганц элементийн зардал өөрийн жин биш, 0: хийх нийлүүлэлт байхгүй. Доорх энгийн хувилбар нь бүх хуваах цэгийг шалгана.",
+            "type": "p"
+          },
+          {
+            "text": "Оролт $n$ ба $n$ жин. Prefix нийлбэрийг ll-д, нэг жинг int-д уншина.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<ll> s(n + 1);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        s[i] = s[i - 1] + x;\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "dp бүх нүд 0-оор эхэлнэ; суурь диагональ $D$($i$,$i$)=0. INF нь одоохондоо шилдэг хариу сонгоогүй гэсэн тэмдэг.",
+            "type": "p"
+          },
+          {
+            "text": "vector<vector<ll>> dp(n + 1, vector<ll>(n + 1));\n    const ll INF = 1LL << 62;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "len=2-оос эхэлж, ",
+                "marks": []
+              },
+              {
+                "text": "j=l..r-1",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " бүх сонголтыг авч хоёр жижиг интервалын утгыг нэмнэ. Хоосон хүүхэд үүсгэхгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "for (int len = 2; len <= n; len++) {\n        for (int l = 1; l + len - 1 <= n; l++) {\n            int r = l + len - 1;\n            dp[l][r] = INF;\n            for (int j = l; j < r; j++) {\n                ll val = dp[l][j] + dp[j + 1][r] + s[r] - s[l - 1];\n                dp[l][r] = min(dp[l][r], val);\n            }\n        }\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Хариу $D$(1,$n$). Жижиг оролтод энэ программыг хурдан хувилбарын лавлах болгон ашиглана.",
+            "type": "p"
+          },
+          {
+            "text": "cout << dp[1][n] << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<ll> s(n + 1);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        s[i] = s[i - 1] + x;\n    }\n    vector<vector<ll>> dp(n + 1, vector<ll>(n + 1));\n    const ll INF = 1LL << 62;\n    for (int len = 2; len <= n; len++) {\n        for (int l = 1; l + len - 1 <= n; l++) {\n            int r = l + len - 1;\n            dp[l][r] = INF;\n            for (int j = l; j < r; j++) {\n                ll val = dp[l][j] + dp[j + 1][r] + s[r] - s[l - 1];\n                dp[l][r] = min(dp[l][r], val);\n            }\n        }\n    }\n    cout << dp[1][n] << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "knuth-proof",
+        "title": "Knuth: хэрэглэх хоёр нөхцөл ба хуваах цэгийн баталгаа",
+        "blocks": [
+          {
+            "text": "Энэ интервал DP-д Knuth оновчлол хэрэглэх хангалттай нөхцөлийг тодорхой бичье. $w$ нь хуваах $j$-ээс хамаарахгүй байх ёстой. Дурын a≤b≤c≤$d$-д доорх хоёр нөхцөл зэрэг хангагдана. Эдгээр нь дурын DP эсвэл дурын сөрөг биш зардалд автоматаар үнэн биш.",
+            "type": "p"
+          },
+          {
+            "tex": "w(b,c)\\le w(a,d)",
+            "type": "math"
+          },
+          {
+            "tex": "w(a,c)+w(b,d)\\le w(a,d)+w(b,c)",
+            "type": "math"
+          },
+          {
+            "text": "Эхнийх нь интервалыг томруулахад зардал багасахгүй гэсэн утгатай. Сөрөг биш жинтэй нийлбэрт энэ нь үнэн. Хоёр дахь нь дөрвөн индексийн тэнцэтгэл биш; манай нийлбэрт хоёр тал яг тэнцэнэ, учир нь давхцсан [b,c] хэсэг хоёуланд нь хоёр тоологдоно. Зөвхөн энэ хоёр дахь тэнцэтгэл хангалттай гэж андуурч болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Эдгээр нөхцөлөөс $D$ өөрөө мөн дөрвөн индексийн тэнцэтгэл бишийг хадгална. Үүнийг интервалын уртаар батална. [a,$d$]-ийн оновчтой зүсэлт $x$, [b,c]-ийнх $y$ байг. $x$<b бол [a,c]-д $x$-ээр зүссэн хувилбар авч, жижиг [$x$+1,$d$] интервалын тэнцэтгэл биш болон $w$(a,c)≤$w$(a,$d$)-г хэрэглэнэ. $x$≥c үед адил санааг нөгөө талд хэрэглэнэ. b≤$x$<c үед $x$,$y$-г хоёр давхцсан интервалд солин тавьж, $w$-ийн тэнцэтгэл биш болон жижиг интервалуудын $D$-ийн тэнцэтгэл бишийг нэмнэ. Ингэхэд дундах дэд интервалууд хоёр талд цуцлагдана. b=c үед дунд тохиолдол байхгүй, $D$(b,b)=0 нь суурь болно.",
+            "type": "p"
+          },
+          {
+            "tex": "D(a,c)+D(b,d)\\le D(a,d)+D(b,c)",
+            "type": "math"
+          },
+          {
+            "text": "Одоо $K$(l,$r$)-ийг хамгийн бага утгыг өгөх хамгийн баруун хуваах цэг гэе. Дээрх $D$-ийн шинжийг ашиглавал дараах хоёр талын хязгаар гарна. Диагональд $K$($i$,$i$)=$i$ гэж бэлдэнэ; урт 2-д зөвхөн $j$=$i$ зөвшөөрөгдөх тул баруун хязгаарыг $r$−1-ээр таслах хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "tex": "K(l,r-1)\\le K(l,r)\\le K(l+1,r)",
+            "type": "math"
+          },
+          {
+            "text": "Эхний талыг яагаад гэдгийг харъя. A($j$)=$D$(l,$j$)+$D$($j$+1,$r$), B($j$)=$D$(l,$j$)+$D$($j$+1,$r$−1) гэе. Хэрэв шинэ хамгийн бага утга p нь өмнөх хамгийн бага утга q-ээс зүүн, p<q байвал $D$-ийн тэнцэтгэл бишээс B(p)+A(q)≤A(p)+B(q). p нь A-ийн, q нь B-ийн хамгийн бага утга тул хоёр чиглэлийн харьцуулалт тэнцэж, q мөн A-ийн хамгийн бага утга болно. q>p учраас шинэ сонголт хамгийн баруун байсан гэдэгтэй зөрчилдөнө. Хоёр дахь хязгаарт A($j$)=$D$(l,$j$)+$D$($j$+1,$r$), B($j$)=$D$(l+1,$j$)+$D$($j$+1,$r$) гэе. Хэрэв q=$K$(l,$r$)>p=$K$(l+1,$r$) бол $D$(l,p)+$D$(l+1,q)≤$D$(l,q)+$D$(l+1,p)-оос A(p)+B(q)≤A(q)+B(p). Оновчтой утгуудын эсрэг харьцуулалтыг нэмэхэд дахин тэнцэж, q нь B-ийн хамгийн бага утгыг өгнө. q>p тул баруун захын сонголтын дүрэмтэй зөрчилдөнө. Ингэснээр хайлтын гаднах цэгийг хаях нь таамаг биш, баталгаатай болно.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "knuth",
+        "title": "Knuth-ийн бүтэн мөрдөлт ба C++17",
+        "blocks": [
+          {
+            "rows": [
+              [
+                "[1,2]",
+                "1",
+                "6",
+                "1"
+              ],
+              [
+                "[2,3]",
+                "2",
+                "5",
+                "2"
+              ],
+              [
+                "[3,4]",
+                "3",
+                "4",
+                "3"
+              ],
+              [
+                "[1,3]",
+                "1..2",
+                "14",
+                "1"
+              ],
+              [
+                "[2,4]",
+                "2..3",
+                "10",
+                "2"
+              ],
+              [
+                "[1,4]",
+                "1..2",
+                "20",
+                "2"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "[l,$r$]",
+              "Хайлтын $j$",
+              "Шилдэг утга",
+              "$K$(l,$r$)"
+            ]
+          },
+          {
+            "text": "Сүүлийн [1,4]-д $K$(1,3)=1, $K$(2,4)=2 учраас зөвхөн $j$=1,2-ыг шалгана. Утгууд 0+10+10=20 ба 6+4+10=20; <= нь баруун $j$=2-ыг хадгална. Хассан $j$=3 нь 14+0+10=24. Уртын эрс өсөх дарааллаас болж хайлтын хоёр захын $K$ аль хэдийн бэлэн байна.",
+            "type": "p"
+          },
+          {
+            "text": "Төлөв бүр тогтмол тооны сонголттой болчихлоо гэж дүгнэж болохгүй. Нэг уртын бүх интервалыг хамтад нь тоолбол хайлтын өргөнүүд $K$(l+1,$r$)−$K$(l,$r$−1)+1 хэлбэртэй бөгөөд дундах гишүүд цуцлагдана. Нэг уртын нийт ажил $O(n)$, бүх урт нийлээд $O(n^2)$. Энэ нь нийлбэр ажлын баталгаа; нэг интервалын хайлт урт байж болно.",
+            "type": "p"
+          },
+          {
+            "text": "Knuth($n$) нь s-ийн $n$+1 prefix, dp-ийн ll хүснэгт, opt-ийн int хүснэгтийг бэлдэнэ. dp[$i$][$i$]=0, opt[$i$][$i$]=$i$. Хоёр хэмжээст төлөвийг нэг segment tree-ийн 4n зайтай андуурахгүй: энд $O(n^2)$ зай хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Knuth {\n    static constexpr ll INF = 1LL << 62;\n    int n;\n    vector<ll> s;\n    vector<vector<ll>> dp;\n    vector<vector<int>> opt;\n    Knuth(int _n) {\n        n = _n;\n        s.resize(n + 1);\n        dp.assign(n + 1, vector<ll>(n + 1));\n        opt.assign(n + 1, vector<int>(n + 1));\n        for (int i = 1; i <= n; i++) opt[i][i] = i;\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Урт бүрийг эрс өсөх дарааллаар бодно. ql,qr нь баталсан хоёр зах, min($r$−1,...) нь хоосон баруун хүүхдийг хориглоно.",
+            "type": "p"
+          },
+          {
+            "text": "ll run() {\n        for (int len = 2; len <= n; len++) {\n            for (int l = 1; l + len - 1 <= n; l++) {\n                int r = l + len - 1;\n                int ql = opt[l][r - 1];\n                int qr = min(r - 1, opt[l + 1][r]);\n                dp[l][r] = INF;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Зөвхөн тэр интервалын $j$-г шалгана. ll хоёр дэд зардал дээр prefix-ийн ll ялгаврыг нэмнэ. <= ба эрс өсөх $j$ давталт нь хамгийн бага утгыг өгөх хамгийн баруун хуваах цэгийг хадгална; $n$=1 үед давталт ажиллахгүй, суурь 0 буцна.",
+            "type": "p"
+          },
+          {
+            "text": "for (int j = ql; j <= qr; j++) {\n                    ll val = dp[l][j] + dp[j + 1][r] + s[r] - s[l - 1];\n                    if (val <= dp[l][r]) {\n                        dp[l][r] = val;\n                        opt[l][r] = j;\n                    }\n                }\n            }\n        }\n        return dp[1][n];\n    }\n};",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Жин бүрийг уншиж prefix бэлдээд run дуудна. Оролт энгийн хувилбартай ижил, гаралт зөвхөн хамгийн бага зардал.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    Knuth dp(n);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        dp.s[i] = dp.s[i - 1] + x;\n    }\n    cout << dp.run() << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Knuth {\n    static constexpr ll INF = 1LL << 62;\n    int n;\n    vector<ll> s;\n    vector<vector<ll>> dp;\n    vector<vector<int>> opt;\n    Knuth(int _n) {\n        n = _n;\n        s.resize(n + 1);\n        dp.assign(n + 1, vector<ll>(n + 1));\n        opt.assign(n + 1, vector<int>(n + 1));\n        for (int i = 1; i <= n; i++) opt[i][i] = i;\n    }\n    ll run() {\n        for (int len = 2; len <= n; len++) {\n            for (int l = 1; l + len - 1 <= n; l++) {\n                int r = l + len - 1;\n                int ql = opt[l][r - 1];\n                int qr = min(r - 1, opt[l + 1][r]);\n                dp[l][r] = INF;\n                for (int j = ql; j <= qr; j++) {\n                    ll val = dp[l][j] + dp[j + 1][r] + s[r] - s[l - 1];\n                    if (val <= dp[l][r]) {\n                        dp[l][r] = val;\n                        opt[l][r] = j;\n                    }\n                }\n            }\n        }\n        return dp[1][n];\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    Knuth dp(n);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        dp.s[i] = dp.s[i - 1] + x;\n    }\n    cout << dp.run() << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Хүрээ: 1≤$n$≤5000, 0≤aᵢ≤10⁹. Нийт жин ≤5·10¹², нийт зардлын аюулгүй дээд хязгаар ($n$−1)Sₙ<2.5·10¹⁶ тул ll хүрэлцэнэ. dp ба opt-ийн нийлсэн санах ой $n$=5000-д ойролцоогоор 300 MB: 8 ба 4 байтын нүдтэй бүтэн хүснэгтүүд. $O(n^2)$ санах ойг үл тоож болохгүй; жижиг хязгаарт cubic энгийн хувилбар хангалттай байж болно.",
+            "type": "p"
+          },
+          {
+            "text": "Эсрэг жишээ: a=[−3,−2,−1,−3]. Нийлбэр $w$ нь дөрвөн индексийн тэнцэтгэлийг хадгалсан ч интервалыг томруулахад багасдаг: $w$(2,3)=−3≤$w$(1,4)=−9 гэдэг худал. Baseline-ийн $K$(1,4)=3 нь $K$(2,4)=2-оос их, хоёр талын хязгаар эвдэрнэ. Жинхэнэ зардал −20; зөвхөн $j$=2-т баригдсан Knuth код −18 гаргана. Иймээс дөрвөн индексийн тэнцэтгэл биш ганцаараа хангалтгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Аргаа сонгох, шалгах ба дадлага",
+        "blocks": [
+          {
+            "text": "Оновчлол сонгох дараалал: эхлээд шилжилтийн томьёогоо яг бич; дараа нь шилжилтийн зардлыг $O(1)$-д олж болох эсэх, сонголтын хамгийн баруун индекс ямар шинжтэйг батал. Divide-and-conquer нь бэлэн өмнөх мөр дээр тулгуурладаг. Knuth нь хоёр дэд интервалаас хамаарах, хуваах цэгээс үл хамаарах $w$-тэй шилжилтийн томьёо ба зардлын хоёр нөхцөл шаарддаг. Нэг аргын кодыг нөгөө хэлбэрт механикаар хуулж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Бие даасан шалгалт: жижиг массивын бүх $k$−1 заагийг сонгож квадратын нийлбэрийн хамгийн бага утгыг ол. Нийлүүлэх бодлогод бүх боломжит залгаа нийлүүлэлтийн дарааллыг тооч. Дараа нь энгийн ба оновчилсон хувилбаруудын зөвхөн эцсийн хариу бус мөр, интервал бүрийг харьцуул. 0-үүд, ижил жин, ганц элемент, $k$=1, $k$=$n$, том ll хариу болон ижил хамгийн бага утгын баруун сонголтыг шалга.",
+            "type": "p"
+          },
+          {
+            "text": "Оновчилсон кодын өөрийн хязгаарласан opt-ууд үл буурч байна гэдэг нь нөхцөлийн баталгаа биш: алгоритм тийм хязгаарт өөрөө барьдаг. Хассан сонголтуудыг шалгадаг энгийн хувилбартай тулгах болон математик баталгаа хоёул хэрэгтэй. Туршилт алдаа олж чадна, харин бүх оролтод хүчинтэй шинжийг дангаараа батлахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Эзэмших үндсэн бодлогууд",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "524"
+          },
+          {
+            "text": "Subarray Squares: эхний хоёр программын яг шилжилтийн томьёо. Массивыг эрэмбэлэхгүй; хэсгүүд анхны дарааллын залгаа интервалууд.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "526"
+          },
+          {
+            "text": "Knuth Division: хуваах үйлдлийг урвуулбал залгаа нийлүүлэлттэй ижил интервалын мод үүснэ. Ганц элемент дээр 0 байхыг шалга.",
+            "type": "p"
+          },
+          {
+            "text": "Бие даах ба харьцуулах бодлогууд",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "690"
+          },
+          {
+            "text": "AtCoder DP $N$ — Slimes: жижиг $n$-д $O(n³)$ энгийн хувилбар ч хэрэгжинэ. Хоёр хувилбарыг харьцуулж, оновчлол үргэлж шаардлагатай бишийг ажигла.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "525"
+          },
+          {
+            "text": "Houses and Schools: хэсгийн зардал нь квадрат нийлбэр биш, жинтэй зайнаас гарна. Өөрийн зардлыг гаргаж, хурдан тооцоолох ба Monge шинжийг тусад нь баталсны дараа л ижил арга сонго.",
+            "type": "p"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "DP optimizations — divide-and-conquer and Knuth",
+        "summary": "Prove nondecreasing split properties to accelerate candidate searches in two different DP recurrence shapes.",
+        "sections": [
+          {
+            "key": "idea",
+            "title": "Must every state test every candidate?",
+            "blocks": [
+              {
+                "text": "A DP can have the correct states yet spend too long testing every split. We study two related ways to narrow that search: divide-and-conquer when split indices along one row are nondecreasing, and Knuth optimization for interval DP with two-sided split bounds. The central task is proving which candidates can be discarded.",
+                "type": "p"
+              },
+              {
+                "text": "Neither method applies automatically to arbitrary DP. First establish the baseline transition, base cases and numeric domain; then prove applicability and compare the faster version against the baseline. Rolling arrays reduce memory by themselves, not the number of candidate transitions.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "partition",
+            "title": "The baseline DP for exactly k segments",
+            "blocks": [
+              {
+                "text": "Partition nonnegative a₁…aₙ into exactly $k$ nonempty contiguous segments, minimizing the sum of squared segment sums. Let Sᵢ be the sum of the first $i$ elements and S₀=0. A final segment starting after $j$ costs C($j$,$i$)=(Sᵢ−Sⱼ)². Requiring $j$<$i$ prevents empty segments.",
+                "type": "p"
+              },
+              {
+                "tex": "D_g(i)=\\min_{g-1\\le j<i}\\{D_{g-1}(j)+C(j,i)\\}",
+                "type": "math"
+              },
+              {
+                "text": "D_g($i$) is the minimum cost for the first $i$ elements in g segments. D₀(0)=0, D₀($i$>0)=∞, and $i$<g is impossible. The first $j$ elements need g−1 nonempty segments, giving $j$≥g−1. Testing all $j$ for each $i$ costs $O(n^2)$ per row, $O(kn^2)$ overall. Constant-time prefix-sum costs do not by themselves remove that search.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "aᵢ",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "Sᵢ",
+                    "1",
+                    "3",
+                    "6",
+                    "10",
+                    "12",
+                    "13"
+                  ],
+                  [
+                    "D₁($i$)",
+                    "1",
+                    "9",
+                    "36",
+                    "100",
+                    "144",
+                    "169"
+                  ],
+                  [
+                    "D₂($i$)",
+                    "–",
+                    "5",
+                    "18",
+                    "52",
+                    "72",
+                    "85"
+                  ],
+                  [
+                    "D₃($i$)",
+                    "–",
+                    "–",
+                    "14",
+                    "34",
+                    "54",
+                    "61"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "$i$",
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5",
+                  "6"
+                ]
+              },
+              {
+                "text": "For $k$=3 the answer is 61, from [1,2,3], [4], [2,1] with costs 36+16+9. In row 2 at $i$=4, choices $j$=1,2,3 cost 82,58,52, selecting $j$=3. Both following programs solve this same recurrence.",
+                "type": "p"
+              },
+              {
+                "text": "Read $n$,$k$ and the elements. s stores ll prefix sums; $x$ fits int but cumulative values use ll.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    vector<ll> s(n + 1);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        s[i] = s[i - 1] + x;\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "pr is the previous row and cur the current row. Initialize impossible states to INF, with only pr[0]=0.",
+                "type": "p"
+              },
+              {
+                "text": "const ll INF = 1LL << 62;\n    vector<ll> pr(n + 1, INF), cur(n + 1);\n    pr[0] = 0;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Reset cur for every row, testing $i$≥g and g−1≤$j$<$i$. Never add to INF. sum is ll before squaring.",
+                "type": "p"
+              },
+              {
+                "text": "for (int g = 1; g <= k; g++) {\n        fill(cur.begin(), cur.end(), INF);\n        for (int i = g; i <= n; i++) {\n            for (int j = g - 1; j < i; j++) {\n                if (pr[j] == INF) continue;\n                ll sum = s[i] - s[j];\n                cur[i] = min(cur[i], pr[j] + sum * sum);\n            }\n        }\n        swap(pr, cur);\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "After $k$ rows, pr[$n$] is the answer. This complete baseline is useful on small inputs and slow at the full limit.",
+                "type": "p"
+              },
+              {
+                "text": "cout << pr[n] << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    vector<ll> s(n + 1);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        s[i] = s[i - 1] + x;\n    }\n    const ll INF = 1LL << 62;\n    vector<ll> pr(n + 1, INF), cur(n + 1);\n    pr[0] = 0;\n    for (int g = 1; g <= k; g++) {\n        fill(cur.begin(), cur.end(), INF);\n        for (int i = g; i <= n; i++) {\n            for (int j = g - 1; j < i; j++) {\n                if (pr[j] == INF) continue;\n                ll sum = s[i] - s[j];\n                cur[i] = min(cur[i], pr[j] + sum * sum);\n            }\n        }\n        swap(pr, cur);\n    }\n    cout << pr[n] << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "monge",
+            "title": "Why the minimizing splits are nondecreasing",
+            "blocks": [
+              {
+                "text": "Define K_g($i$) as the RIGHTMOST minimizing $j$ for D_g($i$). If K_g($i$)≤K_g($i$+1) has been proved, finding the optimum q at mid bounds the left states by q from above and the right states by q from below. A consistent tie rule is essential when translating that guarantee into code.",
+                "type": "p"
+              },
+              {
+                "text": "Why does our cost have this property? Take prefix positions a≤b≤c≤$d$, and write A=S_b−S_a, B=S_c−S_b, C=S_d−S_c. Nonnegative elements imply A,C≥0. Expanding the squares gives:",
+                "type": "p"
+              },
+              {
+                "tex": "C(a,d)+C(b,c)-C(a,c)-C(b,d)=2AC\\ge0",
+                "type": "math"
+              },
+              {
+                "text": "Thus C(a,c)+C(b,$d$)≤C(a,$d$)+C(b,c), the Monge or quadrangle inequality. Adding the previous-row term preserves it because equal-row terms cancel on both sides; $M$($j$,$i$)=D_{g−1}($j$)+C($j$,$i$) inherits the property. Nonnegative cost entries alone do not make an arbitrary matrix Monge: the specific squared-sum formula was proved here.",
+                "type": "p"
+              },
+              {
+                "text": "To prove monotonicity, suppose i₁<i₂ but their chosen splits satisfy p>q. Both choices are feasible at both endpoints. Monge gives $M$(q,i₁)+$M$(p,i₂)≤$M$(q,i₂)+$M$(p,i₁). Optimality of p at the first endpoint and q at the second forces equality. Then p also minimizes the second state, contradicting its rightmost choice q<p. Hence K_g is nondecreasing.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "divide",
+            "title": "Divide-and-conquer: search bands and complete code",
+            "blocks": [
+              {
+                "text": "calc(l,$r$,ql,qr) computes the current row’s states $i$∈[l,$r$], assuming their minimizers lie in [ql,qr]. At mid, test $j$ from ql through min(mid−1,qr). Use the selected opt to bound both recursive searches. Read only the already completed pr row, never partially computed cur states.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "4",
+                    "1..3",
+                    "52",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "1",
+                    "5",
+                    "1"
+                  ],
+                  [
+                    "3",
+                    "1..2",
+                    "18",
+                    "2"
+                  ],
+                  [
+                    "5",
+                    "3..4",
+                    "72",
+                    "3"
+                  ],
+                  [
+                    "6",
+                    "3..5",
+                    "85",
+                    "3"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "mid",
+                  "Tested $j$",
+                  "cur[mid]",
+                  "opt"
+                ]
+              },
+              {
+                "text": "This is the actual evaluation order for row g=2 on [1,2,3,4,2,1]. First mid=4 chooses opt=3; left states [2,3] need $j$≤3 and right states [5,6] need $j$≥3. At $i$=6 only 3..5 are tested instead of 1..5. The resulting row remains 5,18,52,72,85 with rightmost splits 1,2,3,3,3.",
+                "type": "p"
+              },
+              {
+                "text": "At one recursion level, candidate intervals overlap only at boundaries, for total $O(n)$ scanning. There are $O(\\log n)$ levels: $O(n \\log n)$ per row, $O(kn \\log n)$ overall. The three arrays use $O(n)$ memory. The program prints only the minimum cost; reconstructing all segments needs saved decisions or a separate reconstruction method.",
+                "type": "p"
+              },
+              {
+                "text": "DivideDP($n$) stores $n$ and allocates s,pr,cur with $n$+1 entries, including the empty prefix 0.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct DivideDP {\n    static constexpr ll INF = 1LL << 62;\n    int n;\n    vector<ll> s, pr, cur;\n    DivideDP(int _n) {\n        n = _n;\n        s.resize(n + 1);\n        pr.resize(n + 1);\n        cur.resize(n + 1);\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Return on an empty state interval; compute mid using a difference and initialize its best cost to INF.",
+                "type": "p"
+              },
+              {
+                "text": "void calc(int l, int r, int ql, int qr) {\n        if (l > r) return;\n        int mid = l + (r - l) / 2;\n        int opt = ql;\n        ll best = INF;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The mid−1 cap prevents empty new segments. Skip unreachable pr[$j$]; <= selects the rightmost minimizing $j$.",
+                "type": "p"
+              },
+              {
+                "text": "for (int j = ql; j <= min(mid - 1, qr); j++) {\n            if (pr[j] == INF) continue;\n            ll sum = s[mid] - s[j];\n            ll val = pr[j] + sum * sum;\n            if (val <= best) {\n                best = val;\n                opt = j;\n            }\n        }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Store cur[mid], then narrow both searches using proved monotonicity. Initial calc(g,$n$,g−1,$n$−1) covers every feasible candidate.",
+                "type": "p"
+              },
+              {
+                "text": "cur[mid] = best;\n        calc(l, mid - 1, ql, opt);\n        calc(mid + 1, r, opt, qr);\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "run resets cur each row and swaps it with pr only after completion. Initial pr[0]=0 is the base case.",
+                "type": "p"
+              },
+              {
+                "text": "ll run(int k) {\n        fill(pr.begin(), pr.end(), INF);\n        pr[0] = 0;\n        for (int g = 1; g <= k; g++) {\n            fill(cur.begin(), cur.end(), INF);\n            calc(g, n, g - 1, n - 1);\n            swap(pr, cur);\n        }\n        return pr[n];\n    }\n};",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Input matches the baseline. Build s and run $k$ rows. Recursion depth is $O(\\log n)$, not a linear traversal depth.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    DivideDP dp(n);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        dp.s[i] = dp.s[i - 1] + x;\n    }\n    cout << dp.run(k) << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct DivideDP {\n    static constexpr ll INF = 1LL << 62;\n    int n;\n    vector<ll> s, pr, cur;\n    DivideDP(int _n) {\n        n = _n;\n        s.resize(n + 1);\n        pr.resize(n + 1);\n        cur.resize(n + 1);\n    }\n    void calc(int l, int r, int ql, int qr) {\n        if (l > r) return;\n        int mid = l + (r - l) / 2;\n        int opt = ql;\n        ll best = INF;\n        for (int j = ql; j <= min(mid - 1, qr); j++) {\n            if (pr[j] == INF) continue;\n            ll sum = s[mid] - s[j];\n            ll val = pr[j] + sum * sum;\n            if (val <= best) {\n                best = val;\n                opt = j;\n            }\n        }\n        cur[mid] = best;\n        calc(l, mid - 1, ql, opt);\n        calc(mid + 1, r, opt, qr);\n    }\n    ll run(int k) {\n        fill(pr.begin(), pr.end(), INF);\n        pr[0] = 0;\n        for (int g = 1; g <= k; g++) {\n            fill(cur.begin(), cur.end(), INF);\n            calc(g, n, g - 1, n - 1);\n            swap(pr, cur);\n        }\n        return pr[n];\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    DivideDP dp(n);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        dp.s[i] = dp.s[i - 1] + x;\n    }\n    cout << dp.run(k) << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Domain: 1≤$k$≤$n$≤3000 and 0≤aᵢ≤10⁵. Sₙ≤3·10⁸ and its square ≤9·10¹⁶, requiring ll. sum is ll before multiplication; indices, $k$ and individual inputs fit int. Never add to INF=2⁶². The cubic-in-combination baseline is not promised to meet full-limit timing.",
+                "type": "p"
+              },
+              {
+                "text": "Counterexample outside the assumptions: for a=[−3,1,−2,−2], row g=2 has optima 1,2,1 at $i$=2,3,4, with costs 10,8,18. The last two optima are unique, yet move backward. Applying divide-and-conquer without justification restricts the last search after choosing 2 at mid=3 and returns 20 instead of 18. Not every signed input must fail; the guarantee simply does not apply to them.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "interval",
+            "title": "The baseline interval DP for adjacent merging",
+            "blocks": [
+              {
+                "text": "Now merging two adjacent groups costs their combined weight. Minimize the total cost of merging the sequence into one group. Only ADJACENT groups may merge. Reversing the process gives the same binary tree and total cost as splitting the whole interval into singleton elements.",
+                "type": "p"
+              },
+              {
+                "tex": "D(l,r)=w(l,r)+\\min_{l\\le j<r}\\{D(l,j)+D(j+1,r)\\}",
+                "type": "math"
+              },
+              {
+                "tex": "w(l,r)=S_r-S_{l-1},\\qquad D(i,i)=0",
+                "type": "math"
+              },
+              {
+                "text": "The final merge joins [l,$j$] and [$j$+1,$r$]. Their internal order remains fixed, so combine optimal subintervals. Increasing interval length ensures both values are ready. There are $O(n^2)$ intervals with $O(n)$ choices each: $O(n³)$ time and $O(n^2)$ space.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "1",
+                    "0",
+                    "6",
+                    "14",
+                    "20"
+                  ],
+                  [
+                    "2",
+                    "–",
+                    "0",
+                    "5",
+                    "10"
+                  ],
+                  [
+                    "3",
+                    "–",
+                    "–",
+                    "0",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "–",
+                    "–",
+                    "–",
+                    "0"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "l / $r$",
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ]
+              },
+              {
+                "text": "For weights [4,2,3,1], this is the $D$ table. Merge [4,2] for 6, [3,1] for 4, then pay 10, totaling 20. A singleton costs zero, not its own weight, because no merge is needed. The baseline below tests every split.",
+                "type": "p"
+              },
+              {
+                "text": "Read $n$ weights, using int inputs and ll prefix sums.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<ll> s(n + 1);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        s[i] = s[i - 1] + x;\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Initialize dp to zero, including base diagonal $D$($i$,$i$)=0. INF initializes a state before choosing a best candidate.",
+                "type": "p"
+              },
+              {
+                "text": "vector<vector<ll>> dp(n + 1, vector<ll>(n + 1));\n    const ll INF = 1LL << 62;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Start at length 2 and test ",
+                    "marks": []
+                  },
+                  {
+                    "text": "j=l..r-1",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", combining two smaller intervals without empty children.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "for (int len = 2; len <= n; len++) {\n        for (int l = 1; l + len - 1 <= n; l++) {\n            int r = l + len - 1;\n            dp[l][r] = INF;\n            for (int j = l; j < r; j++) {\n                ll val = dp[l][j] + dp[j + 1][r] + s[r] - s[l - 1];\n                dp[l][r] = min(dp[l][r], val);\n            }\n        }\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Return $D$(1,$n$); use this complete baseline as a small-input oracle for the optimized version.",
+                "type": "p"
+              },
+              {
+                "text": "cout << dp[1][n] << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<ll> s(n + 1);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        s[i] = s[i - 1] + x;\n    }\n    vector<vector<ll>> dp(n + 1, vector<ll>(n + 1));\n    const ll INF = 1LL << 62;\n    for (int len = 2; len <= n; len++) {\n        for (int l = 1; l + len - 1 <= n; l++) {\n            int r = l + len - 1;\n            dp[l][r] = INF;\n            for (int j = l; j < r; j++) {\n                ll val = dp[l][j] + dp[j + 1][r] + s[r] - s[l - 1];\n                dp[l][r] = min(dp[l][r], val);\n            }\n        }\n    }\n    cout << dp[1][n] << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "knuth-proof",
+            "title": "Knuth: two applicability conditions and split bounds",
+            "blocks": [
+              {
+                "text": "State sufficient conditions precisely. For this interval recurrence, $w$ must be independent of the split $j$. For every a≤b≤c≤$d$, BOTH conditions below must hold. They are not automatic for arbitrary DP or arbitrary nonnegative costs.",
+                "type": "p"
+              },
+              {
+                "tex": "w(b,c)\\le w(a,d)",
+                "type": "math"
+              },
+              {
+                "tex": "w(a,c)+w(b,d)\\le w(a,d)+w(b,c)",
+                "type": "math"
+              },
+              {
+                "text": "The first says enlarging an interval cannot reduce its cost, true for nonnegative sums. The second is the quadrangle inequality. For our sums both sides are equal: their overlap [b,c] is counted twice on each side. Do not mistake the second condition alone for a sufficient certificate.",
+                "type": "p"
+              },
+              {
+                "text": "The conditions imply that $D$ itself inherits the quadrangle inequality, by induction on interval length. Let $x$ split optimal [a,$d$] and $y$ split [b,c]. If $x$<b, split [a,c] at $x$ and use the shorter interval [$x$+1,$d$] inequality plus $w$(a,c)≤$w$(a,$d$). The $x$≥c case is symmetric. For b≤$x$<c, exchange $x$ and $y$ between the overlapping intervals and add the $w$ inequality to inequalities on shorter $D$ intervals; common subproblems cancel. When b=c the middle case disappears and $D$(b,b)=0 supplies the base case.",
+                "type": "p"
+              },
+              {
+                "tex": "D(a,c)+D(b,d)\\le D(a,d)+D(b,c)",
+                "type": "math"
+              },
+              {
+                "text": "Let $K$(l,$r$) be the RIGHTMOST minimizing split. The inherited $D$ property gives the two-sided bounds below. Set $K$($i$,$i$)=$i$ on the diagonal; length 2 permits only $j$=$i$, so cap the right search endpoint at $r$−1.",
+                "type": "p"
+              },
+              {
+                "tex": "K(l,r-1)\\le K(l,r)\\le K(l+1,r)",
+                "type": "math"
+              },
+              {
+                "text": "For the first bound, write A($j$)=$D$(l,$j$)+$D$($j$+1,$r$) and B($j$)=$D$(l,$j$)+$D$($j$+1,$r$−1). If the new optimum p lay left of the old optimum q, the $D$ inequality would give B(p)+A(q)≤A(p)+B(q). Optimality of p for A and q for B forces equality, making q another A minimum. Since q>p, this contradicts the rightmost new choice. For the second bound, set A($j$)=$D$(l,$j$)+$D$($j$+1,$r$) and B($j$)=$D$(l+1,$j$)+$D$($j$+1,$r$). If q=$K$(l,$r$)>p=$K$(l+1,$r$), the inherited inequality $D$(l,p)+$D$(l+1,q)≤$D$(l,q)+$D$(l+1,p) gives A(p)+B(q)≤A(q)+B(p). Optimality forces equality, so q also minimizes B, contradicting its rightmost choice p. Discarding candidates outside the band is therefore justified, not guessed.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "knuth",
+            "title": "A complete Knuth trace and C++17 implementation",
+            "blocks": [
+              {
+                "rows": [
+                  [
+                    "[1,2]",
+                    "1",
+                    "6",
+                    "1"
+                  ],
+                  [
+                    "[2,3]",
+                    "2",
+                    "5",
+                    "2"
+                  ],
+                  [
+                    "[3,4]",
+                    "3",
+                    "4",
+                    "3"
+                  ],
+                  [
+                    "[1,3]",
+                    "1..2",
+                    "14",
+                    "1"
+                  ],
+                  [
+                    "[2,4]",
+                    "2..3",
+                    "10",
+                    "2"
+                  ],
+                  [
+                    "[1,4]",
+                    "1..2",
+                    "20",
+                    "2"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "[l,$r$]",
+                  "Search $j$",
+                  "Best cost",
+                  "$K$(l,$r$)"
+                ]
+              },
+              {
+                "text": "For [1,4], $K$(1,3)=1 and $K$(2,4)=2 restrict the search to $j$=1,2. Both cost 20: 0+10+10 and 6+4+10. Using <= retains rightmost $j$=2. Excluded $j$=3 costs 14+0+10=24. Increasing length ensures both bounding $K$ entries are already available.",
+                "type": "p"
+              },
+              {
+                "text": "Do not conclude that each state now tests a constant number of candidates. Across all intervals of one length, widths $K$(l+1,$r$)−$K$(l,$r$−1)+1 telescope: intermediate terms cancel. The total is $O(n)$ per length and $O(n^2)$ overall. This is an aggregate-work argument; one interval can still have a wide search.",
+                "type": "p"
+              },
+              {
+                "text": "Knuth($n$) allocates the $n$+1 prefix array, ll dp matrix and int opt matrix. Initialize dp[$i$][$i$]=0 and opt[$i$][$i$]=$i$. This is a dense $O(n^2)$ interval table, not a segment tree’s 4n layout.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Knuth {\n    static constexpr ll INF = 1LL << 62;\n    int n;\n    vector<ll> s;\n    vector<vector<ll>> dp;\n    vector<vector<int>> opt;\n    Knuth(int _n) {\n        n = _n;\n        s.resize(n + 1);\n        dp.assign(n + 1, vector<ll>(n + 1));\n        opt.assign(n + 1, vector<int>(n + 1));\n        for (int i = 1; i <= n; i++) opt[i][i] = i;\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Process lengths increasingly. ql and qr are the proved split bounds; min($r$−1,...) forbids an empty right child.",
+                "type": "p"
+              },
+              {
+                "text": "ll run() {\n        for (int len = 2; len <= n; len++) {\n            for (int l = 1; l + len - 1 <= n; l++) {\n                int r = l + len - 1;\n                int ql = opt[l][r - 1];\n                int qr = min(r - 1, opt[l + 1][r]);\n                dp[l][r] = INF;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Test only that split interval, adding ll child costs and the ll prefix difference. The ascending loop with <= retains the rightmost minimum. For $n$=1, no merge loop runs and the base zero is returned.",
+                "type": "p"
+              },
+              {
+                "text": "for (int j = ql; j <= qr; j++) {\n                    ll val = dp[l][j] + dp[j + 1][r] + s[r] - s[l - 1];\n                    if (val <= dp[l][r]) {\n                        dp[l][r] = val;\n                        opt[l][r] = j;\n                    }\n                }\n            }\n        }\n        return dp[1][n];\n    }\n};",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Read weights into prefix sums and call run. Input matches the baseline; output is only the minimum cost.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    Knuth dp(n);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        dp.s[i] = dp.s[i - 1] + x;\n    }\n    cout << dp.run() << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Knuth {\n    static constexpr ll INF = 1LL << 62;\n    int n;\n    vector<ll> s;\n    vector<vector<ll>> dp;\n    vector<vector<int>> opt;\n    Knuth(int _n) {\n        n = _n;\n        s.resize(n + 1);\n        dp.assign(n + 1, vector<ll>(n + 1));\n        opt.assign(n + 1, vector<int>(n + 1));\n        for (int i = 1; i <= n; i++) opt[i][i] = i;\n    }\n    ll run() {\n        for (int len = 2; len <= n; len++) {\n            for (int l = 1; l + len - 1 <= n; l++) {\n                int r = l + len - 1;\n                int ql = opt[l][r - 1];\n                int qr = min(r - 1, opt[l + 1][r]);\n                dp[l][r] = INF;\n                for (int j = ql; j <= qr; j++) {\n                    ll val = dp[l][j] + dp[j + 1][r] + s[r] - s[l - 1];\n                    if (val <= dp[l][r]) {\n                        dp[l][r] = val;\n                        opt[l][r] = j;\n                    }\n                }\n            }\n        }\n        return dp[1][n];\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    Knuth dp(n);\n    for (int i = 1, x; i <= n; i++) {\n        cin >> x;\n        dp.s[i] = dp.s[i - 1] + x;\n    }\n    cout << dp.run() << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Domain: 1≤$n$≤5000 and 0≤aᵢ≤10⁹. Total weight is at most 5·10¹² and a safe cost bound is ($n$−1)Sₙ<2.5·10¹⁶, fitting ll. At $n$=5000 the full 8-byte dp and 4-byte opt matrices use about 300 MB. Do not ignore quadratic memory; the cubic baseline may suffice at smaller limits.",
+                "type": "p"
+              },
+              {
+                "text": "Counterexample: a=[−3,−2,−1,−3]. Sum cost still satisfies quadrangle equality, but inclusion monotonicity fails: $w$(2,3)=−3≤$w$(1,4)=−9 is false. The baseline has $K$(1,4)=3>$K$(2,4)=2. Its true cost is −20, while the invalid band restricts Knuth’s code to $j$=2 and returns −18. Quadrangle inequality alone is therefore insufficient.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Choosing, verifying and practicing the method",
+            "blocks": [
+              {
+                "text": "Choose an optimization by first writing the exact recurrence, then proving cost evaluation and rightmost-split properties. Divide-and-conquer here reads a completed previous row. Knuth uses two smaller intervals, a split-independent $w$ and the two cost conditions. Do not mechanically transfer one implementation to the other recurrence shape.",
+                "type": "p"
+              },
+              {
+                "text": "Independent checks: enumerate every choice of $k$−1 cut positions for the partition problem, and every sequence of ADJACENT merges for the interval problem. Compare not just final answers but every row or interval between baseline and optimized versions. Include zeros, equal weights, singletons, $k$=1, $k$=$n$, large ll costs and rightmost ties.",
+                "type": "p"
+              },
+              {
+                "text": "Monotonicity of an optimized program’s own restricted opt choices is not evidence for the assumption: the algorithm enforces those bounds. Compare against an unrestricted baseline and supply a mathematical proof. Tests find errors, but alone do not establish a property for every input.",
+                "type": "p"
+              },
+              {
+                "text": "Core mastery problems",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "524"
+              },
+              {
+                "text": "Subarray Squares matches the first pair of programs. Do not sort the array: segments must remain contiguous in original order.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "526"
+              },
+              {
+                "text": "Knuth Division reverses the adjacent-merge tree. Check the singleton base cost of zero.",
+                "type": "p"
+              },
+              {
+                "text": "Independent practice and comparisons",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "690"
+              },
+              {
+                "text": "AtCoder DP $N$ — Slimes permits the cubic baseline at its smaller $n$. Compare both implementations and observe that optimization is not always necessary.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "525"
+              },
+              {
+                "text": "Houses and Schools has a weighted-distance segment cost, not a squared sum. Derive its cost, fast evaluation and Monge property separately before choosing a similar optimization.",
+                "type": "p"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "DP transitions, interval DP and basic prefix sums"
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "DP-ийн шилжилт, интервал DP, prefix нийлбэрийн үндэс",
+    "priorityLevel": "medium",
+    "priorityReason": "Том хуваалт, интервалын бодлогод хэрэгтэй ч тусгай нөхцөлийн баталгаа шаарддаг ахисан арга тул суурь DP-ээс хойш дунд ач холбогдолтой.",
+    "prerequisiteIds": [
+      "dynamic-programming",
+      "interval-dp"
+    ],
+    "learningRelations": {
+      "related": [
+        "dynamic-programming",
+        "interval-dp",
+        "prefix-sums"
+      ],
+      "practice": [
+        {
+          "key": "524",
+          "stage": "Warm-up",
+          "reason": "Квадрат нийлбэрийн Monge нөхцөл, мөрийн D&C оновчлолыг шууд хэрэгжүүл.",
+          "priority": true
+        },
+        {
+          "key": "526",
+          "stage": "Standard",
+          "reason": "Интервалын нийлбэр зардлын хоёр нөхцөл, Knuth хайлтын интервалыг хэрэгжүүл.",
+          "priority": true
+        },
+        {
+          "key": "690",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "525",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "interval-dp",
+          "description": "Бүх хуваах заагийг шалгах энгийн хувилбарыг давт.",
+          "descriptionEn": "Review the baseline that tests every split."
+        },
+        {
+          "tutorialId": "prefix-sums",
+          "description": "Хэсгийн зардлыг тогтмол хугацаанд олох суурь санаа.",
+          "descriptionEn": "Review constant-time segment-cost evaluation."
+        }
+      ],
+      "prerequisites": [
+        "dynamic-programming",
+        "interval-dp"
+      ]
+    }
+  }
+}

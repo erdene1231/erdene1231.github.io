@@ -1,0 +1,1310 @@
+{
+  "body": {
+    "id": "suffix-array",
+    "level": "Ахисан шат",
+    "order": 91,
+    "title": "Suffix array ба LCP",
+    "aliases": "suffix array LCP Kasai doubling төгсгөл rank",
+    "related": [
+      "kmp",
+      "string-hashing",
+      "binary-search"
+    ],
+    "summary": "Төгсгөлүүдийг rank doubling-аар эрэмбэлж, Kasai LCP-аар ялгаатай болон давтагдсан хэсгүүдийг олно.",
+    "category": "Strings",
+    "levelKey": "advanced",
+    "sections": [
+      {
+        "key": "suffixes",
+        "title": "Төгсгөлүүдийг индексээр нь эрэмбэлэх",
+        "blocks": [
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Текстийн дурын залгаа хэсэг нь нэг төгсгөлийн эхлэл байдаг. Жишээ нь ",
+                "marks": []
+              },
+              {
+                "text": "banana",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " доторх ",
+                "marks": []
+              },
+              {
+                "text": "ana",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь 1 ба 3 байрлалаас эхэлсэн төгсгөлүүдийн эхэнд байна. Иймд бүх төгсгөлийг эрэмбэлбэл хайлт, давтагдсан хэсэг болон ялгаатай хэсгүүдийн тоог нэг бүтэц дээр судалж болно.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "Suffix array нь төгсгөлийн мөрүүдийг өөрсдийг нь биш, тэдгээрийн эхлэх индексүүдийг л эрэмбэлэгдсэн дарааллаар хадгална. Индексүүдийг 0-ээс дугаарлана. $n$ урттай мөрийн хоосон биш $n$ төгсгөлийг авна; хоосон төгсгөлийг массивт оруулахгүй. Нэг мөр нөгөөгийнхөө угтвар бол богино нь түрүүнд эрэмбэлэгдэнэ.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "0",
+                "5",
+                "a",
+                "0"
+              ],
+              [
+                "1",
+                "3",
+                "ana",
+                "1"
+              ],
+              [
+                "2",
+                "1",
+                "anana",
+                "3"
+              ],
+              [
+                "3",
+                "0",
+                "banana",
+                "0"
+              ],
+              [
+                "4",
+                "4",
+                "na",
+                "0"
+              ],
+              [
+                "5",
+                "2",
+                "nana",
+                "2"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "$r$",
+              "sa[$r$]",
+              "Төгсгөл",
+              "lcp[$r$]"
+            ]
+          },
+          {
+            "text": "Энд sa=[5,3,1,0,4,2]. Харин rank[$i$] нь $i$ байрлалын төгсгөл эрэмбэд хэддүгээрт байгааг хэлнэ: rank=[3,2,5,1,4,0]. Өөрөөр хэлбэл rank[sa[$r$]]=$r$. Барилгын завсрын rank нь одоогоор мэдэгдэж буй эхлэлийн бүлгийг илэрхийлэх бөгөөд зөвхөн төгсгөлд бүрэн эрэмбийн урвуу массив болно.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "doubling",
+        "title": "Хоёр хэсгийн rank-аар уртыг хоёр дахин өсгөх",
+        "blocks": [
+          {
+            "text": "Бүх s.substr($i$)-г үүсгэж sort хийвэл нийт Θ(n²) тэмдэгт хуулна. Индексүүдийг sort хийгээд харьцуулалт бүрд тэмдэгтүүдийг дахин шалгавал нэг харьцуулалт $O(n)$ болж, давтагдсан урт мөрүүд дээр удаан. Бид өмнө мэдсэн хэсгийн эрэмбийг дахин ашиглан харьцуулалтыг хоёр тооны хос болгоно.",
+            "type": "p"
+          },
+          {
+            "text": "Эхлээд нэг үсгийн rank-ийг тухайн byte-ийн утгаар өгнө. Эхний len үсгийн бүлгийн rank зөв гэж үзье. Дараагийн 2·len үсгийг эхний len ба дараагийн len гэсэн хоёр хэсэгт хуваана. Харьцуулах түлхүүр нь доорх хос. Эхний rank зөрвөл тэр нь шийднэ; тэнцвэл хоёр дахь хэсгийг харьцуулна.",
+            "type": "p"
+          },
+          {
+            "tex": "(\\operatorname{rank}[i],\\ i+\\ell<n\\ ?\\ \\operatorname{rank}[i+\\ell]:-1)",
+            "type": "math"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Мөрийн цаана үлдэх хоёр дахь хэсгийн rank нь −1: бүх жинхэнэ rank-аас эрс бага. Иймээс ",
+                "marks": []
+              },
+              {
+                "text": "a",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь ",
+                "marks": []
+              },
+              {
+                "text": "ana",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-аас өмнө орно. Кодод тусгай ",
+                "marks": []
+              },
+              {
+                "text": "$",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " тэмдэгт залгахгүй; ",
+                "marks": []
+              },
+              {
+                "text": "$",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " болон зай нь оролтын жирийн byte байж болно. Өөр хэрэгжүүлэлт sentinel залгадаг бол тэр нь оролтод байхгүй, бусдаас эрс бага тэмдэг байх ёстой бөгөөд түүний төгсгөлийг эцсийн sa-аас хасна. Хоёр өөр гэрээг хольж болохгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "Хосуудаар эрэмбэлсний дараа ижил хостой төгсгөлүүдэд ижил шинэ rank, өөр хостойд дараагийн rank өгнө. Өмнөх rank-ийг харьцуулалт дуусахаас өмнө өөрчилж болохгүй тул nr тусдаа массивтай. Ингээд len хоёр дахин өснө. Бүх rank ялгаатай болсон бол ямар ч урт үргэлжлэл одоогийн эрэмбийг өөрчлөхгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "rank-trace",
+        "title": "banana-ийн rank-уудыг бүтнээр нь мөрдөх",
+        "blocks": [
+          {
+            "text": "banana-ийн эхний rank нь ASCII утгууд [98,97,110,97,110,97]. len=1 үед нэг хос хоёр үсгийг эрэмбэлнэ. Доорх хүснэгт нь индексийн анхны дарааллаар бичигдсэн түлхүүр ба шинэ бүлгүүд.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "0",
+                "banana",
+                "(98,97)",
+                "2"
+              ],
+              [
+                "1",
+                "anana",
+                "(97,110)",
+                "1"
+              ],
+              [
+                "2",
+                "nana",
+                "(110,97)",
+                "3"
+              ],
+              [
+                "3",
+                "ana",
+                "(97,110)",
+                "1"
+              ],
+              [
+                "4",
+                "na",
+                "(110,97)",
+                "3"
+              ],
+              [
+                "5",
+                "a",
+                "(97,−1)",
+                "0"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "$i$",
+              "Төгсгөл",
+              "len=1 түлхүүр",
+              "Шинэ rank"
+            ]
+          },
+          {
+            "text": "Шинэ rank=[2,1,3,1,3,0]. anana ба ana одоогоор ижил бүлэг; эхний хоёр үсэг адил тул энэ нь алдаа биш. sort нь ижил түлхүүрүүдийг ямар ч дарааллаар байрлуулж болно. Зөвхөн бүлгийн rank чухал, stable sort шаардлагагүй.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "0",
+                "(2,3)",
+                "3"
+              ],
+              [
+                "1",
+                "(1,1)",
+                "2"
+              ],
+              [
+                "2",
+                "(3,3)",
+                "5"
+              ],
+              [
+                "3",
+                "(1,0)",
+                "1"
+              ],
+              [
+                "4",
+                "(3,−1)",
+                "4"
+              ],
+              [
+                "5",
+                "(0,−1)",
+                "0"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "$i$",
+              "len=2 түлхүүр",
+              "Шинэ rank"
+            ]
+          },
+          {
+            "text": "Энэ удаад бүх бүлэг ялгаатай, sa=[5,3,1,0,4,2] болж дуусна. Эхний эрэмбэ зөв байгаа нь суурь. Хоёр хагасын зөв rank-аар лексикограф эрэмбийг хадгалдаг нь индукцийн алхам. 2·len≥$n$ бол бүх төгсгөлийг бүрэн ялгахад хангалттай; код уртыг хоёр дахин нэмэхээс өмнө үүнийг шалгаж хэтрэлтээс хамгаална.",
+            "type": "p"
+          },
+          {
+            "text": "Нэг үе $O(n \\log n)$ хугацаатай comparison sort, хосын харьцуулалт $O(1)$. $O(\\log n)$ үе нийлээд $O(n \\log^2 n)$. Counting/radix sort ашигласан doubling $O(n \\log n)$ байж болох ч доорх код тэр хувилбар биш. Мөн шугаман suffix array байгуулах алгоритм гэж нэрлэхгүй. sa,rank,nr,lcp массивууд $O(n)$ санах ойтой.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "kasai",
+        "title": "LCP ба Kasai-ийн шугаман тооцоо",
+        "blocks": [
+          {
+            "text": "LCP буюу longest common prefix нь хоёр мөрийн эхнээсээ ижил үргэлжлэх хамгийн урт хэсгийн урт. Энд lcp[$r$]=LCP(s[sa[$r$−1]…],s[sa[$r$]…]), $r$≥1; lcp[0]=0. Зарим хэрэгжүүлэлт дараагийн төгсгөлтэй харьцуулдаг тул индекс нь нэгээр зөрдөг. Энэ хичээл үргэлж өмнөх хөршийн гэрээг хэрэглэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "banana-ийн хөршүүд a/ana →1, ana/anana →3, anana/banana →0, banana/na →0, na/nana →2. Иймээс lcp=[0,1,3,0,0,2]. Хөрш бүрийг шинээр харьцуулбал a…a дээр нийлбэр $O(n^2)$ байж болно. Kasai нь эхлэх байрлалыг $i$=0,1,… дарааллаар гүйлгэж, өмнө олсон уртын доод хязгаарыг дахин ашиглана.",
+            "type": "p"
+          },
+          {
+            "text": "s[$i$…] ба түүний өмнөх хөрш s[$j$…] эхний h үсгээрээ ижил байг. Эхний үсгийг хоёулангаас нь хасвал $i$+1 ба $j$+1 төгсгөлүүд ядаж h−1 эхлэлтэй. $j$+1 нь $i$+1-ийн яг өмнөх хөрш байх албагүй. Гэхдээ эрэмбийн завсар байгаа мөрүүд ижил эхлэлийг хадгалдаг тул $i$+1-ийн жинхэнэ өмнөх хөрштэй LCP бас ядаж h−1. Энэ нь h-ийг тэгээс эхлүүлэхгүй байх баталгаа. h≤1 үед доод хязгаар 0, дууссан төгсгөлийг тусад нь ашиглах шаардлагагүй.",
+            "type": "p"
+          },
+          {
+            "text": "Тиймээс rank[$i$]-аар хөршөө олж, хадгалсан h-ээс цааш л тэмдэгтүүдийг шалгана. lcp-д бичээд h>0 бол нэгээр бууруулна. rank[$i$]=0 үед өмнөх хөрш байхгүй тул h=0 болгож алгасна. h өсөх бүрд нэг амжилттай харьцуулалт, буурах нь нэг $i$ алхамд хамгийн ихдээ 1. Тэглэх онцгой алхам ганцхан учраас нийт өсөлт, харьцуулалт $O(n)$. Амжилтгүй сүүлийн харьцуулалт ч нэг $i$-д хамгийн ихдээ нэг.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "lcp-trace",
+        "title": "Kasai-ийн алхам бүр ба захын тохиолдлууд",
+        "blocks": [
+          {
+            "rows": [
+              [
+                "0",
+                "3",
+                "1",
+                "0",
+                "0",
+                "0"
+              ],
+              [
+                "1",
+                "2",
+                "3",
+                "0",
+                "3",
+                "2"
+              ],
+              [
+                "2",
+                "5",
+                "4",
+                "2",
+                "2",
+                "1"
+              ],
+              [
+                "3",
+                "1",
+                "5",
+                "1",
+                "1",
+                "0"
+              ],
+              [
+                "4",
+                "4",
+                "0",
+                "0",
+                "0",
+                "0"
+              ],
+              [
+                "5",
+                "0",
+                "–",
+                "0",
+                "0",
+                "0"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "$i$",
+              "rank[$i$]",
+              "$j$",
+              "Эхлэх h",
+              "lcp[rank[$i$]]",
+              "Дараагийн h"
+            ]
+          },
+          {
+            "text": "$i$=1 дээр anana ба ana-г харьцуулж h=3 болно. $i$=2 дээр nana ба na-ийн эхний хоёр үсгийг дахин шалгахгүй: h=2-оос эхлээд богино мөрийн төгсгөлд хүрснээ мэднэ. Дараагийн $i$=3 дээр мөн h=1-ийг шууд ашиглана. Энэ нь нууц $O(n^2)$ давталт биш; нэг индексээр урагшлахад өмнөх ижил эхлэлийн нэг үсэг л хасагдана.",
+            "type": "p"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Индексийн гэрээг шалгах хамгийн жижиг жишээ: s=",
+                "marks": []
+              },
+              {
+                "text": "a",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " бол sa=[0],rank=[0],lcp=[0]. Хоосон мөрт гурав нь хоосон. s=",
+                "marks": []
+              },
+              {
+                "text": "aaaa",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " бол sa=[3,2,1,0],lcp=[0,1,2,3]. Урт төгсгөл түрүүлж болохгүй.",
+                "marks": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "applications",
+        "title": "Ялгаатай хэсгүүд ба хамгийн урт давтагдсан хэсэг",
+        "blocks": [
+          {
+            "text": "Хоёр захын байрлалаараа ялгаатай бүх хэсгийн тоо $n$($n$+1)/2 боловч үсгээрээ ижил хэсэг олон давтагдана. Эрэмбэлэгдсэн нэг төгсгөл $n$−sa[$r$] ширхэг угтвар өгнө. Түүний өмнөх хөрштэй давхцах lcp[$r$] угтвар нь өмнө гарсан; үлдсэн нь шинэ. Яагаад зөвхөн өмнөх хөрш хангалттай вэ? Аль нэг өмнөх төгсгөл урт эхлэл хуваалцвал тэдний завсрын бүх төгсгөл мөн уг эхлэлийг хуваалцана. Хамгийн ойрын өмнөх хөрш хамгийн урт давхцлыг барина.",
+            "type": "p"
+          },
+          {
+            "tex": "\\#\\text{distinct}=\\frac{n(n+1)}2-\\sum_{r=1}^{n-1}\\operatorname{lcp}[r]",
+            "type": "math"
+          },
+          {
+            "rows": [
+              [
+                "a",
+                "1",
+                "0",
+                "1"
+              ],
+              [
+                "ana",
+                "3",
+                "1",
+                "2"
+              ],
+              [
+                "anana",
+                "5",
+                "3",
+                "2"
+              ],
+              [
+                "banana",
+                "6",
+                "0",
+                "6"
+              ],
+              [
+                "na",
+                "2",
+                "0",
+                "2"
+              ],
+              [
+                "nana",
+                "4",
+                "2",
+                "2"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Төгсгөл",
+              "Угтварууд",
+              "Өмнө байсан",
+              "Шинэ"
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "banana-ийн шинэ хэсгүүдийн тоо 1+2+2+6+2+2=15. Код ",
+                "marks": []
+              },
+              {
+                "text": "1LL*n*(n+1)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гэж үржүүлэхээс өмнө ll-д шилжүүлнэ. $n$=200000 үед дээд тоо 20000100000 тул int хүрэлцэхгүй. sa,rank,lcp-ийн элементүүд болон индексүүд int-д багтана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "Урт давтагдсан хэсэг олохдоо lcp-ийн хамгийн их утгыг авна. Хоёр газар давтагддаг ямар ч мөр нь дор хаяж хоёр төгсгөлийн ижил угтвар; тэдгээрийн эрэмбийн завсарт бас ижил угтвар байна. Иймд хамгийн сайн урт хөрш хоёрын аль нэг LCP дээр гарна. banana-д урт 3, мөр ana, байрлалууд 1 ба 3; давхцлыг хориглоогүй. Үүнийг давхцаж болохгүй давталт гэж андуурч болохгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "Constructor, rank, Kasai ба бүтэн C++17",
+        "blocks": [
+          {
+            "text": "Struct нь $n$,sa,rank,lcp-ийг хадгална. Constructor массивуудаа $n$ хэмжээтэй бэлдэж, sa-д бүх эхлэх индекс, rank-д unsigned byte утгыг өгнө. Signed char-ийн сөрөг утгыг −1 гэсэн байхгүй хэсгийн тэмдэгтэй хольж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct SuffixArray {\n    int n;\n    vector<int> sa, rank, lcp;\n    SuffixArray(const string& s) {\n        n = (int)s.size();\n        sa.resize(n);\n        rank.resize(n);\n        for (int i = 0; i < n; i++) {\n            sa[i] = i;\n            rank[i] = (unsigned char)s[i];\n        }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "nr нь шинэ rank. len алхамд key нь хуучин rank-аас хоёр хэсгийг авна. $i$<$n$−len гэдэг нь $i$+len<$n$-тай ижил бөгөөд нийлбэрээр хязгаар шалгахгүй. Lambda хуучин массивыг л уншина.",
+            "type": "p"
+          },
+          {
+            "text": "vector<int> nr(n);\n        for (int len = 1; len < n; ) {\n            auto key = [&](int i) {\n                return pair<int, int>{rank[i], i < n - len ? rank[i + len] : -1};\n            };",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "sort-ийн харьцуулагч < буюу эрс бага хосыг хэрэглэнэ; <= биш. Ижил хостой үед nr-ийн утгыг хэвээр, өөр бол нэгээр нэмнэ. rank-ийг энэ үеэр өөрчлөхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "sort(sa.begin(), sa.end(), [&](int a, int b) {\n                return key(a) < key(b);\n            });\n            nr[sa[0]] = 0;\n            for (int i = 1; i < n; i++) {\n                nr[sa[i]] = nr[sa[i - 1]] + (key(sa[i - 1]) != key(sa[i]));\n            }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Шинэ rank-ийг swap хийж авна. Бүх бүлэг ялгаатай эсвэл 2·len≥$n$ бол зогсоно; үгүй бол len хоёр дахин өснө. Үндсэн алгоритм рекурсгүй.",
+            "type": "p"
+          },
+          {
+            "text": "rank.swap(nr);\n            if (rank[sa[n - 1]] == n - 1 || len >= n - len) break;\n            len *= 2;\n        }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Төгсгөлд rank-ийг sa-ийн урвуу болгож баталгаажуулна. lcp тэгээр эхэлнэ. Kasai эхлэх индексийн дарааллаар явж, rank=0-г хөршгүй гэж алгасна.",
+            "type": "p"
+          },
+          {
+            "text": "for (int i = 0; i < n; i++) rank[sa[i]] = i;\n        lcp.assign(n, 0);\n        int h = 0;\n        for (int i = 0; i < n; i++) {\n            int r = rank[i];\n            if (r == 0) {\n                h = 0;\n                continue;\n            }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Өмнөх хөрш $j$=sa[$r$−1]. Хоёр мөрийн зааг ба үсгийн тэнцлийг шалгаж h-ийг л сунгана. lcp[$r$]-д бичээд дараагийн $i$-д нэгээр багасгана.",
+            "type": "p"
+          },
+          {
+            "text": "int j = sa[r - 1];\n            while (i + h < n && j + h < n && s[i + h] == s[j + h]) h++;\n            lcp[r] = h;\n            if (h > 0) h--;\n        }\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "distinct нь бүх байрлалын хэсгүүдээс давхардсан угтваруудыг хасна. Хариу ll; зөвхөн return-ийн төрлийг ll болгоод int үржвэрийг хэвээр орхиж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "ll distinct() const {\n        ll ans = 1LL * n * (n + 1) / 2;\n        for (int x : lcp) ans -= x;\n        return ans;\n    }\n};",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "getline нь нэг бүтэн мөр уншина, зайг хадгална. Бүтэн программ мөр бүрд 0-ээс эхэлсэн sa[$r$],lcp[$r$], эцэст нь distinct тоог хэвлэнэ. Онлайн шүүгч зөвхөн тоо шаардвал хүснэгт хэвлэх давталтыг хас; өөр гаралтын гэрээг шууд хуулж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string s;\n    getline(cin, s);\n    SuffixArray a(s);\n    for (int i = 0; i < a.n; i++) {\n        cout << a.sa[i] << ' ' << a.lcp[i] << '\\n';\n    }\n    cout << a.distinct() << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct SuffixArray {\n    int n;\n    vector<int> sa, rank, lcp;\n    SuffixArray(const string& s) {\n        n = (int)s.size();\n        sa.resize(n);\n        rank.resize(n);\n        for (int i = 0; i < n; i++) {\n            sa[i] = i;\n            rank[i] = (unsigned char)s[i];\n        }\n        vector<int> nr(n);\n        for (int len = 1; len < n; ) {\n            auto key = [&](int i) {\n                return pair<int, int>{rank[i], i < n - len ? rank[i + len] : -1};\n            };\n            sort(sa.begin(), sa.end(), [&](int a, int b) {\n                return key(a) < key(b);\n            });\n            nr[sa[0]] = 0;\n            for (int i = 1; i < n; i++) {\n                nr[sa[i]] = nr[sa[i - 1]] + (key(sa[i - 1]) != key(sa[i]));\n            }\n            rank.swap(nr);\n            if (rank[sa[n - 1]] == n - 1 || len >= n - len) break;\n            len *= 2;\n        }\n        for (int i = 0; i < n; i++) rank[sa[i]] = i;\n        lcp.assign(n, 0);\n        int h = 0;\n        for (int i = 0; i < n; i++) {\n            int r = rank[i];\n            if (r == 0) {\n                h = 0;\n                continue;\n            }\n            int j = sa[r - 1];\n            while (i + h < n && j + h < n && s[i + h] == s[j + h]) h++;\n            lcp[r] = h;\n            if (h > 0) h--;\n        }\n    }\n    ll distinct() const {\n        ll ans = 1LL * n * (n + 1) / 2;\n        for (int x : lcp) ans -= x;\n        return ans;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string s;\n    getline(cin, s);\n    SuffixArray a(s);\n    for (int i = 0; i < a.n; i++) {\n        cout << a.sa[i] << ' ' << a.lcp[i] << '\\n';\n    }\n    cout << a.distinct() << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "repeat-code",
+        "title": "Давтагдсан хэсгийн бүтэн хэрэглээ",
+        "blocks": [
+          {
+            "text": "Дараах программ ижил struct-ийг өөрчлөхгүй ашиглаад хамгийн урт давтагдсан хэсгийг хэвлэнэ. best нь одоогоор олсон хамгийн их LCP, pos нь тэр хэсгийн эхлэх байрлал. $r$=1-ээс эхэлж илүү урт LCP олбол хоёр утгаа шинэчилнэ. Эцэст нь s.substr(pos,best); best=0 бол −1. Ижил урттай хэд хэдэн хариунаас эхний олдсоныг авна.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string s;\n    getline(cin, s);\n    SuffixArray a(s);\n    int best = 0, pos = 0;\n    for (int r = 1; r < a.n; r++) {\n        if (a.lcp[r] > best) {\n            best = a.lcp[r];\n            pos = a.sa[r];\n        }\n    }\n    if (best == 0) cout << \"-1\\n\";\n    else cout << s.substr(pos, best) << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тэр main-ийг өмнөхтэй ижил struct-тэй нэгтгэсэн, тусдаа хөрвүүлж ажиллуулах бүтэн хувилбар:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct SuffixArray {\n    int n;\n    vector<int> sa, rank, lcp;\n    SuffixArray(const string& s) {\n        n = (int)s.size();\n        sa.resize(n);\n        rank.resize(n);\n        for (int i = 0; i < n; i++) {\n            sa[i] = i;\n            rank[i] = (unsigned char)s[i];\n        }\n        vector<int> nr(n);\n        for (int len = 1; len < n; ) {\n            auto key = [&](int i) {\n                return pair<int, int>{rank[i], i < n - len ? rank[i + len] : -1};\n            };\n            sort(sa.begin(), sa.end(), [&](int a, int b) {\n                return key(a) < key(b);\n            });\n            nr[sa[0]] = 0;\n            for (int i = 1; i < n; i++) {\n                nr[sa[i]] = nr[sa[i - 1]] + (key(sa[i - 1]) != key(sa[i]));\n            }\n            rank.swap(nr);\n            if (rank[sa[n - 1]] == n - 1 || len >= n - len) break;\n            len *= 2;\n        }\n        for (int i = 0; i < n; i++) rank[sa[i]] = i;\n        lcp.assign(n, 0);\n        int h = 0;\n        for (int i = 0; i < n; i++) {\n            int r = rank[i];\n            if (r == 0) {\n                h = 0;\n                continue;\n            }\n            int j = sa[r - 1];\n            while (i + h < n && j + h < n && s[i + h] == s[j + h]) h++;\n            lcp[r] = h;\n            if (h > 0) h--;\n        }\n    }\n    ll distinct() const {\n        ll ans = 1LL * n * (n + 1) / 2;\n        for (int x : lcp) ans -= x;\n        return ans;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string s;\n    getline(cin, s);\n    SuffixArray a(s);\n    int best = 0, pos = 0;\n    for (int r = 1; r < a.n; r++) {\n        if (a.lcp[r] > best) {\n            best = a.lcp[r];\n            pos = a.sa[r];\n        }\n    }\n    if (best == 0) cout << \"-1\\n\";\n    else cout << s.substr(pos, best) << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Жишээ: banana → ana, aaaa → aaa, abc → −1, хоосон мөр → −1. distinct хувилбарт хоосон мөрийн массивууд хоосон, хариу 0. Эдгээр хоёр программ ижил оролттой ч гаралт нь ялгаатай.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "Хэрэглэх хүрээ ба шалгах дүрмүүд",
+        "blocks": [
+          {
+            "text": "Хүрээ: нэг мөрийн byte текст, 0≤$n$≤200000. UTF-8 оролтыг code point эсвэл монгол үсгээр биш byte-аар эрэмбэлнэ; хэлний цагаан толгойн эрэмбэ гэж нэрлэхгүй. Төгсгөлийн шинэ мөрийг getline уншдаггүй, мөр доторх зай, $ хэвээр. Unicode үсгийн эрэмбэ хэрэгтэй бол эхлээд code point дараалалд хөрвүүлэх тусдаа шийдэл шаардлагатай.",
+            "type": "p"
+          },
+          {
+            "text": "Suffix array нь олон хайх үг өөрчлөгдсөн ч текст тогтмол байх үед ашигтай. Нэг pattern-ийн таарах төгсгөлүүд эрэмбэд залгаа интервал эзэлдэг тул binary search хийж болно. Гэхдээ тэмдэгтээр харьцуулах энгийн хувилбарт нэг харьцуулалт $O(pattern_length)$; хайлтыг $O(\\log n)$ гэж дангаар нь хэлж болохгүй. Энд тэр хайлтын кодыг оруулаагүй, өмнөх KMP/Aho хичээлтэй хэрэглээг нь харьцуулж байна.",
+            "type": "p"
+          },
+          {
+            "text": "Жижиг оролтод бүх төгсгөлийг шууд эрэмбэлж, хөрш бүрийн LCP-г тэгээс харьцуулсан oracle хадгал. sa нь бүх индексийн permutation, rank[sa[$r$]]=$r$, lcp[$r$]≤min($n$−sa[$r$],$n$−sa[$r$−1]) байх ёстой. Давтагдсан бүх үсэгтэй, үелсэн, бүгд ялгаатай, хоосон, ганц үсэг болон олон ижил эхлэлтэй мөрүүдийг шалга. Бүтэн suffix-уудыг хадгалах удаан oracle-г production алгоритмын санах ойн тайлбартай хольж болохгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Дасгал ба бие даах бодлогууд",
+        "blocks": [
+          {
+            "text": "Эзэмших үндсэн бодлогууд",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "485"
+          },
+          {
+            "text": "Distinct Substrings: тооллогын аргыг хэрэгжүүл. Бүтэн программын хүснэгтэн гаралтыг шүүгчийн шаардлагад тохируулан хасна.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "487"
+          },
+          {
+            "text": "Repeating Substring: давхцаж болох хоёр байрлалд таарах хамгийн урт хэсгийг ол. Ижил урттай олон зөв хариу байж болно.",
+            "type": "p"
+          },
+          {
+            "text": "Бие даах ба өргөтгөх бодлогууд",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "491"
+          },
+          {
+            "text": "Substring Order $I$: ялгаатай хэсгүүдийг эрэмбээр тоолохдоо нэг төгсгөлийн шинэ угтваруудыг багц болгон авч үз. Дарааллын дугаарын тоон хүрээг шалга.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "493"
+          },
+          {
+            "text": "Substring Distribution: урт бүрийн шинэ хэсгүүдийн тоог бод. Нэг suffix-ийн шинэ уртууд (lcp[$r$], $n$−sa[$r$]] гэсэн интервал үүсгэдгийг ашиглан өөрөө гарга.",
+            "type": "p"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Suffix array and LCP",
+        "summary": "Sort suffixes with rank doubling and use Kasai LCP for distinct and repeated substrings.",
+        "sections": [
+          {
+            "key": "suffixes",
+            "title": "Sorting suffixes by their starting indices",
+            "blocks": [
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Every substring is a prefix of some suffix. In ",
+                    "marks": []
+                  },
+                  {
+                    "text": "banana",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", ana begins the suffixes starting at positions 1 and 3. Sorting all suffixes gives one structure for searching, repetitions and distinct-substring counting.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "A suffix array stores starting indices in sorted suffix order, not copies of the suffix strings. Indices are 0-based. We include the $n$ nonempty suffixes of a length-$n$ string and exclude the empty suffix. When one string is a prefix of another, the shorter comes first.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "0",
+                    "5",
+                    "a",
+                    "0"
+                  ],
+                  [
+                    "1",
+                    "3",
+                    "ana",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "1",
+                    "anana",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "0",
+                    "banana",
+                    "0"
+                  ],
+                  [
+                    "4",
+                    "4",
+                    "na",
+                    "0"
+                  ],
+                  [
+                    "5",
+                    "2",
+                    "nana",
+                    "2"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "$r$",
+                  "sa[$r$]",
+                  "Suffix",
+                  "lcp[$r$]"
+                ]
+              },
+              {
+                "text": "Here sa=[5,3,1,0,4,2], while rank=[3,2,5,1,4,0] is its inverse: rank[sa[$r$]]=$r$. Intermediate construction ranks identify groups of equal known prefixes; only the final ranks give full suffix positions.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "doubling",
+            "title": "Doubling the known prefix length with rank pairs",
+            "blocks": [
+              {
+                "text": "Materializing every s.substr($i$) copies Θ(n²) characters. Sorting indices with full character-by-character suffix comparisons can still cost $O(n)$ per comparison on repeated strings. We instead reuse known prefix ranks and compare pairs of integers.",
+                "type": "p"
+              },
+              {
+                "text": "Initially rank each character by its byte value. Suppose ranks correctly order prefixes of length len. Split the next 2·len prefix into its first and second halves. The key below first compares the first-half ranks and, on equality, the second-half ranks.",
+                "type": "p"
+              },
+              {
+                "tex": "(\\operatorname{rank}[i],\\ i+\\ell<n\\ ?\\ \\operatorname{rank}[i+\\ell]:-1)",
+                "type": "math"
+              },
+              {
+                "text": "Use −1 for a missing second half, below every real rank; this makes a sort before ana. This implementation appends no sentinel: dollar signs and spaces are ordinary input bytes. A different sentinel-based implementation must choose a symbol absent from the input and below all others, then remove its suffix from the final sa. Do not mix these conventions.",
+                "type": "p"
+              },
+              {
+                "text": "After sorting keys, give equal keys equal new ranks and increase the rank at each new key. Keep old ranks intact during the entire pass by writing into nr. Then double len. Once all ranks differ, longer continuations cannot change the established order.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "rank-trace",
+            "title": "Tracing banana’s rank passes",
+            "blocks": [
+              {
+                "text": "For banana, initial byte ranks are [98,97,110,97,110,97]. At len=1 a pair orders two-character prefixes. The table lists keys and resulting groups in original index order.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "0",
+                    "banana",
+                    "(98,97)",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "anana",
+                    "(97,110)",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "nana",
+                    "(110,97)",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "ana",
+                    "(97,110)",
+                    "1"
+                  ],
+                  [
+                    "4",
+                    "na",
+                    "(110,97)",
+                    "3"
+                  ],
+                  [
+                    "5",
+                    "a",
+                    "(97,−1)",
+                    "0"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "$i$",
+                  "Suffix",
+                  "len=1 key",
+                  "New rank"
+                ]
+              },
+              {
+                "text": "The new ranks are [2,1,3,1,3,0]. Anana and ana still share a group because their first two characters agree. Equal keys may appear in either order after sort; only their group rank matters, so stability is unnecessary.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "0",
+                    "(2,3)",
+                    "3"
+                  ],
+                  [
+                    "1",
+                    "(1,1)",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "(3,3)",
+                    "5"
+                  ],
+                  [
+                    "3",
+                    "(1,0)",
+                    "1"
+                  ],
+                  [
+                    "4",
+                    "(3,−1)",
+                    "4"
+                  ],
+                  [
+                    "5",
+                    "(0,−1)",
+                    "0"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "$i$",
+                  "len=2 key",
+                  "New rank"
+                ]
+              },
+              {
+                "text": "All groups now differ and sa=[5,3,1,0,4,2]. Correct character ranks are the base case; lexicographic comparison of two correctly ranked halves is the inductive step. Once 2·len≥$n$, the full suffixes are distinguished. The code checks this before doubling again to avoid unnecessary overflow.",
+                "type": "p"
+              },
+              {
+                "text": "Each comparison-sort pass costs $O(n \\log n)$, with $O(1)$ key comparisons, over $O(\\log n)$ passes: $O(n \\log^2 n)$. Counting/radix-sort doubling can achieve $O(n \\log n)$, but that is not this code. It is not linear-time suffix construction. The sa,rank,nr,lcp arrays use $O(n)$ memory.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "kasai",
+            "title": "LCP and Kasai’s linear scan",
+            "blocks": [
+              {
+                "text": "LCP (longest common prefix) is the length of the shared initial segment of two strings. Our convention is lcp[$r$]=LCP(s[sa[$r$−1]…],s[sa[$r$]…]) for $r$≥1, with lcp[0]=0. Some implementations compare the next suffix instead, shifting the indexing. Here we always use the previous neighbor.",
+                "type": "p"
+              },
+              {
+                "text": "For banana the adjacent pairs give a/ana →1, ana/anana →3, anana/banana →0, banana/na →0, na/nana →2, so lcp=[0,1,3,0,0,2]. Rechecking each neighbor from scratch is quadratic on repeated characters. Kasai visits starting positions $i$=0,1,… and reuses a lower bound from the preceding iteration.",
+                "type": "p"
+              },
+              {
+                "text": "If suffix $i$ and its previous neighbor $j$ share h characters, removing their first characters leaves suffixes $i$+1 and $j$+1 sharing at least h−1. Suffix $j$+1 need not be $i$+1’s immediate predecessor. However, all strings between two strings with the same prefix share that prefix, so $i$+1’s actual predecessor has LCP at least h−1 as well. For h≤1 the bound is just zero, without requiring a nonempty $j$+1 suffix.",
+                "type": "p"
+              },
+              {
+                "text": "Use rank[$i$] to locate the predecessor and compare characters only beyond the carried h. Store the LCP, then decrease h by one if positive. When rank[$i$]=0 there is no predecessor: reset h and skip. Each increase of h corresponds to a successful comparison; ordinary iterations decrease it by at most one. The special reset occurs once, so total increases and comparisons are $O(n)$. There is at most one final failed comparison per $i$.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "lcp-trace",
+            "title": "Every Kasai step and boundary cases",
+            "blocks": [
+              {
+                "rows": [
+                  [
+                    "0",
+                    "3",
+                    "1",
+                    "0",
+                    "0",
+                    "0"
+                  ],
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "0",
+                    "3",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "5",
+                    "4",
+                    "2",
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "3",
+                    "1",
+                    "5",
+                    "1",
+                    "1",
+                    "0"
+                  ],
+                  [
+                    "4",
+                    "4",
+                    "0",
+                    "0",
+                    "0",
+                    "0"
+                  ],
+                  [
+                    "5",
+                    "0",
+                    "–",
+                    "0",
+                    "0",
+                    "0"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "$i$",
+                  "rank[$i$]",
+                  "$j$",
+                  "Carried h",
+                  "lcp[rank[$i$]]",
+                  "Next h"
+                ]
+              },
+              {
+                "text": "At $i$=1, anana and ana produce h=3. At $i$=2, nana and na reuse h=2 without comparing those characters again, then hit the shorter suffix’s end. The next iteration reuses h=1. This is why the nested loop is not secretly quadratic: advancing one start index discards only one character of the prior common prefix.",
+                "type": "p"
+              },
+              {
+                "text": "Small convention checks: for a, sa=[0],rank=[0],lcp=[0]. For an empty string all arrays are empty. For aaaa, sa=[3,2,1,0] and lcp=[0,1,2,3]; longer suffixes do not sort before their shorter prefix.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "applications",
+            "title": "Distinct substrings and longest repetitions",
+            "blocks": [
+              {
+                "text": "There are $n$($n$+1)/2 position-defined substrings, but many have equal text. Sorted suffix $r$ contributes $n$−sa[$r$] prefixes. Its first lcp[$r$] prefixes already occurred; the rest are new. Comparing only the previous neighbor suffices because every suffix between two suffixes sharing a prefix also shares it. The nearest predecessor captures the longest already-seen prefix.",
+                "type": "p"
+              },
+              {
+                "tex": "\\#\\text{distinct}=\\frac{n(n+1)}2-\\sum_{r=1}^{n-1}\\operatorname{lcp}[r]",
+                "type": "math"
+              },
+              {
+                "rows": [
+                  [
+                    "a",
+                    "1",
+                    "0",
+                    "1"
+                  ],
+                  [
+                    "ana",
+                    "3",
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "anana",
+                    "5",
+                    "3",
+                    "2"
+                  ],
+                  [
+                    "banana",
+                    "6",
+                    "0",
+                    "6"
+                  ],
+                  [
+                    "na",
+                    "2",
+                    "0",
+                    "2"
+                  ],
+                  [
+                    "nana",
+                    "4",
+                    "2",
+                    "2"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Suffix",
+                  "All prefixes",
+                  "Already seen",
+                  "New"
+                ]
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "For banana the contributions sum to 15. The expression ",
+                    "marks": []
+                  },
+                  {
+                    "text": "1LL*n*(n+1)",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " promotes before multiplication. At $n$=200000 the upper count is 20000100000, beyond int. Suffix indices, ranks and individual LCP values fit int.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "The longest repeated substring has length max(lcp). Any substring occurring twice is a prefix of two suffixes; all suffixes between them share it too, so an adjacent pair achieves at least that length. For banana the answer is ana, length 3, at positions 1 and 3. Overlap is allowed; a nonoverlapping-repeat problem requires additional conditions.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "Constructor, ranks, Kasai and complete C++17",
+            "blocks": [
+              {
+                "text": "The struct stores $n$,sa,rank,lcp. Its constructor sizes arrays to $n$, fills sa with starting indices and initializes ranks from unsigned bytes, avoiding collision between negative signed char values and the −1 missing-half marker.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct SuffixArray {\n    int n;\n    vector<int> sa, rank, lcp;\n    SuffixArray(const string& s) {\n        n = (int)s.size();\n        sa.resize(n);\n        rank.resize(n);\n        for (int i = 0; i < n; i++) {\n            sa[i] = i;\n            rank[i] = (unsigned char)s[i];\n        }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "nr holds new ranks. key reads two old-rank halves at length len. Testing $i$<$n$−len is equivalent to $i$+len<$n$ without adding indices for the bounds check. The lambda only reads the old rank array.",
+                "type": "p"
+              },
+              {
+                "text": "vector<int> nr(n);\n        for (int len = 1; len < n; ) {\n            auto key = [&](int i) {\n                return pair<int, int>{rank[i], i < n - len ? rank[i + len] : -1};\n            };",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The sort comparator uses strict pair ordering <, never <=. Equal keys retain a new rank; a changed key increments it. Do not overwrite rank during this pass.",
+                "type": "p"
+              },
+              {
+                "text": "sort(sa.begin(), sa.end(), [&](int a, int b) {\n                return key(a) < key(b);\n            });\n            nr[sa[0]] = 0;\n            for (int i = 1; i < n; i++) {\n                nr[sa[i]] = nr[sa[i - 1]] + (key(sa[i - 1]) != key(sa[i]));\n            }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Swap in the new ranks. Stop when all groups differ or 2·len≥$n$, otherwise double len. Construction is nonrecursive.",
+                "type": "p"
+              },
+              {
+                "text": "rank.swap(nr);\n            if (rank[sa[n - 1]] == n - 1 || len >= n - len) break;\n            len *= 2;\n        }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Finalize rank as the inverse of sa, initialize LCP to zero, then run Kasai by start index. Rank zero has no predecessor.",
+                "type": "p"
+              },
+              {
+                "text": "for (int i = 0; i < n; i++) rank[sa[i]] = i;\n        lcp.assign(n, 0);\n        int h = 0;\n        for (int i = 0; i < n; i++) {\n            int r = rank[i];\n            if (r == 0) {\n                h = 0;\n                continue;\n            }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Choose previous suffix $j$=sa[$r$−1], extend h while both positions are in range and characters agree, store lcp[$r$], then reduce h for the next $i$.",
+                "type": "p"
+              },
+              {
+                "text": "int j = sa[r - 1];\n            while (i + h < n && j + h < n && s[i + h] == s[j + h]) h++;\n            lcp[r] = h;\n            if (h > 0) h--;\n        }\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "distinct subtracts repeated prefixes from all position-defined substrings. Both the return type and pre-multiplication promotion use ll; changing only the return type would not fix int overflow.",
+                "type": "p"
+              },
+              {
+                "text": "ll distinct() const {\n        ll ans = 1LL * n * (n + 1) / 2;\n        for (int x : lcp) ans -= x;\n        return ans;\n    }\n};",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "getline reads one whole line, preserving spaces. The complete program prints 0-based sa[$r$],lcp[$r$] pairs and finally the distinct count. If a judge requests only the count, remove the diagnostic table loop; do not copy a different output contract unchanged.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string s;\n    getline(cin, s);\n    SuffixArray a(s);\n    for (int i = 0; i < a.n; i++) {\n        cout << a.sa[i] << ' ' << a.lcp[i] << '\\n';\n    }\n    cout << a.distinct() << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete program assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct SuffixArray {\n    int n;\n    vector<int> sa, rank, lcp;\n    SuffixArray(const string& s) {\n        n = (int)s.size();\n        sa.resize(n);\n        rank.resize(n);\n        for (int i = 0; i < n; i++) {\n            sa[i] = i;\n            rank[i] = (unsigned char)s[i];\n        }\n        vector<int> nr(n);\n        for (int len = 1; len < n; ) {\n            auto key = [&](int i) {\n                return pair<int, int>{rank[i], i < n - len ? rank[i + len] : -1};\n            };\n            sort(sa.begin(), sa.end(), [&](int a, int b) {\n                return key(a) < key(b);\n            });\n            nr[sa[0]] = 0;\n            for (int i = 1; i < n; i++) {\n                nr[sa[i]] = nr[sa[i - 1]] + (key(sa[i - 1]) != key(sa[i]));\n            }\n            rank.swap(nr);\n            if (rank[sa[n - 1]] == n - 1 || len >= n - len) break;\n            len *= 2;\n        }\n        for (int i = 0; i < n; i++) rank[sa[i]] = i;\n        lcp.assign(n, 0);\n        int h = 0;\n        for (int i = 0; i < n; i++) {\n            int r = rank[i];\n            if (r == 0) {\n                h = 0;\n                continue;\n            }\n            int j = sa[r - 1];\n            while (i + h < n && j + h < n && s[i + h] == s[j + h]) h++;\n            lcp[r] = h;\n            if (h > 0) h--;\n        }\n    }\n    ll distinct() const {\n        ll ans = 1LL * n * (n + 1) / 2;\n        for (int x : lcp) ans -= x;\n        return ans;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string s;\n    getline(cin, s);\n    SuffixArray a(s);\n    for (int i = 0; i < a.n; i++) {\n        cout << a.sa[i] << ' ' << a.lcp[i] << '\\n';\n    }\n    cout << a.distinct() << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "repeat-code",
+            "title": "A complete longest-repeat application",
+            "blocks": [
+              {
+                "text": "The following program reuses exactly the same struct and prints a longest repeated substring. best is the largest LCP found and pos its starting index. Scan from $r$=1 and update both only for a larger LCP; print s.substr(pos,best), or −1 if best=0. Among ties it keeps the first encountered result.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string s;\n    getline(cin, s);\n    SuffixArray a(s);\n    int best = 0, pos = 0;\n    for (int r = 1; r < a.n; r++) {\n        if (a.lcp[r] > best) {\n            best = a.lcp[r];\n            pos = a.sa[r];\n        }\n    }\n    if (best == 0) cout << \"-1\\n\";\n    else cout << s.substr(pos, best) << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "A separate complete compilable version combining that main with the unchanged struct:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct SuffixArray {\n    int n;\n    vector<int> sa, rank, lcp;\n    SuffixArray(const string& s) {\n        n = (int)s.size();\n        sa.resize(n);\n        rank.resize(n);\n        for (int i = 0; i < n; i++) {\n            sa[i] = i;\n            rank[i] = (unsigned char)s[i];\n        }\n        vector<int> nr(n);\n        for (int len = 1; len < n; ) {\n            auto key = [&](int i) {\n                return pair<int, int>{rank[i], i < n - len ? rank[i + len] : -1};\n            };\n            sort(sa.begin(), sa.end(), [&](int a, int b) {\n                return key(a) < key(b);\n            });\n            nr[sa[0]] = 0;\n            for (int i = 1; i < n; i++) {\n                nr[sa[i]] = nr[sa[i - 1]] + (key(sa[i - 1]) != key(sa[i]));\n            }\n            rank.swap(nr);\n            if (rank[sa[n - 1]] == n - 1 || len >= n - len) break;\n            len *= 2;\n        }\n        for (int i = 0; i < n; i++) rank[sa[i]] = i;\n        lcp.assign(n, 0);\n        int h = 0;\n        for (int i = 0; i < n; i++) {\n            int r = rank[i];\n            if (r == 0) {\n                h = 0;\n                continue;\n            }\n            int j = sa[r - 1];\n            while (i + h < n && j + h < n && s[i + h] == s[j + h]) h++;\n            lcp[r] = h;\n            if (h > 0) h--;\n        }\n    }\n    ll distinct() const {\n        ll ans = 1LL * n * (n + 1) / 2;\n        for (int x : lcp) ans -= x;\n        return ans;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    string s;\n    getline(cin, s);\n    SuffixArray a(s);\n    int best = 0, pos = 0;\n    for (int r = 1; r < a.n; r++) {\n        if (a.lcp[r] > best) {\n            best = a.lcp[r];\n            pos = a.sa[r];\n        }\n    }\n    if (best == 0) cout << \"-1\\n\";\n    else cout << s.substr(pos, best) << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Examples: banana → ana, aaaa → aaa, abc → −1, empty input line → −1. For distinct counting, an empty string has empty arrays and answer 0. These two programs share input format but have different outputs.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "Supported domain and verification rules",
+            "blocks": [
+              {
+                "text": "Domain: a single line of bytes, 0≤$n$≤200000. UTF-8 input is ordered by bytes, not code points or Mongolian alphabetical order. getline excludes the line terminator and preserves internal spaces and dollar signs. Unicode character ordering requires a separate code-point representation.",
+                "type": "p"
+              },
+              {
+                "text": "A suffix array is useful when the text stays fixed while query patterns change. Matching suffixes occupy a contiguous sorted interval, enabling binary search. With direct character comparison, each comparison costs $O(pattern_length)$, so do not claim $O(\\log n)$ alone. Search code is not implemented here; this contrasts the data structure with the earlier KMP/Aho lessons.",
+                "type": "p"
+              },
+              {
+                "text": "Keep a small oracle that sorts literal suffixes and recomputes neighboring LCPs from zero. Verify that sa is a permutation, rank[sa[$r$]]=$r$, and LCP never exceeds either suffix length. Test all-equal, periodic, distinct, empty, singleton and shared-prefix strings. The slow oracle materializes suffixes; the production implementation does not.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "text": "Core mastery problems",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "485"
+              },
+              {
+                "text": "Distinct Substrings uses the counting method; remove diagnostic table output to match the judge contract.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "487"
+              },
+              {
+                "text": "Repeating Substring asks for a longest repeat at two possibly overlapping positions; ties may have multiple valid strings.",
+                "type": "p"
+              },
+              {
+                "text": "Independent practice and extensions",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "491"
+              },
+              {
+                "text": "Substring Order $I$ extends the new-prefix contributions to lexicographic selection; inspect the rank/count numeric bounds.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "493"
+              },
+              {
+                "text": "Substring Distribution asks for counts per length. Derive how a suffix contributes the interval of new lengths (lcp[$r$], $n$−sa[$r$]].",
+                "type": "p"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Lexicographic order, sorting/lambda comparators and string indices"
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Лексикограф эрэмбэ, sort ба lambda харьцуулагч, тэмдэгт мөрийн индекс",
+    "priorityLevel": "medium",
+    "priorityReason": "Олон дэд мөрийн ахисан бодлогод чухал боловч үндсэн хайлтаас дараа үзэх тусгай бүтэц тул дунд ач холбогдолтой.",
+    "prerequisiteIds": [
+      "kmp",
+      "sorting"
+    ],
+    "learningRelations": {
+      "related": [
+        "kmp",
+        "string-hashing",
+        "binary-search"
+      ],
+      "practice": [
+        {
+          "key": "485",
+          "stage": "Standard",
+          "reason": "Suffix бүрийн шинэ угтварын тоог LCP-аар хасаж, ll хариу ол.",
+          "priority": true
+        },
+        {
+          "key": "487",
+          "stage": "Application",
+          "reason": "Хөрш LCP-ийн хамгийн их утга ба эхлэх индексээс давтагдсан хэсгийг сэргээ.",
+          "priority": true
+        },
+        {
+          "key": "491",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "493",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "kmp",
+          "description": "Угтвар, төгсгөл ба нэг мөрийн хайлтыг давт.",
+          "descriptionEn": "Review prefix/suffix notation and single-pattern search."
+        }
+      ],
+      "prerequisites": [
+        "kmp",
+        "sorting"
+      ]
+    }
+  }
+}
