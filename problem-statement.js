@@ -2,7 +2,7 @@ import {assertProblemStatementReady,STATEMENT_CHECKS} from './problem-statement-
 import {validateTutorial} from './tutorial-model.js?v=63';
 import {drawArticle,typeset} from './tutorials.js?v=84';
 import {mountBlockEditor} from './tutorial-block-editor.js?v=84';
-import {readProblemStatement,problemBackend} from './problem-backend.js?v=85';
+import {readProblemStatement,problemBackend} from './problem-backend.js?v=86';
 import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=63';
 const node=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const clearMath=root=>{try{window.MathJax?.typesetClear?.([root]);}catch{}};
@@ -55,13 +55,13 @@ export function setupProblemStatementEditor(root,ctx){
   if(!loading)return;
   const actor=ctx.user()?.id;
   try{const result=await readProblemStatement(ctx.client(),problem.id);if(generation!==turn||actor!==ctx.user()?.id)return;
-   if(result?.problemRevision!==problem.revision)throw Error('REVISION_CONFLICT');validateTutorial(result?.body);doc=structuredClone(result.body);setProvenance(result.provenance);message.textContent='Хадгалах үед бодлого болон statement хамт шинэчлэгдэнэ.';
-  }catch{if(generation===turn){failed=true;message.textContent='Statement ачаалсангүй. Өгөгдөл алдахгүйн тулд бодлого хадгалахыг түр хориглолоо; дахин ачаална уу.';}}
+   if(result?.problemRevision!==problem.revision)throw Error('REVISION_CONFLICT');validateTutorial(result?.body);doc=structuredClone(result.body);setProvenance(result.provenance);message.textContent='Statement-ийн өөрчлөлтийг тусдаа товчоор хадгална.';
+  }catch{if(generation===turn){failed=true;message.textContent='Statement ачаалсангүй. Энэ document-ийг хадгалах боломжгүй; дахин ачаална уу.';}}
   finally{if(generation===turn){loading=false;paint();}}
  }
  create.onclick=()=>{if(locked()||failed)return;doc={id:'problem-statement-'+crypto.randomUUID(),title:(target?.title||'Бодлого')+' — Statement',levelKey:'intermediate',order:1,category:'Problem statement',sections:['Бодлогын нөхцөл','Оролт','Гаралт','Хязгаарлалт','Жишээ'].map(title=>({title,blocks:[]}))};touched=true;details.open=true;paint();};
  remove.onclick=()=>{if(locked()||!doc||!confirm('Statement холбоосыг салгах уу? Хадгалах хүртэл серверийн хувилбар өөрчлөгдөхгүй.'))return;doc=null;touched=true;paint();};
  language.onchange=()=>{if(locked()||!doc)return;lang=language.value;paint();};title.oninput=()=>{if(locked()||!doc)return;version().title=title.value;touched=true;reviewed.checked=false;};
  window.addEventListener('beforeunload',e=>{if(touched){e.preventDefault();e.returnValue='';}});
- return{edit,markSaved(){touched=false;},collect(){if(loading||failed)throw Error('Statement бүрэн ачаалагдаагүй байна. Дахин ачаална уу.');if(doc){assertProblemStatementReady({statement:doc,statementProvenance:collectProvenance()});return structuredClone(doc);}return touched?null:undefined;},invalidate(){turn++;editor?.destroy();doc=null;target=null;loading=false;failed=false;touched=false;paint();},provenance:collectProvenance,dirty:()=>touched,refresh:paint};
+ return{edit,markSaved(){touched=false;},collect(){if(loading||failed)throw Error('Statement бүрэн ачаалагдаагүй байна. Дахин ачаална уу.');if(doc){assertProblemStatementReady({statement:doc,statementProvenance:collectProvenance()});return structuredClone(doc);}return touched?null:undefined;},invalidate(){turn++;editor?.destroy();doc=null;target=null;loading=false;failed=false;touched=false;paint();},provenance:collectProvenance,dirty:()=>touched,refresh:paint,refreshControls(){for(const input of controls.querySelectorAll('input,select,button'))input.disabled=locked();for(const input of metadata.querySelectorAll('input,select'))input.disabled=locked();title.disabled=locked();editor?.refreshControls();}};
 }

@@ -2,6 +2,7 @@ import {priorityLevel} from './priority.js?v=52';
 import {validateTutorial} from './tutorial-model.js?v=63';
 import {drawArticle,typeset} from './tutorials.js?v=84';
 import {mountBlockEditor} from './tutorial-block-editor.js?v=84';
+import {readProblemEditorial,problemBackend} from './problem-backend.js?v=86';
 import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=63';
 const node=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const clearMath=root=>{try{window.MathJax?.typesetClear?.([root]);}catch{}};
@@ -22,7 +23,7 @@ export function setupProblemEditorial(root,ctx){
    try{await typeset([target],()=>drawArticle(doc,target,lang,{client:ctx.client(),viewerId:ctx.user?.()?.id||'public'}),()=>valid()&&language.value===lang&&target.isConnected);}catch{if(valid())message.textContent='Томьёог дүрсэлж чадсангүй; эх бичвэрийг харуулж байна.';}
   }
   async function load(){if(pending)return;if(doc){await paint();return;}if(!problem.editorial&&!problem.hasEditorial){message.textContent=missing;return;}pending=true;message.textContent='Editorial ачаалж байна…';
-   try{let body=problem.editorial;if(!body){if(!ctx.client())throw Error('Онлайн editorial холболт шаардлагатай.');const result=await ctx.client().rpc('get_problem_editorial',{p_problem_id:problem.id});if(result.error)throw result.error;body=result.data?.body;}
+   try{let body=problem.editorial;if(!body){if(!ctx.client())throw Error('Онлайн editorial холболт шаардлагатай.');const result=await readProblemEditorial(ctx.client(),problem.id);body=result?.body;}
     if(!valid())return;if(!body){message.textContent=missing;return;}validateTutorial(body);doc=structuredClone(body);label.hidden=false;await paint();
    }catch{if(valid())message.textContent='Editorial ачаалсангүй. Дахин нээж оролдоно уу.';}finally{pending=false;}
   }
@@ -41,21 +42,21 @@ export function setupProblemEditorialEditor(root,ctx){
  function version(){if(lang==='mn')return doc;doc.translations??={};return doc.translations.en??={title:'',sections:[]};}
  function paint(){editor?.destroy();editor=null;body.replaceChildren();titleLabel.hidden=remove.hidden=label.hidden=!doc;create.hidden=!!doc;create.disabled=locked();remove.disabled=locked();language.disabled=locked();title.disabled=locked();if(!doc)return;const v=version();title.value=v.title||'';const generation=turn,actor=ctx.user()?.id,id=doc.id;
   editor=mountBlockEditor(body,v.sections,{locked,changed:()=>{touched=true;},message:t=>message.textContent=t,problems:ctx.problems,progress:ctx.progress,
-   uploadImage:async(file,current)=>{await ctx.requireBackend?.();return uploadTutorialImage(ctx.client(),id,file,actor,()=>generation===turn&&!locked()&&ctx.user()?.id===actor&&doc?.id===id&&current());},
+   uploadImage:async(file,current)=>{if(problemBackend().inlineEditorial)throw Error('Энэ editorial хадгалалтад зураг дэмжигдээгүй.');await ctx.requireBackend?.();return uploadTutorialImage(ctx.client(),id,file,actor,()=>generation===turn&&!locked()&&ctx.user()?.id===actor&&doc?.id===id&&current());},
    imageUrl:path=>tutorialImageUrl(ctx.client(),path,ctx.user()?.id,true)});
  }
- async function edit(problem){const generation=++turn;editor?.destroy();doc=null;target=problem;lang='mn';language.value=lang;touched=false;failed=false;loading=!!problem?.hasEditorial&&!problem.editorial;message.textContent=loading?'Editorial ачаалж байна…':'High priority-д шаталсан hint болон бүрэн editorial шаардлагатай.';details.open=false;paint();
+ async function edit(problem){const generation=++turn;editor?.destroy();doc=null;target=problem;lang='mn';language.value=lang;touched=false;failed=false;loading=!!problem?.hasEditorial&&!problem.editorial;message.textContent=loading?'Editorial ачаалж байна…':'Tutorial бүтэцтэй Монгол/English бодолт, баталгаа, complexity болон код.';details.open=false;paint();
   if(problem?.editorial){doc=structuredClone(problem.editorial);paint();return;}
   if(!loading)return;
   const actor=ctx.user()?.id;
-  try{const result=await ctx.client().rpc('get_problem_editorial',{p_problem_id:problem.id});if(result.error)throw result.error;if(generation!==turn||actor!==ctx.user()?.id)return;
-   if(result.data?.problemRevision!==problem.revision)throw Error('REVISION_CONFLICT');validateTutorial(result.data?.body);doc=structuredClone(result.data.body);message.textContent='Хадгалах үед бодлого болон editorial хамт шинэчлэгдэнэ.';
-  }catch{if(generation===turn){failed=true;message.textContent='Editorial ачаалсангүй. Өгөгдөл алдахгүйн тулд бодлого хадгалахыг түр хориглолоо; дахин ачаална уу.';}}
+  try{const result=await readProblemEditorial(ctx.client(),problem.id);if(generation!==turn||actor!==ctx.user()?.id)return;
+   if(result?.problemRevision!==problem.revision)throw Error('REVISION_CONFLICT');validateTutorial(result?.body);doc=structuredClone(result.body);message.textContent='Editorial-ийн өөрчлөлтийг тусад нь хадгалж болно.';
+  }catch{if(generation===turn){failed=true;message.textContent='Editorial ачаалсангүй. Энэ document-ийг хадгалах боломжгүй; дахин ачаална уу.';}}
   finally{if(generation===turn){loading=false;paint();}}
  }
  create.onclick=()=>{if(locked()||failed)return;doc={id:'problem-editorial-'+crypto.randomUUID(),title:(target?.title||'Бодлого')+' — Editorial',levelKey:'intermediate',order:1,category:'Problem editorial',sections:[{title:'Тайлбар',blocks:[]}]};touched=true;details.open=true;paint();};
  remove.onclick=()=>{if(locked()||!doc||!confirm('Editorial холбоосыг салгах уу? Хадгалах хүртэл серверийн хувилбар өөрчлөгдөхгүй.'))return;doc=null;touched=true;paint();};
  language.onchange=()=>{if(locked()||!doc)return;lang=language.value;paint();};title.oninput=()=>{if(locked()||!doc)return;version().title=title.value;touched=true;};
  window.addEventListener('beforeunload',e=>{if(touched){e.preventDefault();e.returnValue='';}});
- return{edit,markSaved(){touched=false;},collect(){if(loading||failed)throw Error('Editorial бүрэн ачаалагдаагүй байна. Дахин ачаална уу.');if(doc){validateTutorial(doc);return structuredClone(doc);}return touched?null:undefined;},invalidate(){turn++;editor?.destroy();doc=null;target=null;loading=false;failed=false;touched=false;paint();},dirty:()=>touched,refresh:paint};
+ return{edit,markSaved(){touched=false;},collect(){if(loading||failed)throw Error('Editorial бүрэн ачаалагдаагүй байна. Дахин ачаална уу.');if(doc){validateTutorial(doc);return structuredClone(doc);}return touched?null:undefined;},invalidate(){turn++;editor?.destroy();doc=null;target=null;loading=false;failed=false;touched=false;paint();},dirty:()=>touched,refresh:paint,refreshControls(){for(const input of controls.querySelectorAll('input,select,button'))input.disabled=locked();title.disabled=locked();editor?.refreshControls();}};
 }

@@ -4,7 +4,8 @@
 export function problemBackend(config=globalThis.window?.THINK_CP_CONFIG||{}) {
  const version=[31,32,33,34].includes(config.problemBackendVersion)?config.problemBackendVersion:31;
  const inlineStatement=version>=32&&config.problemStatementStorage==='catalog-inline-v1';
- return Object.freeze({version,priority:version>=32,editorial:version>=33,statement:version>=34||inlineStatement,bulkImport:version>=34,...(inlineStatement?{inlineStatement:true}:{})});
+ const inlineEditorial=version>=32&&config.problemEditorialStorage==='catalog-inline-v1';
+ return Object.freeze({version,priority:version>=32,editorial:version>=33||inlineEditorial,statement:version>=34||inlineStatement,bulkImport:version>=34,...(inlineStatement?{inlineStatement:true}:{}),...(inlineEditorial?{inlineEditorial:true}:{})});
 }
 // Uses the table's existing SELECT privilege and active/admin row policy. No
 // new reader RPC, credentials or grants are required by inline storage.
@@ -19,6 +20,16 @@ export async function requireInlineStatementBackend(client){
  // write. Only the native validator returns this precise capability marker.
  try{const{error}=await client.rpc('admin_save_problem',{p_body:{statement:null,statementProvenance:{capabilityProbe:true}},p_number:null,p_revision:null});if(error?.code==='22023'&&error.message?.includes('NATIVE_STATEMENT_PROVENANCE_WITHOUT_BODY'))return;}catch{}
  throw Error('Native statement backend баталгаажаагүй. Өөрчлөлт хадгалагдаагүй.');
+}
+export async function readProblemEditorial(client,id,capabilities=problemBackend()){
+ if(!capabilities.inlineEditorial){const result=await client.rpc('get_problem_editorial',{p_problem_id:id});if(result.error)throw result.error;return result.data;}
+ const result=await client.from('problem_catalog').select('body,revision').eq('problem_id',id).maybeSingle();
+ if(result.error)throw result.error;const row=result.data;if(!row?.body?.editorial)return null;
+ return{body:row.body.editorial,problemRevision:row.revision,revision:row.revision};
+}
+export async function requireInlineEditorialBackend(client){
+ try{const{error}=await client.rpc('admin_save_problem',{p_body:{editorial:{__nativeEditorialProbe:true}},p_number:null,p_revision:null});if(error?.code==='22023'&&error.message?.includes('NATIVE_EDITORIAL_VALIDATOR_READY'))return;}catch{}
+ throw Error('Native editorial backend баталгаажаагүй. Өөрчлөлт хадгалагдаагүй.');
 }
 export function prepareProblemSave(payload,existing,capabilities=problemBackend()) {
  const p=structuredClone(payload);
