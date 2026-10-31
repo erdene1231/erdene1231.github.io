@@ -22,7 +22,7 @@ export function resolvePractice(list, problems) {
 export function tutorialMastery(id, record, practice, progress) {
   const confirmed = CHECKS.every(key => (record?.checks || []).includes(key));
   const priority = practice.filter(row => row.priority);
-  return {read: (record?.readSections || []).length > 0, confirmed,
+  return {read: !!record?.viewedAt || (record?.readSections || []).length > 0, confirmed,
     mastered: confirmed && priority.length > 0 && priority.every(row => row.problem && progress[row.problem.id]?.status === 'solved')};
 }
 export function dayCompletion(day, index, records, progress, checks = []) {

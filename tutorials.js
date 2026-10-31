@@ -4,7 +4,7 @@ import {refreshInlineMath} from './tutorial-math-layout.js?v=56';
 import {priorityLevel,priorityLabel,priorityRank} from './priority.js?v=52';
 import {renderExtendedBlock} from './tutorial-block-renderer.js?v=63';
 import {clearMediaCache} from './tutorial-media.js?v=63';
-import {loadLearningContent,bodyHash} from './learning-model.js?v=84';
+import {loadLearningContent,bodyHash} from './learning-model.js?v=87';
 import {algorithmDemo} from './algorithm-demos.js?v=52';
 import {segmentTreeDemo} from './segment-tree-demo.js?v=52';
 import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=63';
@@ -81,15 +81,36 @@ export function setupTutorials(ctx){
  const priorityName=(t,selected=lang)=>selected==='en'?priorityLabel(t):'Ач холбогдол: '+({low:'бага',medium:'дунд',high:'өндөр'}[priorityLevel(t)]);
  const labels=()=>{const credit=$('tutorial-source-credit');if(credit){const book=node('a',"Competitive Programmer’s Handbook");book.href='https://cses.fi/book/index.php';book.target='_blank';book.rel='noopener noreferrer';const license=node('a','CC BY-NC-SA 4.0');license.href='https://creativecommons.org/licenses/by-nc-sa/4.0/';license.target='_blank';license.rel='noopener noreferrer';credit.replaceChildren(document.createTextNode(tr('Хичээлүүдийг Antti Laaksonen-ийн ','Tutorials are being revised using Antti Laaksonen’s ')),book,document.createTextNode(tr(' номыг жишиг болгон үе шаттай шинэчилж байна. Түүнд тулгуурласан MN/EN найруулга, жишээнүүд ',' as a benchmark. Adapted MN/EN prose and examples are under ')),license,document.createTextNode(tr(' нөхцөлтэй. Кодын тайлбар, дасгалууд нэмсэн; албан ёсны орчуулга биш.','; code walkthroughs and practice have been added. Not an official translation.')));} $('tutorial-learning-guide').replaceChildren(node('strong',tr('Хаанаас эхлэх вэ?','Where should I start?')),node('p',tr('Шинээр эхэлж байгаа бол Анхан шатны хичээлүүдийг дугаараар нь үз. Жишээг гараар дагаж, кодоо уншаад, бүтэн программыг ажиллуул. Санамж нээхээс өмнө дасгалаа өөрөө оролд. Урт хичээлийг “Хэсэг хэсгээр” горимоор уншиж болно. Дунд, ахисан шатанд орохын өмнө урьдчилсан хичээлүүдээ шалга.','Start with the Beginner lessons in numbered order. Trace the example, read the code and run the complete program. Try the exercises before opening hints. Use section-by-section mode for a long lesson. Check prerequisites before moving to Intermediate or Advanced.')));for(const o of $('tutorial-category').options)o.textContent=o.value?categoryName(o.value):tr('Бүх бүлэг','All categories');document.documentElement.lang=location.hash.startsWith('#tutorial')?lang:'mn';$('tutorial-copy-link').textContent=tr('Холбоос хуулах','Copy link');$('tutorial-search').placeholder=tr('Хоёртын хайлт, динамик програмчлал, мод…','Binary search, dp, tree, shortest path…');$('tutorial-reading-label').textContent=tr('Унших горим','Reading mode');$('tutorial-reading-mode').options[0].textContent=tr('Бүтэн хичээл','Full lesson');$('tutorial-reading-mode').options[1].textContent=tr('Хэсэг хэсгээр','Section by section');$('tutorial-section-prev').textContent=tr('← Өмнөх хэсэг','← Previous section');$('tutorial-section-next').textContent=tr('Дараагийн хэсэг →','Next section →');tocSummary.textContent=tr('Хичээлийн агуулга','Lesson contents');$('tutorial-toc').setAttribute('aria-label',tr('Хичээлийн агуулга','Lesson contents'));$('tutorial-section-nav').setAttribute('aria-label',tr('Хэсгийн дараалал','Section navigation'));document.querySelectorAll('.tutorial-back').forEach(a=>a.textContent=tr('← Бүх хичээл','← All tutorials'));};
  function reading(part,scroll=false){
-  if(!current)return;const sections=[...$('tutorial-content').children],count=sections.length;if(!count){activePart=0;$('tutorial-section-nav').hidden=true;$('tutorial-toc').hidden=true;tocPanel.hidden=true;readButton.disabled=true;$('tutorial-section-position').textContent='';return;}$('tutorial-toc').hidden=false;tocPanel.hidden=false;
+  if(!current)return;const sections=[...$('tutorial-content').children],count=sections.length;if(!count){activePart=0;$('tutorial-section-nav').hidden=true;$('tutorial-toc').hidden=true;tocPanel.hidden=true;readButton.disabled=true;$('tutorial-section-position').textContent='';readingActivity();return;}$('tutorial-toc').hidden=false;tocPanel.hidden=false;
   activePart=Number.isInteger(part)&&part>=0&&part<count?part:0;readButton.disabled=!ctx.learning();readButton.textContent=tr('Энэ хэсгийг уншсан','Mark section read');
   sections.forEach((section,i)=>section.hidden=readingMode==='step'&&i!==activePart);
   $('tutorial-section-nav').hidden=readingMode!=='step';$('tutorial-section-prev').disabled=activePart===0;$('tutorial-section-next').disabled=activePart===count-1;
   const readCount=(ctx.learning()?.lessonRecord(current.id).readSections||[]).filter(i=>Number.isInteger(i)&&i>=0&&i<count).length;$('tutorial-section-position').textContent=tr('Хэсэг ','Section ')+(activePart+1)+' / '+count+' · '+tr('Уншсан ','Read ')+readCount+'/'+count;
   [...$('tutorial-toc').querySelectorAll('a')].forEach((a,i)=>{if(i===activePart)a.setAttribute('aria-current','step');else a.removeAttribute('aria-current');});
+  readingActivity();
   if(scroll){const target=sections[activePart];target.scrollIntoView({block:'start',behavior:'instant'});const heading=target.querySelector('h3');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}}
  }
- const readButton=node('button',tr('Энэ хэсгийг уншсан','Mark section read'));readButton.type='button';readButton.dataset.readCurrent='true';readButton.onclick=()=>{if(!current||!ctx.learning())return;const previous=ctx.learning().lessonRecord(current.id);ctx.learning().store.set('tutorial',current.id,{...previous,readSections:[...new Set([...(previous.readSections||[]),activePart])]});reading(activePart);};$('tutorial-section-nav').append(readButton);
+ const readButton=node('button',tr('Энэ хэсгийг уншсан','Mark section read'));readButton.type='button';readButton.dataset.readCurrent='true';readButton.onclick=()=>{if(!current||!ctx.learning())return;const previous=ctx.learning().lessonRecord(current.id);if(ctx.learning().activityEnabled?.())ctx.learning().markSection(current,activePart);else ctx.learning().store.set('tutorial',current.id,{...previous,readSections:[...new Set([...(previous.readSections||[]),activePart])]});reading(activePart);};$('tutorial-section-nav').append(readButton);
+ const activityBar=node('div',undefined,'tutorial-activity-actions'),viewedButton=node('button'),completeButton=node('button'),activityStatus=node('span',undefined,'muted'),activityRetry=node('button');
+ activityBar.id='tutorial-activity-actions';activityStatus.setAttribute('role','status');
+ for(const button of[viewedButton,completeButton,activityRetry])button.type='button';
+ viewedButton.onclick=()=>{if(current)ctx.learning()?.markViewed(current);readingActivity();};
+ completeButton.onclick=()=>{if(current)ctx.learning()?.markCompleted(current);readingActivity();};
+ activityRetry.onclick=()=>void ctx.learning()?.store.reload();
+ activityBar.append(viewedButton,completeButton,activityStatus,activityRetry);$('tutorial-reader').querySelector('.tutorial-reader-actions').after(activityBar);
+ function readingActivity(){
+  const learning=ctx.learning();activityBar.hidden=!current||!learning?.activityEnabled?.();if(activityBar.hidden)return;
+  const record=learning.lessonRecord(current.id),state=learning.readingState(current),ready=learning.activityReady(),pending=!!record._activityEvent;
+  const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Ulaanbaatar',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+  const day=stamp=>stamp&&!Number.isNaN(Date.parse(stamp))?new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Ulaanbaatar',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(stamp)):null;
+  const viewedToday=day(record.viewedAt)===today;
+  viewedButton.textContent=viewedToday?tr('Өнөөдөр үзсэн ✓','Viewed today ✓'):tr('Үзсэн гэж тэмдэглэх','Mark viewed');viewedButton.disabled=!ready||viewedToday;
+  completeButton.textContent=state.complete?tr('Бүрэн уншсан ✓','Reading completed ✓'):tr('Бүрэн уншсан гэж тэмдэглэх','Complete reading');completeButton.disabled=!ready||(state.complete&&!pending)||!current.sections.length;
+  readButton.disabled=!ready||(record.readSections||[]).includes(activePart)||activePart>=current.sections.length;
+  activityStatus.textContent=pending?tr('Огноог хадгалж байна…','Saving activity date…'):record.completedAt?tr('Дууссан: ','Completed: ')+day(record.completedAt):state.complete?tr('Өмнөх уншилт · огноо тодорхойгүй','Earlier reading · date unknown'):tr('Үзсэн/уншсан тэмдэглэгээ нь эзэмшлийн шалгалтаас тусдаа.','Reading activity is separate from mastery checks.');
+  activityRetry.hidden=ready;activityRetry.textContent=tr('Ахиц дахин ачаалах','Reload progress');
+ }
+ window.addEventListener('erdene-learning-records',()=>{if(current)reading(activePart);});
  function goPart(part){if(!current)return;const hash='#tutorial/'+current.id+'/part/'+part;if(location.hash===hash)reading(part,true);else location.hash=hash;}
  function learningLinks(t,selectedLang){
   const isEn=selectedLang==='en',pre=$('tutorial-prerequisite-links'),nav=$('tutorial-lesson-navigation');pre.replaceChildren();nav.replaceChildren();

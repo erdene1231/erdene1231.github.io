@@ -130,3 +130,11 @@ I/O, native editor/editorial and olympiad URL phases are complete.
 These additional references are queued for their respective phase; their pixels
 have not yet been inspected. A genuine image access blocker must be documented
 while independent work continues.
+
+Current UI prerequisite (not yet live): dated-reading controls/store/migration040
+are implemented behind flag0. Targeted tests, native MN/EN browser save/reload,
+real PostgreSQL17 independent-session contention/RLS, and full1064-row guarded
+DDL rollback rehearsals pass. Legacy dates remain unknown; server-recorded view
+days preserve past weeks; mastery checks stay independent. A refreshed full Node
+aggregate covers the final concurrent-field preservation hardening. No live040
+write/activation yet. Remaining five UI items continue after this release.
