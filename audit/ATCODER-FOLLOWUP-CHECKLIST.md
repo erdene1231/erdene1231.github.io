@@ -143,3 +143,10 @@ Dated-reading prerequisite:040 installed exactly once as20261031172833 after
 source PR240; full1064-row/protected/history/allocator and old81-function/access
 readback exact. Only2private invoker helpers/2learning triggers added; no legacy
 date backfill. Feature1 activation receipt/deployment is in progress.
+
+UI item1 is now complete and verified live: source PR240,040 installed once
+as20261031172833, activation/receipt PR241 (39cb7d3), Pages41225051047 success.
+All12 active assets byte-exact over default TLS; real protected data unchanged.
+Native MN/EN save/reload paths use synthetic Auth and isolated PostgreSQL tests;
+no authenticated live-user fixture mutation is claimed. Continue the remaining
+five UI items without a permission pause.
