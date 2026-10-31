@@ -7,6 +7,6 @@ window.THINK_CP_CONFIG = {
   problemBackendVersion: 32,
   problemStatementStorage: 'catalog-inline-v1',
   problemEditorialStorage: 'catalog-inline-v1',
-  learningActivityVersion: 0, // Enable only after040 installation is verified.
+  learningActivityVersion: 1, // 040 installed and data/access preservation verified.
   adminProfileEditorEnabled: true
 };
