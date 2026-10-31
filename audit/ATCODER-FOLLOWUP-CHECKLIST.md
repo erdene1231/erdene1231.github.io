@@ -21,6 +21,9 @@ compaction. Finish the I/O phase first with its own receipt.
 - [x] Inventory all51 targets/methods and reusable original code/oracles.
 - [x] Provide independent Statement and Editorial controls inside the problem
   editor, both using the actual tutorial schema/components and save/load/CAS.
+Batch01: task749/750/751 are published and exact-readback verified (3/51;48 remain).
+Native integration039 is live; see its separate installation receipt.
+
 - [ ] Independently reason, author, test and publish original MN/EN editorials
   for all50 existing Typical90 tasks and ABC005D in genuinely finished batches.
 - [ ] Explain algorithms, correctness, complexity and meaningful fragments first;
