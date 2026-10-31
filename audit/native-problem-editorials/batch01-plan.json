@@ -1,0 +1,826 @@
+[
+  {
+    "id": "task-749",
+    "number": 749,
+    "ref": "typical90_a",
+    "expected_revision": 3,
+    "expected_body_sha256": "63950afb4fb909b78b711d01f6800a4e78478f9d9dae6154093f5fb758516659",
+    "editorial_sha256": "e557982eaeb446ae43e33021f597dfa64c1d535be83ceaea404ad8953ee15e4b",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_a",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-a",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Yokan Party — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хариуны доод урт $x$-ийг тогтоогоод, бүх хэсгийг дор хаяж $x$ урттай болгож болох эсэхийг шалгая. Боломжтой уртууд эхнээсээ дараалсан муж үүсгэнэ. Иймээс Greedy шалгалтыг Binary search-тэй хослуулна."
+            }
+          ]
+        },
+        {
+          "title": "Шалгалт ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Зүүнээс баруун тийш явж, өмнөх таслалтаас $x$ зай хүрсэн хамгийн эхний боломжит байрлалд хэсгийг дуусгана. Төгсгөл $L$-ийг мөн тооцно. $K+1$ буюу түүнээс олон хэсэг гарвал эхний $K$ таслалтыг авч, үлдсэн бүх хэсгийг нэгтгэж болно."
+            },
+            {
+              "type": "p",
+              "text": "$L=34$, таслах байрлалууд $8,13,26$, $K=1$ байг. $x=13$ үед $13$ дээр таслаад $13,21$ урттай хоёр хэсэг авна. $x=14$ үед эхний хэсэг $26$ дээр дуусаж, үлдсэн $8$ хүрэлцэхгүй. Иймээс энэ жишээний хариу $13$."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Greedy-ийн эхний таслалт нь $x$ урт бүрдүүлж болох хамгийн эрт байрлал. Өөр зөв сонголтын эхний таслалт үүнээс зүүн байж чадахгүй. Greedy-ийн таслалтаар сольсноор үлдэх хэсэг богиносохгүй. Энэ тайлбарыг дараагийн таслалтуудад давтан хэрэглэвэл Greedy хамгийн олон хэсэг гаргана."
+            },
+            {
+              "type": "p",
+              "text": "Дор хаяж $K+1$ хэсэг гарсан бол эхний $K$ таслалтыг үлдээж, цаадах хэсгүүд болон сүүлийн үлдэгдлийг нэгтгэнэ. Ингэхэд сүүлчийн хэсэг ч $x$-ээс богиносохгүй. Харин Greedy хүрэхгүй бол өөр хуваалт хүрэхгүй."
+            },
+            {
+              "type": "p",
+              "text": "$x$ боломжтой бол түүнээс бага урт мөн боломжтой. Binary search боломжтой/боломжгүй хилээ хадгалж дуусах тул хамгийн их боломжтой уртыг олно."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Нэг шалгалт $O(N)$, нийт хугацаа $O(N\\log L)$, санах ой $O(N)$. Төгсгөлийн $L$-ийг орхивол сүүлийн хэсгийг буруу тоолно. Яг $K$ хэсэг биш, $K+1$ хэсэг хэрэгтэй."
+            },
+            {
+              "type": "p",
+              "text": "Одоогийн хязгаарт байрлал, урт $10^9$-аас ихгүй; хэсгийн тоо $N+1$. Иймээс энэ програмын int хувьсагчид хангалттай. Дундаж хилийг $lo+(hi-lo)/2$ гэж олно."
+            }
+          ]
+        },
+        {
+          "title": "Кодыг хэсэгчлэн",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Байрлалууд ба төгсгөл"
+            },
+            {
+              "type": "p",
+              "text": "$a$-д боломжит таслах байрлалууд байна. Төгсгөлийн $l$-ийг нэмснээр сүүлчийн хэсгийг мөн адил шалгана. Өгөгдөл эрс өсөхөөр ирдэг тул sort хэрэггүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<int> a(n);\nfor (int &x : a) {\n    cin >> x;\n}\na.push_back(l);"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Greedy шалгалт"
+            },
+            {
+              "type": "p",
+              "text": "$x$ урттай хэсэг үүсгэж болох хамгийн эхний байрлалд тасална. $last$ нь өмнөх таслалт, $cnt$ нь үүссэн хэсгийн тоо. Эцэст нь дор хаяж $k+1$ хэсэг хүрсэн эсэхийг буцаана."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "auto ok = [&](int x) {\n    int cnt = 0, last = 0;\n    for (int pos : a) {\n        if (pos - last >= x) {\n            ++cnt;\n            last = pos;\n        }\n    }\n    return cnt >= k + 1;\n};"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Binary search-ийн хил"
+            },
+            {
+              "type": "p",
+              "text": "Эхэндээ $lo=0$ боломжтой, $hi=l+1$ боломжгүй. $mid$ дээрх шалгалтын хариугаар нэг хилийг ойртуулна. Хилүүдийн зөрүү $1$ болоход $lo$ хамгийн их боломжтой бүхэл урт байна."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int lo = 0, hi = l + 1;\nwhile (hi - lo > 1) {\n    int mid = lo + (hi - lo) / 2;\n    if (ok(mid)) {\n        lo = mid;\n    } else {\n        hi = mid;\n    }\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_a"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, l, k;\n    cin >> n >> l >> k;\n    vector<int> a(n);\n    for (int &x : a) {\n        cin >> x;\n    }\n    a.push_back(l);\n\n    auto ok = [&](int x) {\n        int cnt = 0, last = 0;\n        for (int pos : a) {\n            if (pos - last >= x) {\n                ++cnt;\n                last = pos;\n            }\n        }\n        return cnt >= k + 1;\n    };\n\n    int lo = 0, hi = l + 1;\n    while (hi - lo > 1) {\n        int mid = lo + (hi - lo) / 2;\n        if (ok(mid)) {\n            lo = mid;\n        } else {\n            hi = mid;\n        }\n    }\n    cout << lo << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Yokan Party — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Fix a proposed minimum length $x$ and test whether every piece can have length at least $x$. Feasible lengths form an initial interval, so combine a Greedy check with Binary search."
+                }
+              ]
+            },
+            {
+              "title": "Check and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Scan candidate positions from left to right and finish each piece at the earliest position at least $x$ after the previous cut. Include endpoint $L$. If at least $K+1$ pieces can be formed, keep the first $K$ cuts and merge everything remaining."
+                },
+                {
+                  "type": "p",
+                  "text": "For $L=34$, positions $8,13,26$ and $K=1$, length $13$ works by cutting at $13$, giving lengths $13,21$. For length $14$, the earliest first piece ends at $26$ and the remaining $8$ is too short. The optimum is $13$."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "The first Greedy cut is the earliest possible cut completing a piece of length at least $x$. Any feasible first cut is no earlier. Replacing it by the Greedy cut leaves at least as much length for subsequent pieces. Repeating this exchange shows that Greedy forms the maximum possible number of pieces."
+                },
+                {
+                  "type": "p",
+                  "text": "If at least $K+1$ pieces are formed, retain the first $K$ cuts and merge all later pieces and any leftover tail. The final piece still has length at least $x$. If Greedy cannot reach $K+1$, no other partition can."
+                },
+                {
+                  "type": "p",
+                  "text": "Feasibility is monotone: a partition meeting $x$ also meets any smaller threshold. Binary search preserves a feasible lower bound and an infeasible upper bound, so its final lower bound is optimal."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and pitfalls",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Each check takes $O(N)$ time, for $O(N\\log L)$ total time and $O(N)$ memory. Include endpoint $L$ and require $K+1$ pieces, not $K$."
+                },
+                {
+                  "type": "p",
+                  "text": "All positions and lengths are at most $10^9$, and the count is at most $N+1$, so int is sufficient here. Compute the midpoint as $lo+(hi-lo)/2$."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Positions and endpoint"
+                },
+                {
+                  "type": "p",
+                  "text": "$a$ contains the candidate cut positions. Append $l$ so the final piece is checked by the same loop. The positions are already strictly increasing."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<int> a(n);\nfor (int &x : a) {\n    cin >> x;\n}\na.push_back(l);"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Greedy feasibility"
+                },
+                {
+                  "type": "p",
+                  "text": "Finish each piece at the earliest position at least $x$ beyond $last$. Count completed pieces in $cnt$ and require at least $k+1$."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "auto ok = [&](int x) {\n    int cnt = 0, last = 0;\n    for (int pos : a) {\n        if (pos - last >= x) {\n            ++cnt;\n            last = pos;\n        }\n    }\n    return cnt >= k + 1;\n};"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Binary-search bounds"
+                },
+                {
+                  "type": "p",
+                  "text": "Initially $lo=0$ is feasible and $hi=l+1$ is infeasible. Each check moves one bound inward. When the gap is $1$, $lo$ is the greatest feasible integer length."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int lo = 0, hi = l + 1;\nwhile (hi - lo > 1) {\n    int mid = lo + (hi - lo) / 2;\n    if (ok(mid)) {\n        lo = mid;\n    } else {\n        hi = mid;\n    }\n}"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_a"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, l, k;\n    cin >> n >> l >> k;\n    vector<int> a(n);\n    for (int &x : a) {\n        cin >> x;\n    }\n    a.push_back(l);\n\n    auto ok = [&](int x) {\n        int cnt = 0, last = 0;\n        for (int pos : a) {\n            if (pos - last >= x) {\n                ++cnt;\n                last = pos;\n            }\n        }\n        return cnt >= k + 1;\n    };\n\n    int lo = 0, hi = l + 1;\n    while (hi - lo > 1) {\n        int mid = lo + (hi - lo) / 2;\n        if (ok(mid)) {\n            lo = mid;\n        } else {\n            hi = mid;\n        }\n    }\n    cout << lo << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-750",
+    "number": 750,
+    "ref": "typical90_d",
+    "expected_revision": 3,
+    "expected_body_sha256": "40d9ade41d55749ccc362740bcbfbec90e31fcbe8191660894e70647046eff45",
+    "editorial_sha256": "487177f783c786cdc161956f6f3e0507bda3e69cf13ca6dd54772fcf2845c3eb",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_d",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-d",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Cross Sum — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Нүд бүрийн хариуг шууд мөр, баганаар нь давтан нийлбэрлэх шаардлагагүй. Эхлээд мөр бүрийн $R_i$, багана бүрийн $C_j$ нийлбэрийг олъё. Тэгвэл $B_{i,j}=R_i+C_j-A_{i,j}$."
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Матрицыг уншихдаа мөр, баганын нийлбэрүүдийг зэрэг цуглуулна. Дараа нь нүд бүрд дээрх томьёог хэрэглэнэ."
+            },
+            {
+              "type": "p",
+              "text": "Матрицын мөрүүд $[1,2,3]$, $[4,5,6]$ байг. Мөрийн нийлбэрүүд $6,15$, баганын нийлбэрүүд $5,7,9$. Эхний мөрийн хоёр дахь нүдний хариу $6+7-2=11$. Бүтэн хариуны мөрүүд $[10,11,12]$, $[16,17,18]$."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$R_i$ нь $i$-р мөрийн бүх нүдийг, $C_j$ нь $j$-р баганын бүх нүдийг тоолно. Энэ хоёр олонлогийн огтлолцол ганцхан $(i,j)$ нүд. Тиймээс $R_i+C_j$-д зөвхөн $A_{i,j}$ хоёр удаа орсон; нэгийг нь хасахад шаардлагатай нүд бүр яг нэг удаа үлдэнэ."
+            },
+            {
+              "type": "p",
+              "text": "Энэ томьёог бүх нүдэнд хэрэглэсэн тул гаралтын матриц бүхэлдээ зөв."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Уншилт, нийлбэр ба гаралт тус бүр $O(HW)$; нийт хугацаа $O(HW)$, санах ой $O(HW+H+W)$. Тухайн нүдийг хасахаа мартаж болохгүй."
+            },
+            {
+              "type": "p",
+              "text": "$H,W\\le2000$, $A_{i,j}\\le99$ учир хариу $(H+W-1)\\cdot99\\le395901$. Энэ програмд int хангалттай. Мөрийн төгсгөлд шинэ мөр хэвлэнэ."
+            }
+          ]
+        },
+        {
+          "title": "Кодыг хэсэгчлэн",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Массив ба нийлбэрүүд"
+            },
+            {
+              "type": "p",
+              "text": "Матрицыг дараа нь дахин ашиглах тул хадгална. $row$, $col$ эхэндээ тэг утгатай."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<vector<int>> a(h, vector<int>(w));\nvector<int> row(h), col(w);"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Нэг уншилтаар бэлтгэх"
+            },
+            {
+              "type": "p",
+              "text": "Нүд бүрийг уншихад зөвхөн өөрийн мөр, баганын нийлбэрт нэмнэ. Нийт $HW$ нүдээр нэг удаа явна."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "for (int i = 0; i < h; ++i) {\n    for (int j = 0; j < w; ++j) {\n        cin >> a[i][j];\n        row[i] += a[i][j];\n        col[j] += a[i][j];\n    }\n}\n\n"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Нүд бүрийн хариу"
+            },
+            {
+              "type": "p",
+              "text": "Хоёр нийлбэрт давхар орсон тухайн нүдийг нэг удаа хасна. Гаралтын мөр, баганын дарааллыг өөрчлөхгүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "cout << row[i] + col[j] - a[i][j];"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_d"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int h, w;\n    cin >> h >> w;\n    vector<vector<int>> a(h, vector<int>(w));\n    vector<int> row(h), col(w);\n    for (int i = 0; i < h; ++i) {\n        for (int j = 0; j < w; ++j) {\n            cin >> a[i][j];\n            row[i] += a[i][j];\n            col[j] += a[i][j];\n        }\n    }\n\n    for (int i = 0; i < h; ++i) {\n        for (int j = 0; j < w; ++j) {\n            if (j) {\n                cout << ' ';\n            }\n            cout << row[i] + col[j] - a[i][j];\n        }\n        cout << '\\n';\n    }\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Cross Sum — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Precompute each row sum $R_i$ and column sum $C_j$ instead of summing a full cross for every output cell. Then $B_{i,j}=R_i+C_j-A_{i,j}$."
+                }
+              ]
+            },
+            {
+              "title": "Algorithm and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Accumulate row and column sums while reading the matrix. Make a second pass to output the formula for each cell."
+                },
+                {
+                  "type": "p",
+                  "text": "For rows $[1,2,3]$ and $[4,5,6]$, row sums are $6,15$ and column sums are $5,7,9$. The second cell of the first row becomes $6+7-2=11$. The complete output rows are $[10,11,12]$ and $[16,17,18]$."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "$R_i$ counts every cell in row $i$, and $C_j$ counts every cell in column $j$. Their intersection is exactly cell $(i,j)$. Thus only $A_{i,j}$ is counted twice; subtracting it once leaves every required cell exactly once."
+                },
+                {
+                  "type": "p",
+                  "text": "Applying this identity to every cell produces the entire required matrix."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and pitfalls",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Input, accumulation and output each take $O(HW)$ time. Total memory is $O(HW+H+W)$. Remember to subtract the cell included in both sums."
+                },
+                {
+                  "type": "p",
+                  "text": "Since $H,W\\le2000$ and $A_{i,j}\\le99$, an answer is at most $(H+W-1)\\cdot99\\le395901$. int is sufficient. Print a newline after every output row."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Matrix and sums"
+                },
+                {
+                  "type": "p",
+                  "text": "Store the matrix for later output. The $row$ and $col$ vectors start at zero."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<vector<int>> a(h, vector<int>(w));\nvector<int> row(h), col(w);"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Accumulate while reading"
+                },
+                {
+                  "type": "p",
+                  "text": "Each input cell contributes once to its row sum and once to its column sum, using one pass over $HW$ cells."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "for (int i = 0; i < h; ++i) {\n    for (int j = 0; j < w; ++j) {\n        cin >> a[i][j];\n        row[i] += a[i][j];\n        col[j] += a[i][j];\n    }\n}\n\n"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Each cell answer"
+                },
+                {
+                  "type": "p",
+                  "text": "Subtract the cell counted in both sums. Keep the original row and column order in the output."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "cout << row[i] + col[j] - a[i][j];"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_d"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int h, w;\n    cin >> h >> w;\n    vector<vector<int>> a(h, vector<int>(w));\n    vector<int> row(h), col(w);\n    for (int i = 0; i < h; ++i) {\n        for (int j = 0; j < w; ++j) {\n            cin >> a[i][j];\n            row[i] += a[i][j];\n            col[j] += a[i][j];\n        }\n    }\n\n    for (int i = 0; i < h; ++i) {\n        for (int j = 0; j < w; ++j) {\n            if (j) {\n                cout << ' ';\n            }\n            cout << row[i] + col[j] - a[i][j];\n        }\n        cout << '\\n';\n    }\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-751",
+    "number": 751,
+    "ref": "typical90_g",
+    "expected_revision": 3,
+    "expected_body_sha256": "2999882a6a2dc2bdc6e722b5e9b00742e334cff46d56397faff450c4dd7dd59a",
+    "editorial_sha256": "26ef5a5603eee531feecf23c26b7bfffaa2d4d63292d19d4c3735e7124e33dca",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_g",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-g",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "CP Classes — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Ангийн түвшнүүдийг нэг удаа sort хийнэ. Сурагчийн түвшин $b$ бүрд lower_bound-оор $b$-ээс багагүй хамгийн эхний элементийг ол. Хариунд зөвхөн тэр элемент болон түүний өмнөх элемент хэрэгтэй."
+            }
+          ]
+        },
+        {
+          "title": "Алгоритм ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Ангийг сурагчид хоорондоо хуваарилан булаалдахгүй: нэг ангийг олон сурагч сонгож болно. Иймээс асуулт бүр бие даасан."
+            },
+            {
+              "type": "p",
+              "text": "Ангийн түвшнүүд $[7,20,30]$ байг. $b=18$ үед lower_bound нь $20$; өмнөх нь $7$. Зөрүүнүүд $2,11$ тул хариу $2$. $b=3$ үед зүүн хөрш байхгүй, хариу $4$; $b=35$ үед баруун хөрш байхгүй, хариу $5$."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$b$-ээс бага бүх түвшинд зөрүү нь $b-a$. Тэдгээрээс хамгийн их $a$ хамгийн бага зөрүү өгнө; энэ нь lower_bound-ийн өмнөх элемент. Харин $b$-ээс багагүй түвшинд зөрүү $a-b$ тул хамгийн бага $a$, өөрөөр хэлбэл lower_bound өөрөө хамгийн сайн."
+            },
+            {
+              "type": "p",
+              "text": "Тиймээс аль тал байгаагаас хамааран нэг эсвэл хоёр хөршийг шалгахад бүх ангийн дундах хамгийн бага зөрүү олдоно. Асуултуудыг оролтын дарааллаар бодож хэвлэсэн тул бүх сурагчийн хариу зөв."
+            }
+          ]
+        },
+        {
+          "title": "Хугацаа ба анхаарах зүйл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эрэмбэлэлт $O(N\\log N)$, асуултууд $O(Q\\log N)$, санах ой $O(N)$. end болон begin хилийг тус тус шалгана. $N=1$, давхардсан түвшин, яг таарсан утга бүгд зөв ажиллана."
+            },
+            {
+              "type": "p",
+              "text": "$0\\le A_i,B_j\\le10^9$ учир ашигласан хасалтууд болон зөрүү int төрөлд багтана. Асуултуудыг эрэмбэлж гаралтын дарааллыг өөрчлөх хэрэггүй."
+            }
+          ]
+        },
+        {
+          "title": "Кодыг хэсэгчлэн",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Ангийн түвшнүүдийг эрэмбэлэх"
+            },
+            {
+              "type": "p",
+              "text": "Эрэмбэлсэн массивт тухайн утгын хоёр талын хамгийн ойр хөршийг хурдан олно. Давхардсан түвшнүүдийг хасах шаардлагагүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<int> a(n);\nfor (int &x : a) {\n    cin >> x;\n}\nsort(a.begin(), a.end());"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Баруун талын хөрш"
+            },
+            {
+              "type": "p",
+              "text": "lower_bound нь $b$-ээс багагүй хамгийн эхний утгыг заана. end болсон бол ийм утга байхгүй; энэ үед dereference хийхгүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "auto it = lower_bound(a.begin(), a.end(), b);\nint ans = INT_MAX;\nif (it != a.end()) {\n    ans = min(ans, *it - b);\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Зүүн талын хөрш"
+            },
+            {
+              "type": "p",
+              "text": "Өмнөх элемент байвал $b$-ээс бага утгуудын хамгийн их нь. begin дээр prev дуудаж болохгүй. Хоёр талын боломжит зөрүүний багыг хэвлэнэ."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "if (it != a.begin()) {\n    ans = min(ans, b - *prev(it));\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_g"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<int> a(n);\n    for (int &x : a) {\n        cin >> x;\n    }\n    sort(a.begin(), a.end());\n\n    int q;\n    cin >> q;\n    while (q--) {\n        int b;\n        cin >> b;\n        auto it = lower_bound(a.begin(), a.end(), b);\n        int ans = INT_MAX;\n        if (it != a.end()) {\n            ans = min(ans, *it - b);\n        }\n        if (it != a.begin()) {\n            ans = min(ans, b - *prev(it));\n        }\n        cout << ans << '\\n';\n    }\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "CP Classes — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Sort class levels once. For each student level $b$, use lower_bound to find the first level at least $b$. Only that element and its predecessor can be optimal."
+                }
+              ]
+            },
+            {
+              "title": "Algorithm and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Classes are not consumed: multiple students may choose the same class. Every query is independent."
+                },
+                {
+                  "type": "p",
+                  "text": "For class levels $[7,20,30]$ and $b=18$, lower_bound gives $20$ and its predecessor is $7$. Their differences are $2,11$, so the answer is $2$. For $b=3$ there is no left candidate and the answer is $4$; for $b=35$ there is no right candidate and the answer is $5$."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "For levels below $b$, the difference is $b-a$, minimized by the largest such $a$: the predecessor of lower_bound. For levels at least $b$, the difference is $a-b$, minimized by the smallest such $a$: lower_bound itself."
+                },
+                {
+                  "type": "p",
+                  "text": "Checking the available one or two neighbors therefore finds the minimum over all classes. Queries are answered in input order, so each student receives the correct answer."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and pitfalls",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Sorting takes $O(N\\log N)$ time; all queries take $O(Q\\log N)$, with $O(N)$ memory. Check end before dereferencing and begin before taking a predecessor. Single-class, duplicate and exact-match cases are covered."
+                },
+                {
+                  "type": "p",
+                  "text": "All values lie in $[0,10^9]$, so the subtractions and differences used here fit int. Do not reorder query outputs."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Sort the class levels"
+                },
+                {
+                  "type": "p",
+                  "text": "Sorting makes the nearest candidate on each side easy to find. Duplicate class levels do not need removal."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<int> a(n);\nfor (int &x : a) {\n    cin >> x;\n}\nsort(a.begin(), a.end());"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Right-side candidate"
+                },
+                {
+                  "type": "p",
+                  "text": "lower_bound returns the first level at least $b$. If it equals end, there is no such candidate and it must not be dereferenced."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "auto it = lower_bound(a.begin(), a.end(), b);\nint ans = INT_MAX;\nif (it != a.end()) {\n    ans = min(ans, *it - b);\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Left-side candidate"
+                },
+                {
+                  "type": "p",
+                  "text": "If a predecessor exists, it is the largest level below $b$. Never call prev on begin. Take the smaller valid difference."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "if (it != a.begin()) {\n    ans = min(ans, b - *prev(it));\n}"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_g"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<int> a(n);\n    for (int &x : a) {\n        cin >> x;\n    }\n    sort(a.begin(), a.end());\n\n    int q;\n    cin >> q;\n    while (q--) {\n        int b;\n        cin >> b;\n        auto it = lower_bound(a.begin(), a.end(), b);\n        int ans = INT_MAX;\n        if (it != a.end()) {\n            ans = min(ans, *it - b);\n        }\n        if (it != a.begin()) {\n            ans = min(ans, b - *prev(it));\n        }\n        cout << ans << '\\n';\n    }\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+]

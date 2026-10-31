@@ -19,7 +19,7 @@ compaction. Finish the I/O phase first with its own receipt.
 
 - [x] Inventory actual Statement/Editorial capabilities, gates and persistence.
 - [x] Inventory all51 targets/methods and reusable original code/oracles.
-- [ ] Provide independent Statement and Editorial controls inside the problem
+- [x] Provide independent Statement and Editorial controls inside the problem
   editor, both using the actual tutorial schema/components and save/load/CAS.
 - [ ] Independently reason, author, test and publish original MN/EN editorials
   for all50 existing Typical90 tasks and ABC005D in genuinely finished batches.
