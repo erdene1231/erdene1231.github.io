@@ -9,8 +9,8 @@
   678 code blocks,390 Input/288 Output; every text/whitespace value unchanged.
 - [x] Targeted model/SQL field-scope, rollback, history and replay checks.
 - [x] Actual native selector/save/reload and MN/EN mobile/desktop reader checks.
-- [ ] Source PR merge, guarded live publication, exact public readback.
-- [ ] Separate receipt PR and deployment closure before editorial work.
+- [x] Source PR merge, guarded live publication, exact public readback.
+- [x] Separate receipt PR and deployment closure before editorial work.
 
 ## Then: independent native editors and51 original bilingual editorials
 
@@ -38,3 +38,62 @@ credential changes, APPROVE review or historical SQL replay. Minimal compatible
 schema work without expanded access is authorized; report any genuinely new
 persistent access requirement before changing it. Existing statements, stable
 IDs/ratings/priorities/tags and all learner/profile/private data stay preserved.
+
+## Separate international-olympiad URL preference audit
+
+- [ ] Inventory every actual olympiad category, including JOI/CEOI/COCI/BOI,
+  IOI/APIO/EGOI and analogous sources; exclude AtCoder and ordinary CF rounds.
+- [ ] Traverse actual source listings/pagination and verify individual task
+  identities, including BOI region/round distinctions.
+- [ ] Prefer a verified individual oj.uz task URL. Only if absent there and a
+  verified individual QOJ page exists, use QOJ. Otherwise retain the old URL.
+- [ ] Never guess IDs/use listing URLs or downgrade established oj.uz matches;
+  retain the36 verified EGOI mappings unless preferred new proof requires change.
+- [ ] Separate allowlist/PR/targeted tests/guarded publication/receipt, with
+  category totals and already-preferred/oj.uz/QOJ/retained-gap counts. Reconcile
+  fresh revisions with native editorial batches and preserve every other field.
+
+URL research may fit between editorial batches but must not stall or drop the
+51-editorial scope. No new imports; respect429/403/certificate boundaries and
+report concrete unmatched/ambiguous/access gaps.
+
+## Automatically continue the five bounded deferred UI/workflow items afterward
+
+The user authorizes continuation without a confirmation pause after the current
+I/O, native editor/editorial and olympiad URL phases are complete.
+
+- [ ] Fix tutorial viewed/completed actions with actual persisted completion
+  dates, repeat-click/reload/navigation/auth-user isolation and preserved old
+  records. Never fabricate missing historical dates.
+- [ ] Profile solved-by-rating chart: first materialize and view actual reference
+  `libfile_859dc9d57cd4819191edfc37feaac539` pixels. Accurate rating/unknown/edge
+  counts and colors:800–1100grey,1200–1300green,1400–1500cyan,1600–1800blue,
+  1900–2000magenta,2100–2300orange,2400–2900red,3000+black; light/dark contrast.
+- [ ] Weekly vertical progress: inspect actual reference pixels from
+  `libfile_4f0d4a4c10dc8191870848c552102032`. Show new attempts/solved, previous
+  week change, highest and average rating, actual highest-solved problem link,
+  viewed/completed tutorial counts from real dates, and completed100-day challenge
+  days. Preserve existing timezone/week semantics and label missing data honestly.
+- [ ] Light-theme 'Сайтын хэсгүүд' background becomes pure white: first view
+  actual Library JPEG `libfile_425a6bf873e48191baef2da9f0ef3e78`. Inspect the
+  exact surface/gradient/overlay cause; narrowly change that light surface only,
+  preserve dark/unrelated surfaces/text contrast and verify mobile/desktop.
+- [ ] After the completion-date prerequisite, add group student-report opt-in
+  actions exactly 'Өнөөдөр бодсон бодлогуудыг нэмэх үү?' and
+  'Өнөөдөр үзсэн хичээлүүдийг нэмэх үү?'. Select only the current user's actual
+  dated today activity into the existing corresponding report fields; preserve
+  handtyped contents and stable-ID-deduplicate repeated additions. Normal
+  review/edit and the existing submit action remain required; never auto-submit
+  or add another user's activity. Distinguish actual today from a backdated
+  report date using existing day/timezone semantics. No fabricated old dates.
+  Verify repeated/empty/partial/error/reload cases, midnight boundaries, user
+  isolation, report serialization and light/dark/mobile states. Preserve existing
+  membership/report permissions and do not add new access grants.
+- [ ] Existing components/style only; meaningful real save/reload/isolation and
+  aggregate checks with supported isolated contexts, no real-user fixture
+  mutation without authority. Guarded deployment/readback/receipts; no arbitrary
+  redesign, new package, new access/security grants or credential changes.
+
+These additional references are queued for their respective phase; their pixels
+have not yet been inspected. A genuine image access blocker must be documented
+while independent work continues.

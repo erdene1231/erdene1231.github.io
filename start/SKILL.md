@@ -1042,3 +1042,39 @@ one Medium. No live authenticated browser claim. Pages 41190751298 succeeded;
 `audit/ATCODER-NATIVE-STATEMENTS-ABC.md` and
 `audit/atcoder-expansion/publication-receipt.json`. No private draft publication,
 tutorial mutation, credentials/access change or APPROVE review occurred.
+
+## AtCoder native Input/Output formatting — committed 2026-10-31
+
+All three supplied Library screenshots were materialized/byte-verified and
+actually viewed. They identify CP Classes/task-751 generic text I/O blocks.
+Source PR #218 merged as `cce33892f4f29870e793aacb6558a87a5f7064ea`.
+All51 native AtCoder statements now use the existing tutorial Code selector's
+actual Input/Output subtypes:678 code.language changes (102input formats,
+288sample inputs,288sample outputs),390Input/288Output. Every other character,
+space/newline, bilingual explanation, example, constraint, source provenance and
+problem metadata stays exact. No output prose was converted or synthesized.
+
+One atomic operation committed51 edits, history1101–1151; SQL SHA256
+`1ec2ec2e7a4c9a349c8909084832dc06087fead4eee585d63ec9ebbedbeff6f5`.
+The standard45-second response read timed out, but fresh exact row/history/
+allocator/public-document inspection proved complete success. It was never
+replayed. NEVER REPLAY. Recovery/one-time intent/outcome resolution is under
+`/workspace/atcoder-io-format/`. Catalog1064/AtCoder132, all1,013 other rows,
+74stored/73public tutorials,8drafts and protected learner/profile/access state
+remain exact. No schema/frontend/access change or new problem.
+
+Six targeted Node checks,204 native app-reader cases/1,356 I/O panels,678 real
+native Code selector changes and51 serialization/save/lazy-reload roundtrips
+pass. Exact clipboard text and a full1,064-row rollback rehearsal pass. Pages
+41205386753 succeeded;19 deployed assets match under normal TLS. Evidence:
+`audit/ATCODER-IO-FORMATTING.md`,
+`audit/atcoder-io-format/publication-receipt.json`.
+
+The current user has authorized further work without a confirmation pause:
+independent native Statement/Editorial controls and original bilingual
+editorials for all51 Japanese-only targets; separate international olympiad
+oj.uz→QOJ→retain URL audit/update; then the five bounded deferred UI/workflow
+items. Retain their exact scope/order/Library references and safeguards from
+`audit/ATCODER-FOLLOWUP-CHECKLIST.md`. Do not stop at this formatting receipt or
+drop those active requests. No new grants/RLS/Auth/credentials, real-user test
+fixture mutation, APPROVE review or historical SQL replay is authorized.
