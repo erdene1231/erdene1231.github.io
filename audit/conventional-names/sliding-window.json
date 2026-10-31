@@ -1,0 +1,1058 @@
+{
+  "body": {
+    "id": "sliding-window",
+    "level": "Анхан шат",
+    "order": 46,
+    "title": "Sliding Window — нөхцөл, нийлбэр ба минимум",
+    "aliases": "sliding-window Sliding window — цонхоо ухраахгүй байх Sliding window — moving a window without backtracking",
+    "related": [
+      "binary-search-answer",
+      "monotonic-stack"
+    ],
+    "summary": "Тогтмол нийлбэр, эерэг яг нийлбэрийн тооллого ба deque минимум/максимумыг ялгаж, зааг, давамгайлал, нийт хөдөлгөөнөөр зөв ажиллагаа ба хурдыг батална.",
+    "category": "Array ба search",
+    "levelKey": "beginner",
+    "sections": [
+      {
+        "key": "windows",
+        "title": "Тогтмол ба нөхцөлөөр өөрчлөгдөх цонх",
+        "blocks": [
+          {
+            "text": "Sliding Window аргын цонх гэдэг нь анхны дарааллын одоо авч үзэж буй залгаа хэсэг. Зүүн, баруун заагийг нь хөдөлгөхөд элемент орж, гарна. Цонх тогтмол урттай байж болно; эсвэл нийлбэр, давтамж зэрэг нөхцөлөөс хамаарч урт нь өөрчлөгдөж болно. Дарааллыг эрэмбэлэх эсвэл дундаас нь элемент алгасвал анхны залгаа хэсэг гэдэг утга алдагдана.",
+            "type": "p"
+          },
+          {
+            "text": "Эхлээд тогтмол уртын нийлбэрийг нэг орох, нэг гарах утгаар шинэчилнэ. Дараа нь яг нийлбэртэй хэсгүүдийг тоолохдоо зүүн заагийг яагаад буцаахгүй байж болохыг батална. Эцэст нь нийлбэр шиг шууд хасаж болохгүй минимум, максимумд нэр дэвшигчээ хадгалах хоёр үзүүртэй дараалал (deque) хэрэглэнэ.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "fixed-sum",
+        "title": "Тогтмол уртын нийлбэр",
+        "blocks": [
+          {
+            "kind": "dp",
+            "rows": [
+              [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7"
+              ],
+              [
+                "2",
+                "1",
+                "4",
+                "5",
+                "3",
+                "4",
+                "1",
+                "2"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "0-ээс эхэлсэн индекс ба утгууд; эхний дөрвөн утга нь эхний цонх.",
+            "highlights": [
+              "1:0",
+              "1:1",
+              "1:2",
+              "1:3"
+            ]
+          },
+          {
+            "text": "Энэ дараалалд $k$=4 урттай цонхны нийлбэрүүд 12,13,16,13,10. Эхний 2+1+4+5=12-оос баруун тийш нэг алхахад 2 гарч, 3 орно: 12−2+3=13. Бүтэн цонх бүрийг $k$ удаа нэмбэл $O(nk)$, харин өмнөх нийлбэрийг шинэчилбэл нэг шинэ элементэд тогтмол ажил.",
+            "type": "p"
+          },
+          {
+            "text": "$r$ дахь утгыг нэмсний дараа $r$≥$k$ бол $r$−$k$ дахь хуучныг хасна. Ингэснээр sum нь одоогийн хамгийн сүүлийн $k$ элемент, эсвэл эхэндээ бүрдээгүй богино хэсгийн нийлбэр байна. Зөвхөн $r$≥$k$−1 үед бүтэн цонх үүссэн тул хэвлэнэ. Тогтмол урт нь заагийг өөрөө тогтоодог учир сөрөг утга ч зөв ажиллана.",
+            "type": "p"
+          },
+          {
+            "text": "Энэ болон deque программд 0≤$n$≤200000, |a[$i$]|≤10⁹. $k$ нь бүхэл тоо; 1≤$k$≤$n$ үед л бүтэн цонхтой. $k$=0, $k$>$n$ эсвэл $n$=0 үед энэ интерфэйс цонхгүй гэж үзэж хоосон гаралтын мөр өгнө. Энэ нь урт 0-той математик хэсгүүдийг тоолох өөр бодлогын гэрээ биш. Нийлбэрийн абсолют утга 2×10¹⁴-өөс ихгүй тул ll, индексүүд int.",
+            "type": "p"
+          },
+          {
+            "text": "ll нь цонхны нийлбэрт, int нь хэмжээ/индекст.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "$n$,$k$, дараа нь $n$ утга уншина. Анхны дарааллыг хадгална.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, k;\n    cin >> n >> k;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Хүчинтэй уртыг шалгаад нэг утга нэмэх/хасах дүрмээр цонх бүрийн нийлбэрийг шууд хэвлэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "if (k < 1 || k > n) {\n        cout << '\\n';\n        return 0;\n    }\n    ll sum = 0;\n    for (int r = 0; r < n; r++) {\n        sum += a[r];\n        if (r >= k) sum -= a[r - k];\n        if (r >= k - 1) cout << sum << (r == n - 1 ? '\\n' : ' ');\n    }\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, k;\n    cin >> n >> k;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    if (k < 1 || k > n) {\n        cout << '\\n';\n        return 0;\n    }\n    ll sum = 0;\n    for (int r = 0; r < n; r++) {\n        sum += a[r];\n        if (r >= k) sum -= a[r - k];\n        if (r >= k - 1) cout << sum << (r == n - 1 ? '\\n' : ' ');\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Хугацаа $O(n)$, цонхны тооцооны нэмэлт төлөв $O(1)$. Программ оролтын a массивыг $O(n)$ зайд хадгалж байгааг тусад нь тооцно; $k$ алхмын өмнөх утгыг тэндээс авна.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "positive",
+        "title": "Эерэг нийлбэрт зүүн зааг яагаад ухрахгүй вэ?",
+        "blocks": [
+          {
+            "text": "Одоо бүх утга эерэг, зорилтот нийлбэр $x$=8 байг. [1,3,2,5,1,1,2,3]-аас эхний 1,3,2 нийлээд 6; дараагийн 5-г нэмбэл 11 болж хэтэрнэ. Эхний 1-ийг хассан 3,2 нь 5 бөгөөд 5-г залгавал мөн хэтэрнэ. Дараагийн эхлэлд 2,5,1 нийлээд 8 болно. Зүүн ба баруун зааг зөвхөн баруун тийш хөдөлж энэ хэсгийг олно.",
+            "type": "p"
+          },
+          {
+            "kind": "dp",
+            "rows": [
+              [
+                "1",
+                "3",
+                "2",
+                "5",
+                "1",
+                "1",
+                "2",
+                "3"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "x=8-д 0-ээс тоолсон 2..4 хэсэг 2+5+1=8.",
+            "highlights": [
+              "0:2",
+              "0:3",
+              "0:4"
+            ]
+          },
+          {
+            "text": "Нэг зөв хэсэг олохын оронд бүх зөв хэсгийг тоолъё. [2,1,3,2,1], $x$=3 дээр [0,1], [2,2], [3,4] гэсэн гурван хэсэг. $r$ бүрийг нэгээр өсгөж утгыг нэмээд, нийлбэр $x$-ээс эрс их байвал зүүнээс хангалттай олон удаа хасна. Хэтэрсэн эхлэлүүдийг бүрмөсөн орхиж болох эсэх нь гол баталгаа.",
+            "type": "p"
+          },
+          {
+            "text": "Бүх a[$i$]>0 тул баруунд элемент нэмэхэд нийлбэр эрс өснө, зүүнээс хасахад эрс буурна. Одоогийн төгсгөлд $x$-ээс хэтэрсэн нэг эхлэл ирээдүйн төгсгөлд ч улам их нийлбэртэй тул дахин зөв болохгүй. Хасаж дууссаны дараа хадгалсан хамгийн зүүн боломжит l-ээс хойш эхлэхэд нийлбэр эрс багасна. Тиймээс нэг $r$ дээр нийлбэр яг $x$ бол тэр l цорын ганц зөв эхлэл; эрс бага бол түүнээс хойших эхлэлүүд ч $x$ хүрэхгүй.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "0",
+                "2",
+                "–",
+                "0",
+                "2",
+                "0"
+              ],
+              [
+                "1",
+                "1",
+                "–",
+                "0",
+                "3",
+                "1"
+              ],
+              [
+                "2",
+                "3",
+                "0,1",
+                "2",
+                "3",
+                "2"
+              ],
+              [
+                "3",
+                "2",
+                "2",
+                "3",
+                "2",
+                "2"
+              ],
+              [
+                "4",
+                "1",
+                "–",
+                "3",
+                "3",
+                "3"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "$r$",
+              "Нэмсэн",
+              "Хассан индексүүд",
+              "Үлдсэн l",
+              "Нийлбэр",
+              "Хуримтлагдсан тоо"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "count-code",
+        "title": "Яг нийлбэрийн тооллого ба эвдрэх нөхцөл",
+        "blocks": [
+          {
+            "text": "Кодын гэрээ: 0≤$n$≤200000, 1≤a[$i$]≤10⁹, 0≤$x$≤10¹⁸. sum нь яг l..$r$ хэсгийн нийлбэр; хэсэг хоосон бол 0. Зүүн зааг $r$+1 хүрч болно. l≤$r$ гэж шалгаснаар хоосон хэсгийг хариунд тоолохгүй, $x$=0 үед эерэг элементтэй зөв хэсэг 0 гарна. Нэг элемент $x$-ээс эрс их байвал түүнийг өөрийг нь хасаад дараагийн $r$ рүү хэвийн шилжинэ.",
+            "type": "p"
+          },
+          {
+            "text": "sum-д ll шаардлагатай. Харин бүх утга эерэг энэ нөхцөлд нэг $r$-д хамгийн ихдээ нэг хариу тул ans≤$n$, int хангалттай. Нийт l ба $r$ тус бүр хамгийн ихдээ $n$ алхам, $O(n)$ хугацаа. Нэг алхамд while олон хасалт хийж болох ч бүх ажилд $n$-ээс их хасалт болохгүй; энэ нь санамсаргүй оролтын дундаж үнэлгээ биш.",
+            "type": "p"
+          },
+          {
+            "text": "Утга/нийлбэрт ll, хэмжээ ба заагт int.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "$n$,$x$ болон эерэг утгуудыг уншина. Эерэгийн нөхцөл нь зөв ажиллагааны урьдчилсан нөхцөл.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    ll x;\n    cin >> n >> x;\n    vector<ll> a(n);\n    for (ll &v : a) cin >> v;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "$r$-г сунгаад хэтэрсэн бүх эхлэлийг while-аар хасна. Зөвхөн хоосон биш, яг $x$ үед нэгээр тоолно.",
+            "type": "p"
+          },
+          {
+            "text": "int l = 0, ans = 0;\n    ll sum = 0;\n    for (int r = 0; r < n; r++) {\n        sum += a[r];\n        while (l <= r && sum > x) sum -= a[l++];\n        if (l <= r && sum == x) ans++;\n    }\n    cout << ans << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    ll x;\n    cin >> n >> x;\n    vector<ll> a(n);\n    for (ll &v : a) cin >> v;\n    int l = 0, ans = 0;\n    ll sum = 0;\n    for (int r = 0; r < n; r++) {\n        sum += a[r];\n        while (l <= r && sum > x) sum -= a[l++];\n        if (l <= r && sum == x) ans++;\n    }\n    cout << ans << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Сөрөг утгад энэ кодыг хэрэглэхгүй. [4,−1], $x$=3 дээр 4 хэтэрсэн гээд хасвал дараа нь −1 ирэхэд бүтэн хэсгийн зөв хариуг алдана. Мөн тэгүүдийг зөвшөөрвөл [0,0], $x$=0 дээр гурван зөв хэсэг байхад нэг $r$-д нэгээр нэмэх нь зөвхөн хоёр гэж тоолно. Тэгэхээр “сөрөг биш” нь “эерэг”-тэй адил биш. Ийм өөр гэрээнд хуримтлагдсан нийлбэр ба давтамж зэрэг өөр төлөв хэрэгтэй; энэ кодыг нэрийг нь өөрчлөөд ашиглахгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "deque",
+        "title": "Monotonic queue — тогтмол цонхны минимумд нэр дэвшигч хадгалах",
+        "blocks": [
+          {
+            "text": "Тогтмол цонхны минимумд гарах утгыг хасаад дараагийн хамгийн багыг мэдэх боломжгүй. $k$=4, [2,1,4,5,3,4,1,2]-ын минимумууд 1,1,3,1,1. Цонх бүрд бүх $k$ утгыг шалгахын оронд ирээдүйд хамгийн бага байж болох индексүүдийг хадгална.",
+            "type": "p"
+          },
+          {
+            "text": "Monotonic queue нь нэр дэвшигчдийн утгыг нэг чигийн дараалалтай хадгална. Энд deque-ээр хэрэгжүүлэх бөгөөд индексүүд урдаасаа хойш эрс өсөх дараалалтай, утгууд нь мөн эрс өсөх дараалалтай. Шинэ a[$i$]-аас их буюу тэнцүү хуучин төгсгөлийг ардаас хасаж болно: шинэ элемент түүнээс ихгүй, бас илүү хожуу цонхноос гарна. Хуучин элементийн оролцсон ирээдүйн ямар ч цонхонд шинэ нь бас байна. Иймээс хассан элементийг минимум болгох шаардлага дахин гарахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Цонхны зүүн хил $i$−$k$+1. Үүнээс эрс бага индексийг урдаас гаргана; утгаар нь хайж устгахгүй. Ардаас давамгайлагдсан нэр дэвшигч, урдаас хугацаа дууссан индекс гэсэн хоёр өөр шалтгаан байна. Дараа нь $i$-г ард нэмэхэд урд талын индекс хамгийн бага утгыг өгнө. Сөрөг утга ч зөв: энд нийлбэрийн өсөх шинж бус, утгын харьцуулалт ба индексийн хугацааг ашиглаж байна.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "0..3",
+                "–",
+                "–",
+                "1,2,3",
+                "1,4,5",
+                "1"
+              ],
+              [
+                "1..4",
+                "–",
+                "3,2",
+                "1,4",
+                "1,3",
+                "1"
+              ],
+              [
+                "2..5",
+                "1",
+                "–",
+                "4,5",
+                "3,4",
+                "3"
+              ],
+              [
+                "3..6",
+                "–",
+                "5,4",
+                "6",
+                "1",
+                "1"
+              ],
+              [
+                "4..7",
+                "–",
+                "–",
+                "6,7",
+                "1,2",
+                "1"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "l..$r$",
+              "Урдаас гарсан",
+              "Ардаас гарсан",
+              "Үлдсэн индекс",
+              "Утгууд",
+              "Минимум"
+            ]
+          },
+          {
+            "text": "Эхний цонхны нэр дэвшигчид 1,4,5. Шинэ 3 орж ирэхэд 5 ба 4 хасагдаж 1,3 үлдэнэ. Дараагийн цонхонд хуучин 1-ийн индекс гадна гарч, 3,4 үлдэнэ. Шинэ 1 нь хоёуланг ардаас хасаад ганцаараа үлдэнэ, эцэст нь 2 залгагдана. Минимумуудыг зөвхөн утгаар хадгалбал эхний 1 ба дараах 1-ийн хугацааг ялгахгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "extrema-code",
+        "title": "Минимум ба максимумын бүтэн хэрэгжүүлэлт",
+        "blocks": [
+          {
+            "text": "Максимумд эсрэг эрэмбийг хадгална: шинэ утгаас бага буюу тэнцүү арын нэр дэвшигчийг хасаад, утгуудыг эрс буурах дарааллаар үлдээнэ. Энэ жишээний максимумууд 5,5,5,5,4. Тэнцүү утгыг хасаж шинэ индексийг үлдээх бодлого нь minimum/maximum-ын утгад аюулгүй; хэрэв тэнцсэн хамгийн эрт индексийг асуувал тэнцүүг хасахгүй өөр tie дүрэм хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "text": "Индекс бүр deque бүрд нэг удаа орж, урд эсвэл араас хамгийн ихдээ нэг удаа гарна. Тиймээс хоёр deque нийлээд ч $O(n)$ ажилтай. Нэг шинэ элементэд $O(k)$ хасалт гарч болох тул нэг алхмын хамгийн муу хугацааг $O(1)$ гэж хэлэхгүй; нийт ажиллагааны үнэлгээ л шугаман.",
+            "type": "p"
+          },
+          {
+            "text": "Доорх код эхний мөрөнд бүх минимум, хоёр дахь мөрөнд бүх максимум хэвлэнэ. Хүчинтэй цонхгүй бол хоёр хоосон мөр. Deque-үүд $O(k)$ нэр дэвшигч хадгална, харин оролтын a болон хэвлэх хариуны mn,mx массивууд $O(n)$ зайтай. Иймээс энэ бүтэн программын нийт санах ой $O(n)$, зөвхөн deque-ийн төлөв $O(k)$.",
+            "type": "p"
+          },
+          {
+            "text": "Утга ll, индекс int.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тогтмол нийлбэрийн программтай ижил $n$,$k$,утгын оролт.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, k;\n    cin >> n >> k;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Эхлээд хуучирсан индексүүдийг гаргаж, дараа нь хоёр эсрэг эрэмбийн арын нэр дэвшигчийг цэвэрлэнэ. Зөвхөн бүтэн цонх бүрдэхэд хариу хадгална.",
+            "type": "p"
+          },
+          {
+            "text": "if (k < 1 || k > n) {\n        cout << \"\\n\\n\";\n        return 0;\n    }\n    deque<int> lo, hi;\n    vector<ll> mn, mx;\n    for (int i = 0; i < n; i++) {\n        while (!lo.empty() && lo.front() <= i - k) lo.pop_front();\n        while (!hi.empty() && hi.front() <= i - k) hi.pop_front();\n        while (!lo.empty() && a[lo.back()] >= a[i]) lo.pop_back();\n        while (!hi.empty() && a[hi.back()] <= a[i]) hi.pop_back();\n        lo.push_back(i);\n        hi.push_back(i);\n        if (i >= k - 1) {\n            mn.push_back(a[lo.front()]);\n            mx.push_back(a[hi.front()]);\n        }\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "mn ба mx-ийг тус тус нэг мөрөөр хэвлэнэ. Хоёр үзүүрийн элемент авахын өмнө deque хоосон биш байна.",
+            "type": "p"
+          },
+          {
+            "text": "for (int i = 0; i < int(mn.size()); i++) {\n        cout << mn[i] << (i + 1 == int(mn.size()) ? '\\n' : ' ');\n    }\n    for (int i = 0; i < int(mx.size()); i++) {\n        cout << mx[i] << (i + 1 == int(mx.size()) ? '\\n' : ' ');\n    }\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, k;\n    cin >> n >> k;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    if (k < 1 || k > n) {\n        cout << \"\\n\\n\";\n        return 0;\n    }\n    deque<int> lo, hi;\n    vector<ll> mn, mx;\n    for (int i = 0; i < n; i++) {\n        while (!lo.empty() && lo.front() <= i - k) lo.pop_front();\n        while (!hi.empty() && hi.front() <= i - k) hi.pop_front();\n        while (!lo.empty() && a[lo.back()] >= a[i]) lo.pop_back();\n        while (!hi.empty() && a[hi.back()] <= a[i]) hi.pop_back();\n        lo.push_back(i);\n        hi.push_back(i);\n        if (i >= k - 1) {\n            mn.push_back(a[lo.front()]);\n            mx.push_back(a[hi.front()]);\n        }\n    }\n    for (int i = 0; i < int(mn.size()); i++) {\n        cout << mn[i] << (i + 1 == int(mn.size()) ? '\\n' : ' ');\n    }\n    for (int i = 0; i < int(mx.size()); i++) {\n        cout << mx[i] << (i + 1 == int(mx.size()) ? '\\n' : ' ');\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "Гэрээ, хязгаар ба нийт хөдөлгөөний үнэлгээ",
+        "blocks": [
+          {
+            "text": "Цонх бүрд юуг хадгалах вэ гэдгээс арга өөр. Нийлбэр нь орсон/гарсан утгаар шинэчлэгдэнэ. Яг нийлбэрийн хувьсах цонхонд мартах эхлэлийн баталгаа хэрэгтэй. Минимумын deque нь утга ба хугацааны давамгайллыг хэрэглэнэ. Медиан зэрэг дундах эрэмбийн утгад хоёр талын хэмжээг хадгалах өөр бүтэц шаардлагатай; минимумын deque хангалтгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Хоосон оролт, $k$=1, $k$=$n$, $k$>$n$, тэнцүү бүх утга, үл буурах/үл өсөх дараалалтай утга, сөрөг утгатай тогтмол цонхыг шалга. Яг нийлбэрийн кодод зөвшөөрсөн эерэг оролтыг бүх залгаа хэсгийн нийлбэртэй тулгаж, зөвшөөрөөгүй тэг/сөрөг оролтын эсрэг жишээг тусад нь ойлго. Дотоод while хэдэн удаа ажилласнаар нэг алхмыг биш, бүх хасалтыг тоолж үнэл.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "text": "Өөрийгөө шалга: 1. [4,−1],$x$=3 дээр эерэгийн код юуг алдах вэ? 2. [0,0],$x$=0 яагаад хоёр биш гурав вэ? 3. Deque-ээс урд ба араас гаргах хоёр шалтгаан юу вэ? 4. Тогтмол нийлбэрийн цонх сөрөг утгад яагаад зөв вэ?",
+            "type": "p"
+          },
+          {
+            "text": "Хариу: хассан 4 дараа нь −1-тэй нийлж зөв болох байв; хоёр ганц элемент ба бүтэн хэсэг; хугацаа дуусах ба шинэ илүү сайн нэр дэвшигчид давамгайлагдах; урт нь заагийг тогтоож байгаа тул нийлбэр өсөх нөхцөл шаардахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Сэдвийг эзэмших үндсэн бодлогууд",
+            "type": "p"
+          },
+          {
+            "text": "Subarray Sums $I$: эерэгийн нөхцөл ба нэг $r$-д ганц эхлэл гэсэн баталгаагаа хэрэгжүүл.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "334"
+          },
+          {
+            "text": "Бие даах ба ахиулах бодлогууд",
+            "type": "p"
+          },
+          {
+            "text": "Playlist: давтамжийн нөхцөл биелтэл while-аар хумь; нэг if хангалтгүй жишээ гарга.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "23"
+          },
+          {
+            "text": "Distinct Values Subarrays II: нэг төгсгөлд олон эхлэл зөв байж болно, answer++-ийг шууд хуулж болохгүй.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "336"
+          },
+          {
+            "text": "Maximum Subarray Sum II: зөвшөөрсөн уртыг prefix эхлэлүүдийн цонх болгож, нэмэлт минимумын бүтэцтэй холбо.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "339"
+          },
+          {
+            "text": "Sliding Window Median: дундах эрэмбийн байрлал, тэнцүүг ялган устгах өөр бүтэц хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "542"
+          },
+          {
+            "text": "IOI2011 Rice Hub: медианд хүргэх төсөв ба prefix нийлбэрийн нэмэлт баталгааг гарга.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "841"
+          },
+          {
+            "text": "Sliding Window Sum: тогтмол уртын орох/гарах утгатай шинэчлэлтийг дадлагажуул.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "535"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Sliding windows — contracts, sums and extrema",
+        "summary": "Distinguish fixed sums, positive exact-sum counts and deque extrema, proving boundary, dominance and total-movement invariants.",
+        "sections": [
+          {
+            "key": "windows",
+            "title": "Fixed and condition-driven windows",
+            "blocks": [
+              {
+                "text": "A window is a contiguous part of the original array. Moving its boundaries inserts or removes elements. It may have fixed length or a length determined by a sum/frequency condition. Sorting the array or skipping internal elements destroys the original contiguous-subarray meaning.",
+                "type": "p"
+              },
+              {
+                "text": "First update fixed-length sums by one entering and one leaving value. Then prove when a left boundary need not retreat while counting exact-sum subarrays. Finally handle minima/maxima, which cannot simply be subtracted, using a deque of candidates.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "fixed-sum",
+            "title": "Fixed-length sums",
+            "blocks": [
+              {
+                "kind": "dp",
+                "rows": [
+                  [
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7"
+                  ],
+                  [
+                    "2",
+                    "1",
+                    "4",
+                    "5",
+                    "3",
+                    "4",
+                    "1",
+                    "2"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "Zero-based indices and values; the first four values form the first window.",
+                "highlights": [
+                  "1:0",
+                  "1:1",
+                  "1:2",
+                  "1:3"
+                ]
+              },
+              {
+                "text": "For $k$=4 the window sums are 12,13,16,13,10. Moving from 2+1+4+5=12 removes 2 and adds 3, giving 13. Summing each window independently costs $O(nk)$; updating the previous sum takes constant work per new element.",
+                "type": "p"
+              },
+              {
+                "text": "After adding index $r$, remove $r$−$k$ when $r$≥$k$. The sum then covers the latest $k$ values, or the incomplete shorter prefix at the start. Output only when $r$≥$k$−1. Fixed length determines the boundaries, so negative values cause no problem.",
+                "type": "p"
+              },
+              {
+                "text": "Both this and the deque program require 0≤$n$≤200000 and |a[$i$]|≤10⁹. Full windows exist only for integer 1≤$k$≤$n$. For $k$=0, $k$>$n$ or $n$=0 this interface emits empty result lines; it is not a contract for counting mathematical empty subarrays. Absolute sums are at most 2×10¹⁴, so use ll sums and int indices.",
+                "type": "p"
+              },
+              {
+                "text": "Use ll for window sums and int for dimensions/indices.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Read $n$,$k$ followed by $n$ values, preserving their order.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, k;\n    cin >> n >> k;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Check the width, then stream sums using the insert/remove rule.",
+                "type": "p"
+              },
+              {
+                "text": "if (k < 1 || k > n) {\n        cout << '\\n';\n        return 0;\n    }\n    ll sum = 0;\n    for (int r = 0; r < n; r++) {\n        sum += a[r];\n        if (r >= k) sum -= a[r - k];\n        if (r >= k - 1) cout << sum << (r == n - 1 ? '\\n' : ' ');\n    }\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, k;\n    cin >> n >> k;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    if (k < 1 || k > n) {\n        cout << '\\n';\n        return 0;\n    }\n    ll sum = 0;\n    for (int r = 0; r < n; r++) {\n        sum += a[r];\n        if (r >= k) sum -= a[r - k];\n        if (r >= k - 1) cout << sum << (r == n - 1 ? '\\n' : ' ');\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Time is $O(n)$ and rolling-state space $O(1)$. The program separately stores the input array in $O(n)$ space to retrieve the value leaving $k$ steps later.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "positive",
+            "title": "Why positive sums permit a forward-only left edge",
+            "blocks": [
+              {
+                "text": "Now all values are positive and $x$=8. In[1,3,2,5,1,1,2,3], the first 1,3,2 sum to 6; adding 5 exceeds the target. Removing the initial 1 leaves 3,2 with sum 5, which still cannot accept 5. The next start allows 2,5,1 with sum 8. Both boundaries only move right.",
+                "type": "p"
+              },
+              {
+                "kind": "dp",
+                "rows": [
+                  [
+                    "1",
+                    "3",
+                    "2",
+                    "5",
+                    "1",
+                    "1",
+                    "2",
+                    "3"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "For x=8, zero-based interval2..4 sums to2+5+1=8.",
+                "highlights": [
+                  "0:2",
+                  "0:3",
+                  "0:4"
+                ]
+              },
+              {
+                "text": "Instead of finding one subarray, count them all. For[2,1,3,2,1] and $x$=3 the three intervals are[0,1],[2,2],[3,4]. Advance $r$ and add its value, then remove from the left while the sum is too large. The crucial question is why discarded starting positions can be forgotten permanently.",
+                "type": "p"
+              },
+              {
+                "text": "Because every a[$i$]>0, extending right increases the sum and removing left decreases it. A start already exceeding $x$ can never become valid at a later endpoint. Once shrinking ends, every later start gives a strictly smaller sum. Thus if the surviving sum equals $x$, its l is the only valid start for this $r$; if below $x$, no later start can reach $x$.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "0",
+                    "2",
+                    "–",
+                    "0",
+                    "2",
+                    "0"
+                  ],
+                  [
+                    "1",
+                    "1",
+                    "–",
+                    "0",
+                    "3",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "3",
+                    "0,1",
+                    "2",
+                    "3",
+                    "2"
+                  ],
+                  [
+                    "3",
+                    "2",
+                    "2",
+                    "3",
+                    "2",
+                    "2"
+                  ],
+                  [
+                    "4",
+                    "1",
+                    "–",
+                    "3",
+                    "3",
+                    "3"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "$r$",
+                  "Added",
+                  "Removed indices",
+                  "Remaining l",
+                  "Sum",
+                  "Total count"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "count-code",
+            "title": "Exact-sum counting and counterexamples",
+            "blocks": [
+              {
+                "text": "Contract:0≤$n$≤200000,1≤a[$i$]≤10⁹ and 0≤$x$≤10¹⁸. sum represents exactly l..$r$, or 0 for an empty window. l may reach $r$+1. Testing l≤$r$ prevents counting empty windows; positive inputs with $x$=0 give zero answers. A single value larger than $x$ is removed and scanning continues normally.",
+                "type": "p"
+              },
+              {
+                "text": "sum needs ll. Under strict positivity each $r$ contributes at most one answer, so ans≤$n$ and int suffices. Both pointers advance at most $n$ times, giving $O(n)$ total time. One arrival can trigger many removals, but total removals are bounded by $n$. This is a deterministic total bound, not average performance over random inputs.",
+                "type": "p"
+              },
+              {
+                "text": "ll stores values/sums; int stores dimensions and boundaries.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Read $n$,$x$ and the positive values. Positivity is a correctness precondition.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    ll x;\n    cin >> n >> x;\n    vector<ll> a(n);\n    for (ll &v : a) cin >> v;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Extend $r$, repeatedly remove excessive starts, then count only a nonempty window with sum exactly $x$.",
+                "type": "p"
+              },
+              {
+                "text": "int l = 0, ans = 0;\n    ll sum = 0;\n    for (int r = 0; r < n; r++) {\n        sum += a[r];\n        while (l <= r && sum > x) sum -= a[l++];\n        if (l <= r && sum == x) ans++;\n    }\n    cout << ans << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    ll x;\n    cin >> n >> x;\n    vector<ll> a(n);\n    for (ll &v : a) cin >> v;\n    int l = 0, ans = 0;\n    ll sum = 0;\n    for (int r = 0; r < n; r++) {\n        sum += a[r];\n        while (l <= r && sum > x) sum -= a[l++];\n        if (l <= r && sum == x) ans++;\n    }\n    cout << ans << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Do not use this code for signed values. With[4,−1],$x$=3, discarding 4 loses the valid complete subarray when−1 arrives. Allowing zero also breaks the unique-start count: [0,0],$x$=0 has three answers, while one increment per endpoint returns only two. Nonnegative is not the same as positive. Different contracts require different state, such as prefix-sum frequencies; renaming this code does not fix it.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "deque",
+            "title": "Candidate deques for fixed-window minima",
+            "blocks": [
+              {
+                "text": "A minimum cannot be updated by subtracting the leaving value. For $k$=4 and[2,1,4,5,3,4,1,2], the minima are 1,1,3,1,1. Rather than inspect all $k$ values repeatedly, retain indices that could still become future minima.",
+                "type": "p"
+              },
+              {
+                "text": "Deque indices increase from front to back, and their values strictly increase. Remove a back candidate whose value is at least the new a[$i$]: the new index is no worse in value and expires later. Any future window still containing the old index also contains the new one. The discarded candidate can never be necessary for a future minimum.",
+                "type": "p"
+              },
+              {
+                "text": "The left boundary is $i$−$k$+1. Remove smaller indices from the front, not by searching for their values. Back removal handles dominated candidates; front removal handles expiration. Append $i$ and read the minimum at the front. Negative values work because the argument uses comparisons and index lifetime, not increasing sums.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "0..3",
+                    "–",
+                    "–",
+                    "1,2,3",
+                    "1,4,5",
+                    "1"
+                  ],
+                  [
+                    "1..4",
+                    "–",
+                    "3,2",
+                    "1,4",
+                    "1,3",
+                    "1"
+                  ],
+                  [
+                    "2..5",
+                    "1",
+                    "–",
+                    "4,5",
+                    "3,4",
+                    "3"
+                  ],
+                  [
+                    "3..6",
+                    "–",
+                    "5,4",
+                    "6",
+                    "1",
+                    "1"
+                  ],
+                  [
+                    "4..7",
+                    "–",
+                    "–",
+                    "6,7",
+                    "1,2",
+                    "1"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "l..$r$",
+                  "Expired front",
+                  "Removed back",
+                  "Indices",
+                  "Values",
+                  "Minimum"
+                ]
+              },
+              {
+                "text": "The first window retains values 1,4,5. New 3 removes 5 and 4, leaving 1,3. In the next window the old 1 expires, leaving 3,4. New 1 removes both from the back; finally 2 is appended. Storing only values would not distinguish the expiration of the old 1 from the later 1.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "extrema-code",
+            "title": "Complete minimum and maximum implementation",
+            "blocks": [
+              {
+                "text": "For maxima reverse the order: discard back values at most the incoming value, retaining strictly decreasing values. The example maxima are 5,5,5,5,4. Keeping the newest equal index preserves extremal values; if a problem asks for the earliest equal index, keep equals and use a different tie policy.",
+                "type": "p"
+              },
+              {
+                "text": "Each index enters each deque once and leaves at most once, from either end. Two deques still take $O(n)$ total work. One incoming value may cause $O(k)$ removals; individual worst-case updates are not $O(1)$, while the total is linear.",
+                "type": "p"
+              },
+              {
+                "text": "The program prints all minima on the first line and all maxima on the second; without valid full windows it prints two empty lines. Candidate deques use $O(k)$ space, but input a and output arrays mn,mx use $O(n)$. Thus the complete program uses $O(n)$ memory, with $O(k)$ candidate state.",
+                "type": "p"
+              },
+              {
+                "text": "Values are ll and indices int.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Use the same $n$,$k$,value input as fixed-window sums.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, k;\n    cin >> n >> k;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Expire indices first, then maintain the two opposite back-order invariants. Store answers only for complete windows.",
+                "type": "p"
+              },
+              {
+                "text": "if (k < 1 || k > n) {\n        cout << \"\\n\\n\";\n        return 0;\n    }\n    deque<int> lo, hi;\n    vector<ll> mn, mx;\n    for (int i = 0; i < n; i++) {\n        while (!lo.empty() && lo.front() <= i - k) lo.pop_front();\n        while (!hi.empty() && hi.front() <= i - k) hi.pop_front();\n        while (!lo.empty() && a[lo.back()] >= a[i]) lo.pop_back();\n        while (!hi.empty() && a[hi.back()] <= a[i]) hi.pop_back();\n        lo.push_back(i);\n        hi.push_back(i);\n        if (i >= k - 1) {\n            mn.push_back(a[lo.front()]);\n            mx.push_back(a[hi.front()]);\n        }\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Print mn and mx separately. Deques are nonempty before reading their fronts.",
+                "type": "p"
+              },
+              {
+                "text": "for (int i = 0; i < int(mn.size()); i++) {\n        cout << mn[i] << (i + 1 == int(mn.size()) ? '\\n' : ' ');\n    }\n    for (int i = 0; i < int(mx.size()); i++) {\n        cout << mx[i] << (i + 1 == int(mx.size()) ? '\\n' : ' ');\n    }\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, k;\n    cin >> n >> k;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    if (k < 1 || k > n) {\n        cout << \"\\n\\n\";\n        return 0;\n    }\n    deque<int> lo, hi;\n    vector<ll> mn, mx;\n    for (int i = 0; i < n; i++) {\n        while (!lo.empty() && lo.front() <= i - k) lo.pop_front();\n        while (!hi.empty() && hi.front() <= i - k) hi.pop_front();\n        while (!lo.empty() && a[lo.back()] >= a[i]) lo.pop_back();\n        while (!hi.empty() && a[hi.back()] <= a[i]) hi.pop_back();\n        lo.push_back(i);\n        hi.push_back(i);\n        if (i >= k - 1) {\n            mn.push_back(a[lo.front()]);\n            mx.push_back(a[hi.front()]);\n        }\n    }\n    for (int i = 0; i < int(mn.size()); i++) {\n        cout << mn[i] << (i + 1 == int(mn.size()) ? '\\n' : ' ');\n    }\n    for (int i = 0; i < int(mx.size()); i++) {\n        cout << mx[i] << (i + 1 == int(mx.size()) ? '\\n' : ' ');\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "Contracts, limits and total movement",
+            "blocks": [
+              {
+                "text": "The maintained statistic determines the method. Sums update by entering/leaving values. A variable exact-sum window needs a proof that old starts can be forgotten. Extremal deques exploit value-and-expiration dominance. A median needs a different structure maintaining ordered ranks; the minimum deque is insufficient.",
+                "type": "p"
+              },
+              {
+                "text": "Test empty input,$k$=1,$k$=$n$,$k$>$n$, equal values, monotone arrays and signed fixed windows. Compare the positive-count program against all subarrays within its supported domain, and understand zero/signed counterexamples separately. Analyze all removals across the execution rather than multiplying the worst inner loop by every iteration.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "text": "Check yourself:1. What is lost on[4,−1],$x$=3?2. Why does[0,0],$x$=0 have three answers?3. Why remove deque indices from two different ends?4. Why do fixed sums handle negative values?",
+                "type": "p"
+              },
+              {
+                "text": "Answers: discarded 4 would later combine with−1; two singletons plus the whole array; expiration versus domination; fixed width determines boundaries without any monotonic-sum assumption.",
+                "type": "p"
+              },
+              {
+                "text": "Core problems for mastering the topic",
+                "type": "p"
+              },
+              {
+                "text": "Subarray Sums $I$: implement positivity and the unique start per endpoint proof.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "334"
+              },
+              {
+                "text": "Independent practice and extensions",
+                "type": "p"
+              },
+              {
+                "text": "Playlist: shrink until the frequency invariant holds; find why one if is insufficient.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "23"
+              },
+              {
+                "text": "Distinct Values Subarrays II: multiple valid starts can share an endpoint; do not copy answer++.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "336"
+              },
+              {
+                "text": "Maximum Subarray Sum II: model allowed lengths as a window of prefix starts with an additional minimum structure.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "339"
+              },
+              {
+                "text": "Sliding Window Median: use a rank-maintaining structure with careful equal-value deletion.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "542"
+              },
+              {
+                "text": "IOI 2011 Rice Hub: derive extra median-budget and prefix-sum reasoning.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "841"
+              },
+              {
+                "text": "Sliding Window Sum: practice fixed-length enter/leave updates.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "535"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know two pointers, consecutive intervals, prefix sums and loop-state reasoning."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Two Pointers арга, дараалсан завсар, хуримтлагдсан нийлбэр болон давталтын утгыг мэддэг байна.",
+    "priorityLevel": "high",
+    "priorityReason": "Төлөвийг зөв хадгалж, нэг элементийг нэг удаа оруулж гаргах нийт ажлын тооцоо хийх нь олон цонхны алгоритмын суурь. Хассан эхлэл дахин хэрэггүйг батлах нь синтаксаас илүү чухал.",
+    "prerequisiteIds": [
+      "two-pointers",
+      "prefix-sums"
+    ],
+    "learningRelations": {
+      "next": "stack-queue",
+      "practice": [
+        {
+          "key": "334",
+          "stage": "Warm-up",
+          "reason": "Эерэг нийлбэрийн цонхны төлөв, зүүн эхлэл хасах баталгаа, нэг төгсгөлийн ганц хариуг бие даан хэрэгжүүлэх шууд цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "23",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "336",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "339",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "542",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "841",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "535",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "binary-search-answer",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "monotonic-stack",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  }
+}

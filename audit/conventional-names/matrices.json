@@ -1,0 +1,3246 @@
+{
+  "body": {
+    "id": "matrices",
+    "level": "Ахисан шат",
+    "order": 23,
+    "title": "Матриц — зэрэг, шилжилт ба граф",
+    "aliases": "matrix matrices multiplication exponentiation determinant inverse recurrence fibonacci minplus kirchhoff laplacian матриц тодорхойлогч",
+    "related": [
+      "fast-power",
+      "number-theory",
+      "dynamic-programming",
+      "graph-basics",
+      "combinatorics"
+    ],
+    "summary": "Матрицын үйлдэл, зэрэг, тодорхойлогч/урвуу, шугаман хамаарал, тогтмол урттай явалт, min-plus ба Кирхгофыг бүтэн жишээ, тайлбартай C++17-оор сурна.",
+    "category": "Mathematics",
+    "levelKey": "advanced",
+    "sections": [
+      {
+        "key": "basics",
+        "title": "Матрицын хэмжээ ба тэмдэглэгээ",
+        "blocks": [
+          {
+            "text": "Матриц нь мөр, баганад байрлуулсан тоонуудын хүснэгт. Программд хоёр хэмжээст массивтай адил боловч хэмжээс ба үйлдлийн дүрмийг нь математик утгатайгаар ашиглана. Жишээ нь дараах $A$ нь $3\\times4$ хэмжээтэй: гурван мөр, дөрвөн багана.",
+            "type": "p"
+          },
+          {
+            "tex": "A=\\begin{bmatrix}6&13&7&4\\\\7&0&8&2\\\\9&5&4&18\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "text": "$A[i,j]$ нь $i$-р мөр, $j$-р баганын элемент. Энд математик тэмдэглэгээг $1$-ээс эхлүүлсэн тул $A[2,3]=8$, $A[3,1]=9$. Харин доорх C++ кодын индекс $0$-оос эхэлнэ. $n\\times1$ хэмжээтэй матриц нь багана векторын тусгай тохиолдол; жишээ нь дараах вектор гурван элементтэй.",
+            "type": "p"
+          },
+          {
+            "tex": "V=\\begin{bmatrix}4\\\\7\\\\5\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "text": "Мөр ба баганыг солиход $A^T$ үүснэ: $A^T[i,j]=A[j,i]$. Хэмжээ нь $3\\times4$-өөс $4\\times3$ болно. Мөр, баганын тоо ижил матрицыг квадрат матриц гэнэ; $S$ нь $3\\times3$ жишээ.",
+            "type": "p"
+          },
+          {
+            "tex": "A^T=\\begin{bmatrix}6&7&9\\\\13&0&5\\\\7&8&4\\\\4&2&18\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "tex": "S=\\begin{bmatrix}3&12&4\\\\5&9&15\\\\0&2&4\\end{bmatrix}",
+            "type": "math"
+          }
+        ]
+      },
+      {
+        "key": "operations",
+        "title": "23.1 Үйлдлүүд",
+        "blocks": [
+          {
+            "text": "Нэмэх ба тоогоор үржүүлэх",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "$A+B$ нь хоёр матриц ижил хэмжээтэй үед тодорхойлогдоно. Ижил байрлалын элементүүдийг нэмээд, ижил хэмжээтэй шинэ матриц авна. Матрицыг $x$ тоогоор үржүүлэхэд элемент бүрийг $x$-ээр үржүүлнэ.",
+            "type": "p"
+          },
+          {
+            "tex": "\\begin{bmatrix}6&1&4\\\\3&9&2\\end{bmatrix}+\\begin{bmatrix}4&9&3\\\\8&1&3\\end{bmatrix}=\\begin{bmatrix}6+4&1+9&4+3\\\\3+8&9+1&2+3\\end{bmatrix}=\\begin{bmatrix}10&10&7\\\\11&10&5\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "tex": "2\\begin{bmatrix}6&1&4\\\\3&9&2\\end{bmatrix}=\\begin{bmatrix}2\\cdot6&2\\cdot1&2\\cdot4\\\\2\\cdot3&2\\cdot9&2\\cdot2\\end{bmatrix}=\\begin{bmatrix}12&2&8\\\\6&18&4\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "text": "Матрицын үржвэр",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "$A$ нь $a\\times n$, $B$ нь $n\\times b$ хэмжээтэй үед $AB$ тодорхойлогдож $a\\times b$ хэмжээтэй болно. Доторх хэмжээс $n$ таарах ёстой. $[i,j]$ элементийг $A$-ийн $i$-р мөр ба $B$-ийн $j$-р баганын харгалзах гишүүдийг үржүүлж нэмэн олно.",
+            "type": "p"
+          },
+          {
+            "tex": "AB[i,j]=\\sum_{k=1}^n A[i,k]B[k,j]",
+            "type": "math"
+          },
+          {
+            "kind": "dp",
+            "rows": [
+              [
+                "1",
+                "4"
+              ],
+              [
+                "3",
+                "9"
+              ],
+              [
+                "8",
+                "6"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "Зүүн матрицын эхний мөрийг тэмдэглэв: 1, 4.",
+            "gridPresentation": {
+              "colors": [
+                {
+                  "col": 0,
+                  "row": 0,
+                  "color": "#fde68a"
+                },
+                {
+                  "col": 1,
+                  "row": 0,
+                  "color": "#fde68a"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "dp",
+            "rows": [
+              [
+                "1",
+                "6"
+              ],
+              [
+                "2",
+                "9"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "Баруун матрицын хоёр дахь багана: 6, 9.",
+            "gridPresentation": {
+              "colors": [
+                {
+                  "col": 1,
+                  "row": 0,
+                  "color": "#bfdbfe"
+                },
+                {
+                  "col": 1,
+                  "row": 1,
+                  "color": "#bfdbfe"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "dp",
+            "rows": [
+              [
+                "9",
+                "42"
+              ],
+              [
+                "21",
+                "99"
+              ],
+              [
+                "20",
+                "102"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "Үржвэрийн [1,2] элемент: 1·6 + 4·9 = 42.",
+            "gridPresentation": {
+              "colors": [
+                {
+                  "col": 1,
+                  "row": 0,
+                  "color": "#bbf7d0"
+                }
+              ]
+            }
+          },
+          {
+            "tex": "\\begin{bmatrix}1&4\\\\3&9\\\\8&6\\end{bmatrix}\\begin{bmatrix}1&6\\\\2&9\\end{bmatrix}=\\begin{bmatrix}1\\cdot1+4\\cdot2&1\\cdot6+4\\cdot9\\\\3\\cdot1+9\\cdot2&3\\cdot6+9\\cdot9\\\\8\\cdot1+6\\cdot2&8\\cdot6+6\\cdot9\\end{bmatrix}=\\begin{bmatrix}9&42\\\\21&99\\\\20&102\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "text": "Үржүүлэхэд бүлэглэх чанар $A(BC)=(AB)C$ хүчинтэй, учир нь хоёр тал хоёулаа дундын хоёр индексээр авсан ижил нийлбэр болно. Харин байр солих чанар ерөнхийдөө байхгүй: $AB$ ба $BA$ өөр хэмжээтэй, бүр нэг нь тодорхойлогдохгүй ч байж болно. Хоёулаа квадрат байсан ч өөр утгатай байж болно.",
+            "type": "p"
+          },
+          {
+            "tex": "\\begin{bmatrix}1&1\\\\0&1\\end{bmatrix}\\begin{bmatrix}1&0\\\\1&1\\end{bmatrix}=\\begin{bmatrix}2&1\\\\1&1\\end{bmatrix}\\ne\\begin{bmatrix}1&1\\\\1&2\\end{bmatrix}=\\begin{bmatrix}1&0\\\\1&1\\end{bmatrix}\\begin{bmatrix}1&1\\\\0&1\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "text": "Нэгж матриц",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Нэгж матрицын гол диагональ $1$, бусад элемент $0$. $I_n$ нь $n\\times n$ хэмжээтэй. Үржвэрийн нийлбэрээс зөвхөн нэг гишүүн үлддэг тул $I_aA=A$, $AI_n=A$; зүүн ба баруун нэгжийн хэмжээ өөр байж болно.",
+            "type": "p"
+          },
+          {
+            "tex": "I_3=\\begin{bmatrix}1&0&0\\\\0&1&0\\\\0&0&1\\end{bmatrix},\\qquad I_3\\begin{bmatrix}1&4\\\\3&9\\\\8&6\\end{bmatrix}=\\begin{bmatrix}1&4\\\\3&9\\\\8&6\\end{bmatrix},\\quad\\begin{bmatrix}1&4\\\\3&9\\\\8&6\\end{bmatrix}I_2=\\begin{bmatrix}1&4\\\\3&9\\\\8&6\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "text": "Энгийн гурван давталт квадрат матрицын үржвэрийг $O(n^3)$ хугацаанд, хариу хадгалахад $O(n^2)$ зайд бодно. Тэгш өнцөгт тохиолдолд $O(anb)$ хугацаатай. Strassen-ийн арга $O(n^{\\log_2 7})\\approx O(n^{2.807})$ зэрэг хурдан онолын хувилбарууд байдаг ч энд ойлгомжтой куб хугацааны хувилбарыг ашиглана.",
+            "type": "p"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Mat(int _r, int _c)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь мөр, баганын тоог хадгалж бүх элемент нь тэг хүснэгт үүсгэнэ. ",
+                "marks": []
+              },
+              {
+                "text": "transpose",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь хэмжээ солигдсон шинэ матрицад ",
+                "marks": []
+              },
+              {
+                "text": "b.a[j][i] = a[i][j]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гэж хуулна. Мөр, баганын байрлалыг хольж болохгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Mat {\n    int r, c;\n    vector<vector<ll>> a;\n\n    Mat(int _r, int _c) {\n        r = _r;\n        c = _c;\n        a.assign(r, vector<ll>(c));\n    }\n\n    Mat transpose() const {\n        Mat b(c, r);\n        for (int i = 0; i < r; i++) {\n            for (int j = 0; j < c; j++) b.a[j][i] = a[i][j];\n        }\n        return b;\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Нэмэх, тоогоор үржүүлэх нь ижил байрлал дээр ажиллана. ",
+                "marks": []
+              },
+              {
+                "text": "operator*",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийн $i,k,j$ давталт бүрт ",
+                "marks": []
+              },
+              {
+                "text": "a[i][k] * b.a[k][j]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-г хариунд нэмнэ. Хэмжээс таарсан оролт гэсэн урьдчилсан нөхцөлтэй; үржвэрийн хариуг заавал тэгээс эхлүүлнэ. ",
+                "marks": []
+              },
+              {
+                "text": "ll",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " утгуудтай тул үржвэр нь үржүүлэхээсээ өмнө 64 битийн төрөлд байна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "Mat operator+(const Mat &b) const {\n        Mat res(r, c);\n        for (int i = 0; i < r; i++) {\n            for (int j = 0; j < c; j++) res.a[i][j] = a[i][j] + b.a[i][j];\n        }\n        return res;\n    }\n\n    Mat scale(ll x) const {\n        Mat res(r, c);\n        for (int i = 0; i < r; i++) {\n            for (int j = 0; j < c; j++) res.a[i][j] = x * a[i][j];\n        }\n        return res;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(r, b.c);\n        for (int i = 0; i < r; i++) {\n            for (int k = 0; k < c; k++) {\n                for (int j = 0; j < b.c; j++) res.a[i][j] += a[i][k] * b.a[k][j];\n            }\n        }\n        return res;\n    }\n};",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "r n c x",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", дараа нь $r\\times n$ хэмжээтэй $A$, $n\\times c$ хэмжээтэй $B$, $r\\times n$ хэмжээтэй $D$ уншина. Гаралт нь $A+D$, $xA$, $A^T$, $AB$; тус бүрийн өмнө хэмжээг хэвлэнэ. Хэмжээс $1\\ldots30$, утга ба $|x|\\le10^6$ тул хамгийн том нэг үржвэрийн элемент $30\\cdot10^{12}$-оос хэтрэхгүй. Томруулсан хүрээнд ",
+                "marks": []
+              },
+              {
+                "text": "ll",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " ч халихыг анхаар.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "void read(Mat &a) {\n    for (auto &row : a.a) for (ll &x : row) cin >> x;\n}\n\nvoid print(const Mat &a) {\n    cout << a.r << ' ' << a.c << \"\\n\";\n    for (const auto &row : a.a) {\n        for (ll x : row) cout << x << ' ';\n        cout << \"\\n\";\n    }\n}\n\nint main() {\n    int r, n, c;\n    ll x;\n    cin >> r >> n >> c >> x; // dimensions 1..30; |x|,|entries| <= 10^6\n    Mat a(r, n), b(n, c), d(r, n);\n    read(a);\n    read(b);\n    read(d);\n    print(a + d);\n    print(a.scale(x));\n    print(a.transpose());\n    print(a * b);\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг нэгтгэсэн хувилбар. Бүтэн программуудыг тус тусдаа файлд хөрвүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Mat {\n    int r, c;\n    vector<vector<ll>> a;\n\n    Mat(int _r, int _c) {\n        r = _r;\n        c = _c;\n        a.assign(r, vector<ll>(c));\n    }\n\n    Mat transpose() const {\n        Mat b(c, r);\n        for (int i = 0; i < r; i++) {\n            for (int j = 0; j < c; j++) b.a[j][i] = a[i][j];\n        }\n        return b;\n    }\n\n    Mat operator+(const Mat &b) const {\n        Mat res(r, c);\n        for (int i = 0; i < r; i++) {\n            for (int j = 0; j < c; j++) res.a[i][j] = a[i][j] + b.a[i][j];\n        }\n        return res;\n    }\n\n    Mat scale(ll x) const {\n        Mat res(r, c);\n        for (int i = 0; i < r; i++) {\n            for (int j = 0; j < c; j++) res.a[i][j] = x * a[i][j];\n        }\n        return res;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(r, b.c);\n        for (int i = 0; i < r; i++) {\n            for (int k = 0; k < c; k++) {\n                for (int j = 0; j < b.c; j++) res.a[i][j] += a[i][k] * b.a[k][j];\n            }\n        }\n        return res;\n    }\n};\n\nvoid read(Mat &a) {\n    for (auto &row : a.a) for (ll &x : row) cin >> x;\n}\n\nvoid print(const Mat &a) {\n    cout << a.r << ' ' << a.c << \"\\n\";\n    for (const auto &row : a.a) {\n        for (ll x : row) cout << x << ' ';\n        cout << \"\\n\";\n    }\n}\n\nint main() {\n    int r, n, c;\n    ll x;\n    cin >> r >> n >> c >> x; // dimensions 1..30; |x|,|entries| <= 10^6\n    Mat a(r, n), b(n, c), d(r, n);\n    read(a);\n    read(b);\n    read(d);\n    print(a + d);\n    print(a.scale(x));\n    print(a.transpose());\n    print(a * b);\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Матрицын зэрэг",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Квадрат матрицад $A^k$ нь $A$-г $k$ удаа үржүүлсэн үржвэр; $A^0=I$. Хоосон үржвэр нэгж байх ёстой тул тэг зэрэгт тэг матриц буцааж болохгүй. Жишээний матрицын квадрат, кубыг завсрын алхамтай нь харъя.",
+            "type": "p"
+          },
+          {
+            "tex": "A=\\begin{bmatrix}2&5\\\\1&4\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "tex": "A^2=\\begin{bmatrix}9&30\\\\6&21\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "tex": "A^3=\\begin{bmatrix}48&165\\\\33&114\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "tex": "A^0=\\begin{bmatrix}1&0\\\\0&1\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "tex": "A^8=A^4A^4,\\qquad A^{2t}=(A^t)^2,\\qquad A^{2t+1}=A(A^t)^2",
+            "type": "math"
+          },
+          {
+            "text": "Хурдан зэрэгт дэвшүүлэх арга нь тоон үржүүлэхийн оронд матриц үржүүлж ажиллана. Алхам бүрт зэргийн илтгэгчийг хоёр дахин багасгах тул $O(\\log k)$ үржвэр, нийт $O(n^3\\log k)$ хугацаа, $O(n^2)$ зайтай. Энд бүлэглэх чанар хангалттай; дурын хоёр өөр матрицыг байр сольж болно гэж дүгнэж болохгүй. $k=0$-д цикл ажиллахгүй, нэгж шууд буцна.",
+            "type": "p"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Энэ квадрат ",
+                "marks": []
+              },
+              {
+                "text": "Mat",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь тогтмол $p=10^9+7$ модулиар тоолно. ",
+                "marks": []
+              },
+              {
+                "text": "Mat(n, true)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нэгж, ердийн ",
+                "marks": []
+              },
+              {
+                "text": "Mat(n)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " тэг матриц үүсгэнэ. ",
+                "marks": []
+              },
+              {
+                "text": "norm",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь сөрөг үлдэгдлийг $0\\ldots p-1$ хүрээнд оруулна. Нэмэх бүрт үлдэгдэл авснаар $n$ ширхэг том үржвэрийг нэг ",
+                "marks": []
+              },
+              {
+                "text": "ll",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-д цуглуулахгүй; тус бүрийн завсрын утга аюулгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst int MOD = 1000000007;\n\nll norm(ll x) {\n    x %= MOD;\n    if (x < 0) x += MOD;\n    return x;\n}\n\nstruct Mat {\n    int n;\n    vector<vector<ll>> a;\n\n    Mat(int _n, bool unit = false) {\n        n = _n;\n        a.assign(n, vector<ll>(n));\n        if (unit) for (int i = 0; i < n; i++) a[i][i] = 1;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(n);\n        for (int i = 0; i < n; i++) {\n            for (int k = 0; k < n; k++) {\n                for (int j = 0; j < n; j++) {\n                    res.a[i][j] = (res.a[i][j] + a[i][k] * b.a[k][j]) % MOD;\n                }\n            }\n        }\n        return res;\n    }\n};",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "res",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь одоогоор сонгосон хоёртын зэргийн үржвэр. Үлдсэн зэргийн илтгэгчийн бага бит $1$ бол одоогийн ",
+                "marks": []
+              },
+              {
+                "text": "a",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-гаар үржүүлээд, ",
+                "marks": []
+              },
+              {
+                "text": "a",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-г квадратлаж, зэргийн илтгэгчийг баруун тийш шилжүүлнэ. Инвариант нь $RA^k=A_0^{k_0}$: $R$ нь ",
+                "marks": []
+              },
+              {
+                "text": "res",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", $A$ нь одоогийн ",
+                "marks": []
+              },
+              {
+                "text": "a",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", харин $A_0,k_0$ нь анхны матриц ба зэргийн илтгэгч. Оролтын ",
+                "marks": []
+              },
+              {
+                "text": "a",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хуулбар учир дуудсан талын матрицыг эвдэхгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "Mat power(Mat a, ll k) {\n    Mat res(a.n, true);\n    while (k) {\n        if (k & 1) res = res * a;\n        a = a * a;\n        k >>= 1;\n    }\n    return res;\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "$1\\le n\\le80$, $0\\le k\\le10^{18}$, дараа нь $n^2$ бүхэл утга уншина. Утгуудыг эхлээд бууруулж, $A^k\\bmod p$-г хэвлэнэ. Энэ нь яг бүхэл матрицын үржвэр биш, үлдэгдлийн матриц. Сөрөг зэрэг болон дурын нийлмэл модульд урвуу олохыг энэ программ дэмжихгүй.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    int n;\n    ll k;\n    cin >> n >> k; // 1 <= n <= 80; 0 <= k <= 10^18\n    Mat a(n);\n    for (auto &row : a.a) for (ll &x : row) {\n        cin >> x;\n        x = norm(x);\n    }\n    Mat b = power(a, k);\n    for (auto &row : b.a) {\n        for (ll x : row) cout << x << ' ';\n        cout << \"\\n\";\n    }\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг нэгтгэсэн хувилбар. Бүтэн программуудыг тус тусдаа файлд хөрвүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst int MOD = 1000000007;\n\nll norm(ll x) {\n    x %= MOD;\n    if (x < 0) x += MOD;\n    return x;\n}\n\nstruct Mat {\n    int n;\n    vector<vector<ll>> a;\n\n    Mat(int _n, bool unit = false) {\n        n = _n;\n        a.assign(n, vector<ll>(n));\n        if (unit) for (int i = 0; i < n; i++) a[i][i] = 1;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(n);\n        for (int i = 0; i < n; i++) {\n            for (int k = 0; k < n; k++) {\n                for (int j = 0; j < n; j++) {\n                    res.a[i][j] = (res.a[i][j] + a[i][k] * b.a[k][j]) % MOD;\n                }\n            }\n        }\n        return res;\n    }\n};\n\nMat power(Mat a, ll k) {\n    Mat res(a.n, true);\n    while (k) {\n        if (k & 1) res = res * a;\n        a = a * a;\n        k >>= 1;\n    }\n    return res;\n}\n\nint main() {\n    int n;\n    ll k;\n    cin >> n >> k; // 1 <= n <= 80; 0 <= k <= 10^18\n    Mat a(n);\n    for (auto &row : a.a) for (ll &x : row) {\n        cin >> x;\n        x = norm(x);\n    }\n    Mat b = power(a, k);\n    for (auto &row : b.a) {\n        for (ll x : row) cout << x << ' ';\n        cout << \"\\n\";\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тодорхойлогч ба урвуу матриц",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Тодорхойлогч $\\det A$ нь квадрат матрицад тодорхойлогдоно. $1\\times1$ үед ганц элементтэй тэнцүү. Том матрицын эхний мөрөөр задлахдаа тухайн мөр, баганыг хассан жижиг матрицын тодорхойлогчийг тэмдэгтэйгээр ашиглана. Тэр тэмдэгтэй утгыг cofactor буюу алгебрын гүйцээлт гэнэ.",
+            "type": "p"
+          },
+          {
+            "tex": "\\det A=\\sum_{j=1}^n A[1,j]C[1,j],\\qquad C[i,j]=(-1)^{i+j}\\det M[i,j]",
+            "type": "math"
+          },
+          {
+            "tex": "\\det\\begin{bmatrix}3&4\\\\1&6\\end{bmatrix}=3\\cdot6-4\\cdot1=14",
+            "type": "math"
+          },
+          {
+            "tex": "\\det\\begin{bmatrix}2&4&3\\\\5&1&6\\\\7&2&4\\end{bmatrix}=2\\det\\begin{bmatrix}1&6\\\\2&4\\end{bmatrix}-4\\det\\begin{bmatrix}5&6\\\\7&4\\end{bmatrix}+3\\det\\begin{bmatrix}5&1\\\\7&2\\end{bmatrix}=2(-8)-4(-22)+3(3)=81",
+            "type": "math"
+          },
+          {
+            "text": "Бодит эсвэл рационал тоон дээр $A^{-1}$ орших зайлшгүй бөгөөд хүрэлцээтэй нөхцөл $\\det A\\ne0$. Урвууг cofactor-уудыг транспозолж тодорхойлогчид хуваан олно. Индекс $C[j,i]$ болж солигдсоныг анхаар: зөвхөн элемент бүрийг $C[i,j]$-ээр авч хуваавал ерөнхийдөө буруу.",
+            "type": "p"
+          },
+          {
+            "tex": "A^{-1}[i,j]=\\frac{C[j,i]}{\\det A},\\qquad \\begin{bmatrix}2&4&3\\\\5&1&6\\\\7&2&4\\end{bmatrix}\\cdot\\frac1{81}\\begin{bmatrix}-8&-10&21\\\\22&-13&3\\\\3&24&-18\\end{bmatrix}=I_3",
+            "type": "math"
+          },
+          {
+            "text": "Энэ нөхцөл ямар тоон мужид ажиллаж байгаагаас хамаарна. Бүхэл элементтэй урвуу заавал гарахгүй; $[2]^{-1}=[1/2]$. Анхны $p$ модулиар $\\det A\\not\\equiv0$ байхад урвуу оршино. Нийлмэл модульд тэг биш байх нь хангалтгүй: $[2]$ нь модуль $4$ дээр урвуугүй. Тэнд тодорхойлогч модультай харилцан анхны байх шаардлагатай.",
+            "type": "p"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "minorOf",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь сонгосон мөр, баганыг алгасаж шинэ хүснэгт үүсгэнэ. ",
+                "marks": []
+              },
+              {
+                "text": "det",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " эхний мөрөөр тэмдэг ээлжлэн задална. Хоосон матрицын тодорхойлогчийг $1$ гэж авснаар $1\\times1$ матрицын cofactor зөв болно. Энэ нь тодорхойлолтыг шууд дагасан факториал хугацаатай арга; зөвхөн жижиг хэмжээнд хэрэглэнэ, том тохиолдолд доорх мөрийн хувиргалтыг ашиглана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nusing Matrix = vector<vector<ll>>;\n\nMatrix minorOf(const Matrix &a, int r, int c) {\n    int n = a.size();\n    Matrix b;\n    for (int i = 0; i < n; i++) {\n        if (i == r) continue;\n        vector<ll> row;\n        for (int j = 0; j < n; j++) if (j != c) row.push_back(a[i][j]);\n        b.push_back(row);\n    }\n    return b;\n}\n\nll det(const Matrix &a) {\n    int n = a.size();\n    if (n == 0) return 1;\n    if (n == 1) return a[0][0];\n    ll res = 0;\n    for (int j = 0; j < n; j++) {\n        ll term = a[0][j] * det(minorOf(a, 0, j));\n        res += (j % 2 ? -term : term);\n    }\n    return res;\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "$1\\le n\\le6$, элемент бүрийн абсолют утга $20$-оос ихгүй. Тодорхойлогч болон задралын завсрын нийлбэрийг $n!20^n\\le46080000000$ гэж хязгаарлаж болох тул ",
+                "marks": []
+              },
+              {
+                "text": "ll",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " аюулгүй. Урвуугийн элемент бүрийг gcd-аар хураасан яг бутархай ",
+                "marks": []
+              },
+              {
+                "text": "x/y",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хэлбэрээр хэвлэнэ; floating point ойролцоо биш. ",
+                "marks": []
+              },
+              {
+                "text": "minorOf(a, j, i)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гэж солигдсон индекс хэрэглэнэ. Бүх cofactor-ийг шууд бодох нийт хугацаанд $O(n^2n!)$ гэсэн дээд хязгаар тавьж болно; рекурсийн жижиг хүснэгтүүд $O(n^3)$ ажлын зайд багтана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    int n;\n    cin >> n; // 1 <= n <= 6; |entries| <= 20\n    Matrix a(n, vector<ll>(n));\n    for (auto &row : a) for (ll &x : row) cin >> x;\n    ll d = det(a);\n    cout << d << \"\\n\";\n    if (d == 0) {\n        cout << \"SINGULAR\\n\";\n        return 0;\n    }\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < n; j++) {\n            ll x = det(minorOf(a, j, i)); // transposed cofactor\n            if ((i + j) % 2) x = -x;\n            ll y = d, g = gcd(abs(x), abs(y));\n            x /= g;\n            y /= g;\n            if (y < 0) x = -x, y = -y;\n            cout << x << '/' << y << ' ';\n        }\n        cout << \"\\n\";\n    }\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг нэгтгэсэн хувилбар. Бүтэн программуудыг тус тусдаа файлд хөрвүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nusing Matrix = vector<vector<ll>>;\n\nMatrix minorOf(const Matrix &a, int r, int c) {\n    int n = a.size();\n    Matrix b;\n    for (int i = 0; i < n; i++) {\n        if (i == r) continue;\n        vector<ll> row;\n        for (int j = 0; j < n; j++) if (j != c) row.push_back(a[i][j]);\n        b.push_back(row);\n    }\n    return b;\n}\n\nll det(const Matrix &a) {\n    int n = a.size();\n    if (n == 0) return 1;\n    if (n == 1) return a[0][0];\n    ll res = 0;\n    for (int j = 0; j < n; j++) {\n        ll term = a[0][j] * det(minorOf(a, 0, j));\n        res += (j % 2 ? -term : term);\n    }\n    return res;\n}\n\nint main() {\n    int n;\n    cin >> n; // 1 <= n <= 6; |entries| <= 20\n    Matrix a(n, vector<ll>(n));\n    for (auto &row : a) for (ll &x : row) cin >> x;\n    ll d = det(a);\n    cout << d << \"\\n\";\n    if (d == 0) {\n        cout << \"SINGULAR\\n\";\n        return 0;\n    }\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < n; j++) {\n            ll x = det(minorOf(a, j, i)); // transposed cofactor\n            if ((i + j) % 2) x = -x;\n            ll y = d, g = gcd(abs(x), abs(y));\n            x /= g;\n            y /= g;\n            if (y < 0) x = -x, y = -y;\n            cout << x << '/' << y << ' ';\n        }\n        cout << \"\\n\";\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "recurrences",
+        "title": "23.2 Шугаман рекуррент хамаарал",
+        "blocks": [
+          {
+            "text": "Шугаман рекуррент хамааралд эхний $f(0),\\ldots,f(k-1)$ утгууд өгөгдөж, дараагийн утга өмнөх $k$ утгын тогтмол коэффициенттэй нийлбэр байна. Нэг нэгээр нь DP бодвол $O(kn)$ хугацаа. $k$ бага, $n$ маш том үед төлөвийг матриц болгон нэгтгэж олон алхмыг хурдан зэрэгт дэвшүүлэх аргаар алгасаж болно.",
+            "type": "p"
+          },
+          {
+            "tex": "f(n)=c_1f(n-1)+c_2f(n-2)+\\cdots+c_kf(n-k)",
+            "type": "math"
+          },
+          {
+            "text": "Fibonacci-ийн жишээ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "tex": "f(0)=0,\\quad f(1)=1,\\quad f(n)=f(n-1)+f(n-2),\\qquad X=\\begin{bmatrix}0&1\\\\1&1\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "text": "Төлөвийг $(f(i),f(i+1))^T$ багана гэж авъя. Эхний шинэ утга хуучин хоёр дахь утга учир $X$-ийн эхний мөр $(0,1)$. Дараагийн шинэ утга хуучин хоёрыг нэмсэнтэй тэнцүү тул хоёр дахь мөр $(1,1)$. Тэгэхээр $X$-ээр нэг үржүүлэх нь төлөвийг яг нэг алхмаар урагшлуулна.",
+            "type": "p"
+          },
+          {
+            "tex": "\\begin{bmatrix}0&1\\\\1&1\\end{bmatrix}\\begin{bmatrix}5\\\\8\\end{bmatrix}=\\begin{bmatrix}8\\\\13\\end{bmatrix},\\qquad\\begin{bmatrix}f(n)\\\\f(n+1)\\end{bmatrix}=X^n\\begin{bmatrix}0\\\\1\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "text": "Жишээнд $f(5)=5$, $f(6)=8$-аас $f(6)=8$, $f(7)=13$ рүү шилжлээ. Хоёр утгатай төлөвийн матриц тогтмол хэмжээтэй тул $f(n)$-г $O(\\log n)$ хугацаанд олно. $n=0$-д $X^0=I$ бөгөөд анхны $(0,1)$ төлөв өөрчлөгдөхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Ерөнхий тохиолдол",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "tex": "X\\begin{bmatrix}f(i)\\\\f(i+1)\\\\\\vdots\\\\f(i+k-1)\\end{bmatrix}=\\begin{bmatrix}f(i+1)\\\\f(i+2)\\\\\\vdots\\\\f(i+k)\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "tex": "X=\\begin{bmatrix}0&1&0&\\cdots&0\\\\0&0&1&\\cdots&0\\\\\\vdots&\\vdots&\\vdots&\\ddots&\\vdots\\\\0&0&0&\\cdots&1\\\\c_k&c_{k-1}&c_{k-2}&\\cdots&c_1\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "text": "Эхний $k-1$ мөр нь дараагийн утгыг урд байрлал руу хуулна. Сүүлийн мөр шинэ $f(i+k)$-г бодно. Төлөвийг хуучнаас шинэ рүү жагсаасан учир коэффициентүүд сүүлийн мөрөнд $c_k,\\ldots,c_1$ гэж урвуу байрлана. $k=1$ үед зөвхөн $[c_1]$ үлдэнэ. Жишээ нь $f(n)=2f(n-1)-f(n-2)+3f(n-3)$-д сүүлийн мөр $(3,-1,2)$; $(1,2,4)$ төлөвөөс $(2,4,9)$ үүснэ.",
+            "type": "p"
+          },
+          {
+            "tex": "\\begin{bmatrix}f(n)\\\\f(n+1)\\\\\\vdots\\\\f(n+k-1)\\end{bmatrix}=X^n\\begin{bmatrix}f(0)\\\\f(1)\\\\\\vdots\\\\f(k-1)\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Квадрат матриц ба хурдан зэрэгт дэвшүүлэх аргын өмнөх хэрэгжүүлэлтийг ижил байдлаар ашиглана. Төлөв нь багана вектор учир шилжилт зүүн талаас үржигдэнэ. Коэффициент, эхний утгууд сөрөг байж болох тул ",
+                "marks": []
+              },
+              {
+                "text": "norm",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-оор бууруулна. Модулиар нэмэх/үржүүлэх нь шугаман хамаарлыг хадгална.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst int MOD = 1000000007;\n\nll norm(ll x) {\n    x %= MOD;\n    if (x < 0) x += MOD;\n    return x;\n}\n\nstruct Mat {\n    int n;\n    vector<vector<ll>> a;\n\n    Mat(int _n, bool unit = false) {\n        n = _n;\n        a.assign(n, vector<ll>(n));\n        if (unit) for (int i = 0; i < n; i++) a[i][i] = 1;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(n);\n        for (int i = 0; i < n; i++) {\n            for (int k = 0; k < n; k++) {\n                for (int j = 0; j < n; j++) {\n                    res.a[i][j] = (res.a[i][j] + a[i][k] * b.a[k][j]) % MOD;\n                }\n            }\n        }\n        return res;\n    }\n};\n\nMat power(Mat a, ll k) {\n    Mat res(a.n, true);\n    while (k) {\n        if (k & 1) res = res * a;\n        a = a * a;\n        k >>= 1;\n    }\n    return res;\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "k n",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", эхний $k$ утга, дараа нь $c_1,\\ldots,c_k$ коэффициентүүдийг уншина. Шилжүүлэх диагональд $1$ тавьж, сүүлийн мөрийг урвуулан бөглөөд $X^n$-г бодно. Гаралт нь $f(n),\\ldots,f(n+k-1)$ бүх төлөв; эхний тоо нь хүссэн $f(n)$. $k\\le50$, $n\\le10^{18}$, хугацаа $O(k^3\\log n)$, зай $O(k^2)$; эцсийн вектор үржвэр $O(k^2)$.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    int k;\n    ll n;\n    cin >> k >> n; // 1 <= k <= 50; 0 <= n <= 10^18\n    vector<ll> f(k), c(k);\n    for (ll &x : f) {\n        cin >> x;\n        x = norm(x);\n    }\n    for (ll &x : c) {\n        cin >> x; // c1,c2,...,ck in this order\n        x = norm(x);\n    }\n    Mat x(k);\n    for (int i = 0; i + 1 < k; i++) x.a[i][i + 1] = 1;\n    for (int j = 0; j < k; j++) x.a[k - 1][j] = c[k - 1 - j];\n    Mat b = power(x, n);\n    for (int i = 0; i < k; i++) {\n        ll ans = 0;\n        for (int j = 0; j < k; j++) ans = (ans + b.a[i][j] * f[j]) % MOD;\n        cout << ans << ' ';\n    }\n    cout << \"\\n\";\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг нэгтгэсэн хувилбар. Бүтэн программуудыг тус тусдаа файлд хөрвүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst int MOD = 1000000007;\n\nll norm(ll x) {\n    x %= MOD;\n    if (x < 0) x += MOD;\n    return x;\n}\n\nstruct Mat {\n    int n;\n    vector<vector<ll>> a;\n\n    Mat(int _n, bool unit = false) {\n        n = _n;\n        a.assign(n, vector<ll>(n));\n        if (unit) for (int i = 0; i < n; i++) a[i][i] = 1;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(n);\n        for (int i = 0; i < n; i++) {\n            for (int k = 0; k < n; k++) {\n                for (int j = 0; j < n; j++) {\n                    res.a[i][j] = (res.a[i][j] + a[i][k] * b.a[k][j]) % MOD;\n                }\n            }\n        }\n        return res;\n    }\n};\n\nMat power(Mat a, ll k) {\n    Mat res(a.n, true);\n    while (k) {\n        if (k & 1) res = res * a;\n        a = a * a;\n        k >>= 1;\n    }\n    return res;\n}\n\nint main() {\n    int k;\n    ll n;\n    cin >> k >> n; // 1 <= k <= 50; 0 <= n <= 10^18\n    vector<ll> f(k), c(k);\n    for (ll &x : f) {\n        cin >> x;\n        x = norm(x);\n    }\n    for (ll &x : c) {\n        cin >> x; // c1,c2,...,ck in this order\n        x = norm(x);\n    }\n    Mat x(k);\n    for (int i = 0; i + 1 < k; i++) x.a[i][i + 1] = 1;\n    for (int j = 0; j < k; j++) x.a[k - 1][j] = c[k - 1 - j];\n    Mat b = power(x, n);\n    for (int i = 0; i < k; i++) {\n        ll ans = 0;\n        for (int j = 0; j < k; j++) ans = (ans + b.a[i][j] * f[j]) % MOD;\n        cout << ans << ' ';\n    }\n    cout << \"\\n\";\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "graphs",
+        "title": "23.3 Граф ба матриц",
+        "blocks": [
+          {
+            "text": "Тогтмол тооны ирмэгтэй явалтыг тоолох",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Чиглэлтэй графын хөршлөлийн матрицын $V[i,j]$ нь $i\\to j$ ирмэгийн тоо. Энгийн графт энэ нь $0$ эсвэл $1$. Тэгвэл $V^k[i,j]$ нь $i$-ээс $j$ рүү яг $k$ ирмэг дамжих явалтын тоо. Энд орой, ирмэг давтаж болно: заавал энгийн зам биш. Доорх граф ба матрицад мөр нь эхлэл, багана нь очих орой.",
+            "type": "p"
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "4"
+              ],
+              [
+                "2",
+                "1"
+              ],
+              [
+                "2",
+                "5"
+              ],
+              [
+                "2",
+                "6"
+              ],
+              [
+                "3",
+                "2"
+              ],
+              [
+                "4",
+                "2"
+              ],
+              [
+                "6",
+                "3"
+              ],
+              [
+                "6",
+                "5"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 15,
+                "y": 18,
+                "id": "1",
+                "label": "1"
+              },
+              {
+                "x": 50,
+                "y": 18,
+                "id": "2",
+                "label": "2"
+              },
+              {
+                "x": 85,
+                "y": 18,
+                "id": "3",
+                "label": "3"
+              },
+              {
+                "x": 15,
+                "y": 82,
+                "id": "4",
+                "label": "4"
+              },
+              {
+                "x": 50,
+                "y": 82,
+                "id": "5",
+                "label": "5"
+              },
+              {
+                "x": 85,
+                "y": 82,
+                "id": "6",
+                "label": "6"
+              }
+            ],
+            "caption": "Яг 4 ирмэгтэй явалтыг тоолох чиглэлтэй граф.",
+            "directed": true,
+            "edgeStyles": [
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {}
+            ]
+          },
+          {
+            "tex": "V=\\begin{bmatrix}0&0&0&1&0&0\\\\1&0&0&0&1&1\\\\0&1&0&0&0&0\\\\0&1&0&0&0&0\\\\0&0&0&0&0&0\\\\0&0&1&0&1&0\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "tex": "V^4=\\begin{bmatrix}0&0&1&1&1&0\\\\2&0&0&0&2&2\\\\0&2&0&0&0&0\\\\0&2&0&0&0&0\\\\0&0&0&0&0&0\\\\0&0&1&1&1&0\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "text": "$V^4[2,5]=2$: $2\\to1\\to4\\to2\\to5$ болон $2\\to6\\to3\\to2\\to5$. Аль аль нь $2$ оройг давтсан нь явалтын тайлбарыг чухал болгоно. Яагаад зэрэг тоолдог вэ? $i$-ээс $j$ хүрэх $a+b$ ирмэгтэй явалт бүр яг $a$ алхмын дараах $t$ оройгоор ганц утгатай сална. Эхний $a$ ба сүүлийн $b$ хэсгийн тоог үржүүлээд бүх $t$-ээр нэмэх нь яг матрицын үржвэр.",
+            "type": "p"
+          },
+          {
+            "text": "Өмнөх модуль матриц ба хурдан зэрэг ижил хэвээр. Хоосон явалт оройгоос өөр рүү шилжихгүй тул $V^0=I$: орой бүрээс өөртөө нэг, бусдад тэг. Дурын урттай зам тоолох, эсвэл яг $k$ биш хамгийн ихдээ $k$ алхам тоолох нь өөр бодлого.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst int MOD = 1000000007;\n\nll norm(ll x) {\n    x %= MOD;\n    if (x < 0) x += MOD;\n    return x;\n}\n\nstruct Mat {\n    int n;\n    vector<vector<ll>> a;\n\n    Mat(int _n, bool unit = false) {\n        n = _n;\n        a.assign(n, vector<ll>(n));\n        if (unit) for (int i = 0; i < n; i++) a[i][i] = 1;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(n);\n        for (int i = 0; i < n; i++) {\n            for (int k = 0; k < n; k++) {\n                for (int j = 0; j < n; j++) {\n                    res.a[i][j] = (res.a[i][j] + a[i][k] * b.a[k][j]) % MOD;\n                }\n            }\n        }\n        return res;\n    }\n};\n\nMat power(Mat a, ll k) {\n    Mat res(a.n, true);\n    while (k) {\n        if (k & 1) res = res * a;\n        a = a * a;\n        k >>= 1;\n    }\n    return res;\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "n m k",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", дараа нь чиглэлтэй $m$ ирмэг уншина. Давхар ирмэг бүр тусдаа сонголт тул ",
+                "marks": []
+              },
+              {
+                "text": "++",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", шууд ",
+                "marks": []
+              },
+              {
+                "text": "= 1",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " биш. Өөртөө гогцоо мөн бодит нэг алхам. Бүх хосын хариуг модулиар хэвлэнэ; хугацаа $O(n^3\\log k+m)$, зай $O(n^2)$, $n\\le80$, $m\\le10000$.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    int n, m;\n    ll k;\n    cin >> n >> m >> k; // 1 <= n <= 80; m <= 10000; 0 <= k <= 10^18\n    Mat a(n);\n    for (int i = 0; i < m; i++) {\n        int u, v;\n        cin >> u >> v;\n        a.a[u - 1][v - 1]++; // each parallel edge is a distinct choice\n    }\n    Mat b = power(a, k);\n    for (auto &row : b.a) {\n        for (ll x : row) cout << x << ' ';\n        cout << \"\\n\";\n    }\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг нэгтгэсэн хувилбар. Бүтэн программуудыг тус тусдаа файлд хөрвүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst int MOD = 1000000007;\n\nll norm(ll x) {\n    x %= MOD;\n    if (x < 0) x += MOD;\n    return x;\n}\n\nstruct Mat {\n    int n;\n    vector<vector<ll>> a;\n\n    Mat(int _n, bool unit = false) {\n        n = _n;\n        a.assign(n, vector<ll>(n));\n        if (unit) for (int i = 0; i < n; i++) a[i][i] = 1;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(n);\n        for (int i = 0; i < n; i++) {\n            for (int k = 0; k < n; k++) {\n                for (int j = 0; j < n; j++) {\n                    res.a[i][j] = (res.a[i][j] + a[i][k] * b.a[k][j]) % MOD;\n                }\n            }\n        }\n        return res;\n    }\n};\n\nMat power(Mat a, ll k) {\n    Mat res(a.n, true);\n    while (k) {\n        if (k & 1) res = res * a;\n        a = a * a;\n        k >>= 1;\n    }\n    return res;\n}\n\nint main() {\n    int n, m;\n    ll k;\n    cin >> n >> m >> k; // 1 <= n <= 80; m <= 10000; 0 <= k <= 10^18\n    Mat a(n);\n    for (int i = 0; i < m; i++) {\n        int u, v;\n        cin >> u >> v;\n        a.a[u - 1][v - 1]++; // each parallel edge is a distinct choice\n    }\n    Mat b = power(a, k);\n    for (auto &row : b.a) {\n        for (ll x : row) cout << x << ' ';\n        cout << \"\\n\";\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Яг тогтмол тооны ирмэгтэй хамгийн бага өртөг",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Одоо ирмэгийн жинтэй графт яг $k$ ирмэгтэй явалтын хамгийн бага нийлбэр жинг олъё. Матрицад байхгүй ирмэгийг $\\infty$, бодит ирмэгийг жингээр нь тэмдэглэнэ. Доорх жинтэй граф нь өмнөхтэй ижил холболттой.",
+            "type": "p"
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "4"
+              ],
+              [
+                "2",
+                "1"
+              ],
+              [
+                "2",
+                "5"
+              ],
+              [
+                "2",
+                "6"
+              ],
+              [
+                "3",
+                "2"
+              ],
+              [
+                "4",
+                "2"
+              ],
+              [
+                "6",
+                "3"
+              ],
+              [
+                "6",
+                "5"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 15,
+                "y": 18,
+                "id": "1",
+                "label": "1"
+              },
+              {
+                "x": 50,
+                "y": 18,
+                "id": "2",
+                "label": "2"
+              },
+              {
+                "x": 85,
+                "y": 18,
+                "id": "3",
+                "label": "3"
+              },
+              {
+                "x": 15,
+                "y": 82,
+                "id": "4",
+                "label": "4"
+              },
+              {
+                "x": 50,
+                "y": 82,
+                "id": "5",
+                "label": "5"
+              },
+              {
+                "x": 85,
+                "y": 82,
+                "id": "6",
+                "label": "6"
+              }
+            ],
+            "caption": "Ижил чиглэлтэй графын ирмэгийн жингүүд.",
+            "directed": true,
+            "edgeStyles": [
+              {
+                "label": "4"
+              },
+              {
+                "label": "2"
+              },
+              {
+                "label": "1"
+              },
+              {
+                "label": "2"
+              },
+              {
+                "label": "4"
+              },
+              {
+                "label": "1"
+              },
+              {
+                "label": "3"
+              },
+              {
+                "label": "2"
+              }
+            ]
+          },
+          {
+            "tex": "V=\\begin{bmatrix}\\infty&\\infty&\\infty&4&\\infty&\\infty\\\\2&\\infty&\\infty&\\infty&1&2\\\\\\infty&4&\\infty&\\infty&\\infty&\\infty\\\\\\infty&1&\\infty&\\infty&\\infty&\\infty\\\\\\infty&\\infty&\\infty&\\infty&\\infty&\\infty\\\\\\infty&\\infty&3&\\infty&2&\\infty\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "tex": "(A\\otimes B)[i,j]=\\min_t\\bigl(A[i,t]+B[t,j]\\bigr)",
+            "type": "math"
+          },
+          {
+            "text": "Үржвэрийн нийлбэрийг minimum, тоонуудын үржвэрийг нэмэхээр сольсон min-plus үржвэр хэрэглэнэ. Дундын $t$ оройгоор эхний ба сүүлийн хэсгийг залгахад өртгүүд нэмэгдэнэ; бүх залгалтаас хамгийн багыг сонгоно. Энэ үйлдэл бүлэглэх чанартай тул хурдан зэрэг хэвээр ажиллана. Нэгж нь гол диагональдаа $0$, бусаддаа $\\infty$: тэг ирмэгтэй өөртөө үлдэх өртөг тэг.",
+            "type": "p"
+          },
+          {
+            "tex": "V^{\\otimes4}=\\begin{bmatrix}\\infty&\\infty&10&11&9&\\infty\\\\9&\\infty&\\infty&\\infty&8&9\\\\\\infty&11&\\infty&\\infty&\\infty&\\infty\\\\\\infty&8&\\infty&\\infty&\\infty&\\infty\\\\\\infty&\\infty&\\infty&\\infty&\\infty&\\infty\\\\\\infty&\\infty&12&13&11&\\infty\\end{bmatrix}",
+            "type": "math"
+          },
+          {
+            "text": "$2\\to1\\to4\\to2\\to5$ нь $2+4+1+1=8$ өртөгтэй тул $[2,5]$ элемент $8$. Нөгөө дөрвөн ирмэгтэй явалт $2\\to6\\to3\\to2\\to5$ нь $2+3+4+1=10$, тиймээс илүү үнэтэй. Матрицыг анх байгуулахдаа диагоналийг автоматаар тэг болгож болохгүй: бодит гогцоо байхгүй бол нэг алхмын матрицад тэр байрлал $\\infty$ байх ёстой. Үгүй бол хуурамч тэг өртөгтэй алхмаар уртыг нөхөж, “яг” гэсэн нөхцөлийг эвдэнэ.",
+            "type": "p"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Тэг матрицын оронд бүх утгыг ",
+                "marks": []
+              },
+              {
+                "text": "INF",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ээр эхлүүлнэ. Зөвхөн нэгж хүссэн үед диагональд тэг тавина. Үржүүлэхдээ хоёр хэсгийн аль нэг байхгүй бол алгасана; ",
+                "marks": []
+              },
+              {
+                "text": "INF + w",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-г бодож, түүнийг бодит замтай андуурч болохгүй. Байгаа өртгүүдийг нэмээд минимум авна.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst ll INF = 4000000000000000000LL;\n\nstruct Mat {\n    int n;\n    vector<vector<ll>> a;\n\n    Mat(int _n, bool unit = false) {\n        n = _n;\n        a.assign(n, vector<ll>(n, INF));\n        if (unit) for (int i = 0; i < n; i++) a[i][i] = 0;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(n);\n        for (int i = 0; i < n; i++) {\n            for (int k = 0; k < n; k++) {\n                if (a[i][k] == INF) continue;\n                for (int j = 0; j < n; j++) {\n                    if (b.a[k][j] == INF) continue;\n                    res.a[i][j] = min(res.a[i][j], a[i][k] + b.a[k][j]);\n                }\n            }\n        }\n        return res;\n    }\n};",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Хурдан зэрэгт дэвшүүлэх аргын удирдлага өөрчлөгдөхгүй, харин ",
+                "marks": []
+              },
+              {
+                "text": "operator*",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ийн утга min-plus болсон. $k=0$ үед л нэгжийн тэг диагональ зөв. Сөрөг жин байж болно: тогтмол $k$ ирмэгтэй явалтад сөрөг цикл байлаа ч дурын олон удаа эргэх боломжгүй, тиймээс хугацааны хязгааргүй хамгийн богино замын бодлоготой андуурахгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "Mat power(Mat a, ll k) {\n    Mat res(a.n, true);\n    while (k) {\n        if (k & 1) res = res * a;\n        a = a * a;\n        k >>= 1;\n    }\n    return res;\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "$n\\le80$, $m\\le10000$, $0\\le k\\le10^{12}$, $|w|\\le10^6$. Энэ хязгаарт хүссэн өртөг $10^{18}$-оос их абсолют утгатай болохгүй; хурдан зэрэгт дэвшүүлэх аргын завсрын квадратуудын урт $2^{40}$-оос хэтрэхгүй тул нийлбэрүүд ",
+                "marks": []
+              },
+              {
+                "text": "ll",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " болон $4\\cdot10^{18}$ гэсэн ",
+                "marks": []
+              },
+              {
+                "text": "INF",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ээс аюулгүй зайтай. Давхар ирмэгүүдээс хамгийн бага жинг хадгална. Байхгүй хариуг ",
+                "marks": []
+              },
+              {
+                "text": "INF",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гэж хэвлэнэ. Хугацаа $O(n^3\\log k+m)$, зай $O(n^2)$.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    int n, m;\n    ll k;\n    cin >> n >> m >> k; // 1 <= n <= 80; m <= 10000; 0 <= k <= 10^12\n    Mat a(n);\n    for (int i = 0; i < m; i++) {\n        int u, v;\n        ll w;\n        cin >> u >> v >> w; // |w| <= 10^6\n        --u;\n        --v;\n        a.a[u][v] = min(a.a[u][v], w);\n    }\n    Mat b = power(a, k);\n    for (auto &row : b.a) {\n        for (ll x : row) {\n            if (x == INF) cout << \"INF \";\n            else cout << x << ' ';\n        }\n        cout << \"\\n\";\n    }\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг нэгтгэсэн хувилбар. Бүтэн программуудыг тус тусдаа файлд хөрвүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst ll INF = 4000000000000000000LL;\n\nstruct Mat {\n    int n;\n    vector<vector<ll>> a;\n\n    Mat(int _n, bool unit = false) {\n        n = _n;\n        a.assign(n, vector<ll>(n, INF));\n        if (unit) for (int i = 0; i < n; i++) a[i][i] = 0;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(n);\n        for (int i = 0; i < n; i++) {\n            for (int k = 0; k < n; k++) {\n                if (a[i][k] == INF) continue;\n                for (int j = 0; j < n; j++) {\n                    if (b.a[k][j] == INF) continue;\n                    res.a[i][j] = min(res.a[i][j], a[i][k] + b.a[k][j]);\n                }\n            }\n        }\n        return res;\n    }\n};\n\nMat power(Mat a, ll k) {\n    Mat res(a.n, true);\n    while (k) {\n        if (k & 1) res = res * a;\n        a = a * a;\n        k >>= 1;\n    }\n    return res;\n}\n\nint main() {\n    int n, m;\n    ll k;\n    cin >> n >> m >> k; // 1 <= n <= 80; m <= 10000; 0 <= k <= 10^12\n    Mat a(n);\n    for (int i = 0; i < m; i++) {\n        int u, v;\n        ll w;\n        cin >> u >> v >> w; // |w| <= 10^6\n        --u;\n        --v;\n        a.a[u][v] = min(a.a[u][v], w);\n    }\n    Mat b = power(a, k);\n    for (auto &row : b.a) {\n        for (ll x : row) {\n            if (x == INF) cout << \"INF \";\n            else cout << x << ' ';\n        }\n        cout << \"\\n\";\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Кирхгофын теорем",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Чиглэлгүй графын бүх оройг хамарсан модны тоог тусгай матрицын тодорхойлогчоор олж болно. Доорх граф нь дөрвөн ирмэгтэй, гурван хамрах модтой. $1$–$2$ ирмэг нь зайлшгүй; $1,3,4$-ийн гурвалжнаас аль нэг ирмэгийг хасах гурван сонголт байна.",
+            "type": "p"
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "3"
+              ],
+              [
+                "1",
+                "4"
+              ],
+              [
+                "3",
+                "4"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 20,
+                "y": 20,
+                "id": "1",
+                "label": "1"
+              },
+              {
+                "x": 80,
+                "y": 20,
+                "id": "2",
+                "label": "2"
+              },
+              {
+                "x": 20,
+                "y": 80,
+                "id": "3",
+                "label": "3"
+              },
+              {
+                "x": 80,
+                "y": 80,
+                "id": "4",
+                "label": "4"
+              }
+            ],
+            "caption": "Дөрвөн оройтой граф: нийт 3 хамрах мод.",
+            "directed": false
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "4"
+              ],
+              [
+                "3",
+                "4"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 20,
+                "y": 20,
+                "id": "1",
+                "label": "1"
+              },
+              {
+                "x": 80,
+                "y": 20,
+                "id": "2",
+                "label": "2"
+              },
+              {
+                "x": 20,
+                "y": 80,
+                "id": "3",
+                "label": "3"
+              },
+              {
+                "x": 80,
+                "y": 80,
+                "id": "4",
+                "label": "4"
+              }
+            ],
+            "caption": "Хамрах мод 1/3.",
+            "directed": false
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "3"
+              ],
+              [
+                "1",
+                "4"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 20,
+                "y": 20,
+                "id": "1",
+                "label": "1"
+              },
+              {
+                "x": 80,
+                "y": 20,
+                "id": "2",
+                "label": "2"
+              },
+              {
+                "x": 20,
+                "y": 80,
+                "id": "3",
+                "label": "3"
+              },
+              {
+                "x": 80,
+                "y": 80,
+                "id": "4",
+                "label": "4"
+              }
+            ],
+            "caption": "Хамрах мод 2/3.",
+            "directed": false
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "3"
+              ],
+              [
+                "3",
+                "4"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 20,
+                "y": 20,
+                "id": "1",
+                "label": "1"
+              },
+              {
+                "x": 80,
+                "y": 20,
+                "id": "2",
+                "label": "2"
+              },
+              {
+                "x": 20,
+                "y": 80,
+                "id": "3",
+                "label": "3"
+              },
+              {
+                "x": 80,
+                "y": 80,
+                "id": "4",
+                "label": "4"
+              }
+            ],
+            "caption": "Хамрах мод 3/3.",
+            "directed": false
+          },
+          {
+            "text": "Лапласын матриц $L$-ийн $L[i,i]$ нь оройн зэрэг, ялгаатай $i,j$-д $L[i,j]$ нь холбосон ирмэгийн тооны сөрөг утга. Энгийн графт энэ нь $-1$ эсвэл $0$. Нэг ижил $r$ дугаартай мөр ба баганыг хассан $L_r$ үндсэн минорын тодорхойлогч нь хамрах модны тоо; аль $r$-ийг сонгосноос үл хамаарна.",
+            "type": "p"
+          },
+          {
+            "tex": "L=\\begin{bmatrix}3&-1&-1&-1\\\\-1&1&0&0\\\\-1&0&2&-1\\\\-1&0&-1&2\\end{bmatrix},\\qquad\\det L_1=\\det\\begin{bmatrix}1&0&0\\\\0&2&-1\\\\0&-1&2\\end{bmatrix}=3",
+            "type": "math"
+          },
+          {
+            "text": "Өөр өөр мөр, багана сонговол шууд determinant-ийн тэмдэг өөрчлөгдөж болно; зөв тоо нь $(-1)^{i+j}\\det M[i,j]$ гэсэн cofactor. Иймээс доорх код заавал ижил индексийг хасна. Бүтэн $L$-ийн мөр бүрийн нийлбэр тэг тул $\\det L=0$; бүтэн матрицын тодорхойлогчийг авах нь хамрах мод тоолох арга биш.",
+            "type": "p"
+          },
+          {
+            "text": "Яагаад мод тоологдохыг харъя. Ирмэг бүрт дурын чиглэл өгөөд мөр нь орой, багана нь ирмэг байх incidence матриц байгуулна: тухайн ирмэгийн эхлэлд $1$, төгсгөлд $-1$, бусад оройд $0$ тавина. Сонгосон нэг оройн мөрийг хасаж $B$ байгуулна. Тэгвэл $L_r=BB^T$. Тодорхойлогчийг ирмэгийн $n-1$ баганын сонголтоор задлахад мод биш сонголт $0$, хамрах мод бүр $1$ өгдөг. Модны минорыг навчийн мөрөөр давтан задлахад тодорхойлогч $1$ эсвэл $-1$; циклтэй эсвэл салангид сонголтод тэг гарна. Энэ нь тоололтой холбоотой гол санаа; тооцоолохдоо бүх модыг үнэхээр жагсаахгүй.",
+            "type": "p"
+          },
+          {
+            "tex": "\\det\\begin{bmatrix}n-1&-1&\\cdots&-1\\\\-1&n-1&\\cdots&-1\\\\\\vdots&\\vdots&\\ddots&\\vdots\\\\-1&-1&\\cdots&n-1\\end{bmatrix}_{(n-1)\\times(n-1)}=n^{n-2}",
+            "type": "math"
+          },
+          {
+            "text": "Бүтэн графын орой бүрийн зэрэг $n-1$, диагоналиас бусад утга $-1$. Нэг мөр/баганыг хасахад дээрх $(n-1)\\times(n-1)$ матриц үүсч, тодорхойлогч нь Cayley-ийн $n^{n-2}$ болно. Үүнийг мөр, баганын хувиргалтаар харж болно: эхний мөрөнд бусад бүх мөрийг нэмэхэд тэр мөр бүхэлдээ $1$ болно. Дараа нь бусад багана бүрээс эхний баганыг хасахад эхний мөр $(1,0,\\ldots,0)$, үлдсэн гол диагональ $n$ болно. Иймээс тодорхойлогч $1\\cdot n^{n-2}$. $n=1$-д хоосон минорын тодорхойлогч $1$ нь ганц оройтой модтой таарна.",
+            "type": "p"
+          },
+          {
+            "text": "Том минорын тодорхойлогчийг модулиар бодох",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Рекурс задрал том хэмжээнд удаан тул анхны модуль дээр мөрийн хувиргалт хэрэглэе. Багана бүрт тэг биш тулгуур элемент сонгоно; мөр сольбол тодорхойлогчийн тэмдэг солигдоно. Нэг мөрөөс нөгөө мөрийг тогтмол тоогоор үржүүлсэн үр дүнг хасахад тодорхойлогч өөрчлөгдөхгүй. Доод гишүүдийг арилгаад гурвалжин матриц болгоход диагоналийн үржвэр хариу болно.",
+            "type": "p"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "det",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь хүснэгтийн хуулбар дээр ажиллана. Тулгуур тэг бол доороос тэг биш мөр хайж солино; олдохгүй бол determinant модуль дээр тэг. Тулгуурыг хариунд үржүүлж, урвууг нь Fermat-аар олоод доод мөрүүдийг арилгана. Хугацаа $O(n^3+n\\log p)$, хүснэгтийн зай $O(n^2)$. Энэ кодын хуваалт нь $p=10^9+7$ анхны байх нөхцөлд зөв.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst int MOD = 1000000007;\n\nll modpow(ll a, int n) {\n    ll res = 1;\n    while (n) {\n        if (n & 1) res = res * a % MOD;\n        a = a * a % MOD;\n        n >>= 1;\n    }\n    return res;\n}\n\nll det(vector<vector<ll>> a) {\n    int n = a.size();\n    ll res = 1;\n    for (int i = 0; i < n; i++) {\n        int p = i;\n        while (p < n && a[p][i] == 0) p++;\n        if (p == n) return 0;\n        if (p != i) {\n            swap(a[p], a[i]);\n            res = (MOD - res) % MOD;\n        }\n        res = res * a[i][i] % MOD;\n        ll inv = modpow(a[i][i], MOD - 2);\n        for (int r = i + 1; r < n; r++) {\n            ll c = a[r][i] * inv % MOD;\n            for (int j = i; j < n; j++) {\n                a[r][j] = (a[r][j] - c * a[i][j] % MOD + MOD) % MOD;\n            }\n        }\n    }\n    return res;\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "n m root",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", дараа нь чиглэлгүй ирмэгүүд уншина. Бодит өөртөө гогцоо хамрах модонд орохгүй тул алгасана; давхар ирмэг тус бүр тусдаа сонголт болж Лапласын утгуудыг нэмэгдүүлнэ. ",
+                "marks": []
+              },
+              {
+                "text": "root",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " мөр ба баганыг хоёуланг хасч, сөрөг утгуудыг бууруулна. $n\\le150$, $m\\le10000$. Хариу нь модны тооны үлдэгдэл: холбогдсон графын яг тоо $p$-д хуваагдаж болно, тиймээс модулийн тэгийг дангаар нь салангид граф гэж дүгнэхгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    int n, m, root;\n    cin >> n >> m >> root; // 1 <= n <= 150; m <= 10000; 1 <= root <= n\n    --root;\n    vector<vector<ll>> l(n, vector<ll>(n));\n    for (int i = 0; i < m; i++) {\n        int a, b;\n        cin >> a >> b;\n        --a;\n        --b;\n        if (a == b) continue; // self-loops cannot belong to a spanning tree\n        l[a][a]++;\n        l[b][b]++;\n        l[a][b]--;\n        l[b][a]--;\n    }\n    vector<vector<ll>> a;\n    for (int i = 0; i < n; i++) {\n        if (i == root) continue;\n        vector<ll> row;\n        for (int j = 0; j < n; j++) {\n            if (j != root) row.push_back((l[i][j] % MOD + MOD) % MOD);\n        }\n        a.push_back(row);\n    }\n    cout << det(a) << \"\\n\"; // the empty minor for n=1 has determinant1\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүтэн C++17 программ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг нэгтгэсэн хувилбар. Бүтэн программуудыг тус тусдаа файлд хөрвүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst int MOD = 1000000007;\n\nll modpow(ll a, int n) {\n    ll res = 1;\n    while (n) {\n        if (n & 1) res = res * a % MOD;\n        a = a * a % MOD;\n        n >>= 1;\n    }\n    return res;\n}\n\nll det(vector<vector<ll>> a) {\n    int n = a.size();\n    ll res = 1;\n    for (int i = 0; i < n; i++) {\n        int p = i;\n        while (p < n && a[p][i] == 0) p++;\n        if (p == n) return 0;\n        if (p != i) {\n            swap(a[p], a[i]);\n            res = (MOD - res) % MOD;\n        }\n        res = res * a[i][i] % MOD;\n        ll inv = modpow(a[i][i], MOD - 2);\n        for (int r = i + 1; r < n; r++) {\n            ll c = a[r][i] * inv % MOD;\n            for (int j = i; j < n; j++) {\n                a[r][j] = (a[r][j] - c * a[i][j] % MOD + MOD) % MOD;\n            }\n        }\n    }\n    return res;\n}\n\nint main() {\n    int n, m, root;\n    cin >> n >> m >> root; // 1 <= n <= 150; m <= 10000; 1 <= root <= n\n    --root;\n    vector<vector<ll>> l(n, vector<ll>(n));\n    for (int i = 0; i < m; i++) {\n        int a, b;\n        cin >> a >> b;\n        --a;\n        --b;\n        if (a == b) continue; // self-loops cannot belong to a spanning tree\n        l[a][a]++;\n        l[b][b]++;\n        l[a][b]--;\n        l[b][a]--;\n    }\n    vector<vector<ll>> a;\n    for (int i = 0; i < n; i++) {\n        if (i == root) continue;\n        vector<ll> row;\n        for (int j = 0; j < n; j++) {\n            if (j != root) row.push_back((l[i][j] % MOD + MOD) % MOD);\n        }\n        a.push_back(row);\n    }\n    cout << det(a) << \"\\n\"; // the empty minor for n=1 has determinant1\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Дасгал ба бие даах бодлогууд",
+        "blocks": [
+          {
+            "text": "Сэдвийг эзэмших дасгал",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "$3\\times4$ матрицын $A[2,3]$, $A^T[3,2]$-ыг тулга. Мөр–баганын үржвэрээс жишээний $42$, $99$, $102$-ыг гарга. $I_3A$ ба $AI_2$-ийн хэмжээс яагаад өөр нэгж матриц шаарддагийг тайлбарла. Хоёр квадрат матрицад $AB\\ne BA$ жишээг өөрөө бод. $A^0$, $A^1$, $A^3$-г хурдан зэрэгт дэвшүүлэх аргын явцтай тулга.",
+            "type": "p"
+          },
+          {
+            "text": "$81$ тодорхойлогчийг гурван минороор бодоод, өгөгдсөн урвууг хоёр талаас үржүүлж нэгж болохыг шалга. $1\\times1$, тэг мөртэй, мөр солисон жишээ турш. Fibonacci-ийн $(5,8)\\to(8,13)$ шилжилт ба гурван гишүүнт хамаарлын коэффициент яагаад урвуу байрласныг тайлбарла. Жижиг $n$ дээр шууд DP ба матрицын хариуг тулга.",
+            "type": "p"
+          },
+          {
+            "text": "Яг дөрвөн ирмэгтэй хоёр явалт ба тэдний $8$, $10$ өртгийг мөрдөөрэй. Нэг орой, ирмэггүй графт $k=0$ болон $k=1$-ийн хариу яагаад ялгаатай вэ? Давхар ирмэгийг тоолох ба хамгийн бага жинг хадгалах хоёрын ялгааг шалга. Кирхгофын жишээний гурван модыг жагсааж, ижил индексийн дөрвөн минороор тус бүр $3$ гарга. Өөр индексийн минорыг тэмдэггүй авбал яагаад буруу болохыг шалга.",
+            "type": "p"
+          },
+          {
+            "text": "Эзэмших ба бие даах бодлогууд",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Fibonacci Numbers: төлөв ба хурдан матрицын зэргийг холбох цөм дасгал.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "456"
+          },
+          {
+            "text": "Throwing Dice: олон гишүүнтэй шугаман хамаарлын төлөвийг өөрөө байгуул.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "457"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Graph Paths I",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ": яг тогтмол урттай явалт тоолох цөм хэрэглээ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "problem",
+            "problemKey": "458"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Graph Paths II",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ": min-plus үржвэр ба зөв нэгжийн цөм дасгал.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "problem",
+            "problemKey": "459"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "AtCoder DP R — Walk",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ": бүх эхлэл/төгсгөлийн явалтын тоог нэгтгэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "problem",
+            "problemKey": "694"
+          },
+          {
+            "text": "Fixed Length Walk Queries: олон асуултын нөхцөлд матрицын зэргийн бэлтгэлээ тохируул.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "579"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Matrices — powers, transitions and graphs",
+        "summary": "Matrix operations, powers, determinant/inverse, linear recurrences, fixed-length walks, min-plus and Kirchhoff with complete examples and explained C++17.",
+        "sections": [
+          {
+            "key": "basics",
+            "title": "Dimensions and notation",
+            "blocks": [
+              {
+                "text": "A matrix is a rectangular array of numbers. In code it resembles a two-dimensional array, but its dimensions and operations have mathematical meaning. The following matrix $A$ has size $3\\times4$: three rows and four columns.",
+                "type": "p"
+              },
+              {
+                "tex": "A=\\begin{bmatrix}6&13&7&4\\\\7&0&8&2\\\\9&5&4&18\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "text": "Entry $A[i,j]$ lies in row $i$, column $j$. Mathematical indices here start at $1$, so $A[2,3]=8$ and $A[3,1]=9$. C++ indices below start at $0$. A column vector is the special case of an $n\\times1$ matrix; this vector has three entries.",
+                "type": "p"
+              },
+              {
+                "tex": "V=\\begin{bmatrix}4\\\\7\\\\5\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "text": "Swapping rows and columns produces the transpose $A^T$, with $A^T[i,j]=A[j,i]$. Its size changes from $3\\times4$ to $4\\times3$. A matrix with equal row and column counts is square; $S$ is a $3\\times3$ example.",
+                "type": "p"
+              },
+              {
+                "tex": "A^T=\\begin{bmatrix}6&7&9\\\\13&0&5\\\\7&8&4\\\\4&2&18\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "tex": "S=\\begin{bmatrix}3&12&4\\\\5&9&15\\\\0&2&4\\end{bmatrix}",
+                "type": "math"
+              }
+            ]
+          },
+          {
+            "key": "operations",
+            "title": "23.1 Operations",
+            "blocks": [
+              {
+                "text": "Addition and scalar multiplication",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "The sum $A+B$ is defined when both matrices have the same dimensions. Add corresponding entries to obtain a matrix of the same size. Multiplying a matrix by a scalar $x$ multiplies every entry by $x$.",
+                "type": "p"
+              },
+              {
+                "tex": "\\begin{bmatrix}6&1&4\\\\3&9&2\\end{bmatrix}+\\begin{bmatrix}4&9&3\\\\8&1&3\\end{bmatrix}=\\begin{bmatrix}6+4&1+9&4+3\\\\3+8&9+1&2+3\\end{bmatrix}=\\begin{bmatrix}10&10&7\\\\11&10&5\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "tex": "2\\begin{bmatrix}6&1&4\\\\3&9&2\\end{bmatrix}=\\begin{bmatrix}2\\cdot6&2\\cdot1&2\\cdot4\\\\2\\cdot3&2\\cdot9&2\\cdot2\\end{bmatrix}=\\begin{bmatrix}12&2&8\\\\6&18&4\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "text": "Matrix multiplication",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "If $A$ has size $a\\times n$ and $B$ has size $n\\times b$, their product $AB$ is defined and has size $a\\times b$. The inner dimension $n$ must match. Entry $[i,j]$ is obtained by multiplying corresponding entries of row $i$ in $A$ and column $j$ in $B$, then summing.",
+                "type": "p"
+              },
+              {
+                "tex": "AB[i,j]=\\sum_{k=1}^n A[i,k]B[k,j]",
+                "type": "math"
+              },
+              {
+                "kind": "dp",
+                "rows": [
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "3",
+                    "9"
+                  ],
+                  [
+                    "8",
+                    "6"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "Highlighted first row of the left matrix: 1,4.",
+                "gridPresentation": {
+                  "colors": [
+                    {
+                      "col": 0,
+                      "row": 0,
+                      "color": "#fde68a"
+                    },
+                    {
+                      "col": 1,
+                      "row": 0,
+                      "color": "#fde68a"
+                    }
+                  ]
+                }
+              },
+              {
+                "kind": "dp",
+                "rows": [
+                  [
+                    "1",
+                    "6"
+                  ],
+                  [
+                    "2",
+                    "9"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "Highlighted second column of the right matrix: 6,9.",
+                "gridPresentation": {
+                  "colors": [
+                    {
+                      "col": 1,
+                      "row": 0,
+                      "color": "#bfdbfe"
+                    },
+                    {
+                      "col": 1,
+                      "row": 1,
+                      "color": "#bfdbfe"
+                    }
+                  ]
+                }
+              },
+              {
+                "kind": "dp",
+                "rows": [
+                  [
+                    "9",
+                    "42"
+                  ],
+                  [
+                    "21",
+                    "99"
+                  ],
+                  [
+                    "20",
+                    "102"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "Product entry [1,2]: 1·6 + 4·9 =42.",
+                "gridPresentation": {
+                  "colors": [
+                    {
+                      "col": 1,
+                      "row": 0,
+                      "color": "#bbf7d0"
+                    }
+                  ]
+                }
+              },
+              {
+                "tex": "\\begin{bmatrix}1&4\\\\3&9\\\\8&6\\end{bmatrix}\\begin{bmatrix}1&6\\\\2&9\\end{bmatrix}=\\begin{bmatrix}1\\cdot1+4\\cdot2&1\\cdot6+4\\cdot9\\\\3\\cdot1+9\\cdot2&3\\cdot6+9\\cdot9\\\\8\\cdot1+6\\cdot2&8\\cdot6+6\\cdot9\\end{bmatrix}=\\begin{bmatrix}9&42\\\\21&99\\\\20&102\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "text": "Multiplication is associative: $A(BC)=(AB)C$, because both sides expand to the same sum over two intermediate indices. It is generally not commutative: $AB$ and $BA$ may have different sizes, and one may not even be defined. Even for square matrices their values can differ.",
+                "type": "p"
+              },
+              {
+                "tex": "\\begin{bmatrix}1&1\\\\0&1\\end{bmatrix}\\begin{bmatrix}1&0\\\\1&1\\end{bmatrix}=\\begin{bmatrix}2&1\\\\1&1\\end{bmatrix}\\ne\\begin{bmatrix}1&1\\\\1&2\\end{bmatrix}=\\begin{bmatrix}1&0\\\\1&1\\end{bmatrix}\\begin{bmatrix}1&1\\\\0&1\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "text": "Identity matrix",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "An identity matrix has ones on the main diagonal and zeros elsewhere; $I_n$ has size $n\\times n$. Only one term survives in each product sum, so $I_aA=A$ and $AI_n=A$. The left and right identities may have different sizes.",
+                "type": "p"
+              },
+              {
+                "tex": "I_3=\\begin{bmatrix}1&0&0\\\\0&1&0\\\\0&0&1\\end{bmatrix},\\qquad I_3\\begin{bmatrix}1&4\\\\3&9\\\\8&6\\end{bmatrix}=\\begin{bmatrix}1&4\\\\3&9\\\\8&6\\end{bmatrix},\\quad\\begin{bmatrix}1&4\\\\3&9\\\\8&6\\end{bmatrix}I_2=\\begin{bmatrix}1&4\\\\3&9\\\\8&6\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "text": "Three straightforward loops multiply square matrices in $O(n^3)$ time with $O(n^2)$ result space. Rectangular multiplication takes $O(anb)$ time. Faster theoretical methods exist, such as Strassen’s $O(n^{\\log_2 7})\\approx O(n^{2.807})$, but here we use the clear cubic implementation.",
+                "type": "p"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The constructor ",
+                    "marks": []
+                  },
+                  {
+                    "text": "Mat(int _r, int _c)",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " stores dimensions and allocates zero entries. Method ",
+                    "marks": []
+                  },
+                  {
+                    "text": "transpose",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " creates reversed dimensions and copies with ",
+                    "marks": []
+                  },
+                  {
+                    "text": "b.a[j][i] = a[i][j]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Keep row and column roles distinct.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Mat {\n    int r, c;\n    vector<vector<ll>> a;\n\n    Mat(int _r, int _c) {\n        r = _r;\n        c = _c;\n        a.assign(r, vector<ll>(c));\n    }\n\n    Mat transpose() const {\n        Mat b(c, r);\n        for (int i = 0; i < r; i++) {\n            for (int j = 0; j < c; j++) b.a[j][i] = a[i][j];\n        }\n        return b;\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Addition and scalar multiplication act on corresponding entries. In ",
+                    "marks": []
+                  },
+                  {
+                    "text": "operator*",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", loops over $i,k,j$ add ",
+                    "marks": []
+                  },
+                  {
+                    "text": "a[i][k] * b.a[k][j]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " to the result. Inputs must have compatible dimensions, and the result must start at zero. Since entries are ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ll",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", multiplication already occurs in a 64-bit type.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "Mat operator+(const Mat &b) const {\n        Mat res(r, c);\n        for (int i = 0; i < r; i++) {\n            for (int j = 0; j < c; j++) res.a[i][j] = a[i][j] + b.a[i][j];\n        }\n        return res;\n    }\n\n    Mat scale(ll x) const {\n        Mat res(r, c);\n        for (int i = 0; i < r; i++) {\n            for (int j = 0; j < c; j++) res.a[i][j] = x * a[i][j];\n        }\n        return res;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(r, b.c);\n        for (int i = 0; i < r; i++) {\n            for (int k = 0; k < c; k++) {\n                for (int j = 0; j < b.c; j++) res.a[i][j] += a[i][k] * b.a[k][j];\n            }\n        }\n        return res;\n    }\n};",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read ",
+                    "marks": []
+                  },
+                  {
+                    "text": "r n c x",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", then $A$ of size $r\\times n$, $B$ of size $n\\times c$, and $D$ of size $r\\times n$. Output $A+D$, $xA$, $A^T$, $AB$, each preceded by its dimensions. Dimensions are $1\\ldots30$, and absolute entry/scalar values are at most $10^6$, bounding each product entry by $30\\cdot10^{12}$. Extending the domain may overflow even ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ll",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ".",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "void read(Mat &a) {\n    for (auto &row : a.a) for (ll &x : row) cin >> x;\n}\n\nvoid print(const Mat &a) {\n    cout << a.r << ' ' << a.c << \"\\n\";\n    for (const auto &row : a.a) {\n        for (ll x : row) cout << x << ' ';\n        cout << \"\\n\";\n    }\n}\n\nint main() {\n    int r, n, c;\n    ll x;\n    cin >> r >> n >> c >> x; // dimensions 1..30; |x|,|entries| <= 10^6\n    Mat a(r, n), b(n, c), d(r, n);\n    read(a);\n    read(b);\n    read(d);\n    print(a + d);\n    print(a.scale(x));\n    print(a.transpose());\n    print(a * b);\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "The preceding parts combined. Compile the complete programs in separate files.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Mat {\n    int r, c;\n    vector<vector<ll>> a;\n\n    Mat(int _r, int _c) {\n        r = _r;\n        c = _c;\n        a.assign(r, vector<ll>(c));\n    }\n\n    Mat transpose() const {\n        Mat b(c, r);\n        for (int i = 0; i < r; i++) {\n            for (int j = 0; j < c; j++) b.a[j][i] = a[i][j];\n        }\n        return b;\n    }\n\n    Mat operator+(const Mat &b) const {\n        Mat res(r, c);\n        for (int i = 0; i < r; i++) {\n            for (int j = 0; j < c; j++) res.a[i][j] = a[i][j] + b.a[i][j];\n        }\n        return res;\n    }\n\n    Mat scale(ll x) const {\n        Mat res(r, c);\n        for (int i = 0; i < r; i++) {\n            for (int j = 0; j < c; j++) res.a[i][j] = x * a[i][j];\n        }\n        return res;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(r, b.c);\n        for (int i = 0; i < r; i++) {\n            for (int k = 0; k < c; k++) {\n                for (int j = 0; j < b.c; j++) res.a[i][j] += a[i][k] * b.a[k][j];\n            }\n        }\n        return res;\n    }\n};\n\nvoid read(Mat &a) {\n    for (auto &row : a.a) for (ll &x : row) cin >> x;\n}\n\nvoid print(const Mat &a) {\n    cout << a.r << ' ' << a.c << \"\\n\";\n    for (const auto &row : a.a) {\n        for (ll x : row) cout << x << ' ';\n        cout << \"\\n\";\n    }\n}\n\nint main() {\n    int r, n, c;\n    ll x;\n    cin >> r >> n >> c >> x; // dimensions 1..30; |x|,|entries| <= 10^6\n    Mat a(r, n), b(n, c), d(r, n);\n    read(a);\n    read(b);\n    read(d);\n    print(a + d);\n    print(a.scale(x));\n    print(a.transpose());\n    print(a * b);\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Matrix powers",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "For a square matrix, $A^k$ is a product of $k$ copies of $A$, with $A^0=I$. The empty product must be the identity, not a zero matrix. Here are the example matrix’s square and cube with the intermediate step.",
+                "type": "p"
+              },
+              {
+                "tex": "A=\\begin{bmatrix}2&5\\\\1&4\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "tex": "A^2=\\begin{bmatrix}9&30\\\\6&21\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "tex": "A^3=\\begin{bmatrix}48&165\\\\33&114\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "tex": "A^0=\\begin{bmatrix}1&0\\\\0&1\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "tex": "A^8=A^4A^4,\\qquad A^{2t}=(A^t)^2,\\qquad A^{2t+1}=A(A^t)^2",
+                "type": "math"
+              },
+              {
+                "text": "Fast exponentiation replaces scalar multiplication with matrix multiplication. Halving the exponent gives $O(\\log k)$ multiplications, hence $O(n^3\\log k)$ time and $O(n^2)$ space. Associativity suffices; this does not permit swapping arbitrary different matrices. At $k=0$, the loop is skipped and the identity is returned.",
+                "type": "p"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "This square ",
+                    "marks": []
+                  },
+                  {
+                    "text": "Mat",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " works modulo fixed $p=10^9+7$. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "Mat(n, true)",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " creates the identity; ordinary ",
+                    "marks": []
+                  },
+                  {
+                    "text": "Mat(n)",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " creates zero. The helper ",
+                    "marks": []
+                  },
+                  {
+                    "text": "norm",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " normalizes negative residues into $0\\ldots p-1$. Reducing after every addition avoids accumulating $n$ large products in one ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ll",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", keeping intermediate values safe.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst int MOD = 1000000007;\n\nll norm(ll x) {\n    x %= MOD;\n    if (x < 0) x += MOD;\n    return x;\n}\n\nstruct Mat {\n    int n;\n    vector<vector<ll>> a;\n\n    Mat(int _n, bool unit = false) {\n        n = _n;\n        a.assign(n, vector<ll>(n));\n        if (unit) for (int i = 0; i < n; i++) a[i][i] = 1;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(n);\n        for (int i = 0; i < n; i++) {\n            for (int k = 0; k < n; k++) {\n                for (int j = 0; j < n; j++) {\n                    res.a[i][j] = (res.a[i][j] + a[i][k] * b.a[k][j]) % MOD;\n                }\n            }\n        }\n        return res;\n    }\n};",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Variable ",
+                    "marks": []
+                  },
+                  {
+                    "text": "res",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " holds the product of selected binary powers. If the low bit is set, multiply by the current ",
+                    "marks": []
+                  },
+                  {
+                    "text": "a",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": "; square ",
+                    "marks": []
+                  },
+                  {
+                    "text": "a",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " and shift the exponent. The invariant is $RA^k=A_0^{k_0}$: $R$ denotes ",
+                    "marks": []
+                  },
+                  {
+                    "text": "res",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", $A$ denotes the current ",
+                    "marks": []
+                  },
+                  {
+                    "text": "a",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", and $A_0,k_0$ are the original matrix and exponent. Passing ",
+                    "marks": []
+                  },
+                  {
+                    "text": "a",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " by value preserves the caller’s matrix.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "Mat power(Mat a, ll k) {\n    Mat res(a.n, true);\n    while (k) {\n        if (k & 1) res = res * a;\n        a = a * a;\n        k >>= 1;\n    }\n    return res;\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Read $1\\le n\\le80$, $0\\le k\\le10^{18}$, followed by $n^2$ integer entries. Normalize them and print $A^k\\bmod p$. This is a matrix of residues, not the unbounded exact integer product. Negative powers or inverse calculations over arbitrary composite moduli are outside this program’s domain.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    int n;\n    ll k;\n    cin >> n >> k; // 1 <= n <= 80; 0 <= k <= 10^18\n    Mat a(n);\n    for (auto &row : a.a) for (ll &x : row) {\n        cin >> x;\n        x = norm(x);\n    }\n    Mat b = power(a, k);\n    for (auto &row : b.a) {\n        for (ll x : row) cout << x << ' ';\n        cout << \"\\n\";\n    }\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "The preceding parts combined. Compile the complete programs in separate files.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst int MOD = 1000000007;\n\nll norm(ll x) {\n    x %= MOD;\n    if (x < 0) x += MOD;\n    return x;\n}\n\nstruct Mat {\n    int n;\n    vector<vector<ll>> a;\n\n    Mat(int _n, bool unit = false) {\n        n = _n;\n        a.assign(n, vector<ll>(n));\n        if (unit) for (int i = 0; i < n; i++) a[i][i] = 1;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(n);\n        for (int i = 0; i < n; i++) {\n            for (int k = 0; k < n; k++) {\n                for (int j = 0; j < n; j++) {\n                    res.a[i][j] = (res.a[i][j] + a[i][k] * b.a[k][j]) % MOD;\n                }\n            }\n        }\n        return res;\n    }\n};\n\nMat power(Mat a, ll k) {\n    Mat res(a.n, true);\n    while (k) {\n        if (k & 1) res = res * a;\n        a = a * a;\n        k >>= 1;\n    }\n    return res;\n}\n\nint main() {\n    int n;\n    ll k;\n    cin >> n >> k; // 1 <= n <= 80; 0 <= k <= 10^18\n    Mat a(n);\n    for (auto &row : a.a) for (ll &x : row) {\n        cin >> x;\n        x = norm(x);\n    }\n    Mat b = power(a, k);\n    for (auto &row : b.a) {\n        for (ll x : row) cout << x << ' ';\n        cout << \"\\n\";\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Determinant and inverse",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "The determinant $\\det A$ is defined for square matrices. For size $1\\times1$, it equals the single entry. Expanding a larger determinant along the first row uses determinants of smaller matrices obtained by deleting a row and column, with alternating signs. The signed value is the cofactor.",
+                "type": "p"
+              },
+              {
+                "tex": "\\det A=\\sum_{j=1}^n A[1,j]C[1,j],\\qquad C[i,j]=(-1)^{i+j}\\det M[i,j]",
+                "type": "math"
+              },
+              {
+                "tex": "\\det\\begin{bmatrix}3&4\\\\1&6\\end{bmatrix}=3\\cdot6-4\\cdot1=14",
+                "type": "math"
+              },
+              {
+                "tex": "\\det\\begin{bmatrix}2&4&3\\\\5&1&6\\\\7&2&4\\end{bmatrix}=2\\det\\begin{bmatrix}1&6\\\\2&4\\end{bmatrix}-4\\det\\begin{bmatrix}5&6\\\\7&4\\end{bmatrix}+3\\det\\begin{bmatrix}5&1\\\\7&2\\end{bmatrix}=2(-8)-4(-22)+3(3)=81",
+                "type": "math"
+              },
+              {
+                "text": "Over real or rational numbers, $A^{-1}$ exists exactly when $\\det A\\ne0$. Transpose the cofactor matrix and divide by the determinant. Note the swapped indices $C[j,i]$; simply dividing untransposed $C[i,j]$ values is generally wrong.",
+                "type": "p"
+              },
+              {
+                "tex": "A^{-1}[i,j]=\\frac{C[j,i]}{\\det A},\\qquad \\begin{bmatrix}2&4&3\\\\5&1&6\\\\7&2&4\\end{bmatrix}\\cdot\\frac1{81}\\begin{bmatrix}-8&-10&21\\\\22&-13&3\\\\3&24&-18\\end{bmatrix}=I_3",
+                "type": "math"
+              },
+              {
+                "text": "The numeric domain matters. An inverse of an integer matrix need not have integer entries: $[2]^{-1}=[1/2]$. Modulo a prime $p$, invertibility requires $\\det A\\not\\equiv0$. For a composite modulus, a nonzero determinant alone is insufficient: $[2]$ has no inverse modulo $4$. The determinant must be coprime to that modulus.",
+                "type": "p"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Function ",
+                    "marks": []
+                  },
+                  {
+                    "text": "minorOf",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " skips one selected row and column. The helper ",
+                    "marks": []
+                  },
+                  {
+                    "text": "det",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " expands the first row with alternating signs. Defining the empty determinant as $1$ correctly handles cofactors of a $1\\times1$ matrix. This direct definition has factorial running time and is intended only for small dimensions; use elimination below for larger cases.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nusing Matrix = vector<vector<ll>>;\n\nMatrix minorOf(const Matrix &a, int r, int c) {\n    int n = a.size();\n    Matrix b;\n    for (int i = 0; i < n; i++) {\n        if (i == r) continue;\n        vector<ll> row;\n        for (int j = 0; j < n; j++) if (j != c) row.push_back(a[i][j]);\n        b.push_back(row);\n    }\n    return b;\n}\n\nll det(const Matrix &a) {\n    int n = a.size();\n    if (n == 0) return 1;\n    if (n == 1) return a[0][0];\n    ll res = 0;\n    for (int j = 0; j < n; j++) {\n        ll term = a[0][j] * det(minorOf(a, 0, j));\n        res += (j % 2 ? -term : term);\n    }\n    return res;\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Require $1\\le n\\le6$ and absolute entries at most $20$. The bound $n!20^n\\le46080000000$ covers determinants and expansion sums, so ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ll",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " is safe. Print each inverse entry as an exact reduced fraction ",
+                    "marks": []
+                  },
+                  {
+                    "text": "x/y",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", not a floating-point approximation. Swapped indices appear as ",
+                    "marks": []
+                  },
+                  {
+                    "text": "minorOf(a, j, i)",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Computing all cofactors directly has an $O(n^2n!)$ upper time bound; small matrices along the recursion use $O(n^3)$ working space.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    int n;\n    cin >> n; // 1 <= n <= 6; |entries| <= 20\n    Matrix a(n, vector<ll>(n));\n    for (auto &row : a) for (ll &x : row) cin >> x;\n    ll d = det(a);\n    cout << d << \"\\n\";\n    if (d == 0) {\n        cout << \"SINGULAR\\n\";\n        return 0;\n    }\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < n; j++) {\n            ll x = det(minorOf(a, j, i)); // transposed cofactor\n            if ((i + j) % 2) x = -x;\n            ll y = d, g = gcd(abs(x), abs(y));\n            x /= g;\n            y /= g;\n            if (y < 0) x = -x, y = -y;\n            cout << x << '/' << y << ' ';\n        }\n        cout << \"\\n\";\n    }\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "The preceding parts combined. Compile the complete programs in separate files.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nusing Matrix = vector<vector<ll>>;\n\nMatrix minorOf(const Matrix &a, int r, int c) {\n    int n = a.size();\n    Matrix b;\n    for (int i = 0; i < n; i++) {\n        if (i == r) continue;\n        vector<ll> row;\n        for (int j = 0; j < n; j++) if (j != c) row.push_back(a[i][j]);\n        b.push_back(row);\n    }\n    return b;\n}\n\nll det(const Matrix &a) {\n    int n = a.size();\n    if (n == 0) return 1;\n    if (n == 1) return a[0][0];\n    ll res = 0;\n    for (int j = 0; j < n; j++) {\n        ll term = a[0][j] * det(minorOf(a, 0, j));\n        res += (j % 2 ? -term : term);\n    }\n    return res;\n}\n\nint main() {\n    int n;\n    cin >> n; // 1 <= n <= 6; |entries| <= 20\n    Matrix a(n, vector<ll>(n));\n    for (auto &row : a) for (ll &x : row) cin >> x;\n    ll d = det(a);\n    cout << d << \"\\n\";\n    if (d == 0) {\n        cout << \"SINGULAR\\n\";\n        return 0;\n    }\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < n; j++) {\n            ll x = det(minorOf(a, j, i)); // transposed cofactor\n            if ((i + j) % 2) x = -x;\n            ll y = d, g = gcd(abs(x), abs(y));\n            x /= g;\n            y /= g;\n            if (y < 0) x = -x, y = -y;\n            cout << x << '/' << y << ' ';\n        }\n        cout << \"\\n\";\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "recurrences",
+            "title": "23.2 Linear recurrences",
+            "blocks": [
+              {
+                "text": "A linear recurrence specifies initial values $f(0),\\ldots,f(k-1)$ and forms each later value as a fixed linear combination of the previous $k$ values. Direct DP takes $O(kn)$ time. When $k$ is small but $n$ is huge, encode the state as a vector and skip many steps using matrix powers.",
+                "type": "p"
+              },
+              {
+                "tex": "f(n)=c_1f(n-1)+c_2f(n-2)+\\cdots+c_kf(n-k)",
+                "type": "math"
+              },
+              {
+                "text": "Fibonacci example",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "tex": "f(0)=0,\\quad f(1)=1,\\quad f(n)=f(n-1)+f(n-2),\\qquad X=\\begin{bmatrix}0&1\\\\1&1\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "text": "Use column state $(f(i),f(i+1))^T$. Its new first value is the old second value, so the first row of $X$ is $(0,1)$. Its new second value is their sum, giving row $(1,1)$. Multiplying by $X$ therefore advances the state exactly one step.",
+                "type": "p"
+              },
+              {
+                "tex": "\\begin{bmatrix}0&1\\\\1&1\\end{bmatrix}\\begin{bmatrix}5\\\\8\\end{bmatrix}=\\begin{bmatrix}8\\\\13\\end{bmatrix},\\qquad\\begin{bmatrix}f(n)\\\\f(n+1)\\end{bmatrix}=X^n\\begin{bmatrix}0\\\\1\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "text": "The example advances from $f(5)=5$, $f(6)=8$ to $f(6)=8$, $f(7)=13$. The state matrix has fixed size two, so $f(n)$ can be found in $O(\\log n)$ time. At $n=0$, $X^0=I$ leaves initial state $(0,1)$ unchanged.",
+                "type": "p"
+              },
+              {
+                "text": "General case",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "tex": "X\\begin{bmatrix}f(i)\\\\f(i+1)\\\\\\vdots\\\\f(i+k-1)\\end{bmatrix}=\\begin{bmatrix}f(i+1)\\\\f(i+2)\\\\\\vdots\\\\f(i+k)\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "tex": "X=\\begin{bmatrix}0&1&0&\\cdots&0\\\\0&0&1&\\cdots&0\\\\\\vdots&\\vdots&\\vdots&\\ddots&\\vdots\\\\0&0&0&\\cdots&1\\\\c_k&c_{k-1}&c_{k-2}&\\cdots&c_1\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "text": "The first $k-1$ rows shift the next value into the previous slot. The last row computes $f(i+k)$. Since the state is ordered oldest to newest, the last-row coefficients appear reversed as $c_k,\\ldots,c_1$. For $k=1$, only $[c_1]$ remains. For instance, $f(n)=2f(n-1)-f(n-2)+3f(n-3)$ uses last row $(3,-1,2)$, sending state $(1,2,4)$ to $(2,4,9)$.",
+                "type": "p"
+              },
+              {
+                "tex": "\\begin{bmatrix}f(n)\\\\f(n+1)\\\\\\vdots\\\\f(n+k-1)\\end{bmatrix}=X^n\\begin{bmatrix}f(0)\\\\f(1)\\\\\\vdots\\\\f(k-1)\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Reuse the same square-matrix and fast-power implementation. States are columns, so transitions multiply from the left. Coefficients and initial values may be negative and are normalized with ",
+                    "marks": []
+                  },
+                  {
+                    "text": "norm",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Modular addition and multiplication preserve the linear recurrence.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst int MOD = 1000000007;\n\nll norm(ll x) {\n    x %= MOD;\n    if (x < 0) x += MOD;\n    return x;\n}\n\nstruct Mat {\n    int n;\n    vector<vector<ll>> a;\n\n    Mat(int _n, bool unit = false) {\n        n = _n;\n        a.assign(n, vector<ll>(n));\n        if (unit) for (int i = 0; i < n; i++) a[i][i] = 1;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(n);\n        for (int i = 0; i < n; i++) {\n            for (int k = 0; k < n; k++) {\n                for (int j = 0; j < n; j++) {\n                    res.a[i][j] = (res.a[i][j] + a[i][k] * b.a[k][j]) % MOD;\n                }\n            }\n        }\n        return res;\n    }\n};\n\nMat power(Mat a, ll k) {\n    Mat res(a.n, true);\n    while (k) {\n        if (k & 1) res = res * a;\n        a = a * a;\n        k >>= 1;\n    }\n    return res;\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read ",
+                    "marks": []
+                  },
+                  {
+                    "text": "k n",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", the first $k$ values, then coefficients $c_1,\\ldots,c_k$. Set the shift diagonal to one and fill the last row in reverse order, then compute $X^n$. Output the whole state $f(n),\\ldots,f(n+k-1)$; the first entry is the requested value. Bounds are $k\\le50$, $n\\le10^{18}$, time $O(k^3\\log n)$ and space $O(k^2)$; the final vector product costs $O(k^2)$.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    int k;\n    ll n;\n    cin >> k >> n; // 1 <= k <= 50; 0 <= n <= 10^18\n    vector<ll> f(k), c(k);\n    for (ll &x : f) {\n        cin >> x;\n        x = norm(x);\n    }\n    for (ll &x : c) {\n        cin >> x; // c1,c2,...,ck in this order\n        x = norm(x);\n    }\n    Mat x(k);\n    for (int i = 0; i + 1 < k; i++) x.a[i][i + 1] = 1;\n    for (int j = 0; j < k; j++) x.a[k - 1][j] = c[k - 1 - j];\n    Mat b = power(x, n);\n    for (int i = 0; i < k; i++) {\n        ll ans = 0;\n        for (int j = 0; j < k; j++) ans = (ans + b.a[i][j] * f[j]) % MOD;\n        cout << ans << ' ';\n    }\n    cout << \"\\n\";\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "The preceding parts combined. Compile the complete programs in separate files.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst int MOD = 1000000007;\n\nll norm(ll x) {\n    x %= MOD;\n    if (x < 0) x += MOD;\n    return x;\n}\n\nstruct Mat {\n    int n;\n    vector<vector<ll>> a;\n\n    Mat(int _n, bool unit = false) {\n        n = _n;\n        a.assign(n, vector<ll>(n));\n        if (unit) for (int i = 0; i < n; i++) a[i][i] = 1;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(n);\n        for (int i = 0; i < n; i++) {\n            for (int k = 0; k < n; k++) {\n                for (int j = 0; j < n; j++) {\n                    res.a[i][j] = (res.a[i][j] + a[i][k] * b.a[k][j]) % MOD;\n                }\n            }\n        }\n        return res;\n    }\n};\n\nMat power(Mat a, ll k) {\n    Mat res(a.n, true);\n    while (k) {\n        if (k & 1) res = res * a;\n        a = a * a;\n        k >>= 1;\n    }\n    return res;\n}\n\nint main() {\n    int k;\n    ll n;\n    cin >> k >> n; // 1 <= k <= 50; 0 <= n <= 10^18\n    vector<ll> f(k), c(k);\n    for (ll &x : f) {\n        cin >> x;\n        x = norm(x);\n    }\n    for (ll &x : c) {\n        cin >> x; // c1,c2,...,ck in this order\n        x = norm(x);\n    }\n    Mat x(k);\n    for (int i = 0; i + 1 < k; i++) x.a[i][i + 1] = 1;\n    for (int j = 0; j < k; j++) x.a[k - 1][j] = c[k - 1 - j];\n    Mat b = power(x, n);\n    for (int i = 0; i < k; i++) {\n        ll ans = 0;\n        for (int j = 0; j < k; j++) ans = (ans + b.a[i][j] * f[j]) % MOD;\n        cout << ans << ' ';\n    }\n    cout << \"\\n\";\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "graphs",
+            "title": "23.3 Graphs and matrices",
+            "blocks": [
+              {
+                "text": "Counting walks with a fixed number of edges",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "For a directed graph, entry $V[i,j]$ in its adjacency matrix is the number of edges from $i$ to $j$; it is $0$ or $1$ in a simple graph. Then $V^k[i,j]$ counts walks from $i$ to $j$ using exactly $k$ edges. Repeated vertices and edges are allowed: these need not be simple paths. Rows below represent sources and columns destinations.",
+                "type": "p"
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "2",
+                    "6"
+                  ],
+                  [
+                    "3",
+                    "2"
+                  ],
+                  [
+                    "4",
+                    "2"
+                  ],
+                  [
+                    "6",
+                    "3"
+                  ],
+                  [
+                    "6",
+                    "5"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 15,
+                    "y": 18,
+                    "id": "1",
+                    "label": "1"
+                  },
+                  {
+                    "x": 50,
+                    "y": 18,
+                    "id": "2",
+                    "label": "2"
+                  },
+                  {
+                    "x": 85,
+                    "y": 18,
+                    "id": "3",
+                    "label": "3"
+                  },
+                  {
+                    "x": 15,
+                    "y": 82,
+                    "id": "4",
+                    "label": "4"
+                  },
+                  {
+                    "x": 50,
+                    "y": 82,
+                    "id": "5",
+                    "label": "5"
+                  },
+                  {
+                    "x": 85,
+                    "y": 82,
+                    "id": "6",
+                    "label": "6"
+                  }
+                ],
+                "caption": "Directed graph for counting four-edge walks.",
+                "directed": true,
+                "edgeStyles": [
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {}
+                ]
+              },
+              {
+                "tex": "V=\\begin{bmatrix}0&0&0&1&0&0\\\\1&0&0&0&1&1\\\\0&1&0&0&0&0\\\\0&1&0&0&0&0\\\\0&0&0&0&0&0\\\\0&0&1&0&1&0\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "tex": "V^4=\\begin{bmatrix}0&0&1&1&1&0\\\\2&0&0&0&2&2\\\\0&2&0&0&0&0\\\\0&2&0&0&0&0\\\\0&0&0&0&0&0\\\\0&0&1&1&1&0\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "text": "We have $V^4[2,5]=2$: $2\\to1\\to4\\to2\\to5$ and $2\\to6\\to3\\to2\\to5$. Both revisit vertex $2$, illustrating why the objects are walks. Why do powers count them? Each $(a+b)$-edge walk from $i$ to $j$ splits uniquely at its vertex $t$ after exactly $a$ edges. Multiply counts of the first $a$ and last $b$ portions and sum over $t$: this is precisely matrix multiplication.",
+                "type": "p"
+              },
+              {
+                "text": "Reuse the modular matrix and power code. An empty walk remains at its starting vertex, so $V^0=I$: one from each vertex to itself and zero to others. Counting arbitrary-length walks or walks of at most $k$ edges is a different problem.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst int MOD = 1000000007;\n\nll norm(ll x) {\n    x %= MOD;\n    if (x < 0) x += MOD;\n    return x;\n}\n\nstruct Mat {\n    int n;\n    vector<vector<ll>> a;\n\n    Mat(int _n, bool unit = false) {\n        n = _n;\n        a.assign(n, vector<ll>(n));\n        if (unit) for (int i = 0; i < n; i++) a[i][i] = 1;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(n);\n        for (int i = 0; i < n; i++) {\n            for (int k = 0; k < n; k++) {\n                for (int j = 0; j < n; j++) {\n                    res.a[i][j] = (res.a[i][j] + a[i][k] * b.a[k][j]) % MOD;\n                }\n            }\n        }\n        return res;\n    }\n};\n\nMat power(Mat a, ll k) {\n    Mat res(a.n, true);\n    while (k) {\n        if (k & 1) res = res * a;\n        a = a * a;\n        k >>= 1;\n    }\n    return res;\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read ",
+                    "marks": []
+                  },
+                  {
+                    "text": "n m k",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", followed by $m$ directed edges. Parallel edges are distinct choices, so use ",
+                    "marks": []
+                  },
+                  {
+                    "text": "++",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " rather than assignment to one. A self-loop is also a genuine one-edge step. Print all pair counts modulo the prime. Time is $O(n^3\\log k+m)$ and space $O(n^2)$, with $n\\le80$, $m\\le10000$.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    int n, m;\n    ll k;\n    cin >> n >> m >> k; // 1 <= n <= 80; m <= 10000; 0 <= k <= 10^18\n    Mat a(n);\n    for (int i = 0; i < m; i++) {\n        int u, v;\n        cin >> u >> v;\n        a.a[u - 1][v - 1]++; // each parallel edge is a distinct choice\n    }\n    Mat b = power(a, k);\n    for (auto &row : b.a) {\n        for (ll x : row) cout << x << ' ';\n        cout << \"\\n\";\n    }\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "The preceding parts combined. Compile the complete programs in separate files.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst int MOD = 1000000007;\n\nll norm(ll x) {\n    x %= MOD;\n    if (x < 0) x += MOD;\n    return x;\n}\n\nstruct Mat {\n    int n;\n    vector<vector<ll>> a;\n\n    Mat(int _n, bool unit = false) {\n        n = _n;\n        a.assign(n, vector<ll>(n));\n        if (unit) for (int i = 0; i < n; i++) a[i][i] = 1;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(n);\n        for (int i = 0; i < n; i++) {\n            for (int k = 0; k < n; k++) {\n                for (int j = 0; j < n; j++) {\n                    res.a[i][j] = (res.a[i][j] + a[i][k] * b.a[k][j]) % MOD;\n                }\n            }\n        }\n        return res;\n    }\n};\n\nMat power(Mat a, ll k) {\n    Mat res(a.n, true);\n    while (k) {\n        if (k & 1) res = res * a;\n        a = a * a;\n        k >>= 1;\n    }\n    return res;\n}\n\nint main() {\n    int n, m;\n    ll k;\n    cin >> n >> m >> k; // 1 <= n <= 80; m <= 10000; 0 <= k <= 10^18\n    Mat a(n);\n    for (int i = 0; i < m; i++) {\n        int u, v;\n        cin >> u >> v;\n        a.a[u - 1][v - 1]++; // each parallel edge is a distinct choice\n    }\n    Mat b = power(a, k);\n    for (auto &row : b.a) {\n        for (ll x : row) cout << x << ' ';\n        cout << \"\\n\";\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Minimum cost with exactly a fixed number of edges",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Now minimize total weight among walks using exactly $k$ edges. Store an absent edge as $\\infty$ and a present edge by its weight. The following weighted graph has the same connections as the counting example.",
+                "type": "p"
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "2",
+                    "6"
+                  ],
+                  [
+                    "3",
+                    "2"
+                  ],
+                  [
+                    "4",
+                    "2"
+                  ],
+                  [
+                    "6",
+                    "3"
+                  ],
+                  [
+                    "6",
+                    "5"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 15,
+                    "y": 18,
+                    "id": "1",
+                    "label": "1"
+                  },
+                  {
+                    "x": 50,
+                    "y": 18,
+                    "id": "2",
+                    "label": "2"
+                  },
+                  {
+                    "x": 85,
+                    "y": 18,
+                    "id": "3",
+                    "label": "3"
+                  },
+                  {
+                    "x": 15,
+                    "y": 82,
+                    "id": "4",
+                    "label": "4"
+                  },
+                  {
+                    "x": 50,
+                    "y": 82,
+                    "id": "5",
+                    "label": "5"
+                  },
+                  {
+                    "x": 85,
+                    "y": 82,
+                    "id": "6",
+                    "label": "6"
+                  }
+                ],
+                "caption": "Edge weights on the same directed graph.",
+                "directed": true,
+                "edgeStyles": [
+                  {
+                    "label": "4"
+                  },
+                  {
+                    "label": "2"
+                  },
+                  {
+                    "label": "1"
+                  },
+                  {
+                    "label": "2"
+                  },
+                  {
+                    "label": "4"
+                  },
+                  {
+                    "label": "1"
+                  },
+                  {
+                    "label": "3"
+                  },
+                  {
+                    "label": "2"
+                  }
+                ]
+              },
+              {
+                "tex": "V=\\begin{bmatrix}\\infty&\\infty&\\infty&4&\\infty&\\infty\\\\2&\\infty&\\infty&\\infty&1&2\\\\\\infty&4&\\infty&\\infty&\\infty&\\infty\\\\\\infty&1&\\infty&\\infty&\\infty&\\infty\\\\\\infty&\\infty&\\infty&\\infty&\\infty&\\infty\\\\\\infty&\\infty&3&\\infty&2&\\infty\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "tex": "(A\\otimes B)[i,j]=\\min_t\\bigl(A[i,t]+B[t,j]\\bigr)",
+                "type": "math"
+              },
+              {
+                "text": "Use min-plus multiplication: replace the outer sum by a minimum and scalar products by addition. Joining two portions at vertex $t$ adds their costs; choose the least over all junctions. This operation is associative, so fast exponentiation still applies. Its identity has zeros on the diagonal and $\\infty$ elsewhere: a zero-edge walk stays put at cost zero.",
+                "type": "p"
+              },
+              {
+                "tex": "V^{\\otimes4}=\\begin{bmatrix}\\infty&\\infty&10&11&9&\\infty\\\\9&\\infty&\\infty&\\infty&8&9\\\\\\infty&11&\\infty&\\infty&\\infty&\\infty\\\\\\infty&8&\\infty&\\infty&\\infty&\\infty\\\\\\infty&\\infty&\\infty&\\infty&\\infty&\\infty\\\\\\infty&\\infty&12&13&11&\\infty\\end{bmatrix}",
+                "type": "math"
+              },
+              {
+                "text": "The walk $2\\to1\\to4\\to2\\to5$ costs $2+4+1+1=8$, giving entry $[2,5]=8$. The other four-edge walk $2\\to6\\to3\\to2\\to5$ costs $2+3+4+1=10$. Do not automatically zero the adjacency diagonal: without a real self-loop, that one-step entry must be $\\infty$. Otherwise fake zero-cost steps can pad a shorter walk and violate the exact-length condition.",
+                "type": "p"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Initialize entries with ",
+                    "marks": []
+                  },
+                  {
+                    "text": "INF",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " rather than zero. Only the identity gets zero diagonal entries. During multiplication, skip a junction if either portion is absent; do not evaluate ",
+                    "marks": []
+                  },
+                  {
+                    "text": "INF + w",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " and mistake it for a real walk. Add finite costs and minimize.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst ll INF = 4000000000000000000LL;\n\nstruct Mat {\n    int n;\n    vector<vector<ll>> a;\n\n    Mat(int _n, bool unit = false) {\n        n = _n;\n        a.assign(n, vector<ll>(n, INF));\n        if (unit) for (int i = 0; i < n; i++) a[i][i] = 0;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(n);\n        for (int i = 0; i < n; i++) {\n            for (int k = 0; k < n; k++) {\n                if (a[i][k] == INF) continue;\n                for (int j = 0; j < n; j++) {\n                    if (b.a[k][j] == INF) continue;\n                    res.a[i][j] = min(res.a[i][j], a[i][k] + b.a[k][j]);\n                }\n            }\n        }\n        return res;\n    }\n};",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The fast-power control flow is unchanged, while ",
+                    "marks": []
+                  },
+                  {
+                    "text": "operator*",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " now means min-plus. The identity’s zero diagonal is correct for $k=0$. Negative weights are allowed: with exactly $k$ edges, even a negative cycle cannot be traversed arbitrarily many times. This differs from unrestricted shortest paths.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "Mat power(Mat a, ll k) {\n    Mat res(a.n, true);\n    while (k) {\n        if (k & 1) res = res * a;\n        a = a * a;\n        k >>= 1;\n    }\n    return res;\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Bounds are $n\\le80$, $m\\le10000$, $0\\le k\\le10^{12}$ and $|w|\\le10^6$. Requested costs have absolute value at most $10^{18}$. Intermediate squared powers have lengths at most $2^{40}$, keeping finite sums safely within ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ll",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " and below sentinel $4\\cdot10^{18}$. Keep the least weight among parallel edges. Print absent answers as ",
+                    "marks": []
+                  },
+                  {
+                    "text": "INF",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Time is $O(n^3\\log k+m)$, space $O(n^2)$.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    int n, m;\n    ll k;\n    cin >> n >> m >> k; // 1 <= n <= 80; m <= 10000; 0 <= k <= 10^12\n    Mat a(n);\n    for (int i = 0; i < m; i++) {\n        int u, v;\n        ll w;\n        cin >> u >> v >> w; // |w| <= 10^6\n        --u;\n        --v;\n        a.a[u][v] = min(a.a[u][v], w);\n    }\n    Mat b = power(a, k);\n    for (auto &row : b.a) {\n        for (ll x : row) {\n            if (x == INF) cout << \"INF \";\n            else cout << x << ' ';\n        }\n        cout << \"\\n\";\n    }\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "The preceding parts combined. Compile the complete programs in separate files.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst ll INF = 4000000000000000000LL;\n\nstruct Mat {\n    int n;\n    vector<vector<ll>> a;\n\n    Mat(int _n, bool unit = false) {\n        n = _n;\n        a.assign(n, vector<ll>(n, INF));\n        if (unit) for (int i = 0; i < n; i++) a[i][i] = 0;\n    }\n\n    Mat operator*(const Mat &b) const {\n        Mat res(n);\n        for (int i = 0; i < n; i++) {\n            for (int k = 0; k < n; k++) {\n                if (a[i][k] == INF) continue;\n                for (int j = 0; j < n; j++) {\n                    if (b.a[k][j] == INF) continue;\n                    res.a[i][j] = min(res.a[i][j], a[i][k] + b.a[k][j]);\n                }\n            }\n        }\n        return res;\n    }\n};\n\nMat power(Mat a, ll k) {\n    Mat res(a.n, true);\n    while (k) {\n        if (k & 1) res = res * a;\n        a = a * a;\n        k >>= 1;\n    }\n    return res;\n}\n\nint main() {\n    int n, m;\n    ll k;\n    cin >> n >> m >> k; // 1 <= n <= 80; m <= 10000; 0 <= k <= 10^12\n    Mat a(n);\n    for (int i = 0; i < m; i++) {\n        int u, v;\n        ll w;\n        cin >> u >> v >> w; // |w| <= 10^6\n        --u;\n        --v;\n        a.a[u][v] = min(a.a[u][v], w);\n    }\n    Mat b = power(a, k);\n    for (auto &row : b.a) {\n        for (ll x : row) {\n            if (x == INF) cout << \"INF \";\n            else cout << x << ' ';\n        }\n        cout << \"\\n\";\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Kirchhoff’s theorem",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "The number of spanning trees of an undirected graph can be obtained from a special matrix determinant. The graph below has four edges and three spanning trees. Edge $1$–$2$ is mandatory; deleting any one of the three edges in triangle $1,3,4$ gives the three possibilities.",
+                "type": "p"
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 20,
+                    "y": 20,
+                    "id": "1",
+                    "label": "1"
+                  },
+                  {
+                    "x": 80,
+                    "y": 20,
+                    "id": "2",
+                    "label": "2"
+                  },
+                  {
+                    "x": 20,
+                    "y": 80,
+                    "id": "3",
+                    "label": "3"
+                  },
+                  {
+                    "x": 80,
+                    "y": 80,
+                    "id": "4",
+                    "label": "4"
+                  }
+                ],
+                "caption": "Four-vertex graph with three spanning trees.",
+                "directed": false
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 20,
+                    "y": 20,
+                    "id": "1",
+                    "label": "1"
+                  },
+                  {
+                    "x": 80,
+                    "y": 20,
+                    "id": "2",
+                    "label": "2"
+                  },
+                  {
+                    "x": 20,
+                    "y": 80,
+                    "id": "3",
+                    "label": "3"
+                  },
+                  {
+                    "x": 80,
+                    "y": 80,
+                    "id": "4",
+                    "label": "4"
+                  }
+                ],
+                "caption": "Spanning tree 1/3.",
+                "directed": false
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "1",
+                    "4"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 20,
+                    "y": 20,
+                    "id": "1",
+                    "label": "1"
+                  },
+                  {
+                    "x": 80,
+                    "y": 20,
+                    "id": "2",
+                    "label": "2"
+                  },
+                  {
+                    "x": 20,
+                    "y": 80,
+                    "id": "3",
+                    "label": "3"
+                  },
+                  {
+                    "x": 80,
+                    "y": 80,
+                    "id": "4",
+                    "label": "4"
+                  }
+                ],
+                "caption": "Spanning tree 2/3.",
+                "directed": false
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 20,
+                    "y": 20,
+                    "id": "1",
+                    "label": "1"
+                  },
+                  {
+                    "x": 80,
+                    "y": 20,
+                    "id": "2",
+                    "label": "2"
+                  },
+                  {
+                    "x": 20,
+                    "y": 80,
+                    "id": "3",
+                    "label": "3"
+                  },
+                  {
+                    "x": 80,
+                    "y": 80,
+                    "id": "4",
+                    "label": "4"
+                  }
+                ],
+                "caption": "Spanning tree 3/3.",
+                "directed": false
+              },
+              {
+                "text": "The Laplacian has vertex degrees on its diagonal and, for distinct $i,j$, the negative number of connecting edges at $L[i,j]$. In a simple graph this is $-1$ or $0$. Delete row and column with the same index $r$ to obtain principal minor $L_r$. Its determinant is the spanning-tree count, independent of the chosen $r$.",
+                "type": "p"
+              },
+              {
+                "tex": "L=\\begin{bmatrix}3&-1&-1&-1\\\\-1&1&0&0\\\\-1&0&2&-1\\\\-1&0&-1&2\\end{bmatrix},\\qquad\\det L_1=\\det\\begin{bmatrix}1&0&0\\\\0&2&-1\\\\0&-1&2\\end{bmatrix}=3",
+                "type": "math"
+              },
+              {
+                "text": "Deleting different row and column indices may change the raw determinant’s sign; the count is the signed cofactor $(-1)^{i+j}\\det M[i,j]$. The code therefore deletes the same index. Every row of the full $L$ sums to zero, so $\\det L=0$; taking the full determinant does not count spanning trees.",
+                "type": "p"
+              },
+              {
+                "text": "To see the counting idea, orient every edge arbitrarily. Form an incidence matrix with one row per vertex and one column per edge: put $1$ at its source, $-1$ at its destination, and $0$ elsewhere. Delete one vertex row to obtain $B$. Then $L_r=BB^T$. Expanding its determinant over choices of $n-1$ edge columns gives zero for a non-tree selection and one for every spanning tree. A tree minor has determinant $1$ or $-1$ by repeatedly expanding a leaf row, whereas cyclic or disconnected selections contribute zero. This is the central counting link; the algorithm does not enumerate those trees.",
+                "type": "p"
+              },
+              {
+                "tex": "\\det\\begin{bmatrix}n-1&-1&\\cdots&-1\\\\-1&n-1&\\cdots&-1\\\\\\vdots&\\vdots&\\ddots&\\vdots\\\\-1&-1&\\cdots&n-1\\end{bmatrix}_{(n-1)\\times(n-1)}=n^{n-2}",
+                "type": "math"
+              },
+              {
+                "text": "In a complete graph every degree is $n-1$ and off-diagonal entries are $-1$. Deleting one row/column gives the displayed $(n-1)\\times(n-1)$ matrix and determinant $n^{n-2}$, recovering Cayley’s formula. An elementary row/column argument gives the value: add all other rows to the first row, making it all ones. Then subtract the first column from every other column. The first row becomes $(1,0,\\ldots,0)$ and the remaining diagonal entries become $n$, giving determinant $1\\cdot n^{n-2}$. At $n=1$, the empty minor has determinant $1$, matching the single-vertex tree.",
+                "type": "p"
+              },
+              {
+                "text": "A practical modular determinant for larger minors",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Recursive expansion is too slow for large minors, so use row elimination over a prime field. In each column choose a nonzero pivot; swapping rows reverses the determinant’s sign. Subtracting a multiple of one row from another preserves the determinant. Eliminate entries below pivots to obtain a triangular matrix, whose determinant is the diagonal product.",
+                "type": "p"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The helper ",
+                    "marks": []
+                  },
+                  {
+                    "text": "det",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " works on a copy. If the pivot is zero, find and swap a nonzero row below; if none exists, the determinant is zero in the field. Multiply the pivot into the result, invert it with Fermat, and eliminate below. Time is $O(n^3+n\\log p)$ and matrix space $O(n^2)$. Division here requires the fixed prime $p=10^9+7$.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst int MOD = 1000000007;\n\nll modpow(ll a, int n) {\n    ll res = 1;\n    while (n) {\n        if (n & 1) res = res * a % MOD;\n        a = a * a % MOD;\n        n >>= 1;\n    }\n    return res;\n}\n\nll det(vector<vector<ll>> a) {\n    int n = a.size();\n    ll res = 1;\n    for (int i = 0; i < n; i++) {\n        int p = i;\n        while (p < n && a[p][i] == 0) p++;\n        if (p == n) return 0;\n        if (p != i) {\n            swap(a[p], a[i]);\n            res = (MOD - res) % MOD;\n        }\n        res = res * a[i][i] % MOD;\n        ll inv = modpow(a[i][i], MOD - 2);\n        for (int r = i + 1; r < n; r++) {\n            ll c = a[r][i] * inv % MOD;\n            for (int j = i; j < n; j++) {\n                a[r][j] = (a[r][j] - c * a[i][j] % MOD + MOD) % MOD;\n            }\n        }\n    }\n    return res;\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read ",
+                    "marks": []
+                  },
+                  {
+                    "text": "n m root",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", followed by undirected edges. Ignore self-loops because they cannot belong to a spanning tree; each parallel edge is a distinct choice and contributes to the Laplacian. Delete both the ",
+                    "marks": []
+                  },
+                  {
+                    "text": "root",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " row and column and normalize negative entries. Bounds are $n\\le150$, $m\\le10000$. The result is the count modulo the prime: a connected graph’s exact count may be divisible by $p$, so a zero residue alone does not prove disconnection.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    int n, m, root;\n    cin >> n >> m >> root; // 1 <= n <= 150; m <= 10000; 1 <= root <= n\n    --root;\n    vector<vector<ll>> l(n, vector<ll>(n));\n    for (int i = 0; i < m; i++) {\n        int a, b;\n        cin >> a >> b;\n        --a;\n        --b;\n        if (a == b) continue; // self-loops cannot belong to a spanning tree\n        l[a][a]++;\n        l[b][b]++;\n        l[a][b]--;\n        l[b][a]--;\n    }\n    vector<vector<ll>> a;\n    for (int i = 0; i < n; i++) {\n        if (i == root) continue;\n        vector<ll> row;\n        for (int j = 0; j < n; j++) {\n            if (j != root) row.push_back((l[i][j] % MOD + MOD) % MOD);\n        }\n        a.push_back(row);\n    }\n    cout << det(a) << \"\\n\"; // the empty minor for n=1 has determinant1\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete C++17 program",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "The preceding parts combined. Compile the complete programs in separate files.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst int MOD = 1000000007;\n\nll modpow(ll a, int n) {\n    ll res = 1;\n    while (n) {\n        if (n & 1) res = res * a % MOD;\n        a = a * a % MOD;\n        n >>= 1;\n    }\n    return res;\n}\n\nll det(vector<vector<ll>> a) {\n    int n = a.size();\n    ll res = 1;\n    for (int i = 0; i < n; i++) {\n        int p = i;\n        while (p < n && a[p][i] == 0) p++;\n        if (p == n) return 0;\n        if (p != i) {\n            swap(a[p], a[i]);\n            res = (MOD - res) % MOD;\n        }\n        res = res * a[i][i] % MOD;\n        ll inv = modpow(a[i][i], MOD - 2);\n        for (int r = i + 1; r < n; r++) {\n            ll c = a[r][i] * inv % MOD;\n            for (int j = i; j < n; j++) {\n                a[r][j] = (a[r][j] - c * a[i][j] % MOD + MOD) % MOD;\n            }\n        }\n    }\n    return res;\n}\n\nint main() {\n    int n, m, root;\n    cin >> n >> m >> root; // 1 <= n <= 150; m <= 10000; 1 <= root <= n\n    --root;\n    vector<vector<ll>> l(n, vector<ll>(n));\n    for (int i = 0; i < m; i++) {\n        int a, b;\n        cin >> a >> b;\n        --a;\n        --b;\n        if (a == b) continue; // self-loops cannot belong to a spanning tree\n        l[a][a]++;\n        l[b][b]++;\n        l[a][b]--;\n        l[b][a]--;\n    }\n    vector<vector<ll>> a;\n    for (int i = 0; i < n; i++) {\n        if (i == root) continue;\n        vector<ll> row;\n        for (int j = 0; j < n; j++) {\n            if (j != root) row.push_back((l[i][j] % MOD + MOD) % MOD);\n        }\n        a.push_back(row);\n    }\n    cout << det(a) << \"\\n\"; // the empty minor for n=1 has determinant1\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Exercises and independent practice",
+            "blocks": [
+              {
+                "text": "Exercises to master the topic",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Compare $A[2,3]$ with $A^T[3,2]$ in the rectangular example. Derive entries $42$, $99$, $102$ from row–column products. Explain the different identity sizes in $I_3A$ and $AI_2$. Check a square example where $AB\\ne BA$. Compare $A^0$, $A^1$, $A^3$ with the fast-power trace.",
+                "type": "p"
+              },
+              {
+                "text": "Compute determinant $81$ from three minors, then multiply the supplied inverse on both sides to verify the identity. Test a $1\\times1$ case, a zero row and a row swap. Explain the Fibonacci transition $(5,8)\\to(8,13)$ and reversed coefficients for a three-term recurrence. Compare matrix answers against direct DP for small indices.",
+                "type": "p"
+              },
+              {
+                "text": "Trace the two four-edge walks and their costs $8$ and $10$. Why do $k=0$ and $k=1$ differ on a one-vertex graph without edges? Compare counting parallel edges with keeping their least weight. Enumerate the three spanning trees and verify count $3$ using every principal minor. Check why an off-diagonal minor needs its sign.",
+                "type": "p"
+              },
+              {
+                "text": "Mastery and independent practice",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Fibonacci Numbers: core practice connecting state transitions with matrix powers.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "456"
+              },
+              {
+                "text": "Throwing Dice: independently construct a state for a higher-order linear recurrence.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "457"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Graph Paths I",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ": core application counting walks of exactly a fixed length.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "problem",
+                "problemKey": "458"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Graph Paths II",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ": core practice for min-plus products and the correct identity.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "problem",
+                "problemKey": "459"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "AtCoder DP R — Walk",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ": aggregate counts across all starting and ending vertices.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "problem",
+                "problemKey": "694"
+              },
+              {
+                "text": "Fixed Length Walk Queries: adapt matrix-power preprocessing to the query constraints.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "579"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Modular arithmetic, fast exponentiation and DP states; graph sections use directed/undirected graphs and spanning trees."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Модулийн арифметик, хурдан зэрэгт дэвшүүлэх арга, DP төлөв; графын хэсэгт чиглэлтэй/чиглэлгүй граф ба хамрах мод.",
+    "priorityLevel": "high",
+    "priorityReason": "Давтагдах шугаман шилжилт, том индекстэй тоолол, тогтмол урттай графын явалт ба хамрах модны тоог нэг алгебрын аргаар холбодог дахин хэрэглэгдэх суурь. Priority нь хүндрэлийн оноо биш.",
+    "prerequisiteIds": [
+      "number-theory",
+      "dynamic-programming"
+    ],
+    "learningRelations": {
+      "practice": [
+        {
+          "key": "456",
+          "stage": "Warm-up",
+          "reason": "Fibonacci Numbers: төлөв ба хурдан матрицын зэргийг холбох цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "457",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "458",
+          "stage": "Observation",
+          "reason": "`Graph Paths I`: яг тогтмол урттай явалт тоолох цөм хэрэглээ.",
+          "priority": true
+        },
+        {
+          "key": "459",
+          "stage": "Application",
+          "reason": "`Graph Paths II`: min-plus үржвэр ба зөв нэгжийн цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "694",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "579",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "fast-power",
+          "description": "Хурдан зэрэгт дэвшүүлэх аргын ижил удирдлагад тоон үржвэрийн оронд матриц хэрэглэнэ.",
+          "descriptionEn": "Reuse the fast-power control flow with matrix products."
+        },
+        {
+          "tutorialId": "combinatorics",
+          "description": "Cayley-ийн тоог Кирхгофын тусгай тохиолдолтой холбо.",
+          "descriptionEn": "Connect Cayley’s count to the special case of Kirchhoff."
+        }
+      ]
+    }
+  }
+}

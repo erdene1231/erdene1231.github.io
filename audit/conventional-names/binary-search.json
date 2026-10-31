@@ -1,0 +1,787 @@
+{
+  "body": {
+    "id": "binary-search",
+    "level": "Анхан шат",
+    "order": 10,
+    "title": "Хоёртын хайлт — эрэмбэлэгдсэн дарааллаас утга олох",
+    "aliases": "binary-search Binary search — sorted array дотор хайх Binary search — searching a sorted array хоёртын хайлт binary search lower bound upper bound answer monotonic",
+    "related": [
+      "sorting",
+      "two-pointers"
+    ],
+    "summary": "Утгуудын эрэмбийг ашиглан боломжгүй талыг бүхэлд нь хасъя. Хайлтын хоёр хязгаарыг зөв тайлбарлаж, хамгийн эхний тохирох байрлалыг алдалгүй олох аргыг баталж, хэрэгжүүлнэ.",
+    "category": "Array ба search",
+    "levelKey": "beginner",
+    "sections": [
+      {
+        "key": "idea",
+        "title": "Эрэмбэ хайлтыг хэрхэн богиносгодог вэ?",
+        "blocks": [
+          {
+            "text": "Үл буурах дарааллаар эрэмбэлэгдсэн $[1,3,3,8,12]$ массивт $8$ байна уу? Байвал аль нэг индексийг олъё. Харин $6$ байхгүй. Дор хаяж $6$ хэмжээтэй төхөөрөмж олох өөр асуултад $8$ тохирно: байгаа эсэх ба доод зааг олох нь ижил хариу биш. Энд эхлээд яг тэнцүү утгыг хайна.",
+            "type": "p"
+          },
+          {
+            "kind": "dp",
+            "rows": [
+              [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4"
+              ],
+              [
+                "1",
+                "3",
+                "3",
+                "8",
+                "12"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "Дээд мөр индекс; эхний индекс 0."
+          },
+          {
+            "text": "Эрэмбэлэгдээгүй массивын бүх утгыг нэг нэгээр шалгахад хамгийн муудаа $O(n)$ хугацаа орно. Үзээгүй сүүлчийн утга л хариу байх боломжтой. Харин эрэмбэ нь голын утгаас эрс бага утгыг баруун талд хайх хэрэггүйг хэлнэ. Энэ мэдээллээр боломжит мужийн талыг хасаж болно.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "closed",
+        "title": "Хоёр зах нь багтсан муж ба зөв байдлын үндэслэл",
+        "blocks": [
+          {
+            "text": "Боломжит элементийн индексийг хоёр зах нь багтсан $[l,r]$ мужид хадгална. Эхэндээ $l=0$, $r=n-1$. Дунд нь $mid=l+(r-l)/2$. $a[mid]=x$ бол шууд буцаана. Голын утга $x$-ээс эрс бага бол $mid$ хүртэлх бүх утга мөн эрс бага учир $l=mid+1$; эрс их бол $r=mid-1$. Шалгасан голын элементийг дахин үлдээхгүй.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "0",
+                "4",
+                "2",
+                "3",
+                "l=3"
+              ],
+              [
+                "3",
+                "4",
+                "3",
+                "8",
+                "return 3"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "l",
+              "$r$",
+              "mid",
+              "a[mid]",
+              "$x$=8 үед"
+            ]
+          },
+          {
+            "text": "$x=6$ үед эхний алхам адил. Дараа нь $8>6$ тул $r=2$, харин $l=3$ хэвээр: муж хоосорч хариу $-1$. $x=3$ бол код $2$-ыг буцааж болно; энэ нь зөв боловч хамгийн эхний $3$-ын индекс $1$ биш. Эхний таарцыг шаардах бол доод заагийн арга хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "text": "Давталтын эхэнд $x$-тэй тэнцүү индекс байвал хасагдаагүй $[l,r]$ дотор дор хаяж нэг нь бий. Эрэмбэ буруу талыг аюулгүй хасуулна. Таараагүй алхам бүрд муж богиносох тул төгсөнө. $n=0$ үед $r=-1$ болж массивт хүрэлгүй $-1$ гарна. Нэг элемент, бүх утга ижил, эхлэл/төгсгөлийн таарц мөн энэ дүрмээр бодогдоно.",
+            "type": "p"
+          },
+          {
+            "text": "Мужийн урт алхам бүрд ойролцоогоор тал болж, нэг асуулт $O(\\log(n+1))$ хугацаа, $O(1)$ нэмэлт зай хэрэглэнэ. $n$=0 үед ч тогтмол цөөн үйлдэлтэй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "jumps",
+        "title": "Үсрэлтийн уртыг таллах арга",
+        "blocks": [
+          {
+            "text": "Өөр арга нь зүүнээс баруун тийш урт үсрэлт хийж, дараа нь үсрэлтийг таллах юм. $k=-1$ гэдэг нь массивын өмнөх хийсвэр байрлал; $a[-1]$-д хэзээ ч хүрэхгүй. $k$-г $a[k]<x$ байх хамгийн сүүлийн бодит индекс рүү ахиулна. Дараагийн байрлал $k+1$ л эхний боломжит таарц.",
+            "type": "p"
+          },
+          {
+            "text": "$b$-г $n$-ээс ихгүй хамгийн том хоёрын зэрэг болгоно. Одоо үсэрч болох бүрд ахиулаад $b$-г таллана. Тухайн уртаар цааш ахих боломжгүй бол үлдсэн зөв ахиц $b$-ээс эрс бага; хагас уртад ихдээ нэг шинэ ахиц хэрэгтэй. Эхний урт ч иймээс нийт үсрэлт $O(\\log(n+1))$. $n=0$ үед нөхцөл эхнээсээ худал.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "4",
+                "3",
+                "8<6 false; $k$=-1"
+              ],
+              [
+                "2",
+                "1",
+                "3<6 true; $k$=1"
+              ],
+              [
+                "2",
+                "3",
+                "8<6 false"
+              ],
+              [
+                "1",
+                "2",
+                "3<6 true; $k$=2"
+              ],
+              [
+                "1",
+                "3",
+                "8<6 false; p=3"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "b",
+              "Шалгах индекс",
+              "$x$=6, үйлдэл"
+            ]
+          },
+          {
+            "text": "Олдсон $p=3$ дээр $8$ байна. Тиймээс хамгийн эхний $\\ge6$ зааг нь $3$ ч яг $6$-тай тэнцүү биш учир утга байгаа эсэхийн хариу $-1$. Хоёр аргын давталт өөр боловч хариуны гэрээ ижил: байхгүй бол $-1$, байвал хүчинтэй индекс. Үсрэлтийн арга эхний таарцыг өгнө.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "Хэрэгжүүлэлтийг хэсэгчлэн бүтээх нь",
+        "blocks": [
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Нэг асуулт бүрд массивыг дахин эрэмбэлэхгүй. Эрэмбэлэлт хэрэгтэй бол нэг удаагийн $O(n\\log n)$ бэлтгэл бөгөөд элементүүдийн анхны байрлал өөрчлөгдөнө. Дараах программд оролт аль хэдийн үл буурах дараалалтай гэж өгсөн; $0\\le n\\le200000$, $0\\le q\\le200000$. Утга ба хайх $x$ нь ll-д багтах бүхэл тоо, хэмжээ ба индекс int. ",
+                "marks": []
+              },
+              {
+                "text": "n",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хэмжээний vector-ийг санах ойд багтаах нөхцөлтэй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "Оролт $n$ q, дараа нь $n$ утга, q хайх утга. Асуулт бүрд эхний программын аль нэг таарц ба үсрэлтийн аргын эхний таарцыг хэвлэнэ; олдохгүй бол тус тус -1. Давхардалтай үед хоёр индекс ялгаатай байж болно.",
+            "type": "p"
+          },
+          {
+            "text": "Толгой хэсэг vector болон стандарт хэрэгслүүдийг оруулна. ll нь long long; индекс int хэвээр.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "findAny хоёр зах нь багтсан мужтай. mid-ийг l+($r$-l)/2 гэж олно: l+$r$ гэсэн хэрэггүй том нийлбэр үүсгэхгүй. Олдмогц return хийдэг тул дараагийн шилжилт түүнийг дарж өөрчлөхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "int findAny(const vector<ll> &a, ll x) {\n    int l = 0, r = (int)a.size() - 1;\n    while (l <= r) {\n        int mid = l + (r - l) / 2;\n        if (a[mid] == x) return mid;\n        if (a[mid] < x) l = mid + 1;\n        else r = mid - 1;\n    }\n    return -1;\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "findFirst-ийн $k$ нь $x$-ээс эрс бага утгатай сүүлийн элементийн индекс. b-ийг өсгөхдөө b≤$n$/2 гэж шалгасан тул 2b≤$n$; signed overflow үүсгэхгүй. Богино холболт $k$+b<$n$ шалгалтыг утга уншихаас түрүүнд хийдэг. p=$n$ үед a[p]-г мөн уншихгүй.",
+            "type": "p"
+          },
+          {
+            "text": "int findFirst(const vector<ll> &a, ll x) {\n    int n = a.size(), k = -1, b = 1;\n    while (b <= n / 2) b *= 2;\n    for (; b >= 1; b /= 2) {\n        while (k + b < n && a[k + b] < x) k += b;\n    }\n    int p = k + 1;\n    return p < n && a[p] == x ? p : -1;\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "main эрэмбэлэгдсэн vector-ийг нэг удаа уншаад асуулт бүрд өөрчлөлтгүй ашиглана. Хоёр аргын хариуны ялгааг гаралтаар харьцуулж болно.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n);\n    for (ll &v : a) cin >> v;\n    while (q--) {\n        ll x;\n        cin >> x;\n        cout << findAny(a, x) << ' ' << findFirst(a, x) << '\\n';\n    }\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Дээрх хэсгүүдийг яг энэ дарааллаар нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint findAny(const vector<ll> &a, ll x) {\n    int l = 0, r = (int)a.size() - 1;\n    while (l <= r) {\n        int mid = l + (r - l) / 2;\n        if (a[mid] == x) return mid;\n        if (a[mid] < x) l = mid + 1;\n        else r = mid - 1;\n    }\n    return -1;\n}\n\nint findFirst(const vector<ll> &a, ll x) {\n    int n = a.size(), k = -1, b = 1;\n    while (b <= n / 2) b *= 2;\n    for (; b >= 1; b /= 2) {\n        while (k + b < n && a[k + b] < x) k += b;\n    }\n    int p = k + 1;\n    return p < n && a[p] == x ? p : -1;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n);\n    for (ll &v : a) cin >> v;\n    while (q--) {\n        ll x;\n        cin >> x;\n        cout << findAny(a, x) << ' ' << findFirst(a, x) << '\\n';\n    }\n}",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "checks",
+        "title": "Заагийн тохиолдол ба өөрийгөө шалгах нь",
+        "blocks": [
+          {
+            "text": "Бүх утга ижил $[2,2,2]$, хоосон массив, ганц элемент, эхний/сүүлийн утга, хүрээнээс гаднах $x$-ийг шалга. Эрэмбэлэгдээгүй оролтод энэ баталгаа үйлчлэхгүй. mid-г шинэ зааг хэвээр үлдээгээд давталтын муж багасахгүй бол хоёр хөрш дээр гацна. Зөвхөн < ба ≤-г цээжлэхийн оронд хоёр талд юу батлагдсаныг хэлж сур.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "0",
+                "0",
+                "0",
+                "0"
+              ],
+              [
+                "2",
+                "1",
+                "4",
+                "3"
+              ],
+              [
+                "4",
+                "4",
+                "4",
+                "0"
+              ],
+              [
+                "5",
+                "4",
+                "5",
+                "1"
+              ],
+              [
+                "6",
+                "5",
+                "5",
+                "0"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "$x$",
+              "lower",
+              "upper",
+              "тоо"
+            ]
+          },
+          {
+            "text": "Хүснэгт нь $[1,2,2,2,5]$ дээрх хариу. Өөрөө нэг мөрийг гараар мөрдөж батал. Хоосон массивт lower=upper=0. Эдгээр нь $n$-ээс нэг бага элементийн индексээр хязгаарлагдахгүй, $n$ хүртэлх ЗААГ байдаг.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "text": "1. $[2,2,2]$ дээр $x=1,2,3$-ийн хоёр заагийг ол.",
+            "type": "p"
+          },
+          {
+            "text": "2. Яагаад $p=n$ үед $a[p]$-д хүрч болохгүй вэ?",
+            "type": "p"
+          },
+          {
+            "text": "3. $[l,r)$ элемент ба $[l,r]$ хариуны заагийн ялгааг тайлбарла.",
+            "type": "p"
+          },
+          {
+            "text": "4. Давталтын муж алхам бүрд багасахыг батал.",
+            "type": "p"
+          },
+          {
+            "text": "Шалгах хариу: (0,0), (0,3), (3,3); $n$ нь массивын дараах байрлал; хоосорсон элементийн мужид ч нэг зааг үлдэнэ; шинэ l≥mid+1 эсвэл шинэ $r$=mid нь l<$r$ үед уртыг заавал бууруулна.",
+            "type": "p"
+          },
+          {
+            "text": "Эхлээд доорх цөм дасгалын зааг, харьцуулалтыг өөрөө тодорхойл. Хайж буй нөхцөл яагаад нэг л удаа өөрчлөгдөхийг үндэслэ.",
+            "type": "p"
+          },
+          {
+            "text": "Доод заагийн хоёр талын хөршөөс хамгийн ойр утгыг олох, эхлэл ба төгсгөлийг аюулгүй шалгах үндсэн дадлага.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "751"
+          },
+          {
+            "text": "Дараах бодлогуудыг бие дааж бодоод эхлээд эрэмбэ, дараа нь хайж буй заагаа бич. Өөр аргыг шаардсан бодлогыг заавал энэ кодод хүчээр тааруулахгүй.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "315"
+          },
+          {
+            "type": "problem",
+            "problemKey": "749"
+          },
+          {
+            "type": "problem",
+            "problemKey": "95"
+          },
+          {
+            "type": "problem",
+            "problemKey": "337"
+          },
+          {
+            "type": "problem",
+            "problemKey": "132"
+          },
+          {
+            "type": "problem",
+            "problemKey": "313"
+          },
+          {
+            "type": "problem",
+            "problemKey": "26"
+          },
+          {
+            "type": "problem",
+            "problemKey": "322"
+          },
+          {
+            "type": "problem",
+            "problemKey": "96"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Binary search — finding a boundary in sorted data",
+        "summary": "Use sorted order to discard a whole impossible region. Define the two bounds precisely, prove that the first qualifying position is retained, and implement the search.",
+        "sections": [
+          {
+            "key": "idea",
+            "title": "How order shortens the search",
+            "blocks": [
+              {
+                "text": "In the non-decreasing sorted array $[1,3,3,8,12]$, does $8$ occur? Return an index if so; $6$ is absent. A different question, finding the first device of size at least $6$, would select $8$. Exact membership and a lower bound are different results; start with exact search.",
+                "type": "p"
+              },
+              {
+                "kind": "dp",
+                "rows": [
+                  [
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "1",
+                    "3",
+                    "3",
+                    "8",
+                    "12"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "Top row: zero-based indices."
+              },
+              {
+                "text": "Scanning an unsorted array costs $O(n)$ in the worst case: the last unseen value could be the target. Sorting gives additional information: a target smaller than the middle value cannot occur to its right. Use that fact to discard half the candidates.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "closed",
+            "title": "Closed interval and correctness",
+            "blocks": [
+              {
+                "text": "Store possible element indices in the closed interval $[l,r]$, initially $l=0,r=n-1$. Set $mid=l+(r-l)/2$. Return on equality. If $a[mid]<x$, all values through mid are too small, so use $l=mid+1$; otherwise use $r=mid-1$. Exclude the middle element after comparing it.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "0",
+                    "4",
+                    "2",
+                    "3",
+                    "l=3"
+                  ],
+                  [
+                    "3",
+                    "4",
+                    "3",
+                    "8",
+                    "return 3"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "l",
+                  "$r$",
+                  "mid",
+                  "a[mid]",
+                  "For $x$=8"
+                ]
+              },
+              {
+                "text": "$x=6$ follows the same first step, then $8>6$ sets $r=2$ while $l=3$. The interval is empty and the answer is $-1$. For $x=3$, the code may return index $2$. That is a valid match but not the first one at index $1$; use a lower bound when the first occurrence is required.",
+                "type": "p"
+              },
+              {
+                "text": "Invariant: if a matching index exists, at least one remains in $[l,r]$. Order makes each discarded half impossible. Every unsuccessful step shortens the interval, proving termination. When $n=0$, $r=-1$ and no element is accessed. The same rules handle a singleton, equal values and endpoint matches.",
+                "type": "p"
+              },
+              {
+                "text": "Halving the candidate interval gives $O(\\log(n+1))$ time and $O(1)$ extra space per query, including constant work for empty input.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "jumps",
+            "title": "Halving the jump length",
+            "blocks": [
+              {
+                "text": "An alternative moves left-to-right with long jumps, then halves their length. Start at the virtual position $k=-1$, never reading $a[-1]$. Advance toward the last real index whose value is less than $x$. The next position $k+1$ is the first possible match.",
+                "type": "p"
+              },
+              {
+                "text": "Choose b as the largest power of two not exceeding $n$. Advance while that jump is legal, then halve b. Once no further b-jump works, the remaining legal advance is less than b, so the next half-size stage needs at most one advance. This also bounds the initial stage, giving $O(\\log(n+1))$ total jumps. For an empty array every jump test fails.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "4",
+                    "3",
+                    "8<6 false; $k$=-1"
+                  ],
+                  [
+                    "2",
+                    "1",
+                    "3<6 true; $k$=1"
+                  ],
+                  [
+                    "2",
+                    "3",
+                    "8<6 false"
+                  ],
+                  [
+                    "1",
+                    "2",
+                    "3<6 true; $k$=2"
+                  ],
+                  [
+                    "1",
+                    "3",
+                    "8<6 false; p=3"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "b",
+                  "Candidate index",
+                  "$x$=6 action"
+                ]
+              },
+              {
+                "text": "At p=3 the value is 8: it is the first value at least 6, but not equal to 6, so membership returns -1. The two loops differ but share the result contract: -1 if absent, otherwise a valid index. The jump method additionally returns the first occurrence.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "Build the implementation in parts",
+            "blocks": [
+              {
+                "text": "Do not sort again for each query. If needed, sorting is an $O(n\\log n)$ preprocessing step that changes original-index meaning. The program assumes an already non-decreasing input, with $0\\le n,q\\le200000$. Values and targets fit ll; sizes/indices use int, with feasible vector storage.",
+                "type": "p"
+              },
+              {
+                "text": "Input $n$ q, $n$ sorted values and q targets. Each output gives any-match and jump-first-match indices, each−1 if absent. They may legitimately differ when duplicates occur.",
+                "type": "p"
+              },
+              {
+                "text": "The header supplies vector/library tools. ll aliases long long; indices remain int.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "findAny uses a closed interval and l+($r$−l)/2, avoiding an unnecessarily large l+$r$ sum. Equality immediately returns rather than being overwritten by a later branch.",
+                "type": "p"
+              },
+              {
+                "text": "int findAny(const vector<ll> &a, ll x) {\n    int l = 0, r = (int)a.size() - 1;\n    while (l <= r) {\n        int mid = l + (r - l) / 2;\n        if (a[mid] == x) return mid;\n        if (a[mid] < x) l = mid + 1;\n        else r = mid - 1;\n    }\n    return -1;\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "findFirst maintains the index of the last value strictly smaller than the target. Growing b only when b≤$n$/2 ensures2b≤$n$ without overflow. Short-circuit tests check $k$+b<$n$ before reading the element, and p<$n$ before checking equality.",
+                "type": "p"
+              },
+              {
+                "text": "int findFirst(const vector<ll> &a, ll x) {\n    int n = a.size(), k = -1, b = 1;\n    while (b <= n / 2) b *= 2;\n    for (; b >= 1; b /= 2) {\n        while (k + b < n && a[k + b] < x) k += b;\n    }\n    int p = k + 1;\n    return p < n && a[p] == x ? p : -1;\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "main reads the sorted vector once and reuses it without mutation. The two result columns expose their different duplicate-match choices.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n);\n    for (ll &v : a) cin >> v;\n    while (q--) {\n        ll x;\n        cin >> x;\n        cout << findAny(a, x) << ' ' << findFirst(a, x) << '\\n';\n    }\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled from exactly the preceding parts:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint findAny(const vector<ll> &a, ll x) {\n    int l = 0, r = (int)a.size() - 1;\n    while (l <= r) {\n        int mid = l + (r - l) / 2;\n        if (a[mid] == x) return mid;\n        if (a[mid] < x) l = mid + 1;\n        else r = mid - 1;\n    }\n    return -1;\n}\n\nint findFirst(const vector<ll> &a, ll x) {\n    int n = a.size(), k = -1, b = 1;\n    while (b <= n / 2) b *= 2;\n    for (; b >= 1; b /= 2) {\n        while (k + b < n && a[k + b] < x) k += b;\n    }\n    int p = k + 1;\n    return p < n && a[p] == x ? p : -1;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n);\n    for (ll &v : a) cin >> v;\n    while (q--) {\n        ll x;\n        cin >> x;\n        cout << findAny(a, x) << ' ' << findFirst(a, x) << '\\n';\n    }\n}",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "checks",
+            "title": "Boundary cases and self-checks",
+            "blocks": [
+              {
+                "text": "Check an equal array [2,2,2], empty/singleton inputs, first/last values and targets outside the range. The proof fails on unsorted input. Keeping mid without shrinking the interval can stall on adjacent endpoints. Explain the meaning of both known regions rather than memorize < versus ≤.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "0",
+                    "0",
+                    "0",
+                    "0"
+                  ],
+                  [
+                    "2",
+                    "1",
+                    "4",
+                    "3"
+                  ],
+                  [
+                    "4",
+                    "4",
+                    "4",
+                    "0"
+                  ],
+                  [
+                    "5",
+                    "4",
+                    "5",
+                    "1"
+                  ],
+                  [
+                    "6",
+                    "5",
+                    "5",
+                    "0"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "$x$",
+                  "lower",
+                  "upper",
+                  "count"
+                ]
+              },
+              {
+                "text": "The table refers to [1,2,2,2,5]. Trace a row manually. An empty array has lower=upper=0. These are boundaries up to $n$, not only element indices up to $n$−1.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "text": "1. Find both bounds for $x=1,2,3$ in $[2,2,2]$.",
+                "type": "p"
+              },
+              {
+                "text": "2. Explain why $a[p]$ is invalid at $p=n$.",
+                "type": "p"
+              },
+              {
+                "text": "3. Distinguish $[l,r)$ elements from $[l,r]$ answer boundaries.",
+                "type": "p"
+              },
+              {
+                "text": "4. Prove strict progress on every iteration.",
+                "type": "p"
+              },
+              {
+                "text": "Checks: (0,0),(0,3),(3,3); $n$ is past the array; an empty element interval can retain one boundary; l≥mid+1 or $r$=mid strictly reduces the length when l<$r$.",
+                "type": "p"
+              },
+              {
+                "text": "First identify the boundary/comparison for the core practice below. Justify why the searched predicate changes only once.",
+                "type": "p"
+              },
+              {
+                "text": "Core practice in finding the nearest value among the neighbors of a lower bound, checking the beginning and end safely.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "751"
+              },
+              {
+                "text": "For independent practice, state the ordering and desired boundary first. Do not force this exact code onto a problem requiring a different method.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "315"
+              },
+              {
+                "type": "problem",
+                "problemKey": "749"
+              },
+              {
+                "type": "problem",
+                "problemKey": "95"
+              },
+              {
+                "type": "problem",
+                "problemKey": "337"
+              },
+              {
+                "type": "problem",
+                "problemKey": "132"
+              },
+              {
+                "type": "problem",
+                "problemKey": "313"
+              },
+              {
+                "type": "problem",
+                "problemKey": "26"
+              },
+              {
+                "type": "problem",
+                "problemKey": "322"
+              },
+              {
+                "type": "problem",
+                "problemKey": "96"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Know nondecreasing order, zero-based array positions, conditionals and loops. Study sorting first."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Үл буурах дараалал, тэгээс дугаарласан байрлал, нөхцөлт салаалал ба давталтыг мэддэг байна. Эхлээд эрэмбэлэх хичээлээ үзээрэй.",
+    "priorityLevel": "high",
+    "priorityReason": "Эрэмбэлэгдсэн өгөгдөлд зааг олох, боломжит хариуны мужийг алдалгүй багасгах, давталтын зөвийг батлах суурь чадварыг өгдөг тул сургалтын ач холбогдол өндөр. Энэ үнэлгээ нь бодлогын хүндрэлээс тусдаа.",
+    "prerequisiteIds": [
+      "sorting"
+    ],
+    "learningRelations": {
+      "next": "lower-bound",
+      "practice": [
+        {
+          "key": "751",
+          "stage": "Warm-up",
+          "reason": "Доод заагийн хоёр талын хөршөөс хамгийн ойр утгыг олох, эхлэл ба төгсгөлийг аюулгүй шалгах үндсэн дадлага.",
+          "priority": true
+        },
+        {
+          "key": "315",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "749",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "95",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "337",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "132",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "313",
+          "stage": "Warm-up",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "26",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "322",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "96",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "lower-bound",
+          "description": "Шаардлагыг хангах эхний байрлал болон утгын муж дахь тоог олох.",
+          "descriptionEn": "First qualifying boundary and value-range counts."
+        },
+        {
+          "tutorialId": "upper-bound",
+          "description": "Өгсөн утгаас эрс их эхний утгын байрлалаар давтамж тоолох.",
+          "descriptionEn": "The boundary after equal values and frequency."
+        },
+        {
+          "tutorialId": "binary-search-answer",
+          "description": "Боломжит хариуны мужид нэг чиглэлтэй шалгах нөхцөл байгуулах.",
+          "descriptionEn": "Monotonic feasibility over an answer domain."
+        }
+      ]
+    }
+  }
+}

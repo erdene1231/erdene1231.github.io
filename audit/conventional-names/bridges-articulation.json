@@ -1,0 +1,910 @@
+{
+  "body": {
+    "id": "bridges-articulation",
+    "level": "Ахисан шат",
+    "order": 32,
+    "title": "Гүүр ба салгах орой — DFS-ийн буцах мэдээлэл",
+    "aliases": "bridges articulation points cut vertex lowlink tin low гүүр салгах орой",
+    "related": [
+      "dfs",
+      "connected-components",
+      "scc"
+    ],
+    "summary": "DFS-ийн орох цаг ба low утгаар нэг ирмэг эсвэл орой устахад холбогдол хаана тасрахыг шугаман хугацаанд олно.",
+    "category": "Graphs",
+    "levelKey": "advanced",
+    "sections": [
+      {
+        "key": "removal",
+        "title": "Холбоос тасрахыг компонентын тоогоор тодорхойлох",
+        "blocks": [
+          {
+            "text": "Сүлжээнээс нэг холбоос устахад хоёр хэсэг салж болох уу? Харин нэг орой болон түүнд тулсан бүх ирмэгийг устгавал яах вэ? Чиглэлгүй графын компонентын тоог өсгөдөг ирмэгийг гүүр, оройг салгах орой (articulation point) гэе. Эх граф заавал холбоост байх албагүй: өөрчлөлтийг анхны компонентын тоотой нь харьцуулна.",
+            "type": "p"
+          },
+          {
+            "text": "Ирмэг, орой бүрийг тус тус устгаад BFS хийвэл жижиг графт зөв лавлах болно. Гэвч O(($n$+$m$)²) хүртэл ажилтай. Нэг DFS-ийн явцад дэд мод эцгээсээ өөр замаар дээшээ хүрч чадах эсэхийг хадгалбал бүх хариуг $O(n+m)$-д олно. Энэ нь чиглэлтэй графын SCC бодлого биш.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "low",
+        "title": "DFS-ийн орох цаг ба low төлөв",
+        "blocks": [
+          {
+            "text": "tin[$u$] нь $u$-д анх орсон дарааллын дугаар. Үзээгүй хөрш $v$ рүү орох ирмэг DFS модны ирмэг, $v$ нь хүүхэд болно. Харин аль хэдийн орсон өвөг рүү очих өөр ирмэг буцах холбоос. Рекурсээр бичсэн бол хүүхдээс БУЦАХАД хүүхдийн бүх салбарын мэдээлэл бэлэн болно. Итератив код ч яг энэ агшныг дуурайх ёстой.",
+            "type": "p"
+          },
+          {
+            "text": "low[$u$] нь $u$-ийн дэд модноос модны ирмэгээр доош явж, хамгийн ихдээ нэг буцах холбоос ашиглаад хүрч болох хамгийн бага tin. Эхэнд low[$u$]=tin[$u$]. Хүүхэд $v$ дуусахад low[$v$]-г авна; эцгийн яг тэр ирмэгээс өөр, үзсэн $v$ хөршийн үед tin[$v$]-г авна. Буцах холбоост low[$v$] биш tin[$v$] хэрэглэнэ: бид нэг нэмэлт холбоосоор хаана хүрснийг л авч байна.",
+            "type": "p"
+          },
+          {
+            "text": "Чиглэлгүй DFS-д үзсэн хөрш нь доод үр удам байж бас болно. Түүний tin нь $u$-ийнхээс эрс их тул хамгийн бага утгыг бууруулахгүй. Модны ирмэгээр орсон эцгийг бүхэлд нь алгасахгүй: зөвхөн эцэгтэй холбосон тухайн ирмэгийн дугаарыг алгасана.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "trace",
+        "title": "Хоёр цикл ба ганц гүүрийг бүтнээр мөрдөх",
+        "blocks": [
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "3",
+                "1"
+              ],
+              [
+                "3",
+                "4"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "6"
+              ],
+              [
+                "6",
+                "4"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 8,
+                "y": 18,
+                "id": "1",
+                "label": "1",
+                "annotation": "1/1",
+                "annotationDy": -25
+              },
+              {
+                "x": 8,
+                "y": 80,
+                "id": "2",
+                "label": "2",
+                "annotation": "2/1",
+                "annotationDy": -25
+              },
+              {
+                "x": 32,
+                "y": 48,
+                "id": "3",
+                "label": "3",
+                "annotation": "3/1",
+                "annotationDy": -25
+              },
+              {
+                "x": 58,
+                "y": 48,
+                "id": "4",
+                "label": "4",
+                "annotation": "4/4",
+                "annotationDy": -25
+              },
+              {
+                "x": 83,
+                "y": 18,
+                "id": "5",
+                "label": "5",
+                "annotation": "5/4",
+                "annotationDy": -25
+              },
+              {
+                "x": 83,
+                "y": 80,
+                "id": "6",
+                "label": "6",
+                "annotation": "6/4",
+                "annotationDy": -25
+              },
+              {
+                "x": 48,
+                "y": 90,
+                "id": "7",
+                "label": "7",
+                "annotation": "7/7",
+                "annotationDy": -25
+              }
+            ],
+            "caption": "Хоёр гурвалжин 3–4 ирмэгээр холбогдсон, 7 тусгаар. Гаднах тэмдэг нь tin/low.",
+            "directed": false,
+            "edgeStyles": [
+              {
+                "color": "#64748b",
+                "label": "1"
+              },
+              {
+                "color": "#64748b",
+                "label": "2"
+              },
+              {
+                "color": "#64748b",
+                "label": "3"
+              },
+              {
+                "color": "#e67e22",
+                "label": "4"
+              },
+              {
+                "color": "#64748b",
+                "label": "5"
+              },
+              {
+                "color": "#64748b",
+                "label": "6"
+              },
+              {
+                "color": "#64748b",
+                "label": "7"
+              }
+            ]
+          },
+          {
+            "text": "Оролтын дарааллаар 1→2→3→4→5→6 гэж орно, дараа нь тусгаар 7. Орой 3-аас 1 рүү буцах ирмэг low[3]=1 болгож, буцахад low[2]=1 болно. Орой 6-аас 4 рүү буцах ирмэг low[6]=4, дараа нь low[5]=4. Харин 4-ийн дэд мод 3 эсвэл түүнээс дээш хүрэх буцах холбоосгүй.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "1",
+                "1",
+                "1",
+                "0"
+              ],
+              [
+                "2",
+                "2",
+                "1",
+                "1"
+              ],
+              [
+                "3",
+                "3",
+                "1",
+                "2"
+              ],
+              [
+                "4",
+                "4",
+                "4",
+                "3"
+              ],
+              [
+                "5",
+                "5",
+                "4",
+                "4"
+              ],
+              [
+                "6",
+                "6",
+                "4",
+                "5"
+              ],
+              [
+                "7",
+                "7",
+                "7",
+                "0"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Орой",
+              "tin",
+              "low",
+              "DFS эцэг"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "conditions",
+        "title": "Гүүрийн >, салгах оройн ≥ ба үндэс",
+        "blocks": [
+          {
+            "text": "DFS модны $u$–$v$ ирмэгт $v$ хүүхэд байг. low[$v$]>tin[$u$] бол хүүхдийн дэд мод $u$ рүү ч, $u$-ийн өвөг рүү ч өөр ирмэгээр хүрэхгүй. $u$–$v$-г устгахад хоёр тал сална: энэ нь гүүр. Харин low[$v$]≤tin[$u$] бол доош модны зам, буцах ирмэг, дээш модны замаар өөр маршрут байна. Модны биш ирмэг өөрөө циклд ордог учраас гүүр биш.",
+            "type": "p"
+          },
+          {
+            "text": "Үндэс биш $u$-ийн хувьд low[$v$]≥tin[$u$] хүүхэд байвал $u$-г устгахад тэр дэд мод $u$-ийн эцгийн талд хүрэхгүй, тиймээс $u$ салгах орой. Тэнцүү үед ч хариу тийм: буцах холбоос зөвхөн $u$-д хүрдэг, устсан $u$ тус болохгүй. low[$v$]<tin[$u$] бүх хүүхдэд биелбэл хүүхдийн салбар бүр эцгийн талд холбоостой үлдэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "Үндэст эцгийн тал байхгүй тул дээрх нөхцөлийг шууд хэрэглэхгүй. DFS үндэс хоёр буюу түүнээс олон хүүхэдтэй үед л салгах орой. Нэг хүүхэдтэй бол үлдсэн бүх орой нэг дэд модонд, хүүхэдгүй бол тусгаар орой. Графын хөршийн тоо биш, DFS-ийн шууд хүүхдийн тоог тоолно.",
+            "type": "p"
+          },
+          {
+            "text": "Жишээнд low[4]=4>tin[3]=3 тул 4 дугаар ирмэг гүүр, орой3 салгах орой. low[5]=tin[4]=4 тул 4–5 гүүр БИШ боловч орой4 салгах орой. Үндэс1 зөвхөн хүүхэд2-той тул салгах орой биш. Үр дүн: гүүрүүд [4], салгах оройнууд [3,4].",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "edge-cases",
+        "title": "Давхар ирмэг, өөртэйгөө ирмэг ба салангид граф",
+        "blocks": [
+          {
+            "text": "1–2 хооронд хоёр ирмэг, 2–3 хооронд нэг ирмэг, 2-т өөртэйгөө ирмэг байг. 1-ээс 2 руу эхний ирмэгээр орвол зөвхөн тэр ID-ийн буцах хувийг алгасана. Хоёр дахь 1–2 ирмэг low[2]-г tin[1] болгоно: эхний ирмэг гүүр биш. Хоёр ирмэгт ижил төгсгөл байгаа нь ижил ирмэг гэсэн үг биш.",
+            "type": "p"
+          },
+          {
+            "text": "Өөртэйгөө ирмэг low-д өөрийн tin-ийг л өгнө, шинэ хүүхэд үүсгэхгүй. Түүнийг устгаад холбогдол өөрчлөгдөхгүй. Энэ жишээнд зөвхөн 3 дугаар ирмэг гүүр, орой2 салгах орой. Салангид графт үзээгүй орой бүрээс шинэ DFS эхлүүлж, үндэс бүрийн хүүхдийг тусад нь тоолно. Тусгаар оройг устгахад компонентын тоо өсөхгүй тул салгах орой биш.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "Итератив Lowlink struct ба бүтэн C++17",
+        "blocks": [
+          {
+            "text": "Рекурсийн гүн гинжин графт $n$ хүрнэ. Доорх хувилбар ил Stack ашиглана: it[$u$] нь дараагийн шалгах хөрш, Stack-аас $u$-г гаргах мөч нь рекурсээс буцахтай адил. Хүүхдийн low зөвхөн тэр үед эцэгт дамжина; орсон даруйд шалгавал хүүхдийн мэдээлэл дутуу байна.",
+            "type": "p"
+          },
+          {
+            "text": "Оролт $n$ $m$, дараа нь $m$ чиглэлгүй ирмэг; 0≤$n$,$m$≤200000, оройнууд 1..$n$. $n$=0 бол $m$=0. Давхар болон өөртэйгөө ирмэг зөвшөөрнө. Гаралт дөрвөн мөр: гүүрийн тоо, оролтын 1-ээс эхэлсэн гүүрийн ID-ууд, салгах оройн тоо, тэдгээрийн дугаар. Хоосон жагсаалт хоосон мөрөөр гарна. Necessary Roads-д ID бус төгсгөлүүдийг хэвлэхээр тохируулна.",
+            "type": "p"
+          },
+          {
+            "text": "Индекс, цаг, тооллого нь 200000-аас хэтрэхгүй тул int хангалттай.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Хэмжээ авдаг байгуулагч хөршүүдийг бэлдэнэ. add нэг ирмэгийн дугаарыг хоёр чиглэлийн бичлэгт хуваалцана. edges нь төгсгөлүүдийг хадгална.",
+            "type": "p"
+          },
+          {
+            "text": "struct Lowlink {\n    int n, timer = 0;\n    vector<vector<pair<int, int>>> adj;\n    vector<pair<int, int>> edges;\n    vector<int> tin, low, par, pe, it, child, cut, bridge;\n    Lowlink(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n    }\n    void add(int u, int v) {\n        int id = (int)edges.size();\n        edges.push_back({u, v});\n        adj[u].push_back({v, id});\n        adj[v].push_back({u, id});\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "run бүх ажлын массивыг шинэчилнэ; pe=-1 нь эцгийн ирмэггүй үндсийн тэмдэг.",
+            "type": "p"
+          },
+          {
+            "text": "void run() {\n        timer = 0;\n        tin.assign(n + 1, 0);\n        low.assign(n + 1, 0);\n        par.assign(n + 1, 0);\n        pe.assign(n + 1, -1);\n        it.assign(n + 1, 0);\n        child.assign(n + 1, 0);\n        cut.assign(n + 1, 0);\n        bridge.assign(edges.size(), 0);",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Үзээгүй үндэс бүрийг Stack-д оруулж анх орсон цаг олгоно.",
+            "type": "p"
+          },
+          {
+            "text": "for (int r = 1; r <= n; r++) {\n            if (tin[r]) continue;\n            vector<int> st = {r};\n            tin[r] = low[r] = ++timer;\n            while (!st.empty()) {\n                int u = st.back();",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Хөршийн индексийг ахиулаад яг эцгийн ирмэгийг алгасана. Үзээгүй хүүхдэд орж, үзсэн хөршөөс tin утга авна.",
+            "type": "p"
+          },
+          {
+            "text": "if (it[u] < (int)adj[u].size()) {\n                    auto [v, id] = adj[u][it[u]++];\n                    if (id == pe[u]) continue;\n                    if (!tin[v]) {\n                        par[v] = u;\n                        pe[v] = id;\n                        child[u]++;\n                        tin[v] = low[v] = ++timer;\n                        st.push_back(v);\n                    } else {\n                        low[u] = min(low[u], tin[v]);\n                    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бүх хөрш дуусахад $u$-г гаргаж low-г эцэгт дамжуулна. Үндэс ба үндэс биш оройн шалгуурыг ялгана.",
+            "type": "p"
+          },
+          {
+            "text": "} else {\n                    st.pop_back();\n                    int p = par[u];\n                    if (!p) {\n                        cut[u] = child[u] > 1;\n                    } else {\n                        low[p] = min(low[p], low[u]);\n                        if (low[u] > tin[p]) bridge[pe[u]] = 1;\n                        if (par[p] && low[u] >= tin[p]) cut[p] = 1;\n                    }\n                }\n            }\n        }\n    }\n};",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "main ирмэгийн ID ба оройн жагсаалтуудыг дугаарын дарааллаар хэвлэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    Lowlink g(n);\n    for (int i = 0, u, v; i < m; i++) {\n        cin >> u >> v;\n        g.add(u, v);\n    }\n    g.run();\n    vector<int> b, c;\n    for (int i = 0; i < m; i++) if (g.bridge[i]) b.push_back(i + 1);\n    for (int u = 1; u <= n; u++) if (g.cut[u]) c.push_back(u);\n    cout << b.size() << '\\n';\n    for (int id : b) cout << id << ' ';\n    cout << '\\n' << c.size() << '\\n';\n    for (int u : c) cout << u << ' ';\n    cout << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct Lowlink {\n    int n, timer = 0;\n    vector<vector<pair<int, int>>> adj;\n    vector<pair<int, int>> edges;\n    vector<int> tin, low, par, pe, it, child, cut, bridge;\n    Lowlink(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n    }\n    void add(int u, int v) {\n        int id = (int)edges.size();\n        edges.push_back({u, v});\n        adj[u].push_back({v, id});\n        adj[v].push_back({u, id});\n    }\n    void run() {\n        timer = 0;\n        tin.assign(n + 1, 0);\n        low.assign(n + 1, 0);\n        par.assign(n + 1, 0);\n        pe.assign(n + 1, -1);\n        it.assign(n + 1, 0);\n        child.assign(n + 1, 0);\n        cut.assign(n + 1, 0);\n        bridge.assign(edges.size(), 0);\n        for (int r = 1; r <= n; r++) {\n            if (tin[r]) continue;\n            vector<int> st = {r};\n            tin[r] = low[r] = ++timer;\n            while (!st.empty()) {\n                int u = st.back();\n                if (it[u] < (int)adj[u].size()) {\n                    auto [v, id] = adj[u][it[u]++];\n                    if (id == pe[u]) continue;\n                    if (!tin[v]) {\n                        par[v] = u;\n                        pe[v] = id;\n                        child[u]++;\n                        tin[v] = low[v] = ++timer;\n                        st.push_back(v);\n                    } else {\n                        low[u] = min(low[u], tin[v]);\n                    }\n                } else {\n                    st.pop_back();\n                    int p = par[u];\n                    if (!p) {\n                        cut[u] = child[u] > 1;\n                    } else {\n                        low[p] = min(low[p], low[u]);\n                        if (low[u] > tin[p]) bridge[pe[u]] = 1;\n                        if (par[p] && low[u] >= tin[p]) cut[p] = 1;\n                    }\n                }\n            }\n        }\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    Lowlink g(n);\n    for (int i = 0, u, v; i < m; i++) {\n        cin >> u >> v;\n        g.add(u, v);\n    }\n    g.run();\n    vector<int> b, c;\n    for (int i = 0; i < m; i++) if (g.bridge[i]) b.push_back(i + 1);\n    for (int u = 1; u <= n; u++) if (g.cut[u]) c.push_back(u);\n    cout << b.size() << '\\n';\n    for (int id : b) cout << id << ' ';\n    cout << '\\n' << c.size() << '\\n';\n    for (int u : c) cout << u << ' ';\n    cout << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Орой бүр нэг орж нэг гарна, чиглэлгүй ирмэгийн хоёр бичлэг тус бүр нэг шалгагдана. Хугацаа $O(n+m)$, нийт санах ой $O(n+m)$, рекурсийн дуудлагын Stack хэрэглээгүй. it,par,pe нь орсон/буцсан төлөвийг ил хадгалж байгаа болохоос DFS-ийн утгыг өөрчилсөн биш.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "text": "Лавлах шалгалт: эхний компонентын тоог ол. Ирмэг бүрийг зөвхөн ID-гаар нь устгаад дахин тоолж, өссөн эсэхийг шалга. Орой устгахдаа түүнд тулсан бүх ирмэг ба оройг тооллогоос хас. Үлдсэн графын компонентыг анхны тоотой харьцуулна. Энэ удаан арга нь low-ийн томьёог давтахгүй тул бие даасан лавлах шалгалт болно.",
+            "type": "p"
+          },
+          {
+            "text": "Сэдвийг эзэмших үндсэн бодлого",
+            "type": "p"
+          },
+          {
+            "text": "Necessary Roads: бүх гүүрийг олоод ирмэгийн төгсгөлүүдийг шаардсан хэлбэрээр хэвлэ.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "519"
+          },
+          {
+            "text": "Necessary Cities: бүх салгах оройг ол; DFS үндсийн тусгай нөхцөлийг шалга.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "520"
+          },
+          {
+            "text": "Бие даах ба ахиулах бодлогууд",
+            "type": "p"
+          },
+          {
+            "text": "Round Trip: цикл сэргээх нь зөвхөн гүүр мөн эсэх тэмдэглэгээнээс өөр нэмэлт ажил.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "365"
+          },
+          {
+            "text": "Building Roads: статик компонент олох DFS-ийг үндсэн лавлахтай харьцуул.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "362"
+          },
+          {
+            "text": "Network Breakdown: олон устгал дараалан хийгдэх нь ганц анхны графын lowlink-оос өөр динамик бодлого.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "584"
+          },
+          {
+            "text": "Police Chase: хамгийн бага огтлол олох урсгалын аргыг ганц ирмэгийн гүүртэй бүү адилтга.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "392"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Bridges and articulation points — information returned by DFS",
+        "summary": "Use DFS entry times and low values to find edges and vertices whose removal increases the component count.",
+        "sections": [
+          {
+            "key": "removal",
+            "title": "Defining failure by component counts",
+            "blocks": [
+              {
+                "text": "Can removing one connection separate a network? What if a vertex and all its incident edges disappear? In an undirected graph, an edge increasing the component count is a bridge; a vertex doing so is an articulation point. The graph need not initially be connected: compare against its original component count.",
+                "type": "p"
+              },
+              {
+                "text": "Deleting each edge or vertex and recomputing components with BFS gives a correct small oracle, but can cost O(($n$+$m$)²). One DFS can summarize whether each subtree escapes upward without its parent edge, finding everything in $O(n+m)$. This is not the directed SCC problem.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "low",
+            "title": "DFS discovery times and the low summary",
+            "blocks": [
+              {
+                "text": "tin[$u$] is the order in which $u$ is first entered. An edge to an unseen $v$ is a DFS tree edge, making $v$ a child. Another edge to an entered ancestor provides a back connection. In recursive DFS, a child’s summary is complete only when it RETURNS; the iterative implementation must reproduce this event.",
+                "type": "p"
+              },
+              {
+                "text": "low[$u$] is the minimum entry time reachable from $u$’s subtree by descending tree edges and using at most one back connection. Initialize low[$u$]=tin[$u$]. When child $v$ finishes, incorporate low[$v$]; for an already visited neighbor $v$ through a non-parent edge, incorporate tin[$v$], not low[$v$], because it is this one additional edge’s endpoint that matters.",
+                "type": "p"
+              },
+              {
+                "text": "A visited neighbor may also be a descendant in undirected DFS; its larger tin cannot decrease the minimum. Do not skip the parent vertex wholesale: skip only the exact edge ID used to enter the current vertex.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "trace",
+            "title": "Tracing two cycles and one bridge",
+            "blocks": [
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "1"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "6"
+                  ],
+                  [
+                    "6",
+                    "4"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 8,
+                    "y": 18,
+                    "id": "1",
+                    "label": "1",
+                    "annotation": "1/1",
+                    "annotationDy": -25
+                  },
+                  {
+                    "x": 8,
+                    "y": 80,
+                    "id": "2",
+                    "label": "2",
+                    "annotation": "2/1",
+                    "annotationDy": -25
+                  },
+                  {
+                    "x": 32,
+                    "y": 48,
+                    "id": "3",
+                    "label": "3",
+                    "annotation": "3/1",
+                    "annotationDy": -25
+                  },
+                  {
+                    "x": 58,
+                    "y": 48,
+                    "id": "4",
+                    "label": "4",
+                    "annotation": "4/4",
+                    "annotationDy": -25
+                  },
+                  {
+                    "x": 83,
+                    "y": 18,
+                    "id": "5",
+                    "label": "5",
+                    "annotation": "5/4",
+                    "annotationDy": -25
+                  },
+                  {
+                    "x": 83,
+                    "y": 80,
+                    "id": "6",
+                    "label": "6",
+                    "annotation": "6/4",
+                    "annotationDy": -25
+                  },
+                  {
+                    "x": 48,
+                    "y": 90,
+                    "id": "7",
+                    "label": "7",
+                    "annotation": "7/7",
+                    "annotationDy": -25
+                  }
+                ],
+                "caption": "Two triangles joined by edge3–4, plus isolated7. Outer labels show tin/low.",
+                "directed": false,
+                "edgeStyles": [
+                  {
+                    "color": "#64748b",
+                    "label": "1"
+                  },
+                  {
+                    "color": "#64748b",
+                    "label": "2"
+                  },
+                  {
+                    "color": "#64748b",
+                    "label": "3"
+                  },
+                  {
+                    "color": "#e67e22",
+                    "label": "4"
+                  },
+                  {
+                    "color": "#64748b",
+                    "label": "5"
+                  },
+                  {
+                    "color": "#64748b",
+                    "label": "6"
+                  },
+                  {
+                    "color": "#64748b",
+                    "label": "7"
+                  }
+                ]
+              },
+              {
+                "text": "Following input order enters 1→2→3→4→5→6, then isolated7. The edge from3 back to1 gives low[3]=1 and, on return, low[2]=1. Edge6→4 gives low[6]=4 and then low[5]=4. But the subtree rooted at4 has no back connection to3 or an earlier ancestor.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "1",
+                    "1",
+                    "1",
+                    "0"
+                  ],
+                  [
+                    "2",
+                    "2",
+                    "1",
+                    "1"
+                  ],
+                  [
+                    "3",
+                    "3",
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "4",
+                    "4",
+                    "4",
+                    "3"
+                  ],
+                  [
+                    "5",
+                    "5",
+                    "4",
+                    "4"
+                  ],
+                  [
+                    "6",
+                    "6",
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "7",
+                    "7",
+                    "7",
+                    "0"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Vertex",
+                  "tin",
+                  "low",
+                  "DFS parent"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "conditions",
+            "title": "Bridge >, articulation ≥ and the root exception",
+            "blocks": [
+              {
+                "text": "For a tree edge $u$–$v$ with child $v$, low[$v$]>tin[$u$] means the subtree cannot reach $u$ or an ancestor through another edge. Removing $u$–$v$ disconnects it: a bridge. If low[$v$]≤tin[$u$], tree paths and a back edge provide an alternative route. A non-tree edge itself lies on a cycle and cannot be a bridge.",
+                "type": "p"
+              },
+              {
+                "text": "A non-root $u$ is an articulation point if some child $v$ has low[$v$]≥tin[$u$]. Deleting $u$ disconnects that subtree from the parent side. Equality still matters: a back connection ending at the deleted $u$ is useless. If every child has low[$v$]<tin[$u$], each child branch retains a connection to the parent side.",
+                "type": "p"
+              },
+              {
+                "text": "A root has no parent side, so apply a separate rule: it is an articulation point exactly when it has at least two DFS children. One child contains all other vertices in that component; no children means an isolated vertex. Count direct DFS children, not graph degree.",
+                "type": "p"
+              },
+              {
+                "text": "In the example low[4]=4>tin[3]=3 makes edge ID4 a bridge and vertex3 an articulation point. Equality low[5]=tin[4]=4 means edge4–5 is NOT a bridge but vertex4 is an articulation point. Root1 has only child2 and is not a cut vertex. Results: bridges[4], articulation vertices[3,4].",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "edge-cases",
+            "title": "Parallel edges, self-loops and disconnected graphs",
+            "blocks": [
+              {
+                "text": "Take two parallel edges1–2, one edge2–3 and a self-loop at2. Enter2 through the first edge and skip only that edge’s reverse occurrence. The second parallel edge lowers low[2] to tin[1], preventing a false bridge. Equal endpoints do not make two edges identical.",
+                "type": "p"
+              },
+              {
+                "text": "A self-loop only contributes the vertex’s own tin and creates no child; removing it does not change connectivity. This example has only bridge ID3 and articulation vertex2. In a disconnected graph start a DFS from every unseen vertex and count children separately per root. Removing an isolated vertex does not increase the component count, so it is not an articulation point.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "Iterative Lowlink struct and complete C++17",
+            "blocks": [
+              {
+                "text": "Recursive depth can reach $n$ on a path. The implementation uses an explicit stack: it[$u$] tracks the next neighbor, and popping $u$ simulates returning from recursion. Only then propagate its completed low to the parent; checking immediately on entry would use an incomplete summary.",
+                "type": "p"
+              },
+              {
+                "text": "Input $n$ $m$ and $m$ undirected edges, with 0≤$n$,$m$≤200000 and vertices1..$n$; $n$=0 requires $m$=0. Parallel edges and loops are allowed. Output four lines: bridge count, 1-based input edge IDs, articulation count, vertex IDs. An empty list gives an empty line. Adapt output to endpoints rather than IDs for Necessary Roads.",
+                "type": "p"
+              },
+              {
+                "text": "Indices, times and counts fit int under the200000 bound.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The size constructor allocates adjacency lists. add shares one edge ID across both directions and retains endpoints in edges.",
+                "type": "p"
+              },
+              {
+                "text": "struct Lowlink {\n    int n, timer = 0;\n    vector<vector<pair<int, int>>> adj;\n    vector<pair<int, int>> edges;\n    vector<int> tin, low, par, pe, it, child, cut, bridge;\n    Lowlink(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n    }\n    void add(int u, int v) {\n        int id = (int)edges.size();\n        edges.push_back({u, v});\n        adj[u].push_back({v, id});\n        adj[v].push_back({u, id});\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "run resets working arrays; pe=-1 marks an absent parent edge.",
+                "type": "p"
+              },
+              {
+                "text": "void run() {\n        timer = 0;\n        tin.assign(n + 1, 0);\n        low.assign(n + 1, 0);\n        par.assign(n + 1, 0);\n        pe.assign(n + 1, -1);\n        it.assign(n + 1, 0);\n        child.assign(n + 1, 0);\n        cut.assign(n + 1, 0);\n        bridge.assign(edges.size(), 0);",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Push each unseen root and assign its discovery time.",
+                "type": "p"
+              },
+              {
+                "text": "for (int r = 1; r <= n; r++) {\n            if (tin[r]) continue;\n            vector<int> st = {r};\n            tin[r] = low[r] = ++timer;\n            while (!st.empty()) {\n                int u = st.back();",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Advance the neighbor iterator, skip the exact parent edge, enter unseen children and use tin for visited neighbors.",
+                "type": "p"
+              },
+              {
+                "text": "if (it[u] < (int)adj[u].size()) {\n                    auto [v, id] = adj[u][it[u]++];\n                    if (id == pe[u]) continue;\n                    if (!tin[v]) {\n                        par[v] = u;\n                        pe[v] = id;\n                        child[u]++;\n                        tin[v] = low[v] = ++timer;\n                        st.push_back(v);\n                    } else {\n                        low[u] = min(low[u], tin[v]);\n                    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "On completion pop $u$, propagate low and apply separate root/non-root conditions.",
+                "type": "p"
+              },
+              {
+                "text": "} else {\n                    st.pop_back();\n                    int p = par[u];\n                    if (!p) {\n                        cut[u] = child[u] > 1;\n                    } else {\n                        low[p] = min(low[p], low[u]);\n                        if (low[u] > tin[p]) bridge[pe[u]] = 1;\n                        if (par[p] && low[u] >= tin[p]) cut[p] = 1;\n                    }\n                }\n            }\n        }\n    }\n};",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "main prints edge IDs and vertices in numeric order.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    Lowlink g(n);\n    for (int i = 0, u, v; i < m; i++) {\n        cin >> u >> v;\n        g.add(u, v);\n    }\n    g.run();\n    vector<int> b, c;\n    for (int i = 0; i < m; i++) if (g.bridge[i]) b.push_back(i + 1);\n    for (int u = 1; u <= n; u++) if (g.cut[u]) c.push_back(u);\n    cout << b.size() << '\\n';\n    for (int id : b) cout << id << ' ';\n    cout << '\\n' << c.size() << '\\n';\n    for (int u : c) cout << u << ' ';\n    cout << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct Lowlink {\n    int n, timer = 0;\n    vector<vector<pair<int, int>>> adj;\n    vector<pair<int, int>> edges;\n    vector<int> tin, low, par, pe, it, child, cut, bridge;\n    Lowlink(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n    }\n    void add(int u, int v) {\n        int id = (int)edges.size();\n        edges.push_back({u, v});\n        adj[u].push_back({v, id});\n        adj[v].push_back({u, id});\n    }\n    void run() {\n        timer = 0;\n        tin.assign(n + 1, 0);\n        low.assign(n + 1, 0);\n        par.assign(n + 1, 0);\n        pe.assign(n + 1, -1);\n        it.assign(n + 1, 0);\n        child.assign(n + 1, 0);\n        cut.assign(n + 1, 0);\n        bridge.assign(edges.size(), 0);\n        for (int r = 1; r <= n; r++) {\n            if (tin[r]) continue;\n            vector<int> st = {r};\n            tin[r] = low[r] = ++timer;\n            while (!st.empty()) {\n                int u = st.back();\n                if (it[u] < (int)adj[u].size()) {\n                    auto [v, id] = adj[u][it[u]++];\n                    if (id == pe[u]) continue;\n                    if (!tin[v]) {\n                        par[v] = u;\n                        pe[v] = id;\n                        child[u]++;\n                        tin[v] = low[v] = ++timer;\n                        st.push_back(v);\n                    } else {\n                        low[u] = min(low[u], tin[v]);\n                    }\n                } else {\n                    st.pop_back();\n                    int p = par[u];\n                    if (!p) {\n                        cut[u] = child[u] > 1;\n                    } else {\n                        low[p] = min(low[p], low[u]);\n                        if (low[u] > tin[p]) bridge[pe[u]] = 1;\n                        if (par[p] && low[u] >= tin[p]) cut[p] = 1;\n                    }\n                }\n            }\n        }\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    Lowlink g(n);\n    for (int i = 0, u, v; i < m; i++) {\n        cin >> u >> v;\n        g.add(u, v);\n    }\n    g.run();\n    vector<int> b, c;\n    for (int i = 0; i < m; i++) if (g.bridge[i]) b.push_back(i + 1);\n    for (int u = 1; u <= n; u++) if (g.cut[u]) c.push_back(u);\n    cout << b.size() << '\\n';\n    for (int id : b) cout << id << ' ';\n    cout << '\\n' << c.size() << '\\n';\n    for (int u : c) cout << u << ' ';\n    cout << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Each vertex is entered and popped once; each adjacency occurrence is scanned once. Time and total space are $O(n+m)$, with no recursive call stack. it,par,pe explicitly retain the enter/return state rather than changing DFS semantics.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "text": "For an independent oracle, count initial components. Remove each edge by its ID and recount. For vertex removal, exclude the vertex and all incident edges. Compare remaining components with the original count. This slow method does not repeat the low formulas and is an independent check.",
+                "type": "p"
+              },
+              {
+                "text": "Core problem for mastery",
+                "type": "p"
+              },
+              {
+                "text": "Necessary Roads: find every bridge and print endpoints in the required format.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "519"
+              },
+              {
+                "text": "Necessary Cities: find all articulation points, checking the DFS-root exception.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "520"
+              },
+              {
+                "text": "Independent practice and extensions",
+                "type": "p"
+              },
+              {
+                "text": "Round Trip: reconstructing a cycle requires more than bridge flags.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "365"
+              },
+              {
+                "text": "Building Roads: compare component DFS with the independent oracle.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "362"
+              },
+              {
+                "text": "Network Breakdown: a sequence of deletions is a dynamic problem, not solved by one initial lowlink pass.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "584"
+              },
+              {
+                "text": "Police Chase: a flow-based minimum cut is different from testing a single bridge.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "392"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Чиглэлгүй графын DFS, эцэг/хүүхэд, буцах агшин, холбоост компонент.",
+    "priorityLevel": "medium",
+    "priorityReason": "DFS-ийн дэд мод гаднах хэсэгтэй хэрхэн холбогдохыг ойлгуулах чухал арга. Гүүр, салгах орой болон дараагийн задлалын бодлогод шууд хэрэгтэй боловч өдөр тутмын бүх графын аргын урьдчилсан нөхцөл биш тул medium.",
+    "prerequisiteIds": [
+      "dfs",
+      "connected-components"
+    ],
+    "learningRelations": {
+      "next": "scc",
+      "practice": [
+        {
+          "key": "519",
+          "stage": "Warm-up",
+          "reason": "Гүүрийн шалгуурыг шууд хэрэгжүүлж, гаралтыг ирмэгийн төгсгөлөөр тохируул.",
+          "priority": true
+        },
+        {
+          "key": "520",
+          "stage": "Standard",
+          "reason": "Салгах орой, үндэсний тусгай нөхцөлийг шууд дадлагажуул.",
+          "priority": true
+        },
+        {
+          "key": "365",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "362",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "584",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "392",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "dfs",
+          "description": "DFS-ийн орох ба буцах агшныг харьцуул.",
+          "descriptionEn": "Compare DFS entry and return events."
+        },
+        {
+          "tutorialId": "connected-components",
+          "description": "Устгахын өмнөх ба дараах компонентын тоог харьцуул.",
+          "descriptionEn": "Compare component counts before and after removal."
+        }
+      ]
+    }
+  }
+}
