@@ -158,3 +158,5 @@ references have now been materialized and actual pixels inspected; the old
 queued/unviewed note above is historical. See ui-followup/PROFILE-PROGRESS.md.
 Release/deployment receipt pending; Groups today opt-ins and Minimalist-only
 status/columns remain active afterward without reconfirmation.
+
+UI items2/3/4 complete: PR243 mergedda20033, Pages41226240873success;14 active assets match byte-for-byte under default TLS, feature1 preserved. Profile rating/weekly/private dates/cumulative challenge and narrowly white light home verified. Receipt: ui-followup/profile-progress-deployment.json. Remaining two: Groups today opt-ins and Minimalist-only controls/columns.
