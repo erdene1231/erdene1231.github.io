@@ -1,0 +1,1882 @@
+[
+  {
+    "id": "task-767",
+    "number": 767,
+    "ref": "typical90_ac",
+    "expected_revision": 3,
+    "expected_body_sha256": "5a7e364eae9d8eb1aabd9a588b97a615c55e77982314bd123c8a648c18c2196f",
+    "editorial_sha256": "163f5f40f6114ea3c2084d488d926fb63dd1d927e79643ddde95187aa746d28e",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_ac",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-ac",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Long Bricks — Бодолт",
+      "sections": [
+        {
+          "title": "Range Max ба Range Assignment",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Одоогийн багана бүрийн дээд өндрийг хадгална. $[L,R]$ дээр шинэ brick тавихад түүний дээд өндөр $h=1+\\max_{L\\le i\\le R}height_i$. Дараа нь тэр range-ийн бүх дээд өндрийг яг $h$ болгоно. Энэ нь range бүрд $1$ нэмэх биш."
+            }
+          ]
+        },
+        {
+          "title": "Lazy Segment Tree ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Segment Tree node бүр range maximum хадгалж, lazy tag нь дараа нь хүүхдүүдэд дамжуулах assignment утга. $-1$ нь pending assignment байхгүй гэсэн sentinel. Шинэ assignment хуучин tag-ийг дарна."
+            },
+            {
+              "type": "p",
+              "text": "Өндрүүд $[2,0,1]$ үед бүх range-ийг бүрхсэн brick-ийн дээд өндөр $3$, шинэ өндөр $[3,3,3]$. Uniform $+1$ хийвэл $[3,1,2]$ болж буруу."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Brick нь бүрхсэн хэсгийн хамгийн өндөр гадаргуу дээр тогтоно, өөрийн өндөр $1$ тул шинэ дээд гадаргуу яг range maximum дээр нэгийг нэмсэнтэй тэнцүү. Brick range-ийн бүх баганыг бүрхдэг учраас тэдгээрийн харагдах дээд өндөр бүгд шинэ $h$ болно."
+            },
+            {
+              "type": "p",
+              "text": "Tree-ийн бүтэн node-д assignment хийхэд maximum ба lazy утгыг $h$ болгох нь бүх leaf-ийг шинэчилсэнтэй адил. Partial query эсвэл update хийхийн өмнө pending assignment-ийг хоёр хүүхдэд дамжуулна. Partial update-ийн дараа хүүхдийн maximum-уудын ихийг авна. Энэ invariant-аар query maximum болон range assignment хоёулаа зөв; brick-үүдийн дарааллаар induction хийвэл бүх output зөв."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба struct",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хугацаа $O(N\\log W)$, санах ой $O(W)$. Source-д $W\\le500000$, $N\\le250000$; өндөр $N$-ээс ихгүй тул int хангалттай."
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Constructor-ийн ",
+                  "marks": []
+                },
+                {
+                  "text": "n(1)",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь leaf capacity-ийг нэгээс эхлүүлнэ. Дараа нь $W$-г багтаах хамгийн бага power of two болтол өсгөнө. Нэгээр эхэлсэн node индексийн binary tree-д ",
+                  "marks": []
+                },
+                {
+                  "text": "2*n",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " entry хангалттай; padded leaf-үүд $0$ бөгөөд бодит query range-д орохгүй. ",
+                  "marks": []
+                },
+                {
+                  "text": "mx",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " эхэнд $0$, ",
+                  "marks": []
+                },
+                {
+                  "text": "lazy",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " эхэнд $-1$.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Constructor ба tag дамжуулах"
+            },
+            {
+              "type": "p",
+              "text": "apply нь node-ийн maximum ба assignment-ийг зэрэг солино. push нь хүүхдүүдэд tag өгөөд эцэгт pending tag байхгүй болгоно."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "struct SegmentTree {\n    int n;\n    vector<int> mx, lazy;\n    SegmentTree(int width) : n(1) {\n        while (n < width) n *= 2;\n        mx.assign(2 * n, 0);\n        lazy.assign(2 * n, -1);\n    }\n    void apply(int node, int value) {\n        mx[node] = lazy[node] = value;\n    }\n    void push(int node) {\n        if (lazy[node] == -1) return;\n        apply(node * 2, lazy[node]);\n        apply(node * 2 + 1, lazy[node]);\n        lazy[node] = -1;\n    }"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Query ба assignment"
+            },
+            {
+              "type": "p",
+              "text": "Partial range дээр recursion хийнэ. Disjoint query-ийн 0 нь бүх өндөр nonnegative учир maximum-ийн зөв neutral утга."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "    int query(int node, int left, int right, int ql, int qr) {\n        if (qr <= left || right <= ql) return 0;\n        if (ql <= left && right <= qr) return mx[node];\n        push(node);\n        int mid = (left + right) / 2;\n        return max(query(node * 2, left, mid, ql, qr), query(node * 2 + 1, mid, right, ql, qr));\n    }\n    void assign(int node, int left, int right, int ql, int qr, int value) {\n        if (qr <= left || right <= ql) return;\n        if (ql <= left && right <= qr) {\n            apply(node, value);\n            return;\n        }\n        push(node);\n        int mid = (left + right) / 2;\n        assign(node * 2, left, mid, ql, qr, value);\n        assign(node * 2 + 1, mid, right, ql, qr, value);\n        mx[node] = max(mx[node * 2], mx[node * 2 + 1]);\n    }\n};"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Inclusive range хөрвүүлэх"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "L",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийг нэгээр багасгахад zero-based half-open ",
+                  "marks": []
+                },
+                {
+                  "text": "[L-1,R)",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " болно. Max+1-ийг нэг удаа олоод бүх range-д assign хийнэ.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "while (n--) {\n    int l, r;\n    cin >> l >> r;\n    --l;\n    int height = tree.query(1, 0, tree.n, l, r) + 1;\n    tree.assign(1, 0, tree.n, l, r, height);\n    cout << height << '\\n';\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ac"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct SegmentTree {\n    int n;\n    vector<int> mx, lazy;\n    SegmentTree(int width) : n(1) {\n        while (n < width) n *= 2;\n        mx.assign(2 * n, 0);\n        lazy.assign(2 * n, -1);\n    }\n    void apply(int node, int value) {\n        mx[node] = lazy[node] = value;\n    }\n    void push(int node) {\n        if (lazy[node] == -1) return;\n        apply(node * 2, lazy[node]);\n        apply(node * 2 + 1, lazy[node]);\n        lazy[node] = -1;\n    }\n    int query(int node, int left, int right, int ql, int qr) {\n        if (qr <= left || right <= ql) return 0;\n        if (ql <= left && right <= qr) return mx[node];\n        push(node);\n        int mid = (left + right) / 2;\n        return max(query(node * 2, left, mid, ql, qr), query(node * 2 + 1, mid, right, ql, qr));\n    }\n    void assign(int node, int left, int right, int ql, int qr, int value) {\n        if (qr <= left || right <= ql) return;\n        if (ql <= left && right <= qr) {\n            apply(node, value);\n            return;\n        }\n        push(node);\n        int mid = (left + right) / 2;\n        assign(node * 2, left, mid, ql, qr, value);\n        assign(node * 2 + 1, mid, right, ql, qr, value);\n        mx[node] = max(mx[node * 2], mx[node * 2 + 1]);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int w, n;\n    cin >> w >> n;\n    SegmentTree tree(w);\n    while (n--) {\n        int l, r;\n        cin >> l >> r;\n        --l;\n        int height = tree.query(1, 0, tree.n, l, r) + 1;\n        tree.assign(1, 0, tree.n, l, r, height);\n        cout << height << '\\n';\n    }\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Long Bricks — Editorial",
+          "sections": [
+            {
+              "title": "Range Max and Range Assignment",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Maintain the current top height in every column. Placing a brick on $[L,R]$ gives top height $h=1+\\max_{L\\le i\\le R}height_i$. Assign every height in that range to $h$. This is not a uniform increment."
+                }
+              ]
+            },
+            {
+              "title": "Lazy Segment Tree and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Each node stores its range maximum. A lazy tag records a pending assignment; $-1$ means no assignment. A newer assignment replaces an older one."
+                },
+                {
+                  "type": "p",
+                  "text": "For heights $[2,0,1]$, a brick covering all columns has top height three and leaves $[3,3,3]$. Adding one uniformly would incorrectly produce $[3,1,2]$."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "The brick rests on the highest covered surface and has height one, giving the stated maximum plus one. Its top spans every covered column, so all those visible top heights become $h$."
+                },
+                {
+                  "type": "p",
+                  "text": "Assigning a whole node’s maximum and lazy tag to $h$ represents assigning every underlying leaf. Push pending assignments to both children before partial queries or updates. Recompute a partially updated node as the maximum of its children. These invariants prove both operations correct; induction over bricks proves all outputs."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and struct",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Time is $O(N\\log W)$ and space $O(W)$. The source has $W\\le500000$, $N\\le250000$; height never exceeds $N$, so int suffices."
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The constructor initializer ",
+                      "marks": []
+                    },
+                    {
+                      "text": "n(1)",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " starts leaf capacity at one, then rounds it up to the smallest power of two covering $W$. This one-based binary-tree layout needs ",
+                      "marks": []
+                    },
+                    {
+                      "text": "2*n",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " entries. Padded leaves start at zero and lie outside actual query ranges. Initialize ",
+                      "marks": []
+                    },
+                    {
+                      "text": "mx",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " to zero and ",
+                      "marks": []
+                    },
+                    {
+                      "text": "lazy",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " to $-1$.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Constructor and lazy propagation"
+                },
+                {
+                  "type": "p",
+                  "text": "apply replaces both the maximum and assignment. push transfers the tag to children and clears the parent tag."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "struct SegmentTree {\n    int n;\n    vector<int> mx, lazy;\n    SegmentTree(int width) : n(1) {\n        while (n < width) n *= 2;\n        mx.assign(2 * n, 0);\n        lazy.assign(2 * n, -1);\n    }\n    void apply(int node, int value) {\n        mx[node] = lazy[node] = value;\n    }\n    void push(int node) {\n        if (lazy[node] == -1) return;\n        apply(node * 2, lazy[node]);\n        apply(node * 2 + 1, lazy[node]);\n        lazy[node] = -1;\n    }"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Query and assignment"
+                },
+                {
+                  "type": "p",
+                  "text": "Recurse on partial overlaps. Zero is a valid neutral maximum for disjoint queries because heights are nonnegative."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "    int query(int node, int left, int right, int ql, int qr) {\n        if (qr <= left || right <= ql) return 0;\n        if (ql <= left && right <= qr) return mx[node];\n        push(node);\n        int mid = (left + right) / 2;\n        return max(query(node * 2, left, mid, ql, qr), query(node * 2 + 1, mid, right, ql, qr));\n    }\n    void assign(int node, int left, int right, int ql, int qr, int value) {\n        if (qr <= left || right <= ql) return;\n        if (ql <= left && right <= qr) {\n            apply(node, value);\n            return;\n        }\n        push(node);\n        int mid = (left + right) / 2;\n        assign(node * 2, left, mid, ql, qr, value);\n        assign(node * 2 + 1, mid, right, ql, qr, value);\n        mx[node] = max(mx[node * 2], mx[node * 2 + 1]);\n    }\n};"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Convert inclusive input"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Decrementing ",
+                      "marks": []
+                    },
+                    {
+                      "text": "L",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " yields zero-based half-open ",
+                      "marks": []
+                    },
+                    {
+                      "text": "[L-1,R)",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ". Query max+1 once, then assign it across the range.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "while (n--) {\n    int l, r;\n    cin >> l >> r;\n    --l;\n    int height = tree.query(1, 0, tree.n, l, r) + 1;\n    tree.assign(1, 0, tree.n, l, r, height);\n    cout << height << '\\n';\n}"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ac"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct SegmentTree {\n    int n;\n    vector<int> mx, lazy;\n    SegmentTree(int width) : n(1) {\n        while (n < width) n *= 2;\n        mx.assign(2 * n, 0);\n        lazy.assign(2 * n, -1);\n    }\n    void apply(int node, int value) {\n        mx[node] = lazy[node] = value;\n    }\n    void push(int node) {\n        if (lazy[node] == -1) return;\n        apply(node * 2, lazy[node]);\n        apply(node * 2 + 1, lazy[node]);\n        lazy[node] = -1;\n    }\n    int query(int node, int left, int right, int ql, int qr) {\n        if (qr <= left || right <= ql) return 0;\n        if (ql <= left && right <= qr) return mx[node];\n        push(node);\n        int mid = (left + right) / 2;\n        return max(query(node * 2, left, mid, ql, qr), query(node * 2 + 1, mid, right, ql, qr));\n    }\n    void assign(int node, int left, int right, int ql, int qr, int value) {\n        if (qr <= left || right <= ql) return;\n        if (ql <= left && right <= qr) {\n            apply(node, value);\n            return;\n        }\n        push(node);\n        int mid = (left + right) / 2;\n        assign(node * 2, left, mid, ql, qr, value);\n        assign(node * 2 + 1, mid, right, ql, qr, value);\n        mx[node] = max(mx[node * 2], mx[node * 2 + 1]);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int w, n;\n    cin >> w >> n;\n    SegmentTree tree(w);\n    while (n--) {\n        int l, r;\n        cin >> l >> r;\n        --l;\n        int height = tree.query(1, 0, tree.n, l, r) + 1;\n        tree.assign(1, 0, tree.n, l, r, height);\n        cout << height << '\\n';\n    }\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-790",
+    "number": 790,
+    "ref": "typical90_bt",
+    "expected_revision": 3,
+    "expected_body_sha256": "223b01d623866ccdfbdc1ba23d0a293f4bd33fb56345430abd94dc77a4a45323",
+    "editorial_sha256": "bbccff595c23f0de9455e8b56e7584123874a9170869a67e72f3e4c10309d58b",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_bt",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-bt",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Loop Railway Plan — Бодолт",
+      "sections": [
+        {
+          "title": "Backtracking",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$HW\\le16$ тул бүх simple path-ийг DFS-аар судалж болно. Plain cell-үүдийг edge-sharing adjacency-аар холбоно. Start бүрээс явж visited bitmask хадгална; өмнө орсон cell рүү дахин орохгүй. Зөвхөн start руу буцаж cycle-ийг хааж болно."
+            }
+          ]
+        },
+        {
+          "title": "Length ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Length нь path-ийн ялгаатай cell-ийн тоо. Start руу хаахад түүнийг дахин нэмэхгүй; length дор хаяж $3$ бол candidate. Нэг edge-ээр очоод буцах хоёр алхам cycle биш. $2\\times2$ бүх plain grid-ийн хариу $4$; ганц мөрийн хариу $-1$."
+            },
+            {
+              "type": "p",
+              "text": "Давхардлыг багасгахын тулд start-аас бага ID-тай cell рүү орохгүй. Cycle бүрийг хамгийн бага ID-тай cell-ээс нь эхлүүлж олж болох тул боломж алдагдахгүй."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "DFS-ийн path нь зөвхөн plain cell-үүдээр edge-sharing алхам хийж, visited mask-ийн ачаар start-аас бусад cell-ийг давтахгүй. Start руу $3$-аас цөөнгүй cell-ийн дараа хаасан candidate бүх source нөхцөлийг хангана."
+            },
+            {
+              "type": "p",
+              "text": "Ямар ч хүчинтэй cycle-ийн хамгийн бага ID-тай cell-ийг start болгоё. Cycle-ийн дарааллын дараагийн cell бүр одоогоор unvisited бөгөөд start-аас их ID-тай. Тиймээс DFS энэ cycle-ийн бүх алхмыг сонгож, эцэст нь start руу хаах branch-д хүрнэ. Иймээс бүх optimum candidate хамрагдах бөгөөд maximum нь зөв. Олдохгүй бол эхний $-1$ хэвээр үлдэнэ."
+            }
+          ]
+        },
+        {
+          "title": "Complexity",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$V=HW\\le16$. Эхний алхам ихдээ $4$, цааш immediate predecessor руу буцахгүй тул branch ихдээ $3$: loose upper bound $O(V3^V)$ хугацаа, $O(V)$ adjacency ба recursion санах ой. Энэ нь subset DP биш exhaustive Backtracking; small-grid bound дээр ашиглана. Mask int-ийн эхний $16$ bit-д багтана."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Visited mask ба cycle хаах"
+            },
+            {
+              "type": "p",
+              "text": "Generic lambda-ийн self параметрээр recursion хийнэ. next==start branch-ийг unvisited шалгалтаас өмнө тусад нь авч үзнэ."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "for (int start = 0; start < h * w; ++start) {\n    auto dfs = [&](auto &&self, int at, int used, int length) -> void {\n        for (int next : adj[at]) {\n            if (next == start) {\n                if (length >= 3) ans = max(ans, length);\n            } else if (next > start && !(used >> next & 1)) {\n                self(self, next, used | (1 << next), length + 1);\n            }\n        }\n    };\n    dfs(dfs, start, 1 << start, 1);\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Grid adjacency"
+            },
+            {
+              "type": "p",
+              "text": "Зөвхөн дөрвөн чиглэл ба plain destination нэмнэ; diagonal алхам байхгүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<vector<int>> adj(h * w);\nint dr[] = {-1, 1, 0, 0}, dc[] = {0, 0, -1, 1};\nfor (int r = 0; r < h; ++r) {\n    for (int c = 0; c < w; ++c) {\n        if (grid[r][c] == '#') continue;\n        for (int d = 0; d < 4; ++d) {\n            int nr = r + dr[d], nc = c + dc[d];\n            if (nr >= 0 && nr < h && nc >= 0 && nc < w && grid[nr][nc] == '.') {\n                adj[r * w + c].push_back(nr * w + nc);\n            }\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bt"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int h, w;\n    cin >> h >> w;\n    vector<string> grid(h);\n    for (string &row : grid) cin >> row;\n    vector<vector<int>> adj(h * w);\n    int dr[] = {-1, 1, 0, 0}, dc[] = {0, 0, -1, 1};\n    for (int r = 0; r < h; ++r) {\n        for (int c = 0; c < w; ++c) {\n            if (grid[r][c] == '#') continue;\n            for (int d = 0; d < 4; ++d) {\n                int nr = r + dr[d], nc = c + dc[d];\n                if (nr >= 0 && nr < h && nc >= 0 && nc < w && grid[nr][nc] == '.') {\n                    adj[r * w + c].push_back(nr * w + nc);\n                }\n            }\n        }\n    }\n    int ans = -1;\n    for (int start = 0; start < h * w; ++start) {\n        auto dfs = [&](auto &&self, int at, int used, int length) -> void {\n            for (int next : adj[at]) {\n                if (next == start) {\n                    if (length >= 3) ans = max(ans, length);\n                } else if (next > start && !(used >> next & 1)) {\n                    self(self, next, used | (1 << next), length + 1);\n                }\n            }\n        };\n        dfs(dfs, start, 1 << start, 1);\n    }\n    cout << ans << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Loop Railway Plan — Editorial",
+          "sections": [
+            {
+              "title": "Backtracking",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Since $HW\\le16$, enumerate simple paths with DFS. Connect plain cells sharing an edge. For each start, track a visited bitmask and forbid revisiting cells, except returning to the start to close a cycle."
+                }
+              ]
+            },
+            {
+              "title": "Length and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Length counts distinct cells already on the path. Closing at the start does not add it again; accept only lengths at least three. Traversing one edge and immediately returning is invalid. An all-plain $2\\times2$ grid gives four, while a single row gives $-1$."
+                },
+                {
+                  "type": "p",
+                  "text": "To reduce duplicate search, never enter a cell with an ID smaller than the start. Every cycle can still be found from its minimum-ID cell."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "DFS paths use only plain cells and shared-edge moves. The visited mask prevents repeats other than the final return to the start. A closure after at least three distinct cells therefore satisfies every source condition."
+                },
+                {
+                  "type": "p",
+                  "text": "Take any valid cycle and start at its minimum-ID cell. Each successive cycle cell is unvisited and has a larger ID, so DFS includes every step and eventually its closing branch. Hence every optimal cycle is considered. Taking the maximum gives the correct length; if none exists, the initial $-1$ remains."
+                }
+              ]
+            },
+            {
+              "title": "Complexity",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Let $V=HW\\le16$. There are at most four first moves and at most three later choices because the immediate predecessor is visited. A loose bound is $O(V3^V)$ time and $O(V)$ adjacency/recursion space. This is exhaustive Backtracking, not subset DP, and relies on the small grid bound. The mask fits in the first 16 bits of int."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Visited masks and closing cycles"
+                },
+                {
+                  "type": "p",
+                  "text": "The generic lambda recurses through self. Handle next==start separately before the unvisited test."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "for (int start = 0; start < h * w; ++start) {\n    auto dfs = [&](auto &&self, int at, int used, int length) -> void {\n        for (int next : adj[at]) {\n            if (next == start) {\n                if (length >= 3) ans = max(ans, length);\n            } else if (next > start && !(used >> next & 1)) {\n                self(self, next, used | (1 << next), length + 1);\n            }\n        }\n    };\n    dfs(dfs, start, 1 << start, 1);\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Grid adjacency"
+                },
+                {
+                  "type": "p",
+                  "text": "Add only four-direction moves to plain destinations, never diagonals."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<vector<int>> adj(h * w);\nint dr[] = {-1, 1, 0, 0}, dc[] = {0, 0, -1, 1};\nfor (int r = 0; r < h; ++r) {\n    for (int c = 0; c < w; ++c) {\n        if (grid[r][c] == '#') continue;\n        for (int d = 0; d < 4; ++d) {\n            int nr = r + dr[d], nc = c + dc[d];\n            if (nr >= 0 && nr < h && nc >= 0 && nc < w && grid[nr][nc] == '.') {\n                adj[r * w + c].push_back(nr * w + nc);\n            }\n        }\n    }\n}"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bt"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int h, w;\n    cin >> h >> w;\n    vector<string> grid(h);\n    for (string &row : grid) cin >> row;\n    vector<vector<int>> adj(h * w);\n    int dr[] = {-1, 1, 0, 0}, dc[] = {0, 0, -1, 1};\n    for (int r = 0; r < h; ++r) {\n        for (int c = 0; c < w; ++c) {\n            if (grid[r][c] == '#') continue;\n            for (int d = 0; d < 4; ++d) {\n                int nr = r + dr[d], nc = c + dc[d];\n                if (nr >= 0 && nr < h && nc >= 0 && nc < w && grid[nr][nc] == '.') {\n                    adj[r * w + c].push_back(nr * w + nc);\n                }\n            }\n        }\n    }\n    int ans = -1;\n    for (int start = 0; start < h * w; ++start) {\n        auto dfs = [&](auto &&self, int at, int used, int length) -> void {\n            for (int next : adj[at]) {\n                if (next == start) {\n                    if (length >= 3) ans = max(ans, length);\n                } else if (next > start && !(used >> next & 1)) {\n                    self(self, next, used | (1 << next), length + 1);\n                }\n            }\n        };\n        dfs(dfs, start, 1 << start, 1);\n    }\n    cout << ans << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-794",
+    "number": 794,
+    "ref": "typical90_ca",
+    "expected_revision": 3,
+    "expected_body_sha256": "3e7284df693de50f483379e7125ac0f934c9a2f8a758bf7081f6711af9e66876",
+    "editorial_sha256": "94e042305bab710daa513c5b39c186156ab11cfa2f6d3109c07ae8d172b1e517",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_ca",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-ca",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Two by Two — Бодолт",
+      "sections": [
+        {
+          "title": "Greedy elimination",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Row-major дарааллаар хамгийн сүүлийн мөр, баганаас бусад cell-ийг засна. $(i,j)$ дээр $delta=B_{ij}-A_{ij}$ олж, эндээс эхлэх $2\\times2$ block-ийн дөрвөн утгад delta нэмнэ. Энэ нь delta эерэг бол нэмэх, сөрөг бол хасах үйлдлийг $|delta|$ удаа хийхтэй адил."
+            }
+          ]
+        },
+        {
+          "title": "Жишээ ба boundary",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$2\\times2$ бүх $0$-ийг бүх $3$ болгоход delta $3$, minimum $3$ үйлдэл. Харин зөвхөн нэг cell-ийг $1$ болгох боломжгүй. Эцэст бүх matrix-ийг B-тэй харьцуулна; сүүлийн мөр/багана зөрвөл No."
+            },
+            {
+              "type": "p",
+              "text": "Source нь завсрын утгуудыг nonnegative байлгах нөхцөл тавиагүй; signed delta-г шууд ашиглаж болно. Эцсийн target утгууд өгөгдсөн хязгаарт байна."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв ба minimum бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Block бүр дээр хийсэн нэмэх тооноос хасах тоог хассан net coefficient-ийг бодъё. Нийт cell-ийн өөрчлөлт нь эдгээр coefficient-үүдийн нийлбэр contribution; үйлдлийн дараалал нөлөөлөхгүй."
+            },
+            {
+              "type": "p",
+              "text": "Row-major дарааллын $(i,j)$ cell-д нөлөөлөх block-уудаас өмнө нь эхэлсэн бүхний coefficient аль хэдийн тогтсон. Үлдсэн ганц block нь яг $(i,j)$-д эхэлнэ. Түүний coefficient заавал delta байх ёстой. Induction-оор бүх block-ийн coefficient unique, Greedy түүнийг олно. Сүүлийн boundary таарахгүй бол өөр coefficient сонгох боломжгүй тул шийдэл байхгүй."
+            },
+            {
+              "type": "p",
+              "text": "Нэг block-ийн net delta-д дор хаяж $|delta|$ нэгж үйлдэл хэрэгтэй. Greedy яг энэ тоогоор гүйцэтгэнэ. Бүх coefficient forced тул тэдгээрийн absolute sum нь global minimum."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хугацаа, санах ой $O(HW)$. $H,W\\le100$, эхний ба target утга $0\\ldots10^5$. Intermediate signed коэффициент болон нийт operation int-ээс хэтэрч болох тул matrix, delta, answer ll."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Forced delta хэрэгжүүлэх"
+            },
+            {
+              "type": "p",
+              "text": "Cell бүрийг зассаны дараа дараагийн block өмнөх cell-д нөлөөлөхгүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "ll moves = 0;\nfor (int i = 0; i + 1 < h; ++i) {\n    for (int j = 0; j + 1 < w; ++j) {\n        ll delta = b[i][j] - a[i][j];\n        for (int di = 0; di < 2; ++di) {\n            for (int dj = 0; dj < 2; ++dj) a[i + di][j + dj] += delta;\n        }\n        moves += abs(delta);\n    }\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Бүх boundary шалгах"
+            },
+            {
+              "type": "p",
+              "text": "Matrix equality нь зөвхөн дотор хэсэг бус сүүлийн мөр ба баганын шаардлагыг хамарна."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "if (a != b) cout << \"No\\n\";\nelse cout << \"Yes\\n\" << moves << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ca"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int h, w;\n    cin >> h >> w;\n    vector<vector<ll>> a(h, vector<ll>(w)), b = a;\n    for (auto &row : a) for (ll &x : row) cin >> x;\n    for (auto &row : b) for (ll &x : row) cin >> x;\n    ll moves = 0;\n    for (int i = 0; i + 1 < h; ++i) {\n        for (int j = 0; j + 1 < w; ++j) {\n            ll delta = b[i][j] - a[i][j];\n            for (int di = 0; di < 2; ++di) {\n                for (int dj = 0; dj < 2; ++dj) a[i + di][j + dj] += delta;\n            }\n            moves += abs(delta);\n        }\n    }\n    if (a != b) cout << \"No\\n\";\n    else cout << \"Yes\\n\" << moves << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Two by Two — Editorial",
+          "sections": [
+            {
+              "title": "Greedy elimination",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Process cells in row-major order, excluding the last row and column. At $(i,j)$, compute $delta=B_{ij}-A_{ij}$ and add it to all four cells of the $2\\times2$ block starting there. This represents $|delta|$ unit additions or subtractions."
+                }
+              ]
+            },
+            {
+              "title": "Example and boundaries",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Changing an all-zero $2\\times2$ matrix into all threes requires three operations. Changing only one cell to one is impossible. Finally compare the entire matrices; a remaining last-row or last-column mismatch means No."
+                },
+                {
+                  "type": "p",
+                  "text": "The source imposes no nonnegativity restriction on intermediate states, so signed deltas are permitted. Only the initial and target entries have the stated bounds."
+                }
+              ]
+            },
+            {
+              "title": "Correctness and minimality",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "For each block, consider its net coefficient: additions minus subtractions. The final change at each cell is the sum of covering coefficients, independent of operation order."
+                },
+                {
+                  "type": "p",
+                  "text": "At cell $(i,j)$ in row-major order, every covering block that starts earlier already has its coefficient fixed. The only unfixed covering block starts exactly at $(i,j)$, forcing its coefficient to equal delta. Induction makes every block coefficient unique, and Greedy computes it. If the final boundary fails, no alternative coefficient choice can repair it."
+                },
+                {
+                  "type": "p",
+                  "text": "A net coefficient delta needs at least $|delta|$ unit operations on its block. Greedy achieves exactly that many. Since all coefficients are forced, summing their absolute values is globally minimal."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Time and space are $O(HW)$. The source has $H,W\\le100$ and initial/target entries in $0\\ldots10^5$. Intermediate signed coefficients and the total operation count can exceed int, so matrices, delta and the answer use ll."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Apply the forced delta"
+                },
+                {
+                  "type": "p",
+                  "text": "A later block never changes an earlier processed cell."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "ll moves = 0;\nfor (int i = 0; i + 1 < h; ++i) {\n    for (int j = 0; j + 1 < w; ++j) {\n        ll delta = b[i][j] - a[i][j];\n        for (int di = 0; di < 2; ++di) {\n            for (int dj = 0; dj < 2; ++dj) a[i + di][j + dj] += delta;\n        }\n        moves += abs(delta);\n    }\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Check the entire boundary"
+                },
+                {
+                  "type": "p",
+                  "text": "Matrix equality checks the last row and column as well as the processed interior."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "if (a != b) cout << \"No\\n\";\nelse cout << \"Yes\\n\" << moves << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ca"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int h, w;\n    cin >> h >> w;\n    vector<vector<ll>> a(h, vector<ll>(w)), b = a;\n    for (auto &row : a) for (ll &x : row) cin >> x;\n    for (auto &row : b) for (ll &x : row) cin >> x;\n    ll moves = 0;\n    for (int i = 0; i + 1 < h; ++i) {\n        for (int j = 0; j + 1 < w; ++j) {\n            ll delta = b[i][j] - a[i][j];\n            for (int di = 0; di < 2; ++di) {\n                for (int dj = 0; dj < 2; ++dj) a[i + di][j + dj] += delta;\n            }\n            moves += abs(delta);\n        }\n    }\n    if (a != b) cout << \"No\\n\";\n    else cout << \"Yes\\n\" << moves << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-795",
+    "number": 795,
+    "ref": "typical90_cc",
+    "expected_revision": 3,
+    "expected_body_sha256": "3a808d23a3beff8dc0e7f6e5e6cafb41c005b0bd34491a9bf12c9b5430b5dc91",
+    "editorial_sha256": "4dadef3bdbfc10a6bf8063db56ff0f96287d89c5762810ec772634320bac1e6b",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_cc",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-cc",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Friendly Group — Бодолт",
+      "sections": [
+        {
+          "title": "2D Prefix Sum",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Team-ийн бүх хосын height difference $K$-аас ихгүй байх нь max height minus min height $\\le K$ гэсэнтэй тэнцүү; weight-д мөн адил. Иймээс $[a,a+K]\\times[b,b+K]$ inclusive coordinate rectangle дотор хамгийн олон point олох хэрэгтэй. Давхардсан point-ууд өөр өөр student тул multiplicity-тай тоолно."
+            }
+          ]
+        },
+        {
+          "title": "Inclusive range ба жишээ",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Integer coordinate-уудын difference $K$ бол $K+1$ өөр утгыг багтааж чадна. $K=1$ үед $(1,1),(2,2)$ хоёулаа нэг team болно. Баруун/дээд хилийг ",
+                  "marks": []
+                },
+                {
+                  "text": "a+K",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ", ",
+                  "marks": []
+                },
+                {
+                  "text": "b+K",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " гэж авна; ",
+                  "marks": []
+                },
+                {
+                  "text": "a+K-1",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " биш.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "p",
+              "text": "Бүх student-ийг coordinate frequency grid-д оруулаад 2D Prefix Sum байгуулна. Боломжит доод координат бүрээс rectangle count-ийг $O(1)$-д олж maximum авна. Өгөгдсөн хамгийн их координатаас давсан хэсгийг тасалж болно: тэнд point байхгүй."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хүчинтэй team-ийн хоёр координатын minimum-уудыг $a,b$ гэе. Бүх гишүүн $[a,a+K]\\times[b,b+K]$ дотор орно. Тэр rectangle доторх бүх student-ийг авахад ч pairwise хоёр difference $K$-аас хэтрэхгүй, тиймээс team-ийг томруулж болно."
+            },
+            {
+              "type": "p",
+              "text": "Эсрэгээр шалгасан rectangle доторх ямар ч хоёр point хоёр тэнхлэг тус бүрд $K$-аас ихгүй зөрнө. Иймээс rectangle бүр хүчинтэй team өгч, optimum team багтах rectangle заавал шалгагдана. Prefix inclusion-exclusion нь multiplicity-тай exact count өгдөг тул maximum зөв."
+            }
+          ]
+        },
+        {
+          "title": "Complexity",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$A,B$ нь оролтын хамгийн их хоёр координат гэвэл хугацаа $O(N+AB)$, санах ой $O(N+AB)$. Source-д $A,B\\le5000$, $N\\le200000$. Хамгийн том int grid ойролцоогоор $100$ MB; point vector нэмэлт $O(N)$. Count-ууд $N$-ээс ихгүй тул int хангалттай."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Frequency ба prefix"
+            },
+            {
+              "type": "p",
+              "text": "Point давхцах бүрд frequency-ийг нэмнэ. Prefix-ийг grid дээр нь in-place байгуулна."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<vector<int>> sum(maxA + 1, vector<int>(maxB + 1));\nfor (auto [a, b] : points) ++sum[a][b];\nfor (int a = 1; a <= maxA; ++a) {\n    for (int b = 1; b <= maxB; ++b) {\n        sum[a][b] += sum[a - 1][b] + sum[a][b - 1] - sum[a - 1][b - 1];\n    }\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Inclusive rectangle query"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Prefix table-ийн доод excluded хилд ",
+                  "marks": []
+                },
+                {
+                  "text": "a-1,b-1",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " ашиглана. Upper boundary нь ",
+                  "marks": []
+                },
+                {
+                  "text": "a+k,b+k",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ".",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int ans = 0;\nfor (int a = 1; a <= maxA; ++a) {\n    for (int b = 1; b <= maxB; ++b) {\n        int right = min(maxA, a + k), top = min(maxB, b + k);\n        int count = sum[right][top] - sum[a - 1][top] - sum[right][b - 1] + sum[a - 1][b - 1];\n        ans = max(ans, count);\n    }\n}\ncout << ans << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_cc"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k, maxA = 0, maxB = 0;\n    cin >> n >> k;\n    vector<pair<int, int>> points(n);\n    for (auto &[a, b] : points) {\n        cin >> a >> b;\n        maxA = max(maxA, a);\n        maxB = max(maxB, b);\n    }\n    vector<vector<int>> sum(maxA + 1, vector<int>(maxB + 1));\n    for (auto [a, b] : points) ++sum[a][b];\n    for (int a = 1; a <= maxA; ++a) {\n        for (int b = 1; b <= maxB; ++b) {\n            sum[a][b] += sum[a - 1][b] + sum[a][b - 1] - sum[a - 1][b - 1];\n        }\n    }\n    int ans = 0;\n    for (int a = 1; a <= maxA; ++a) {\n        for (int b = 1; b <= maxB; ++b) {\n            int right = min(maxA, a + k), top = min(maxB, b + k);\n            int count = sum[right][top] - sum[a - 1][top] - sum[right][b - 1] + sum[a - 1][b - 1];\n            ans = max(ans, count);\n        }\n    }\n    cout << ans << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Friendly Group — Editorial",
+          "sections": [
+            {
+              "title": "2D Prefix Sum",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Pairwise height differences at most $K$ are equivalent to maximum height minus minimum height at most $K$, and likewise for weight. Find the largest number of points in an inclusive rectangle $[a,a+K]\\times[b,b+K]$. Duplicate points represent distinct students and retain their multiplicity."
+                }
+              ]
+            },
+            {
+              "title": "Inclusive ranges and example",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "An integer-coordinate span of difference $K$ contains $K+1$ possible values. For $K=1$, points $(1,1)$ and $(2,2)$ can both join. Upper boundaries are ",
+                      "marks": []
+                    },
+                    {
+                      "text": "a+K",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " and ",
+                      "marks": []
+                    },
+                    {
+                      "text": "b+K",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ", not ",
+                      "marks": []
+                    },
+                    {
+                      "text": "a+K-1",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ".",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "p",
+                  "text": "Build a frequency grid and its 2D Prefix Sum. Enumerate lower coordinates and query each rectangle in $O(1)$. Clip upper boundaries to the largest observed coordinates because no points lie beyond them."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Take the coordinate minima $a,b$ of a valid team. Every member lies within $[a,a+K]\\times[b,b+K]$. Adding every other student in that rectangle remains valid because pairwise differences in each coordinate cannot exceed $K$."
+                },
+                {
+                  "type": "p",
+                  "text": "Conversely, every queried rectangle forms a valid team. An optimal team is contained in one enumerated rectangle, so maximizing these counts attains the optimum. Prefix inclusion-exclusion counts multiplicities exactly."
+                }
+              ]
+            },
+            {
+              "title": "Complexity",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "For largest observed coordinates $A,B$, time is $O(N+AB)$ and space $O(N+AB)$. The source has $A,B\\le5000$ and $N\\le200000$. The largest int grid uses about 100 MB, plus the $O(N)$ point vector. Counts never exceed $N$, so int suffices."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Frequencies and prefixes"
+                },
+                {
+                  "type": "p",
+                  "text": "Increment frequency for every repeated point and build the prefix table in place."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<vector<int>> sum(maxA + 1, vector<int>(maxB + 1));\nfor (auto [a, b] : points) ++sum[a][b];\nfor (int a = 1; a <= maxA; ++a) {\n    for (int b = 1; b <= maxB; ++b) {\n        sum[a][b] += sum[a - 1][b] + sum[a][b - 1] - sum[a - 1][b - 1];\n    }\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Inclusive rectangle query"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Use ",
+                      "marks": []
+                    },
+                    {
+                      "text": "a-1",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " and ",
+                      "marks": []
+                    },
+                    {
+                      "text": "b-1",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " for the excluded lower prefixes, with upper boundaries ",
+                      "marks": []
+                    },
+                    {
+                      "text": "a+k",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " and ",
+                      "marks": []
+                    },
+                    {
+                      "text": "b+k",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ".",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int ans = 0;\nfor (int a = 1; a <= maxA; ++a) {\n    for (int b = 1; b <= maxB; ++b) {\n        int right = min(maxA, a + k), top = min(maxB, b + k);\n        int count = sum[right][top] - sum[a - 1][top] - sum[right][b - 1] + sum[a - 1][b - 1];\n        ans = max(ans, count);\n    }\n}\ncout << ans << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_cc"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k, maxA = 0, maxB = 0;\n    cin >> n >> k;\n    vector<pair<int, int>> points(n);\n    for (auto &[a, b] : points) {\n        cin >> a >> b;\n        maxA = max(maxA, a);\n        maxB = max(maxB, b);\n    }\n    vector<vector<int>> sum(maxA + 1, vector<int>(maxB + 1));\n    for (auto [a, b] : points) ++sum[a][b];\n    for (int a = 1; a <= maxA; ++a) {\n        for (int b = 1; b <= maxB; ++b) {\n            sum[a][b] += sum[a - 1][b] + sum[a][b - 1] - sum[a - 1][b - 1];\n        }\n    }\n    int ans = 0;\n    for (int a = 1; a <= maxA; ++a) {\n        for (int b = 1; b <= maxB; ++b) {\n            int right = min(maxA, a + k), top = min(maxB, b + k);\n            int count = sum[right][top] - sum[a - 1][top] - sum[right][b - 1] + sum[a - 1][b - 1];\n            ans = max(ans, count);\n        }\n    }\n    cout << ans << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-797",
+    "number": 797,
+    "ref": "typical90_cg",
+    "expected_revision": 3,
+    "expected_body_sha256": "9bf0db02c5618a757002a918234b50fdf86313bf32e2ca799e56716ebb0d02ef",
+    "editorial_sha256": "70e41f1fd48e8dc69ebdce835cffdf1cd84b9aea291b9d1c4ba88787cfeefcbf",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_cg",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-cg",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Multiplication 085 — Бодолт",
+      "sections": [
+        {
+          "title": "Divisor enumeration",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$abc=K$, $a\\le b\\le c$ тул $a,b$ хоёулаа $K$-ийн divisor. Бүх divisor-ийг $\\sqrt K$ хүртэлх хосоор олж sort хийнэ. Divisor $a$ бүрт $rem=K/a$; $b\\ge a$, $b^2\\le rem$, $b$ нь rem-ийг хуваах үед $c=rem/b$ гэсэн ганц зөв triple гарна."
+            }
+          ]
+        },
+        {
+          "title": "Canonical ordering ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$K=12$ үед $(1,1,12),(1,2,6),(1,3,4),(2,2,3)$ гэсэн $4$ triple. Permutation-уудыг дахин тоолохгүй. $K=1$ үед $(1,1,1)$ гэсэн ганц хариу бий."
+            },
+            {
+              "type": "p",
+              "text": "Sorted divisor list дээр b-ийн loop-ийг a-ийн индексээс эхлүүлнэ. $b>rem/b$ болмогц дараагийн b-үүд ч $b>c$ тул зогсоно. $a>rem/a$ бол $a^3>K$ тул цааш a сонгох боломжгүй."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хүчинтэй triple бүрийн a,b нь divisor list-д орно; ordering-оос a-ийн индекс b-ээс хэтрэхгүй, b-ийн квадрат rem-ээс хэтрэхгүй. Иймээс тухайн хос loop-д шалгагдана. rem нь b-д хуваагдаж, c нь ганц утгаар тодорхойлогдоно."
+            },
+            {
+              "type": "p",
+              "text": "Тоологдсон хос бүр a,b эерэг, a<=b, b<=c, $abc=K$ нөхцөлийг хангана. Нэг ordered triple-ийн a,b хос ганц тул давхар тоолохгүй. Тэнцүү factor-ууд болон square divisor-ийг нэг удаа хадгалах нь boundary-г зөв шийднэ."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба overflow",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Divisor-ийн тоог $D$ гэвэл хугацаа $O(\\sqrt K+D^2)$, санах ой $O(D)$. $K\\le10^{12}$ тул ll ашиглана. ",
+                  "marks": []
+                },
+                {
+                  "text": "d<=k/d",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ", ",
+                  "marks": []
+                },
+                {
+                  "text": "a<=rem/a",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ", ",
+                  "marks": []
+                },
+                {
+                  "text": "b<=rem/b",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " шалгалтууд square/cube/raw product үүсгэхгүй. c-г хэвлэх шаардлагагүй тул divisible хосыг л тоолно.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Divisor хосууд"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "d",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " болон ",
+                  "marks": []
+                },
+                {
+                  "text": "k/d",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " ижил үед хоёр удаа нэмэхгүй.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<ll> divisors;\nfor (ll d = 1; d <= k / d; ++d) {\n    if (k % d != 0) continue;\n    divisors.push_back(d);\n    if (d != k / d) divisors.push_back(k / d);\n}\nsort(divisors.begin(), divisors.end());"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Nondecreasing triple тоолох"
+            },
+            {
+              "type": "p",
+              "text": "rem/b division-ийг bound болгон ашиглаж, дараа нь rem%b==0 гэж exact factor эсэхийг шалгана."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "ll ans = 0;\nfor (int i = 0; i < int(divisors.size()); ++i) {\n    ll a = divisors[i], rem = k / a;\n    if (a > rem / a) break;\n    for (int j = i; j < int(divisors.size()); ++j) {\n        ll b = divisors[j];\n        if (b > rem / b) break;\n        if (rem % b == 0) ++ans;\n    }\n}\ncout << ans << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_cg"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    ll k;\n    cin >> k;\n    vector<ll> divisors;\n    for (ll d = 1; d <= k / d; ++d) {\n        if (k % d != 0) continue;\n        divisors.push_back(d);\n        if (d != k / d) divisors.push_back(k / d);\n    }\n    sort(divisors.begin(), divisors.end());\n    ll ans = 0;\n    for (int i = 0; i < int(divisors.size()); ++i) {\n        ll a = divisors[i], rem = k / a;\n        if (a > rem / a) break;\n        for (int j = i; j < int(divisors.size()); ++j) {\n            ll b = divisors[j];\n            if (b > rem / b) break;\n            if (rem % b == 0) ++ans;\n        }\n    }\n    cout << ans << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Multiplication 085 — Editorial",
+          "sections": [
+            {
+              "title": "Divisor enumeration",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Since $abc=K$ and $a\\le b\\le c$, both a and b divide $K$. Generate paired divisors through $\\sqrt K$ and sort them. For each a, let $rem=K/a$; a divisor b with $b\\ge a$, $b^2\\le rem$ and $b\\mid rem$ determines the unique c=$rem/b$."
+                }
+              ]
+            },
+            {
+              "title": "Canonical order and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "For $K=12$, triples are $(1,1,12),(1,2,6),(1,3,4),(2,2,3)$: four, without counting permutations. For $K=1$, only $(1,1,1)$ exists."
+                },
+                {
+                  "type": "p",
+                  "text": "Start the b loop at a’s divisor index. Once $b>rem/b$, later b values also exceed c. Once $a>rem/a$, we have $a^3>K$, so no later a is feasible."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Every valid triple has a and b in the divisor list. Its ordering places b at or after a and ensures $b^2\\le rem$, so its pair is examined. Divisibility fixes c uniquely."
+                },
+                {
+                  "type": "p",
+                  "text": "Every counted pair yields positive a,b,c with a<=b<=c and $abc=K$. Each canonical triple has exactly one a,b pair, preventing duplicate permutations. Generating a square divisor only once also handles equal factors correctly."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and overflow",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "For $D$ divisors, time is $O(\\sqrt K+D^2)$ and space $O(D)$. The bound $K\\le10^{12}$ requires ll. Tests ",
+                      "marks": []
+                    },
+                    {
+                      "text": "d<=k/d",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ", ",
+                      "marks": []
+                    },
+                    {
+                      "text": "a<=rem/a",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " and ",
+                      "marks": []
+                    },
+                    {
+                      "text": "b<=rem/b",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " avoid raw square/cube products. Only the count is requested, so c need not be stored.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Paired divisors"
+                },
+                {
+                  "type": "p",
+                  "text": "Do not append the same square-root divisor twice."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<ll> divisors;\nfor (ll d = 1; d <= k / d; ++d) {\n    if (k % d != 0) continue;\n    divisors.push_back(d);\n    if (d != k / d) divisors.push_back(k / d);\n}\nsort(divisors.begin(), divisors.end());"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Count nondecreasing triples"
+                },
+                {
+                  "type": "p",
+                  "text": "Use rem/b for the ordering bound, then rem%b==0 to test exact divisibility."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "ll ans = 0;\nfor (int i = 0; i < int(divisors.size()); ++i) {\n    ll a = divisors[i], rem = k / a;\n    if (a > rem / a) break;\n    for (int j = i; j < int(divisors.size()); ++j) {\n        ll b = divisors[j];\n        if (b > rem / b) break;\n        if (rem % b == 0) ++ans;\n    }\n}\ncout << ans << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_cg"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    ll k;\n    cin >> k;\n    vector<ll> divisors;\n    for (ll d = 1; d <= k / d; ++d) {\n        if (k % d != 0) continue;\n        divisors.push_back(d);\n        if (d != k / d) divisors.push_back(k / d);\n    }\n    sort(divisors.begin(), divisors.end());\n    ll ans = 0;\n    for (int i = 0; i < int(divisors.size()); ++i) {\n        ll a = divisors[i], rem = k / a;\n        if (a > rem / a) break;\n        for (int j = i; j < int(divisors.size()); ++j) {\n            ll b = divisors[j];\n            if (b > rem / b) break;\n            if (rem % b == 0) ++ans;\n        }\n    }\n    cout << ans << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-798",
+    "number": 798,
+    "ref": "typical90_ch",
+    "expected_revision": 3,
+    "expected_body_sha256": "66ca908564ed9cd8723126b972fced354239aaef22c803f1f24596d82819833f",
+    "editorial_sha256": "223f60aebef24cbfa760a1e42db6b30b255bca2a4a08524759ca7b532b74a951",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_ch",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-ch",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Snuke's Favorite Arrays — Бодолт",
+      "sections": [
+        {
+          "title": "Bit-үүдийг салгах",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "OR нь bit бүрд бие даасан. Нэг bit дээр $N$ хувьсагчийн binary assignment-ийг mask гэж үзээд бүх $2^N$ mask-ийг шалгана. Query-ийн гурван индексийн аль нэг нь $1$ бол OR bit $1$, бүгд $0$ бол $0$. Үүнийг тухайн $w$-ийн bit-тэй харьцуулна."
+            }
+          ]
+        },
+        {
+          "title": "Үржүүлэх ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Bit бүрт бүх query-г хангасан mask-ийн тоог олж, $60$ bit-ийн тоонуудыг mod $10^9+7$-аар үржүүлнэ. Query-д огт ороогүй хувьсагчийн bit free хэвээр: mask enumeration түүнийг автоматаар тоолно."
+            },
+            {
+              "type": "p",
+              "text": "$N=3$, ганц OR query $w=1$ бол доод bit-д бүх-тэгээс бусад $7$ mask, бусад $59$ bit-д зөвхөн бүх-тэг mask. Нийт $7$ sequence. Ижил гурвалд OR $0$ ба OR $1$ гэсэн хоёр query байвал боломжгүй."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Бүтэн integer sequence бүрийн bit бүр $N$-bit mask-ийг ганц утгаар тодорхойлно. Эсрэгээр $60$ mask-ийн сонголт нь $0\\le A_j<2^{60}$ sequence-ийг ганцаар байгуулна. Энэ нь нэг-нэг харгалзаа."
+            },
+            {
+              "type": "p",
+              "text": "OR equality бүхэлдээ биелэх нь бүх $60$ bit дээр биелэхтэй тэнцүү. Bit-үүдийн хооронд carry, нэмэлт хамаарал байхгүй. Тиймээс хүчинтэй sequence-үүдийн set нь bit бүрийн хүчинтэй mask set-ийн Cartesian product; тоонуудыг үржүүлэх нь зөв. Query бүрийг mask intersection-аар шалгах нь binary OR-ийн яг тодорхойлолт."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба struct",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хугацаа $O(60\\cdot2^NQ)$, санах ой $O(Q)$. Source-д $3\\le N\\le12$, $Q\\le50$, $w<2^{60}$. Bit index $0\\ldots59$; value ll, жижиг assignment mask int. Тоолол residue-тай үржихээс өмнө ll-д орно."
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Compact Query struct нь гурван индексийн bitmask болон шаардсан бүхэл value-г хадгална. Aggregate initializer ",
+                  "marks": []
+                },
+                {
+                  "text": "{mask,w}",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь нэмэлт constructor шаардахгүй; ижил нэртэй assignment mask-тай intersection хийхэд гурвын OR bit олдоно.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Query mask байгуулах"
+            },
+            {
+              "type": "p",
+              "text": "Нэгээр эхэлсэн индексийг shift-ийн өмнө нэгээр багасгана. Source-ийн $x<y<z$ нөхцөл гурван индексийг ялгаатай болгоно."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<Query> queries;\nfor (int i = 0; i < q; ++i) {\n    int x, y, z;\n    ll w;\n    cin >> x >> y >> z >> w;\n    queries.push_back({(1 << (x - 1)) | (1 << (y - 1)) | (1 << (z - 1)), w});\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Нэг bit-ийн бүх mask"
+            },
+            {
+              "type": "p",
+              "text": "Intersection nonzero эсэхийг bool болгож required bit-тэй харьцуулна. Энэ нь XOR эсвэл гурвыг бүгдийг нэг байх нөхцөл биш."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "for (int bit = 0; bit < 60; ++bit) {\n    int count = 0;\n    for (int mask = 0; mask < (1 << n); ++mask) {\n        bool ok = true;\n        for (const auto &query : queries) {\n            if (bool(mask & query.mask) != bool(query.value >> bit & 1LL)) {\n                ok = false;\n                break;\n            }\n        }\n        if (ok) ++count;\n    }\n    ans = ans * count % mod;\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ch"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Query {\n    int mask;\n    ll value;\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<Query> queries;\n    for (int i = 0; i < q; ++i) {\n        int x, y, z;\n        ll w;\n        cin >> x >> y >> z >> w;\n        queries.push_back({(1 << (x - 1)) | (1 << (y - 1)) | (1 << (z - 1)), w});\n    }\n    const ll mod = 1000000007;\n    ll ans = 1;\n    for (int bit = 0; bit < 60; ++bit) {\n        int count = 0;\n        for (int mask = 0; mask < (1 << n); ++mask) {\n            bool ok = true;\n            for (const auto &query : queries) {\n                if (bool(mask & query.mask) != bool(query.value >> bit & 1LL)) {\n                    ok = false;\n                    break;\n                }\n            }\n            if (ok) ++count;\n        }\n        ans = ans * count % mod;\n    }\n    cout << ans << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Snuke's Favorite Arrays — Editorial",
+          "sections": [
+            {
+              "title": "Separate the bits",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "OR acts independently on each bit. For one bit, enumerate all $2^N$ binary assignments as masks. A query’s OR bit is one exactly when at least one of its three indexed positions is one; compare it with that bit of ",
+                      "marks": []
+                    },
+                    {
+                      "text": "w",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ".",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Multiply counts and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Count masks satisfying every query for each of the 60 bits, then multiply the counts modulo $10^9+7$. Variables absent from all queries remain free; mask enumeration counts their choices automatically."
+                },
+                {
+                  "type": "p",
+                  "text": "For $N=3$ and one OR query with $w=1$, the lowest bit has seven masks, excluding all-zero. Each other bit has only the all-zero mask, giving seven sequences. Queries requiring both OR zero and OR one on the same triple are contradictory."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Every full integer sequence determines one $N$-bit assignment at each bit. Conversely, any choice of 60 masks uniquely reconstructs values satisfying $0\\le A_j<2^{60}$. This is a bijection."
+                },
+                {
+                  "type": "p",
+                  "text": "An integer OR equality holds exactly when all 60 bit equalities hold. There are no carries or cross-bit restrictions. The valid sequences therefore form the Cartesian product of valid per-bit assignment sets, so multiplying counts is correct. Mask intersection implements the exact binary OR test."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and struct",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Time is $O(60\\cdot2^NQ)$ and space $O(Q)$. The source has $3\\le N\\le12$, $Q\\le50$ and $w<2^{60}$. Process bits zero through 59; stored values use ll and assignment masks use int. Multiplication by the residue is evaluated in ll."
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "The compact Query struct stores the three-index bitmask and required integer value. Aggregate initialization ",
+                      "marks": []
+                    },
+                    {
+                      "text": "{mask,w}",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " needs no extra constructor. Intersecting an assignment mask with the query mask tells whether any of the three bits is one.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Build query masks"
+                },
+                {
+                  "type": "p",
+                  "text": "Subtract one before shifting one-based indices. The source guarantees $x<y<z$, so the three positions are distinct."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<Query> queries;\nfor (int i = 0; i < q; ++i) {\n    int x, y, z;\n    ll w;\n    cin >> x >> y >> z >> w;\n    queries.push_back({(1 << (x - 1)) | (1 << (y - 1)) | (1 << (z - 1)), w});\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "All assignments for one bit"
+                },
+                {
+                  "type": "p",
+                  "text": "Compare the Boolean nonempty intersection with the required bit. This is OR, not XOR or an all-three-ones test."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "for (int bit = 0; bit < 60; ++bit) {\n    int count = 0;\n    for (int mask = 0; mask < (1 << n); ++mask) {\n        bool ok = true;\n        for (const auto &query : queries) {\n            if (bool(mask & query.mask) != bool(query.value >> bit & 1LL)) {\n                ok = false;\n                break;\n            }\n        }\n        if (ok) ++count;\n    }\n    ans = ans * count % mod;\n}"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ch"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Query {\n    int mask;\n    ll value;\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<Query> queries;\n    for (int i = 0; i < q; ++i) {\n        int x, y, z;\n        ll w;\n        cin >> x >> y >> z >> w;\n        queries.push_back({(1 << (x - 1)) | (1 << (y - 1)) | (1 << (z - 1)), w});\n    }\n    const ll mod = 1000000007;\n    ll ans = 1;\n    for (int bit = 0; bit < 60; ++bit) {\n        int count = 0;\n        for (int mask = 0; mask < (1 << n); ++mask) {\n            bool ok = true;\n            for (const auto &query : queries) {\n                if (bool(mask & query.mask) != bool(query.value >> bit & 1LL)) {\n                    ok = false;\n                    break;\n                }\n            }\n            if (ok) ++count;\n        }\n        ans = ans * count % mod;\n    }\n    cout << ans << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+]
