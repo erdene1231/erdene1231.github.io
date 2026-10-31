@@ -44,3 +44,5 @@ The local browser checks cover all 73 lessons in both languages at 375 px/light 
 The SQL regression runs all 72 candidates in **24 batches of three** through the existing publication validators. It checks atomic rollback after an injected late failure, stale catalog/draft guards, replay rejection, exact reviewed hashes and preservation of synthetic private drafts, the unchanged DSU/Mongolia rows, learner records and problems. The wrapper retains the existing 1–3-target limit and adds the exact reviewed ledger plus whole-catalog/all-draft guards.
 
 Publication must use fresh body/revision, draft, function/ACL and trigger guards before each transaction, with scoped recovery and one-time intent/result files. Only changed published lessons are targeted. A later receipt records actual revisions, history IDs, exact anonymous public-body verification and protected-state/deployment checks. No migration is required. The three deferred UI/progress items remain outside this pass.
+
+The complete Node suite passes: **365 tests, zero failures**. See [verification.json](contextual-mn-editorial/verification.json) for the bounded validation receipt.
