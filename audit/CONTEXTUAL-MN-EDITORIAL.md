@@ -46,3 +46,13 @@ The SQL regression runs all 72 candidates in **24 batches of three** through the
 Publication must use fresh body/revision, draft, function/ACL and trigger guards before each transaction, with scoped recovery and one-time intent/result files. Only changed published lessons are targeted. A later receipt records actual revisions, history IDs, exact anonymous public-body verification and protected-state/deployment checks. No migration is required. The three deferred UI/progress items remain outside this pass.
 
 The complete Node suite passes: **365 tests, zero failures**. See [verification.json](contextual-mn-editorial/verification.json) for the bounded validation receipt.
+
+## Publication receipt
+
+[Source PR #210](https://github.com/erdene1231/erdene1231.github.io/pull/210) merged at `d8a781fb7b05f516e45fa4d9a5a90b6ccada891b`. All 72 changed lessons then committed in 24 guarded transactions and were read back individually. Fresh anonymous retrieval matches all 73 reviewed bodies exactly, including unchanged DSU. History advanced from 285 to 357 (new entries 286–357). The [publication receipt](contextual-mn-editorial/publication-receipt.json) records every new revision, history ID and one-time SQL hash. Never replay these statements.
+
+All 74 stored identities, the 55 original and 18 additional public identities, numeric order fields and native reader order are preserved. The existing `get_tutorials` RPC sorts only by numeric `order`; equal-value ties have unspecified raw array order. Those raw ties shifted after row updates, while the actual `orderTutorials` reader order remained exact. This is recorded rather than claiming a stable raw RPC tie order.
+
+Mongolia remains unchanged and unpublished. All eight private drafts and their base revisions, 1,010 problems, learner records/progress, profiles and checked ACL/RLS/function/trigger fingerprints remain unchanged. Private drafts retain normal revision-conflict handling. The final changed-field count is 509 Mongolian/shared fields and 31 English counterpart fields.
+
+Pages deployment 41179315942 succeeded for the source merge. All 16 cache-84 runtime/JSON assets match deployed bytes with default TLS verification. No runtime or deferred UI changes were needed for this pass.
