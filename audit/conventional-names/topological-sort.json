@@ -1,0 +1,5097 @@
+{
+  "body": {
+    "id": "topological-sort",
+    "level": "Дунд шат",
+    "order": 34,
+    "title": "Чиглэлтэй граф — топологийн эрэмбэ, DAG DP, дараагч ба цикл",
+    "aliases": "topological-sort Topological sort — dependency-ийн дараалал Topological sorting — dependency order topological sort dag indegree kahn dependency cycle чиглэсэн cycle",
+    "related": [
+      "graph-basics",
+      "bfs",
+      "fenwick-tree"
+    ],
+    "summary": "Чиглэлтэй циклгүй графын хамаарлын дараалал, замын DP, дараагчийн үсрэлт ба Floyd-ийн циклийг тодорхой жишээ, тайлбартай C++17 программаар судална.",
+    "category": "Graphs",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "directed",
+        "title": "Чиглэлтэй графын хоёр онцгой хэлбэр",
+        "blocks": [
+          {
+            "text": "Чиглэлтэй графт ирмэгийг зөвхөн сумны дагуу туулна. Энд хоёр онцгой хэлбэрийг судална. Нэгдүгээрт, чиглэлтэй циклгүй граф буюу DAG: ямар ч оройгоос нэг буюу түүнээс олон ирмэг туулан өөрт нь буцаж ирэхгүй. Хоёрдугаарт, орой бүрээс яг нэг ирмэг гардаг дараагчийн граф: дараагийн орой нь нэг утгатай. Эхний хэлбэрт хамаарлыг зөв дарааллаар бодож, хоёр дахь хэлбэрт урт алхалтыг үсрэлтээр хурдасгаж болно.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "topological",
+        "title": "16.1 Топологийн эрэмбэлэлт",
+        "blocks": [
+          {
+            "text": "Топологийн эрэмбэ нь оройнуудыг нэг нэг удаа жагсааж, $a\\to b$ ирмэг бүрд $a$-г $b$-ээс өмнө байрлуулсан дараалал. Иймээс $a$-аас $b$ хүрэх ямар ч эерэг урттай зам байвал $a$ өмнө нь байна. Дараах графт $[4,1,5,2,3,6]$ нэг зөв эрэмбэ болно.",
+            "type": "p"
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "3",
+                "6"
+              ],
+              [
+                "4",
+                "1"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "2"
+              ],
+              [
+                "5",
+                "3"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 16,
+                "y": 22,
+                "id": "1",
+                "label": "1"
+              },
+              {
+                "x": 50,
+                "y": 22,
+                "id": "2",
+                "label": "2"
+              },
+              {
+                "x": 84,
+                "y": 22,
+                "id": "3",
+                "label": "3"
+              },
+              {
+                "x": 16,
+                "y": 78,
+                "id": "4",
+                "label": "4"
+              },
+              {
+                "x": 50,
+                "y": 78,
+                "id": "5",
+                "label": "5"
+              },
+              {
+                "x": 84,
+                "y": 78,
+                "id": "6",
+                "label": "6"
+              }
+            ],
+            "caption": "Эхний жишээнд 4 → 1; сумны чиглэлийг анхаар.",
+            "directed": true,
+            "edgeStyles": [
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {}
+            ]
+          },
+          {
+            "kind": "array",
+            "rows": [
+              [
+                "4",
+                "1",
+                "5",
+                "2",
+                "3",
+                "6"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "Нэг боломжит топологийн эрэмбэ."
+          },
+          {
+            "text": "DAG бүр топологийн эрэмбэтэй. Харин циклтэй бол боломжгүй: цикл дагуу дараагийн орой бүр өмнөхөөсөө хойно байх ёстой мөртлөө эцэст нь эхний орой өөрөөсөө хойно орохыг шаардана. DFS-ээр цикл байгаа эсэхийг шалгахдаа эрэмбийг давхар байгуулж болно.",
+            "type": "p"
+          },
+          {
+            "text": "DFS-ийн гурван төлөв",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Орой бүрийг $0$ — эхлээгүй, $1$ — одоо идэвхтэй дуудлагад байгаа, $2$ — бүх гарах ирмэгээ шалгаад дууссан гэж тэмдэглэнэ. Шинэ оройд ороход $1$, бүх дараах оройг боловсруулж дуусахад $2$ болгоно. $1$ төлөвтэй орой руу ирмэг таарвал идэвхтэй хайлтын замын өвөг рүү буцсан тул цикл бий. $2$ төлөвтэй орой руу очих нь өөрөө цикл гэсэн үг биш.",
+            "type": "p"
+          },
+          {
+            "text": "Орой $2$ төлөвт шилжихэд жагсаалтанд нэмнэ. Циклгүй бол $u\\to v$ ирмэгийн $v$ нь $u$-ээс өмнө дууссан байна: эсвэл өмнө нь дууссан, эсвэл $u$-гийн хайлтаар дуудагдаж түрүүлж дуусна. Иймээс дуусалтын жагсаалтыг урвуулахад бүх ирмэг урагш чиглэнэ. Нэг эхлэлээс хүрэхгүй хэсгийг орхихгүй, бүх оройгоос эхлээгүйг нь сонгож хайлт хийнэ.",
+            "type": "p"
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "3",
+                "6"
+              ],
+              [
+                "4",
+                "1"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "2"
+              ],
+              [
+                "5",
+                "3"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 16,
+                "y": 22,
+                "id": "1",
+                "color": "#e5e7eb",
+                "label": "1",
+                "textColor": "#111827",
+                "annotation": "s=1",
+                "annotationDy": -27
+              },
+              {
+                "x": 50,
+                "y": 22,
+                "id": "2",
+                "color": "#e5e7eb",
+                "label": "2",
+                "textColor": "#111827",
+                "annotation": "s=1",
+                "annotationDy": -27
+              },
+              {
+                "x": 84,
+                "y": 22,
+                "id": "3",
+                "color": "#e5e7eb",
+                "label": "3",
+                "textColor": "#111827",
+                "annotation": "s=1",
+                "annotationDy": -27
+              },
+              {
+                "x": 16,
+                "y": 78,
+                "id": "4",
+                "label": "4"
+              },
+              {
+                "x": 50,
+                "y": 78,
+                "id": "5",
+                "label": "5"
+              },
+              {
+                "x": 84,
+                "y": 78,
+                "id": "6",
+                "color": "#64748b",
+                "label": "6",
+                "textColor": "#ffffff",
+                "annotation": "s=2",
+                "annotationDy": -27
+              }
+            ],
+            "caption": "1 → 2 → 3 → 6; 6 эхэлж дуусна.",
+            "directed": true,
+            "edgeStyles": [
+              {
+                "color": "#c2410c"
+              },
+              {
+                "color": "#c2410c"
+              },
+              {
+                "color": "#c2410c"
+              },
+              {},
+              {},
+              {},
+              {}
+            ]
+          },
+          {
+            "text": "Эхлээд $1\\to2\\to3\\to6$ гэж явна. $6$-аас гарах ирмэг байхгүй тул дуусаж нэмэгдэнэ. Буцахдаа $3,2,1$ дуусч жагсаалт $[6,3,2,1]$ болно. Дараа нь эхлээгүй $4$-өөс хайхад $1$ аль хэдийн дууссан тул дахин орохгүй, харин $5$-ыг боловсруулна.",
+            "type": "p"
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "3",
+                "6"
+              ],
+              [
+                "4",
+                "1"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "2"
+              ],
+              [
+                "5",
+                "3"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 16,
+                "y": 22,
+                "id": "1",
+                "color": "#64748b",
+                "label": "1",
+                "textColor": "#ffffff",
+                "annotation": "s=2",
+                "annotationDy": -27
+              },
+              {
+                "x": 50,
+                "y": 22,
+                "id": "2",
+                "color": "#64748b",
+                "label": "2",
+                "textColor": "#ffffff",
+                "annotation": "s=2",
+                "annotationDy": -27
+              },
+              {
+                "x": 84,
+                "y": 22,
+                "id": "3",
+                "color": "#64748b",
+                "label": "3",
+                "textColor": "#ffffff",
+                "annotation": "s=2",
+                "annotationDy": -27
+              },
+              {
+                "x": 16,
+                "y": 78,
+                "id": "4",
+                "label": "4"
+              },
+              {
+                "x": 50,
+                "y": 78,
+                "id": "5",
+                "label": "5"
+              },
+              {
+                "x": 84,
+                "y": 78,
+                "id": "6",
+                "color": "#64748b",
+                "label": "6",
+                "textColor": "#ffffff",
+                "annotation": "s=2",
+                "annotationDy": -27
+              }
+            ],
+            "caption": "6,3,2,1 дууссан; 4,5 эхлээгүй.",
+            "directed": true,
+            "edgeStyles": [
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {}
+            ]
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "3",
+                "6"
+              ],
+              [
+                "4",
+                "1"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "2"
+              ],
+              [
+                "5",
+                "3"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 16,
+                "y": 22,
+                "id": "1",
+                "color": "#64748b",
+                "label": "1",
+                "textColor": "#ffffff",
+                "annotation": "s=2",
+                "annotationDy": -27
+              },
+              {
+                "x": 50,
+                "y": 22,
+                "id": "2",
+                "color": "#64748b",
+                "label": "2",
+                "textColor": "#ffffff",
+                "annotation": "s=2",
+                "annotationDy": -27
+              },
+              {
+                "x": 84,
+                "y": 22,
+                "id": "3",
+                "color": "#64748b",
+                "label": "3",
+                "textColor": "#ffffff",
+                "annotation": "s=2",
+                "annotationDy": -27
+              },
+              {
+                "x": 16,
+                "y": 78,
+                "id": "4",
+                "color": "#e5e7eb",
+                "label": "4",
+                "textColor": "#111827",
+                "annotation": "s=1",
+                "annotationDy": -27
+              },
+              {
+                "x": 50,
+                "y": 78,
+                "id": "5",
+                "color": "#e5e7eb",
+                "label": "5",
+                "textColor": "#111827",
+                "annotation": "s=1",
+                "annotationDy": -27
+              },
+              {
+                "x": 84,
+                "y": 78,
+                "id": "6",
+                "color": "#64748b",
+                "label": "6",
+                "textColor": "#ffffff",
+                "annotation": "s=2",
+                "annotationDy": -27
+              }
+            ],
+            "caption": "4 → 5 хайлт; 5-ын хөршүүд өмнө дууссан.",
+            "directed": true,
+            "edgeStyles": [
+              {},
+              {},
+              {},
+              {},
+              {
+                "color": "#c2410c"
+              },
+              {},
+              {}
+            ]
+          },
+          {
+            "text": "Эцсийн дуусалтын жагсаалт $[6,3,2,1,5,4]$. Урвуу нь $[4,5,1,2,3,6]$, бас зөв топологийн эрэмбэ. Өмнөх $[4,1,5,2,3,6]$-ээс өөр байгаа нь алдаа биш: хамааралгүй оройнуудын байрыг сольж болно.",
+            "type": "p"
+          },
+          {
+            "kind": "array",
+            "rows": [
+              [
+                "4",
+                "5",
+                "1",
+                "2",
+                "3",
+                "6"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "DFS-ээс гарсан эрэмбэ."
+          },
+          {
+            "text": "Циклтэй жишээ",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "3",
+                "6"
+              ],
+              [
+                "4",
+                "1"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "2"
+              ],
+              [
+                "3",
+                "5"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 16,
+                "y": 22,
+                "id": "1",
+                "label": "1"
+              },
+              {
+                "x": 50,
+                "y": 22,
+                "id": "2",
+                "label": "2"
+              },
+              {
+                "x": 84,
+                "y": 22,
+                "id": "3",
+                "label": "3"
+              },
+              {
+                "x": 16,
+                "y": 78,
+                "id": "4",
+                "label": "4"
+              },
+              {
+                "x": 50,
+                "y": 78,
+                "id": "5",
+                "label": "5"
+              },
+              {
+                "x": 84,
+                "y": 78,
+                "id": "6",
+                "label": "6"
+              }
+            ],
+            "caption": "Энд 5 → 3 биш, 3 → 5 болсон.",
+            "directed": true,
+            "edgeStyles": [
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {}
+            ]
+          },
+          {
+            "text": "Одоо $2\\to3\\to5\\to2$ цикл бий. Хайлт $1,2,3$-ыг идэвхтэй байлгаж, $6$-г дуусгасны дараа $3\\to5$-аар орно. $5\\to2$ дээр $2$ нь $1$ төлөвтэй хэвээр: энэ нь эрэмбэ байгуулах боломжгүйг батална. Цикл нь эхлэлээс хүрэхгүй өөр хэсэгт байсан ч бүх оройгоос хайдаг тул илрүүлнэ.",
+            "type": "p"
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "3",
+                "6"
+              ],
+              [
+                "4",
+                "1"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "2"
+              ],
+              [
+                "3",
+                "5"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 16,
+                "y": 22,
+                "id": "1",
+                "color": "#e5e7eb",
+                "label": "1",
+                "textColor": "#111827",
+                "annotation": "s=1",
+                "annotationDy": -27
+              },
+              {
+                "x": 50,
+                "y": 22,
+                "id": "2",
+                "color": "#e5e7eb",
+                "label": "2",
+                "textColor": "#111827",
+                "annotation": "s=1",
+                "annotationDy": -27
+              },
+              {
+                "x": 84,
+                "y": 22,
+                "id": "3",
+                "color": "#e5e7eb",
+                "label": "3",
+                "textColor": "#111827",
+                "annotation": "s=1",
+                "annotationDy": -27
+              },
+              {
+                "x": 16,
+                "y": 78,
+                "id": "4",
+                "label": "4"
+              },
+              {
+                "x": 50,
+                "y": 78,
+                "id": "5",
+                "color": "#e5e7eb",
+                "label": "5",
+                "textColor": "#111827",
+                "annotation": "s=1",
+                "annotationDy": -27
+              },
+              {
+                "x": 84,
+                "y": 78,
+                "id": "6",
+                "color": "#64748b",
+                "label": "6",
+                "textColor": "#ffffff",
+                "annotation": "s=2",
+                "annotationDy": -27
+              }
+            ],
+            "caption": "2 идэвхтэй байхад 5 → 2 руу буцав.",
+            "directed": true,
+            "edgeStyles": [
+              {},
+              {
+                "color": "#c2410c"
+              },
+              {},
+              {},
+              {},
+              {
+                "color": "#c2410c"
+              },
+              {
+                "color": "#c2410c"
+              }
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Код рекурсийн дуудлагыг ",
+                "marks": []
+              },
+              {
+                "text": "(орой, дараагийн ирмэгийн индекс)",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гэсэн ил Stack-д хадгална. Ингэснээр урт гинж дээр C++ дуудлагын Stack дүүрэхгүй. Оролт $n,m$, дараа нь $m$ чиглэлтэй ",
+                "marks": []
+              },
+              {
+                "text": "a b",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "; $1\\le n\\le200000$, $m\\le400000$. Гаралт нэг зөв эрэмбэ эсвэл ",
+                "marks": []
+              },
+              {
+                "text": "IMPOSSIBLE",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ". Өөртөө заасан ирмэг ч цикл; олон давхардсан ирмэгийг тус бүр шалгана. Хугацаа, санах ой $O(n+m)$.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Индекс ба төлөвт ",
+                "marks": []
+              },
+              {
+                "text": "int",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хангалттай.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "state=1",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " болгохдоо Stack-д оруулна. Хөршүүд дуусахад ",
+                "marks": []
+              },
+              {
+                "text": "state=2",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " болгож ",
+                "marks": []
+              },
+              {
+                "text": "ord",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-д нэмнэ. Ирмэгийн индексийг нэмсний дараа хүүхэд рүү орох тул буцаж ирэхэд зөв газраасаа үргэлжилнэ. Идэвхтэй орой таарвал хоосон вектор буцаана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "vector<int> topo(const vector<vector<int>> &adj) {\n    int n = (int)adj.size() - 1;\n    vector<int> state(n + 1), ord;\n    for (int s = 1; s <= n; s++) {\n        if (state[s]) continue;\n        vector<pair<int, int>> st = {{s, 0}};\n        state[s] = 1;\n        while (!st.empty()) {\n            int u = st.back().first;\n            int &i = st.back().second;\n            if (i == (int)adj[u].size()) {\n                state[u] = 2;\n                ord.push_back(u);\n                st.pop_back();\n                continue;\n            }\n            int v = adj[u][i++];\n            if (state[v] == 1) return {};\n            if (state[v] == 0) {\n                state[v] = 1;\n                st.push_back({v, 0});\n            }\n        }\n    }\n    reverse(ord.begin(), ord.end());\n    return ord;\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Чиглэлтэй ирмэгийг зөвхөн нэг талд нэмнэ. $n\\ge1$ тул хоосон эрэмбэ цикл илэрснийг заана.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    vector<vector<int>> adj(n + 1);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        adj[a].push_back(b);\n    }\n    auto ord = topo(adj);\n    if (ord.empty()) cout << \"IMPOSSIBLE\\n\";\n    else for (int i = 0; i < n; i++) cout << ord[i] << (i + 1 == n ? '\\n' : ' ');\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Өмнөх хэсгүүдийг нэгтгэсэн бүтэн C++17 программ. Программ бүрийг тусдаа файлд хөрвүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nvector<int> topo(const vector<vector<int>> &adj) {\n    int n = (int)adj.size() - 1;\n    vector<int> state(n + 1), ord;\n    for (int s = 1; s <= n; s++) {\n        if (state[s]) continue;\n        vector<pair<int, int>> st = {{s, 0}};\n        state[s] = 1;\n        while (!st.empty()) {\n            int u = st.back().first;\n            int &i = st.back().second;\n            if (i == (int)adj[u].size()) {\n                state[u] = 2;\n                ord.push_back(u);\n                st.pop_back();\n                continue;\n            }\n            int v = adj[u][i++];\n            if (state[v] == 1) return {};\n            if (state[v] == 0) {\n                state[v] = 1;\n                st.push_back({v, 0});\n            }\n        }\n    }\n    reverse(ord.begin(), ord.end());\n    return ord;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    vector<vector<int>> adj(n + 1);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        adj[a].push_back(b);\n    }\n    auto ord = topo(adj);\n    if (ord.empty()) cout << \"IMPOSSIBLE\\n\";\n    else for (int i = 0; i < n; i++) cout << ord[i] << (i + 1 == n ? '\\n' : ' ');\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "dp",
+        "title": "16.2 Чиглэлтэй циклгүй граф дээрх DP",
+        "blocks": [
+          {
+            "text": "DAG-ийн топологийн дарааллаар DP бодож болно. Эхлэлээс төгсгөл хүртэлх замын тоо, хамгийн бага/их жин, хамгийн цөөн/олон ирмэг, зам болгонд заавал ордог орой зэрэг асуулт үүнд багтана. Өмнөх төлөвөөс дараагийн төлөв рүү шилжихэд шаардлагатай хариу нь аль хэдийн бэлэн байдаг.",
+            "type": "p"
+          },
+          {
+            "text": "Замын тоо",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "3",
+                "6"
+              ],
+              [
+                "1",
+                "4"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "2"
+              ],
+              [
+                "5",
+                "3"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 16,
+                "y": 22,
+                "id": "1",
+                "label": "1"
+              },
+              {
+                "x": 50,
+                "y": 22,
+                "id": "2",
+                "label": "2"
+              },
+              {
+                "x": 84,
+                "y": 22,
+                "id": "3",
+                "label": "3"
+              },
+              {
+                "x": 16,
+                "y": 78,
+                "id": "4",
+                "label": "4"
+              },
+              {
+                "x": 50,
+                "y": 78,
+                "id": "5",
+                "label": "5"
+              },
+              {
+                "x": 84,
+                "y": 78,
+                "id": "6",
+                "label": "6"
+              }
+            ],
+            "caption": "Энэ жишээнд 1 → 4: эхний топологийн жишээнээс чиглэл нь өөр.",
+            "directed": true,
+            "edgeStyles": [
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {}
+            ]
+          },
+          {
+            "text": "$1$-ээс $6$ хүрэх яг гурван зам байна: $1\\to2\\to3\\to6$; $1\\to4\\to5\\to2\\to3\\to6$; $1\\to4\\to5\\to3\\to6$. $ways[x]$-г $1$-ээс $x$ хүртэлх замын тоо гэе. $ways[1]=1$ нь эхлэл дээрх хоосон зам. Бусад оройд шууд ирдэг бүх $a$ оройн хариуг нэмнэ: $ways[x]=\\sum_{a\\to x}ways[a]$. Зам бүр сүүлийн ирмэгээрээ яг нэг ангилалд орно.",
+            "type": "p"
+          },
+          {
+            "kind": "array",
+            "rows": [
+              [
+                "1",
+                "4",
+                "5",
+                "2",
+                "3",
+                "6"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "Төлөвүүдийг бодох топологийн дараалал."
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "3",
+                "6"
+              ],
+              [
+                "1",
+                "4"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "2"
+              ],
+              [
+                "5",
+                "3"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 16,
+                "y": 22,
+                "id": "1",
+                "label": "1",
+                "annotation": "1",
+                "annotationDy": -30,
+                "annotationColor": "#c2410c"
+              },
+              {
+                "x": 50,
+                "y": 22,
+                "id": "2",
+                "label": "2",
+                "annotation": "2",
+                "annotationDy": -30,
+                "annotationColor": "#c2410c"
+              },
+              {
+                "x": 84,
+                "y": 22,
+                "id": "3",
+                "label": "3",
+                "annotation": "3",
+                "annotationDy": -30,
+                "annotationColor": "#c2410c"
+              },
+              {
+                "x": 16,
+                "y": 78,
+                "id": "4",
+                "label": "4",
+                "annotation": "1",
+                "annotationDy": -30,
+                "annotationColor": "#c2410c"
+              },
+              {
+                "x": 50,
+                "y": 78,
+                "id": "5",
+                "label": "5",
+                "annotation": "1",
+                "annotationDy": -30,
+                "annotationColor": "#c2410c"
+              },
+              {
+                "x": 84,
+                "y": 78,
+                "id": "6",
+                "label": "6",
+                "annotation": "3",
+                "annotationDy": -30,
+                "annotationColor": "#c2410c"
+              }
+            ],
+            "caption": "Оройн гаднах тоо нь ways утга.",
+            "directed": true,
+            "edgeStyles": [
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {}
+            ]
+          },
+          {
+            "text": "$1,4,5,2,3,6$ дарааллаар $ways$ утгууд $1,1,1,2,3,3$ болно. Тухайлбал $3$ руу $2$ ба $5$-аас ирдэг тул $ways[3]=ways[2]+ways[5]=2+1=3$. Хүрэхгүй оройн тоо $0$ хэвээр.",
+            "type": "p"
+          },
+          {
+            "text": "Замын бусад үзүүлэлт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Тооны нэмэхийг минимум эсвэл максимум болгон сольж, $u\\to v$ жин $w$ дээр $low[v]=\\min(low[v],low[u]+w)$, $high[v]=\\max(high[v],high[u]+w)$ гэж шинэчилнэ. Ирмэгийн тоонд $w$-ийн оронд $1$ нэмнэ. Эхлэлийн утга $0$, хүрэхгүй төлөвүүд тусгай утгатай; хүрээгүй оройгоос тооцоо хийхгүй. DAG тул сөрөг жин байсан ч энэ дараалал зөв.",
+            "type": "p"
+          },
+          {
+            "text": "Заавал дайрах оройд урдаас $ways[u]$, араас $back[u]$ гэсэн $u$-ээс төгсгөл хүртэлх замын тоог бодно. DAG-д $u$-ээр дайрах замуудын тоо $ways[u]back[u]$: урд ба хойд замыг нийлүүлэхэд өөр орой давтагдвал цикл үүсэх ёстой. Нийт зам $T>0$ үед энэ үржвэр $T$-тэй тэнцүү бол $u$ бүх замд байна. Яг тоонуудыг харьцуулах ёстой; модуль авсан тоон дээр энэ шалгалтыг хийвэл буруу дүгнэж болно.",
+            "type": "p"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Дараах программд энгийн DAG, $1\\le n\\le60$, давхардсан ирмэггүй, $|w|\\le10^9$ гэж авна. Энгийн DAG-д ялгаатай хоёр оройн хооронд хамгийн ихдээ $2^{n-2}$ зам байдаг тул тоо ",
+                "marks": []
+              },
+              {
+                "text": "ll",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-д багтана; нийт боломжит дарааллаас завсрын оройнуудын дэд олонлогийг сонгож байна. Илүү том оролтод яг тоо хадгалах том бүхэл тоо эсвэл бодлогын өгсөн модуль шаардлагатай. ",
+                "marks": []
+              },
+              {
+                "text": "ll",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ээр хязгааргүй тоог төлөөлнө гэж үзэхгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт $n,m,s,t$, дараа нь ",
+                "marks": []
+              },
+              {
+                "text": "a b w",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ". Гаралт: замын тоо; хамгийн бага/их жин; хамгийн цөөн/олон ирмэг; заавал дайрах оройнууд. Хүрэхгүй үед $0$, хоёр ",
+                "marks": []
+              },
+              {
+                "text": "UNREACHABLE",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", хоосон мөр; цикл илэрвэл ",
+                "marks": []
+              },
+              {
+                "text": "CYCLIC",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ". $s=t$ үед хоосон замыг нэг гэж тоолно. Хугацаа, санах ой $O(n+m)$; энэ хязгаарт 64 битийн үйлдлүүд тогтмол зардалтай.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Жин ба замын тоонд ",
+                "marks": []
+              },
+              {
+                "text": "ll",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "; оройн дугаарт ",
+                "marks": []
+              },
+              {
+                "text": "int",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ".",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Өмнөх гурван төлөвтэй эрэмбэлэгчийг хэвээр ашиглана.",
+            "type": "p"
+          },
+          {
+            "text": "vector<int> topo(const vector<vector<int>> &adj) {\n    int n = (int)adj.size() - 1;\n    vector<int> state(n + 1), ord;\n    for (int s = 1; s <= n; s++) {\n        if (state[s]) continue;\n        vector<pair<int, int>> st = {{s, 0}};\n        state[s] = 1;\n        while (!st.empty()) {\n            int u = st.back().first;\n            int &i = st.back().second;\n            if (i == (int)adj[u].size()) {\n                state[u] = 2;\n                ord.push_back(u);\n                st.pop_back();\n                continue;\n            }\n            int v = adj[u][i++];\n            if (state[v] == 1) return {};\n            if (state[v] == 0) {\n                state[v] = 1;\n                st.push_back({v, 0});\n            }\n        }\n    }\n    reverse(ord.begin(), ord.end());\n    return ord;\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Жинтэй жагсаалт ба зөвхөн оройн дугаартай жагсаалтыг тус тус хадгална. Эхнийх шилжилтэд, хоёр дахь нь эрэмбэлэлтэд хэрэглэгдэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m, s, t;\n    cin >> n >> m >> s >> t;\n    vector<vector<int>> adj(n + 1);\n    vector<vector<pair<int, ll>>> edges(n + 1);\n    for (int i = 0, a, b; i < m; i++) {\n        ll w;\n        cin >> a >> b >> w;\n        adj[a].push_back(b);\n        edges[a].push_back({b, w});\n    }\n    auto ord = topo(adj);\n    if (ord.empty()) {\n        cout << \"CYCLIC\\n\";\n        return 0;\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Урд дарааллаар бүх замын үзүүлэлтийг дамжуулна. Хүрээгүй үед ",
+                "marks": []
+              },
+              {
+                "text": "INF",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " дээр нэмэхгүй. Урвуу дарааллаар төгсгөл рүү хүрэх тоог нэгтгэнэ.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "const ll INF = 1LL << 62;\n    vector<ll> ways(n + 1), back(n + 1);\n    vector<ll> low(n + 1, INF), high(n + 1, -INF);\n    vector<int> mn(n + 1, n + 1), mx(n + 1, -1);\n    ways[s] = 1;\n    low[s] = high[s] = mn[s] = mx[s] = 0;\n    for (int u : ord) {\n        if (ways[u] == 0) continue;\n        for (auto [v, w] : edges[u]) {\n            ways[v] += ways[u];\n            low[v] = min(low[v], low[u] + w);\n            high[v] = max(high[v], high[u] + w);\n            mn[v] = min(mn[v], mn[u] + 1);\n            mx[v] = max(mx[v], mx[u] + 1);\n        }\n    }\n    back[t] = 1;\n    for (int i = n - 1; i >= 0; i--) {\n        int u = ord[i];\n        for (int v : adj[u]) back[u] += back[v];\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Хүрэхгүй тохиолдлыг ялгаж, зөвхөн зам байгаа үед яг тоонуудын үржвэрээр заавал дайрах оройг шалгана.",
+            "type": "p"
+          },
+          {
+            "text": "cout << ways[t] << '\\n';\n    if (ways[t] == 0) {\n        cout << \"UNREACHABLE\\nUNREACHABLE\\n\\n\";\n        return 0;\n    }\n    cout << low[t] << ' ' << high[t] << '\\n';\n    cout << mn[t] << ' ' << mx[t] << '\\n';\n    for (int u = 1; u <= n; u++) {\n        if (ways[u] * back[u] == ways[t]) cout << u << ' ';\n    }\n    cout << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Өмнөх хэсгүүдийг нэгтгэсэн бүтэн C++17 программ. Программ бүрийг тусдаа файлд хөрвүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nvector<int> topo(const vector<vector<int>> &adj) {\n    int n = (int)adj.size() - 1;\n    vector<int> state(n + 1), ord;\n    for (int s = 1; s <= n; s++) {\n        if (state[s]) continue;\n        vector<pair<int, int>> st = {{s, 0}};\n        state[s] = 1;\n        while (!st.empty()) {\n            int u = st.back().first;\n            int &i = st.back().second;\n            if (i == (int)adj[u].size()) {\n                state[u] = 2;\n                ord.push_back(u);\n                st.pop_back();\n                continue;\n            }\n            int v = adj[u][i++];\n            if (state[v] == 1) return {};\n            if (state[v] == 0) {\n                state[v] = 1;\n                st.push_back({v, 0});\n            }\n        }\n    }\n    reverse(ord.begin(), ord.end());\n    return ord;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m, s, t;\n    cin >> n >> m >> s >> t;\n    vector<vector<int>> adj(n + 1);\n    vector<vector<pair<int, ll>>> edges(n + 1);\n    for (int i = 0, a, b; i < m; i++) {\n        ll w;\n        cin >> a >> b >> w;\n        adj[a].push_back(b);\n        edges[a].push_back({b, w});\n    }\n    auto ord = topo(adj);\n    if (ord.empty()) {\n        cout << \"CYCLIC\\n\";\n        return 0;\n    }\n    const ll INF = 1LL << 62;\n    vector<ll> ways(n + 1), back(n + 1);\n    vector<ll> low(n + 1, INF), high(n + 1, -INF);\n    vector<int> mn(n + 1, n + 1), mx(n + 1, -1);\n    ways[s] = 1;\n    low[s] = high[s] = mn[s] = mx[s] = 0;\n    for (int u : ord) {\n        if (ways[u] == 0) continue;\n        for (auto [v, w] : edges[u]) {\n            ways[v] += ways[u];\n            low[v] = min(low[v], low[u] + w);\n            high[v] = max(high[v], high[u] + w);\n            mn[v] = min(mn[v], mn[u] + 1);\n            mx[v] = max(mx[v], mx[u] + 1);\n        }\n    }\n    back[t] = 1;\n    for (int i = n - 1; i >= 0; i--) {\n        int u = ord[i];\n        for (int v : adj[u]) back[u] += back[v];\n    }\n    cout << ways[t] << '\\n';\n    if (ways[t] == 0) {\n        cout << \"UNREACHABLE\\nUNREACHABLE\\n\\n\";\n        return 0;\n    }\n    cout << low[t] << ' ' << high[t] << '\\n';\n    cout << mn[t] << ' ' << mx[t] << '\\n';\n    for (int u = 1; u <= n; u++) {\n        if (ways[u] * back[u] == ways[t]) cout << u << ' ';\n    }\n    cout << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Dijkstra-ийн хариуг өргөтгөх",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "3"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "2",
+                "4"
+              ],
+              [
+                "2",
+                "5"
+              ],
+              [
+                "3",
+                "4"
+              ],
+              [
+                "4",
+                "5"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 12,
+                "y": 22,
+                "id": "1",
+                "label": "1"
+              },
+              {
+                "x": 50,
+                "y": 22,
+                "id": "2",
+                "label": "2"
+              },
+              {
+                "x": 12,
+                "y": 78,
+                "id": "3",
+                "label": "3"
+              },
+              {
+                "x": 50,
+                "y": 78,
+                "id": "4",
+                "label": "4"
+              },
+              {
+                "x": 88,
+                "y": 50,
+                "id": "5",
+                "label": "5"
+              }
+            ],
+            "caption": "Эерэг жинтэй чиглэлгүй граф.",
+            "directed": false,
+            "edgeStyles": [
+              {
+                "label": "3"
+              },
+              {
+                "label": "5"
+              },
+              {
+                "label": "2"
+              },
+              {
+                "label": "4"
+              },
+              {
+                "label": "8"
+              },
+              {
+                "label": "2"
+              },
+              {
+                "label": "1"
+              }
+            ]
+          },
+          {
+            "text": "$1$-ээс зай $[0,3,5,7,8]$. Хамгийн богино замд ашиглагдах $u\\to v$ чиглэл нь $dist[u]+w(u,v)=dist[v]$ тэнцэтгэлээр ялгарна. Жишээнд $2$–$5$ жин $8$ хасагдана, харин $1\\to3$ ба $1\\to2\\to3$ хоёулаа хамгийн богино тул үлдэнэ.",
+            "type": "p"
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "3"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "2",
+                "4"
+              ],
+              [
+                "3",
+                "4"
+              ],
+              [
+                "4",
+                "5"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 12,
+                "y": 22,
+                "id": "1",
+                "label": "1"
+              },
+              {
+                "x": 50,
+                "y": 22,
+                "id": "2",
+                "label": "2"
+              },
+              {
+                "x": 12,
+                "y": 78,
+                "id": "3",
+                "label": "3"
+              },
+              {
+                "x": 50,
+                "y": 78,
+                "id": "4",
+                "label": "4"
+              },
+              {
+                "x": 88,
+                "y": 50,
+                "id": "5",
+                "label": "5"
+              }
+            ],
+            "caption": "Хамгийн богино замуудын чиглэлтэй граф.",
+            "directed": true,
+            "edgeStyles": [
+              {
+                "label": "3"
+              },
+              {
+                "label": "5"
+              },
+              {
+                "label": "2"
+              },
+              {
+                "label": "4"
+              },
+              {
+                "label": "2"
+              },
+              {
+                "label": "1"
+              }
+            ]
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "3"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "2",
+                "4"
+              ],
+              [
+                "3",
+                "4"
+              ],
+              [
+                "4",
+                "5"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 12,
+                "y": 22,
+                "id": "1",
+                "label": "1",
+                "annotation": "1",
+                "annotationDy": -30,
+                "annotationColor": "#c2410c"
+              },
+              {
+                "x": 50,
+                "y": 22,
+                "id": "2",
+                "label": "2",
+                "annotation": "1",
+                "annotationDy": -30,
+                "annotationColor": "#c2410c"
+              },
+              {
+                "x": 12,
+                "y": 78,
+                "id": "3",
+                "label": "3",
+                "annotation": "2",
+                "annotationDy": -30,
+                "annotationColor": "#c2410c"
+              },
+              {
+                "x": 50,
+                "y": 78,
+                "id": "4",
+                "label": "4",
+                "annotation": "3",
+                "annotationDy": -30,
+                "annotationColor": "#c2410c"
+              },
+              {
+                "x": 88,
+                "y": 50,
+                "id": "5",
+                "label": "5",
+                "annotation": "3",
+                "annotationDy": -30,
+                "annotationColor": "#c2410c"
+              }
+            ],
+            "caption": "ways = 1,1,2,3,3; 5 руу гурван хамгийн богино зам.",
+            "directed": true,
+            "edgeStyles": [
+              {
+                "label": "3"
+              },
+              {
+                "label": "5"
+              },
+              {
+                "label": "2"
+              },
+              {
+                "label": "4"
+              },
+              {
+                "label": "2"
+              },
+              {
+                "label": "1"
+              }
+            ]
+          },
+          {
+            "text": "Жин ЭЕРЭГ бол ийм ирмэг бүрээр зай эрс өснө, тиймээс сонгосон ирмэгүүд DAG болно. Зайн үл буурах дарааллаар эрэмбэлээд замын тоог дамжуулна. Зөвхөн сөрөг биш гэж сулруулж болохгүй: $0$ жинтэй цикл байвал зай өсөхгүй, энэ DAG баталгаа алдагдана. Тийм тохиолдолд хамгийн богино алхалтын тоо хязгааргүй ч байж болох тул энэ код зориулагдаагүй.",
+            "type": "p"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт $n,m,s$, дараа нь энгийн чиглэлгүй графын ",
+                "marks": []
+              },
+              {
+                "text": "a b w",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "; $n\\le60$, $1\\le w\\le10^9$. Орой бүрт зай ба яг замын тоо, хүрэхгүй бол ",
+                "marks": []
+              },
+              {
+                "text": "INF 0",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хэвлэнэ. Өмнөх энгийн DAG-ийн тоон хязгаар энд мөн үйлчилнэ. Хугацаа $O(n+m\\log(m+1)+n\\log n)$, санах ой $O(n+m)$.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "64 битийн зай ба тоо ашиглана.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Dijkstra эхлээд зөвхөн зайг олно. Хуучирсан heap бичлэгийг алгасаж, ирмэгийг хоёр чиглэлээр хадгална.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m, s;\n    cin >> n >> m >> s;\n    vector<vector<pair<int, ll>>> adj(n + 1);\n    for (int i = 0, a, b; i < m; i++) {\n        ll w;\n        cin >> a >> b >> w;\n        adj[a].push_back({b, w});\n        adj[b].push_back({a, w});\n    }\n    const ll INF = 1LL << 62;\n    vector<ll> dist(n + 1, INF);\n    priority_queue<pair<ll, int>, vector<pair<ll, int>>, greater<pair<ll, int>>> q;\n    dist[s] = 0;\n    q.push({0, s});\n    while (!q.empty()) {\n        auto [d, u] = q.top();\n        q.pop();\n        if (d != dist[u]) continue;\n        for (auto [v, w] : adj[u]) {\n            if (dist[v] > d + w) {\n                dist[v] = d + w;\n                q.push({dist[v], v});\n            }\n        }\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Дараа нь зайгаар эрэмбэлээд зөвхөн тэнцэтгэл хангах чиглэлээр тоог дамжуулна. Ижил зайтай оройнуудын хооронд эерэг жинтэй тохирох ирмэг байхгүй тул тэдний дотоод дараалал хамаагүй.",
+            "type": "p"
+          },
+          {
+            "text": "vector<int> ord(n);\n    iota(ord.begin(), ord.end(), 1);\n    sort(ord.begin(), ord.end(), [&](int a, int b) {\n        return dist[a] < dist[b];\n    });\n    vector<ll> ways(n + 1);\n    ways[s] = 1;\n    for (int u : ord) {\n        if (dist[u] == INF) continue;\n        for (auto [v, w] : adj[u]) {\n            if (dist[u] + w == dist[v]) ways[v] += ways[u];\n        }\n    }\n    for (int u = 1; u <= n; u++) {\n        if (dist[u] == INF) cout << \"INF 0\\n\";\n        else cout << dist[u] << ' ' << ways[u] << '\\n';\n    }\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Өмнөх хэсгүүдийг нэгтгэсэн бүтэн C++17 программ. Программ бүрийг тусдаа файлд хөрвүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m, s;\n    cin >> n >> m >> s;\n    vector<vector<pair<int, ll>>> adj(n + 1);\n    for (int i = 0, a, b; i < m; i++) {\n        ll w;\n        cin >> a >> b >> w;\n        adj[a].push_back({b, w});\n        adj[b].push_back({a, w});\n    }\n    const ll INF = 1LL << 62;\n    vector<ll> dist(n + 1, INF);\n    priority_queue<pair<ll, int>, vector<pair<ll, int>>, greater<pair<ll, int>>> q;\n    dist[s] = 0;\n    q.push({0, s});\n    while (!q.empty()) {\n        auto [d, u] = q.top();\n        q.pop();\n        if (d != dist[u]) continue;\n        for (auto [v, w] : adj[u]) {\n            if (dist[v] > d + w) {\n                dist[v] = d + w;\n                q.push({dist[v], v});\n            }\n        }\n    }\n    vector<int> ord(n);\n    iota(ord.begin(), ord.end(), 1);\n    sort(ord.begin(), ord.end(), [&](int a, int b) {\n        return dist[a] < dist[b];\n    });\n    vector<ll> ways(n + 1);\n    ways[s] = 1;\n    for (int u : ord) {\n        if (dist[u] == INF) continue;\n        for (auto [v, w] : adj[u]) {\n            if (dist[u] + w == dist[v]) ways[v] += ways[u];\n        }\n    }\n    for (int u = 1; u <= n; u++) {\n        if (dist[u] == INF) cout << \"INF 0\\n\";\n        else cout << dist[u] << ' ' << ways[u] << '\\n';\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "DP-г графаар дүрслэх",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "DP төлөвийг орой, өмнөхөөс дараах төлөв рүү шилжихийг ирмэг гэж үзэж болно. Нэг чиглэлд урагшлах хамааралтай DP нь DAG дээрх тооцоолол болж харагдана. Жишээ нь $\\{1,3,4\\}$ зоосоор нийлбэр $6$ үүсгэхэд $0,1,\\ldots,6$ орой байгуулж, $s\\to s+c$ ирмэгийг боломжтой зоос бүрд нэмнэ.",
+            "type": "p"
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "0",
+                "1"
+              ],
+              [
+                "0",
+                "3"
+              ],
+              [
+                "0",
+                "4"
+              ],
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "4"
+              ],
+              [
+                "1",
+                "5"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "2",
+                "5"
+              ],
+              [
+                "2",
+                "6"
+              ],
+              [
+                "3",
+                "4"
+              ],
+              [
+                "3",
+                "6"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "6"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 50,
+                "y": 11,
+                "id": "0",
+                "label": "0"
+              },
+              {
+                "x": 81.2732592987212,
+                "y": 25.683897727509393,
+                "id": "1",
+                "label": "1"
+              },
+              {
+                "x": 88.99711648727295,
+                "y": 58.67831642429626,
+                "id": "2",
+                "label": "2"
+              },
+              {
+                "x": 67.35534956470232,
+                "y": 85.13778584819434,
+                "id": "3",
+                "label": "3"
+              },
+              {
+                "x": 32.64465043529768,
+                "y": 85.13778584819434,
+                "id": "4",
+                "label": "4"
+              },
+              {
+                "x": 11.002883512727053,
+                "y": 58.67831642429627,
+                "id": "5",
+                "label": "5"
+              },
+              {
+                "x": 18.726740701278803,
+                "y": 25.683897727509397,
+                "id": "6",
+                "label": "6"
+              }
+            ],
+            "caption": "0–6 төлөвүүд ба зөвшөөрөгдсөн чиглэлтэй шилжилтүүд.",
+            "directed": true,
+            "edgeStyles": [
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {}
+            ]
+          },
+          {
+            "rows": [
+              [
+                "0",
+                "1, 3, 4"
+              ],
+              [
+                "1",
+                "2, 4, 5"
+              ],
+              [
+                "2",
+                "3, 5, 6"
+              ],
+              [
+                "3",
+                "4, 6"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "6"
+              ],
+              [
+                "6",
+                "—"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Нийлбэр",
+              "Дараагийн нийлбэрүүд"
+            ]
+          },
+          {
+            "kind": "array",
+            "rows": [
+              [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "Шилжилт бүр энэ дарааллаар урагшилна."
+          },
+          {
+            "text": "$0$-ээс $6$ хүртэлх хамгийн цөөн ирмэгтэй зам нь хамгийн цөөн зоос: $0\\to3\\to6$ тул $2$ зоос. Бүх замын тоо $9$. Энд зоосны ДАРААЛЛЫГ ялгана: $1,1,4$ ба $4,1,1$ өөр зам; эрэмбэгүй зоосны цуглуулга тоолох өөр бодлоготой андуурахгүй.",
+            "type": "p"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Код $n,k$, дараа нь ялгаатай эерэг $k$ зоос уншина. $0\\le n\\le60$, зоос бүр $1$-ээс их буюу тэнцүү. Хариу нь хамгийн цөөн зоос ба яг дарааллын тоо; боломжгүй бол $-1$ ба $0$. $n=0$ үед хоосон дараалал нэг, зоос $0$. Эерэг зоос нийлбэрийг өсгөдөг; $0$ эсвэл сөрөг зоосыг энэ DP-д шууд оруулж болохгүй. Энэ хязгаарт тоо хамгийн ихдээ $2^{59}$ тул ",
+                "marks": []
+              },
+              {
+                "text": "ll",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хангалттай. Хугацаа $O(nk)$, санах ой $O(n)$.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Зоосны тоонд ",
+                "marks": []
+              },
+              {
+                "text": "int",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", дарааллын тоонд ",
+                "marks": []
+              },
+              {
+                "text": "ll",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ".",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "best[0]=0",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", ",
+                "marks": []
+              },
+              {
+                "text": "ways[0]=1",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гэж эхлүүлнэ. Нийлбэрийг гадна давталтаар өсгөхөд $s-c$ бэлэн байна. Замын тоог нэмж, хүрч болох өмнөх төлөвөөс зоосны тоонд нэгийг нэмж минимум авна. ",
+                "marks": []
+              },
+              {
+                "text": "n+1",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь боломжгүй утга; үүнийг жинхэнэ хариу шиг хэвлэхгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    vector<int> coins(k);\n    for (int &c : coins) cin >> c;\n    vector<int> best(n + 1, n + 1);\n    vector<ll> ways(n + 1);\n    best[0] = 0;\n    ways[0] = 1;\n    for (int s = 1; s <= n; s++) {\n        for (int c : coins) {\n            if (c > s) continue;\n            ways[s] += ways[s - c];\n            if (best[s - c] != n + 1) best[s] = min(best[s], best[s - c] + 1);\n        }\n    }\n    cout << (best[n] == n + 1 ? -1 : best[n]) << ' ' << ways[n] << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Өмнөх хэсгүүдийг нэгтгэсэн бүтэн C++17 программ. Программ бүрийг тусдаа файлд хөрвүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    vector<int> coins(k);\n    for (int &c : coins) cin >> c;\n    vector<int> best(n + 1, n + 1);\n    vector<ll> ways(n + 1);\n    best[0] = 0;\n    ways[0] = 1;\n    for (int s = 1; s <= n; s++) {\n        for (int c : coins) {\n            if (c > s) continue;\n            ways[s] += ways[s - c];\n            if (best[s - c] != n + 1) best[s] = min(best[s], best[s - c] + 1);\n        }\n    }\n    cout << (best[n] == n + 1 ? -1 : best[n]) << ' ' << ways[n] << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "successor",
+        "title": "16.3 Дараагчийн зам ба үсрэлт",
+        "blocks": [
+          {
+            "text": "Дараагчийн буюу functional графт орой бүр яг нэг дараагчтай. Чиглэлийг үл харгалзсан бүрэлдэхүүн бүр нэг цикл болон түүнд орж нийлдэг замуудаас тогтоно. Хязгаартай олон оройгоор байнга урагшилбал нэг орой заавал давтагдана; түүнээс хойш нэг циклийг тойрно. Гарах ирмэг нэг тул нэг алхалтад хоёр өөр цикл сонгох салаалалт байхгүй.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "1",
+                "3"
+              ],
+              [
+                "2",
+                "5"
+              ],
+              [
+                "3",
+                "7"
+              ],
+              [
+                "4",
+                "6"
+              ],
+              [
+                "5",
+                "2"
+              ],
+              [
+                "6",
+                "2"
+              ],
+              [
+                "7",
+                "1"
+              ],
+              [
+                "8",
+                "6"
+              ],
+              [
+                "9",
+                "3"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Орой",
+              "Дараагч"
+            ]
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "3"
+              ],
+              [
+                "2",
+                "5"
+              ],
+              [
+                "3",
+                "7"
+              ],
+              [
+                "4",
+                "6"
+              ],
+              [
+                "5",
+                "2"
+              ],
+              [
+                "6",
+                "2"
+              ],
+              [
+                "7",
+                "1"
+              ],
+              [
+                "8",
+                "6"
+              ],
+              [
+                "9",
+                "3"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 8,
+                "y": 20,
+                "id": "9",
+                "label": "9"
+              },
+              {
+                "x": 27,
+                "y": 20,
+                "id": "3",
+                "label": "3"
+              },
+              {
+                "x": 46,
+                "y": 20,
+                "id": "1",
+                "label": "1"
+              },
+              {
+                "x": 27,
+                "y": 54,
+                "id": "7",
+                "label": "7"
+              },
+              {
+                "x": 66,
+                "y": 20,
+                "id": "2",
+                "label": "2"
+              },
+              {
+                "x": 91,
+                "y": 20,
+                "id": "5",
+                "label": "5"
+              },
+              {
+                "x": 66,
+                "y": 54,
+                "id": "6",
+                "label": "6"
+              },
+              {
+                "x": 52,
+                "y": 86,
+                "id": "4",
+                "label": "4"
+              },
+              {
+                "x": 87,
+                "y": 86,
+                "id": "8",
+                "label": "8"
+              }
+            ],
+            "caption": "1 → 3 → 7 → 1 ба 2 ↔ 5 гэсэн хоёр цикл.",
+            "directed": true,
+            "edgeStyles": [
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {},
+              {}
+            ]
+          },
+          {
+            "text": "$succ(x,k)$ нь $x$-ээс яг $k$ удаа дараагч руу шилжсэн орой. $succ(x,0)=x$. Жишээнд $4\\to6\\to2\\to5\\to2\\to5\\to2$ тул $succ(4,6)=2$. Нэг нэгээр алхвал нэг асуулт $O(k)$; олон асуулт эсвэл асар их алхамд удаан.",
+            "type": "p"
+          },
+          {
+            "kind": "array",
+            "rows": [
+              [
+                "4",
+                "6",
+                "2",
+                "5",
+                "2",
+                "5",
+                "2"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "4-өөс зургаан алхам."
+          },
+          {
+            "text": "Хоёрын зэрэг урттай үсрэлт",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "$up[x][j]=succ(x,2^j)$ гэж хадгалъя. $up[x][0]=succ(x)$; урт $2^j$ үсрэлтийг $2^{j-1}$ урттай хоёр үсрэлтээр байгуулна: $up[x][j]=up[up[x][j-1]][j-1]$. Эхлээд бүх оройд богино үсрэлтийг бэлэн болгоод дараагийн үсрэлтийн түвшин рүү орно.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "1",
+                "3",
+                "7",
+                "3",
+                "7"
+              ],
+              [
+                "2",
+                "5",
+                "2",
+                "2",
+                "2"
+              ],
+              [
+                "3",
+                "7",
+                "1",
+                "7",
+                "1"
+              ],
+              [
+                "4",
+                "6",
+                "2",
+                "2",
+                "2"
+              ],
+              [
+                "5",
+                "2",
+                "5",
+                "5",
+                "5"
+              ],
+              [
+                "6",
+                "2",
+                "5",
+                "5",
+                "5"
+              ],
+              [
+                "7",
+                "1",
+                "3",
+                "1",
+                "3"
+              ],
+              [
+                "8",
+                "6",
+                "2",
+                "2",
+                "2"
+              ],
+              [
+                "9",
+                "3",
+                "7",
+                "3",
+                "7"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Орой",
+              "1 алхам",
+              "2 алхам",
+              "4 алхам",
+              "8 алхам"
+            ]
+          },
+          {
+            "text": "$11=8+2+1$ тул $succ(x,11)=succ(succ(succ(x,8),2),1)$. Тухайлбал $4$-өөс $8$ алхамд $2$, дахиад $2$ алхамд $2$, нэг алхамд $5$: $succ(4,11)=5$. Код бага битээс эхэлж $1,2,8$-аар үсэрсэн ч нийт $11$ ижил алхам тул хариу адил. Урьдчилалт $O(n\\log U)$, санах ой мөн адил; ерөнхий асуулт $O(\\log U)$ бит шалгана. Хэрэгтэй түвшнээ л шалгавал $k>0$-д $O(\\log k)$ гэж бичиж болно.",
+            "type": "p"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт $n,q$, дараа нь $n$ дараагч, дараа нь ",
+                "marks": []
+              },
+              {
+                "text": "u k",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " асуултууд. $n\\le200000$, $0\\le k\\le10^{18}$, бүх дараагч $1,\\ldots,n$ дотор. $60$ түвшин хангалттай, учир нь $10^{18}<2^{60}$. Алхам ",
+                "marks": []
+              },
+              {
+                "text": "ll",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", орой ",
+                "marks": []
+              },
+              {
+                "text": "int",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "; $1\\ll j$ гэсэн 32 битийн шилжилт хэрэглэхгүй. Энд ерөнхий дараагчийн үсрэлт зааж байна; модны LCA ба static path query-г холбогдох дараагийн бүлэгт тусад нь тайлбарлана.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Алхамын тоонд ",
+                "marks": []
+              },
+              {
+                "text": "ll",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хэрэгтэй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Jump",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " бүтэц constructor дотроо хүснэгтийг хэмжээлж, эхний дараагчдыг оноогоод богино хоёр үсрэлтийг нийлүүлнэ. ",
+                "marks": []
+              },
+              {
+                "text": "get",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь $k$-гийн асаалттай бит бүрээр одоогийн оройг шинэчилнэ; $k=0$ бол өөрчлөхгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "struct Jump {\n    static const int L = 60;\n    vector<array<int, L>> up;\n    Jump(const vector<int> &succ) {\n        int n = (int)succ.size() - 1;\n        up.resize(n + 1);\n        for (int u = 1; u <= n; u++) up[u][0] = succ[u];\n        for (int j = 1; j < L; j++) {\n            for (int u = 1; u <= n; u++) up[u][j] = up[up[u][j - 1]][j - 1];\n        }\n    }\n    int get(int u, ll k) const {\n        for (int j = 0; j < L; j++) {\n            if ((k >> j) & 1LL) u = up[u][j];\n        }\n        return u;\n    }\n};",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Нэг удаа урьдчилж бодоод бүх асуултыг ижил хүснэгтээр хариулна. Өөр өөр асуулт хүснэгтийг өөрчлөхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<int> succ(n + 1);\n    for (int u = 1; u <= n; u++) cin >> succ[u];\n    Jump g(succ);\n    while (q--) {\n        int u;\n        ll k;\n        cin >> u >> k;\n        cout << g.get(u, k) << '\\n';\n    }\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Өмнөх хэсгүүдийг нэгтгэсэн бүтэн C++17 программ. Программ бүрийг тусдаа файлд хөрвүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Jump {\n    static const int L = 60;\n    vector<array<int, L>> up;\n    Jump(const vector<int> &succ) {\n        int n = (int)succ.size() - 1;\n        up.resize(n + 1);\n        for (int u = 1; u <= n; u++) up[u][0] = succ[u];\n        for (int j = 1; j < L; j++) {\n            for (int u = 1; u <= n; u++) up[u][j] = up[up[u][j - 1]][j - 1];\n        }\n    }\n    int get(int u, ll k) const {\n        for (int j = 0; j < L; j++) {\n            if ((k >> j) & 1LL) u = up[u][j];\n        }\n        return u;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<int> succ(n + 1);\n    for (int u = 1; u <= n; u++) cin >> succ[u];\n    Jump g(succ);\n    while (q--) {\n        int u;\n        ll k;\n        cin >> u >> k;\n        cout << g.get(u, k) << '\\n';\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "cycle",
+        "title": "16.4 Цикл илрүүлэх",
+        "blocks": [
+          {
+            "text": "Эхлэлээс алхахад циклд анх орох орой болон циклийн уртыг олъё. Дараах жишээнд эхлэл $1$, циклд анх орох орой $4$, цикл нь $4\\to5\\to6\\to4$, урт $3$. Цикл хүртэлх уртыг $\\mu=3$, циклийн уртыг $\\lambda=3$ гэж тэмдэглэнэ.",
+            "type": "p"
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "3",
+                "4"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "6"
+              ],
+              [
+                "6",
+                "4"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 8,
+                "y": 72,
+                "id": "1",
+                "label": "1"
+              },
+              {
+                "x": 27,
+                "y": 72,
+                "id": "2",
+                "label": "2"
+              },
+              {
+                "x": 46,
+                "y": 72,
+                "id": "3",
+                "label": "3"
+              },
+              {
+                "x": 65,
+                "y": 72,
+                "id": "4",
+                "label": "4"
+              },
+              {
+                "x": 91,
+                "y": 72,
+                "id": "5",
+                "label": "5"
+              },
+              {
+                "x": 78,
+                "y": 20,
+                "id": "6",
+                "label": "6"
+              }
+            ],
+            "caption": "Эхлээд 1,2,3; дараа нь 4,5,6 циклийг давтана.",
+            "directed": true,
+            "edgeStyles": [
+              {},
+              {},
+              {},
+              {},
+              {},
+              {}
+            ]
+          },
+          {
+            "text": "Энгийн арга нь орой бүрийг хэд дэх алхамд анх үзсэнээ хадгалах. Орой дахин таарах анхны мөчид тэр нь циклд анх орсон орой. Анхны алхмын индекс нь $\\mu$, одоогийн индексээс хасвал $\\lambda$. Алхалтын хэсэг $O(\\mu+\\lambda)$ боловч үзсэн массивын бүх утгыг эхлүүлэх $O(n)$ зардлыг оруулбал энэ хэрэгжүүлэлтийн нийт хугацаа $O(n)$. Нэмэлт санах ой $O(n)$.",
+            "type": "p"
+          },
+          {
+            "text": "Floyd-ийн хоёр заагч",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Нэмэлт санах ойг $O(1)$ болгохын тулд $a$ нэг, $b$ хоёр алхмаар явна. Эхний хөдөлгөөнөөс нь эхлүүлж уулзтал давтана; эхлэл дээр хоёулаа ижил байгааг уулзалт гэж шууд тооцохгүй. Хоёулаа циклд орсны дараа хурдны зөрүү нэг тул хамгийн ихдээ нэг цикл тойроход уулзана.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "1",
+                "2",
+                "3"
+              ],
+              [
+                "2",
+                "3",
+                "5"
+              ],
+              [
+                "3",
+                "4",
+                "4"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Алхам",
+              "a",
+              "b"
+            ]
+          },
+          {
+            "text": "Уулзахад $a$ нийт $k$, $b$ нийт $2k$ алхсан. Цикл дотор ижил оройд байгаа тул $\\lambda$ нь ялгавар $k$-г хуваана. $a$-г эхлэл рүү буцааж, хоёуланг нэг нэг алхмаар явуулъя. $\\mu$ алхмын дараа эхний заагч циклд анх орно; нөгөөгийн байрлал түүнээс $k$ алхмын зөрүүтэй, $k$ нь циклийн уртын үржвэр тул мөн тэр оройд байна. Иймээс тэдний дараагийн уулзалт яг оролтын орой.",
+            "type": "p"
+          },
+          {
+            "text": "Дараа нь нэг заагчийг оролтын оройд үлдээгээд нөгөөг нэг алхам хөдөлгөн, буцаад иртэл тоолбол $\\lambda$ гарна. Өөртөө заасан ирмэгийн урт $1$. Эхлэл өөрөө циклд байвал $\\mu=0$; салангид бусад бүрэлдэхүүн энэ эхлэлийн хариунд нөлөөлөхгүй. Floyd функц $O(\\mu+\\lambda)$ хугацаа, $O(1)$ нэмэлт санах ойтой; оролтын дараагчийн массивын $O(n)$ хадгалалтыг үүнтэй андуурахгүй.",
+            "type": "p"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Оролт $n,x$, дараа нь $n$ зөв дараагч; $1\\le n\\le200000$. Эхний мөр Floyd-ийн, хоёр дахь нь үзсэн хүснэгтийн аргын ",
+                "marks": []
+              },
+              {
+                "text": "циклд орох орой, μ, λ",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хариу. Хоёр мөр тэнцэх ёстой. Харьцуулахын тулд хоёр дахь аргыг ажиллуулсан бүтэн программ нийт $O(n)$ нэмэлт хүснэгттэй; зөвхөн Floyd-ийг дуудах үед тэр хүснэгт хэрэггүй. Энэ Floyd нь хамгийн богино замын Floyd–Warshall-аас өөр алгоритм.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Орой, алхмын индекс, циклийн урт $n$-ээс хэтрэхгүй тул ",
+                "marks": []
+              },
+              {
+                "text": "int",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ".",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Анхны үзсэн алхмыг $-1$-ээр эхлүүлээд орой давтагдтал тэмдэглэнэ. Давтагдсан оройн анхны индексээр урд хэсэг, циклийг ялгана.",
+            "type": "p"
+          },
+          {
+            "text": "tuple<int, int, int> seenCycle(const vector<int> &succ, int x) {\n    vector<int> seen(succ.size(), -1);\n    int t = 0;\n    while (seen[x] == -1) {\n        seen[x] = t++;\n        x = succ[x];\n    }\n    return {x, seen[x], t - seen[x]};\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Хурдан заагч хоёр удаа дараагч авна. Графын орой бүр заавал нэг зөв дараагчтай тул төгсгөлд null шалгах хэрэггүй.",
+            "type": "p"
+          },
+          {
+            "text": "tuple<int, int, int> floyd(const vector<int> &succ, int x) {\n    int a = succ[x], b = succ[succ[x]];\n    while (a != b) {\n        a = succ[a];\n        b = succ[succ[b]];\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Эхлэл рүү нэгийг буцааж оролтыг олно; дараа нь нэг тойргийн уртыг тоолно. ",
+                "marks": []
+              },
+              {
+                "text": "mu",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь эхлэлээс оролт хүртэлх алхам, ",
+                "marks": []
+              },
+              {
+                "text": "len",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь циклд байгаа оройн тоо.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "a = x;\n    int mu = 0;\n    while (a != b) {\n        a = succ[a];\n        b = succ[b];\n        mu++;\n    }\n    int first = a, len = 1;\n    b = succ[a];\n    while (a != b) {\n        b = succ[b];\n        len++;\n    }\n    return {first, mu, len};\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Ижил оролт дээр хоёр аргын хариуг хэвлэж тулгана. Нэг функц нөгөөгийн төлөвийг өөрчилдөггүй.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, x;\n    cin >> n >> x;\n    vector<int> succ(n + 1);\n    for (int u = 1; u <= n; u++) cin >> succ[u];\n    auto [a, mu, len] = floyd(succ, x);\n    cout << a << ' ' << mu << ' ' << len << '\\n';\n    auto [b, pre, size] = seenCycle(succ, x);\n    cout << b << ' ' << pre << ' ' << size << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Өмнөх хэсгүүдийг нэгтгэсэн бүтэн C++17 программ. Программ бүрийг тусдаа файлд хөрвүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\ntuple<int, int, int> seenCycle(const vector<int> &succ, int x) {\n    vector<int> seen(succ.size(), -1);\n    int t = 0;\n    while (seen[x] == -1) {\n        seen[x] = t++;\n        x = succ[x];\n    }\n    return {x, seen[x], t - seen[x]};\n}\n\ntuple<int, int, int> floyd(const vector<int> &succ, int x) {\n    int a = succ[x], b = succ[succ[x]];\n    while (a != b) {\n        a = succ[a];\n        b = succ[succ[b]];\n    }\n    a = x;\n    int mu = 0;\n    while (a != b) {\n        a = succ[a];\n        b = succ[b];\n        mu++;\n    }\n    int first = a, len = 1;\n    b = succ[a];\n    while (a != b) {\n        b = succ[b];\n        len++;\n    }\n    return {first, mu, len};\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, x;\n    cin >> n >> x;\n    vector<int> succ(n + 1);\n    for (int u = 1; u <= n; u++) cin >> succ[u];\n    auto [a, mu, len] = floyd(succ, x);\n    cout << a << ' ' << mu << ' ' << len << '\\n';\n    auto [b, pre, size] = seenCycle(succ, x);\n    cout << b << ' ' << pre << ' ' << size << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Дасгал ба бие даах бодлогууд",
+        "blocks": [
+          {
+            "text": "Сэдвийг эзэмших дасгал",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "text": "Эхний графын хоёр зөв топологийн эрэмбийг ирмэг бүрээр шалга. DFS дуусалтын жагсаалтыг гараар гаргаад урвуулах шалтгааныг тайлбарла. $5\\to3$-ыг $3\\to5$ болгоход ямар идэвхтэй орой руу буцаж байгааг заа. Зам тоолох жишээнд $4\\to1$ биш $1\\to4$ байгааг тусад нь шалга.",
+            "type": "p"
+          },
+          {
+            "text": "Гурван замыг жагсааж $ways[3]=3$-ыг батал. Жинтэй жишээний $1$-ээс $5$ хүртэлх гурван хамгийн богино замыг бич. Зоосны дарааллын тоо ба эрэмбэгүй цуглуулгын ялгааг жишээгээр гарга. Дараагчийн хүснэгтээс $4$-ийн $6$, $11$, $0$ алхмыг тулгаж, Floyd-ийн хоёр уулзалтыг гараар мөрд.",
+            "type": "p"
+          },
+          {
+            "text": "Эзэмших ба бие даах бодлогууд",
+            "type": "heading",
+            "level": 4
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Эхлээд доорх үндсэн бодлогод хамаарлын ирмэгийн чиглэл, цикл илрүүлэлт, бүх бүрэлдэхүүнийг шалгасан эсэхээ баталгаажуул. Бие даах бодлогод DAG эсэхийг өгсөн үү, батлах уу, шалгах уу гэдгийг ялга. Тооны хязгаар ",
+                "marks": []
+              },
+              {
+                "text": "ll",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-д багтах уу, модуль асуусан уу гэдгийг уншиж байж DP-ийн төрлөө сонго.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "Дараагчийн асуултад хамгийн их алхмаар хүснэгтийн түвшнийг тооц. Цикл олохдоо эхлэл нь цикл дотор, өөртөө заадаг, урт урд замтай гэсэн гурван тохиолдлыг турш. Жижиг графт бүх зам эсвэл үзсэн дарааллыг шууд тоолсон удаан шийдлээр хурдан аргаа тулгаж болно.",
+            "type": "p"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Directed graphs — topological order, DAG DP, successors and cycles",
+        "summary": "Derive dependency order, DAG path statistics, shortest-path DAGs, successor jumping and Floyd cycle detection through complete examples and explained C++17 programs.",
+        "sections": [
+          {
+            "key": "directed",
+            "title": "Two special classes of directed graphs",
+            "blocks": [
+              {
+                "text": "Directed edges may be traversed only in their arrow direction. We study two special classes. A directed acyclic graph, or DAG, has no nonempty directed route from a vertex back to itself. A successor graph has exactly one outgoing edge per vertex, giving a unique next vertex. DAG dependencies admit a processing order; successor walks can be accelerated by jumps.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "topological",
+            "title": "16.1 Topological sorting",
+            "blocks": [
+              {
+                "text": "A topological order lists every vertex once so that $a$ precedes $b$ for each edge $a\\to b$. Consequently every nonempty path from $a$ to $b$ places $a$ earlier. One valid order for this graph is $[4,1,5,2,3,6]$.",
+                "type": "p"
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "6"
+                  ],
+                  [
+                    "4",
+                    "1"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ],
+                  [
+                    "5",
+                    "3"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 16,
+                    "y": 22,
+                    "id": "1",
+                    "label": "1"
+                  },
+                  {
+                    "x": 50,
+                    "y": 22,
+                    "id": "2",
+                    "label": "2"
+                  },
+                  {
+                    "x": 84,
+                    "y": 22,
+                    "id": "3",
+                    "label": "3"
+                  },
+                  {
+                    "x": 16,
+                    "y": 78,
+                    "id": "4",
+                    "label": "4"
+                  },
+                  {
+                    "x": 50,
+                    "y": 78,
+                    "id": "5",
+                    "label": "5"
+                  },
+                  {
+                    "x": 84,
+                    "y": 78,
+                    "id": "6",
+                    "label": "6"
+                  }
+                ],
+                "caption": "The first example has 4 → 1; follow arrow directions.",
+                "directed": true,
+                "edgeStyles": [
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {}
+                ]
+              },
+              {
+                "kind": "array",
+                "rows": [
+                  [
+                    "4",
+                    "1",
+                    "5",
+                    "2",
+                    "3",
+                    "6"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "One possible topological order."
+              },
+              {
+                "text": "Every DAG has a topological order. A directed cycle makes one impossible: every next vertex would have to come later, eventually forcing the first vertex to come after itself. DFS can detect a cycle and construct an order at the same time.",
+                "type": "p"
+              },
+              {
+                "text": "Three DFS states",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "States are $0$ unstarted, $1$ active in the current DFS stack, and $2$ finished after examining all outgoing edges. Entering sets state $1$; finishing sets state $2$. An edge to state $1$ returns to an active ancestor and forms a cycle. An edge to a finished state-$2$ vertex is not by itself evidence of a cycle.",
+                "type": "p"
+              },
+              {
+                "text": "Append a vertex when it becomes state $2$. Without a cycle, every edge $u\\to v$ has $v$ finish first: it either finished earlier or is explored and completed by the search from $u$. Reversing finishing order therefore sends every edge forward. Start a search at every unvisited vertex so disconnected regions are included.",
+                "type": "p"
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "6"
+                  ],
+                  [
+                    "4",
+                    "1"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ],
+                  [
+                    "5",
+                    "3"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 16,
+                    "y": 22,
+                    "id": "1",
+                    "color": "#e5e7eb",
+                    "label": "1",
+                    "textColor": "#111827",
+                    "annotation": "s=1",
+                    "annotationDy": -27
+                  },
+                  {
+                    "x": 50,
+                    "y": 22,
+                    "id": "2",
+                    "color": "#e5e7eb",
+                    "label": "2",
+                    "textColor": "#111827",
+                    "annotation": "s=1",
+                    "annotationDy": -27
+                  },
+                  {
+                    "x": 84,
+                    "y": 22,
+                    "id": "3",
+                    "color": "#e5e7eb",
+                    "label": "3",
+                    "textColor": "#111827",
+                    "annotation": "s=1",
+                    "annotationDy": -27
+                  },
+                  {
+                    "x": 16,
+                    "y": 78,
+                    "id": "4",
+                    "label": "4"
+                  },
+                  {
+                    "x": 50,
+                    "y": 78,
+                    "id": "5",
+                    "label": "5"
+                  },
+                  {
+                    "x": 84,
+                    "y": 78,
+                    "id": "6",
+                    "color": "#64748b",
+                    "label": "6",
+                    "textColor": "#ffffff",
+                    "annotation": "s=2",
+                    "annotationDy": -27
+                  }
+                ],
+                "caption": "1 → 2 → 3 → 6; vertex 6 finishes first.",
+                "directed": true,
+                "edgeStyles": [
+                  {
+                    "color": "#c2410c"
+                  },
+                  {
+                    "color": "#c2410c"
+                  },
+                  {
+                    "color": "#c2410c"
+                  },
+                  {},
+                  {},
+                  {},
+                  {}
+                ]
+              },
+              {
+                "text": "First follow $1\\to2\\to3\\to6$. Vertex $6$ has no outgoing edge, so it finishes and is appended. Returning finishes $3,2,1$, giving $[6,3,2,1]$. The next search starts at unvisited $4$; vertex $1$ is already finished, while $5$ still needs processing.",
+                "type": "p"
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "6"
+                  ],
+                  [
+                    "4",
+                    "1"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ],
+                  [
+                    "5",
+                    "3"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 16,
+                    "y": 22,
+                    "id": "1",
+                    "color": "#64748b",
+                    "label": "1",
+                    "textColor": "#ffffff",
+                    "annotation": "s=2",
+                    "annotationDy": -27
+                  },
+                  {
+                    "x": 50,
+                    "y": 22,
+                    "id": "2",
+                    "color": "#64748b",
+                    "label": "2",
+                    "textColor": "#ffffff",
+                    "annotation": "s=2",
+                    "annotationDy": -27
+                  },
+                  {
+                    "x": 84,
+                    "y": 22,
+                    "id": "3",
+                    "color": "#64748b",
+                    "label": "3",
+                    "textColor": "#ffffff",
+                    "annotation": "s=2",
+                    "annotationDy": -27
+                  },
+                  {
+                    "x": 16,
+                    "y": 78,
+                    "id": "4",
+                    "label": "4"
+                  },
+                  {
+                    "x": 50,
+                    "y": 78,
+                    "id": "5",
+                    "label": "5"
+                  },
+                  {
+                    "x": 84,
+                    "y": 78,
+                    "id": "6",
+                    "color": "#64748b",
+                    "label": "6",
+                    "textColor": "#ffffff",
+                    "annotation": "s=2",
+                    "annotationDy": -27
+                  }
+                ],
+                "caption": "6,3,2,1 are finished; 4,5 are unstarted.",
+                "directed": true,
+                "edgeStyles": [
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {}
+                ]
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "6"
+                  ],
+                  [
+                    "4",
+                    "1"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ],
+                  [
+                    "5",
+                    "3"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 16,
+                    "y": 22,
+                    "id": "1",
+                    "color": "#64748b",
+                    "label": "1",
+                    "textColor": "#ffffff",
+                    "annotation": "s=2",
+                    "annotationDy": -27
+                  },
+                  {
+                    "x": 50,
+                    "y": 22,
+                    "id": "2",
+                    "color": "#64748b",
+                    "label": "2",
+                    "textColor": "#ffffff",
+                    "annotation": "s=2",
+                    "annotationDy": -27
+                  },
+                  {
+                    "x": 84,
+                    "y": 22,
+                    "id": "3",
+                    "color": "#64748b",
+                    "label": "3",
+                    "textColor": "#ffffff",
+                    "annotation": "s=2",
+                    "annotationDy": -27
+                  },
+                  {
+                    "x": 16,
+                    "y": 78,
+                    "id": "4",
+                    "color": "#e5e7eb",
+                    "label": "4",
+                    "textColor": "#111827",
+                    "annotation": "s=1",
+                    "annotationDy": -27
+                  },
+                  {
+                    "x": 50,
+                    "y": 78,
+                    "id": "5",
+                    "color": "#e5e7eb",
+                    "label": "5",
+                    "textColor": "#111827",
+                    "annotation": "s=1",
+                    "annotationDy": -27
+                  },
+                  {
+                    "x": 84,
+                    "y": 78,
+                    "id": "6",
+                    "color": "#64748b",
+                    "label": "6",
+                    "textColor": "#ffffff",
+                    "annotation": "s=2",
+                    "annotationDy": -27
+                  }
+                ],
+                "caption": "Search 4 → 5; the successors of 5 finished earlier.",
+                "directed": true,
+                "edgeStyles": [
+                  {},
+                  {},
+                  {},
+                  {},
+                  {
+                    "color": "#c2410c"
+                  },
+                  {},
+                  {}
+                ]
+              },
+              {
+                "text": "The final finishing list is $[6,3,2,1,5,4]$. Its reverse $[4,5,1,2,3,6]$ is also valid. It differs from $[4,1,5,2,3,6]$ because unrelated vertices may exchange positions.",
+                "type": "p"
+              },
+              {
+                "kind": "array",
+                "rows": [
+                  [
+                    "4",
+                    "5",
+                    "1",
+                    "2",
+                    "3",
+                    "6"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "Order produced by DFS."
+              },
+              {
+                "text": "A cyclic example",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "6"
+                  ],
+                  [
+                    "4",
+                    "1"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ],
+                  [
+                    "3",
+                    "5"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 16,
+                    "y": 22,
+                    "id": "1",
+                    "label": "1"
+                  },
+                  {
+                    "x": 50,
+                    "y": 22,
+                    "id": "2",
+                    "label": "2"
+                  },
+                  {
+                    "x": 84,
+                    "y": 22,
+                    "id": "3",
+                    "label": "3"
+                  },
+                  {
+                    "x": 16,
+                    "y": 78,
+                    "id": "4",
+                    "label": "4"
+                  },
+                  {
+                    "x": 50,
+                    "y": 78,
+                    "id": "5",
+                    "label": "5"
+                  },
+                  {
+                    "x": 84,
+                    "y": 78,
+                    "id": "6",
+                    "label": "6"
+                  }
+                ],
+                "caption": "Here the edge is 3 → 5 rather than 5 → 3.",
+                "directed": true,
+                "edgeStyles": [
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {}
+                ]
+              },
+              {
+                "text": "The cycle is $2\\to3\\to5\\to2$. Search keeps $1,2,3$ active, finishes $6$, then enters $5$ from $3$. At $5\\to2$, vertex $2$ is still state $1$, proving an order impossible. Searching all vertices also detects a cycle in another disconnected region.",
+                "type": "p"
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "6"
+                  ],
+                  [
+                    "4",
+                    "1"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ],
+                  [
+                    "3",
+                    "5"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 16,
+                    "y": 22,
+                    "id": "1",
+                    "color": "#e5e7eb",
+                    "label": "1",
+                    "textColor": "#111827",
+                    "annotation": "s=1",
+                    "annotationDy": -27
+                  },
+                  {
+                    "x": 50,
+                    "y": 22,
+                    "id": "2",
+                    "color": "#e5e7eb",
+                    "label": "2",
+                    "textColor": "#111827",
+                    "annotation": "s=1",
+                    "annotationDy": -27
+                  },
+                  {
+                    "x": 84,
+                    "y": 22,
+                    "id": "3",
+                    "color": "#e5e7eb",
+                    "label": "3",
+                    "textColor": "#111827",
+                    "annotation": "s=1",
+                    "annotationDy": -27
+                  },
+                  {
+                    "x": 16,
+                    "y": 78,
+                    "id": "4",
+                    "label": "4"
+                  },
+                  {
+                    "x": 50,
+                    "y": 78,
+                    "id": "5",
+                    "color": "#e5e7eb",
+                    "label": "5",
+                    "textColor": "#111827",
+                    "annotation": "s=1",
+                    "annotationDy": -27
+                  },
+                  {
+                    "x": 84,
+                    "y": 78,
+                    "id": "6",
+                    "color": "#64748b",
+                    "label": "6",
+                    "textColor": "#ffffff",
+                    "annotation": "s=2",
+                    "annotationDy": -27
+                  }
+                ],
+                "caption": "Return along 5 → 2 while 2 is active.",
+                "directed": true,
+                "edgeStyles": [
+                  {},
+                  {
+                    "color": "#c2410c"
+                  },
+                  {},
+                  {},
+                  {},
+                  {
+                    "color": "#c2410c"
+                  },
+                  {
+                    "color": "#c2410c"
+                  }
+                ]
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The code stores recursive-call state explicitly as ",
+                    "marks": []
+                  },
+                  {
+                    "text": "(vertex, next-edge index)",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", avoiding call-stack overflow on long chains. Read $n,m$ and $m$ directed edges ",
+                    "marks": []
+                  },
+                  {
+                    "text": "a b",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", with $1\\le n\\le200000$, $m\\le400000$. Output a valid order or ",
+                    "marks": []
+                  },
+                  {
+                    "text": "IMPOSSIBLE",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". A self-loop is a cycle; parallel edges are examined separately. Time and space are $O(n+m)$.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Indices and states fit ",
+                    "marks": []
+                  },
+                  {
+                    "text": "int",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ".",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Set state $1$ when pushing a frame. After its neighbors finish, set state $2$ and append to ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ord",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Advance the edge index before entering a child so the frame resumes correctly. Encountering an active vertex returns an empty vector.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "vector<int> topo(const vector<vector<int>> &adj) {\n    int n = (int)adj.size() - 1;\n    vector<int> state(n + 1), ord;\n    for (int s = 1; s <= n; s++) {\n        if (state[s]) continue;\n        vector<pair<int, int>> st = {{s, 0}};\n        state[s] = 1;\n        while (!st.empty()) {\n            int u = st.back().first;\n            int &i = st.back().second;\n            if (i == (int)adj[u].size()) {\n                state[u] = 2;\n                ord.push_back(u);\n                st.pop_back();\n                continue;\n            }\n            int v = adj[u][i++];\n            if (state[v] == 1) return {};\n            if (state[v] == 0) {\n                state[v] = 1;\n                st.push_back({v, 0});\n            }\n        }\n    }\n    reverse(ord.begin(), ord.end());\n    return ord;\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Insert only the specified direction. Since $n\\ge1$, an empty result signals a cycle.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    vector<vector<int>> adj(n + 1);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        adj[a].push_back(b);\n    }\n    auto ord = topo(adj);\n    if (ord.empty()) cout << \"IMPOSSIBLE\\n\";\n    else for (int i = 0; i < n; i++) cout << ord[i] << (i + 1 == n ? '\\n' : ' ');\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete C++17 program combining the preceding parts. Compile each complete program as a separate file.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nvector<int> topo(const vector<vector<int>> &adj) {\n    int n = (int)adj.size() - 1;\n    vector<int> state(n + 1), ord;\n    for (int s = 1; s <= n; s++) {\n        if (state[s]) continue;\n        vector<pair<int, int>> st = {{s, 0}};\n        state[s] = 1;\n        while (!st.empty()) {\n            int u = st.back().first;\n            int &i = st.back().second;\n            if (i == (int)adj[u].size()) {\n                state[u] = 2;\n                ord.push_back(u);\n                st.pop_back();\n                continue;\n            }\n            int v = adj[u][i++];\n            if (state[v] == 1) return {};\n            if (state[v] == 0) {\n                state[v] = 1;\n                st.push_back({v, 0});\n            }\n        }\n    }\n    reverse(ord.begin(), ord.end());\n    return ord;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    vector<vector<int>> adj(n + 1);\n    for (int i = 0, a, b; i < m; i++) {\n        cin >> a >> b;\n        adj[a].push_back(b);\n    }\n    auto ord = topo(adj);\n    if (ord.empty()) cout << \"IMPOSSIBLE\\n\";\n    else for (int i = 0; i < n; i++) cout << ord[i] << (i + 1 == n ? '\\n' : ' ');\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "dp",
+            "title": "16.2 Dynamic programming on DAGs",
+            "blocks": [
+              {
+                "text": "A DAG supports DP in topological order: number of source-to-target paths, minimum/maximum weight, minimum/maximum edge count, or vertices present on every path. Every dependency needed to move to a later state is already available.",
+                "type": "p"
+              },
+              {
+                "text": "Counting paths",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "6"
+                  ],
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ],
+                  [
+                    "5",
+                    "3"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 16,
+                    "y": 22,
+                    "id": "1",
+                    "label": "1"
+                  },
+                  {
+                    "x": 50,
+                    "y": 22,
+                    "id": "2",
+                    "label": "2"
+                  },
+                  {
+                    "x": 84,
+                    "y": 22,
+                    "id": "3",
+                    "label": "3"
+                  },
+                  {
+                    "x": 16,
+                    "y": 78,
+                    "id": "4",
+                    "label": "4"
+                  },
+                  {
+                    "x": 50,
+                    "y": 78,
+                    "id": "5",
+                    "label": "5"
+                  },
+                  {
+                    "x": 84,
+                    "y": 78,
+                    "id": "6",
+                    "label": "6"
+                  }
+                ],
+                "caption": "This example has 1 → 4, unlike the first topological example.",
+                "directed": true,
+                "edgeStyles": [
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {}
+                ]
+              },
+              {
+                "text": "There are exactly three paths from $1$ to $6$: $1\\to2\\to3\\to6$; $1\\to4\\to5\\to2\\to3\\to6$; and $1\\to4\\to5\\to3\\to6$. Let $ways[x]$ count paths from $1$ to $x$. Set $ways[1]=1$ for the empty path at the start. For other vertices, sum over incoming predecessors: $ways[x]=\\sum_{a\\to x}ways[a]$. Every path belongs to exactly one class determined by its final edge.",
+                "type": "p"
+              },
+              {
+                "kind": "array",
+                "rows": [
+                  [
+                    "1",
+                    "4",
+                    "5",
+                    "2",
+                    "3",
+                    "6"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "Topological processing order."
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "6"
+                  ],
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ],
+                  [
+                    "5",
+                    "3"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 16,
+                    "y": 22,
+                    "id": "1",
+                    "label": "1",
+                    "annotation": "1",
+                    "annotationDy": -30,
+                    "annotationColor": "#c2410c"
+                  },
+                  {
+                    "x": 50,
+                    "y": 22,
+                    "id": "2",
+                    "label": "2",
+                    "annotation": "2",
+                    "annotationDy": -30,
+                    "annotationColor": "#c2410c"
+                  },
+                  {
+                    "x": 84,
+                    "y": 22,
+                    "id": "3",
+                    "label": "3",
+                    "annotation": "3",
+                    "annotationDy": -30,
+                    "annotationColor": "#c2410c"
+                  },
+                  {
+                    "x": 16,
+                    "y": 78,
+                    "id": "4",
+                    "label": "4",
+                    "annotation": "1",
+                    "annotationDy": -30,
+                    "annotationColor": "#c2410c"
+                  },
+                  {
+                    "x": 50,
+                    "y": 78,
+                    "id": "5",
+                    "label": "5",
+                    "annotation": "1",
+                    "annotationDy": -30,
+                    "annotationColor": "#c2410c"
+                  },
+                  {
+                    "x": 84,
+                    "y": 78,
+                    "id": "6",
+                    "label": "6",
+                    "annotation": "3",
+                    "annotationDy": -30,
+                    "annotationColor": "#c2410c"
+                  }
+                ],
+                "caption": "Outer numbers show ways values.",
+                "directed": true,
+                "edgeStyles": [
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {}
+                ]
+              },
+              {
+                "text": "Processing $1,4,5,2,3,6$ gives counts $1,1,1,2,3,3$. In particular $ways[3]=ways[2]+ways[5]=2+1=3$, because edges enter $3$ from $2$ and $5$. Unreachable vertices retain count $0$.",
+                "type": "p"
+              },
+              {
+                "text": "Other path statistics",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Replace addition of counts by minimum or maximum: for edge $u\\to v$ of weight $w$, update $low[v]=\\min(low[v],low[u]+w)$ and $high[v]=\\max(high[v],high[u]+w)$. Add $1$ instead of $w$ to count edges. Initialize the source to $0$ and keep unreachable states separate. Acyclic processing remains valid with negative weights.",
+                "type": "p"
+              },
+              {
+                "text": "For mandatory vertices compute forward counts $ways[u]$ and reverse counts $back[u]$ from $u$ to the target. In a DAG, $ways[u]back[u]$ counts paths through $u$: a repeated vertex after concatenation would imply a cycle. When total count $T>0$, equality to $T$ means every path uses $u$. Compare exact counts; modular counts cannot safely establish this equality.",
+                "type": "p"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "This program assumes a simple DAG with $1\\le n\\le60$, no parallel edges, and $|w|\\le10^9$. Between distinct vertices a simple DAG has at most $2^{n-2}$ paths, so exact counts fit ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ll",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ": a path selects a subset of intermediate vertices in fixed topological order. Larger inputs need arbitrary-precision integers or a problem-specified modulus. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ll",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " does not represent unbounded counts.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read $n,m,s,t$ and directed edges ",
+                    "marks": []
+                  },
+                  {
+                    "text": "a b w",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Print path count, minimum/maximum weight, minimum/maximum edge count, and mandatory vertices. If unreachable print $0$, two ",
+                    "marks": []
+                  },
+                  {
+                    "text": "UNREACHABLE",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " lines and a blank line; if cyclic print ",
+                    "marks": []
+                  },
+                  {
+                    "text": "CYCLIC",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". For $s=t$ count the empty path once. Time and storage are $O(n+m)$ with constant-cost 64-bit arithmetic under these bounds.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Use ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ll",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " for weights/counts and ",
+                    "marks": []
+                  },
+                  {
+                    "text": "int",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " for vertices.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Reuse the same three-state topological routine.",
+                "type": "p"
+              },
+              {
+                "text": "vector<int> topo(const vector<vector<int>> &adj) {\n    int n = (int)adj.size() - 1;\n    vector<int> state(n + 1), ord;\n    for (int s = 1; s <= n; s++) {\n        if (state[s]) continue;\n        vector<pair<int, int>> st = {{s, 0}};\n        state[s] = 1;\n        while (!st.empty()) {\n            int u = st.back().first;\n            int &i = st.back().second;\n            if (i == (int)adj[u].size()) {\n                state[u] = 2;\n                ord.push_back(u);\n                st.pop_back();\n                continue;\n            }\n            int v = adj[u][i++];\n            if (state[v] == 1) return {};\n            if (state[v] == 0) {\n                state[v] = 1;\n                st.push_back({v, 0});\n            }\n        }\n    }\n    reverse(ord.begin(), ord.end());\n    return ord;\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Keep weighted adjacency for transitions and unweighted adjacency for ordering.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m, s, t;\n    cin >> n >> m >> s >> t;\n    vector<vector<int>> adj(n + 1);\n    vector<vector<pair<int, ll>>> edges(n + 1);\n    for (int i = 0, a, b; i < m; i++) {\n        ll w;\n        cin >> a >> b >> w;\n        adj[a].push_back(b);\n        edges[a].push_back({b, w});\n    }\n    auto ord = topo(adj);\n    if (ord.empty()) {\n        cout << \"CYCLIC\\n\";\n        return 0;\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Propagate statistics forward without adding to unreachable ",
+                    "marks": []
+                  },
+                  {
+                    "text": "INF",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Aggregate target-reaching counts in reverse order.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "const ll INF = 1LL << 62;\n    vector<ll> ways(n + 1), back(n + 1);\n    vector<ll> low(n + 1, INF), high(n + 1, -INF);\n    vector<int> mn(n + 1, n + 1), mx(n + 1, -1);\n    ways[s] = 1;\n    low[s] = high[s] = mn[s] = mx[s] = 0;\n    for (int u : ord) {\n        if (ways[u] == 0) continue;\n        for (auto [v, w] : edges[u]) {\n            ways[v] += ways[u];\n            low[v] = min(low[v], low[u] + w);\n            high[v] = max(high[v], high[u] + w);\n            mn[v] = min(mn[v], mn[u] + 1);\n            mx[v] = max(mx[v], mx[u] + 1);\n        }\n    }\n    back[t] = 1;\n    for (int i = n - 1; i >= 0; i--) {\n        int u = ord[i];\n        for (int v : adj[u]) back[u] += back[v];\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Separate unreachable inputs and test mandatory vertices by exact products only when paths exist.",
+                "type": "p"
+              },
+              {
+                "text": "cout << ways[t] << '\\n';\n    if (ways[t] == 0) {\n        cout << \"UNREACHABLE\\nUNREACHABLE\\n\\n\";\n        return 0;\n    }\n    cout << low[t] << ' ' << high[t] << '\\n';\n    cout << mn[t] << ' ' << mx[t] << '\\n';\n    for (int u = 1; u <= n; u++) {\n        if (ways[u] * back[u] == ways[t]) cout << u << ' ';\n    }\n    cout << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete C++17 program combining the preceding parts. Compile each complete program as a separate file.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nvector<int> topo(const vector<vector<int>> &adj) {\n    int n = (int)adj.size() - 1;\n    vector<int> state(n + 1), ord;\n    for (int s = 1; s <= n; s++) {\n        if (state[s]) continue;\n        vector<pair<int, int>> st = {{s, 0}};\n        state[s] = 1;\n        while (!st.empty()) {\n            int u = st.back().first;\n            int &i = st.back().second;\n            if (i == (int)adj[u].size()) {\n                state[u] = 2;\n                ord.push_back(u);\n                st.pop_back();\n                continue;\n            }\n            int v = adj[u][i++];\n            if (state[v] == 1) return {};\n            if (state[v] == 0) {\n                state[v] = 1;\n                st.push_back({v, 0});\n            }\n        }\n    }\n    reverse(ord.begin(), ord.end());\n    return ord;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m, s, t;\n    cin >> n >> m >> s >> t;\n    vector<vector<int>> adj(n + 1);\n    vector<vector<pair<int, ll>>> edges(n + 1);\n    for (int i = 0, a, b; i < m; i++) {\n        ll w;\n        cin >> a >> b >> w;\n        adj[a].push_back(b);\n        edges[a].push_back({b, w});\n    }\n    auto ord = topo(adj);\n    if (ord.empty()) {\n        cout << \"CYCLIC\\n\";\n        return 0;\n    }\n    const ll INF = 1LL << 62;\n    vector<ll> ways(n + 1), back(n + 1);\n    vector<ll> low(n + 1, INF), high(n + 1, -INF);\n    vector<int> mn(n + 1, n + 1), mx(n + 1, -1);\n    ways[s] = 1;\n    low[s] = high[s] = mn[s] = mx[s] = 0;\n    for (int u : ord) {\n        if (ways[u] == 0) continue;\n        for (auto [v, w] : edges[u]) {\n            ways[v] += ways[u];\n            low[v] = min(low[v], low[u] + w);\n            high[v] = max(high[v], high[u] + w);\n            mn[v] = min(mn[v], mn[u] + 1);\n            mx[v] = max(mx[v], mx[u] + 1);\n        }\n    }\n    back[t] = 1;\n    for (int i = n - 1; i >= 0; i--) {\n        int u = ord[i];\n        for (int v : adj[u]) back[u] += back[v];\n    }\n    cout << ways[t] << '\\n';\n    if (ways[t] == 0) {\n        cout << \"UNREACHABLE\\nUNREACHABLE\\n\\n\";\n        return 0;\n    }\n    cout << low[t] << ' ' << high[t] << '\\n';\n    cout << mn[t] << ' ' << mx[t] << '\\n';\n    for (int u = 1; u <= n; u++) {\n        if (ways[u] * back[u] == ways[t]) cout << u << ' ';\n    }\n    cout << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Extending Dijkstra’s result",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "4"
+                  ],
+                  [
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 12,
+                    "y": 22,
+                    "id": "1",
+                    "label": "1"
+                  },
+                  {
+                    "x": 50,
+                    "y": 22,
+                    "id": "2",
+                    "label": "2"
+                  },
+                  {
+                    "x": 12,
+                    "y": 78,
+                    "id": "3",
+                    "label": "3"
+                  },
+                  {
+                    "x": 50,
+                    "y": 78,
+                    "id": "4",
+                    "label": "4"
+                  },
+                  {
+                    "x": 88,
+                    "y": 50,
+                    "id": "5",
+                    "label": "5"
+                  }
+                ],
+                "caption": "An undirected graph with positive weights.",
+                "directed": false,
+                "edgeStyles": [
+                  {
+                    "label": "3"
+                  },
+                  {
+                    "label": "5"
+                  },
+                  {
+                    "label": "2"
+                  },
+                  {
+                    "label": "4"
+                  },
+                  {
+                    "label": "8"
+                  },
+                  {
+                    "label": "2"
+                  },
+                  {
+                    "label": "1"
+                  }
+                ]
+              },
+              {
+                "text": "Distances from $1$ are $[0,3,5,7,8]$. A direction $u\\to v$ can belong to a shortest path when $dist[u]+w(u,v)=dist[v]$. The weight-$8$ edge $2$–$5$ is excluded, while both $1\\to3$ and $1\\to2\\to3$ remain shortest routes.",
+                "type": "p"
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "4"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 12,
+                    "y": 22,
+                    "id": "1",
+                    "label": "1"
+                  },
+                  {
+                    "x": 50,
+                    "y": 22,
+                    "id": "2",
+                    "label": "2"
+                  },
+                  {
+                    "x": 12,
+                    "y": 78,
+                    "id": "3",
+                    "label": "3"
+                  },
+                  {
+                    "x": 50,
+                    "y": 78,
+                    "id": "4",
+                    "label": "4"
+                  },
+                  {
+                    "x": 88,
+                    "y": 50,
+                    "id": "5",
+                    "label": "5"
+                  }
+                ],
+                "caption": "Directed graph of shortest-path edges.",
+                "directed": true,
+                "edgeStyles": [
+                  {
+                    "label": "3"
+                  },
+                  {
+                    "label": "5"
+                  },
+                  {
+                    "label": "2"
+                  },
+                  {
+                    "label": "4"
+                  },
+                  {
+                    "label": "2"
+                  },
+                  {
+                    "label": "1"
+                  }
+                ]
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "4"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 12,
+                    "y": 22,
+                    "id": "1",
+                    "label": "1",
+                    "annotation": "1",
+                    "annotationDy": -30,
+                    "annotationColor": "#c2410c"
+                  },
+                  {
+                    "x": 50,
+                    "y": 22,
+                    "id": "2",
+                    "label": "2",
+                    "annotation": "1",
+                    "annotationDy": -30,
+                    "annotationColor": "#c2410c"
+                  },
+                  {
+                    "x": 12,
+                    "y": 78,
+                    "id": "3",
+                    "label": "3",
+                    "annotation": "2",
+                    "annotationDy": -30,
+                    "annotationColor": "#c2410c"
+                  },
+                  {
+                    "x": 50,
+                    "y": 78,
+                    "id": "4",
+                    "label": "4",
+                    "annotation": "3",
+                    "annotationDy": -30,
+                    "annotationColor": "#c2410c"
+                  },
+                  {
+                    "x": 88,
+                    "y": 50,
+                    "id": "5",
+                    "label": "5",
+                    "annotation": "3",
+                    "annotationDy": -30,
+                    "annotationColor": "#c2410c"
+                  }
+                ],
+                "caption": "ways = 1,1,2,3,3; three shortest paths reach 5.",
+                "directed": true,
+                "edgeStyles": [
+                  {
+                    "label": "3"
+                  },
+                  {
+                    "label": "5"
+                  },
+                  {
+                    "label": "2"
+                  },
+                  {
+                    "label": "4"
+                  },
+                  {
+                    "label": "2"
+                  },
+                  {
+                    "label": "1"
+                  }
+                ]
+              },
+              {
+                "text": "Strictly POSITIVE weights make distance strictly increase on every retained edge, so these edges form a DAG. Process vertices in nondecreasing distance and propagate counts. Nonnegative weights alone are insufficient: a zero-weight cycle breaks strict increase and the DAG argument. Shortest walks may then be infinite; this code does not handle that case.",
+                "type": "p"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read $n,m,s$ and a simple undirected graph’s edges ",
+                    "marks": []
+                  },
+                  {
+                    "text": "a b w",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", with $n\\le60$ and $1\\le w\\le10^9$. Print each vertex’s distance and exact path count, or ",
+                    "marks": []
+                  },
+                  {
+                    "text": "INF 0",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". The same simple-DAG count bound applies. Time is $O(n+m\\log(m+1)+n\\log n)$ and storage $O(n+m)$.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "Use 64-bit distances and counts.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Dijkstra computes distances first, skipping stale heap entries and storing both edge directions.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m, s;\n    cin >> n >> m >> s;\n    vector<vector<pair<int, ll>>> adj(n + 1);\n    for (int i = 0, a, b; i < m; i++) {\n        ll w;\n        cin >> a >> b >> w;\n        adj[a].push_back({b, w});\n        adj[b].push_back({a, w});\n    }\n    const ll INF = 1LL << 62;\n    vector<ll> dist(n + 1, INF);\n    priority_queue<pair<ll, int>, vector<pair<ll, int>>, greater<pair<ll, int>>> q;\n    dist[s] = 0;\n    q.push({0, s});\n    while (!q.empty()) {\n        auto [d, u] = q.top();\n        q.pop();\n        if (d != dist[u]) continue;\n        for (auto [v, w] : adj[u]) {\n            if (dist[v] > d + w) {\n                dist[v] = d + w;\n                q.push({dist[v], v});\n            }\n        }\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Then sort by distance and propagate counts only along equality edges. Positive weights prevent a retained edge between equal-distance vertices, so ties in this sorting are harmless.",
+                "type": "p"
+              },
+              {
+                "text": "vector<int> ord(n);\n    iota(ord.begin(), ord.end(), 1);\n    sort(ord.begin(), ord.end(), [&](int a, int b) {\n        return dist[a] < dist[b];\n    });\n    vector<ll> ways(n + 1);\n    ways[s] = 1;\n    for (int u : ord) {\n        if (dist[u] == INF) continue;\n        for (auto [v, w] : adj[u]) {\n            if (dist[u] + w == dist[v]) ways[v] += ways[u];\n        }\n    }\n    for (int u = 1; u <= n; u++) {\n        if (dist[u] == INF) cout << \"INF 0\\n\";\n        else cout << dist[u] << ' ' << ways[u] << '\\n';\n    }\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete C++17 program combining the preceding parts. Compile each complete program as a separate file.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m, s;\n    cin >> n >> m >> s;\n    vector<vector<pair<int, ll>>> adj(n + 1);\n    for (int i = 0, a, b; i < m; i++) {\n        ll w;\n        cin >> a >> b >> w;\n        adj[a].push_back({b, w});\n        adj[b].push_back({a, w});\n    }\n    const ll INF = 1LL << 62;\n    vector<ll> dist(n + 1, INF);\n    priority_queue<pair<ll, int>, vector<pair<ll, int>>, greater<pair<ll, int>>> q;\n    dist[s] = 0;\n    q.push({0, s});\n    while (!q.empty()) {\n        auto [d, u] = q.top();\n        q.pop();\n        if (d != dist[u]) continue;\n        for (auto [v, w] : adj[u]) {\n            if (dist[v] > d + w) {\n                dist[v] = d + w;\n                q.push({dist[v], v});\n            }\n        }\n    }\n    vector<int> ord(n);\n    iota(ord.begin(), ord.end(), 1);\n    sort(ord.begin(), ord.end(), [&](int a, int b) {\n        return dist[a] < dist[b];\n    });\n    vector<ll> ways(n + 1);\n    ways[s] = 1;\n    for (int u : ord) {\n        if (dist[u] == INF) continue;\n        for (auto [v, w] : adj[u]) {\n            if (dist[u] + w == dist[v]) ways[v] += ways[u];\n        }\n    }\n    for (int u = 1; u <= n; u++) {\n        if (dist[u] == INF) cout << \"INF 0\\n\";\n        else cout << dist[u] << ' ' << ways[u] << '\\n';\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Representing DP as a graph",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "View DP states as vertices and transitions from earlier to later states as edges. A DP with acyclic dependencies becomes a DAG computation. For coins $\\{1,3,4\\}$ and target $6$, use vertices $0,1,\\ldots,6$ and add $s\\to s+c$ for each feasible coin.",
+                "type": "p"
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "0",
+                    "1"
+                  ],
+                  [
+                    "0",
+                    "3"
+                  ],
+                  [
+                    "0",
+                    "4"
+                  ],
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "1",
+                    "5"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "2",
+                    "6"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "3",
+                    "6"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "6"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 50,
+                    "y": 11,
+                    "id": "0",
+                    "label": "0"
+                  },
+                  {
+                    "x": 81.2732592987212,
+                    "y": 25.683897727509393,
+                    "id": "1",
+                    "label": "1"
+                  },
+                  {
+                    "x": 88.99711648727295,
+                    "y": 58.67831642429626,
+                    "id": "2",
+                    "label": "2"
+                  },
+                  {
+                    "x": 67.35534956470232,
+                    "y": 85.13778584819434,
+                    "id": "3",
+                    "label": "3"
+                  },
+                  {
+                    "x": 32.64465043529768,
+                    "y": 85.13778584819434,
+                    "id": "4",
+                    "label": "4"
+                  },
+                  {
+                    "x": 11.002883512727053,
+                    "y": 58.67831642429627,
+                    "id": "5",
+                    "label": "5"
+                  },
+                  {
+                    "x": 18.726740701278803,
+                    "y": 25.683897727509397,
+                    "id": "6",
+                    "label": "6"
+                  }
+                ],
+                "caption": "States 0–6 and the permitted directed transitions.",
+                "directed": true,
+                "edgeStyles": [
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {}
+                ]
+              },
+              {
+                "rows": [
+                  [
+                    "0",
+                    "1, 3, 4"
+                  ],
+                  [
+                    "1",
+                    "2, 4, 5"
+                  ],
+                  [
+                    "2",
+                    "3, 5, 6"
+                  ],
+                  [
+                    "3",
+                    "4, 6"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "6"
+                  ],
+                  [
+                    "6",
+                    "—"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Sum",
+                  "Next sums"
+                ]
+              },
+              {
+                "kind": "array",
+                "rows": [
+                  [
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "Every transition moves forward in this order."
+              },
+              {
+                "text": "The fewest-edge route from $0$ to $6$ minimizes coins: $0\\to3\\to6$ uses $2$. There are $9$ paths in total. Coin ORDER matters: $1,1,4$ and $4,1,1$ are different paths, unlike counting unordered multisets.",
+                "type": "p"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read $n,k$ and $k$ distinct positive coins. Assume $0\\le n\\le60$ and each coin at least $1$. Print minimum coins and exact sequence count, or $-1$ and $0$ if impossible. For $n=0$, the empty sequence counts once and uses $0$ coins. Positive coins increase the sum; zero/negative coins do not fit this DP directly. Counts are at most $2^{59}$ under the bound, fitting ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ll",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Time is $O(nk)$ and storage $O(n)$.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Use ",
+                    "marks": []
+                  },
+                  {
+                    "text": "int",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " for minimum coin count and ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ll",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " for sequence counts.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Initialize ",
+                    "marks": []
+                  },
+                  {
+                    "text": "best[0]=0",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ways[0]=1",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Increasing sums in the outer loop ensures $s-c$ is ready. Add counts and minimize one plus a reachable predecessor’s coin count. Sentinel ",
+                    "marks": []
+                  },
+                  {
+                    "text": "n+1",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " means unreachable and is not printed as a real answer.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    vector<int> coins(k);\n    for (int &c : coins) cin >> c;\n    vector<int> best(n + 1, n + 1);\n    vector<ll> ways(n + 1);\n    best[0] = 0;\n    ways[0] = 1;\n    for (int s = 1; s <= n; s++) {\n        for (int c : coins) {\n            if (c > s) continue;\n            ways[s] += ways[s - c];\n            if (best[s - c] != n + 1) best[s] = min(best[s], best[s - c] + 1);\n        }\n    }\n    cout << (best[n] == n + 1 ? -1 : best[n]) << ' ' << ways[n] << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete C++17 program combining the preceding parts. Compile each complete program as a separate file.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    vector<int> coins(k);\n    for (int &c : coins) cin >> c;\n    vector<int> best(n + 1, n + 1);\n    vector<ll> ways(n + 1);\n    best[0] = 0;\n    ways[0] = 1;\n    for (int s = 1; s <= n; s++) {\n        for (int c : coins) {\n            if (c > s) continue;\n            ways[s] += ways[s - c];\n            if (best[s - c] != n + 1) best[s] = min(best[s], best[s - c] + 1);\n        }\n    }\n    cout << (best[n] == n + 1 ? -1 : best[n]) << ' ' << ways[n] << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "successor",
+            "title": "16.3 Successor paths and jumping",
+            "blocks": [
+              {
+                "text": "A successor or functional graph gives every vertex one successor. Each weak component contains one cycle and paths feeding into it. Repeated forward steps in a finite vertex set must revisit a vertex, after which they follow one cycle. A unique outgoing edge gives no branching choice between different cycles.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "3",
+                    "7"
+                  ],
+                  [
+                    "4",
+                    "6"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ],
+                  [
+                    "6",
+                    "2"
+                  ],
+                  [
+                    "7",
+                    "1"
+                  ],
+                  [
+                    "8",
+                    "6"
+                  ],
+                  [
+                    "9",
+                    "3"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Vertex",
+                  "Successor"
+                ]
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "3",
+                    "7"
+                  ],
+                  [
+                    "4",
+                    "6"
+                  ],
+                  [
+                    "5",
+                    "2"
+                  ],
+                  [
+                    "6",
+                    "2"
+                  ],
+                  [
+                    "7",
+                    "1"
+                  ],
+                  [
+                    "8",
+                    "6"
+                  ],
+                  [
+                    "9",
+                    "3"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 8,
+                    "y": 20,
+                    "id": "9",
+                    "label": "9"
+                  },
+                  {
+                    "x": 27,
+                    "y": 20,
+                    "id": "3",
+                    "label": "3"
+                  },
+                  {
+                    "x": 46,
+                    "y": 20,
+                    "id": "1",
+                    "label": "1"
+                  },
+                  {
+                    "x": 27,
+                    "y": 54,
+                    "id": "7",
+                    "label": "7"
+                  },
+                  {
+                    "x": 66,
+                    "y": 20,
+                    "id": "2",
+                    "label": "2"
+                  },
+                  {
+                    "x": 91,
+                    "y": 20,
+                    "id": "5",
+                    "label": "5"
+                  },
+                  {
+                    "x": 66,
+                    "y": 54,
+                    "id": "6",
+                    "label": "6"
+                  },
+                  {
+                    "x": 52,
+                    "y": 86,
+                    "id": "4",
+                    "label": "4"
+                  },
+                  {
+                    "x": 87,
+                    "y": 86,
+                    "id": "8",
+                    "label": "8"
+                  }
+                ],
+                "caption": "Two cycles: 1 → 3 → 7 → 1 and 2 ↔ 5.",
+                "directed": true,
+                "edgeStyles": [
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {}
+                ]
+              },
+              {
+                "text": "Let $succ(x,k)$ mean the vertex after exactly $k$ successor steps from $x$, with $succ(x,0)=x$. The walk $4\\to6\\to2\\to5\\to2\\to5\\to2$ gives $succ(4,6)=2$. Walking one step at a time costs $O(k)$ per query, too slow for many queries or huge step counts.",
+                "type": "p"
+              },
+              {
+                "kind": "array",
+                "rows": [
+                  [
+                    "4",
+                    "6",
+                    "2",
+                    "5",
+                    "2",
+                    "5",
+                    "2"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "Six steps from 4."
+              },
+              {
+                "text": "Power-of-two jumps",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Store $up[x][j]=succ(x,2^j)$. Set $up[x][0]=succ(x)$ and compose two jumps of length $2^{j-1}$: $up[x][j]=up[up[x][j-1]][j-1]$. Complete a shorter level for every vertex before building the next.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "1",
+                    "3",
+                    "7",
+                    "3",
+                    "7"
+                  ],
+                  [
+                    "2",
+                    "5",
+                    "2",
+                    "2",
+                    "2"
+                  ],
+                  [
+                    "3",
+                    "7",
+                    "1",
+                    "7",
+                    "1"
+                  ],
+                  [
+                    "4",
+                    "6",
+                    "2",
+                    "2",
+                    "2"
+                  ],
+                  [
+                    "5",
+                    "2",
+                    "5",
+                    "5",
+                    "5"
+                  ],
+                  [
+                    "6",
+                    "2",
+                    "5",
+                    "5",
+                    "5"
+                  ],
+                  [
+                    "7",
+                    "1",
+                    "3",
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "8",
+                    "6",
+                    "2",
+                    "2",
+                    "2"
+                  ],
+                  [
+                    "9",
+                    "3",
+                    "7",
+                    "3",
+                    "7"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Vertex",
+                  "1 step",
+                  "2 steps",
+                  "4 steps",
+                  "8 steps"
+                ]
+              },
+              {
+                "text": "Since $11=8+2+1$, compose $succ(x,11)=succ(succ(succ(x,8),2),1)$. From $4$, eight steps reach $2$, two more reach $2$, and one reaches $5$, so $succ(4,11)=5$. The code scans lower bits first, jumping $1,2,8$; the same total of eleven steps gives the same result. Preprocessing and storage are $O(n\\log U)$; a query scans $O(\\log U)$ bits. Scanning only needed levels yields $O(\\log k)$ for $k>0$.",
+                "type": "p"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read $n,q$, then $n$ successors and queries ",
+                    "marks": []
+                  },
+                  {
+                    "text": "u k",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Assume $n\\le200000$, $0\\le k\\le10^{18}$ and valid successor IDs. Sixty levels suffice because $10^{18}<2^{60}$. Steps use ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ll",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ", vertices use ",
+                    "marks": []
+                  },
+                  {
+                    "text": "int",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": "; avoid a 32-bit ",
+                    "marks": []
+                  },
+                  {
+                    "text": "1 << j",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". This is general successor jumping; tree LCA and static path queries belong to their later dedicated explanation.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Step counts require ",
+                    "marks": []
+                  },
+                  {
+                    "text": "ll",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ".",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "The ",
+                    "marks": []
+                  },
+                  {
+                    "text": "Jump",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " constructor allocates the table, assigns successors and combines two shorter jumps. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "get",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " advances the current vertex for each set bit of $k$; zero leaves it unchanged.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "struct Jump {\n    static const int L = 60;\n    vector<array<int, L>> up;\n    Jump(const vector<int> &succ) {\n        int n = (int)succ.size() - 1;\n        up.resize(n + 1);\n        for (int u = 1; u <= n; u++) up[u][0] = succ[u];\n        for (int j = 1; j < L; j++) {\n            for (int u = 1; u <= n; u++) up[u][j] = up[up[u][j - 1]][j - 1];\n        }\n    }\n    int get(int u, ll k) const {\n        for (int j = 0; j < L; j++) {\n            if ((k >> j) & 1LL) u = up[u][j];\n        }\n        return u;\n    }\n};",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Preprocess once and answer all queries from the same immutable table.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<int> succ(n + 1);\n    for (int u = 1; u <= n; u++) cin >> succ[u];\n    Jump g(succ);\n    while (q--) {\n        int u;\n        ll k;\n        cin >> u >> k;\n        cout << g.get(u, k) << '\\n';\n    }\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete C++17 program combining the preceding parts. Compile each complete program as a separate file.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Jump {\n    static const int L = 60;\n    vector<array<int, L>> up;\n    Jump(const vector<int> &succ) {\n        int n = (int)succ.size() - 1;\n        up.resize(n + 1);\n        for (int u = 1; u <= n; u++) up[u][0] = succ[u];\n        for (int j = 1; j < L; j++) {\n            for (int u = 1; u <= n; u++) up[u][j] = up[up[u][j - 1]][j - 1];\n        }\n    }\n    int get(int u, ll k) const {\n        for (int j = 0; j < L; j++) {\n            if ((k >> j) & 1LL) u = up[u][j];\n        }\n        return u;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<int> succ(n + 1);\n    for (int u = 1; u <= n; u++) cin >> succ[u];\n    Jump g(succ);\n    while (q--) {\n        int u;\n        ll k;\n        cin >> u >> k;\n        cout << g.get(u, k) << '\\n';\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "cycle",
+            "title": "16.4 Cycle detection",
+            "blocks": [
+              {
+                "text": "Find the first cycle vertex reached from a start and the cycle length. Starting at $1$ in this example enters at $4$, with cycle $4\\to5\\to6\\to4$ of length $3$. Write tail length $\\mu=3$ and cycle length $\\lambda=3$.",
+                "type": "p"
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "6"
+                  ],
+                  [
+                    "6",
+                    "4"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 8,
+                    "y": 72,
+                    "id": "1",
+                    "label": "1"
+                  },
+                  {
+                    "x": 27,
+                    "y": 72,
+                    "id": "2",
+                    "label": "2"
+                  },
+                  {
+                    "x": 46,
+                    "y": 72,
+                    "id": "3",
+                    "label": "3"
+                  },
+                  {
+                    "x": 65,
+                    "y": 72,
+                    "id": "4",
+                    "label": "4"
+                  },
+                  {
+                    "x": 91,
+                    "y": 72,
+                    "id": "5",
+                    "label": "5"
+                  },
+                  {
+                    "x": 78,
+                    "y": 20,
+                    "id": "6",
+                    "label": "6"
+                  }
+                ],
+                "caption": "Visit 1,2,3 first, then repeat cycle 4,5,6.",
+                "directed": true,
+                "edgeStyles": [
+                  {},
+                  {},
+                  {},
+                  {},
+                  {},
+                  {}
+                ]
+              },
+              {
+                "text": "A simple method records the step when each vertex is first visited. The first repeated vertex is the cycle entry. Its first index is $\\mu$, and subtracting that from the current step gives $\\lambda$. Walking takes $O(\\mu+\\lambda)$, but initializing the full visited array costs $O(n)$, so this implementation takes $O(n)$ total time and $O(n)$ auxiliary storage.",
+                "type": "p"
+              },
+              {
+                "text": "Floyd’s two pointers",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "For $O(1)$ auxiliary storage, move pointer $a$ one step and $b$ two steps. Start after their first moves; do not treat their initial equality as the meeting. Once both are in the cycle, their relative speed is one, so they meet within at most another cycle traversal.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "1",
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "3",
+                    "5"
+                  ],
+                  [
+                    "3",
+                    "4",
+                    "4"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Round",
+                  "a",
+                  "b"
+                ]
+              },
+              {
+                "text": "At the meeting, $a$ has taken $k$ steps and $b$ has taken $2k$. Their difference $k$ is divisible by $\\lambda$. Reset $a$ to the start and move both one step at a time. After $\\mu$ steps, the first reaches the entry; the second differs by $k$ steps, a whole number of cycle laps, so it reaches the same entry. Their next meeting is therefore the entry itself.",
+                "type": "p"
+              },
+              {
+                "text": "Leave one pointer at the entry and move the other once, counting until it returns to obtain $\\lambda$. A self-loop has length $1$. Starting inside the cycle gives $\\mu=0$; other components do not affect this start. Floyd takes $O(\\mu+\\lambda)$ time and $O(1)$ auxiliary storage, distinct from the input successor array’s $O(n)$ storage.",
+                "type": "p"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Read $n,x$ and $n$ valid successors, with $1\\le n\\le200000$. Print ",
+                    "marks": []
+                  },
+                  {
+                    "text": "(entry, μ, λ)",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " from Floyd and then from the visited-array method. The lines must agree. The full comparison program allocates the second method’s $O(n)$ array; calling only Floyd needs no such array. This Floyd algorithm is different from shortest-path Floyd–Warshall.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Vertices, step indices and cycle lengths fit ",
+                    "marks": []
+                  },
+                  {
+                    "text": "int",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " under the bound.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Initialize first-visit steps to $-1$ and mark until repetition. The repeated vertex’s first index separates the tail from the cycle.",
+                "type": "p"
+              },
+              {
+                "text": "tuple<int, int, int> seenCycle(const vector<int> &succ, int x) {\n    vector<int> seen(succ.size(), -1);\n    int t = 0;\n    while (seen[x] == -1) {\n        seen[x] = t++;\n        x = succ[x];\n    }\n    return {x, seen[x], t - seen[x]};\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The fast pointer applies the successor twice. Every vertex has one valid successor, so no null-end check is needed.",
+                "type": "p"
+              },
+              {
+                "text": "tuple<int, int, int> floyd(const vector<int> &succ, int x) {\n    int a = succ[x], b = succ[succ[x]];\n    while (a != b) {\n        a = succ[a];\n        b = succ[succ[b]];\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Reset one pointer to find the entry, then measure one lap. ",
+                    "marks": []
+                  },
+                  {
+                    "text": "mu",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " counts steps to the entry and ",
+                    "marks": []
+                  },
+                  {
+                    "text": "len",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " counts cycle vertices.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "a = x;\n    int mu = 0;\n    while (a != b) {\n        a = succ[a];\n        b = succ[b];\n        mu++;\n    }\n    int first = a, len = 1;\n    b = succ[a];\n    while (a != b) {\n        b = succ[b];\n        len++;\n    }\n    return {first, mu, len};\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Print both answers for the same input. Neither function mutates the successor mapping.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, x;\n    cin >> n >> x;\n    vector<int> succ(n + 1);\n    for (int u = 1; u <= n; u++) cin >> succ[u];\n    auto [a, mu, len] = floyd(succ, x);\n    cout << a << ' ' << mu << ' ' << len << '\\n';\n    auto [b, pre, size] = seenCycle(succ, x);\n    cout << b << ' ' << pre << ' ' << size << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Complete C++17 program combining the preceding parts. Compile each complete program as a separate file.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\ntuple<int, int, int> seenCycle(const vector<int> &succ, int x) {\n    vector<int> seen(succ.size(), -1);\n    int t = 0;\n    while (seen[x] == -1) {\n        seen[x] = t++;\n        x = succ[x];\n    }\n    return {x, seen[x], t - seen[x]};\n}\n\ntuple<int, int, int> floyd(const vector<int> &succ, int x) {\n    int a = succ[x], b = succ[succ[x]];\n    while (a != b) {\n        a = succ[a];\n        b = succ[succ[b]];\n    }\n    a = x;\n    int mu = 0;\n    while (a != b) {\n        a = succ[a];\n        b = succ[b];\n        mu++;\n    }\n    int first = a, len = 1;\n    b = succ[a];\n    while (a != b) {\n        b = succ[b];\n        len++;\n    }\n    return {first, mu, len};\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, x;\n    cin >> n >> x;\n    vector<int> succ(n + 1);\n    for (int u = 1; u <= n; u++) cin >> succ[u];\n    auto [a, mu, len] = floyd(succ, x);\n    cout << a << ' ' << mu << ' ' << len << '\\n';\n    auto [b, pre, size] = seenCycle(succ, x);\n    cout << b << ' ' << pre << ' ' << size << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Exercises and independent practice",
+            "blocks": [
+              {
+                "text": "Exercises to master the topic",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "Check both topological orders against every edge. Trace the finishing list and explain reversal. Reverse $5\\to3$ into $3\\to5$ and identify the active vertex reached again. Separately verify that the counting example uses $1\\to4$, not $4\\to1$.",
+                "type": "p"
+              },
+              {
+                "text": "List the three paths and verify $ways[3]=3$. Write the three shortest routes from $1$ to $5$ in the weighted example. Contrast ordered coin sequences with unordered collections. Check $6$, $11$ and $0$ steps from $4$ and trace both Floyd meetings by hand.",
+                "type": "p"
+              },
+              {
+                "text": "Mastery and independent practice",
+                "type": "heading",
+                "level": 4
+              },
+              {
+                "text": "For the core task below, verify dependency direction, cycle detection and coverage of all components. For independent work distinguish a promised DAG from one you must prove or check. Read count bounds and modular requirements before choosing DP types.",
+                "type": "p"
+              },
+              {
+                "text": "Size jump levels from the largest step count. Test cycle detection when starting inside a cycle, on a self-loop and after a long tail. On small graphs use exhaustive paths or directly recorded walks as a slow oracle for the fast method.",
+                "type": "p"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Directed graphs, adjacency lists and FIFO queues. An edge $u\\to v$ requires $u$ before $v$."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Чиглэсэн граф, хөршийн жагсаалт, FIFO дараалал. Ирмэг $u\\to v$ бол $u$ нь $v$-ээс өмнө.",
+    "priorityLevel": "high",
+    "priorityReason": "Хамааралтай ажлуудын боловсруулах дараалал, чиглэсэн цикл илрүүлэх, циклгүй графын DP-ийн суурь. Жингийн эрэмбэ ба хамаарлын эрэмбэ өөр гэдгийг ойлгох өндөр ач холбогдолтой.",
+    "prerequisiteIds": [
+      "graph-basics",
+      "bfs"
+    ],
+    "learningRelations": {
+      "next": "fenwick-tree",
+      "practice": [
+        {
+          "key": "373",
+          "stage": "Warm-up",
+          "reason": "Үндсэн төлөв, боловсруулах дараалал ба зөв ажиллагааны нөхцөлийг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "375",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "683",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "374",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "574",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "369",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "graph-basics",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "bfs",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "fenwick-tree",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  }
+}

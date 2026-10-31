@@ -1,0 +1,1038 @@
+{
+  "body": {
+    "id": "sparse-table",
+    "level": "Дунд шат",
+    "order": 37,
+    "title": "Sparse table — статик хамгийн бага утга ба давхцсан хоёр блок",
+    "aliases": "sparse-table Sparse table — static range minimum Sparse tables — static range minimum sparse table rmq static range minimum query min gcd",
+    "related": [
+      "segment-tree",
+      "bit-operations",
+      "number-theory"
+    ],
+    "summary": "Хоёрын зэрэг урттай бэлтгэлээс дурын хоосон биш завсрыг O(1)-д асуух, давхцал зөв болох нөхцөл ба нийлбэрийн ялгааг тайлбарлана.",
+    "category": "Data structures",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "need",
+        "title": "Бүх завсар биш, хоёрын зэрэг урттай хэсгүүд",
+        "blocks": [
+          {
+            "text": "Өөрчлөгдөхгүй массивын олон завсрын хамгийн бага утгыг олъё. Асуулт бүрийг нэг бүрчлэн гүйвэл урт завсар бүрд өмнөх ажлыг давтана. Бүх эхлэл, төгсгөлийн хосыг хадгалах нь $O(n^2)$ зайтай. Харин зөвхөн 1,2,4,8,… урттай хэсгүүдийн хариуг бэлдвэл ямар ч завсрыг хоёр бэлэн хэсгээр бүрхэж болно.",
+            "type": "p"
+          },
+          {
+            "kind": "dp",
+            "rows": [
+              [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7"
+              ],
+              [
+                "1",
+                "3",
+                "4",
+                "8",
+                "6",
+                "1",
+                "4",
+                "2"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "Индекс 0-ээс эхэлнэ. 1..6 завсарт хамгийн бага утга 1."
+          },
+          {
+            "text": "Энэ бүтцийг sparse table гэж нэрлэдэг. Энд хамгийн бага утгын асуултыг хэрэгжүүлнэ. Хамгийн их утгад ижил арга ажиллах боловч дурын үйлдлийг min-ийн оронд тавьж болохгүй: хоёр хэсэг давхцаж болдгийг эхлээд шалгана. Утга өөрчлөгдөхгүй гэдэг нь асуултуудыг урьдчилан мэдэх ёстой гэсэн үг биш; зөвхөн нэг массивын бэлтгэлийг дахин ашиглана.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "build",
+        "title": "Түвшин бүрийг хоёр жижиг хариунаас байгуулах",
+        "blocks": [
+          {
+            "text": "$st[k][i]$ нь $i$-ээс эхэлсэн $2^k$ элементийн хамгийн бага утга. Блок бүхэлдээ массивт багтах ёстой: $i+2^k\\le n$. $k$=0 түвшинд ганц элемент тул st[0][$i$]=a[$i$]. Дараагийн түвшний блокийг адил урттай хоёр хагас болгон хуваана.",
+            "type": "p"
+          },
+          {
+            "text": "$w=2^{k-1}$ гэвэл $st[k][i]=\\min(st[k-1][i],st[k-1][i+w])$. Эхний хагас $[i,i+w)$, хоёр дахь нь $[i+w,i+2w)$; бэлтгэхдээ эдгээр нь давхцахгүй. Бага түвшнийг дуусгасны дараа дараагийнхыг боддог тул шаардлагатай хоёр хариу бэлэн байна.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "0",
+                "1",
+                "1, 3, 4, 8, 6, 1, 4, 2"
+              ],
+              [
+                "1",
+                "2",
+                "1, 3, 4, 6, 1, 1, 2"
+              ],
+              [
+                "2",
+                "4",
+                "1, 3, 1, 1, 1"
+              ],
+              [
+                "3",
+                "8",
+                "1"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Түвшин $k$",
+              "Урт",
+              "Бүх хүчинтэй эхлэлийн хамгийн бага утга"
+            ]
+          },
+          {
+            "text": "Жишээ нь st[1][4]=min(6,1)=1. st[2][2] нь 4,8,6,1 дөрвөн утгыг хамарч min(st[1][2],st[1][4])=min(4,1)=1. st[3][0] нь бүх найман утгын хамгийн бага утга 1. Блок багтахгүй сүүлийн байрлалуудыг query уншихгүй; код тэдгээрийг бэлэн хариу гэж үзэхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Ганц элементийн түвшин зөв. Хоёр хагасын хамгийн бага утга зөв бол тэдний хамгийн бага нь нийлсэн бүх хэсгийн хамгийн бага утга учир бүх түвшин индукцээр зөв. Түвшин бүр хамгийн ихдээ $n$ блоктой, түвшний тоо floor(log₂ $n$)+1 тул бэлтгэл ба зай $O(n \\log n)$.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "query",
+        "title": "Давхцсан хоёр блок яагаад хангалттай вэ?",
+        "blocks": [
+          {
+            "text": "Дотоод асуултыг хоосон биш $[l,r)$ гэж авъя. Урт нь $L=r-l>0$. $k=\\lfloor\\log_2 L\\rfloor$, $w=2^k$. Зүүн захаас $[l,l+w)$, баруун захаас $[r-w,r)$ хоёр блок авна. Хариу $\\min(st[k][l],st[k][r-w])$.",
+            "type": "p"
+          },
+          {
+            "text": "$w$≤$L$<2w тул хоёр блокийн дунд завсар үлдэхгүй. Аль аль нь асуусан хэсгээс гадагш гарахгүй. Давхцсан элемент хоёр удаа орж болно, гэхдээ min($x$,$x$)=$x$ учир хамгийн бага утга өөрчлөгдөхгүй. Яг хоёрын зэрэг уртад хоёр блок нэг хэсгийг заана; ганц элементэд ч зөв.",
+            "type": "p"
+          },
+          {
+            "kind": "dp",
+            "rows": [
+              [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7"
+              ],
+              [
+                "1",
+                "3",
+                "4",
+                "8",
+                "6",
+                "1",
+                "4",
+                "2"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "Асуух [1,6] завсар; индекс 0-ээс эхэлнэ.",
+            "gridPresentation": {
+              "colors": [
+                {
+                  "col": 1,
+                  "row": 1,
+                  "color": "#7db7d8"
+                },
+                {
+                  "col": 2,
+                  "row": 1,
+                  "color": "#7db7d8"
+                },
+                {
+                  "col": 3,
+                  "row": 1,
+                  "color": "#7db7d8"
+                },
+                {
+                  "col": 4,
+                  "row": 1,
+                  "color": "#7db7d8"
+                },
+                {
+                  "col": 5,
+                  "row": 1,
+                  "color": "#7db7d8"
+                },
+                {
+                  "col": 6,
+                  "row": 1,
+                  "color": "#7db7d8"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "dp",
+            "rows": [
+              [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7"
+              ],
+              [
+                "1",
+                "3",
+                "4",
+                "8",
+                "6",
+                "1",
+                "4",
+                "2"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "Зүүн [1,4] блок.",
+            "gridPresentation": {
+              "colors": [
+                {
+                  "col": 1,
+                  "row": 1,
+                  "color": "#7db7d8"
+                },
+                {
+                  "col": 2,
+                  "row": 1,
+                  "color": "#7db7d8"
+                },
+                {
+                  "col": 3,
+                  "row": 1,
+                  "color": "#7db7d8"
+                },
+                {
+                  "col": 4,
+                  "row": 1,
+                  "color": "#7db7d8"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "dp",
+            "rows": [
+              [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7"
+              ],
+              [
+                "1",
+                "3",
+                "4",
+                "8",
+                "6",
+                "1",
+                "4",
+                "2"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "Баруун [3,6] блок; 3,4 индексүүд давхцана.",
+            "gridPresentation": {
+              "colors": [
+                {
+                  "col": 3,
+                  "row": 1,
+                  "color": "#7db7d8"
+                },
+                {
+                  "col": 4,
+                  "row": 1,
+                  "color": "#7db7d8"
+                },
+                {
+                  "col": 5,
+                  "row": 1,
+                  "color": "#7db7d8"
+                },
+                {
+                  "col": 6,
+                  "row": 1,
+                  "color": "#7db7d8"
+                }
+              ]
+            }
+          },
+          {
+            "rows": [
+              [
+                "[1,4]",
+                "3,4,8,6",
+                "3"
+              ],
+              [
+                "[3,6]",
+                "8,6,1,4",
+                "1"
+              ],
+              [
+                "[1,6]",
+                "3,4,8,6,1,4",
+                "1"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Хэсэг, хоёр үзүүр орно",
+              "Утгууд",
+              "Minimum"
+            ]
+          },
+          {
+            "text": "1..6 урт 6 тул $w$=4. Хоёр блок 1..4 ба 3..6; индекс 3,4-ийн 8,6 давхцана. min(3,1)=1 нь бүх зургаан утгын хамгийн бага утга. Программд энэ нь [1,7), гаднах 1-ээс эхэлсэн оролт [2,7] болно. Гаднах l-ийг л нэгээр бууруулж $r$-ийг хэвээр дамжуулна.",
+            "type": "p"
+          },
+          {
+            "text": "Өөр [5,2,7,3,6,1,4,8] массив дээр гаднах [2,7] асуулт мөн хоёр дөрвөн урттай [2,5], [4,7] хэсэгт хуваагдана. Тэдний хамгийн бага утга 2 ба 1, хариу 1. [3,3] ганц нүд 7, [1,4] хариу 2. Тоон хариу таарах төдий бус, хоёр блокийн яг ямар нүд давхцаж байгааг зурж шалга.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "operation",
+        "title": "Давхардалд тэсвэртэй үйлдэл ба нийлбэрийн эсрэг жишээ",
+        "blocks": [
+          {
+            "text": "Нэг утгыг давтан нэгтгэхэд өөрчлөгддөггүй шинжийг idempotence гэдэг. min, max, gcd ийм шинжтэй бөгөөд хэсгүүдийг бүлэглэн нэгтгэхэд хариу нь өөрчлөгдөхгүй. Харин нийлбэрт $x$+$x$ нь $x$ биш. Дээрх 1..4-ийн нийлбэр 21, 3..6-ийнх 19: нэмбэл 40. Бодит 1..6-ийн нийлбэр 26; давхцсан 8+6=14 илүү оржээ.",
+            "type": "p"
+          },
+          {
+            "text": "XOR мөн энэ хоёр блокийн аргаар болохгүй: $x$ XOR $x$=0 тул давхцсан утга арилна. Нийлбэр, XOR-ийн статик асуултад prefix-ийн ялгавар буюу XOR ашиглах нь энгийн. Эсвэл давхцахгүй хоёрын зэрэг блокууд авч нэгтгэх нь $O(\\log n)$; энэ нь энд хэрэгжүүлсэн хоёр блокийн $O(1)$ хамгийн бага утга асуулттай өөр арга.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "Бүхэл логарифм, байгуулагч ба бүтэн C++17",
+        "blocks": [
+          {
+            "text": "Sparse struct-ийн $n$ нь элементийн тоо. lg[t] нь floor(log₂ t), зөвхөн t≥1-д ашиглана. lg[1]=0, lg[t]=lg[t/2]+1 гэж бүхэл тоогоор бодох тул хөвөгч цэгийн log2-оос үүдэх заагийн алдаа гарахгүй. st-ийн мөрийн тоо $n$>0 бол lg[$n$]+1; багана $n$. Байгуулагч эхлээд эдгээр хэмжээг бэлдэнэ, build дараа нь утгуудыг нөхнө.",
+            "type": "p"
+          },
+          {
+            "text": "Оролт $n$ q, дараа нь $n$ утга, q ширхэг 1-ээс эхэлсэн хоёр үзүүр орсон l $r$ асуулт. 0≤$n$,q≤200000; $n$=0 бол q=0. Утгууд ll-д багтах бүхэл тоо, нэмэх/үржүүлэхгүй зөвхөн харьцуулна. query-д 0≤l<$r$≤$n$ шаардана; хоосон хэсгийн хамгийн бага утга тодорхойлоогүй. 2^$k$ болон 2w нь энэ $n$-ийн хязгаарт int-д багтана.",
+            "type": "p"
+          },
+          {
+            "text": "ll нь хадгалах утга, хамгийн бага утгын буцах төрөл. Индекс, түвшин int.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Байгуулагч хэмжээ, бүхэл логарифм, хоёр хэмжээст хүснэгтийг бэлдэнэ. Хоосон массивт st мөргүй байна.",
+            "type": "p"
+          },
+          {
+            "text": "struct Sparse {\n    int n;\n    vector<int> lg;\n    vector<vector<ll>> st;\n\n    Sparse(int _n) {\n        n = _n;\n        lg.resize(n + 1);\n        for (int i = 2; i <= n; i++) lg[i] = lg[i / 2] + 1;\n        int k = n ? lg[n] + 1 : 0;\n        st.assign(k, vector<ll>(n));\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "build эхний түвшинд a-г хуулж, багтах хоёр хагасыг л нэгтгэнэ. $i$+2w≤$n$ нь унших хоёр блокийг хамгаална.",
+            "type": "p"
+          },
+          {
+            "text": "void build(const vector<ll> &a) {\n        if (n == 0) return;\n        st[0] = a;\n        for (int k = 1; k < (int)st.size(); k++) {\n            int w = 1 << (k - 1);\n            for (int i = 0; i + 2 * w <= n; i++) {\n                st[k][i] = min(st[k - 1][i], st[k - 1][i + w]);\n            }\n        }\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "query эерэг уртын lg-г авч хоёр бэлэн хамгийн бага утгыг харьцуулна. Энэ нь массивыг өөрчлөхгүй const үйлдэл.",
+            "type": "p"
+          },
+          {
+            "text": "ll query(int l, int r) const {\n        int k = lg[r - l];\n        int w = 1 << k;\n        return min(st[k][l], st[k][r - w]);\n    }\n};",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "main нэг удаа build хийгээд гаднах асуултыг [l−1,$r$) болгож дамжуулна.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    Sparse sp(n);\n    sp.build(a);\n    while (q--) {\n        int l, r;\n        cin >> l >> r;\n        cout << sp.query(l - 1, r) << '\\n';\n    }\n    return 0;\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Sparse {\n    int n;\n    vector<int> lg;\n    vector<vector<ll>> st;\n\n    Sparse(int _n) {\n        n = _n;\n        lg.resize(n + 1);\n        for (int i = 2; i <= n; i++) lg[i] = lg[i / 2] + 1;\n        int k = n ? lg[n] + 1 : 0;\n        st.assign(k, vector<ll>(n));\n    }\n\n    void build(const vector<ll> &a) {\n        if (n == 0) return;\n        st[0] = a;\n        for (int k = 1; k < (int)st.size(); k++) {\n            int w = 1 << (k - 1);\n            for (int i = 0; i + 2 * w <= n; i++) {\n                st[k][i] = min(st[k - 1][i], st[k - 1][i + w]);\n            }\n        }\n    }\n\n    ll query(int l, int r) const {\n        int k = lg[r - l];\n        int w = 1 << k;\n        return min(st[k][l], st[k][r - w]);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    Sparse sp(n);\n    sp.build(a);\n    while (q--) {\n        int l, r;\n        cin >> l >> r;\n        cout << sp.query(l - 1, r) << '\\n';\n    }\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "rows": [
+              [
+                "8 3 / 1 3 4 8 6 1 4 2 / 2 7 / 4 4 / 1 8",
+                "1 / 8 / 1"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Оролт",
+              "Гаралт"
+            ]
+          },
+          {
+            "text": "Нийт хугацаа $O(n \\log n+q)$, санах ой $O(n \\log n)$; асуулт бүр $O(1)$. Бүтэн матрицад хүчинтэй бус төгсгөлийн нүдүүд ч зай эзэлдэг. Утга солигдвол түүнийг агуулсан олон блок хуучирна. Энэ интерфейст update байхгүй: дахин build эсвэл динамик сегментийн мод сонгоно.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "text": "Шалгах асуулт: урт 5-д $w$ хэд вэ? Хоёр блок давхцвал min яагаад зөв вэ? Нийлбэрийг хоёр блокоор нэмбэл юу давхардах вэ?",
+            "type": "p"
+          },
+          {
+            "text": "Хариу: 4; ижил утгыг давтахад хамгийн бага утга өөрчлөгдөхгүй; огтлолын нийлбэр. Урт 1,2,3,4,5 ба бүх массивын асуултуудыг шууд хамгийн бага утгатай тулга.",
+            "type": "p"
+          },
+          {
+            "text": "Сэдвийг эзэмших үндсэн бодлогууд",
+            "type": "p"
+          },
+          {
+            "text": "Static Range Minimum Queries: түвшин, бүхэл логарифм, хоёр давхцсан блокийг шууд хэрэгжүүл.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "396"
+          },
+          {
+            "text": "Бие даах ба ахиулах бодлогууд",
+            "type": "p"
+          },
+          {
+            "text": "Static Range Sum Queries: sparse хамгийн бага утгын дүрмийг хуулалгүй prefix нийлбэр сонго.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "395"
+          },
+          {
+            "text": "Range Xor Queries: XOR-ийн урвуу шинжийг ашигла; давхцсан хоёр sparse блок болохгүйг тайлбарла.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "399"
+          },
+          {
+            "text": "Dynamic Range Minimum Queries: шинэчлэлттэй тул сегментийн мод хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "398"
+          },
+          {
+            "text": "Distinct Values Queries: ялгаатай утгын тоо давхцсан хэсгийн хоёр тооноос дангаар тодорхойлогдохгүй.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "411"
+          },
+          {
+            "text": "Forest Queries: хоёр хэмжээст prefix-ийн дөрвөн булангийн дүрмийг ялгаж хэрэгжүүл.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "401"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Sparse table — static minima and two overlapping blocks",
+        "summary": "Build power-of-two minima, answer nonempty ranges in O(1), and explain when overlap works and why sums differ.",
+        "sections": [
+          {
+            "key": "need",
+            "title": "Precompute power-of-two blocks, not every interval",
+            "blocks": [
+              {
+                "text": "Find the minimum on many ranges of an array that does not change. Scanning repeats work across long queries, while storing all endpoint pairs costs $O(n^2)$ space. Precompute only lengths 1,2,4,8,…: any query can then be covered by two prepared blocks.",
+                "type": "p"
+              },
+              {
+                "kind": "dp",
+                "rows": [
+                  [
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7"
+                  ],
+                  [
+                    "1",
+                    "3",
+                    "4",
+                    "8",
+                    "6",
+                    "1",
+                    "4",
+                    "2"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "Zero-based indices. The minimum on the inclusive interval 1..6 is 1."
+              },
+              {
+                "text": "This structure is a sparse table. We implement range minima. Maxima work similarly, but an arbitrary operation cannot replace min: the two blocks may overlap. Static values do not require knowing queries in advance; we merely reuse one array’s preprocessing.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "build",
+            "title": "Build each level from two smaller answers",
+            "blocks": [
+              {
+                "text": "st[$k$][$i$] is the minimum of 2^$k$ elements starting at $i$, requiring $i$+2^$k$≤$n$. At level 0 a block has one element, so st[0][$i$]=a[$i$]. Split each larger block into two equal halves.",
+                "type": "p"
+              },
+              {
+                "text": "For $w$=2^($k$−1), st[$k$][$i$]=min(st[$k$−1][$i$],st[$k$−1][$i$+$w$]). The halves [$i$,$i$+$w$) and [$i$+$w$,$i$+2w) are disjoint during preprocessing. Completing smaller levels first ensures both answers are available.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "0",
+                    "1",
+                    "1, 3, 4, 8, 6, 1, 4, 2"
+                  ],
+                  [
+                    "1",
+                    "2",
+                    "1, 3, 4, 6, 1, 1, 2"
+                  ],
+                  [
+                    "2",
+                    "4",
+                    "1, 3, 1, 1, 1"
+                  ],
+                  [
+                    "3",
+                    "8",
+                    "1"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Level $k$",
+                  "Length",
+                  "Minimum at each valid start"
+                ]
+              },
+              {
+                "text": "For example, st[1][4]=min(6,1)=1. st[2][2] covers 4,8,6,1 and equals min(st[1][2],st[1][4])=min(4,1)=1. st[3][0] is the whole array’s minimum 1. Positions where a full block would not fit are never read by a valid query.",
+                "type": "p"
+              },
+              {
+                "text": "Singletons are correct. If both halves’ minima are correct, their minimum is correct for the union, proving all levels by induction. Each level has at most $n$ blocks and there are floor(log₂ $n$)+1 levels, giving $O(n \\log n)$ preprocessing and space.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "query",
+            "title": "Why two overlapping blocks suffice",
+            "blocks": [
+              {
+                "text": "Use a nonempty half-open query [l,$r$), of length $L$=$r$−l>0. Set $k$=floor(log₂ $L$), $w$=2^$k$. Take the left block [l,l+$w$) and right block [$r$−$w$,$r$). The answer is min(st[$k$][l],st[$k$][$r$−$w$]).",
+                "type": "p"
+              },
+              {
+                "text": "Since $w$≤$L$<2w, no gap remains between the blocks, and both stay within the query. Overlap may include an element twice, but min($x$,$x$)=$x$ leaves the minimum unchanged. For a power-of-two length both blocks coincide; this also handles a singleton.",
+                "type": "p"
+              },
+              {
+                "kind": "dp",
+                "rows": [
+                  [
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7"
+                  ],
+                  [
+                    "1",
+                    "3",
+                    "4",
+                    "8",
+                    "6",
+                    "1",
+                    "4",
+                    "2"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "Query [1,6], with zero-based indices.",
+                "gridPresentation": {
+                  "colors": [
+                    {
+                      "col": 1,
+                      "row": 1,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "col": 2,
+                      "row": 1,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "col": 3,
+                      "row": 1,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "col": 4,
+                      "row": 1,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "col": 5,
+                      "row": 1,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "col": 6,
+                      "row": 1,
+                      "color": "#7db7d8"
+                    }
+                  ]
+                }
+              },
+              {
+                "kind": "dp",
+                "rows": [
+                  [
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7"
+                  ],
+                  [
+                    "1",
+                    "3",
+                    "4",
+                    "8",
+                    "6",
+                    "1",
+                    "4",
+                    "2"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "Left block [1,4].",
+                "gridPresentation": {
+                  "colors": [
+                    {
+                      "col": 1,
+                      "row": 1,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "col": 2,
+                      "row": 1,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "col": 3,
+                      "row": 1,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "col": 4,
+                      "row": 1,
+                      "color": "#7db7d8"
+                    }
+                  ]
+                }
+              },
+              {
+                "kind": "dp",
+                "rows": [
+                  [
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7"
+                  ],
+                  [
+                    "1",
+                    "3",
+                    "4",
+                    "8",
+                    "6",
+                    "1",
+                    "4",
+                    "2"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "Right block [3,6]; indices 3,4 overlap.",
+                "gridPresentation": {
+                  "colors": [
+                    {
+                      "col": 3,
+                      "row": 1,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "col": 4,
+                      "row": 1,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "col": 5,
+                      "row": 1,
+                      "color": "#7db7d8"
+                    },
+                    {
+                      "col": 6,
+                      "row": 1,
+                      "color": "#7db7d8"
+                    }
+                  ]
+                }
+              },
+              {
+                "rows": [
+                  [
+                    "[1,4]",
+                    "3,4,8,6",
+                    "3"
+                  ],
+                  [
+                    "[3,6]",
+                    "8,6,1,4",
+                    "1"
+                  ],
+                  [
+                    "[1,6]",
+                    "3,4,8,6,1,4",
+                    "1"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Inclusive block",
+                  "Values",
+                  "Minimum"
+                ]
+              },
+              {
+                "text": "The inclusive range 1..6 has length 6, so $w$=4. Blocks 1..4 and 3..6 overlap at indices 3,4, values 8,6. min(3,1)=1 is the minimum of all six values. Internally this is [1,7), while one-based inclusive input is [2,7]. Decrement only the external left endpoint.",
+                "type": "p"
+              },
+              {
+                "text": "On a second array [5,2,7,3,6,1,4,8], external query [2,7] likewise uses length-four blocks [2,5] and [4,7]. Their minima are 2 and 1, giving 1. Singleton [3,3] returns 7, and [1,4] returns 2. Check the actual covered cells, not only the final number.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "operation",
+            "title": "Idempotent operations and a sum counterexample",
+            "blocks": [
+              {
+                "text": "Idempotence means combining the same value twice changes nothing. Min, max and gcd have this property and support associative grouping. Sum does not: $x$+$x$ is not $x$. In the example, block sums are 21 and 19, totaling 40, while the true sum is 26. The overlapping 8+6=14 was counted twice.",
+                "type": "p"
+              },
+              {
+                "text": "XOR also fails with these two blocks: $x$ XOR $x$=0 cancels overlapping values. Static sum or XOR queries are simpler with prefix subtraction or prefix XOR. Combining disjoint power-of-two blocks is another $O(\\log n)$ option, distinct from this implementation’s two-block $O(1)$ minimum query.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "Integer logs, constructor and complete C++17",
+            "blocks": [
+              {
+                "text": "In Sparse, $n$ counts elements. lg[t]=floor(log₂ t) is used only for t≥1. Starting from lg[1]=0, lg[t]=lg[t/2]+1 uses integers and avoids floating-point log2 boundary errors. For $n$>0, st has lg[$n$]+1 rows and $n$ columns. The constructor allocates them; build then fills valid blocks.",
+                "type": "p"
+              },
+              {
+                "text": "Input is $n$ q, then $n$ values and q one-based inclusive l $r$ queries. Require 0≤$n$,q≤200000, and q=0 if $n$=0. Values may be any ll integers; we compare rather than add or multiply them. query requires 0≤l<$r$≤$n$: no minimum is defined for an empty interval. Under this $n$ bound, 2^$k$ and 2w fit int.",
+                "type": "p"
+              },
+              {
+                "text": "ll stores values and returned minima; indices and levels use int.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The constructor prepares size, integer logs and the two-dimensional table. An empty array has no st rows.",
+                "type": "p"
+              },
+              {
+                "text": "struct Sparse {\n    int n;\n    vector<int> lg;\n    vector<vector<ll>> st;\n\n    Sparse(int _n) {\n        n = _n;\n        lg.resize(n + 1);\n        for (int i = 2; i <= n; i++) lg[i] = lg[i / 2] + 1;\n        int k = n ? lg[n] + 1 : 0;\n        st.assign(k, vector<ll>(n));\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "build copies a into level 0 and combines only complete halves. $i$+2w≤$n$ ensures both blocks exist.",
+                "type": "p"
+              },
+              {
+                "text": "void build(const vector<ll> &a) {\n        if (n == 0) return;\n        st[0] = a;\n        for (int k = 1; k < (int)st.size(); k++) {\n            int w = 1 << (k - 1);\n            for (int i = 0; i + 2 * w <= n; i++) {\n                st[k][i] = min(st[k - 1][i], st[k - 1][i + w]);\n            }\n        }\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "query uses the positive length’s log and compares two prepared minima. It is const and does not change the array.",
+                "type": "p"
+              },
+              {
+                "text": "ll query(int l, int r) const {\n        int k = lg[r - l];\n        int w = 1 << k;\n        return min(st[k][l], st[k][r - w]);\n    }\n};",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "main builds once and converts external queries to [l−1,$r$).",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    Sparse sp(n);\n    sp.build(a);\n    while (q--) {\n        int l, r;\n        cin >> l >> r;\n        cout << sp.query(l - 1, r) << '\\n';\n    }\n    return 0;\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Sparse {\n    int n;\n    vector<int> lg;\n    vector<vector<ll>> st;\n\n    Sparse(int _n) {\n        n = _n;\n        lg.resize(n + 1);\n        for (int i = 2; i <= n; i++) lg[i] = lg[i / 2] + 1;\n        int k = n ? lg[n] + 1 : 0;\n        st.assign(k, vector<ll>(n));\n    }\n\n    void build(const vector<ll> &a) {\n        if (n == 0) return;\n        st[0] = a;\n        for (int k = 1; k < (int)st.size(); k++) {\n            int w = 1 << (k - 1);\n            for (int i = 0; i + 2 * w <= n; i++) {\n                st[k][i] = min(st[k - 1][i], st[k - 1][i + w]);\n            }\n        }\n    }\n\n    ll query(int l, int r) const {\n        int k = lg[r - l];\n        int w = 1 << k;\n        return min(st[k][l], st[k][r - w]);\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, q;\n    cin >> n >> q;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    Sparse sp(n);\n    sp.build(a);\n    while (q--) {\n        int l, r;\n        cin >> l >> r;\n        cout << sp.query(l - 1, r) << '\\n';\n    }\n    return 0;\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "rows": [
+                  [
+                    "8 3 / 1 3 4 8 6 1 4 2 / 2 7 / 4 4 / 1 8",
+                    "1 / 8 / 1"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Input",
+                  "Output"
+                ]
+              },
+              {
+                "text": "Total time is $O(n \\log n+q)$, memory $O(n \\log n)$, and each query $O(1)$. The rectangular allocation also reserves unused tail entries. Changing a value invalidates many containing blocks. This interface has no update: rebuild or use a dynamic segment tree.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "text": "Check yourself: what is $w$ for length 5? Why does overlap preserve min? What is double-counted when adding two block sums?",
+                "type": "p"
+              },
+              {
+                "text": "Answers: 4; repeating a value does not change the minimum; the overlap sum. Compare lengths 1,2,3,4,5 and full-array queries with direct minima.",
+                "type": "p"
+              },
+              {
+                "text": "Core problems for mastering the topic",
+                "type": "p"
+              },
+              {
+                "text": "Static Range Minimum Queries: implement levels, integer logs and the two overlapping blocks.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "396"
+              },
+              {
+                "text": "Independent practice and extensions",
+                "type": "p"
+              },
+              {
+                "text": "Static Range Sum Queries: choose prefix sums rather than copying the minimum rule.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "395"
+              },
+              {
+                "text": "Range Xor Queries: use prefix XOR and explain why two overlapping sparse blocks fail.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "399"
+              },
+              {
+                "text": "Dynamic Range Minimum Queries: updates call for a segment tree.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "398"
+              },
+              {
+                "text": "Distinct Values Queries: two counts do not determine the count of the overlapping union.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "411"
+              },
+              {
+                "text": "Forest Queries: distinguish the four-corner two-dimensional prefix formula.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "401"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Combining interval summaries, powers of two and integer logarithms; the array is immutable here."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Сегментийн хэсгийн хариу нэгтгэх санаа, хоёрын зэрэг ба бүхэл логарифм. Энэ хичээлд массив өөрчлөгдөхгүй.",
+    "priorityLevel": "medium",
+    "priorityReason": "Өөрчлөгдөхгүй, давхцалд үр дүн өөрчлөгдөхгүй үйлдлийн асуултад хурдан хэрэгтэй ч хэрэглээ нь нөхцөлтэй. Динамик модны дараах дунд ач холбогдолтой туслах арга; санах ой ба урьдчилсан ажлыг харьцуулж сонгохыг сургана.",
+    "prerequisiteIds": [
+      "segment-tree",
+      "bit-operations"
+    ],
+    "learningRelations": {
+      "next": "number-theory",
+      "practice": [
+        {
+          "key": "396",
+          "stage": "Warm-up",
+          "reason": "Хоёрын зэрэг урттай минимумуудыг бэлтгэж, давхцсан хоёр блокоор завсрын хамгийн бага утгыг олох цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "395",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "399",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "398",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "411",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "401",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "segment-tree",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "bit-operations",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "number-theory",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,763 @@
+{
+  "body": {
+    "id": "subtask-strategy",
+    "level": "Дунд шат",
+    "order": 55,
+    "title": "Дэд бодлогын стратеги — зөв жижиг шийдлээс бүрэн хүрээнд",
+    "aliases": "subtask-strategy Subtask-oriented thinking ба meet-in-the-middle Subtask-oriented thinking and meet-in-the-middle",
+    "related": [
+      "debugging",
+      "bitmask-dp"
+    ],
+    "summary": "Хязгаар бүрд баталсан зөв хүрээгээ тогтоож, бүрэн хайлтын лавлахаас хоёр хагасын бүрэн тоололд ахина.",
+    "category": "Бодлого бодох арга",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "contract",
+        "title": "Хязгаар, зорилго, баталсан хүрээг салгах",
+        "blocks": [
+          {
+            "text": "Бодлого уншаад хамгийн хэцүү аргыг шууд бичихээс өмнө яг юу асууж, ямар хязгаар тавьсныг салга. Нэг шийдэл олох уу, бүх сонголтыг тоолох уу, хамгийн сайн утга олох уу? Утгууд сөрөг байж болох уу, ижил утгатай индексүүд ялгаатай юу? Эдгээрийг буруу ойлговол хурдан код ч өөр бодлого бодно.",
+            "type": "p"
+          },
+          {
+            "text": "Энд $n$≤40 тооноос нийлбэр нь T болох дэд олонлогийн ТООГ олно. Индекс бүрийг ихдээ нэг удаа сонгоно, ижил утгатай индексүүд өөр сонголт. Хоосон сонголтыг зөвшөөрнө. Эхлээд жижиг $n$-д яг зөв шийдэл бичээд, дараа нь түүний хязгаарыг яаж ахиулахыг үзье.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "$n$≤22",
+                "бүх маск",
+                "$n$·2ⁿ хугацаа"
+              ],
+              [
+                "$n$≤40",
+                "хоёр хагас",
+                "давхардал ба зай"
+              ],
+              [
+                "сөрөг утга",
+                "нийлбэрийг шууд хадгал",
+                "T-ээс эрс ихэд таслахгүй"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Сургалтын хүрээ",
+              "Зөв арга",
+              "Шалгах гол зүйл"
+            ]
+          },
+          {
+            "text": "Энэ бол бодит тэмцээний онооны хүснэгт биш. Албан дэд бодлого бүрийн хязгаар, оноо, хамаарал, бүх тестийг давах шаардлагыг өөрийн нөхцөлөөс унш. Зөвхөн нэг жишээ оролтод таарсныг partial solution гэж нэрлэхгүй; зарласан бүх хүрээнд зөв байх үндэслэл хэрэгтэй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "partial-program",
+        "title": "Жижиг хүрээнд яг зөв бүтэн программ",
+        "blocks": [
+          {
+            "text": "Маскын $i$-р бит 1 бол $i$-р индексийг сонгоно. $n$ битийн 2ⁿ маск бүр яг нэг дэд олонлогтой харгалзана. Маск бүрийн нийлбэрийг шууд бодоод T-тэй тэнцүү бол тоолно. $n$=0 үед ганц хоосон маск байна: T=0 бол 1, бусад үед 0.",
+            "type": "p"
+          },
+          {
+            "text": "Энэ арга $O(n2^n)$ хугацаа, оролтын массиваас гадна $O(1)$ зайтай. $n$=20 үед ойролцоогоор 20.97 сая бит шалгана; $n$=40 үед 40·2⁴⁰≈44 их наяд. Энэ нь машин бүрийн секундийн баталгаа биш, аргуудын ажлын хэмжээг харьцуулсан тооцоо. $n$≤22 зөв partial хувилбараа жижиг лавлах болгон хадгалж болно.",
+            "type": "p"
+          },
+          {
+            "text": "Хоёр программд |aᵢ|≤10⁹,|T|≤4×10¹⁰. Эхний программ ЗӨВХӨН 0≤$n$≤22 гэрээтэй; том $n$-д бүрэн шийдэл гэж ашиглахгүй. Маск 1<<$n$ нь энэ хүрээнд int-д багтана; нийлбэр ба хариу ll.",
+            "type": "p"
+          },
+          {
+            "text": "Индекс, маск int; нийлбэр, зорилт, тооллого ll.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Функцийн жижиг хүрээг assert-аар локал шалгаж, хариуг 0-ээс эхлүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "ll count_brute(const vector<ll> &a, ll t) {\n    int n = (int)a.size();\n    assert(n <= 22);\n    ll ans = 0;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Маск бүрд бүх индексийг шалгана. Ижил утгууд өөр биттэй тул сонголтууд давхардахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "for (int mask = 0; mask < (1 << n); mask++) {\n        ll s = 0;\n        for (int i = 0; i < n; i++) {\n            if (mask & (1 << i)) s += a[i];\n        }\n        if (s == t) ans++;\n    }\n    return ans;\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "main зөвхөн зарласан жижиг хүрээний оролтыг авч яг хариу хэвлэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    ll t;\n    cin >> n >> t;\n    assert(0 <= n && n <= 22);\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    cout << count_brute(a, t) << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nll count_brute(const vector<ll> &a, ll t) {\n    int n = (int)a.size();\n    assert(n <= 22);\n    ll ans = 0;\n    for (int mask = 0; mask < (1 << n); mask++) {\n        ll s = 0;\n        for (int i = 0; i < n; i++) {\n            if (mask & (1 << i)) s += a[i];\n        }\n        if (s == t) ans++;\n    }\n    return ans;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    ll t;\n    cin >> n >> t;\n    assert(0 <= n && n <= 22);\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    cout << count_brute(a, t) << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "split-proof",
+        "title": "Хоёр хагас яагаад яг тоолдог вэ?",
+        "blocks": [
+          {
+            "text": "Хайлтыг таллаж хослуулах буюу meet in the middle аргыг хэрэглэе. [2,4,5,9], T=15 жишээнд зүүн [2,4]-ийн нийлбэрүүд [0,2,4,6], баруун [5,9]-ийнх [0,5,9,14]. Зүүн 6 ба баруун 9 нийлээд 15, сонголт [2,4,9]. T=10 үед тохирох хос байхгүй. Нэг урт хайлтыг хоёр богино хайлт болгон салгаад хариунуудыг нь үр ашигтай хослуулж байна.",
+            "type": "p"
+          },
+          {
+            "text": "Тоолох хувилбарт давхардлыг хадгална. [1,2,2,3], T=4 жишээг [1,2] ба [2,3] болгон салгавал [0,1,2,3], [0,2,3,5] жагсаалтууд гарна. Зүүн 1-д баруун 3, зүүн 2-т баруун 2 таарч хоёр сонголт. Харин [0,0], T=0 үед хоосон, эхний, хоёр дахь, хоёул гэсэн 4 сонголт; ижил нийлбэрүүдийг давхардалгүй олонлог болгон нэгтгэвэл буруу.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "[1,2] | [2,3], T=4",
+                "0",
+                "4",
+                "0"
+              ],
+              [
+                "—",
+                "1",
+                "3",
+                "1"
+              ],
+              [
+                "—",
+                "2",
+                "2",
+                "1"
+              ],
+              [
+                "—",
+                "3",
+                "1",
+                "0"
+              ],
+              [
+                "[0] | [0], T=0",
+                "0,0",
+                "0,0",
+                "4"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Жишээ",
+              "Зүүн нийлбэр",
+              "Таарах баруун нийлбэр",
+              "Нэмэх тоо"
+            ]
+          },
+          {
+            "text": "Нэг хагасын нийлбэрийг [0]-ээс эхлүүлнэ. Шинэ $x$ бүрд хуучин нийлбэрүүдийг хэвээр үлдээгээд тэдгээр дээр $x$ нэмсэн сонголтуудыг залгана. Давталтын өмнөх $k$ уртыг хадгал; дөнгөж нэмсэн утгыг мөн $x$-ээр тэлбэл нэг индексийг олон удаа ашигласан болно.",
+            "type": "p"
+          },
+          {
+            "text": "Анхны дэд олонлог бүр зүүн сонгосон индексүүд ба баруун сонгосон индексүүдэд цорын ганц аргаар задарна. Хоёр талын ямар ч сонголт нийлээд ганц анхны сонголт болно. Зүүн s бүрд баруунд T−s хэд байгааг нэмэхэд бүх зөв сонголт яг нэг удаа тоологдоно. Эрэмбэлсэн баруун жагсаалтын equal_range нь тэр утгын бүх давталтын хүрээг өгнө.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "full-program",
+        "title": "Ажлын тооцоо ба бүрэн C++17",
+        "blocks": [
+          {
+            "text": "Хагас уртыг l,$r$ гэвэл нийлбэр үүсгэх $O(2^l+2^r)$, баруун жагсаалтыг эрэмбэлэх $O(2^r \\log 2^r)$, зүүн бүрд хайх $O(2^l \\log 2^r)$. Нийт хялбар үнэлгээ $O(n2^{n/2})$, хадгалалт $O(2^{n/2})$. Энд эрэмбэлэлт ба хоёртын хайлт хэрэглэсэн тул “хоёр хагас” гэсэн нэрнээс логарифмын үржигдэхүүнийг хаяж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "$n$=40 үед тал бүр 2²⁰=1,048,576 нийлбэр. Хоёр ll жагсаалтын цэвэр өгөгдөл 16 MiB, үүнээс гадна vector-ийн мэдээлэл, оролт ба эрэмбэлэлтийн бага ажлын зай хэрэгтэй. Хариу 2⁴⁰ хүрч болох тул int биш ll. Хагасын нийлбэр ±2×10¹⁰, хайх T−s нь ±6×10¹⁰ дотор тул ll-д багтана.",
+            "type": "p"
+          },
+          {
+            "text": "Дараах бүрэн программ 0≤$n$≤40 гэрээтэй, оролт $n$ T ба $n$ утга, гаралт сонголтын тоо. Жижиг хүрээний кодоос өөр main-тай; хоёр бүтэн программыг нэг файлд хамт наахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Тооллого ба нийлбэр ll.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "sums хуучин уртыг хадгалан нэг индексийг ихдээ нэг удаа авсан бүх сонголтыг үүсгэнэ. Хагасын урт ихдээ 20 тул reserve-ийн шилжилт аюулгүй.",
+            "type": "p"
+          },
+          {
+            "text": "vector<ll> sums(const vector<ll> &a) {\n    vector<ll> s = {0};\n    s.reserve(1ULL << a.size());\n    for (ll x : a) {\n        int k = (int)s.size();\n        for (int i = 0; i < k; i++) s.push_back(s[i] + x);\n    }\n    return s;\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Зүүн ба баруун нийлбэрүүдийг бэлдээд барууныг эрэмбэлнэ. equal_range-ийн хоёр заагийн ялгавар нь тохирох СОНГОЛТЫН тоо.",
+            "type": "p"
+          },
+          {
+            "text": "ll count_meet(const vector<ll> &a, ll t) {\n    int m = (int)a.size() / 2;\n    auto l = sums(vector<ll>(a.begin(), a.begin() + m));\n    auto r = sums(vector<ll>(a.begin() + m, a.end()));\n    sort(r.begin(), r.end());\n    ll ans = 0;\n    for (ll s : l) {\n        auto [p, q] = equal_range(r.begin(), r.end(), t - s);\n        ans += (ll)(q - p);\n    }\n    return ans;\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "main бүрэн хүрээг уншина. Хоосон массив ч хоёр жагсаалтад тус бүр 0 үүсгэж зөв тоологдоно.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    ll t;\n    cin >> n >> t;\n    assert(0 <= n && n <= 40);\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    cout << count_meet(a, t) << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nvector<ll> sums(const vector<ll> &a) {\n    vector<ll> s = {0};\n    s.reserve(1ULL << a.size());\n    for (ll x : a) {\n        int k = (int)s.size();\n        for (int i = 0; i < k; i++) s.push_back(s[i] + x);\n    }\n    return s;\n}\n\nll count_meet(const vector<ll> &a, ll t) {\n    int m = (int)a.size() / 2;\n    auto l = sums(vector<ll>(a.begin(), a.begin() + m));\n    auto r = sums(vector<ll>(a.begin() + m, a.end()));\n    sort(r.begin(), r.end());\n    ll ans = 0;\n    for (ll s : l) {\n        auto [p, q] = equal_range(r.begin(), r.end(), t - s);\n        ans += (ll)(q - p);\n    }\n    return ans;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    ll t;\n    cin >> n >> t;\n    assert(0 <= n && n <= 40);\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    cout << count_meet(a, t) << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "4 4\n1 2 2 3\n",
+            "type": "code",
+            "language": "text"
+          },
+          {
+            "text": "2\n",
+            "type": "code",
+            "language": "text"
+          },
+          {
+            "text": "Сөрөг утгатай үед явцын нийлбэр T-ээс эрс их бол таслах нь буруу: дараагийн сөрөг утга багасгаж чадна. Жижиг эерэг оролтод зөв байсан хасалт том хувилбарын нөхцөл өөрчлөгдөхөд автоматаар зөв үлдэхгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "workflow",
+        "title": "Жижиг зөв шийдлээ хамгаалж ахиулах",
+        "blocks": [
+          {
+            "text": "Шинэ аргаа жижиг яг зөв хувилбартай тулга. Тэгүүд, ижил утга, сөрөг тоо, хоосон массив, хүрч болохгүй зорилт дээр шалга. Дараа нь $n$=40 бүх тэгт 2⁴⁰, бүх нэгт T=20 үед C(40,20) гэсэн бие даасан тооллоор 64 бит ба давхардлаа шалгаж болно. Тест ба баталгааны хүрээг тус тус бич.",
+            "type": "p"
+          },
+          {
+            "text": "Тэмцээний явцад өмнөх зөв хувилбар, түүний оролт ба баталсан хүрээг хадгал. Дараагийн аргыг тусдаа функцээр эхлүүлж, шилжүүлэлт бүрд дахин шалга. Хугацаа дуусахад дутуу том аргаар өмнөх зөв хэсгээ эвдэхгүй. Гэхдээ том хүрээнд нотлоогүй таамгийг “ихэнх тестэд болох байх” гэж бүрэн шийдэл болгон тайлагнахгүй. Онооны бүлгийг авахын тулд тухайн бүлгийн БҮХ шаардлагыг зөв хангах ёстой.",
+            "type": "p"
+          },
+          {
+            "text": "Албан хязгаарын өөр шинж өөр арга нээж болно: жижиг нийт нийлбэртэй сөрөг бус тоонд нийлбэрийн DP, цөөн шинэчлэлтэд шууд бодолт, тусгай модонд хялбар шилжилт. Аргын нэрээс өмнө хэрэгтэй нөхцөл нь үнэн эсэх, хугацаа ба зай нь бүх дэд хүрээнд багтах эсэхийг шалга. Энд тэдгээр бүх нэмэлт аргын бүтэн шийдлийг өгсөн гэж үзэхгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "text": "Сэдвийг эзэмших үндсэн бодлого",
+            "type": "p"
+          },
+          {
+            "text": "Meet in the Middle: хоёр хагасын давхардлыг хадгалж, хоосон сонголтыг зөв тоол.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "510"
+          },
+          {
+            "text": "Detecting Molecules: албан нөхцөл, дэд хязгааруудыг уншаад жижиг яг зөв лавлахаас ахих аргаа сонго. Энэ жишээний яг T тооллоготой шууд адил гэж бүү үз.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "115"
+          },
+          {
+            "text": "Бие даах ба ахиулах бодлогууд",
+            "type": "p"
+          },
+          {
+            "text": "Apple Division: жижиг бүх сонголтыг шалгасан зөв лавлахаа хадгал.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "85"
+          },
+          {
+            "text": "Chessboard and Queens: мөр бүрийн сонголт ба хоригийн бүтцээр хайлтаа багасгаж, буцаах төлөвөө батал.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "82"
+          },
+          {
+            "text": "Шинэчлэлт цөөн хүрээний шууд лавлахыг бүтэн шинэчлэлтийн хурдан аргын эсрэг ашигла.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "133"
+          },
+          {
+            "text": "IOI 2009 — Mecho: хугацаа ба хүрэлтийн албан нөхцөлийг тус бүр шалгасан жижиг лавлахаас эхэл.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "132"
+          },
+          {
+            "text": "IOI 2011 — Race: жижиг модны бүх замын лавлах болон том хүрээний нэмэлт аргыг тусад нь төлөвлө.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "138"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Subtask strategy — from a correct small solution to full constraints",
+        "summary": "Define the proven domain for each constraint set and progress from an exhaustive oracle to full meet-in-the-middle counting.",
+        "sections": [
+          {
+            "key": "contract",
+            "title": "Separating the objective, constraints and proven scope",
+            "blocks": [
+              {
+                "text": "Before writing the hardest algorithm, separate the objective from the constraints. Is the task to find one solution, count all choices or optimize a value? May values be negative, and are equal-valued indices distinct? A fast implementation of the wrong contract still solves the wrong problem.",
+                "type": "p"
+              },
+              {
+                "text": "Here count subsets of at most 40 numbers with sum T. Each index may be selected once, equal-valued indices are different choices, and the empty subset is allowed. Start with an exactly correct solution for small $n$, then deliberately extend its usable range.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "$n$≤22",
+                    "all masks",
+                    "time"
+                  ],
+                  [
+                    "$n$≤40",
+                    "meet in the middle",
+                    "multiplicity and memory"
+                  ],
+                  [
+                    "signed values",
+                    "keep exact sums",
+                    "no prune at sum>T"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Illustrative domain",
+                  "Correct method",
+                  "Main check"
+                ]
+              },
+              {
+                "text": "This is not a real contest’s scoring table. Read the official constraints, scores, dependencies and test-group requirements for the actual task. Matching one sample is not a partial solution: correctness must cover the entire stated subdomain.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "partial-program",
+            "title": "A complete program correct for a small domain",
+            "blocks": [
+              {
+                "text": "Bit $i$ indicates selection of index $i$. The 2ⁿ masks correspond one-to-one with subsets. Sum each selected set directly and count equality with T. For $n$=0 there is one empty mask, yielding 1 if T=0 and 0 otherwise.",
+                "type": "p"
+              },
+              {
+                "text": "Time is $O(n2^n)$, with $O(1)$ working space beyond the input. At $n$=20 there are about 20.97 million bit checks, while $n$=40 needs roughly 44 trillion. These are work estimates, not timing guarantees for every machine. Keep the correct $n$≤22 version as a small-input oracle.",
+                "type": "p"
+              },
+              {
+                "text": "Both programs use |aᵢ|≤10⁹ and |T|≤4×10¹⁰. The first program supports ONLY 0≤$n$≤22 and is not a full solution for larger $n$. The mask bound 1<<$n$ fits int in this range; sums and counts use ll.",
+                "type": "p"
+              },
+              {
+                "text": "Indices and masks use int; sums, target and count use ll.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Assert the small-input function contract locally and initialize the count to zero.",
+                "type": "p"
+              },
+              {
+                "text": "ll count_brute(const vector<ll> &a, ll t) {\n    int n = (int)a.size();\n    assert(n <= 22);\n    ll ans = 0;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Scan all indices for every mask. Equal values occupy different bits, preserving distinct choices.",
+                "type": "p"
+              },
+              {
+                "text": "for (int mask = 0; mask < (1 << n); mask++) {\n        ll s = 0;\n        for (int i = 0; i < n; i++) {\n            if (mask & (1 << i)) s += a[i];\n        }\n        if (s == t) ans++;\n    }\n    return ans;\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "main accepts the stated small domain and prints its exact answer.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    ll t;\n    cin >> n >> t;\n    assert(0 <= n && n <= 22);\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    cout << count_brute(a, t) << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nll count_brute(const vector<ll> &a, ll t) {\n    int n = (int)a.size();\n    assert(n <= 22);\n    ll ans = 0;\n    for (int mask = 0; mask < (1 << n); mask++) {\n        ll s = 0;\n        for (int i = 0; i < n; i++) {\n            if (mask & (1 << i)) s += a[i];\n        }\n        if (s == t) ans++;\n    }\n    return ans;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    ll t;\n    cin >> n >> t;\n    assert(0 <= n && n <= 22);\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    cout << count_brute(a, t) << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "split-proof",
+            "title": "Why splitting counts exactly",
+            "blocks": [
+              {
+                "text": "Use meet in the middle. For [2,4,5,9] and T=15, left half [2,4] gives sums [0,2,4,6] and right half [5,9] gives [0,5,9,14]. Pair 6+9 gives subset [2,4,9]. No pair gives T=10. Two shorter searches replace one long search when their results can be combined efficiently.",
+                "type": "p"
+              },
+              {
+                "text": "Counting requires retaining multiplicities. Split [1,2,2,3], T=4 into [1,2] and [2,3], producing [0,1,2,3] and [0,2,3,5]. Left 1 matches right 3 and left 2 matches right 2, giving two choices. For [0,0], T=0 there are four: empty, first, second and both. Deduplicating equal sums with a set would lose choices.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "[1,2] | [2,3], T=4",
+                    "0",
+                    "4",
+                    "0"
+                  ],
+                  [
+                    "—",
+                    "1",
+                    "3",
+                    "1"
+                  ],
+                  [
+                    "—",
+                    "2",
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "—",
+                    "3",
+                    "1",
+                    "0"
+                  ],
+                  [
+                    "[0] | [0], T=0",
+                    "0,0",
+                    "0,0",
+                    "4"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Example",
+                  "Left sum",
+                  "Matching right sum",
+                  "Count added"
+                ]
+              },
+              {
+                "text": "Generate one half’s sums starting from [0]. For each new $x$, retain old sums and append each old sum plus $x$. Save the old length $k$ first: extending entries just appended would use the same index multiple times.",
+                "type": "p"
+              },
+              {
+                "text": "Every original subset decomposes uniquely into its selected left and right indices, and every pair of half-subsets forms one original subset. For each left sum s, add the number of right sums equal to T−s. This counts each valid subset once. On the sorted right list, equal_range returns the complete matching range, including duplicates.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "full-program",
+            "title": "Complexity budgeting and complete C++17",
+            "blocks": [
+              {
+                "text": "For half lengths l,$r$, generation costs $O(2^l+2^r)$, sorting the right list $O(2^r \\log 2^r)$, and all left lookups $O(2^l \\log 2^r)$. A convenient bound is $O(n2^{n/2})$ time and $O(2^{n/2})$ storage. This implementation uses sorting and binary search, so do not discard their logarithmic factors merely because the technique is called meet in the middle.",
+                "type": "p"
+              },
+              {
+                "text": "At $n$=40, each list has 2²⁰=1,048,576 entries. Two ll arrays contain 16 MiB of raw data, plus vector metadata, input and sorting workspace. The answer may reach 2⁴⁰, requiring ll. Half-sums have magnitude at most 2×10¹⁰ and T−s at most 6×10¹⁰, safely within ll.",
+                "type": "p"
+              },
+              {
+                "text": "The full program supports 0≤$n$≤40, reads $n$ T and $n$ values, and outputs the count. It has its own main; do not paste both complete programs into one translation unit.",
+                "type": "p"
+              },
+              {
+                "text": "Counts and sums use ll.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "sums stores the old length and generates choices using each index once. Each half has at most 20 elements, making the reserve shift safe.",
+                "type": "p"
+              },
+              {
+                "text": "vector<ll> sums(const vector<ll> &a) {\n    vector<ll> s = {0};\n    s.reserve(1ULL << a.size());\n    for (ll x : a) {\n        int k = (int)s.size();\n        for (int i = 0; i < k; i++) s.push_back(s[i] + x);\n    }\n    return s;\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Generate both sum lists and sort the right one. The equal_range endpoint difference counts matching CHOICES.",
+                "type": "p"
+              },
+              {
+                "text": "ll count_meet(const vector<ll> &a, ll t) {\n    int m = (int)a.size() / 2;\n    auto l = sums(vector<ll>(a.begin(), a.begin() + m));\n    auto r = sums(vector<ll>(a.begin() + m, a.end()));\n    sort(r.begin(), r.end());\n    ll ans = 0;\n    for (ll s : l) {\n        auto [p, q] = equal_range(r.begin(), r.end(), t - s);\n        ans += (ll)(q - p);\n    }\n    return ans;\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "main reads the full domain. An empty array still gives a zero entry in each list and is counted correctly.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    ll t;\n    cin >> n >> t;\n    assert(0 <= n && n <= 40);\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    cout << count_meet(a, t) << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nvector<ll> sums(const vector<ll> &a) {\n    vector<ll> s = {0};\n    s.reserve(1ULL << a.size());\n    for (ll x : a) {\n        int k = (int)s.size();\n        for (int i = 0; i < k; i++) s.push_back(s[i] + x);\n    }\n    return s;\n}\n\nll count_meet(const vector<ll> &a, ll t) {\n    int m = (int)a.size() / 2;\n    auto l = sums(vector<ll>(a.begin(), a.begin() + m));\n    auto r = sums(vector<ll>(a.begin() + m, a.end()));\n    sort(r.begin(), r.end());\n    ll ans = 0;\n    for (ll s : l) {\n        auto [p, q] = equal_range(r.begin(), r.end(), t - s);\n        ans += (ll)(q - p);\n    }\n    return ans;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    ll t;\n    cin >> n >> t;\n    assert(0 <= n && n <= 40);\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    cout << count_meet(a, t) << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "4 4\n1 2 2 3\n",
+                "type": "code",
+                "language": "text"
+              },
+              {
+                "text": "2\n",
+                "type": "code",
+                "language": "text"
+              },
+              {
+                "text": "With signed values, pruning when a partial sum exceeds T is invalid: a later negative value may reduce it. A pruning rule valid for small positive inputs does not automatically survive changed assumptions.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "workflow",
+            "title": "Preserving a correct partial solution while improving it",
+            "blocks": [
+              {
+                "text": "Compare the new method with the exact small version. Test zeros, equal values, negatives, empty arrays and unreachable targets. Then all-zero $n$=40 gives 2⁴⁰, while forty ones with T=20 gives C(40,20), independently checking multiplicity and 64-bit counts. Record tested scope separately from proven scope.",
+                "type": "p"
+              },
+              {
+                "text": "Keep the earlier correct version, tests and proven domain during a contest. Develop the next approach separately and recheck every transition. Avoid destroying a working partial solution with an unfinished large-case method near the deadline. But do not present an unproved large-case guess as a full solution because it may pass many tests; meet the complete requirements of any scoring group you target.",
+                "type": "p"
+              },
+              {
+                "text": "Other structural limits may enable different approaches: sum-based DP for nonnegative small total sums, recomputation for few updates, or simpler transitions on a special tree. Check the needed conditions and whole-domain time/memory before choosing a name. This lesson does not claim full implementations of every such extension.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "text": "Core problem for mastery",
+                "type": "p"
+              },
+              {
+                "text": "Meet in the Middle: preserve duplicate half-sums and count the empty choice correctly.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "510"
+              },
+              {
+                "text": "Detecting Molecules: read official conditions and subtask limits before advancing from an exact small oracle; it is not automatically the same exact-T counting task.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "115"
+              },
+              {
+                "text": "Independent practice and extensions",
+                "type": "p"
+              },
+              {
+                "text": "Apple Division: retain an exact small exhaustive oracle.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "85"
+              },
+              {
+                "text": "Chessboard and Queens: exploit row choices and constraints, proving backtracking restoration.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "82"
+              },
+              {
+                "text": "Use recomputation for a few updates as an oracle for the full dynamic method.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "133"
+              },
+              {
+                "text": "IOI 2009 — Mecho: start with a small oracle that checks the actual timing and reachability conditions.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "132"
+              },
+              {
+                "text": "IOI 2011 — Race: separately plan an all-paths small-tree oracle and the additional full-scale method.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "138"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Exhaustive search, sorting, binary search and time/space estimates."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Бүрэн хайлт, эрэмбэлэлт, хоёртын хайлт, хугацаа ба зайны үнэлгээ.",
+    "priorityLevel": "high",
+    "priorityReason": "Нөхцөл ба хязгаараа унших, баталгаатай жижиг шийдлээс ахих, оноо ба хугацааны эрсдэлийг бодитоор төлөвлөх тэмцээний суурь чадвар. Алгоритмын нэр бус хэрэглэгдэх хүрээг сонгох ач холбогдлоор High.",
+    "prerequisiteIds": [
+      "brute-force",
+      "sorting",
+      "binary-search"
+    ],
+    "learningRelations": {
+      "next": "lca",
+      "practice": [
+        {
+          "key": "85",
+          "stage": "Warm-up",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "510",
+          "stage": "Standard",
+          "reason": "Хичээлийн үндсэн нөхцөл, баталгаа эсвэл жижиг зөв лавлахаас ахих аргыг шууд дадлагажуулах цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "82",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "115",
+          "stage": "Application",
+          "reason": "Хичээлийн үндсэн нөхцөл, баталгаа эсвэл жижиг зөв лавлахаас ахих аргыг шууд дадлагажуулах цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "133",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "132",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "138",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "debugging",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "bitmask-dp",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  }
+}

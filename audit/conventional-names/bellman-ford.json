@@ -1,0 +1,1741 @@
+{
+  "body": {
+    "id": "bellman-ford",
+    "level": "Дунд шат",
+    "order": 51,
+    "title": "Беллман–Форд — сөрөг жин, нөлөөлсөн орой ба зөв зам",
+    "aliases": "bellman-ford Bellman–Ford — сөрөг edge ба relaxation Bellman–Ford — negative edges and relaxation",
+    "related": [
+      "dijkstra",
+      "floyd-warshall"
+    ],
+    "summary": "Ирмэгийн давтан сайжруулалт, n−1 үе, хүрэх сөрөг циклийн нөлөө ба төгсгөлөг өртөгтэй зам сэргээхийг ялгаж хэрэгжүүлнэ.",
+    "category": "Граф",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "relaxation",
+        "title": "Сөрөг ирмэг ба ирмэгээр зай сайжруулах",
+        "blocks": [
+          {
+            "text": "Сөрөг ирмэгтэй гээд хамгийн богино зам шууд утгагүй болохгүй. Жишээ нь 1→2:4, 3→2:−3, 1→3:5 байхад 1-ээс 2-т шууд 4 боловч 3-аар дайрахад 5−3=2. Түр зай 4-ийг хамгийн бага байна гэж эцэслэх Дейкстрагийн баталгаа энд үйлчлэхгүй. Бүх ирмэгийг давтан сайжруулах арга хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "d[v]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " нь эхлэлээс $v$ хүрэх олдсон маршрутын хамгийн бага түр өртөг. Эхлэлд 0, бусдад INF. Энд маршрут орой, ирмэгээр дахин явж болно. Сөрөг циклээр хүссэнээрээ эргэж төгсгөлд хүрч чадвал өртгийг доош хязгааргүй бууруулна; энэ нь тусдаа −INF төлөв, жирийн сөрөг зай биш.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "a→b жин $w$ ирмэгт ",
+                "marks": []
+              },
+              {
+                "text": "d[a]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " төгсгөлөг бол ",
+                "marks": []
+              },
+              {
+                "text": "d[a]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "+$w$ гэсэн шинэ маршрут бий. Энэ нь ",
+                "marks": []
+              },
+              {
+                "text": "d[b]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-ээс эрс бага үед л ",
+                "marks": []
+              },
+              {
+                "text": "d[b]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "-г бууруулж ",
+                "marks": []
+              },
+              {
+                "text": "par[b]=a",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " болгоно. ",
+                "marks": []
+              },
+              {
+                "text": "d[a]=INF",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " үед ирмэгийг алгасана: INF−3 нь хүрсэн бодит зам биш. Тэнцүү өртөгт эцгийг дахин солих шаардлагагүй.",
+                "marks": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "example",
+        "title": "Таван оройн бүх сайжруулалт ба зөв зам",
+        "blocks": [
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "3"
+              ],
+              [
+                "1",
+                "4"
+              ],
+              [
+                "2",
+                "4"
+              ],
+              [
+                "2",
+                "5"
+              ],
+              [
+                "3",
+                "4"
+              ],
+              [
+                "4",
+                "5"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 13,
+                "y": 20,
+                "id": "1",
+                "label": "1",
+                "annotation": "0",
+                "annotationDy": -30
+              },
+              {
+                "x": 60,
+                "y": 20,
+                "id": "2",
+                "label": "2",
+                "annotation": "∞",
+                "annotationDy": -30
+              },
+              {
+                "x": 13,
+                "y": 80,
+                "id": "3",
+                "label": "3",
+                "annotation": "∞",
+                "annotationDy": -30
+              },
+              {
+                "x": 60,
+                "y": 80,
+                "id": "4",
+                "label": "4",
+                "annotation": "∞",
+                "annotationDy": -30
+              },
+              {
+                "x": 88,
+                "y": 50,
+                "id": "5",
+                "label": "5",
+                "annotation": "∞",
+                "annotationDy": -30
+              }
+            ],
+            "caption": "Энэ жишээ чиглэлгүй; программд хоёр чиглэлийн ирмэг болгон оруулна. Гаднах тоо нь түр зай.",
+            "directed": false,
+            "edgeStyles": [
+              {
+                "label": "5"
+              },
+              {
+                "label": "3"
+              },
+              {
+                "label": "7"
+              },
+              {
+                "label": "3"
+              },
+              {
+                "label": "2"
+              },
+              {
+                "label": "1"
+              },
+              {
+                "label": "2"
+              }
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Эхлээд 1-ээс гарсан ирмэгүүдээр ",
+                "marks": []
+              },
+              {
+                "text": "d[2]=5",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ",",
+                "marks": []
+              },
+              {
+                "text": "d[3]=3",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ",",
+                "marks": []
+              },
+              {
+                "text": "d[4]=7",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ". Дараа нь 2→5-аар ",
+                "marks": []
+              },
+              {
+                "text": "d[5]=7",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ", 3→4-өөр ",
+                "marks": []
+              },
+              {
+                "text": "d[4]=4",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " болно. Эцэст нь 4→5-аар ",
+                "marks": []
+              },
+              {
+                "text": "d[5]=6",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ". Эдгээр нь сайжруулалтын үйл явдлууд; зураг бүрийг заавал нэг бүтэн үе гэж ойлгохгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "rows": [
+              [
+                "0",
+                "0",
+                "∞",
+                "∞",
+                "∞",
+                "∞"
+              ],
+              [
+                "1",
+                "0",
+                "5",
+                "3",
+                "7",
+                "∞"
+              ],
+              [
+                "2",
+                "0",
+                "5",
+                "3",
+                "4",
+                "7"
+              ],
+              [
+                "3",
+                "0",
+                "5",
+                "3",
+                "4",
+                "6"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Үйл явдал",
+              "$d$[1]",
+              "$d$[2]",
+              "$d$[3]",
+              "$d$[4]",
+              "$d$[5]"
+            ]
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "3"
+              ],
+              [
+                "1",
+                "4"
+              ],
+              [
+                "2",
+                "4"
+              ],
+              [
+                "2",
+                "5"
+              ],
+              [
+                "3",
+                "4"
+              ],
+              [
+                "4",
+                "5"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 13,
+                "y": 20,
+                "id": "1",
+                "label": "1",
+                "annotation": "0",
+                "annotationDy": -30
+              },
+              {
+                "x": 60,
+                "y": 20,
+                "id": "2",
+                "label": "2",
+                "annotation": "5",
+                "annotationDy": -30
+              },
+              {
+                "x": 13,
+                "y": 80,
+                "id": "3",
+                "label": "3",
+                "annotation": "3",
+                "annotationDy": -30
+              },
+              {
+                "x": 60,
+                "y": 80,
+                "id": "4",
+                "label": "4",
+                "annotation": "4",
+                "annotationDy": -30
+              },
+              {
+                "x": 88,
+                "y": 50,
+                "id": "5",
+                "label": "5",
+                "annotation": "6",
+                "annotationDy": -30
+              }
+            ],
+            "caption": "Эцсийн зай 0,5,3,4,6. 1→3→4→5 зам 3+1+2=6.",
+            "directed": false,
+            "edgeStyles": [
+              {
+                "label": "5"
+              },
+              {
+                "label": "3"
+              },
+              {
+                "label": "7"
+              },
+              {
+                "label": "3"
+              },
+              {
+                "label": "2"
+              },
+              {
+                "label": "1"
+              },
+              {
+                "label": "2"
+              }
+            ]
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Орой 3-ын зай 3, харин орой 5-ын зай 6 гэдгийг ялга. Зөв замын ирмэгүүдийн жинг нэмж нийт зайтай нь тулгана. ",
+                "marks": []
+              },
+              {
+                "text": "par[5]=4",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ",",
+                "marks": []
+              },
+              {
+                "text": "par[4]=3",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": ",",
+                "marks": []
+              },
+              {
+                "text": "par[3]=1",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " гэсэн эцгийн холбоосыг урвуугаар дагаад дарааллыг эргүүлбэл 1,3,4,5 гарна.",
+                "marks": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "passes",
+        "title": "n−1 үеийн баталгаа ба ирмэгийн дараалал",
+        "blocks": [
+          {
+            "text": "Нэг үе бүх $m$ ирмэгийг шалгана. Замын эхний ирмэгийг нэг дэх үе гэхэд, эхний хоёр ирмэгийг хоёр дахь үе гэхэд гэх мэтээр зөв сайжруулж чадна. Иймээс $i$ үеийн дараа $i$-ээс олонгүй ирмэгтэй хамгийн сайн маршрутаас $d$ муу байж болохгүй. Массивын утгыг шууд шинэчилбэл шинэ утга тухайн үед цааш дамжиж, илүү урт замыг ч олж болно; “яг $i$ ирмэгтэй замууд л бодогдоно” гэж хэлэхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Хүрэх боломжтой зорилтод нөлөөлөх сөрөг цикл байхгүй бол хамгийн богино маршрутаас давтагдсан оройн хоорондох сөрөг бус циклийг хасаж болно. Үлдэх энгийн зам хамгийн ихдээ $n$−1 ирмэгтэй. Тиймээс $n$−1 бүтэн үе хангалттай. Бүтэн нэг үед өөрчлөлт гараагүй бол бүх ирмэгийн тэнцэтгэл биш хангагдсан; дараа нь ч сайжрахгүй тул эрт зогсоно.",
+            "type": "p"
+          },
+          {
+            "text": "Эхний сөрөг жинтэй жишээг ирмэгийн дарааллаар нь 1→2,3→2,1→3 гэж гүйлгэе. Эхний үед 2-ын зай 4, дундах ирмэгийн эхлэл хүрээгүй, сүүлд 3-ын зай 5 болно. Хоёр дахь үед 3→2 нь 2-ыг гаргана. Дарааллыг соливол эхний үед ч 2 гарч болно; эцсийн хариу ижил.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "0",
+                "0",
+                "∞",
+                "∞"
+              ],
+              [
+                "1",
+                "0",
+                "4",
+                "5"
+              ],
+              [
+                "2",
+                "0",
+                "2",
+                "5"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Бүтэн үе",
+              "$d$[1]",
+              "$d$[2]",
+              "$d$[3]"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "negative-cycles",
+        "title": "Сөрөг цикл яг аль төгсгөлд нөлөөлөх вэ?",
+        "blocks": [
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Чиглэлтэй 2→3:2,3→4:−7,4→2:1 циклийн нийлбэр −4. 1-ээс түүнд хүрэх 1→2:3,1→3:5 ирмэгүүдтэй. Циклийг нэг эргэхэд дахин 4-өөр хямдарна. Гэхдээ циклээс 1 рүү буцах ирмэггүй учир ",
+                "marks": []
+              },
+              {
+                "text": "d[1]=0",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": " хэвээр; бүх оройн хариу нэгэн зэрэг утгагүй болохгүй.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "3"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "3",
+                "4"
+              ],
+              [
+                "4",
+                "2"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 12,
+                "y": 50,
+                "id": "1",
+                "label": "1"
+              },
+              {
+                "x": 50,
+                "y": 15,
+                "id": "2",
+                "label": "2"
+              },
+              {
+                "x": 50,
+                "y": 85,
+                "id": "3",
+                "label": "3"
+              },
+              {
+                "x": 88,
+                "y": 50,
+                "id": "4",
+                "label": "4"
+              }
+            ],
+            "caption": "Чиглэлтэй цикл 2→3→4→2, жин −4. Сөрөг ирмэгийг чиглэлгүй гэж андуурахгүй.",
+            "directed": true,
+            "edgeStyles": [
+              {
+                "label": "3"
+              },
+              {
+                "label": "5"
+              },
+              {
+                "label": "2"
+              },
+              {
+                "label": "-7"
+              },
+              {
+                "label": "1"
+              }
+            ]
+          },
+          {
+            "text": "$n$−1 үеийн дараа дахин сайжрах a→b ирмэг байвал b нь хүрэх сөрөг циклийн нөлөөнд байна. Бүх ийм b-г тэмдэглээд зөвхөн ГАРАХ ирмэгүүдээр нөлөөг тараана. Циклээс хүрч болох төгсгөл бүрт −INF, хүрэхгүй төгсгөлд тэр цикл нөлөөлөхгүй. Нэмэлт шалгах үед $d$-г өөрчлөхгүй; bad тэмдэг тусдаа.",
+            "type": "p"
+          },
+          {
+            "type": "rich",
+            "content": [
+              {
+                "text": "Яагаад цикл дээр заавал нэг сайжрах ирмэг байна вэ? Циклийн бүх ирмэг ",
+                "marks": []
+              },
+              {
+                "text": "d[b]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "≤",
+                "marks": []
+              },
+              {
+                "text": "d[a]",
+                "marks": [
+                  "code"
+                ]
+              },
+              {
+                "text": "+$w$ нөхцөлтэй байсан бол тэдгээрийг нэмэхэд 0≤циклийн жин болох ёстой. Сөрөг жинд энэ боломжгүй. Харин циклд өртөөгүй b-ийн энгийн хамгийн богино зам $n$−1 үед аль хэдийн олдсон тул дахин сайжрахгүй. Иймээс тэмдэг тараах нь яг өртсөн оройнуудыг олно.",
+                "marks": []
+              }
+            ]
+          },
+          {
+            "text": "Найман оройд 1→2:4,2→3:1,3→2:−3,3→4:2,1→5:7,6→7:−1,7→6:0 ирмэг байг; 8 тусгаар. Эхлэл 1 үед 2,3,4 нь −INF; 5-ын зай 7; 6,7 хүрэхгүй учир тэндхийн сөрөг цикл эхлэл 1-ийн хариунд нөлөөлөхгүй.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "1",
+                "0"
+              ],
+              [
+                "2",
+                "-INF"
+              ],
+              [
+                "3",
+                "-INF"
+              ],
+              [
+                "4",
+                "-INF"
+              ],
+              [
+                "5",
+                "7"
+              ],
+              [
+                "6",
+                "UNREACHABLE"
+              ],
+              [
+                "7",
+                "UNREACHABLE"
+              ],
+              [
+                "8",
+                "UNREACHABLE"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Орой",
+              "Эхлэл 1-ээс төлөв"
+            ]
+          },
+          {
+            "text": "Графын хаана ч сөрөг цикл байгааг шалгах нь өөр эхлэлт: бүх $d$-г 0 болгох нь хийсвэр эхлэлээс бүх оройд 0 ирмэгтэй адил. Тэгвэл $n$ дахь үеийн сайжрал бүх графын циклийг илрүүлнэ. Харин доорх нэг эхлэлийн программ хүрэхгүй циклийг зориуд үл тооцно; Cycle Finding-ийн зорилгыг энэ гэрээтэй бүү холь.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "Хүрэхгүй, төгсгөлөг, доош хязгааргүй төлөв ба бүтэн C++17",
+        "blocks": [
+          {
+            "text": "Bellman struct хоёр дүрслэл хадгална: e нь бүх ирмэгийн жагсаалт, adj нь нөлөө тараах гарах хөршүүд. Байгуулагч $d$=INF,par=−1,bad=0 бэлдэнэ. add нь чиглэлтэй нэг ирмэг; чиглэлгүй жишээнд хоёр чиглэлийг тус тус нэмнэ. Нэг объектоор бүх ирмэгээ уншаад run-ийг нэг эхлэлд нэг удаа дуудна.",
+            "type": "p"
+          },
+          {
+            "text": "Оролт $n$ $m$ s q, дараа нь $m$ ширхэг a b $w$, дараа нь q зорилтот орой. 1≤$n$≤2000, $m$≤10000, q≤2000, |$w$|≤10⁹, s,t нь 1..$n$. Нэг хариу UNREACHABLE, −INF эсвэл “зай замын-оройн-тоо оройнууд” хэлбэртэй. Хүрэх боломжгүй төлөв ба өртөг доош хязгааргүй төлөв хоёр тусдаа.",
+            "type": "p"
+          },
+          {
+            "text": "Утга, жин, зай ll; индекс int. Нэг амжилттай шинэчлэлт өмнөх олдсон маршрутад нэг ирмэг залгана. $n$−1 үеийн $m$ шалгалтаар үүсэх түр маршрутын урт хамгийн ихдээ ($n$−1)$m$ ирмэг, жингийн абсолют утга 2×10¹⁶ орчим. Нэмэлт нэг шалгалт ч ll ба INF=2⁶⁰-оос хол байна. Иймээс энэ гэрээнд энгийн ll нэмэх аюулгүй; хязгааргүй том жин/хэмжээнд энэ баталгааг ашиглаж болохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "path нь зөвхөн төгсгөлөг хариунд par-ыг дагаж эргүүлнэ. Сөрөг циклд өртсөн эцгийн холбоосыг дагаж болохгүй: эргэлтэд орж болно, хамгийн богино маршрут ч байхгүй. Эхлэлээс өөрт нь төгсгөлөг зай 0 бол ганц оройтой зам зөв. Тэнцүү өртөгт биш, эрс сайжралтад л par солихыг хадгална.",
+            "type": "p"
+          },
+          {
+            "text": "INF нь бодит өртгийн хязгаараас эрс их тусгай тоо.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst ll INF = 1LL << 60;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Edge-ийн a,b индекс int, жин $w$ ll. Хэмжээ авдаг байгуулагч бүх төлөвийг эхлүүлж, add ирмэгийн хоёр дүрслэлийг зэрэг нөхнө.",
+            "type": "p"
+          },
+          {
+            "text": "struct Edge {\n    int a, b;\n    ll w;\n};\n\nstruct Bellman {\n    int n;\n    vector<Edge> e;\n    vector<vector<int>> adj;\n    vector<ll> d;\n    vector<int> par, bad;\n\n    Bellman(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        d.assign(n + 1, INF);\n        par.assign(n + 1, -1);\n        bad.resize(n + 1);\n    }\n\n    void add(int a, int b, ll w) {\n        e.push_back({a, b, w});\n        adj[a].push_back(b);\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "$n$−1 үе, хүрэх эхлэлийг шалгах хамгаалалт, эрс сайжралтын эцэг, бүтэн үед өөрчлөлтгүй бол эрт зогсох хэсэг.",
+            "type": "p"
+          },
+          {
+            "text": "void run(int s) {\n        d[s] = 0;\n        for (int i = 1; i < n; i++) {\n            bool changed = false;\n            for (auto [a, b, w] : e) {\n                if (d[a] == INF) continue;\n                ll nd = d[a] + w;\n                if (nd < d[b]) {\n                    d[b] = nd;\n                    par[b] = a;\n                    changed = true;\n                }\n            }\n            if (!changed) break;\n        }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Нэмэлт шалгалтын үрийг тэмдэглээд гарах ирмэгүүдийг дагасан өргөнөөр хайлтаар нөлөөг тараана. Түр зайг −INF тоонд орлуулж арифметик хийхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "queue<int> q;\n        for (auto [a, b, w] : e) {\n            if (d[a] != INF && d[a] + w < d[b] && !bad[b]) {\n                bad[b] = 1;\n                q.push(b);\n            }\n        }\n        while (!q.empty()) {\n            int v = q.front();\n            q.pop();\n            for (int u : adj[v]) {\n                if (!bad[u]) {\n                    bad[u] = 1;\n                    q.push(u);\n                }\n            }\n        }\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Төгсгөлөг зайтай, нөлөөгүй зорилтын эцгийн замыг л сэргээнэ.",
+            "type": "p"
+          },
+          {
+            "text": "vector<int> path(int t) const {\n        if (d[t] == INF || bad[t]) return {};\n        vector<int> p;\n        for (int v = t; v != -1; v = par[v]) p.push_back(v);\n        reverse(p.begin(), p.end());\n        return p;\n    }\n};",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "main гурван төлөвийг ялгаж, зөвхөн зай төгсгөлөг үед зай ба замыг хэвлэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m, s, q;\n    cin >> n >> m >> s >> q;\n    Bellman bf(n);\n    while (m--) {\n        int a, b;\n        ll w;\n        cin >> a >> b >> w;\n        bf.add(a, b, w);\n    }\n    bf.run(s);\n    while (q--) {\n        int t;\n        cin >> t;\n        if (bf.bad[t]) cout << \"-INF\\n\";\n        else if (bf.d[t] == INF) cout << \"UNREACHABLE\\n\";\n        else {\n            auto p = bf.path(t);\n            cout << bf.d[t] << ' ' << p.size();\n            for (int v : p) cout << ' ' << v;\n            cout << '\\n';\n        }\n    }\n    return 0;\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst ll INF = 1LL << 60;\n\nstruct Edge {\n    int a, b;\n    ll w;\n};\n\nstruct Bellman {\n    int n;\n    vector<Edge> e;\n    vector<vector<int>> adj;\n    vector<ll> d;\n    vector<int> par, bad;\n\n    Bellman(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        d.assign(n + 1, INF);\n        par.assign(n + 1, -1);\n        bad.resize(n + 1);\n    }\n\n    void add(int a, int b, ll w) {\n        e.push_back({a, b, w});\n        adj[a].push_back(b);\n    }\n\n    void run(int s) {\n        d[s] = 0;\n        for (int i = 1; i < n; i++) {\n            bool changed = false;\n            for (auto [a, b, w] : e) {\n                if (d[a] == INF) continue;\n                ll nd = d[a] + w;\n                if (nd < d[b]) {\n                    d[b] = nd;\n                    par[b] = a;\n                    changed = true;\n                }\n            }\n            if (!changed) break;\n        }\n        queue<int> q;\n        for (auto [a, b, w] : e) {\n            if (d[a] != INF && d[a] + w < d[b] && !bad[b]) {\n                bad[b] = 1;\n                q.push(b);\n            }\n        }\n        while (!q.empty()) {\n            int v = q.front();\n            q.pop();\n            for (int u : adj[v]) {\n                if (!bad[u]) {\n                    bad[u] = 1;\n                    q.push(u);\n                }\n            }\n        }\n    }\n\n    vector<int> path(int t) const {\n        if (d[t] == INF || bad[t]) return {};\n        vector<int> p;\n        for (int v = t; v != -1; v = par[v]) p.push_back(v);\n        reverse(p.begin(), p.end());\n        return p;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m, s, q;\n    cin >> n >> m >> s >> q;\n    Bellman bf(n);\n    while (m--) {\n        int a, b;\n        ll w;\n        cin >> a >> b >> w;\n        bf.add(a, b, w);\n    }\n    bf.run(s);\n    while (q--) {\n        int t;\n        cin >> t;\n        if (bf.bad[t]) cout << \"-INF\\n\";\n        else if (bf.d[t] == INF) cout << \"UNREACHABLE\\n\";\n        else {\n            auto p = bf.path(t);\n            cout << bf.d[t] << ' ' << p.size();\n            for (int v : p) cout << ' ' << v;\n            cout << '\\n';\n        }\n    }\n    return 0;\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Бэлтгэл $O(nm+n+m)$, хадгалалт $O(n+m)$. Нэг төгсгөлөг өртөгтэй зам хэвлэхэд уртаар нь $O(n)$ хүртэл нэмэлт ажилтай; q асуултын нийт гаралтын хэмжээг тооцно. Сөрөг циклгүй үед Дейкстра сөрөг бус жинд хурдан; жингийн нөхцөлөө алгоритм сонгохоос өмнө шалга.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "text": "Өөрийгөө шалга: нэг сөрөг ирмэг заавал сөрөг цикл үү? 1-ээс циклд хүрсэн ч циклээс t-д хүрэхгүй бол t өртөх үү? Хүрэхгүй 6,7-ийн циклд $d$=INF байгааг яагаад хадгалах вэ?",
+            "type": "p"
+          },
+          {
+            "text": "Хариу: чиглэлтэй графт үгүй; үгүй; бодит эхлэлээс замгүй тул түүний арифметикийг эхлүүлж болохгүй. Чиглэлгүй сөрөг ирмэгийг хоёр чиглэлд чөлөөтэй давтаж болдог загварт хоёр удаа яваад сөрөг маршрут үүсдэгийг ялга.",
+            "type": "p"
+          },
+          {
+            "text": "Сэдвийг эзэмших үндсэн бодлого",
+            "type": "p"
+          },
+          {
+            "text": "High Score: жинг сөрөг болгох хувиргалт, эхлэл→цикл→зорилт гэсэн хоёр хүрэлтийн нөхцөлийг батал.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "369"
+          },
+          {
+            "text": "Cycle Finding: бүх графын 0 эхлэлт хэрэгтэй; циклийн өөрийн оройнуудыг гаргах нь төгсгөлөг өртөгтэй зам сэргээхээс тусдаа сэргээх ажил.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "122"
+          },
+          {
+            "text": "Бие даах ба ахиулах бодлогууд",
+            "type": "p"
+          },
+          {
+            "text": "Shortest Routes: сөрөг бус жинд Дейкстрагийн нөхцөл ба хэмжээг харьцуул.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "367"
+          },
+          {
+            "text": "Longest Flight Route: DAG нөхцөлтэй үед топологийн дарааллаар хамгийн их утгын DP хэрэглэж болно.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "374"
+          },
+          {
+            "text": "Shortest Routes II: бүх хосын асуултын $n$ хязгаарт Floyd–Warshall-ыг харьцуул.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "368"
+          },
+          {
+            "text": "Flight Discount: жин сөрөг бус ч нэг хямдрал гэсэн нэмэлт төлөв хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "370"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Bellman–Ford — negative edges, affected targets and finite paths",
+        "summary": "Separate repeated relaxation, n−1 passes, reachable negative-cycle influence and finite-path reconstruction.",
+        "sections": [
+          {
+            "key": "relaxation",
+            "title": "Negative edges and relaxation",
+            "blocks": [
+              {
+                "text": "A negative edge does not automatically destroy shortest paths. With 1→2:4, 3→2:−3 and 1→3:5, the direct distance 4 improves to 5−3=2 via 3. Dijkstra’s argument for finalizing the current smallest tentative distance does not apply; repeatedly relax edges instead.",
+                "type": "p"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "d[v]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " is the best currently found walk cost from the source to $v$, initialized to 0 at the source and INF elsewhere. Walks may repeat vertices and edges. If a negative cycle can be repeated before reaching the target, cost is unbounded below: a separate −INF status, not just a negative finite distance.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "For edge a→b of weight $w$, a finite ",
+                    "marks": []
+                  },
+                  {
+                    "text": "d[a]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " yields candidate ",
+                    "marks": []
+                  },
+                  {
+                    "text": "d[a]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": "+$w$. Update ",
+                    "marks": []
+                  },
+                  {
+                    "text": "d[b]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " and set ",
+                    "marks": []
+                  },
+                  {
+                    "text": "par[b]=a",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " only if the candidate is strictly smaller. Skip edges with ",
+                    "marks": []
+                  },
+                  {
+                    "text": "d[a]=INF",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ": INF−3 is not a real reachable walk. Do not replace parents merely on equal cost.",
+                    "marks": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "example",
+            "title": "Five vertices: all improvements and the correct path",
+            "blocks": [
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "2",
+                    "4"
+                  ],
+                  [
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 13,
+                    "y": 20,
+                    "id": "1",
+                    "label": "1",
+                    "annotation": "0",
+                    "annotationDy": -30
+                  },
+                  {
+                    "x": 60,
+                    "y": 20,
+                    "id": "2",
+                    "label": "2",
+                    "annotation": "∞",
+                    "annotationDy": -30
+                  },
+                  {
+                    "x": 13,
+                    "y": 80,
+                    "id": "3",
+                    "label": "3",
+                    "annotation": "∞",
+                    "annotationDy": -30
+                  },
+                  {
+                    "x": 60,
+                    "y": 80,
+                    "id": "4",
+                    "label": "4",
+                    "annotation": "∞",
+                    "annotationDy": -30
+                  },
+                  {
+                    "x": 88,
+                    "y": 50,
+                    "id": "5",
+                    "label": "5",
+                    "annotation": "∞",
+                    "annotationDy": -30
+                  }
+                ],
+                "caption": "This example is undirected; insert both directions in the program. Outer labels are tentative distances.",
+                "directed": false,
+                "edgeStyles": [
+                  {
+                    "label": "5"
+                  },
+                  {
+                    "label": "3"
+                  },
+                  {
+                    "label": "7"
+                  },
+                  {
+                    "label": "3"
+                  },
+                  {
+                    "label": "2"
+                  },
+                  {
+                    "label": "1"
+                  },
+                  {
+                    "label": "2"
+                  }
+                ]
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "First edges from 1 give ",
+                    "marks": []
+                  },
+                  {
+                    "text": "d[2]=5",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ",",
+                    "marks": []
+                  },
+                  {
+                    "text": "d[3]=3",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ",",
+                    "marks": []
+                  },
+                  {
+                    "text": "d[4]=7",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Then 2→5 gives ",
+                    "marks": []
+                  },
+                  {
+                    "text": "d[5]=7",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " and 3→4 gives ",
+                    "marks": []
+                  },
+                  {
+                    "text": "d[4]=4",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ". Finally 4→5 improves ",
+                    "marks": []
+                  },
+                  {
+                    "text": "d[5]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " to 6. These are relaxation events, not necessarily one entire pass per picture.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "rows": [
+                  [
+                    "0",
+                    "0",
+                    "∞",
+                    "∞",
+                    "∞",
+                    "∞"
+                  ],
+                  [
+                    "1",
+                    "0",
+                    "5",
+                    "3",
+                    "7",
+                    "∞"
+                  ],
+                  [
+                    "2",
+                    "0",
+                    "5",
+                    "3",
+                    "4",
+                    "7"
+                  ],
+                  [
+                    "3",
+                    "0",
+                    "5",
+                    "3",
+                    "4",
+                    "6"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Event",
+                  "$d$[1]",
+                  "$d$[2]",
+                  "$d$[3]",
+                  "$d$[4]",
+                  "$d$[5]"
+                ]
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "1",
+                    "4"
+                  ],
+                  [
+                    "2",
+                    "4"
+                  ],
+                  [
+                    "2",
+                    "5"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 13,
+                    "y": 20,
+                    "id": "1",
+                    "label": "1",
+                    "annotation": "0",
+                    "annotationDy": -30
+                  },
+                  {
+                    "x": 60,
+                    "y": 20,
+                    "id": "2",
+                    "label": "2",
+                    "annotation": "5",
+                    "annotationDy": -30
+                  },
+                  {
+                    "x": 13,
+                    "y": 80,
+                    "id": "3",
+                    "label": "3",
+                    "annotation": "3",
+                    "annotationDy": -30
+                  },
+                  {
+                    "x": 60,
+                    "y": 80,
+                    "id": "4",
+                    "label": "4",
+                    "annotation": "4",
+                    "annotationDy": -30
+                  },
+                  {
+                    "x": 88,
+                    "y": 50,
+                    "id": "5",
+                    "label": "5",
+                    "annotation": "6",
+                    "annotationDy": -30
+                  }
+                ],
+                "caption": "Final distances 0,5,3,4,6. Path 1→3→4→5 costs 3+1+2=6.",
+                "directed": false,
+                "edgeStyles": [
+                  {
+                    "label": "5"
+                  },
+                  {
+                    "label": "3"
+                  },
+                  {
+                    "label": "7"
+                  },
+                  {
+                    "label": "3"
+                  },
+                  {
+                    "label": "2"
+                  },
+                  {
+                    "label": "1"
+                  },
+                  {
+                    "label": "2"
+                  }
+                ]
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "Distinguish distance 3 to vertex 3 from distance 6 to vertex 5. Verify a reconstructed path by summing its edge weights. Following parents ",
+                    "marks": []
+                  },
+                  {
+                    "text": "par[5]=4",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ",",
+                    "marks": []
+                  },
+                  {
+                    "text": "par[4]=3",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": ",",
+                    "marks": []
+                  },
+                  {
+                    "text": "par[3]=1",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": " backwards and reversing yields 1,3,4,5.",
+                    "marks": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "passes",
+            "title": "Why n−1 passes suffice and how edge order matters",
+            "blocks": [
+              {
+                "text": "One pass scans all $m$ edges. By pass 1 we can propagate the first edge of a path, by pass 2 its first two edges, and so on. After $i$ passes, estimates are no worse than the best walk using at most $i$ edges. In-place updates may propagate farther within the same pass, so they do not represent exactly the at-most-$i$-edge DP layer.",
+                "type": "p"
+              },
+              {
+                "text": "If no negative cycle affects a target, remove nonnegative cycles between repeated vertices from a shortest walk. A simple path has at most $n$−1 edges, so $n$−1 complete passes suffice. If a full pass makes no change, all edge inequalities already hold and later scans cannot improve anything; stop early.",
+                "type": "p"
+              },
+              {
+                "text": "Scan the initial example in order 1→2,3→2,1→3. Pass 1 gives distance 4 to 2, skips the middle edge because 3 is not yet reachable, then gives 5 to 3. Pass 2 improves 2 via 3→2 to 2. Another edge order might achieve this in pass 1, but final distances agree.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "0",
+                    "0",
+                    "∞",
+                    "∞"
+                  ],
+                  [
+                    "1",
+                    "0",
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "2",
+                    "0",
+                    "2",
+                    "5"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Complete pass",
+                  "$d$[1]",
+                  "$d$[2]",
+                  "$d$[3]"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "negative-cycles",
+            "title": "Which targets does a negative cycle affect?",
+            "blocks": [
+              {
+                "text": "The directed cycle 2→3:2,3→4:−7,4→2:1 totals −4, reachable through edges 1→2:3 and 1→3:5. Each repetition reduces cost by another 4. But there is no return to 1, so its distance remains 0: a negative cycle does not invalidate every vertex automatically.",
+                "type": "p"
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "3"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "2"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 12,
+                    "y": 50,
+                    "id": "1",
+                    "label": "1"
+                  },
+                  {
+                    "x": 50,
+                    "y": 15,
+                    "id": "2",
+                    "label": "2"
+                  },
+                  {
+                    "x": 50,
+                    "y": 85,
+                    "id": "3",
+                    "label": "3"
+                  },
+                  {
+                    "x": 88,
+                    "y": 50,
+                    "id": "4",
+                    "label": "4"
+                  }
+                ],
+                "caption": "Directed cycle 2→3→4→2 has weight −4. Do not silently interpret the negative edge as undirected.",
+                "directed": true,
+                "edgeStyles": [
+                  {
+                    "label": "3"
+                  },
+                  {
+                    "label": "5"
+                  },
+                  {
+                    "label": "2"
+                  },
+                  {
+                    "label": "-7"
+                  },
+                  {
+                    "label": "1"
+                  }
+                ]
+              },
+              {
+                "text": "After $n$−1 passes, any still-relaxable edge a→b identifies b as affected by a reachable negative cycle. Seed every such b and propagate only along OUTGOING edges. Targets reachable from the cycle have −INF; others are unaffected by it. The extra detection scan does not mutate $d$; bad is separate.",
+                "type": "p"
+              },
+              {
+                "type": "rich",
+                "content": [
+                  {
+                    "text": "At least one cycle edge must remain relaxable: summing ",
+                    "marks": []
+                  },
+                  {
+                    "text": "d[b]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": "≤",
+                    "marks": []
+                  },
+                  {
+                    "text": "d[a]",
+                    "marks": [
+                      "code"
+                    ]
+                  },
+                  {
+                    "text": "+$w$ around every edge would imply 0≤the cycle weight, impossible for a negative cycle. An unaffected target already has its finite simple shortest path after $n$−1 passes and cannot improve. Propagation therefore identifies exactly the affected vertices.",
+                    "marks": []
+                  }
+                ]
+              },
+              {
+                "text": "Take eight vertices with edges 1→2:4,2→3:1,3→2:−3,3→4:2,1→5:7,6→7:−1,7→6:0, with 8 isolated. From 1, vertices 2,3,4 have −INF, vertex 5 has finite distance 7, and the negative cycle at unreachable 6,7 does not affect this source.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "1",
+                    "0"
+                  ],
+                  [
+                    "2",
+                    "-INF"
+                  ],
+                  [
+                    "3",
+                    "-INF"
+                  ],
+                  [
+                    "4",
+                    "-INF"
+                  ],
+                  [
+                    "5",
+                    "7"
+                  ],
+                  [
+                    "6",
+                    "UNREACHABLE"
+                  ],
+                  [
+                    "7",
+                    "UNREACHABLE"
+                  ],
+                  [
+                    "8",
+                    "UNREACHABLE"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Vertex",
+                  "Status from source 1"
+                ]
+              },
+              {
+                "text": "Detecting a negative cycle anywhere uses a different initialization: setting every $d$ to 0 is equivalent to a super-source with zero edges to every vertex. Improvement on pass $n$ then detects a global cycle. The single-source program below intentionally ignores unreachable cycles; do not confuse that contract with Cycle Finding.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "Three statuses, finite reconstruction and complete C++17",
+            "blocks": [
+              {
+                "text": "Bellman stores both an edge list e and outgoing adjacency for propagation. The constructor initializes $d$=INF,par=−1,bad=0. add inserts one directed edge; represent an undirected example by inserting both directions. Read all edges, then run once from one source on a fresh object.",
+                "type": "p"
+              },
+              {
+                "text": "Input $n$ $m$ s q, $m$ triples a b $w$, then q target vertices. Require 1≤$n$≤2000, $m$≤10000, q≤2000, |$w$|≤10⁹ and s,t in 1..$n$. Each answer is UNREACHABLE, −INF, or “distance vertex-count vertices”. Unreachable infinity and unbounded-below status are separate.",
+                "type": "p"
+              },
+              {
+                "text": "Values, weights and distances use ll; indices use int. Each successful relaxation appends one edge to a previously found walk. Across ($n$−1)$m$ checks, a temporary walk has at most that many edges and absolute cost about 2×10¹⁶. One further checked edge remains far within ll and INF=2⁶⁰. Thus plain ll addition is safe under these stated bounds, not for arbitrary unbounded inputs.",
+                "type": "p"
+              },
+              {
+                "text": "path follows and reverses parents only for a finite answer. Never follow affected parent pointers: they may cycle, and no minimum walk exists. A finite source-to-itself answer is 0 with a singleton path. Preserve strict improvements when updating parents rather than changing them on ties.",
+                "type": "p"
+              },
+              {
+                "text": "INF is a sentinel far above the stated real-cost bounds.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst ll INF = 1LL << 60;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Edge endpoints are int and weight ll. The size constructor initializes state, while add keeps both graph representations synchronized.",
+                "type": "p"
+              },
+              {
+                "text": "struct Edge {\n    int a, b;\n    ll w;\n};\n\nstruct Bellman {\n    int n;\n    vector<Edge> e;\n    vector<vector<int>> adj;\n    vector<ll> d;\n    vector<int> par, bad;\n\n    Bellman(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        d.assign(n + 1, INF);\n        par.assign(n + 1, -1);\n        bad.resize(n + 1);\n    }\n\n    void add(int a, int b, ll w) {\n        e.push_back({a, b, w});\n        adj[a].push_back(b);\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Run up to $n$−1 passes, guard reachability, record strict-improvement parents and stop after a full unchanged pass.",
+                "type": "p"
+              },
+              {
+                "text": "void run(int s) {\n        d[s] = 0;\n        for (int i = 1; i < n; i++) {\n            bool changed = false;\n            for (auto [a, b, w] : e) {\n                if (d[a] == INF) continue;\n                ll nd = d[a] + w;\n                if (nd < d[b]) {\n                    d[b] = nd;\n                    par[b] = a;\n                    changed = true;\n                }\n            }\n            if (!changed) break;\n        }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Seed relaxable heads, then propagate through outgoing edges. Do not perform arithmetic on an artificial −INF distance.",
+                "type": "p"
+              },
+              {
+                "text": "queue<int> q;\n        for (auto [a, b, w] : e) {\n            if (d[a] != INF && d[a] + w < d[b] && !bad[b]) {\n                bad[b] = 1;\n                q.push(b);\n            }\n        }\n        while (!q.empty()) {\n            int v = q.front();\n            q.pop();\n            for (int u : adj[v]) {\n                if (!bad[u]) {\n                    bad[u] = 1;\n                    q.push(u);\n                }\n            }\n        }\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Reconstruct parents only for a finite unaffected target.",
+                "type": "p"
+              },
+              {
+                "text": "vector<int> path(int t) const {\n        if (d[t] == INF || bad[t]) return {};\n        vector<int> p;\n        for (int v = t; v != -1; v = par[v]) p.push_back(v);\n        reverse(p.begin(), p.end());\n        return p;\n    }\n};",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "main distinguishes the three statuses and prints a path only for finite answers.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m, s, q;\n    cin >> n >> m >> s >> q;\n    Bellman bf(n);\n    while (m--) {\n        int a, b;\n        ll w;\n        cin >> a >> b >> w;\n        bf.add(a, b, w);\n    }\n    bf.run(s);\n    while (q--) {\n        int t;\n        cin >> t;\n        if (bf.bad[t]) cout << \"-INF\\n\";\n        else if (bf.d[t] == INF) cout << \"UNREACHABLE\\n\";\n        else {\n            auto p = bf.path(t);\n            cout << bf.d[t] << ' ' << p.size();\n            for (int v : p) cout << ' ' << v;\n            cout << '\\n';\n        }\n    }\n    return 0;\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nconst ll INF = 1LL << 60;\n\nstruct Edge {\n    int a, b;\n    ll w;\n};\n\nstruct Bellman {\n    int n;\n    vector<Edge> e;\n    vector<vector<int>> adj;\n    vector<ll> d;\n    vector<int> par, bad;\n\n    Bellman(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        d.assign(n + 1, INF);\n        par.assign(n + 1, -1);\n        bad.resize(n + 1);\n    }\n\n    void add(int a, int b, ll w) {\n        e.push_back({a, b, w});\n        adj[a].push_back(b);\n    }\n\n    void run(int s) {\n        d[s] = 0;\n        for (int i = 1; i < n; i++) {\n            bool changed = false;\n            for (auto [a, b, w] : e) {\n                if (d[a] == INF) continue;\n                ll nd = d[a] + w;\n                if (nd < d[b]) {\n                    d[b] = nd;\n                    par[b] = a;\n                    changed = true;\n                }\n            }\n            if (!changed) break;\n        }\n        queue<int> q;\n        for (auto [a, b, w] : e) {\n            if (d[a] != INF && d[a] + w < d[b] && !bad[b]) {\n                bad[b] = 1;\n                q.push(b);\n            }\n        }\n        while (!q.empty()) {\n            int v = q.front();\n            q.pop();\n            for (int u : adj[v]) {\n                if (!bad[u]) {\n                    bad[u] = 1;\n                    q.push(u);\n                }\n            }\n        }\n    }\n\n    vector<int> path(int t) const {\n        if (d[t] == INF || bad[t]) return {};\n        vector<int> p;\n        for (int v = t; v != -1; v = par[v]) p.push_back(v);\n        reverse(p.begin(), p.end());\n        return p;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m, s, q;\n    cin >> n >> m >> s >> q;\n    Bellman bf(n);\n    while (m--) {\n        int a, b;\n        ll w;\n        cin >> a >> b >> w;\n        bf.add(a, b, w);\n    }\n    bf.run(s);\n    while (q--) {\n        int t;\n        cin >> t;\n        if (bf.bad[t]) cout << \"-INF\\n\";\n        else if (bf.d[t] == INF) cout << \"UNREACHABLE\\n\";\n        else {\n            auto p = bf.path(t);\n            cout << bf.d[t] << ' ' << p.size();\n            for (int v : p) cout << ' ' << v;\n            cout << '\\n';\n        }\n    }\n    return 0;\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Preprocessing takes $O(nm+n+m)$, space $O(n+m)$. Printing a finite path costs its length, up to $O(n)$, so include total output size across q queries. Dijkstra is faster for nonnegative weights; check the weight assumptions before choosing it.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "text": "Check yourself: does one negative edge imply a negative cycle? Is t affected if the source reaches the cycle but the cycle cannot reach t? Why keep INF at an unreachable negative cycle?",
+                "type": "p"
+              },
+              {
+                "text": "Answers: not in a directed graph; no; arithmetic must not invent reachability from the chosen source. In an undirected-walk model, traversing a negative edge out and back creates a negative closed walk.",
+                "type": "p"
+              },
+              {
+                "text": "Core problem for mastery",
+                "type": "p"
+              },
+              {
+                "text": "High Score: justify weight negation and the source→cycle→target reachability conditions.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "369"
+              },
+              {
+                "text": "Cycle Finding: use global zero initialization; outputting the cycle itself is separate from finite-path reconstruction.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "122"
+              },
+              {
+                "text": "Independent practice and extensions",
+                "type": "p"
+              },
+              {
+                "text": "Shortest Routes: compare Dijkstra’s assumptions and scale for nonnegative weights.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "367"
+              },
+              {
+                "text": "Longest Flight Route: a DAG permits topological maximum-path DP.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "374"
+              },
+              {
+                "text": "Shortest Routes II: compare Floyd–Warshall under its all-pairs size bound.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "368"
+              },
+              {
+                "text": "Flight Discount: nonnegative weights still require an extra discount state.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "370"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Directed edge lists, path relaxation and BFS propagation. Negative weights are permitted."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Чиглэсэн графын ирмэгийн жагсаалт, зам сунгаж зай сайжруулах санаа, BFS-ээр нөлөө тараах. Сөрөг жин зөвшөөрнө.",
+    "priorityLevel": "high",
+    "priorityReason": "Сөрөг жинтэй зам, эхлэлээс хүрэх циклийн нөлөө, зорилтот оройд хүрэх эсэхийг ялгах суурь. Greedy аргын нөхцөл эвдэрвэл өөр баталгаа хэрэгтэйг харуулдаг өндөр өгөөжтэй хичээл.",
+    "prerequisiteIds": [
+      "graph-basics",
+      "bfs"
+    ],
+    "learningRelations": {
+      "next": "floyd-warshall",
+      "practice": [
+        {
+          "key": "367",
+          "stage": "Warm-up",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "369",
+          "stage": "Standard",
+          "reason": "Жингийн нөхцөл, замын төлөв ба циклийн эсвэл бүх хосын зорилгыг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "122",
+          "stage": "Observation",
+          "reason": "Жингийн нөхцөл, замын төлөв ба циклийн эсвэл бүх хосын зорилгыг шууд хэрэгжүүлэх цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "374",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "368",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "370",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "dijkstra",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "floyd-warshall",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  }
+}
