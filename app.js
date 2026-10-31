@@ -1,3 +1,4 @@
+import {columnPreference,effectiveColumns,statusPresentation} from './minimalist.js?v=1';
 import {setupAdminProfiles} from './admin-profile.js?v=52';
 import {createLearningStore} from './learning-store.js?v=87';
 import {setupProblemStatement} from './problem-statement.js?v=86';
@@ -22,7 +23,9 @@ const STATUS = {new:'Эхлээгүй',trying:'Оролдож байгаа',solv
 let data, selectedProblem, state={}, dirty={}, user=null, client=null, loading=false, syncing=false, syncAgain=false, epoch=0;
 let username=null, profileLoading=false, profileSaving=false, solverRequest=0, solverNames=[], solverTotal=0;
 let detailTagsShown=false,hintPanelOpen=false,revealedHintCount=0,problemPage=0,lastFilterKey='',activityPending={},problemAdminAllowed=false,previousProblemHash=location.hash;
-const PROBLEMS_PER_PAGE=100;
+const PROBLEMS_PER_PAGE=100;let preferredColumns=1;
+function updateMinimalColumns(){const root=$('problems'),effective=effectiveColumns(preferredColumns,root.getBoundingClientRect().width);root.style.setProperty('--problem-columns',effective);root.dataset.columns=String(effective);if($('minimalist-columns-note'))$('minimalist-columns-note').textContent=effective<preferredColumns?effective+' багана · дэлгэцэд тааруулсан (сонголт '+preferredColumns+')':'';}
+
 const hiddenHints=new Set();
 let adminProfileUI=null,social=null, adminUI=null, groupUI=null, myProfile=null, avatarPreviewUrl=null, catalogLoading=false;
 let catalogIds=new Set(),hintLanguage='mn';
@@ -73,6 +76,7 @@ function render() {
   renderHome();learningUI?.render();
   const filters={query:$('search').value,source:$('source').value,status:$('status-filter').value,tag:$('tag-filter').value,minRating:$('min-rating').value,maxRating:$('max-rating').value,priorityLevel:$('priority-filter').value,sort:$('sort').value};
   const filterKey=JSON.stringify(filters);if(filterKey!==lastFilterKey){problemPage=0;lastFilterKey=filterKey;}
+  const minimalist=$('problem-density').value==='minimalist';$('minimalist-columns-label').hidden=!minimalist;$('minimalist-columns-note').hidden=!minimalist;
   $('problems').classList.toggle('compact',$('problem-density').value==='compact');$('problems').classList.toggle('minimalist',$('problem-density').value==='minimalist');$('problems').replaceChildren();
   const invalidRange=!$('min-rating').checkValidity()||!$('max-rating').checkValidity()||($('min-rating').value!==''&&$('max-rating').value!==''&&Number($('min-rating').value)>Number($('max-rating').value));
   const filtered=invalidRange?[]:filterProblems(data.problems,state,filters);
@@ -86,15 +90,21 @@ function render() {
     const row=el('article','problem'+(isHighPriority(p)?' is-priority':'')), n=el('span','number','#'+String(p.number).padStart(3,'0')), b=el('button','open');b.disabled=loading||catalogLoading;
     const heading=el('h3','',p.title);
     if(isHighPriority(p)){const star=el('span','priority-star','★');star.title='Priority бодлого';star.setAttribute('aria-label','Priority');heading.prepend(star);}
-    const meta=el('div','problem-meta');const rating=el('span','rating '+ratingClass(p),ratingLabel(p));rating.title=p.ratingKind==='unrated'?'Түвшин тогтоогоогүй':p.ratingKind==='official'?'Codeforces-ийн албан rating':(($('show-tags').checked||entry(p.id).status==='solved')&&p.ratingBasis?p.ratingBasis:'Зохиогчийн CF difficulty-ийн estimate; official биш');
+    const meta=el('div','problem-meta');const rating=el('span','rating '+ratingClass(p),ratingLabel(p));rating.title=p.ratingKind==='unrated'?'Түвшин тогтоогоогүй':p.ratingKind==='official'?'Codeforces-ийн албан rating':(($('show-tags').checked||(!minimalist&&entry(p.id).status==='solved'))&&p.ratingBasis?p.ratingBasis:'Зохиогчийн CF difficulty-ийн estimate; official биш');
     meta.append(rating,el('span','priority-badge priority-'+priorityLevel(p),priorityLabel(p)),el('small','',p.source+' · '+p.ref+' · '+difficultyLabel(p)+(p.level==='Interactive'?' · Interactive':'')));
     b.dataset.problemId=p.id;b.append(heading,meta);b.onclick=()=>openProblem(p);
-    {const tags=el('div','tag-chips');if($('show-tags').checked||entry(p.id).status==='solved'){for(const tag of p.tags)tags.append(el('span','tag-chip',tag));tags.title=p.tags.join(' · ');}else tags.append(el('span','muted','Сэдэв нуусан'));b.append(tags);}
+    {const tags=el('div','tag-chips');if($('show-tags').checked||(!minimalist&&entry(p.id).status==='solved')){for(const tag of p.tags)tags.append(el('span','tag-chip',tag));tags.title=p.tags.join(' · ');}else tags.append(el('span','muted','Сэдэв нуусан'));b.append(tags);}
     const badge=el('span','badge '+entry(p.id).status,STATUS[entry(p.id).status]);
     const arrow=el('button','arrow','↗');arrow.setAttribute('aria-label',p.title+' нээх');arrow.disabled=loading||catalogLoading;arrow.onclick=()=>openProblem(p);
     const signals=el('div','problem-signals');signals.append(badge);
-    row.append(n,b,signals,arrow);const learningLinks=el('div','problem-learning-links');for(const t of ($('show-tags').checked||entry(p.id).status==='solved'?learningUI?.linksForProblem(p)||[]:[])){const a=el('a','',(t.primary?'Үндсэн · ':'')+t.title);a.href='#tutorial/'+t.id;learningLinks.append(a);}const days=learningUI?.planDaysFor(p)||[];if(days.length){const a=el('a','','Өдөр '+days.slice(0,3).join(', ')+(days.length>3?'…':''));a.href='#plan/'+days[0];learningLinks.append(a);}if(learningLinks.children.length)row.append(learningLinks);$('problems').append(row);
+    if(minimalist){
+      const value=entry(p.id).status,presentation=statusPresentation(value),control=el('label','minimal-status'),icon=el('span','minimal-status-icon',presentation.icon),select=el('select','minimal-status-select');control.dataset.status=value;control.title=presentation.label;icon.setAttribute('aria-hidden','true');select.dataset.problemId=p.id;select.setAttribute('aria-label',p.title+' — төлөв');select.title=presentation.label;select.disabled=loading||catalogLoading;
+      for(const[status,label]of Object.entries(STATUS)){const option=el('option','',label);option.value=status;select.append(option);}select.value=value;
+      select.onchange=()=>{setEntry(p.id,{status:select.value});const current=[...document.querySelectorAll('.minimal-status-select')].find(x=>x.dataset.problemId===p.id);(current||$('status-filter')).focus({preventScroll:true});};
+      control.append(icon,select);row.append(n,b,control);
+    }else row.append(n,b,signals,arrow);const learningLinks=el('div','problem-learning-links');for(const t of (!minimalist&&($('show-tags').checked||entry(p.id).status==='solved')?learningUI?.linksForProblem(p)||[]:[])){const a=el('a','',(t.primary?'Үндсэн · ':'')+t.title);a.href='#tutorial/'+t.id;learningLinks.append(a);}const days=minimalist?[]:learningUI?.planDaysFor(p)||[];if(days.length){const a=el('a','','Өдөр '+days.slice(0,3).join(', ')+(days.length>3?'…':''));a.href='#plan/'+days[0];learningLinks.append(a);}if(learningLinks.children.length)row.append(learningLinks);$('problems').append(row);
   }
+  updateMinimalColumns();
   if(!filtered.length)$('problems').append(el('p','muted','Тохирох бодлого олдсонгүй. Шүүлтүүрээ өөрчлөөрэй.'));
 }
 const problemFilterIds=['search','source','status-filter','tag-filter','min-rating','max-rating','priority-filter','sort','problem-density'];
@@ -271,6 +281,9 @@ async function init() {
   }
   const studyRoute=()=>/^#(?:tutorial|plan|profile|learning-admin)/.test(location.hash)||location.hash==='#admin-tutorials';
   if(!configured||studyRoute())startStudy();window.addEventListener('hashchange',()=>{if(studyRoute())startStudy();});
+  try{preferredColumns=columnPreference(localStorage.getItem('erdene:minimalist-columns'));}catch{}$('minimalist-columns').value=String(preferredColumns);
+  $('minimalist-columns').onchange=()=>{preferredColumns=columnPreference($('minimalist-columns').value);try{localStorage.setItem('erdene:minimalist-columns',String(preferredColumns));}catch{}updateMinimalColumns();};
+  if(typeof ResizeObserver==='function')new ResizeObserver(updateMinimalColumns).observe($('problems'));else window.addEventListener('resize',updateMinimalColumns);
   try{const density=localStorage.getItem('erdene:problem-density');$('problem-density').value=['comfortable','compact','minimalist'].includes(density)?density:'comfortable';}catch{}$('problem-density').onchange=()=>{try{localStorage.setItem('erdene:problem-density',$('problem-density').value);}catch{}render();};render();
   $('avatar-file').onchange=()=>{if(avatarPreviewUrl)URL.revokeObjectURL(avatarPreviewUrl);avatarPreviewUrl=null;const file=$('avatar-file').files?.[0];if(file){avatarPreviewUrl=URL.createObjectURL(file);$('remove-avatar').checked=false;}renderOwnAvatar();};
   $('remove-avatar').onchange=()=>{if($('remove-avatar').checked){$('avatar-file').value='';if(avatarPreviewUrl)URL.revokeObjectURL(avatarPreviewUrl);avatarPreviewUrl=null;$('own-avatar').hidden=true;$('own-avatar-fallback').hidden=false;}else renderOwnAvatar();};
