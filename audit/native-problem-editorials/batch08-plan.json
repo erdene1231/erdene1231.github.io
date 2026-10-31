@@ -1,0 +1,1620 @@
+[
+  {
+    "id": "task-747",
+    "number": 747,
+    "ref": "abc005_4",
+    "expected_revision": 3,
+    "expected_body_sha256": "e8bdf69e829b3d0a5a383c1117e11dcca0b77cf6d4e31523f5f6de5c28da15c2",
+    "editorial_sha256": "edd82fc060f63cd348ec402ae99c01fe2e73459893df91f2329df327b273336e",
+    "source_problem_url": "https://atcoder.jp/contests/abc005/tasks/abc005_4",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-abc005-4",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "AtCoder ABC005 D — おいしいたこ焼きの焼き方 — Бодолт",
+      "sections": [
+        {
+          "title": "2D Prefix Sum",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Бүх axis-aligned nonempty rectangle-ийг дөрвөн хилээр нь enumerate хийнэ. 2D Prefix Sum-тай бол rectangle-ийн нийлбэрийг $O(1)$-д олно. $best[s]$-д яг $s$ талбайтай rectangle-уудын хамгийн их нийлбэрийг хадгална."
+            }
+          ]
+        },
+        {
+          "title": "Capacity бол дээд хязгаар",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Query $P$ нь яг $P$ биш, хамгийн ихдээ $P$ нүд ашиглахыг зөвшөөрнө. Тиймээс exact-area хүснэгтийг prefix maximum болгоно: $best[s]=\\max(best[s],best[s-1])$."
+            },
+            {
+              "type": "p",
+              "text": "$N=3$ ба мөрүүд $[1,1,1],[1,1,1],[9,9,9]$, $P=4$ байг. Доод мөрийн гурван нүдийг авахад $27$; дөрвөн нүдтэй $2\\times2$ rectangle хамгийн ихдээ $20$. Иймээс бага талбай сонгох боломжийг алдаж болохгүй."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Prefix table-ийн $sum[i][j]$ нь эхний $i$ мөр, эхний $j$ баганын нийлбэр. Rectangle-ийн гаднах дээд болон зүүн хэсгийг хасаад, давхар хассан огтлолцлыг буцааж нэмэх inclusion-exclusion нь яг шаардсан rectangle-ийн нийлбэр өгнө."
+            },
+            {
+              "type": "p",
+              "text": "Дөрвөн хил бүх nonempty rectangle-ийг нэг удаа хамарна. Иймээс exact-area хүснэгт тухайн талбайн optimum-ийг олно. Prefix maximum-ийн дараа induction-оор $best[P]$ нь талбай нь $P$-ээс ихгүй бүх rectangle-ийн optimum; query бүрийн хариу зөв. Бүх нүд эерэг тул хоосон rectangle-ийг хариу болгох шаардлагагүй."
+            }
+          ]
+        },
+        {
+          "title": "Complexity",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Prefix Sum $O(N^2)$, rectangle enumeration $O(N^4)$, query бүр $O(1)$; санах ой $O(N^2)$. $N\\le50$, $D_{ij}\\le100$ тул нийт нийлбэр $250000$-аас ихгүй; int хангалттай. Query-үүд бие даасан, нэг query-д сонгосон rectangle дараагийнхыг хязгаарлахгүй."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Rectangle-ийг inclusion-exclusion-оор бодох"
+            },
+            {
+              "type": "p",
+              "text": "top/left нь хасах prefix-ийн хил, bottom/right нь exclusive төгсгөлийн хил."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "for (int top = 0; top < n; ++top) {\n    for (int bottom = top + 1; bottom <= n; ++bottom) {\n        for (int left = 0; left < n; ++left) {\n            for (int right = left + 1; right <= n; ++right) {\n                int area = (bottom - top) * (right - left);\n                int value = sum[bottom][right] - sum[top][right] - sum[bottom][left] + sum[top][left];\n                best[area] = max(best[area], value);\n            }\n        }\n    }\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Exact area-аас at-most area руу"
+            },
+            {
+              "type": "p",
+              "text": "Талбай бүр rectangle-ийн хэлбэр болж болох албагүй. Prefix maximum нь зөвхөн боломжтой бага талбайн optimum-ийг дамжуулна."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "for (int area = 1; area <= n * n; ++area) best[area] = max(best[area], best[area - 1]);\nint q;\ncin >> q;\nwhile (q--) {\n    int p;\n    cin >> p;\n    cout << best[p] << '\\n';\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/abc005/tasks/abc005_4"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> sum(n + 1, vector<int>(n + 1));\n    for (int i = 1; i <= n; ++i) {\n        for (int j = 1; j <= n; ++j) {\n            int x;\n            cin >> x;\n            sum[i][j] = x + sum[i - 1][j] + sum[i][j - 1] - sum[i - 1][j - 1];\n        }\n    }\n    vector<int> best(n * n + 1);\n    for (int top = 0; top < n; ++top) {\n        for (int bottom = top + 1; bottom <= n; ++bottom) {\n            for (int left = 0; left < n; ++left) {\n                for (int right = left + 1; right <= n; ++right) {\n                    int area = (bottom - top) * (right - left);\n                    int value = sum[bottom][right] - sum[top][right] - sum[bottom][left] + sum[top][left];\n                    best[area] = max(best[area], value);\n                }\n            }\n        }\n    }\n    for (int area = 1; area <= n * n; ++area) best[area] = max(best[area], best[area - 1]);\n    int q;\n    cin >> q;\n    while (q--) {\n        int p;\n        cin >> p;\n        cout << best[p] << '\\n';\n    }\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "AtCoder ABC005 D — おいしいたこ焼きの焼き方 — Editorial",
+          "sections": [
+            {
+              "title": "2D Prefix Sum",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Enumerate every nonempty axis-aligned rectangle by its four boundaries. A 2D Prefix Sum gives its sum in $O(1)$. Store in $best[s]$ the largest sum of a rectangle with area exactly $s$."
+                }
+              ]
+            },
+            {
+              "title": "Capacity is an upper bound",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "A query $P$ allows at most $P$ cells, rather than exactly $P$. Convert exact-area optima into prefix maxima using $best[s]=\\max(best[s],best[s-1])$."
+                },
+                {
+                  "type": "p",
+                  "text": "For rows $[1,1,1],[1,1,1],[9,9,9]$ and $P=4$, taking the three-cell bottom row gives 27. Every four-cell $2\\times2$ rectangle gives at most 20. Restricting the choice to exact area would lose the optimum."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "The prefix table entry $sum[i][j]$ sums the first $i$ rows and $j$ columns. Subtracting the upper and left excluded parts, then restoring their doubly subtracted overlap, leaves exactly the chosen rectangle."
+                },
+                {
+                  "type": "p",
+                  "text": "The four-boundary loops visit every nonempty rectangle once, so the exact-area table contains each area’s optimum. After prefix maxima, induction shows that $best[P]$ is the best among all areas at most $P$. All cells are positive, so an empty rectangle is unnecessary."
+                }
+              ]
+            },
+            {
+              "title": "Complexity",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Prefix construction costs $O(N^2)$, enumeration $O(N^4)$, and each query $O(1)$; space is $O(N^2)$. Since $N\\le50$ and $D_{ij}\\le100$, sums are at most 250000 and fit int. Queries are independent; a chosen rectangle does not restrict later queries."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Rectangle inclusion-exclusion"
+                },
+                {
+                  "type": "p",
+                  "text": "top/left identify the excluded prefix boundaries; bottom/right are exclusive end boundaries."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "for (int top = 0; top < n; ++top) {\n    for (int bottom = top + 1; bottom <= n; ++bottom) {\n        for (int left = 0; left < n; ++left) {\n            for (int right = left + 1; right <= n; ++right) {\n                int area = (bottom - top) * (right - left);\n                int value = sum[bottom][right] - sum[top][right] - sum[bottom][left] + sum[top][left];\n                best[area] = max(best[area], value);\n            }\n        }\n    }\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "From exact to at-most area"
+                },
+                {
+                  "type": "p",
+                  "text": "Some areas have no rectangle shape. Prefix maxima carry forward the best feasible smaller area."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "for (int area = 1; area <= n * n; ++area) best[area] = max(best[area], best[area - 1]);\nint q;\ncin >> q;\nwhile (q--) {\n    int p;\n    cin >> p;\n    cout << best[p] << '\\n';\n}"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/abc005/tasks/abc005_4"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> sum(n + 1, vector<int>(n + 1));\n    for (int i = 1; i <= n; ++i) {\n        for (int j = 1; j <= n; ++j) {\n            int x;\n            cin >> x;\n            sum[i][j] = x + sum[i - 1][j] + sum[i][j - 1] - sum[i - 1][j - 1];\n        }\n    }\n    vector<int> best(n * n + 1);\n    for (int top = 0; top < n; ++top) {\n        for (int bottom = top + 1; bottom <= n; ++bottom) {\n            for (int left = 0; left < n; ++left) {\n                for (int right = left + 1; right <= n; ++right) {\n                    int area = (bottom - top) * (right - left);\n                    int value = sum[bottom][right] - sum[top][right] - sum[bottom][left] + sum[top][left];\n                    best[area] = max(best[area], value);\n                }\n            }\n        }\n    }\n    for (int area = 1; area <= n * n; ++area) best[area] = max(best[area], best[area - 1]);\n    int q;\n    cin >> q;\n    while (q--) {\n        int p;\n        cin >> p;\n        cout << best[p] << '\\n';\n    }\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-766",
+    "number": 766,
+    "ref": "typical90_ab",
+    "expected_revision": 3,
+    "expected_body_sha256": "35dcb3c85b49951ce0781d5a19e760a34d3f53e2b7b69c0252d3ca5065bb796c",
+    "editorial_sha256": "393a37c55340fcf8386adbe50ff8ac381b2a3ad7ab2a4622c216938afba94af5",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_ab",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-ab",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Cluttered Paper — Бодолт",
+      "sections": [
+        {
+          "title": "2D Difference Array",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Координат $0\\ldots1000$ бүхэл тул хавтгайг unit cell-үүдэд хувааж болно. Rectangle $[lx,rx)\\times[ly,ry)$ доторх cell бүрийн coverage-ийг нэгээр нэмэх хэрэгтэй. Cell бүрийг шууд шинэчлэхийн оронд дөрвөн corner marker тавина."
+            }
+          ]
+        },
+        {
+          "title": "Prefix ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$(lx,ly)$ ба $(rx,ry)$ дээр $+1$, $(rx,ly)$ ба $(lx,ry)$ дээр $-1$. Нэг тэнхлэг, дараа нь нөгөө тэнхлэгээр prefix авна. Ингээд $d[x][y]$ нь $[x,x+1)\\times[y,y+1)$ cell-ийн coverage."
+            },
+            {
+              "type": "p",
+              "text": "$[0,2)\\times[0,1)$ ба $[1,3)\\times[0,1)$ хоёр rectangle-д яг нэг давхарласан талбай $2$, яг хоёр давхарласан талбай $1$. Зөвхөн хилээрээ хүрсэн rectangle-уудын нийтлэг талбай $0$."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Нэг rectangle-ийн дөрвөн marker-ийн 2D prefix нь тухайн cell-д $(1_{x\\ge lx}-1_{x\\ge rx})(1_{y\\ge ly}-1_{y\\ge ry})$. Энэ нь rectangle-ийн дотор $1$, гадна $0$. Prefix үйлдэл нэмэхтэй нийцдэг тул олон rectangle-ийн нийлбэр marker нийт coverage-ийг өгнө."
+            },
+            {
+              "type": "p",
+              "text": "Бүх rectangle-ийн хил integer учраас нэг unit cell дотор coverage тогтмол, cell бүрийн талбай $1$. $0\\le x,y<1000$ cell-үүдийг coverage-аар histogram-д нэмэхэд яг $k$ rectangle-ийн доорх талбай гарна. Coordinate $1000$ нь marker boundary болохоос cell эхлэх индекс биш."
+            }
+          ]
+        },
+        {
+          "title": "Complexity",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$C=1000$ гэвэл хугацаа $O(N+C^2)$, санах ой $O(N+C^2)$. $N\\le10^5$ тул coverage int-д, нийт боломжит талбай $10^6$ тул area ч int-д багтана. $k=1\\ldots N$ бүгдэд, талбай $0$ байсан ч мөр хэвлэнэ."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Дөрвөн marker"
+            },
+            {
+              "type": "p",
+              "text": "Баруун ба дээд хилийг exclusive авснаар давхарлалгүй залгаа rectangle зөв тоологдоно."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "for (int i = 0; i < n; ++i) {\n    int lx, ly, rx, ry;\n    cin >> lx >> ly >> rx >> ry;\n    ++d[lx][ly];\n    --d[rx][ly];\n    --d[lx][ry];\n    ++d[rx][ry];\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Хоёр prefix ба histogram"
+            },
+            {
+              "type": "p",
+              "text": "Marker-уудыг inclusive coordinate 1000 хүртэл нэгтгэнэ; талбайд зөвхөн 0..999 cell-үүдийг тоолно."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "for (int x = 0; x <= limit; ++x) {\n    for (int y = 1; y <= limit; ++y) d[x][y] += d[x][y - 1];\n}\nfor (int x = 1; x <= limit; ++x) {\n    for (int y = 0; y <= limit; ++y) d[x][y] += d[x - 1][y];\n}\nvector<int> area(n + 1);\nfor (int x = 0; x < limit; ++x) {\n    for (int y = 0; y < limit; ++y) ++area[d[x][y]];\n}\nfor (int k = 1; k <= n; ++k) cout << area[k] << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ab"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    const int limit = 1000;\n    vector<vector<int>> d(limit + 1, vector<int>(limit + 1));\n    for (int i = 0; i < n; ++i) {\n        int lx, ly, rx, ry;\n        cin >> lx >> ly >> rx >> ry;\n        ++d[lx][ly];\n        --d[rx][ly];\n        --d[lx][ry];\n        ++d[rx][ry];\n    }\n    for (int x = 0; x <= limit; ++x) {\n        for (int y = 1; y <= limit; ++y) d[x][y] += d[x][y - 1];\n    }\n    for (int x = 1; x <= limit; ++x) {\n        for (int y = 0; y <= limit; ++y) d[x][y] += d[x - 1][y];\n    }\n    vector<int> area(n + 1);\n    for (int x = 0; x < limit; ++x) {\n        for (int y = 0; y < limit; ++y) ++area[d[x][y]];\n    }\n    for (int k = 1; k <= n; ++k) cout << area[k] << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Cluttered Paper — Editorial",
+          "sections": [
+            {
+              "title": "2D Difference Array",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Integer coordinates from zero through 1000 allow a unit-cell grid. A rectangle $[lx,rx)\\times[ly,ry)$ adds one to each contained cell’s coverage. Replace direct cell updates with four corner markers."
+                }
+              ]
+            },
+            {
+              "title": "Prefixes and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Add one at $(lx,ly)$ and $(rx,ry)$; subtract one at $(rx,ly)$ and $(lx,ry)$. Prefix first along one axis, then the other. The resulting $d[x][y]$ is coverage of $[x,x+1)\\times[y,y+1)$."
+                },
+                {
+                  "type": "p",
+                  "text": "Rectangles $[0,2)\\times[0,1)$ and $[1,3)\\times[0,1)$ give area two covered once and area one covered twice. Merely touching boundaries have zero common area."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "For one rectangle, the 2D prefix of its markers at a cell is $(1_{x\\ge lx}-1_{x\\ge rx})(1_{y\\ge ly}-1_{y\\ge ry})$. This is one precisely inside the rectangle and zero outside. Linearity makes the sum of markers yield total coverage."
+                },
+                {
+                  "type": "p",
+                  "text": "Integer rectangle boundaries keep coverage constant within each unit cell, whose area is one. Counting cells with $0\\le x,y<1000$ by their coverage gives the area covered exactly $k$ times. Coordinate 1000 is a marker boundary, not a cell-start index."
+                }
+              ]
+            },
+            {
+              "title": "Complexity",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "For $C=1000$, time is $O(N+C^2)$ and space $O(N+C^2)$. Coverage is at most $N\\le10^5$ and total area at most $10^6$, so int suffices. Print every $k=1\\ldots N$, including zero areas."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Four markers"
+                },
+                {
+                  "type": "p",
+                  "text": "Exclusive right and upper boundaries handle adjacent rectangles without area overlap."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "for (int i = 0; i < n; ++i) {\n    int lx, ly, rx, ry;\n    cin >> lx >> ly >> rx >> ry;\n    ++d[lx][ly];\n    --d[rx][ly];\n    --d[lx][ry];\n    ++d[rx][ry];\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Two prefixes and histogram"
+                },
+                {
+                  "type": "p",
+                  "text": "Accumulate markers through coordinate 1000, but count area only for cell starts 0..999."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "for (int x = 0; x <= limit; ++x) {\n    for (int y = 1; y <= limit; ++y) d[x][y] += d[x][y - 1];\n}\nfor (int x = 1; x <= limit; ++x) {\n    for (int y = 0; y <= limit; ++y) d[x][y] += d[x - 1][y];\n}\nvector<int> area(n + 1);\nfor (int x = 0; x < limit; ++x) {\n    for (int y = 0; y < limit; ++y) ++area[d[x][y]];\n}\nfor (int k = 1; k <= n; ++k) cout << area[k] << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ab"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    const int limit = 1000;\n    vector<vector<int>> d(limit + 1, vector<int>(limit + 1));\n    for (int i = 0; i < n; ++i) {\n        int lx, ly, rx, ry;\n        cin >> lx >> ly >> rx >> ry;\n        ++d[lx][ly];\n        --d[rx][ly];\n        --d[lx][ry];\n        ++d[rx][ry];\n    }\n    for (int x = 0; x <= limit; ++x) {\n        for (int y = 1; y <= limit; ++y) d[x][y] += d[x][y - 1];\n    }\n    for (int x = 1; x <= limit; ++x) {\n        for (int y = 0; y <= limit; ++y) d[x][y] += d[x - 1][y];\n    }\n    vector<int> area(n + 1);\n    for (int x = 0; x < limit; ++x) {\n        for (int y = 0; y < limit; ++y) ++area[d[x][y]];\n    }\n    for (int k = 1; k <= n; ++k) cout << area[k] << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-791",
+    "number": 791,
+    "ref": "typical90_bw",
+    "expected_revision": 3,
+    "expected_body_sha256": "d2f0f374d37589c3441b14859e0f438e2b38259498badceca82d735d68e21d08",
+    "editorial_sha256": "522088d9c109e850c636f2feb32ef06e2e15fa8e5d2d76d976dd79b4ccf0b198",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_bw",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-bw",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Magic For Balls — Бодолт",
+      "sections": [
+        {
+          "title": "Prime factor-ийн тоо",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$N$-ийн prime factor-уудыг multiplicity-тай нь тоолоод $m$ гэе. Жишээ нь $48=2^4\\cdot3$ учир $m=5$. Нэг зэрэг хуваах magic round-ийн minimum нь $2^t\\ge m$ болох хамгийн бага $t$. Prime $N$ үед $m=1$, хариу $0$."
+            }
+          ]
+        },
+        {
+          "title": "Factorization ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Trial Division-аар боломжит divisor бүрт үлдэгдэл тоо хуваагдах бүх удааг тоолно. Давталтын дараа үлдэгдэл $1$-ээс их бол нэг prime factor үлдсэн. Дараа нь capacity-ийг $1$-ээс хоёр дахин өсгөж $m$-д хүргэнэ."
+            },
+            {
+              "type": "p",
+              "text": "$42=2\\cdot3\\cdot7$ үед $m=3$, хоёр round хэрэгтэй. $48$-д $m=5$, гурван round. Энэ нь нийт split-ийн тоо $m-1$ биш: бүх composite ball нэг round-д зэрэг хуваагдана."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Factorization-ийн нийт prime multiplicity нь split бүрт хадгалагдана. Бүх ball prime болсон үед яг $m$ ball байна. Нэг round-д ball бүр ихдээ хоёр болох тул $t$ round-ийн дараа ихдээ $2^t$ ball; иймээс $2^t\\ge m$ зайлшгүй."
+            },
+            {
+              "type": "p",
+              "text": "Энэ доод хязгаарт хүрч болно. Prime factor-уудын multiset-ийг аль болох тэнцүү тоотой хоёр бүлэгт хувааж, бүлэг бүрийн үржвэрийг хоёр шинэ ball болгоно. Composite бүлэг бүрт үүнийг давтана. $t$ түвшний дараа бүлэг бүр ихдээ $\\lceil m/2^t\\rceil=1$ factor-той болно. Prime ball өөрчлөгдөхгүй хэвээр үлддэг тул round-уудыг зэрэг гүйцэтгэхэд зөв."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Trial Division хамгийн муудаа $O(\\sqrt N)$ хугацаа, $O(1)$ нэмэлт санах ой. Source-д $2\\le N\\le10^{12}$; ll ашиглана. ",
+                  "marks": []
+                },
+                {
+                  "text": "p<=n/p",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь квадрат үржүүлэлтгүй bound. $m\\le39$, capacity ба round int-д багтана. Floating logarithm хэрэглэхгүй тул power-of-two boundary дээр rounding алдаа гарахгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Multiplicity-тай factorization"
+            },
+            {
+              "type": "p",
+              "text": "Prime factor давтагдах бүрд factors-ийг нэмнэ; зөвхөн distinct prime тоолохгүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int factors = 0;\nfor (ll p = 2; p <= n / p; ++p) {\n    while (n % p == 0) {\n        n /= p;\n        ++factors;\n    }\n}\nif (n > 1) ++factors;"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Round-ийн integer bound"
+            },
+            {
+              "type": "p",
+              "text": "capacity нь тухайн round тоонд хүрч болох leaf ball-ийн дээд тоо."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int rounds = 0, capacity = 1;\nwhile (capacity < factors) {\n    capacity *= 2;\n    ++rounds;\n}\ncout << rounds << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bw"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    ll n;\n    cin >> n;\n    int factors = 0;\n    for (ll p = 2; p <= n / p; ++p) {\n        while (n % p == 0) {\n            n /= p;\n            ++factors;\n        }\n    }\n    if (n > 1) ++factors;\n    int rounds = 0, capacity = 1;\n    while (capacity < factors) {\n        capacity *= 2;\n        ++rounds;\n    }\n    cout << rounds << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Magic For Balls — Editorial",
+          "sections": [
+            {
+              "title": "Count prime factors",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Let $m$ count prime factors of $N$ with multiplicity. For example, $48=2^4\\cdot3$ gives five. The minimum number of simultaneous splitting rounds is the smallest $t$ with $2^t\\ge m$. A prime has $m=1$ and needs zero rounds."
+                }
+              ]
+            },
+            {
+              "title": "Factorization and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Use Trial Division, counting every repeated division. If the remaining value exceeds one after the loop, it contributes one final prime factor. Double an integer capacity from one until it reaches $m$."
+                },
+                {
+                  "type": "p",
+                  "text": "For $42=2\\cdot3\\cdot7$, three factors need two rounds. Five factors in 48 need three rounds. This counts rounds rather than the $m-1$ individual splits: all current composite balls split simultaneously."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Splitting preserves total prime multiplicity. Once all balls are prime, there are exactly $m$ balls. Each round can at most double their number, so $2^t\\ge m$ is necessary."
+                },
+                {
+                  "type": "p",
+                  "text": "To attain the bound, divide the prime-factor multiset into two groups with counts as equal as possible and split into their products. Repeat for every composite group. After $t$ levels each group contains at most $\\lceil m/2^t\\rceil=1$ factor. Prime balls remain unchanged while other groups split, so the balanced splits can be performed in simultaneous rounds."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Trial Division takes $O(\\sqrt N)$ worst-case time and $O(1)$ auxiliary space. The source bound is $2\\le N\\le10^{12}$, requiring ll. The condition ",
+                      "marks": []
+                    },
+                    {
+                      "text": "p<=n/p",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " avoids squaring. Since $m\\le39$, capacity and rounds fit int. Integer doubling avoids floating-logarithm rounding at powers of two.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Factorization with multiplicity"
+                },
+                {
+                  "type": "p",
+                  "text": "Increment factors for every occurrence, rather than counting only distinct primes."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int factors = 0;\nfor (ll p = 2; p <= n / p; ++p) {\n    while (n % p == 0) {\n        n /= p;\n        ++factors;\n    }\n}\nif (n > 1) ++factors;"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Integer round bound"
+                },
+                {
+                  "type": "p",
+                  "text": "capacity is the maximum leaf count after the current number of rounds."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int rounds = 0, capacity = 1;\nwhile (capacity < factors) {\n    capacity *= 2;\n    ++rounds;\n}\ncout << rounds << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bw"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    ll n;\n    cin >> n;\n    int factors = 0;\n    for (ll p = 2; p <= n / p; ++p) {\n        while (n % p == 0) {\n            n /= p;\n            ++factors;\n        }\n    }\n    if (n > 1) ++factors;\n    int rounds = 0, capacity = 1;\n    while (capacity < factors) {\n        capacity *= 2;\n        ++rounds;\n    }\n    cout << rounds << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-792",
+    "number": 792,
+    "ref": "typical90_bx",
+    "expected_revision": 3,
+    "expected_body_sha256": "c7ed3d43762ebcabfdc59936ee7ef7f459f2ab1062d626f48e0d8ce38f4a401a",
+    "editorial_sha256": "3638761cbd66ee3819de8b293b1fec2ee2bbe80d5e5c94c166eccce738bd0857",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_bx",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-bx",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Cake Cut — Бодолт",
+      "sections": [
+        {
+          "title": "Two Pointers",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Нийт хэмжээг $T$ гэе. $T$ нь $10$-д хуваагдахгүй бол integer piece-үүдийн нийлбэр яг $T/10$ байх боломжгүй. Бусад үед target $T/10$. Circular массивыг modulo индексээр хоёр удаа уншиж болно; эхлэл бүрийг $0\\ldots N-1$-д л шалгана."
+            }
+          ]
+        },
+        {
+          "title": "Window ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$[left,right)$ window-ийн нийлбэрийг хадгална. Target-оос бага үед right-ийг сунгаж, тэнцвэл Yes; дараагийн эхлэл рүү шилжихдээ зүүн утгыг хасна. Нэг window ихдээ $N$ piece-тэй байна. Бүх $A_i>0$ тул right хэзээ ч буцах шаардлагагүй."
+            },
+            {
+              "type": "p",
+              "text": "$[1,18,1]$-ийн нийт $20$, target $2$: сүүлийн ба эхний piece-ийг залгуулж авбал зөв. $[1,9,1,9]$-д хоёр $1$ нийлээд target $2$ боловч залгаа биш тул No."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эхлэл тогтсон үед window сунгах бүрд нийлбэр хатуу өснө. Target хүрэхээс өмнөх төгсгөлүүд бүгд хэт бага, давсан дараагийн төгсгөлүүд бүгд хэт их. Иймээс target-д хүрсэн эсэхийг анхны хүрсэн эсвэл давсан төгсгөл дээр шалгахад хангалттай."
+            },
+            {
+              "type": "p",
+              "text": "Эхлэлийг нэгээр ахиулахад эерэг утга хасагдана. Өмнө target-оос бага байсан эрт төгсгөлүүдийн нийлбэр улам багасах тул тэдгээрийг дахин шалгах шаардлагагүй. right буцахгүй байх нь хүчинтэй. Circular segment бүр урт нь $N$-ээс ихгүй, эхлэл нь нэг piece дээр байх тул бүх боломж хамрагдана."
+            }
+          ]
+        },
+        {
+          "title": "Complexity",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хоёр pointer тус бүр $O(N)$ удаа хөдөлнө: хугацаа $O(N)$, санах ой $O(N)$. Нийт $T\\le10^{14}$ тул sum, total, target ll. Target эерэг учир хоосон window хэзээ ч зөв хариу болохгүй."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Divisibility шалгах"
+            },
+            {
+              "type": "p",
+              "text": "Floating point-ийн ойролцоолол хэрэглэхгүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "if (total % 10 != 0) {\n    cout << \"No\\n\";\n    return 0;\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Circular window"
+            },
+            {
+              "type": "p",
+              "text": "right нь exclusive төгсгөл; modulo зөвхөн массивт хандахад ашиглагдана."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "ll target = total / 10, sum = 0;\nint right = 0;\nfor (int left = 0; left < n; ++left) {\n    while (right < left + n && sum < target) {\n        sum += a[right % n];\n        ++right;\n    }\n    if (sum == target) {\n        cout << \"Yes\\n\";\n        return 0;\n    }\n    sum -= a[left];\n}\ncout << \"No\\n\";"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bx"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    ll total = 0;\n    for (ll &x : a) {\n        cin >> x;\n        total += x;\n    }\n    if (total % 10 != 0) {\n        cout << \"No\\n\";\n        return 0;\n    }\n    ll target = total / 10, sum = 0;\n    int right = 0;\n    for (int left = 0; left < n; ++left) {\n        while (right < left + n && sum < target) {\n            sum += a[right % n];\n            ++right;\n        }\n        if (sum == target) {\n            cout << \"Yes\\n\";\n            return 0;\n        }\n        sum -= a[left];\n    }\n    cout << \"No\\n\";\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Cake Cut — Editorial",
+          "sections": [
+            {
+              "title": "Two Pointers",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Let total size be $T$. If it is not divisible by ten, no integer sum of pieces can equal $T/10$. Otherwise use target $T/10$. Read the circular array through modulo indices, checking starts zero through $N-1$ only."
+                }
+              ]
+            },
+            {
+              "title": "Window and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Maintain the sum of $[left,right)$. Advance right while below target, return Yes on equality, and subtract the old left value when advancing left. Limit a window to $N$ pieces. Strictly positive $A_i$ makes backward pointer movement unnecessary."
+                },
+                {
+                  "type": "p",
+                  "text": "For $[1,18,1]$, total 20 gives target two, attainable across the last/first boundary. For $[1,9,1,9]$, the two ones sum to two but are not consecutive, so the answer is No."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "For a fixed start, extending the window strictly increases its sum. Ends before the first reach or overshoot are too small; later ends are too large. Checking that first reach or overshoot is therefore sufficient."
+                },
+                {
+                  "type": "p",
+                  "text": "Advancing the start subtracts a positive value. Earlier ends that were below target become even smaller and never need reconsideration, justifying a nondecreasing right pointer. Every circular segment starts at one of the checked pieces and uses at most $N$ pieces, so all possibilities are covered."
+                }
+              ]
+            },
+            {
+              "title": "Complexity",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Each pointer moves $O(N)$ times, giving $O(N)$ time and $O(N)$ space. Total size can reach $10^{14}$, so total, target and sum use ll. The positive target prevents an empty window from qualifying."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Check divisibility"
+                },
+                {
+                  "type": "p",
+                  "text": "Use exact divisibility rather than floating-point comparison."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "if (total % 10 != 0) {\n    cout << \"No\\n\";\n    return 0;\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Circular window"
+                },
+                {
+                  "type": "p",
+                  "text": "right is an exclusive end; modulo is used only for array access."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "ll target = total / 10, sum = 0;\nint right = 0;\nfor (int left = 0; left < n; ++left) {\n    while (right < left + n && sum < target) {\n        sum += a[right % n];\n        ++right;\n    }\n    if (sum == target) {\n        cout << \"Yes\\n\";\n        return 0;\n    }\n    sum -= a[left];\n}\ncout << \"No\\n\";"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bx"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    ll total = 0;\n    for (ll &x : a) {\n        cin >> x;\n        total += x;\n    }\n    if (total % 10 != 0) {\n        cout << \"No\\n\";\n        return 0;\n    }\n    ll target = total / 10, sum = 0;\n    int right = 0;\n    for (int left = 0; left < n; ++left) {\n        while (right < left + n && sum < target) {\n            sum += a[right % n];\n            ++right;\n        }\n        if (sum == target) {\n            cout << \"Yes\\n\";\n            return 0;\n        }\n        sum -= a[left];\n    }\n    cout << \"No\\n\";\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-793",
+    "number": 793,
+    "ref": "typical90_bz",
+    "expected_revision": 3,
+    "expected_body_sha256": "3606066d02a57b93ac61faf08047762ab2b29162bc43adc13f6f84ad495ccd30",
+    "editorial_sha256": "43b8ce04fdc940db4c084c8061b644f90bd3a688b680cb31c8d86a7a30646190",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_bz",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-bz",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Easy Graph Problem — Бодолт",
+      "sections": [
+        {
+          "title": "Хөршийн label тоолох",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Undirected edge $(a,b)$ бүрийн бага label-тай төгсгөл нь зөвхөн их label-тай төгсгөлийн smaller-neighbor count-д орно. Иймээс ",
+                  "marks": []
+                },
+                {
+                  "text": "smaller[max(a,b)]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийг нэгээр нэмнэ. Дараа нь count нь яг $1$ оройнуудыг тоолно.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Жишээ ба зөв байдал",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$1-2$, $1-3$, $2-3$ triangle-д counts нь $0,1,2$, хариу зөвхөн орой $2$ буюу $1$. Degree нь $2$ ч шаардлагыг хангаж болно; degree $1$ эсэхийг шалгахгүй."
+            },
+            {
+              "type": "p",
+              "text": "Source graph simple тул нэг edge нэг ялгаатай хөршид харгалзана. Edge бүр дээр бага орой нь их оройн smaller neighbor мөн, эсрэг чиглэл нь шаардлагад орохгүй. Ингэж бүх edge-ийг боловсруулахад орой бүрийн count яг өөрөөс нь жижиг label-тай хөршийн тоо болно. Яг нэгтэйг тоолох нь шаардсан set-ийг өгнө. Connected баталгаа байгаа ч traversal хийх хэрэггүй."
+            }
+          ]
+        },
+        {
+          "title": "Complexity",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хугацаа $O(N+M)$, санах ой $O(N)$. $N,M\\le10^5$ тул count ба answer int-д багтана. Edge-ийн оролтын хоёр төгсгөлийн дараалал үр дүнд нөлөөлөхгүй."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Edge бүрийн нэг contribution"
+            },
+            {
+              "type": "p",
+              "text": "Adjacency list байгуулахгүйгээр зөв төгсгөлд contribution өгч болно."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<int> smaller(n + 1);\nwhile (m--) {\n    int a, b;\n    cin >> a >> b;\n    ++smaller[max(a, b)];\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Яг нэг гэсэн нөхцөл"
+            },
+            {
+              "type": "p",
+              "text": "Zero болон хоёр буюу түүнээс олон smaller neighbor-той оройг хасна."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "cout << count(smaller.begin() + 1, smaller.end(), 1) << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bz"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    vector<int> smaller(n + 1);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        ++smaller[max(a, b)];\n    }\n    cout << count(smaller.begin() + 1, smaller.end(), 1) << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Easy Graph Problem — Editorial",
+          "sections": [
+            {
+              "title": "Count smaller labels",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "For an undirected edge $(a,b)$, its smaller endpoint contributes only to the larger endpoint’s count of smaller neighbors. Increment ",
+                      "marks": []
+                    },
+                    {
+                      "text": "smaller[max(a,b)]",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ", then count vertices whose count is exactly one.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Example and correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "In the triangle $1-2$, $1-3$, $2-3$, counts are zero, one and two; only vertex two qualifies. Its degree is two, illustrating why degree-one counting is incorrect."
+                },
+                {
+                  "type": "p",
+                  "text": "The source graph is simple, so each edge represents one distinct neighbor. Its smaller endpoint is a smaller-labeled neighbor of the larger endpoint, and the reverse direction does not qualify. Processing every edge therefore computes the exact required count at each vertex. Selecting counts equal to one gives exactly the requested set. Connectivity is guaranteed but no traversal is needed."
+                }
+              ]
+            },
+            {
+              "title": "Complexity",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Time is $O(N+M)$ and space $O(N)$. With $N,M\\le10^5$, counts and the answer fit int. Swapping the input order of an edge’s endpoints has no effect."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "One contribution per edge"
+                },
+                {
+                  "type": "p",
+                  "text": "Assign contributions directly without constructing adjacency lists."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<int> smaller(n + 1);\nwhile (m--) {\n    int a, b;\n    cin >> a >> b;\n    ++smaller[max(a, b)];\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "The exactly-one condition"
+                },
+                {
+                  "type": "p",
+                  "text": "Exclude vertices with zero or at least two smaller neighbors."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "cout << count(smaller.begin() + 1, smaller.end(), 1) << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bz"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    vector<int> smaller(n + 1);\n    while (m--) {\n        int a, b;\n        cin >> a >> b;\n        ++smaller[max(a, b)];\n    }\n    cout << count(smaller.begin() + 1, smaller.end(), 1) << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-796",
+    "number": 796,
+    "ref": "typical90_cf",
+    "expected_revision": 3,
+    "expected_body_sha256": "f403e5bad553d3b2b87524de57175cfe160b7e51202d383138df92fb04ded439",
+    "editorial_sha256": "54c991fa21c92a781271d25c7cadafddb1a76487aed98c620651b3839901f5b3",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_cf",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-cf",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "There are two types of characters — Бодолт",
+      "sections": [
+        {
+          "title": "Баруун төгсгөлөөр тоолох",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Одоогийн баруун төгсгөл $i$ хүртэлх хамгийн сүүлийн ",
+                  "marks": []
+                },
+                {
+                  "text": "o",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " болон ",
+                  "marks": []
+                },
+                {
+                  "text": "x",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-ийн индексийг ",
+                  "marks": []
+                },
+                {
+                  "text": "lastO",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ", ",
+                  "marks": []
+                },
+                {
+                  "text": "lastX",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-д хадгална. Zero-based индекс ашиглаж, хараахан гараагүй тэмдэгтэд $-1$ өгнө. $i$ дээр төгсөх substring хоёр тэмдэгттэй байх нь эхлэл $l\\le\\min(lastO,lastX)$-тэй тэнцүү.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Жишээ",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "ooxo",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " мөрийн баруун төгсгөл бүрийн contribution $0,0,2,3$, нийлээд $5$. Бүх тэмдэгт o бол lastX нь $-1$ хэвээр тул contribution бүр $0$.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Substring дотор ",
+                  "marks": []
+                },
+                {
+                  "text": "o",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " байх нь эхлэл хамгийн сүүлийн o-оос хэтрэхгүй гэсэн үг; ",
+                  "marks": []
+                },
+                {
+                  "text": "x",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-д мөн адил. Хоёулаа байх нөхцөл нь хоёр хязгаарын багаас хэтрэхгүй байхтай яг тэнцүү. Zero-based боломжит эхлэлүүд $0\\ldots\\min(lastO,lastX)$ тул contribution $\\min(lastO,lastX)+1$. Аль нэг нь хараахан гараагүй бол энэ нь $0$.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "p",
+              "text": "Substring бүр ганц баруун төгсгөлтэй. Баруун төгсгөл бүрийн зөв contribution-ийг нийлүүлэхэд хүчинтэй substring бүр яг нэг удаа тоологдоно. Last occurrence-уудыг одоогийн тэмдэгтээр шинэчилсний дараа тоолдог тул одоогийн байрлалыг ч зөв хамруулна."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хугацаа $O(N)$, мөрөөс гадуурх нэмэлт санах ой $O(1)$. $N\\le10^6$ тул answer ойролцоогоор $5\\cdot10^{11}$ хүрч болно; ll ашиглана. Индексүүд int-д багтана. Нэг тэмдэгттэй substring хоёр төрлийг агуулахгүй."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Last occurrence-ийн эхлэл"
+            },
+            {
+              "type": "p",
+              "text": "Unseen төлөвийг 0 гэвэл эхний байрлалаас эхэлсэн substring-ийг буруу тоолно; -1 хэрэгтэй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int lastO = -1, lastX = -1;\nll ans = 0;"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Баруун төгсгөлийн contribution"
+            },
+            {
+              "type": "p",
+              "text": "Нийлбэрийг ll-д хадгална. Нэг алхмын contribution int-д багтах боловч нийт нь багтахгүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "for (int i = 0; i < n; ++i) {\n    if (s[i] == 'o') lastO = i;\n    else lastX = i;\n    ans += min(lastO, lastX) + 1;\n}\ncout << ans << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_cf"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    string s;\n    cin >> n >> s;\n    int lastO = -1, lastX = -1;\n    ll ans = 0;\n    for (int i = 0; i < n; ++i) {\n        if (s[i] == 'o') lastO = i;\n        else lastX = i;\n        ans += min(lastO, lastX) + 1;\n    }\n    cout << ans << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "There are two types of characters — Editorial",
+          "sections": [
+            {
+              "title": "Count by right endpoint",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Track the most recent ",
+                      "marks": []
+                    },
+                    {
+                      "text": "o",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " and ",
+                      "marks": []
+                    },
+                    {
+                      "text": "x",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " indices as ",
+                      "marks": []
+                    },
+                    {
+                      "text": "lastO",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " and ",
+                      "marks": []
+                    },
+                    {
+                      "text": "lastX",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ". Use zero-based indices and initialize unseen characters to $-1$. A substring ending at $i$ contains both characters exactly when its start satisfies $l\\le\\min(lastO,lastX)$.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Example",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "For ",
+                      "marks": []
+                    },
+                    {
+                      "text": "ooxo",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ", contributions by right endpoint are zero, zero, two and three, totaling five. If every character is o, lastX remains $-1$ and every contribution is zero.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Containing an ",
+                      "marks": []
+                    },
+                    {
+                      "text": "o",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " means the start does not exceed the latest ",
+                      "marks": []
+                    },
+                    {
+                      "text": "o",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": "; the same statement holds for ",
+                      "marks": []
+                    },
+                    {
+                      "text": "x",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ". Both conditions hold exactly when the start does not exceed their minimum. The possible zero-based starts are $0\\ldots\\min(lastO,lastX)$, giving $\\min(lastO,lastX)+1$ choices. If either character is unseen, this is zero.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "p",
+                  "text": "Every substring has a unique right endpoint. Summing the exact contribution for each endpoint counts every valid substring once. Update the current character’s last occurrence before counting so the current position is included correctly."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Time is $O(N)$ and auxiliary space beyond the input string is $O(1)$. With $N\\le10^6$, the answer may approach $5\\cdot10^{11}$, requiring ll. Indices fit int. A one-character substring never contains both types."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Initialize last occurrences"
+                },
+                {
+                  "type": "p",
+                  "text": "Use -1 for an unseen character; zero would falsely treat position zero as an occurrence."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int lastO = -1, lastX = -1;\nll ans = 0;"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Right-endpoint contribution"
+                },
+                {
+                  "type": "p",
+                  "text": "Store the total in ll. Individual contributions fit int, but their sum does not."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "for (int i = 0; i < n; ++i) {\n    if (s[i] == 'o') lastO = i;\n    else lastX = i;\n    ans += min(lastO, lastX) + 1;\n}\ncout << ans << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_cf"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    string s;\n    cin >> n >> s;\n    int lastO = -1, lastX = -1;\n    ll ans = 0;\n    for (int i = 0; i < n; ++i) {\n        if (s[i] == 'o') lastO = i;\n        else lastX = i;\n        ans += min(lastO, lastX) + 1;\n    }\n    cout << ans << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+]

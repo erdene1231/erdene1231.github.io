@@ -9,7 +9,8 @@ const batches={
  '04':{file:'batch04-plan.json',sha:'c2f043141768cc95f638b7b6acf768b0214d14337304e56ad480e60a63b675c9',ids:['task-757','task-758','task-761','task-769','task-770','task-771']},
  '05':{file:'batch05-plan.json',sha:'3b4dbb58520246daf85851b27cc088cd682a44f4913136c7f692f959161cd6d8',ids:['task-772','task-773','task-774','task-775','task-776','task-777']},
  '06':{file:'batch06-plan.json',sha:'4fdf908dca61732f117cd788b612b6bf4fc193ac3066d1e3af05ad5cd08aec6c',ids:['task-778','task-779','task-780','task-781','task-782','task-783']},
- '07':{file:'batch07-plan.json',sha:'1ed88cd116cf92d574f88929082d35f89e26c4b7562eadb7db01dc7fb47b0608',ids:['task-784','task-785','task-786','task-787','task-788','task-789']}
+ '07':{file:'batch07-plan.json',sha:'1ed88cd116cf92d574f88929082d35f89e26c4b7562eadb7db01dc7fb47b0608',ids:['task-784','task-785','task-786','task-787','task-788','task-789']},
+ '08':{file:'batch08-plan.json',sha:'2697ed13ad5b98ccd090db73373f66ee0392dec759fb589bd0d9a4c5137a6825',ids:['task-747','task-766','task-791','task-792','task-793','task-796']}
 };
 export function editorialBatch(batch='01'){
  const spec=batches[batch];if(!spec)throw Error('Unreviewed editorial batch');
