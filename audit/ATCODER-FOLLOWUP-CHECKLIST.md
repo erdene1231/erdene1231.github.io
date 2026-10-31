@@ -21,10 +21,11 @@ compaction. Finish the I/O phase first with its own receipt.
 - [x] Inventory all51 targets/methods and reusable original code/oracles.
 - [x] Provide independent Statement and Editorial controls inside the problem
   editor, both using the actual tutorial schema/components and save/load/CAS.
-Batches01–04:21/51 editorials are published and exact-readback verified;30 remain.
+Batches01–05:27/51 editorials are published and exact-readback verified;24 remain.
 Batch01: task749/750/751. Batch02: task752/754/755/756/762/763.
 Batch03: task753/759/760/764/765/768.
 Batch04: task757/758/761/769/770/771.
+Batch05: task772/773/774/775/776/777.
 Native integration039 is live; see its separate installation receipt.
 
 - [x] One required shared-runtime Node aggregate: 398/398 checks across 143 files,
