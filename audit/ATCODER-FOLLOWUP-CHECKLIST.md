@@ -1,5 +1,26 @@
 # Current authorized AtCoder follow-up
 
+## Current closure — 2026-10-31
+
+All requested I/O formatting/native editors/all51 original bilingual editorials
+and all six bounded UI items are complete and verified deployed. Final UI source
+PR247 (42a11ba), Pages41227561479success,18 active assets byte-exact normal TLS.
+Full Node439/439 across153 files; native browser save/reload/keyboard/actor and
+responsive light/dark checks pass. All1064 catalog bodies/all51 native documents,
+history1202, allocator, protected data and access remain exact since040.
+See ui-followup/final-deployment-receipt.json and its linked evidence.
+
+The olympiad audit is closed with a genuine source blocker:161 rows audited,
+111 existing oj.uz links retained,50 nonpreferred URLs access-inconclusive,
+0 changes/0 conclusive absence. Normal oj.uz source roots returned403; do not
+infer absence, downgrade to QOJ, guess IDs or bypass the denial. Six existing
+QOJ identities were confirmed through the normal cached public route, without
+claiming preferred-platform absence. See olympiad-url-audit/README.md.
+
+No UI implementation remains pending. The chronological notes below retain
+historical intermediate states; this closure supersedes their pending labels.
+NEVER replay migrations038/039/040 or historical publication/import SQL.
+
 ## First: screenshot-driven I/O formatting
 
 - [x] Materialize and view all three actual Library screenshot pixels locally.

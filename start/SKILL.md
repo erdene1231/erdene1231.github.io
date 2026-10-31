@@ -1096,3 +1096,11 @@ fallback inferred. See audit/olympiad-url-audit and ATCODER-FOLLOWUP-CHECKLIST.
 Six bounded UI items were authorized; dated reading is complete. Profile rating,
 weekly metrics and white home surface are the current release unit, followed
 without pause by Groups today opt-ins and Minimalist-only status/columns.
+
+Final authorized UI closure: all six items are verified deployed. PR243/244
+profile rating/weekly/pure-white,245/246 Groups today opt-ins,247 Minimalist
+controls/columns; final source42a11ba, Pages41227561479success,18 normal-TLS
+assets exact. Full Node439/439 across153 files. Fresh1064/all51/protected/access
+snapshot unchanged since040. See audit/ui-followup/final-deployment-receipt.json.
+No UI scope remains pending; the50-row olympiad URL source-access gap is an
+honest external403 blocker, not evidence of absence. No guessed fallback/replay.
