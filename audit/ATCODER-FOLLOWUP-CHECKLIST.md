@@ -17,8 +17,8 @@
 This is the user's newly authorized next scope; retain it through context
 compaction. Finish the I/O phase first with its own receipt.
 
-- [ ] Inventory actual Statement/Editorial capabilities, gates and persistence.
-- [ ] Inventory all51 targets/methods and reusable original code/oracles.
+- [x] Inventory actual Statement/Editorial capabilities, gates and persistence.
+- [x] Inventory all51 targets/methods and reusable original code/oracles.
 - [ ] Provide independent Statement and Editorial controls inside the problem
   editor, both using the actual tutorial schema/components and save/load/CAS.
 - [ ] Independently reason, author, test and publish original MN/EN editorials
@@ -57,7 +57,7 @@ URL research may fit between editorial batches but must not stall or drop the
 51-editorial scope. No new imports; respect429/403/certificate boundaries and
 report concrete unmatched/ambiguous/access gaps.
 
-## Automatically continue the five bounded deferred UI/workflow items afterward
+## Automatically continue the six bounded deferred UI/workflow items afterward
 
 The user authorizes continuation without a confirmation pause after the current
 I/O, native editor/editorial and olympiad URL phases are complete.
@@ -93,6 +93,15 @@ I/O, native editor/editorial and olympiad URL phases are complete.
   aggregate checks with supported isolated contexts, no real-user fixture
   mutation without authority. Guarded deployment/readback/receipts; no arbitrary
   redesign, new package, new access/security grants or credential changes.
+- [ ] Problems MINIMALIST mode only: first materialize and view actual pixels
+  `libfile_8360d32cbc488191a067955b22759a61`. Hide associated lesson labels;
+  functional compact circular far-right status selector (solved green, trying
+  yellow, unsolved red), accessible keyboard/touch/noncolor labels. Preserve
+  status persistence/user isolation and never solve on navigation. Slightly
+  larger readable titles, smaller rating tags, no hint/history counts; respect
+  hidden tags. Persist 1/2/3-column preference with sensible minimum widths and
+  narrow-screen clamping. Preserve ordering/filter/pagination and other modes;
+  test mobile/tablet/wide, light/dark, all statuses, reload and keyboard.
 
 These additional references are queued for their respective phase; their pixels
 have not yet been inspected. A genuine image access blocker must be documented

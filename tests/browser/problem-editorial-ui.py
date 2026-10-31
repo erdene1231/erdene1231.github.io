@@ -45,12 +45,12 @@ try:
   page.evaluate("const s=document.querySelector('#admin-choose');s.value='1';s.onchange()")
   page.wait_for_function("document.querySelector('#admin-editorial-document input').value.length>0")
   page.locator('#admin-editorial-document > details > summary').click();editable=page.locator('#admin-editorial-document .block-rich-input').first;editable.fill('Шинээр зассан тайлбар $x_1$.')
-  page.locator('#admin-save').click();page.wait_for_function('saved.length===1');assert page.evaluate("saved[0].p_body.editorial.sections[0].blocks[0].content[0].text")=='Шинээр зассан тайлбар $x_1$.'
+  page.locator('#admin-save-editorial').click();page.wait_for_function('saved.length===1');assert page.evaluate("saved[0].p_body.editorial.sections[0].blocks[0].content[0].text")=='Шинээр зассан тайлбар $x_1$.'
   assert page.evaluate('saved[0].p_revision')==1;assert page.evaluate('saved[0].p_body.ratingBasis')==p['ratingBasis']
   checks.append('actual admin: lazy editor load, existing tutorial block authoring, shared revision save payload and explicit rating rationale preserved')
   page.wait_for_function("document.querySelector('#admin-choose').value==='1'");page.wait_for_timeout(100)
-  page.locator('#admin-editorial-document > details > summary').click();page.locator('#admin-editorial-document .block-rich-input').first.fill('Do not lose this draft')
-  page.evaluate('backendAvailable=false');page.locator('#admin-save').click();page.wait_for_function("document.querySelector('#admin-message').textContent.includes('идэвхжээгүй')");assert page.evaluate('saved.length')==1;assert 'Do not lose this draft' in page.locator('#admin-editorial-document').inner_text();checks.append('missing backend fails closed before write and retains unsaved rich content')
+  page.locator('#admin-editorial-document .block-rich-input').first.fill('Do not lose this draft')
+  page.evaluate('backendAvailable=false');page.locator('#admin-save-editorial').click();page.wait_for_function("document.querySelector('#admin-save-editorial').parentElement.nextSibling.textContent.includes('идэвхжээгүй')");assert page.evaluate('saved.length')==1;assert 'Do not lose this draft' in page.locator('#admin-editorial-document').inner_text();checks.append('missing backend fails closed before write and retains unsaved rich content')
   page.on('dialog',lambda d:d.dismiss());page.locator('#admin-new').click();assert page.locator('#admin-choose').input_value()=='1'
   page.evaluate("actor=null;adminUI.accountChanged()");assert page.locator('#admin-nav').is_hidden();assert page.locator('#admin-editorial-document .block-rich-input').count()==0
   checks.append('dirty-editor switch cancellation and logout invalidation preserve privacy')

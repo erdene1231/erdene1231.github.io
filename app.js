@@ -1,7 +1,7 @@
 import {setupAdminProfiles} from './admin-profile.js?v=52';
 import {createLearningStore} from './learning-store.js?v=52';
-import {setupProblemStatement} from './problem-statement.js?v=85';
-import {setupProblemEditorial} from './problem-editorial.js?v=84';
+import {setupProblemStatement} from './problem-statement.js?v=86';
+import {setupProblemEditorial} from './problem-editorial.js?v=86';
 import {appendHintText} from './hint-content.js?v=52';
 import {canonicalProblemUrl} from './problem-url.js?v=52';
 import {priorityLevel,priorityLabel,isHighPriority,ratingClass} from './priority.js?v=52';
@@ -11,7 +11,7 @@ import {setupGroups} from './groups.js?v=52';
 let tutorialUI, learningUI=null,hintRenderTurn=0,problemEditorialUI,problemStatementUI,learningProgressStore;
 import {CURRENT_EMPTY,cleanProgress,parseCurrentBackup,progressRows} from './progress.js?v=52';
 import {getSolvers} from './community.js?v=52';
-import {setupAdmin} from './admin.js?v=85';
+import {setupAdmin} from './admin.js?v=86';
 import {parseCatalog,hintTexts,getSources} from './problem-store.js?v=63';
 import {rpc} from './accounts.js?v=52';
 import {ownProfile,saveOwnProfile,avatarUrl,accountError} from './accounts.js?v=52';
