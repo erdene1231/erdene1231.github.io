@@ -26,6 +26,10 @@ Batch01: task749/750/751. Batch02: task752/754/755/756/762/763.
 Batch03: task753/759/760/764/765/768.
 Native integration039 is live; see its separate installation receipt.
 
+- [x] One required shared-runtime Node aggregate: 398/398 checks across 143 files,
+  zero failures/skips, 8m40s; see native-problem-editorials/full-node-aggregate.json.
+  Later pure-content batches use targeted checks.
+
 - [ ] Independently reason, author, test and publish original MN/EN editorials
   for all50 existing Typical90 tasks and ABC005D in genuinely finished batches.
 - [ ] Explain algorithms, correctness, complexity and meaningful fragments first;
