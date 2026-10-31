@@ -69,6 +69,14 @@ IDs/ratings/priorities/tags and all learner/profile/private data stay preserved.
   category totals and already-preferred/oj.uz/QOJ/retained-gap counts. Reconcile
   fresh revisions with native editorial batches and preserve every other field.
 
+Current audit:161 rows inventoried;111 existing preferred oj.uz URLs retained
+(including36 previously individually verified EGOI matches),50 other URLs retained
+as access-inconclusive. All eight normal oj.uz source-root requests returned403;
+not proof of absence. Six existing public QOJ identities/year confirmed normally,
+but no fallback authorized without oj.uz absence proof. Empty allowlist;zero URL
+writes/SQL. See olympiad-url-audit/README.md and manifest.json. Source-dependent
+resolution remains blocked; continue all six independent UI items.
+
 URL research may fit between editorial batches but must not stall or drop the
 51-editorial scope. No new imports; respect429/403/certificate boundaries and
 report concrete unmatched/ambiguous/access gaps.
