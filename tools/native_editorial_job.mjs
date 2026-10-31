@@ -5,7 +5,8 @@ export{preflightSql};
 const batches={
  '01':{file:'batch01-plan.json',sha:'cede184c27cb9a95934f42ed871096d238819fd4dc11b6b175c9c6a225ff5a15',ids:['task-749','task-750','task-751']},
  '02':{file:'batch02-plan.json',sha:'895f595244acdbe972e7b89f5e96cbf737824216f83b761fbebeb312be2efd51',ids:['task-752','task-754','task-755','task-756','task-762','task-763']},
- '03':{file:'batch03-plan.json',sha:'7e55c76cf26f6a0d207e2ce23225782a8e42382b2f80e299769259d18d35cdb2',ids:['task-753','task-759','task-760','task-764','task-765','task-768']}
+ '03':{file:'batch03-plan.json',sha:'7e55c76cf26f6a0d207e2ce23225782a8e42382b2f80e299769259d18d35cdb2',ids:['task-753','task-759','task-760','task-764','task-765','task-768']},
+ '04':{file:'batch04-plan.json',sha:'c2f043141768cc95f638b7b6acf768b0214d14337304e56ad480e60a63b675c9',ids:['task-757','task-758','task-761','task-769','task-770','task-771']}
 };
 export function editorialBatch(batch='01'){
  const spec=batches[batch];if(!spec)throw Error('Unreviewed editorial batch');

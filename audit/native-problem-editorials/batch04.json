@@ -1,0 +1,1590 @@
+[
+  {
+    "id": "task-757",
+    "ref": "typical90_l",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_l",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-l",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Red Painting — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Улаан нүднүүдийн холбоост component-уудыг DSU-д хадгална. Шинэ нүд улайх бүрд дөрвөн чиглэлийн улаан хөршүүдтэй нь нэгтгэнэ. Нүд хэзээ ч буцаад цагаан болохгүй тул component салгах шаардлагагүй."
+            }
+          ]
+        },
+        {
+          "title": "Төлөөлөл ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$0$-индекстэй $(r,c)$ нүдийг $rW+c$ гэсэн нэг индексээр төлөөлнө. red массив нь нүд будсан эсэхийг DSU-гаас тусдаа хадгална. Асуултад хоёр нүд хоёулаа улаан бөгөөд root нь ижил үед л Yes."
+            },
+            {
+              "type": "p",
+              "text": "Хоосон $2\\times2$ хүснэгтэд $(1,1)$ ба $(2,2)$-ыг будахад тэд диагональ хөрш тул холбогдоогүй. $(1,2)$-ыг нэмбэл замтай болно. Цагаан нүдийг өөртэй нь асуухад No; будсан нүдийг өөртэй нь асуухад Yes."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Одоогийн улаан нүднүүдээр үүсэх graph-ийн ирмэгүүд нь зөвхөн дөрвөн чиглэлийн улаан хөршүүд. Нэг нүд нэмэгдэхэд шинээр үүсэх бүх ирмэг тэр нүднээс түүний улаан хөршүүд рүү явна."
+            },
+            {
+              "type": "p",
+              "text": "Алхам бүрд эдгээр бүх ирмэгээр join хийдэг тул DSU нь graph-ийн холбоост component-уудтай яг таарна. Өөр ирмэгээр нэгтгэхгүй учир байхгүй зам үүсгэхгүй. Эхний хоосон төлөвөөс induction-оор энэ invariant хадгалагдана."
+            },
+            {
+              "type": "p",
+              "text": "DSU цагаан нүдэнд ч singleton root үүсгэсэн байдаг. Иймээс зөвхөн root тэнцүүг шалгах хангалтгүй: хоёр endpoint улаан гэсэн нөхцөлийг заавал хамтад нь шалгана."
+            }
+          ]
+        },
+        {
+          "title": "DSU бүтэц ба complexity",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "DSU-ийн $p[x]<0$ бол $x$ root бөгөөд $-p[x]$ нь component-ийн хэмжээ; бусад үед $p[x]$ нь parent. Constructor-ийн ",
+                  "marks": []
+                },
+                {
+                  "text": "p(n,-1)",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь бүх элементийг нэг оройтой component болгож эхлүүлнэ. root нь Path compression, join нь Union by size ашиглана.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "p",
+              "text": "Эхлэлт $O(HW)$, үйлдлүүд нийт $O(Q\\alpha(HW))$, санах ой $O(HW)$. $HW\\le4\\cdot10^6$ тул индекс, component хэмжээ int-д багтана. Зөвхөн нүдний доторх дөрвөн хөршийг шалгана."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Compact DSU ба constructor"
+            },
+            {
+              "type": "p",
+              "text": "Сөрөг хэмжээний утга бага байх тусам component том. join дотор том component-ийг root хэвээр үлдээгээд хэмжээг нэмнэ; нэг root байвал дахин нэгтгэхгүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "struct DSU {\n    vector<int> p;\n    explicit DSU(int n) : p(n, -1) {}\n    int root(int x) {\n        return p[x] < 0 ? x : p[x] = root(p[x]);\n    }\n    void join(int a, int b) {\n        a = root(a);\n        b = root(b);\n        if (a == b) return;\n        if (p[a] > p[b]) swap(a, b);\n        p[a] += p[b];\n        p[b] = a;\n    }\n};"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Шинэ улаан нүд"
+            },
+            {
+              "type": "p",
+              "text": "red-ийг эхлээд тогтооно. Хөршийн координатыг шалгасны дараа зөвхөн улаан хөрштэй нэгтгэнэ."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "if (type == 1) {\n    red[u] = true;\n    for (int dir = 0; dir < 4; ++dir) {\n        int nr = r + dr[dir], nc = c + dc[dir];\n        if (nr < 0 || nr >= h || nc < 0 || nc >= w) continue;\n        int v = nr * w + nc;\n        if (red[v]) dsu.join(u, v);\n    }\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Endpoint шалгалт"
+            },
+            {
+              "type": "p",
+              "text": "&& нь хоёр endpoint улаан гэдгийг баталсны дараа root-уудыг харьцуулна. Өөртэй нь асуусан цагаан нүдийг ингэж зөв хасна."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int nr, nc;\ncin >> nr >> nc;\nint v = (nr - 1) * w + nc - 1;\nbool ok = red[u] && red[v] && dsu.root(u) == dsu.root(v);\ncout << (ok ? \"Yes\" : \"No\") << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_l"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct DSU {\n    vector<int> p;\n    explicit DSU(int n) : p(n, -1) {}\n    int root(int x) {\n        return p[x] < 0 ? x : p[x] = root(p[x]);\n    }\n    void join(int a, int b) {\n        a = root(a);\n        b = root(b);\n        if (a == b) return;\n        if (p[a] > p[b]) swap(a, b);\n        p[a] += p[b];\n        p[b] = a;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int h, w, q;\n    cin >> h >> w >> q;\n    DSU dsu(h * w);\n    vector<char> red(h * w);\n    const int dr[] = {-1, 1, 0, 0};\n    const int dc[] = {0, 0, -1, 1};\n    while (q--) {\n        int type, r, c;\n        cin >> type >> r >> c;\n        --r;\n        --c;\n        int u = r * w + c;\n        if (type == 1) {\n            red[u] = true;\n            for (int dir = 0; dir < 4; ++dir) {\n                int nr = r + dr[dir], nc = c + dc[dir];\n                if (nr < 0 || nr >= h || nc < 0 || nc >= w) continue;\n                int v = nr * w + nc;\n                if (red[v]) dsu.join(u, v);\n            }\n        } else {\n            int nr, nc;\n            cin >> nr >> nc;\n            int v = (nr - 1) * w + nc - 1;\n            bool ok = red[u] && red[v] && dsu.root(u) == dsu.root(v);\n            cout << (ok ? \"Yes\" : \"No\") << '\\n';\n        }\n    }\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Red Painting — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Maintain connected components of red cells with DSU. Whenever a cell becomes red, unite it with its red neighbors in the four cardinal directions. Cells never become white again, so no component deletion is needed."
+                }
+              ]
+            },
+            {
+              "title": "Representation and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Represent zero-based cell $(r,c)$ by $rW+c$. Keep a separate red array. Answer Yes only when both endpoints are red and have the same root."
+                },
+                {
+                  "type": "p",
+                  "text": "In an initially white $2\\times2$ grid, painting $(1,1)$ and $(2,2)$ does not connect them diagonally. Painting $(1,2)$ connects them. A white cell queried against itself gives No; a painted cell queried against itself gives Yes."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "The current red-cell graph contains exactly the edges between cardinally adjacent red cells. Adding one cell creates only edges from that cell to its red neighbors."
+                },
+                {
+                  "type": "p",
+                  "text": "Joining all these new edges makes the DSU partition exactly match the graph’s connected components. No other unions are performed, so no nonexistent path is introduced. Induction from the empty grid preserves this invariant."
+                },
+                {
+                  "type": "p",
+                  "text": "The DSU also allocates singleton roots for white cells. Root equality alone is therefore insufficient: both endpoints must separately be checked red."
+                }
+              ]
+            },
+            {
+              "title": "DSU structure and complexity",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "A negative $p[x]$ marks a root and stores the negated component size; otherwise it stores a parent. The constructor initializer ",
+                      "marks": []
+                    },
+                    {
+                      "text": "p(n,-1)",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " creates singleton components. root uses Path compression and join uses Union by size.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "p",
+                  "text": "Initialization takes $O(HW)$, operations total $O(Q\\alpha(HW))$, and storage is $O(HW)$. Since $HW\\le4\\cdot10^6$, indices and sizes fit int. Check bounds before inspecting each of the four neighbors."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Compact DSU and constructor"
+                },
+                {
+                  "type": "p",
+                  "text": "More-negative sizes mean larger components. Keep the larger root, add the sizes, and ignore unions within one component."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "struct DSU {\n    vector<int> p;\n    explicit DSU(int n) : p(n, -1) {}\n    int root(int x) {\n        return p[x] < 0 ? x : p[x] = root(p[x]);\n    }\n    void join(int a, int b) {\n        a = root(a);\n        b = root(b);\n        if (a == b) return;\n        if (p[a] > p[b]) swap(a, b);\n        p[a] += p[b];\n        p[b] = a;\n    }\n};"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "A newly painted cell"
+                },
+                {
+                  "type": "p",
+                  "text": "Mark the cell red, then unite only with in-bounds red neighbors."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "if (type == 1) {\n    red[u] = true;\n    for (int dir = 0; dir < 4; ++dir) {\n        int nr = r + dr[dir], nc = c + dc[dir];\n        if (nr < 0 || nr >= h || nc < 0 || nc >= w) continue;\n        int v = nr * w + nc;\n        if (red[v]) dsu.join(u, v);\n    }\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Endpoint checks"
+                },
+                {
+                  "type": "p",
+                  "text": "The && chain requires both endpoints red before comparing roots, correctly rejecting a white cell queried against itself."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int nr, nc;\ncin >> nr >> nc;\nint v = (nr - 1) * w + nc - 1;\nbool ok = red[u] && red[v] && dsu.root(u) == dsu.root(v);\ncout << (ok ? \"Yes\" : \"No\") << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_l"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct DSU {\n    vector<int> p;\n    explicit DSU(int n) : p(n, -1) {}\n    int root(int x) {\n        return p[x] < 0 ? x : p[x] = root(p[x]);\n    }\n    void join(int a, int b) {\n        a = root(a);\n        b = root(b);\n        if (a == b) return;\n        if (p[a] > p[b]) swap(a, b);\n        p[a] += p[b];\n        p[b] = a;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int h, w, q;\n    cin >> h >> w >> q;\n    DSU dsu(h * w);\n    vector<char> red(h * w);\n    const int dr[] = {-1, 1, 0, 0};\n    const int dc[] = {0, 0, -1, 1};\n    while (q--) {\n        int type, r, c;\n        cin >> type >> r >> c;\n        --r;\n        --c;\n        int u = r * w + c;\n        if (type == 1) {\n            red[u] = true;\n            for (int dir = 0; dir < 4; ++dir) {\n                int nr = r + dr[dir], nc = c + dc[dir];\n                if (nr < 0 || nr >= h || nc < 0 || nc >= w) continue;\n                int v = nr * w + nc;\n                if (red[v]) dsu.join(u, v);\n            }\n        } else {\n            int nr, nc;\n            cin >> nr >> nc;\n            int v = (nr - 1) * w + nc - 1;\n            bool ok = red[u] && red[v] && dsu.root(u) == dsu.root(v);\n            cout << (ok ? \"Yes\" : \"No\") << '\\n';\n        }\n    }\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "program_sha256": "0cb7285453fb3e09f9d365ccaa1fa2fc858850a90cecbd918d1057d3684a6b47",
+    "status": "authored; content/native verification and publication pending"
+  },
+  {
+    "id": "task-758",
+    "ref": "typical90_m",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_m",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-m",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Passing — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$d_1[k]$ нь $1$-ээс $k$ хүртэлх shortest distance, $d_N[k]$ нь $N$-ээс $k$ хүртэлх shortest distance байг. Бүх $k$-ийн хариу $d_1[k]+d_N[k]$. Эерэг жинтэй undirected graph тул хоёр удаа Dijkstra ажиллуулна."
+            }
+          ]
+        },
+        {
+          "title": "Маршрутын утга ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Энэ бодлогын маршрут орой болон ирмэгийг дахин дайрч болно. Давтан дайрсан ирмэгийн төлбөр бүрийг нэмнэ. Эх сурвалжийн од хэлбэртэй жишээнд $1-2$ үнэ $314$, $1-4$ үнэ $265$ үед $2$-оор дайрах маршрут $1\\to2\\to1\\to4$, өртөг $893$ байдаг."
+            },
+            {
+              "type": "p",
+              "text": "Өөрийн жижиг жишээ: $1-2$ үнэ $2$, $1-3$ үнэ $5$ бол $1$-ээс $3$ руу $2$-оор дайрах хамгийн бага өртөг $2+2+5=9$. Хоёр distance-ийн нийлбэр буцаж дайрахыг зөв тооцно."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$k$-оор дайрсан дурын маршрутыг $k$ дээр prefix ба suffix болгон салгаж болно. Prefix-ийн өртөг дор хаяж $d_1[k]$, suffix-ийнх дор хаяж $d_N[k]$. Тиймээс нийлбэр нь доод хязгаар."
+            },
+            {
+              "type": "p",
+              "text": "$1\\to k$ shortest path болон $k\\to N$ shortest path-ийг залгахад энэ нийлбэрт хүрнэ. Graph undirected тул $N$-ээс олсон distance-ийг буцааж ашиглаж болно. Давтагдсан орой/ирмэг зөвшөөрөгддөг учир залгасан маршрут хүчинтэй."
+            },
+            {
+              "type": "p",
+              "text": "Dijkstra-д хамгийн бага tentative distance-тай оройг авахад эерэг жинтэй үлдсэн ирмэгүүдээр түүнээс богино шинэ зам гарч чадахгүй. Relaxation нь шинэ боломжит зам бүрийг оруулна. Иймээс хоёр distance хүснэгт зөв бөгөөд нийлбэрүүд ч зөв."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Priority queue-тай хоёр хайлт нийт $O((N+M)\\log N)$ хугацаа, $O(N+M)$ санах ой хэрэглэнэ. Жин $10000$-аас ихгүй; shortest path нь давталтгүй байж болох тул distance $10000(N-1)$-ээс ихгүй. Distance болон sentinel-ийг ll-д хадгалж, хуучирсан queue бичлэгийг алгасана."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Dijkstra ба хуучин бичлэг"
+            },
+            {
+              "type": "p",
+              "text": "State-ийн эхний тал нь distance тул greater ашигласан priority_queue хамгийн бага өртгийг түрүүлж авна. $du\\ne dist[u]$ бол илүү сайн зам олдсон хуучин бичлэг."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<ll> dijkstra(const vector<vector<Edge>> &g, int start) {\n    const ll inf = 1LL << 60;\n    vector<ll> dist(g.size(), inf);\n    using State = pair<ll, int>;\n    priority_queue<State, vector<State>, greater<State>> q;\n    dist[start] = 0;\n    q.push({0, start});\n    while (!q.empty()) {\n        auto [du, u] = q.top();\n        q.pop();\n        if (du != dist[u]) continue;\n        for (auto [v, w] : g[u]) {\n            if (du + w < dist[v]) {\n                dist[v] = du + w;\n                q.push({dist[v], v});\n            }\n        }\n    }\n    return dist;\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Хоёр эхлэлээс бодох"
+            },
+            {
+              "type": "p",
+              "text": "Нэг helper-ийг $0$ болон $n-1$ оройгоор дуудаад бүх оройн хоёр distance-ийг нэмнэ."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "auto d1 = dijkstra(g, 0);\nauto dn = dijkstra(g, n - 1);\nfor (int k = 0; k < n; ++k) cout << d1[k] + dn[k] << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_m"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\nusing Edge = pair<int, int>;\n\nvector<ll> dijkstra(const vector<vector<Edge>> &g, int start) {\n    const ll inf = 1LL << 60;\n    vector<ll> dist(g.size(), inf);\n    using State = pair<ll, int>;\n    priority_queue<State, vector<State>, greater<State>> q;\n    dist[start] = 0;\n    q.push({0, start});\n    while (!q.empty()) {\n        auto [du, u] = q.top();\n        q.pop();\n        if (du != dist[u]) continue;\n        for (auto [v, w] : g[u]) {\n            if (du + w < dist[v]) {\n                dist[v] = du + w;\n                q.push({dist[v], v});\n            }\n        }\n    }\n    return dist;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    vector<vector<Edge>> g(n);\n    for (int i = 0; i < m; ++i) {\n        int a, b, c;\n        cin >> a >> b >> c;\n        --a;\n        --b;\n        g[a].push_back({b, c});\n        g[b].push_back({a, c});\n    }\n    auto d1 = dijkstra(g, 0);\n    auto dn = dijkstra(g, n - 1);\n    for (int k = 0; k < n; ++k) cout << d1[k] + dn[k] << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Passing — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Let $d_1[k]$ be the shortest distance from $1$ to $k$, and $d_N[k]$ the shortest distance from $N$ to $k$. The answer for every $k$ is $d_1[k]+d_N[k]$. Run Dijkstra twice on the positive-weight undirected graph."
+                }
+              ]
+            },
+            {
+              "title": "Route semantics and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Routes may revisit vertices and roads, paying for every traversal. The source’s star example has costs $314$ on $1-2$ and $265$ on $1-4$; going via $2$ uses $1\\to2\\to1\\to4$ and costs $893$."
+                },
+                {
+                  "type": "p",
+                  "text": "For a separate small example, edges $1-2$ of cost $2$ and $1-3$ of cost $5$ require cost $2+2+5=9$ to travel from $1$ to $3$ via $2$. The two-distance sum includes the repeated traversal."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Split any qualifying walk at a visit to $k$. Its prefix costs at least $d_1[k]$, and its suffix costs at least $d_N[k]$, so their sum is a lower bound."
+                },
+                {
+                  "type": "p",
+                  "text": "Concatenating a shortest $1$-to-$k$ path and a shortest $k$-to-$N$ path achieves the bound. Undirected edges let us use distances computed from $N$. Repeated vertices or roads in the concatenation are permitted."
+                },
+                {
+                  "type": "p",
+                  "text": "Dijkstra removes the smallest tentative distance. Positive remaining edges cannot create a shorter route to that settled vertex. Relaxation records every improving extension, so both distance tables are correct and their sums give the claimed minima."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "The two priority-queue searches take $O((N+M)\\log N)$ time and $O(N+M)$ space. Weights are at most $10000$, so shortest distances are at most $10000(N-1)$. Use ll for distances and the large sentinel; skip obsolete queue entries."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Dijkstra and stale entries"
+                },
+                {
+                  "type": "p",
+                  "text": "State stores distance first, and greater makes the priority queue a min-heap. A state with $du\\ne dist[u]$ is obsolete because a better distance was found."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<ll> dijkstra(const vector<vector<Edge>> &g, int start) {\n    const ll inf = 1LL << 60;\n    vector<ll> dist(g.size(), inf);\n    using State = pair<ll, int>;\n    priority_queue<State, vector<State>, greater<State>> q;\n    dist[start] = 0;\n    q.push({0, start});\n    while (!q.empty()) {\n        auto [du, u] = q.top();\n        q.pop();\n        if (du != dist[u]) continue;\n        for (auto [v, w] : g[u]) {\n            if (du + w < dist[v]) {\n                dist[v] = du + w;\n                q.push({dist[v], v});\n            }\n        }\n    }\n    return dist;\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Two starting vertices"
+                },
+                {
+                  "type": "p",
+                  "text": "Call the same helper at vertices zero and $n-1$, then add the two distances for each vertex."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "auto d1 = dijkstra(g, 0);\nauto dn = dijkstra(g, n - 1);\nfor (int k = 0; k < n; ++k) cout << d1[k] + dn[k] << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_m"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\nusing Edge = pair<int, int>;\n\nvector<ll> dijkstra(const vector<vector<Edge>> &g, int start) {\n    const ll inf = 1LL << 60;\n    vector<ll> dist(g.size(), inf);\n    using State = pair<ll, int>;\n    priority_queue<State, vector<State>, greater<State>> q;\n    dist[start] = 0;\n    q.push({0, start});\n    while (!q.empty()) {\n        auto [du, u] = q.top();\n        q.pop();\n        if (du != dist[u]) continue;\n        for (auto [v, w] : g[u]) {\n            if (du + w < dist[v]) {\n                dist[v] = du + w;\n                q.push({dist[v], v});\n            }\n        }\n    }\n    return dist;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    vector<vector<Edge>> g(n);\n    for (int i = 0; i < m; ++i) {\n        int a, b, c;\n        cin >> a >> b >> c;\n        --a;\n        --b;\n        g[a].push_back({b, c});\n        g[b].push_back({a, c});\n    }\n    auto d1 = dijkstra(g, 0);\n    auto dn = dijkstra(g, n - 1);\n    for (int k = 0; k < n; ++k) cout << d1[k] + dn[k] << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "program_sha256": "e0c04c9cc1f48404b66941f9b09d5c552e781a20accee68812838acd8631fa1c",
+    "status": "authored; content/native verification and publication pending"
+  },
+  {
+    "id": "task-761",
+    "ref": "typical90_u",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_u",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-u",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Come Back in One Piece — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хоёр орой харилцан хүрэх боломжтой байх нь нэг Strongly Connected Component (SCC)-д багтахтай тэнцүү. $s$ оройтой SCC нь $s(s-1)/2$ хос өгнө. SCC-уудыг Kosaraju-ийн хоёр DFS-ээр олно."
+            }
+          ]
+        },
+        {
+          "title": "Хоёр traversal ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эхний DFS-ийг анхны graph дээр ажиллуулж, оройг бүх гарах ирмэгээ боловсруулж дуусахад order-д нэмнэ. Дараа нь order-ийг урвуугаар явж, бүх ирмэгийг эргүүлсэн graph дээр ороогүй component бүрийг цуглуулна."
+            },
+            {
+              "type": "p",
+              "text": "$1\\leftrightarrow2$, $2\\to3$, $3\\leftrightarrow4$ бол SCC-ууд $\\{1,2\\}$ болон $\\{3,4\\}$. Нийт $1+1=2$ хос. $2\\to3$ ирмэгийг давхар оруулсан ч хосын тоо өөрчлөгдөхгүй."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "SCC бүрийг нэг орой болгон агшаахад DAG үүснэ. Хоёр өөр component-ийн $A\\to B$ ирмэг байвал эхний DFS-ийн хамгийн сүүлд дуусах хугацаа $A$-д $B$-ээс их: $A$-г эхэлж хүрвэл $B$ дууссаны дараа $A$ дуусна; $B$ өмнө нь дууссан байвал мөн энэ эрэмбэ хадгалагдана."
+            },
+            {
+              "type": "p",
+              "text": "Иймээс урвуу finish order нь үлдсэн component-уудын эх үүсвэрийг түрүүлж авна. Ирмэгүүдийг эргүүлсэн graph дээр тэндээс өөр ороогүй SCC рүү гарах боломжгүй; харин өөрийн SCC-ийн бүх оройд хүрнэ. Давтан ажиллуулахад component бүр яг нэг удаа олдоно."
+            },
+            {
+              "type": "p",
+              "text": "Нэг SCC дотор бүх хоёр орой харилцан хүрнэ. Өөр SCC-уудын орой харилцан хүрдэг байсан бол анхнаасаа нэг SCC байх ёстой. Тиймээс зөвхөн component доторх unordered хосуудыг $s(s-1)/2$-оор нэмнэ."
+            }
+          ]
+        },
+        {
+          "title": "Iterative DFS ба complexity",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эхний stack-ийн frame нь (орой, дараагийн ирмэгийн индекс). Бүх ирмэг дуусахад л order-д нэмэх нь жинхэнэ DFS finish order үүсгэнэ; зүгээр очсон дараалал хангалтгүй. Хоёр traversal хоёулаа iterative тул урт graph-д recursion stack хэрэглэхгүй."
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Хугацаа $O(N+M)$, санах ой $O(N+M)$. Component-ийн ",
+                  "marks": []
+                },
+                {
+                  "text": "size",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " хувьсагч ll учир ",
+                  "marks": []
+                },
+                {
+                  "text": "size*(size-1)",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь үржүүлэхээс өмнө өргөн төрөлтэй. $N=100000$ бүхэл SCC бол $4999950000$ хос гарна; int хүрэхгүй. Graph холбоосгүй болон parallel edge-тэй байж болно.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Finish order-ийн frame"
+            },
+            {
+              "type": "p",
+              "text": "Frame-ийн ирмэгийн индексийг шинэ орой push хийхээс өмнө ахиулна. Буцаж ирэхэд дараагийн ирмэгээс үргэлжилнэ."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<char> seen(n);\nvector<int> order;\nfor (int start = 0; start < n; ++start) {\n    if (seen[start]) continue;\n    vector<pair<int, int>> st{{start, 0}};\n    seen[start] = true;\n    while (!st.empty()) {\n        int u = st.back().first;\n        int edge = st.back().second;\n        if (edge == int(g[u].size())) {\n            order.push_back(u);\n            st.pop_back();\n            continue;\n        }\n        ++st.back().second;\n        int v = g[u][edge];\n        if (!seen[v]) {\n            seen[v] = true;\n            st.push_back({v, 0});\n        }\n    }\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Reverse graph ба хосын тоо"
+            },
+            {
+              "type": "p",
+              "text": "Шинэ traversal бүр нэг SCC-ийн size-ийг олно. ll size нь үржвэрийг int overflow-оос хамгаална."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "fill(seen.begin(), seen.end(), false);\nll ans = 0;\nfor (auto it = order.rbegin(); it != order.rend(); ++it) {\n    int start = *it;\n    if (seen[start]) continue;\n    vector<int> st{start};\n    seen[start] = true;\n    ll size = 0;\n    while (!st.empty()) {\n        int u = st.back();\n        st.pop_back();\n        ++size;\n        for (int v : rev[u]) {\n            if (seen[v]) continue;\n            seen[v] = true;\n            st.push_back(v);\n        }\n    }\n    ans += size * (size - 1) / 2;\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_u"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    vector<vector<int>> g(n), rev(n);\n    for (int i = 0; i < m; ++i) {\n        int a, b;\n        cin >> a >> b;\n        --a;\n        --b;\n        g[a].push_back(b);\n        rev[b].push_back(a);\n    }\n    vector<char> seen(n);\n    vector<int> order;\n    for (int start = 0; start < n; ++start) {\n        if (seen[start]) continue;\n        vector<pair<int, int>> st{{start, 0}};\n        seen[start] = true;\n        while (!st.empty()) {\n            int u = st.back().first;\n            int edge = st.back().second;\n            if (edge == int(g[u].size())) {\n                order.push_back(u);\n                st.pop_back();\n                continue;\n            }\n            ++st.back().second;\n            int v = g[u][edge];\n            if (!seen[v]) {\n                seen[v] = true;\n                st.push_back({v, 0});\n            }\n        }\n    }\n    fill(seen.begin(), seen.end(), false);\n    ll ans = 0;\n    for (auto it = order.rbegin(); it != order.rend(); ++it) {\n        int start = *it;\n        if (seen[start]) continue;\n        vector<int> st{start};\n        seen[start] = true;\n        ll size = 0;\n        while (!st.empty()) {\n            int u = st.back();\n            st.pop_back();\n            ++size;\n            for (int v : rev[u]) {\n                if (seen[v]) continue;\n                seen[v] = true;\n                st.push_back(v);\n            }\n        }\n        ans += size * (size - 1) / 2;\n    }\n    cout << ans << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Come Back in One Piece — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Two vertices are mutually reachable exactly when they belong to one Strongly Connected Component (SCC). A component of size $s$ contributes $s(s-1)/2$ pairs. Find SCCs with Kosaraju’s two DFS traversals."
+                }
+              ]
+            },
+            {
+              "title": "Traversals and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "In the original graph, append each vertex to order only after processing all outgoing edges. Traverse this order backward and explore unvisited vertices in the graph with all edges reversed."
+                },
+                {
+                  "type": "p",
+                  "text": "For $1\\leftrightarrow2$, $2\\to3$, and $3\\leftrightarrow4$, the SCCs are $\\{1,2\\}$ and $\\{3,4\\}$, contributing two pairs. Duplicating edge $2\\to3$ does not change the answer."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Contracting each SCC gives a DAG. For an edge $A\\to B$ between different components, the maximum DFS finishing time in $A$ exceeds that in $B$: if $A$ is reached first, its traversal finishes after the reachable $B$; if $B$ finishes first, the same ordering follows."
+                },
+                {
+                  "type": "p",
+                  "text": "Reverse finishing order therefore selects a source among the remaining components. In the reversed graph it cannot reach another unprocessed SCC, but it reaches its entire own SCC. Repetition finds every component exactly once."
+                },
+                {
+                  "type": "p",
+                  "text": "Every pair inside one SCC is mutually reachable. A mutually reachable pair in different SCCs would contradict their separation. Summing $s(s-1)/2$ over components thus counts exactly the unordered pairs required by $x<y$."
+                }
+              ]
+            },
+            {
+              "title": "Iterative DFS and complexity",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "A first-pass stack frame stores a vertex and its next edge index. Append to order only after all edges finish; mere visit order is insufficient. Both traversals are iterative, avoiding deep recursion."
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Time and space are $O(N+M)$. Component size is ll before multiplication, so ",
+                      "marks": []
+                    },
+                    {
+                      "text": "size*(size-1)",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " is evaluated widely. A component of $100000$ vertices contributes $4999950000$, exceeding int. Disconnected graphs and parallel edges are supported.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Frames for finishing order"
+                },
+                {
+                  "type": "p",
+                  "text": "Advance the frame’s edge index before pushing a child. On return, traversal resumes with the next edge."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<char> seen(n);\nvector<int> order;\nfor (int start = 0; start < n; ++start) {\n    if (seen[start]) continue;\n    vector<pair<int, int>> st{{start, 0}};\n    seen[start] = true;\n    while (!st.empty()) {\n        int u = st.back().first;\n        int edge = st.back().second;\n        if (edge == int(g[u].size())) {\n            order.push_back(u);\n            st.pop_back();\n            continue;\n        }\n        ++st.back().second;\n        int v = g[u][edge];\n        if (!seen[v]) {\n            seen[v] = true;\n            st.push_back({v, 0});\n        }\n    }\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Reverse graph and pair count"
+                },
+                {
+                  "type": "p",
+                  "text": "Each new traversal counts one SCC. The ll size makes the pair product safe before division."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "fill(seen.begin(), seen.end(), false);\nll ans = 0;\nfor (auto it = order.rbegin(); it != order.rend(); ++it) {\n    int start = *it;\n    if (seen[start]) continue;\n    vector<int> st{start};\n    seen[start] = true;\n    ll size = 0;\n    while (!st.empty()) {\n        int u = st.back();\n        st.pop_back();\n        ++size;\n        for (int v : rev[u]) {\n            if (seen[v]) continue;\n            seen[v] = true;\n            st.push_back(v);\n        }\n    }\n    ans += size * (size - 1) / 2;\n}"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_u"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, m;\n    cin >> n >> m;\n    vector<vector<int>> g(n), rev(n);\n    for (int i = 0; i < m; ++i) {\n        int a, b;\n        cin >> a >> b;\n        --a;\n        --b;\n        g[a].push_back(b);\n        rev[b].push_back(a);\n    }\n    vector<char> seen(n);\n    vector<int> order;\n    for (int start = 0; start < n; ++start) {\n        if (seen[start]) continue;\n        vector<pair<int, int>> st{{start, 0}};\n        seen[start] = true;\n        while (!st.empty()) {\n            int u = st.back().first;\n            int edge = st.back().second;\n            if (edge == int(g[u].size())) {\n                order.push_back(u);\n                st.pop_back();\n                continue;\n            }\n            ++st.back().second;\n            int v = g[u][edge];\n            if (!seen[v]) {\n                seen[v] = true;\n                st.push_back({v, 0});\n            }\n        }\n    }\n    fill(seen.begin(), seen.end(), false);\n    ll ans = 0;\n    for (auto it = order.rbegin(); it != order.rend(); ++it) {\n        int start = *it;\n        if (seen[start]) continue;\n        vector<int> st{start};\n        seen[start] = true;\n        ll size = 0;\n        while (!st.empty()) {\n            int u = st.back();\n            st.pop_back();\n            ++size;\n            for (int v : rev[u]) {\n                if (seen[v]) continue;\n                seen[v] = true;\n                st.push_back(v);\n            }\n        }\n        ans += size * (size - 1) / 2;\n    }\n    cout << ans << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "program_sha256": "5def593ec5bdf2b572bd693fdf37905171c52275ee00a2fab61022b21227fcf5",
+    "status": "authored; content/native verification and publication pending"
+  },
+  {
+    "id": "task-769",
+    "ref": "typical90_af",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_af",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-af",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "AtCoder Ekiden — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$N\\le10$ тул гүйгчдийн бүх permutation-ийг шалгана. $p[j]$ нь $j$-р хэсгийн гүйгч. Хөрш гүйгчид хориглосон хос биш бол $\\sum_j A_{p[j],j}$ хугацааг тооцож хамгийн багыг авна."
+            }
+          ]
+        },
+        {
+          "title": "Adjacency ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хориглосон хосын хоёр дараалал адилхан хоригтой тул bad хүснэгтийг symmetric бөглөнө. Зөвхөн дараалсан хэсгүүд хөрш; эхний ба сүүлийн хэсгийг холбохгүй."
+            },
+            {
+              "type": "p",
+              "text": "Гурван гүйгчийн matrix-ийн diagonal $1$, бусад нь $10$ байг. Хориггүй үед $1,2,3$ дараалал $3$ хугацаатай. $1,2$ хос хоригтой бол $1,3,2$ хүчинтэй бөгөөд хугацаа $1+10+10=21$. Эхний ба сүүлийн гүйгчийг хөрш гэж үзэхгүй нь энд чухал."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Гүйгч бүрийг яг нэг хэсэгт тавьсан assignment бүр нэг permutation-тэй нэг-нэгээр харгалзана. iota-гаар өсөх дарааллаас эхэлж next_permutation ашиглахад бүх $N!$ боломжийг нэг удаа шалгана."
+            },
+            {
+              "type": "p",
+              "text": "Хориглосон adjacency агуулсан permutation хүчингүй. Бусад permutation-д matrix-ийн мөр нь гүйгч, багана нь хэсэг гэдгээр хугацааг зөв нэмнэ. Иймээс бүх хүчинтэй assignment-ийн хамгийн бага хугацаа олдоно. Нэг ч хүчинтэй assignment байхгүй бол sentinel өөрчлөгдөхгүй, -1 хэвлэнэ."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хугацаа $O(N!N)$, санах ой $O(N^2)$. $A_{i,j}\\le1000$, $N\\le10$ тул нийт хугацаа $10000$-аас ихгүй, int хангалттай. $N=1$ үед хөршийн шалгалт хоосон бөгөөд ганц гүйгчийн хугацаа гарна."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Symmetric хориг"
+            },
+            {
+              "type": "p",
+              "text": "Оролтын $x,y$-г $0$-индекс рүү шилжүүлээд хоёр чиглэлийг хоёуланг нь тэмдэглэнэ."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<vector<char>> bad(n, vector<char>(n));\nwhile (m--) {\n    int x, y;\n    cin >> x >> y;\n    --x;\n    --y;\n    bad[x][y] = bad[y][x] = true;\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Permutation шалгалт"
+            },
+            {
+              "type": "p",
+              "text": "$p[j]$ гүйгчийн $j$-р хэсгийн хугацааг нэмнэ. Хоригийн loop $1$-ээс эхэлдэг тул эхний/сүүлийн хуурамч adjacency үүсгэхгүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<int> p(n);\niota(p.begin(), p.end(), 0);\nconst int inf = 1000000000;\nint ans = inf;\ndo {\n    bool ok = true;\n    for (int j = 1; j < n; ++j) {\n        if (bad[p[j - 1]][p[j]]) ok = false;\n    }\n    if (!ok) continue;\n    int sum = 0;\n    for (int j = 0; j < n; ++j) sum += a[p[j]][j];\n    ans = min(ans, sum);\n} while (next_permutation(p.begin(), p.end()));\ncout << (ans == inf ? -1 : ans) << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_af"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> a(n, vector<int>(n));\n    for (auto &row : a) for (int &x : row) cin >> x;\n    int m;\n    cin >> m;\n    vector<vector<char>> bad(n, vector<char>(n));\n    while (m--) {\n        int x, y;\n        cin >> x >> y;\n        --x;\n        --y;\n        bad[x][y] = bad[y][x] = true;\n    }\n    vector<int> p(n);\n    iota(p.begin(), p.end(), 0);\n    const int inf = 1000000000;\n    int ans = inf;\n    do {\n        bool ok = true;\n        for (int j = 1; j < n; ++j) {\n            if (bad[p[j - 1]][p[j]]) ok = false;\n        }\n        if (!ok) continue;\n        int sum = 0;\n        for (int j = 0; j < n; ++j) sum += a[p[j]][j];\n        ans = min(ans, sum);\n    } while (next_permutation(p.begin(), p.end()));\n    cout << (ans == inf ? -1 : ans) << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "AtCoder Ekiden — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Since $N\\le10$, enumerate every runner permutation. Let $p[j]$ be the runner on leg $j$. If no neighboring runners form a forbidden pair, evaluate $\\sum_j A_{p[j],j}$ and minimize it."
+                }
+              ]
+            },
+            {
+              "title": "Adjacency and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Store forbidden pairs symmetrically because either order is disallowed. Only consecutive legs are adjacent; the first and last legs are not joined."
+                },
+                {
+                  "type": "p",
+                  "text": "For three runners with matrix diagonal $1$ and every other entry $10$, order $1,2,3$ costs $3$ without restrictions. If pair $1,2$ is forbidden, order $1,3,2$ is valid and costs $1+10+10=21$. Its first and last runners are not adjacent."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Every bijective runner-to-leg assignment corresponds to one permutation. Starting with iota’s increasing order and using next_permutation examines every one of the $N!$ possibilities exactly once."
+                },
+                {
+                  "type": "p",
+                  "text": "Reject exactly those permutations with a forbidden consecutive pair. For the others, use matrix rows as runners and columns as legs to compute the correct total. Minimizing all valid assignments gives the optimum. If none exists, the sentinel remains unchanged and the output is -1."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Time is $O(N!N)$ and space $O(N^2)$. With $A_{i,j}\\le1000$ and $N\\le10$, a total is at most $10000$, so int suffices. For $N=1$, the adjacency check is empty and the sole runner’s time is returned."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Symmetric forbidden pairs"
+                },
+                {
+                  "type": "p",
+                  "text": "Convert the input pair to zero-based indices and mark both directions."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<vector<char>> bad(n, vector<char>(n));\nwhile (m--) {\n    int x, y;\n    cin >> x >> y;\n    --x;\n    --y;\n    bad[x][y] = bad[y][x] = true;\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Permutation evaluation"
+                },
+                {
+                  "type": "p",
+                  "text": "Add runner $p[j]$’s time on leg $j$. Checking consecutive indices from one upward creates no first-to-last adjacency."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<int> p(n);\niota(p.begin(), p.end(), 0);\nconst int inf = 1000000000;\nint ans = inf;\ndo {\n    bool ok = true;\n    for (int j = 1; j < n; ++j) {\n        if (bad[p[j - 1]][p[j]]) ok = false;\n    }\n    if (!ok) continue;\n    int sum = 0;\n    for (int j = 0; j < n; ++j) sum += a[p[j]][j];\n    ans = min(ans, sum);\n} while (next_permutation(p.begin(), p.end()));\ncout << (ans == inf ? -1 : ans) << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_af"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> a(n, vector<int>(n));\n    for (auto &row : a) for (int &x : row) cin >> x;\n    int m;\n    cin >> m;\n    vector<vector<char>> bad(n, vector<char>(n));\n    while (m--) {\n        int x, y;\n        cin >> x >> y;\n        --x;\n        --y;\n        bad[x][y] = bad[y][x] = true;\n    }\n    vector<int> p(n);\n    iota(p.begin(), p.end(), 0);\n    const int inf = 1000000000;\n    int ans = inf;\n    do {\n        bool ok = true;\n        for (int j = 1; j < n; ++j) {\n            if (bad[p[j - 1]][p[j]]) ok = false;\n        }\n        if (!ok) continue;\n        int sum = 0;\n        for (int j = 0; j < n; ++j) sum += a[p[j]][j];\n        ans = min(ans, sum);\n    } while (next_permutation(p.begin(), p.end()));\n    cout << (ans == inf ? -1 : ans) << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "program_sha256": "b35a21e1798584772cefa117ed580ad769c3979eb222c23142e29589d689fbd2",
+    "status": "authored; content/native verification and publication pending"
+  },
+  {
+    "id": "task-770",
+    "ref": "typical90_ag",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_ag",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-ag",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Not Too Bright — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$H=1$ эсвэл $W=1$ бол бүтнээрээ багтах $2\\times2$ муж огт байхгүй. Иймд бүх $HW$ нүдийг асааж болно. Бусад үед хариу $\\lceil H/2\\rceil\\lceil W/2\\rceil$."
+            }
+          ]
+        },
+        {
+          "title": "Байгуулалт ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Мөр болон баганын $1,3,5,\\ldots$ индексүүдийн огтлолцлын нүднүүдийг асаая. Дараалсан хоёр мөр, хоёр багана бүрт сонгосон мөр нэгээс, сонгосон багана нэгээс олонгүй тул $2\\times2$ бүрт ихдээ нэг асаалт байна."
+            },
+            {
+              "type": "p",
+              "text": "$3\\times4$ хүснэгтэд $(1,1),(1,3),(3,1),(3,3)$ гэсэн дөрвөн нүд хүрнэ. Харин $1\\times5$ үед хязгаарлах $2\\times2$ байхгүй тул хариу $5$, ceil үржвэрийг шууд хэрэглэхгүй."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад хамгийн их вэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$H,W\\ge2$ үед мөрүүдийг дараалсан хоёрын бүлэгт, багануудыг мөн хоёрын бүлэгт хуваая. Үлдэгдэл сондгой мөр/багана нэгийн бүлэг болно. Нийт $\\lceil H/2\\rceil\\lceil W/2\\rceil$ жижиг block үүснэ."
+            },
+            {
+              "type": "p",
+              "text": "$2\\times2$ block бүрт ихдээ нэг асаалт байна. Захын $1\\times2$ эсвэл $2\\times1$ block нь хүснэгтэд багтах нэг $2\\times2$ дотор ордог тул мөн ихдээ нэг; $1\\times1$ block ч ихдээ нэг. Иймээс block-ийн тоо дээд хязгаар болно."
+            },
+            {
+              "type": "p",
+              "text": "Сондгой мөр, сондгой баганын байгуулалт энэ тоонд хүрч байгаа учир дээд хязгаар ба хүрэх боломжит тоо тэнцэнэ. Нэг хэмжээст тусгай тохиолдолд бүх нүд гэсэн дээд хязгаарт шууд хүрнэ."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Хугацаа $O(1)$, санах ой $O(1)$. Эерэг бүхэл уртад ceil-ийг ",
+                  "marks": []
+                },
+                {
+                  "text": "(h+1)/2",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " гэж тооцно. $H,W\\le100$ тул хариу болон үржвэр int-д багтана.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Хэмжээ ба integer ceiling"
+            },
+            {
+              "type": "p",
+              "text": "Хоёр хэмжээг int-д уншина. Хязгаар жижиг учир нэмэх болон үржүүлэх үйлдэлд overflow үүсэхгүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int h, w;\ncin >> h >> w;"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Нэг хэмжээст тусгай тохиолдол"
+            },
+            {
+              "type": "p",
+              "text": "Эхлээд $2\\times2$ огт байхгүй тохиолдлыг шалгаад бусад үед хоёр ceil-ийн үржвэрийг хэрэглэнэ."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int ans;\nif (h == 1 || w == 1) ans = h * w;\nelse ans = ((h + 1) / 2) * ((w + 1) / 2);\ncout << ans << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ag"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int h, w;\n    cin >> h >> w;\n    int ans;\n    if (h == 1 || w == 1) ans = h * w;\n    else ans = ((h + 1) / 2) * ((w + 1) / 2);\n    cout << ans << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Not Too Bright — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "If $H=1$ or $W=1$, no fully contained $2\\times2$ square exists, so all $HW$ cells may be lit. Otherwise the answer is $\\lceil H/2\\rceil\\lceil W/2\\rceil$."
+                }
+              ]
+            },
+            {
+              "title": "Construction and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Light the intersections of rows $1,3,5,\\ldots$ and columns $1,3,5,\\ldots$. Any two consecutive rows contain at most one selected row, and likewise for columns, so each $2\\times2$ square contains at most one lit cell."
+                },
+                {
+                  "type": "p",
+                  "text": "For a $3\\times4$ grid, cells $(1,1),(1,3),(3,1),(3,3)$ give four lights. In a $1\\times5$ grid no square imposes a restriction, so the answer is five."
+                }
+              ]
+            },
+            {
+              "title": "Optimality",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "For $H,W\\ge2$, partition consecutive rows into pairs, with a possible final singleton, and do the same for columns. This creates $\\lceil H/2\\rceil\\lceil W/2\\rceil$ disjoint small blocks."
+                },
+                {
+                  "type": "p",
+                  "text": "Each $2\\times2$ block holds at most one light. A boundary $1\\times2$ or $2\\times1$ block is contained in a full $2\\times2$ square elsewhere within the grid and also holds at most one. A $1\\times1$ block trivially holds at most one. The number of blocks is therefore an upper bound."
+                },
+                {
+                  "type": "p",
+                  "text": "The odd-row/odd-column construction achieves this bound. In the one-dimensional case, lighting every cell achieves the total-cell upper bound."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Time and space are $O(1)$. For a positive integer dimension, ",
+                      "marks": []
+                    },
+                    {
+                      "text": "(h+1)/2",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " computes its half rounded upward. Since $H,W\\le100$, the result and products fit int.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Dimensions and integer ceiling"
+                },
+                {
+                  "type": "p",
+                  "text": "Read both dimensions as int. Their small bounds make the additions and products safe."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int h, w;\ncin >> h >> w;"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "One-dimensional special case"
+                },
+                {
+                  "type": "p",
+                  "text": "Handle the absence of any contained square first, then use the product of the two ceilings."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int ans;\nif (h == 1 || w == 1) ans = h * w;\nelse ans = ((h + 1) / 2) * ((w + 1) / 2);\ncout << ans << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ag"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int h, w;\n    cin >> h >> w;\n    int ans;\n    if (h == 1 || w == 1) ans = h * w;\n    else ans = ((h + 1) / 2) * ((w + 1) / 2);\n    cout << ans << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "program_sha256": "7bd5b0a6d6071ca5622d71e3d4801dfdc7d9cc5b5b97a6e2ceb7df4f1f0d4e6c",
+    "status": "authored; content/native verification and publication pending"
+  },
+  {
+    "id": "task-771",
+    "ref": "typical90_ah",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_ah",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-ah",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "There are few types of elements — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Sliding Window / Two Pointers хэрэглэнэ. $[l,r]$ цонхны утга бүрийн давтамжийг Map-д хадгалж, ялгаатай утгын тоо $K$-аас их бол зүүн хилийг ахиулна. Зөв болсон цонхны уртаар хариугаа шинэчилнэ."
+            }
+          ]
+        },
+        {
+          "title": "Жишээ ба invariant",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Map-д зөвхөн эерэг давтамжтай утга үлдээнэ. Иймээс freq.size() нь цонхны ялгаатай утгын тоо. Давтамж $0$ болох түлхүүрийг заавал erase хийнэ."
+            },
+            {
+              "type": "p",
+              "text": "$[1,2,1,3,3]$, $K=2$ үед $[1,2,1]$ болон $[1,3,3]$ гэсэн урт $3$-тай цонхнууд зөв. $[2,1,3]$ нь гурван ялгаатай утгатай тул зүүн талаас хасах шаардлагатай. Хамгийн их урт $3$."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Баруун хил нэмэгдэхэд зөвхөн нэг давтамж нэмэгдэнэ. Зүүн хилийг ахиулахад гарч буй элементийн давтамжийг нэгээр бууруулдаг тул Map үргэлж яг одоогийн цонхыг төлөөлнө."
+            },
+            {
+              "type": "p",
+              "text": "Баруун $r$-ийн хувьд ялгаатай утга $K$-аас их байхад зүүн талаас хасна. Зөв болмогц хамгийн эрт боломжит $l$ дээр зогсоно. Өмнө нь хүчингүй байсан түүнээс зүүн эхлэл нь баруунд элемент нэмэхэд дахин зөв болохгүй, учир ялгаатай утгын тоо буурахгүй."
+            },
+            {
+              "type": "p",
+              "text": "Тиймээс авсан цонх нь тухайн $r$ дээр төгсөх хамгийн урт зөв segment. Бүх $r$-ийг шалгаж хамгийн ихийг авахад бүх segment-ийн optimum олдоно."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Баруун, зүүн хил тус бүр ихдээ $N$ удаа хөдөлнө. Код std::map ашигласан тул хугацаа $O(N\\log N)$, массивтайгаа нийт санах ой $O(N)$. $a_i\\le10^9$, $N\\le10^5$ тул утга, давтамж, урт int-д багтана."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Оролтын массив"
+            },
+            {
+              "type": "p",
+              "text": "$a$-г хадгалснаар зүүн талаас гарах утгыг $O(1)$-д олно. Утгууд том боловч индекс болгон ашиглахгүй, Map-ийн түлхүүр болгоно."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int n, k;\ncin >> n >> k;\nvector<int> a(n);\nfor (int &x : a) cin >> x;"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Цонхны давтамж"
+            },
+            {
+              "type": "p",
+              "text": "Шинэ баруун элементийг нэмээд зөв болтол зүүнээс хасна. erase-ийн дараа iterator-ийг дахин ашиглахгүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "map<int, int> freq;\nint l = 0, ans = 0;\nfor (int r = 0; r < n; ++r) {\n    ++freq[a[r]];\n    while (int(freq.size()) > k) {\n        auto it = freq.find(a[l]);\n        if (--it->second == 0) freq.erase(it);\n        ++l;\n    }\n    ans = max(ans, r - l + 1);\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ah"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    vector<int> a(n);\n    for (int &x : a) cin >> x;\n    map<int, int> freq;\n    int l = 0, ans = 0;\n    for (int r = 0; r < n; ++r) {\n        ++freq[a[r]];\n        while (int(freq.size()) > k) {\n            auto it = freq.find(a[l]);\n            if (--it->second == 0) freq.erase(it);\n            ++l;\n        }\n        ans = max(ans, r - l + 1);\n    }\n    cout << ans << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "There are few types of elements — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Use Sliding Window / Two Pointers. Store frequencies of values in window $[l,r]$ in a Map. When the number of distinct values exceeds $K$, advance the left endpoint. Update the answer after restoring validity."
+                }
+              ]
+            },
+            {
+              "title": "Example and invariant",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Keep only positive-frequency keys, so freq.size() equals the number of distinct values in the current window. Erase a key when its count reaches zero."
+                },
+                {
+                  "type": "p",
+                  "text": "For $[1,2,1,3,3]$ and $K=2$, windows $[1,2,1]$ and $[1,3,3]$ have valid length three. Window $[2,1,3]$ has three distinct values and must shrink. The maximum length is three."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Extending the right endpoint adds one frequency, and advancing the left endpoint removes one occurrence. The Map therefore always represents exactly the current window."
+                },
+                {
+                  "type": "p",
+                  "text": "For a fixed right endpoint $r$, shrink while the distinct count exceeds $K$, stopping at the earliest feasible left endpoint. A previously invalid earlier start cannot become valid by appending another value, since the number of distinct values cannot decrease."
+                },
+                {
+                  "type": "p",
+                  "text": "The resulting window is the longest valid segment ending at $r$. Taking the maximum over every right endpoint therefore finds the global optimum."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Each endpoint advances at most $N$ times. This implementation uses std::map, giving $O(N\\log N)$ time and $O(N)$ total space including the array. Values at most $10^9$, frequencies and lengths fit int under $N\\le10^5$."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Input array"
+                },
+                {
+                  "type": "p",
+                  "text": "Store the array to identify the departing left value in constant time. Large values are Map keys, not array indices."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int n, k;\ncin >> n >> k;\nvector<int> a(n);\nfor (int &x : a) cin >> x;"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Window frequencies"
+                },
+                {
+                  "type": "p",
+                  "text": "Add the new right value, then remove left values until valid. Do not use an iterator after erasing it."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "map<int, int> freq;\nint l = 0, ans = 0;\nfor (int r = 0; r < n; ++r) {\n    ++freq[a[r]];\n    while (int(freq.size()) > k) {\n        auto it = freq.find(a[l]);\n        if (--it->second == 0) freq.erase(it);\n        ++l;\n    }\n    ans = max(ans, r - l + 1);\n}"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ah"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    vector<int> a(n);\n    for (int &x : a) cin >> x;\n    map<int, int> freq;\n    int l = 0, ans = 0;\n    for (int r = 0; r < n; ++r) {\n        ++freq[a[r]];\n        while (int(freq.size()) > k) {\n            auto it = freq.find(a[l]);\n            if (--it->second == 0) freq.erase(it);\n            ++l;\n        }\n        ans = max(ans, r - l + 1);\n    }\n    cout << ans << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "program_sha256": "83d779c2737c784e22876825cfd0aeb93e41a25d9a850d3bf026bc29c5d454f1",
+    "status": "authored; content/native verification and publication pending"
+  }
+]
