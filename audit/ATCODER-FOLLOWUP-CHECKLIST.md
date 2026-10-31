@@ -162,3 +162,5 @@ status/columns remain active afterward without reconfirmation.
 UI items2/3/4 complete: PR243 mergedda20033, Pages41226240873success;14 active assets match byte-for-byte under default TLS, feature1 preserved. Profile rating/weekly/private dates/cumulative challenge and narrowly white light home verified. Receipt: ui-followup/profile-progress-deployment.json. Remaining two: Groups today opt-ins and Minimalist-only controls/columns.
 
 UI item5 complete: PR245 mergedca96672, Pages41226728246success,17 active assets byte-exact defaultTLS. Explicit own-user today report additions verified with true reload and actor/form/midnight failure isolation; no DB/access change. Sole remaining UI item6: Minimalist-only status/columns.
+
+Final UI source unit: Minimalist model/current-progress and actual-app8viewport/theme Auth/save/reload/actor/container/filter/pagination checks pass. Full153-file Node aggregate439/439 passes in297318.850003ms with frozen runtime hashes. Fresh1064/all51/protected/access readback exact since040. Source/deploy receipt pending; no new SQL or access changes.

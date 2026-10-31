@@ -1,0 +1,11 @@
+# Minimalist-only catalog controls
+
+The already-viewed Library reference17022.jpg informed only Minimalist mode. Cards omit lesson/day links and verbose status badges/arrows. Titles remain readable18px, rating/tags smaller. Hidden tags and solution-direction rating tooltips remain hidden even for solved cards in this mode. Comfortable/compact behavior is preserved.
+
+Each far-right status control is an actual native select over a32px colored circle inside a44px target. Green✓/yellow◷/red○ have distinct text options and accessible task-specific labels/tooltips; focus is visible. Selection uses existing setEntry/persist/sync and re-focuses the task control (or the active filter if the row leaves). Navigation never changes status. Unrendered legacy controls cannot receive keyboard focus.
+
+The1/2/3 preference persists while effective columns clamp to the actual available container width with300px minimum cards and16px gaps. A ResizeObserver handles narrower containers as well as viewport changes; the saved preference is never overwritten by temporary clamping. Grid DOM/filter/pagination order remains row-major.
+
+Validation:2 focused column/status model tests plus existing progress preservation tests. Actual app.js browser tests use synthetic Auth and existing own-row storage: keyboard selection, all statuses, repeated changes, actual save/reload, no navigation side effects, temporary615/616/932px container boundaries, preference restoration, filters/pagination/order, tags hidden even for solved, comfortable/compact preservation and late Alice-save/Bob isolation. Eight375/768/1200/1600 light/dark contexts show1/2/3/3 columns,44px targets and no overflow. Actual pixels from all eight viewport screenshots were inspected. See minimalist-browser.json. No authenticated live-user browser or real-user fixture mutation is claimed.
+
+The final full Node aggregate passes439/439 across153 files,0fail/cancel/skip,297318.850003ms with concurrency2. Runtime source hashes remained unchanged through the run; see final-node-aggregate.json. Fresh live readback also confirms all1064 catalog bodies/all51 native rows/history/allocator/protected data/access exact since040; see final-data-readback.json. This UI unit performs no SQL, migration, catalog/document content or access change. Migration040 is already live and must never be replayed.
