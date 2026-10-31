@@ -2,12 +2,23 @@
 import fs from'node:fs';import crypto from'node:crypto';import{PGlite}from'@electric-sql/pglite';
 import{bodyHash}from'./part04_tutorial_proposals.mjs';import{protectedSql,authoritySql,catalogHashSql,historyHashSql,preflightSql}from'./package02_confirmed_bank_job.mjs';
 export{preflightSql};
-const raw=fs.readFileSync(new URL('../audit/native-problem-editorials/batch01-plan.json',import.meta.url),'utf8');
-export const plan=JSON.parse(raw),reviewedHash='cede184c27cb9a95934f42ed871096d238819fd4dc11b6b175c9c6a225ff5a15';
-if(crypto.createHash('sha256').update(raw).digest('hex')!==reviewedHash)throw Error('Reviewed editorial plan hash differs');
+const batches={
+ '01':{file:'batch01-plan.json',sha:'cede184c27cb9a95934f42ed871096d238819fd4dc11b6b175c9c6a225ff5a15',ids:['task-749','task-750','task-751']},
+ '02':{file:'batch02-plan.json',sha:'895f595244acdbe972e7b89f5e96cbf737824216f83b761fbebeb312be2efd51',ids:['task-752','task-754','task-755','task-756','task-762','task-763']}
+};
+export function editorialBatch(batch='01'){
+ const spec=batches[batch];if(!spec)throw Error('Unreviewed editorial batch');
+ const raw=fs.readFileSync(new URL('../audit/native-problem-editorials/'+spec.file,import.meta.url),'utf8');
+ if(crypto.createHash('sha256').update(raw).digest('hex')!==spec.sha)throw Error('Reviewed editorial plan hash differs');
+ const plan=JSON.parse(raw);if(JSON.stringify(plan.map(p=>p.id))!==JSON.stringify(spec.ids))throw Error('Reviewed editorial identity differs');
+ return{plan,reviewedHash:spec.sha};
+}
+export const{plan,reviewedHash}=editorialBatch();
 const lit=v=>"E'"+String(v).replace(/\\/g,'\\\\').replace(/'/g,"''")+"'",json=v=>lit(JSON.stringify(v))+'::jsonb';
-export async function buildEditorialJob(g,reviewed=plan){
- if(JSON.stringify(reviewed)!==JSON.stringify(plan)||JSON.stringify(plan.map(p=>p.id))!==JSON.stringify(['task-749','task-750','task-751']))throw Error('Reviewed editorial allowlist differs');
+export async function buildEditorialJob(g,reviewed=plan){return buildEditorialBatchJob('01',g,reviewed);}
+export async function buildEditorialBatchJob(batch,g,reviewed){
+ const{plan,reviewedHash}=editorialBatch(batch);reviewed??=plan;
+ if(JSON.stringify(reviewed)!==JSON.stringify(plan))throw Error('Reviewed editorial allowlist differs');
  if(!g.owner_catalog||g.authenticated_app_user||g.triggers!==null)throw Error('Unimpersonated owner/trigger baseline required');
  const db=new PGlite(),items=[];let hash;
  try{for(const p of plan){const row=g.problems.find(r=>r.problem_id===p.id);if(!row||row.archived||row.number!==p.number||row.revision!==p.expected_revision||bodyHash(row.body)!==p.expected_body_sha256||bodyHash(p.editorial)!==p.editorial_sha256||row.body.editorial)throw Error('Fresh editorial target CAS differs');const md5=async value=>(await db.query('select md5($1::jsonb::text)h',[JSON.stringify(value)])).rows[0].h;if(await md5(row.body)!==row.body_md5)throw Error('PostgreSQL body representation differs');items.push({id:p.id,number:p.number,revision:p.expected_revision,body_md5:row.body_md5,after_body_md5:await md5({...row.body,editorial:p.editorial}),editorial:p.editorial});}hash=await (async()=>(await db.query('select md5($1::jsonb::text)h',[JSON.stringify(items)])).rows[0].h)();}finally{await db.close();}
@@ -19,7 +30,7 @@ BEGIN
  PERFORM set_config('lock_timeout','5s',true);
  IF auth.uid()IS NOT NULL OR NOT pg_has_role(current_user,(SELECT relowner FROM pg_class WHERE oid='public.problem_catalog'::regclass),'USAGE')THEN RAISE EXCEPTION 'Unimpersonated owner required';END IF;
  PERFORM pg_advisory_xact_lock(72483160);LOCK TABLE public.problem_catalog,public.problem_changes IN SHARE ROW EXCLUSIVE MODE;
- IF md5(items::text)<>${lit(hash)} OR jsonb_array_length(items)<>3 THEN RAISE EXCEPTION 'Reviewed editorial allowlist differs';END IF;
+ IF md5(items::text)<>${lit(hash)} OR jsonb_array_length(items)<>${plan.length} THEN RAISE EXCEPTION 'Reviewed editorial allowlist differs';END IF;
  IF (SELECT count(*)FROM public.problem_catalog)<>${g.problem_count} OR(${catalogHashSql})IS DISTINCT FROM ${lit(g.catalog_fingerprint)} THEN RAISE EXCEPTION 'Catalog baseline drift';END IF;
  IF (SELECT count(*)FROM public.problem_changes)<>${g.history_count} OR(${historyHashSql})IS DISTINCT FROM ${lit(g.history_fingerprint)} THEN RAISE EXCEPTION 'History baseline drift';END IF;
  IF EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid IN('public.problem_catalog'::regclass,'public.problem_changes'::regclass)AND NOT tgisinternal)THEN RAISE EXCEPTION 'Unreviewed trigger';END IF;
@@ -45,7 +56,7 @@ BEGIN
    IF to_jsonb(row_now)-ARRAY['body','revision','updated_at']IS DISTINCT FROM before_row-ARRAY['body','revision','updated_at']OR row_now.revision<>(before_row->>'revision')::integer+1 OR row_now.body-'editorial'IS DISTINCT FROM before_row->'body' OR md5(row_now.body::text)IS DISTINCT FROM item->>'after_body_md5' OR NOT EXISTS(SELECT 1 FROM public.problem_changes WHERE change_id=ANY(history_ids)AND problem_id=row_now.problem_id AND actor_id IS NULL AND action='edit'AND previous_body=before_row->'body'AND next_body=row_now.body)THEN RAISE EXCEPTION 'Editorial field/history scope failed';END IF;
   ELSIF to_jsonb(row_now)IS DISTINCT FROM before_row THEN RAISE EXCEPTION 'Unrelated problem changed';END IF;
  END LOOP;
- IF cardinality(edited_ids)<>3 OR(SELECT count(*)FROM public.problem_catalog)<>${g.problem_count} OR(SELECT count(*)FROM public.problem_changes)<>${g.history_count}+3 OR(SELECT md5(coalesce(jsonb_agg(to_jsonb(h)ORDER BY change_id::text)::text,'[]'))FROM public.problem_changes h WHERE NOT(change_id=ANY(history_ids)))IS DISTINCT FROM ${lit(g.history_fingerprint)} THEN RAISE EXCEPTION 'Catalog/history preservation failed';END IF;
+ IF cardinality(edited_ids)<>${plan.length} OR(SELECT count(*)FROM public.problem_catalog)<>${g.problem_count} OR(SELECT count(*)FROM public.problem_changes)<>${g.history_count}+${plan.length} OR(SELECT md5(coalesce(jsonb_agg(to_jsonb(h)ORDER BY change_id::text)::text,'[]'))FROM public.problem_changes h WHERE NOT(change_id=ANY(history_ids)))IS DISTINCT FROM ${lit(g.history_fingerprint)} THEN RAISE EXCEPTION 'Catalog/history preservation failed';END IF;
  IF(${protectedSql})IS DISTINCT FROM ${json(g.protected)} OR(${authoritySql})IS DISTINCT FROM ${json(g.authority)} OR(SELECT jsonb_build_object('last_value',last_value,'is_called',is_called)FROM public.problem_number_seq)IS DISTINCT FROM ${json(g.sequence)} OR(SELECT md5(jsonb_agg(name ORDER BY name)::text)FROM public.problem_sources)IS DISTINCT FROM ${lit(g.source_fingerprint)} THEN RAISE EXCEPTION 'Protected postcondition failed';END IF;
 END $native_editorial$;\n`;
 }
