@@ -1,0 +1,989 @@
+{
+  "body": {
+    "id": "lis",
+    "level": "Дунд шат",
+    "order": 27,
+    "title": "Хамгийн урт эрс өсөх дэд дараалал",
+    "aliases": "lis LIS — эрс өсөх дэд дараалал LIS — longest increasing subsequence lis longest increasing subsequence strictly increasing дараалал өсөх tails",
+    "related": [
+      "dynamic-programming",
+      "monotonic-stack"
+    ],
+    "summary": "Төгсгөлийн байрлалын DP-ээс хамгийн бага төгсгөлийн аргад хүрч, эрс өсөх/үл буурах нөхцөл, давхардал ба жинхэнэ сонголт сэргээхийг тайлбарлана.",
+    "category": "Dynamic programming",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "goal",
+        "title": "Байрлалаа хадгалсан эрс өсөх сонголт",
+        "blocks": [
+          {
+            "text": "Дарааллын зарим элементийг хасаж, үлдсэнүүдийн анхны байрлалыг өөрчлөхгүй сонгож болно. Сонгосон утга бүр өмнөхөөсөө эрс их байх хамгийн урт дэд дарааллыг олъё. Дэд дараалал нь заавал залгаа биш; харин анхны индексүүд нь эрс өсөх ёстой. Дарааллыг эрэмбэлээд хариу олох нь байрлалын энэ шаардлагыг устгана.",
+            "type": "p"
+          },
+          {
+            "kind": "dp",
+            "rows": [
+              [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7"
+              ],
+              [
+                "6",
+                "2",
+                "5",
+                "1",
+                "7",
+                "4",
+                "8",
+                "3"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "Дээд мөр нь 0-ээс эхэлсэн индекс. Тодруулсан 2,5,7,8 нь 1,2,4,6 индексүүдийн сонголт.",
+            "highlights": [
+              "1:1",
+              "1:2",
+              "1:4",
+              "1:6"
+            ]
+          },
+          {
+            "text": "Энд 1,2,4,6 индексүүдийн 2,5,7,8 нь дөрвөн элементтэй эрс өсөх дэд дараалал. 6,7,8 ч зөв боловч богино. Ганц жишээ олсноор дөрвөөс урт байхгүйг хараахан нотлоогүй; төгсгөлийн байрлал бүрээр хамгийн сайн уртыг бодъё.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "ending",
+        "title": "Төгсгөлийн байрлалаар төлөв гаргах",
+        "blocks": [
+          {
+            "text": "$dp[i]$ нь яг $i$ байрлалын элементээр төгсөх хамгийн урт эрс өсөх дэд дарааллын урт. Өмнөх сонгосон индекс $j$ бол $j<i$, $a[j]<a[i]$ байх ёстой. Иймээс $dp[i]=1+\\max dp[j]$ гэж эдгээр $j$ дээр авна. Тохирох $j$ байхгүй бол зөвхөн a[$i$]-г авсан урт 1. Бүх дарааллын хариу нь заавал сүүлийн байрлалын утга биш, бүх dp[$i$]-ийн их утга.",
+            "type": "p"
+          },
+          {
+            "text": "Дурын зөв сонголтын сүүлийн элементийг хасвал өмнөх $j$ дээр төгсөх зөв сонголт үлдэнэ. Тэр хэсгийг $j$-ийн хамгийн сайн сонголтоор сольбол урт багасахгүй. Нөгөө талаас нөхцөл хангасан $j$-ийн сонголтод a[$i$]-г залгаж болно. Тиймээс шилжилт бүх боломжийг хамарч, хүрч болох хамгийн их уртыг өгнө. $i$-г өсгөж бодвол хэрэгтэй бүх dp[$j$] бэлэн.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "0",
+                "6",
+                "1"
+              ],
+              [
+                "1",
+                "2",
+                "1"
+              ],
+              [
+                "2",
+                "5",
+                "2"
+              ],
+              [
+                "3",
+                "1",
+                "1"
+              ],
+              [
+                "4",
+                "7",
+                "3"
+              ],
+              [
+                "5",
+                "4",
+                "2"
+              ],
+              [
+                "6",
+                "8",
+                "4"
+              ],
+              [
+                "7",
+                "3",
+                "2"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Индекс $i$",
+              "a[$i$]",
+              "dp[$i$]"
+            ]
+          },
+          {
+            "text": "Жишээ нь 7 утгатай $i$=4-ийн өмнөх бага утгууд дундаас 5 дээр төгссөн урт 2 хамгийн сайн, тиймээс dp[4]=3. $i$=6 дахь 8 нь тэр 7-г залгаж dp[6]=4 болно. Сүүлийн 3 дээр өмнөх 1 эсвэл 2-ыг залгаж болно, гэхдээ урт нь 2; хариу 4 хэвээр.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "quadratic",
+        "title": "Квадрат хэрэгжүүлэлт ба сонголт сэргээх",
+        "blocks": [
+          {
+            "text": "Уртыг сайжруулах бүрд par[$i$]=$j$ гэж өмнөх индексийг хадгална. Хамгийн урт төгсгөлийг best-д тэмдэглээд par холбоосоор буцаж явна. Индекс бүр өмнөхөөсөө эрс бага, утга нь эрс бага тул сэргээх зам төгсөнө, зөв дараалал өгнө. Буцаж цуглуулсан индексүүдээ эргүүлж анхны дарааллаар гаргана; олон зөв хариунаас нэгийг л сонгоно.",
+            "type": "p"
+          },
+          {
+            "text": "Квадрат хувилбарын оролт 0≤$n$≤2000, |a[$i$]|≤10¹⁸. Утгуудыг ll-д унших боловч хооронд нь нэмэхгүй, зөвхөн харьцуулна. Урт, индекс int-д багтана. $n$=0 үед хариу 0, дараагийн мөр хоосон; best=−1 тул холбоос уншихгүй. Гаралт эхлээд урт, дараагийн мөрөнд сонгосон 1-ээс эхэлсэн индексүүд.",
+            "type": "p"
+          },
+          {
+            "text": "Стандарт оролт/гаралт, ll утгын нэршил.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "$n$ ширхэг утга уншина. Анхны дарааллыг эрэмбэлэхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "dp-г ганц элементийн урт 1-ээр эхлүүлнэ. Өмнөх бүх эрс бага утгыг шалгаж сайжирсан холбоосыг л хадгална.",
+            "type": "p"
+          },
+          {
+            "text": "vector<int> dp(n, 1), par(n, -1);\n    int best = -1;\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < i; j++) {\n            if (a[j] < a[i] && dp[j] + 1 > dp[i]) {\n                dp[i] = dp[j] + 1;\n                par[i] = j;\n            }\n        }\n        if (best == -1 || dp[i] > dp[best]) best = i;\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "best-ээс par-аар буцаж, индексүүдийг эргүүлээд 1 нэмэн хэвлэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "vector<int> path;\n    for (int i = best; i != -1; i = par[i]) path.push_back(i);\n    reverse(path.begin(), path.end());\n    cout << path.size() << '\\n';\n    for (int i : path) cout << i + 1 << ' ';\n    cout << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    vector<int> dp(n, 1), par(n, -1);\n    int best = -1;\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < i; j++) {\n            if (a[j] < a[i] && dp[j] + 1 > dp[i]) {\n                dp[i] = dp[j] + 1;\n                par[i] = j;\n            }\n        }\n        if (best == -1 || dp[i] > dp[best]) best = i;\n    }\n    vector<int> path;\n    for (int i = best; i != -1; i = par[i]) path.push_back(i);\n    reverse(path.begin(), path.end());\n    cout << path.size() << '\\n';\n    for (int i : path) cout << i + 1 << ' ';\n    cout << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Нийт 0+1+…+($n$−1) харьцуулалт, $O(n^2)$ хугацаа; a,dp,par болон сэргээсэн зам нийт $O(n)$ зай. Энэ жижиг хувилбар нь хурдан аргын бие даасан лавлах болж чадна. $n$ маш том бол өмнөх бүх $j$-г шалгахгүй байх арга хэрэгтэй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "tails",
+        "title": "Ижил уртад бага төгсгөл давуу",
+        "blocks": [
+          {
+            "text": "Ижил урттай хоёр эрс өсөх сонголт 5 ба 7 утгаар төгссөн байг. Дараа нь 6 ирвэл 5-ын ард залгаж болно, 7-ын ард болохгүй; харин 7-ын ард залгаж болох ямар ч их утгыг 5-ын ард мөн залгаж болно. Тиймээс тухайн уртад бага төгсгөлийг хадгалах нь ирээдүйн боломжийг алдахгүй. Өмнөх бүх сонголтын оронд урт бүрийн хамгийн бага төгсгөлийг хадгалъя.",
+            "type": "p"
+          },
+          {
+            "text": "tail[t] нь аль хэдийн уншсан хэсэг доторх урт t+1 сонголтын хамгийн бага төгсгөлийн УТГА. Энэ массивын утгууд эрс өсөх дарааллаар байна: урт t+2 сонголтын сүүлийн элементийг хасвал түүнээс эрс бага төгсгөлтэй урт t+1 сонголт гарна, хамгийн бага төгсгөл түүнээс ихгүй. Ийм эрэмбэлэгдсэн дараалалд хоёртын хайлт хэрэглэж болно.",
+            "type": "p"
+          },
+          {
+            "text": "Шинэ $x$-д эхний tail[$j$]≥$x$ байрлалыг lower_bound-оор олно. $j$-ээс өмнөх төгсгөлүүд $x$-ээс эрс бага тул урт $j$ сонголтод $x$-г залгаж урт $j$+1 үүсгэнэ; $j$=0 бол ганц $x$. Байрлал байхгүй бол хамгийн урт сонголтыг нэгээр уртасгаж төгсгөлд нэмнэ. Байвал tail[$j$]-г $x$-ээр солино; бусад уртын хамгийн бага төгсгөл өөрчлөгдөхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Яагаад илүү урт сонголт шинээр үүсэхгүй вэ? Урт $j$+2 сонголтыг $x$-ээр төгсгөхөд өмнө нь урт $j$+1, төгсгөл нь $x$-ээс эрс бага сонголт хэрэгтэй. Гэтэл $j$ нь ≥$x$ эхний байрлал байсан тул тийм төгсгөл байхгүй. Иймээс нэг шинэчлэлтээр бүх уртад зөв хамгийн бага төгсгөл хадгалагдана.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "6",
+                "6"
+              ],
+              [
+                "2",
+                "2"
+              ],
+              [
+                "5",
+                "2, 5"
+              ],
+              [
+                "1",
+                "1, 5"
+              ],
+              [
+                "7",
+                "1, 5, 7"
+              ],
+              [
+                "4",
+                "1, 4, 7"
+              ],
+              [
+                "8",
+                "1, 4, 7, 8"
+              ],
+              [
+                "3",
+                "1, 3, 7, 8"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Шинэ утга",
+              "Шинэ tail"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "reconstruct",
+        "title": "Хурдан хэрэгжүүлэлт ба жинхэнэ дэд дараалал",
+        "blocks": [
+          {
+            "text": "Эцсийн tail=[1,3,7,8] нь урт 4 гэдгийг хэлнэ, гэхдээ энэ дөрөв анхны дарааллаар сонгогдохгүй: 3 нь 7,8-ын дараа байрладаг. tail-ийн өөр өөр нүд өөр өөр сонголтын төгсгөл учир түүнийг өөрийг нь хариу гэж хэвлэхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "pos[t]-д tail[t]-ийг өгсөн анхны индексийг хадгална. $i$ дэх утга $j$ байрлалд орох үед $j$>0 бол par[$i$]=pos[$j$−1] гэж ОДОО байгаа өмнөх төгсгөлийг тэмдэглээд, дараа нь pos[$j$]-г $i$ болгоно. Ирээдүйд pos[$j$−1] өөрчлөгдсөн ч par[$i$] дотор хадгалсан анхны индекс өөрчлөгдөхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "$i$=6 дээрх 8 урт 4-ийг үүсгэхэд өмнөх индекс нь 4 дэх 7; тэр 7-ын өмнөх нь 2 дахь 5, түүний өмнөх нь 1 дэх 2 байсан. Эцэст нь par холбоос 6→4→2→1 болно. Нэг мөрийн DP-ийн хувьсаж буй утга руу заах бус, оролтын тогтмол индексүүдээр холбоосоо хадгалж байна.",
+            "type": "p"
+          },
+          {
+            "text": "Хурдан хувилбарт 0≤$n$≤200000, |a[$i$]|≤10¹⁸. Утга нэмэхгүй тул тоон халилттай нийлбэр байхгүй; индекс/урт int, утга ll. Нэг элементэд логарифм хайлт, нийт $O(n \\log n)$ хугацаа; $n$=0/1 заагийг хамруулбал O($n$ log($n$+1)+1). tail,pos,par,оролт ба сэргээсэн зам $O(n)$ зай.",
+            "type": "p"
+          },
+          {
+            "text": "Утга ба индексийн төрлийг өмнөхтэй адил ялгана.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Оролт, гаралтын хэлбэр квадрат хувилбартай ижил.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "lower_bound эхний их буюу тэнцүү төгсгөлийг олно. par-ыг pos шинэчлэхээс өмнө хадгална; хоосон pos дээр back дуудахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "vector<ll> tail;\n    vector<int> pos, par(n, -1);\n    for (int i = 0; i < n; i++) {\n        int j = lower_bound(tail.begin(), tail.end(), a[i]) - tail.begin();\n        if (j > 0) par[i] = pos[j - 1];\n        if (j == int(tail.size())) {\n            tail.push_back(a[i]);\n            pos.push_back(i);\n        } else {\n            tail[j] = a[i];\n            pos[j] = i;\n        }\n    }\n    int best = pos.empty() ? -1 : pos.back();",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Хамгийн урт төгсгөлийн индексээс буцаж сонгосон анхны индексүүдээ гаргана.",
+            "type": "p"
+          },
+          {
+            "text": "vector<int> path;\n    for (int i = best; i != -1; i = par[i]) path.push_back(i);\n    reverse(path.begin(), path.end());\n    cout << path.size() << '\\n';\n    for (int i : path) cout << i + 1 << ' ';\n    cout << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    vector<ll> tail;\n    vector<int> pos, par(n, -1);\n    for (int i = 0; i < n; i++) {\n        int j = lower_bound(tail.begin(), tail.end(), a[i]) - tail.begin();\n        if (j > 0) par[i] = pos[j - 1];\n        if (j == int(tail.size())) {\n            tail.push_back(a[i]);\n            pos.push_back(i);\n        } else {\n            tail[j] = a[i];\n            pos[j] = i;\n        }\n    }\n    int best = pos.empty() ? -1 : pos.back();\n    vector<int> path;\n    for (int i = best; i != -1; i = par[i]) path.push_back(i);\n    reverse(path.begin(), path.end());\n    cout << path.size() << '\\n';\n    for (int i : path) cout << i + 1 << ' ';\n    cout << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "duplicates",
+        "title": "Эрс өсөх ба үл буурах нөхцөлийг ялгах",
+        "blocks": [
+          {
+            "text": "Эрс өсөх дараалалд тэнцүү утгыг залгаж болохгүй: [2,2,2]-ын хариу 1. lower_bound нь тэнцүү 2-ыг байгаа байрлалд сольж уртыг нэмэхгүй. Харин үл буурах дараалал тэнцүүг зөвшөөрнө, хариу нь 3. Тэнд өмнөх төгсгөл ≤$x$ байж болох тул эхний ЭРС ИХ tail[$j$]>$x$ байрлалыг upper_bound-оор олно.",
+            "type": "p"
+          },
+          {
+            "text": "Тэнцүү утгуудтай үед үл буурах хувилбарын tail нь мөн үл буурах, заавал эрс өсөх биш. Кодын par холбоос үргэлж өмнөх индекс рүү заадаг тул ижил утгатай ч индекс эрс өсөх шаардлагыг хадгална. Квадрат лавлахыг энэ хувилбарт ашиглах бол a[$j$]<a[$i$] биш a[$j$]≤a[$i$] гэж нөхцөлийг нь мөн өөрчилнө.",
+            "type": "p"
+          },
+          {
+            "text": "Энэ программ үл буурах дэд дараалалд зориулсан.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Ижил оролт, урт ба анхны индексүүдийн гаралт.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Гол ялгаа upper_bound: тэнцүү төгсгөлийн дараа залгаж болно. pos/par-ын бусад үүрэг өөрчлөгдөхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "vector<ll> tail;\n    vector<int> pos, par(n, -1);\n    for (int i = 0; i < n; i++) {\n        int j = upper_bound(tail.begin(), tail.end(), a[i]) - tail.begin();\n        if (j > 0) par[i] = pos[j - 1];\n        if (j == int(tail.size())) {\n            tail.push_back(a[i]);\n            pos.push_back(i);\n        } else {\n            tail[j] = a[i];\n            pos[j] = i;\n        }\n    }\n    int best = pos.empty() ? -1 : pos.back();",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Ижил утга сонгогдсон ч индексүүд эрс өссөн хэвээр байна.",
+            "type": "p"
+          },
+          {
+            "text": "vector<int> path;\n    for (int i = best; i != -1; i = par[i]) path.push_back(i);\n    reverse(path.begin(), path.end());\n    cout << path.size() << '\\n';\n    for (int i : path) cout << i + 1 << ' ';\n    cout << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    vector<ll> tail;\n    vector<int> pos, par(n, -1);\n    for (int i = 0; i < n; i++) {\n        int j = upper_bound(tail.begin(), tail.end(), a[i]) - tail.begin();\n        if (j > 0) par[i] = pos[j - 1];\n        if (j == int(tail.size())) {\n            tail.push_back(a[i]);\n            pos.push_back(i);\n        } else {\n            tail[j] = a[i];\n            pos[j] = i;\n        }\n    }\n    int best = pos.empty() ? -1 : pos.back();\n    vector<int> path;\n    for (int i = best; i != -1; i = par[i]) path.push_back(i);\n    reverse(path.begin(), path.end());\n    cout << path.size() << '\\n';\n    for (int i : path) cout << i + 1 << ' ';\n    cout << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "Зорилго, хэрэглээний хязгаар ба шалгалт",
+        "blocks": [
+          {
+            "text": "Уртыг хамгийн их болгох, сонголтын тоог тоолох, жинт нийлбэрийг ихэсгэх нь өөр зорилгууд. Хамгийн бага ганц төгсгөл хадгалах нотолгоо нь уртын бодлогод тохирсон; жин эсвэл тоог яг энэ массивт хийгээд зөв болно гэж үзэхгүй. Мөн хамгийн урт залгаа эрс өсөх хэсэг нь завсрын элемент хасаж болохгүй өөр бодлого.",
+            "type": "p"
+          },
+          {
+            "text": "Хоосон, ганц элемент, бүхэлдээ эрс өссөн/эрс буурсан, бүгд тэнцүү, сөрөг ба том утга дээр шалга. Жижиг оролтод бүх индексийн дэд олонлогийг үүсгэж зөв эрс өсөх сонголтын хамгийн их уртыг ол. Сэргээсэн индексүүд нь хүрээндээ, эрс өссөн, утгууд нь зөв нөхцөлтэй, урт нь оновчтой эсэхийг тус тус шалгана; зөвхөн хэвлэсэн уртыг тулгах хангалтгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "text": "Өөрийгөө шалга: 1. Эх жишээний сүүлийн dp утга 2 байхад хариу яагаад 4 вэ? 2. tail=[1,3,7,8]-ыг яагаад хариу болгож болохгүй вэ? 3. [2,2,2] дээр хоёр нөхцөлийн хариу юу вэ? 4. pos-ийн утга солигдоход өмнөх par яагаад эвдрэхгүй вэ?",
+            "type": "p"
+          },
+          {
+            "text": "Хариу: бүх төгсгөлийн ихийг авна; tail нь нэг сонголт биш; эрс өсөхөд 1, үл буурахад 3; par нь хувирч буй pos байрлал бус анхны тогтмол индекс хадгалсан.",
+            "type": "p"
+          },
+          {
+            "text": "Сэдвийг эзэмших үндсэн бодлогууд",
+            "type": "p"
+          },
+          {
+            "text": "Increasing Subsequence: эрс өсөх урт, lower_bound-ын тэнцүү заагийг хэрэгжүүл.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "109"
+          },
+          {
+            "text": "Бие даах ба ахиулах бодлогууд",
+            "type": "p"
+          },
+          {
+            "text": "Towers: тэнцүү шооны дүрмээс upper_bound яагаад хэрэгтэйг өөрөө гарга; энэ нь шууд дэд дараалал хэвлэх бодлого биш.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "322"
+          },
+          {
+            "text": "Flowers: урт бус жинт нийлбэр; өмнөх эрс бага өндрийн хамгийн сайн утгыг асуух өөр бүтэц хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "693"
+          },
+          {
+            "text": "Increasing Subsequence II: сонголтын тоог хадгалах өөр төлөв ба давхардлын нөлөөг гарга.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "359"
+          },
+          {
+            "text": "Longest Common Subsequence: хоёр дарааллын угтварын өөр төлөв хэрэгтэй, tail-ыг шууд хуулж болохгүй.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "349"
+          },
+          {
+            "text": "Projects: тохирох өмнөх төслийг хайх ба жинт DP-г холбо; энгийн LIS уртаас ялга.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "355"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Longest increasing subsequence",
+        "summary": "Derive ending-position DP and minimum tails, distinguish strict and nondecreasing inequalities, and reconstruct actual original indices.",
+        "sections": [
+          {
+            "key": "goal",
+            "title": "Strict increase while preserving positions",
+            "blocks": [
+              {
+                "text": "A subsequence selects elements without changing their original order. Find the longest subsequence whose successive values are strictly larger. Selected elements need not be adjacent, but their original indices must increase. Sorting the input destroys that requirement.",
+                "type": "p"
+              },
+              {
+                "kind": "dp",
+                "rows": [
+                  [
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7"
+                  ],
+                  [
+                    "6",
+                    "2",
+                    "5",
+                    "1",
+                    "7",
+                    "4",
+                    "8",
+                    "3"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "Zero-based indices above values; highlighted2,5,7,8 use indices1,2,4,6.",
+                "highlights": [
+                  "1:1",
+                  "1:2",
+                  "1:4",
+                  "1:6"
+                ]
+              },
+              {
+                "text": "Indices 1,2,4,6 select 2,5,7,8, a strictly increasing subsequence of length 4. The sequence 6,7,8 is valid but shorter. Exhibiting four elements does not yet prove that no longer answer exists; calculate the optimum for each ending position.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "ending",
+            "title": "DP by the ending position",
+            "blocks": [
+              {
+                "text": "dp[$i$] is the length of the best strictly increasing subsequence ending exactly at $i$. Its predecessor $j$ must satisfy $j$<$i$ and a[$j$]<a[$i$]. Take one plus the largest dp[$j$] over those predecessors; if none exists, take the singleton length 1. The overall answer is the maximum over all endings, not necessarily the last entry.",
+                "type": "p"
+              },
+              {
+                "text": "Removing the final element leaves a valid subsequence ending at some eligible $j$. Replacing that prefix with an optimal one cannot shorten it. Conversely, a[$i$] can be appended to any eligible predecessor subsequence. Thus the transition is both an upper bound and attainable. Process $i$ upward so all dp[$j$] are ready.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "0",
+                    "6",
+                    "1"
+                  ],
+                  [
+                    "1",
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "5",
+                    "2"
+                  ],
+                  [
+                    "3",
+                    "1",
+                    "1"
+                  ],
+                  [
+                    "4",
+                    "7",
+                    "3"
+                  ],
+                  [
+                    "5",
+                    "4",
+                    "2"
+                  ],
+                  [
+                    "6",
+                    "8",
+                    "4"
+                  ],
+                  [
+                    "7",
+                    "3",
+                    "2"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Index $i$",
+                  "a[$i$]",
+                  "dp[$i$]"
+                ]
+              },
+              {
+                "text": "For $i$=4, value 7 can extend the length 2 subsequence ending at 5, so dp[4]=3. Value 8 at $i$=6 extends that 7 to length 4. The final 3 can extend an earlier 1 or 2 but only reaches length 2; the overall answer remains 4.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "quadratic",
+            "title": "Quadratic implementation and reconstruction",
+            "blocks": [
+              {
+                "text": "Whenever a transition improves dp[$i$], store its predecessor $j$ in par[$i$]. Track the best ending and follow those links backward. Every link decreases the index and strictly decreases the value, so the walk terminates and describes a valid subsequence. Reverse the collected indices to restore input order; any optimal answer is acceptable.",
+                "type": "p"
+              },
+              {
+                "text": "The quadratic program accepts 0≤$n$≤2000 and |a[$i$]|≤10¹⁸. Values are ll and only compared, not added. Indices and lengths fit int. For $n$=0, best remains−1, producing length 0 and an empty index line without accessing a predecessor. Output the length followed by one-based selected indices.",
+                "type": "p"
+              },
+              {
+                "text": "Standard $I$/O and the ll value alias.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Read $n$ values without sorting them.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Initialize singleton lengths to 1. Examine every earlier smaller value and save only improving predecessors.",
+                "type": "p"
+              },
+              {
+                "text": "vector<int> dp(n, 1), par(n, -1);\n    int best = -1;\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < i; j++) {\n            if (a[j] < a[i] && dp[j] + 1 > dp[i]) {\n                dp[i] = dp[j] + 1;\n                par[i] = j;\n            }\n        }\n        if (best == -1 || dp[i] > dp[best]) best = i;\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Follow par from best, reverse the indices and print them with 1 added.",
+                "type": "p"
+              },
+              {
+                "text": "vector<int> path;\n    for (int i = best; i != -1; i = par[i]) path.push_back(i);\n    reverse(path.begin(), path.end());\n    cout << path.size() << '\\n';\n    for (int i : path) cout << i + 1 << ' ';\n    cout << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    vector<int> dp(n, 1), par(n, -1);\n    int best = -1;\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < i; j++) {\n            if (a[j] < a[i] && dp[j] + 1 > dp[i]) {\n                dp[i] = dp[j] + 1;\n                par[i] = j;\n            }\n        }\n        if (best == -1 || dp[i] > dp[best]) best = i;\n    }\n    vector<int> path;\n    for (int i = best; i != -1; i = par[i]) path.push_back(i);\n    reverse(path.begin(), path.end());\n    cout << path.size() << '\\n';\n    for (int i : path) cout << i + 1 << ' ';\n    cout << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "There are 0+1+…+($n$−1) candidate comparisons: $O(n^2)$ time and $O(n)$ space for input, lengths, predecessors and output. This straightforward version is a useful reference for checking a faster one. Large $n$ needs a way to avoid examining every predecessor.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "tails",
+            "title": "Smaller endings dominate at equal length",
+            "blocks": [
+              {
+                "text": "Suppose two increasing subsequences of the same length end in 5 and 7. A later 6 extends the first but not the second; anything extending 7 also extends 5. Keeping the smaller ending therefore loses no future extension. Replace all choices by the minimum possible ending for each length.",
+                "type": "p"
+              },
+              {
+                "text": "tail[t] is a VALUE: the minimum ending of a length t+1 subsequence in the processed prefix. These tails are strictly increasing. Removing the last element of a length t+2 subsequence yields a length t+1 prefix with a smaller ending, and the minimum tail is no greater than that prefix ending. This sorted sequence supports binary search.",
+                "type": "p"
+              },
+              {
+                "text": "For a new $x$, lower_bound locates the first tail[$j$]≥$x$. All earlier tails are smaller than $x$, so $x$ extends a length $j$ subsequence to $j$+1; $j$=0 means a singleton. If no such position exists, append and increase the maximum length. Otherwise replace tail[$j$] with $x$; other minimum endings remain unchanged.",
+                "type": "p"
+              },
+              {
+                "text": "Why can $x$ not create an even longer new subsequence? A length $j$+2 subsequence ending at $x$ would require an earlier length $j$+1 ending below $x$. That contradicts $j$ being the first minimum ending at least $x$. Thus this one update maintains the minimum-tail invariant for all lengths.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "6",
+                    "6"
+                  ],
+                  [
+                    "2",
+                    "2"
+                  ],
+                  [
+                    "5",
+                    "2, 5"
+                  ],
+                  [
+                    "1",
+                    "1, 5"
+                  ],
+                  [
+                    "7",
+                    "1, 5, 7"
+                  ],
+                  [
+                    "4",
+                    "1, 4, 7"
+                  ],
+                  [
+                    "8",
+                    "1, 4, 7, 8"
+                  ],
+                  [
+                    "3",
+                    "1, 3, 7, 8"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "New value",
+                  "Updated tail"
+                ]
+              }
+            ]
+          },
+          {
+            "key": "reconstruct",
+            "title": "Fast implementation and a real subsequence",
+            "blocks": [
+              {
+                "text": "The final tail=[1,3,7,8] certifies length 4, but those values are not an input subsequence:3 occurs after 7 and 8. Different tail entries summarize different subsequences. Do not print the tail array itself as the selected answer.",
+                "type": "p"
+              },
+              {
+                "text": "Store the original index supplying tail[t] in pos[t]. When index $i$ occupies slot $j$, first record par[$i$]=pos[$j$−1] if $j$>0, then replace pos[$j$] with $i$. Later replacement of pos[$j$−1] does not change the original index already saved in par[$i$].",
+                "type": "p"
+              },
+              {
+                "text": "When 8 at index 6 creates length 4, its predecessor is 7 at index 4, whose predecessor is 5 at index 2, then 2 at index 1. The links remain 6→4→2→1. They refer to fixed input indices, not mutable one-row DP slots.",
+                "type": "p"
+              },
+              {
+                "text": "The fast program permits 0≤$n$≤200000 and |a[$i$]|≤10¹⁸. Values are only compared; indices/lengths use int and values ll. Binary search per element gives $O(n \\log n)$ time, or O($n$ log($n$+1)+1) including the empty boundary, and $O(n)$ space for input, tails, positions, predecessors and output.",
+                "type": "p"
+              },
+              {
+                "text": "Keep the same value/index type distinction.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Input/output format matches the quadratic version.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "lower_bound finds the first ending at least the value. Record par before updating pos; never call back on an empty pos.",
+                "type": "p"
+              },
+              {
+                "text": "vector<ll> tail;\n    vector<int> pos, par(n, -1);\n    for (int i = 0; i < n; i++) {\n        int j = lower_bound(tail.begin(), tail.end(), a[i]) - tail.begin();\n        if (j > 0) par[i] = pos[j - 1];\n        if (j == int(tail.size())) {\n            tail.push_back(a[i]);\n            pos.push_back(i);\n        } else {\n            tail[j] = a[i];\n            pos[j] = i;\n        }\n    }\n    int best = pos.empty() ? -1 : pos.back();",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Recover the original indices from the ending of a maximum-length subsequence.",
+                "type": "p"
+              },
+              {
+                "text": "vector<int> path;\n    for (int i = best; i != -1; i = par[i]) path.push_back(i);\n    reverse(path.begin(), path.end());\n    cout << path.size() << '\\n';\n    for (int i : path) cout << i + 1 << ' ';\n    cout << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    vector<ll> tail;\n    vector<int> pos, par(n, -1);\n    for (int i = 0; i < n; i++) {\n        int j = lower_bound(tail.begin(), tail.end(), a[i]) - tail.begin();\n        if (j > 0) par[i] = pos[j - 1];\n        if (j == int(tail.size())) {\n            tail.push_back(a[i]);\n            pos.push_back(i);\n        } else {\n            tail[j] = a[i];\n            pos[j] = i;\n        }\n    }\n    int best = pos.empty() ? -1 : pos.back();\n    vector<int> path;\n    for (int i = best; i != -1; i = par[i]) path.push_back(i);\n    reverse(path.begin(), path.end());\n    cout << path.size() << '\\n';\n    for (int i : path) cout << i + 1 << ' ';\n    cout << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "duplicates",
+            "title": "Strict versus nondecreasing and duplicates",
+            "blocks": [
+              {
+                "text": "Strict increase forbids extending an equal value: [2,2,2] has answer 1. lower_bound replaces the existing equal 2 instead of extending. A nondecreasing subsequence permits equality and has answer 3. Its predecessor may end at≤$x$, so upper_bound finds the first strictly greater ending.",
+                "type": "p"
+              },
+              {
+                "text": "With duplicates, nondecreasing tails may be equal. Predecessor links still point to earlier indices, preserving input order even when values tie. A quadratic reference for this variant must also change a[$j$]<a[$i$] to a[$j$]≤a[$i$].",
+                "type": "p"
+              },
+              {
+                "text": "This program specifically computes a nondecreasing subsequence.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Use the same input and length/original-index output.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The key change is upper_bound: equal endings may be extended. The roles of pos and par are unchanged.",
+                "type": "p"
+              },
+              {
+                "text": "vector<ll> tail;\n    vector<int> pos, par(n, -1);\n    for (int i = 0; i < n; i++) {\n        int j = upper_bound(tail.begin(), tail.end(), a[i]) - tail.begin();\n        if (j > 0) par[i] = pos[j - 1];\n        if (j == int(tail.size())) {\n            tail.push_back(a[i]);\n            pos.push_back(i);\n        } else {\n            tail[j] = a[i];\n            pos[j] = i;\n        }\n    }\n    int best = pos.empty() ? -1 : pos.back();",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Even if selected values tie, their original indices still increase.",
+                "type": "p"
+              },
+              {
+                "text": "vector<int> path;\n    for (int i = best; i != -1; i = par[i]) path.push_back(i);\n    reverse(path.begin(), path.end());\n    cout << path.size() << '\\n';\n    for (int i : path) cout << i + 1 << ' ';\n    cout << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    cin >> n;\n    vector<ll> a(n);\n    for (ll &x : a) cin >> x;\n    vector<ll> tail;\n    vector<int> pos, par(n, -1);\n    for (int i = 0; i < n; i++) {\n        int j = upper_bound(tail.begin(), tail.end(), a[i]) - tail.begin();\n        if (j > 0) par[i] = pos[j - 1];\n        if (j == int(tail.size())) {\n            tail.push_back(a[i]);\n            pos.push_back(i);\n        } else {\n            tail[j] = a[i];\n            pos[j] = i;\n        }\n    }\n    int best = pos.empty() ? -1 : pos.back();\n    vector<int> path;\n    for (int i = best; i != -1; i = par[i]) path.push_back(i);\n    reverse(path.begin(), path.end());\n    cout << path.size() << '\\n';\n    for (int i : path) cout << i + 1 << ' ';\n    cout << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "Objectives, limitations and checks",
+            "blocks": [
+              {
+                "text": "Maximum length, number of subsequences and maximum weighted sum are different objectives. The one-minimum-ending proof is specific to length; putting counts or weights into the same array is not automatically valid. A longest contiguous increasing segment is also different because it forbids skipping intervening elements.",
+                "type": "p"
+              },
+              {
+                "text": "Test empty/singleton arrays, increasing/decreasing inputs, all-equal values and large signed values. For small inputs enumerate index subsets and find the best valid length. Verify reconstructed indices are in range and increasing, their values satisfy the intended inequality, and their count is optimal; checking the printed length alone is insufficient.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "text": "Check yourself:1. Why is the source answer 4 when its last dp entry is 2?2. Why not output tail=[1,3,7,8]?3. What are the two answers for[2,2,2]?4. Why does replacing pos not corrupt old par links?",
+                "type": "p"
+              },
+              {
+                "text": "Answers: maximize over all endings; the tails do not form one selection; strict 1 versus nondecreasing 3; par saves a fixed input index rather than a reference to a mutable pos entry.",
+                "type": "p"
+              },
+              {
+                "text": "Core problems for mastering the topic",
+                "type": "p"
+              },
+              {
+                "text": "Increasing Subsequence: implement strict length with the equality boundary of lower_bound.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "109"
+              },
+              {
+                "text": "Independent practice and extensions",
+                "type": "p"
+              },
+              {
+                "text": "Towers: derive upper_bound from the equal-cube rule; this is not simply printing a subsequence.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "322"
+              },
+              {
+                "text": "Flowers: maximize weighted value using a structure for the best preceding smaller height.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "693"
+              },
+              {
+                "text": "Increasing Subsequence II: derive a counting state and duplicate semantics.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "359"
+              },
+              {
+                "text": "Longest Common Subsequence: use two-prefix states, not a copied tail algorithm.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "349"
+              },
+              {
+                "text": "Projects: combine predecessor search with weighted DP, distinguishing it from LIS length.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "355"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "DP states and binary search in sorted sequences. A subsequence need not be contiguous."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Динамик программчлалын төлөв, эрэмбэлэгдсэн дараалал дээр хоёртын хайлт. Дэд дараалал нь залгаа байх албагүй.",
+    "priorityLevel": "high",
+    "priorityReason": "Дэд дарааллын төлөв, давамгайлсан хувилбарыг хадгалах, хамгийн бага төгсгөлийн утга ба хайлтын заагийг холбох өндөр өгөөжтэй жишээ. Тоон урт, бодит сонголт, тооллогын ялгааг сурах суурь.",
+    "prerequisiteIds": [
+      "dynamic-programming"
+    ],
+    "learningRelations": {
+      "next": "interval-dp",
+      "practice": [
+        {
+          "key": "109",
+          "stage": "Warm-up",
+          "reason": "Төлөвийн утга, хайлтын эсвэл сонголтын баталгааг шууд хэрэгжүүлэх үндсэн дасгал.",
+          "priority": true
+        },
+        {
+          "key": "322",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "693",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "359",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "349",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "355",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "dynamic-programming",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "monotonic-stack",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  }
+}

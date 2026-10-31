@@ -1,0 +1,880 @@
+{
+  "body": {
+    "id": "grid-dp",
+    "level": "Дунд шат",
+    "order": 25,
+    "title": "Хүснэгтэн DP — хамгийн сайн зам ба замын тоо",
+    "aliases": "grid-dp Grid DP — замын тоо Grid DP — counting paths",
+    "related": [
+      "dynamic-programming",
+      "flood-fill",
+      "knapsack"
+    ],
+    "summary": "Хоёр хөршөөс төлөв гаргаж, хамгийн их нийлбэр ба зам тоолохыг ялгана. Саад, сөрөг утга, нэг мөрийн санах ой болон зам сэргээхийг жишээгээр тайлбарлана.",
+    "category": "Dynamic programming",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "objective",
+        "title": "Нүдний утгуудын хамгийн их нийлбэр",
+        "blocks": [
+          {
+            "text": "Зүүн дээд нүднээс баруун доод нүд рүү зөвхөн баруун эсвэл доош явна. Нүд бүр дээр эерэг тоо өгсөн бол дайрсан нүднүүдийн нийлбэрийг хамгийн их болгох замыг олъё. Эхлэл, төгсгөлийн утгыг хоёуланг нийлбэрт оруулна. Дараах 5×5 хүснэгтийн хамгийн сайн нийлбэр 67.",
+            "type": "p"
+          },
+          {
+            "kind": "dp",
+            "rows": [
+              [
+                "3",
+                "7",
+                "9",
+                "2",
+                "7"
+              ],
+              [
+                "9",
+                "8",
+                "3",
+                "5",
+                "5"
+              ],
+              [
+                "1",
+                "7",
+                "9",
+                "8",
+                "5"
+              ],
+              [
+                "3",
+                "8",
+                "6",
+                "4",
+                "10"
+              ],
+              [
+                "6",
+                "3",
+                "9",
+                "7",
+                "8"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "Нүдний утгууд. Нэг боломжит хамгийн сайн зам: доош, баруун, доош, баруун, баруун, баруун, доош, доош."
+          },
+          {
+            "text": "Тэр замын тоонууд 3,9,8,7,9,8,5,10,8 бөгөөд нийлбэр нь 67. Гэхдээ үүнийг хараад хамгийн их гэдгийг нотолсон болохгүй. Зам бүрийг үүсгэхгүйгээр нүд бүрд хүрэх хамгийн сайн нийлбэрийг бодно. Сүүлийн алхам хаанаас ирснийг ажиглая.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "state",
+        "title": "Төлөв, хоёр хөрш ба боловсруулах дараалал",
+        "blocks": [
+          {
+            "text": "Мөр, баганыг эхлээд 1-ээс дугаарлая. $dp[i][j]$ нь (1,1)-ээс ($i$,$j$)-д хүрэх замын хамгийн их нийлбэр. ($i$,$j$)-ийн өмнөх нүд нь зөвхөн ($i$-1,$j$) эсвэл ($i$,$j$-1). Иймээс эхлэлээс бусад хүрч болох нүдэнд $dp[i][j]=\\max(dp[i-1][j],dp[i][j-1])+a[i][j]$.",
+            "type": "p"
+          },
+          {
+            "text": "Яагаад шилжилт зөв вэ? Дурын замын сүүлийн алхмыг хасаад хоёр хөршийн аль нэгэнд хүрэх зам үлдэнэ. Түүний нийлбэрийг тэр хөршийн хамгийн сайн замаар сольбол хариу муудахгүй. Харин хамгийн сайн хөршийн замд одоогийн нүдийг залгавал хууль ёсны зам үүснэ. Хоёр талаас нь харьцуулснаар энэ шилжилт яг хамгийн их утгыг өгнө.",
+            "type": "p"
+          },
+          {
+            "text": "Эхний нүдний хариу өөрийн утга. Саадгүй эхний мөрд зөвхөн зүүнээс, эхний баганад зөвхөн дээрээс ирнэ. Бүх утга эерэг, саадгүй үед гаднах мөр/баганыг 0 болгох богино арга ажилладаг: бодит хөршийн эерэг нийлбэр хийсвэр 0-оос үргэлж их. Энэ аргыг сөрөг утга, саадтай бодлогод шууд хуулж болохгүй.",
+            "type": "p"
+          },
+          {
+            "kind": "dp",
+            "rows": [
+              [
+                "3",
+                "10",
+                "19",
+                "21",
+                "28"
+              ],
+              [
+                "12",
+                "20",
+                "23",
+                "28",
+                "33"
+              ],
+              [
+                "13",
+                "27",
+                "36",
+                "44",
+                "49"
+              ],
+              [
+                "16",
+                "35",
+                "42",
+                "48",
+                "59"
+              ],
+              [
+                "22",
+                "38",
+                "51",
+                "58",
+                "67"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "Нүд бүрийн хамгийн их нийлбэр. Төгсгөлийн 67 нь бүх замын дундах дээд утга."
+          },
+          {
+            "text": "Жишээ нь (3,3)-д дээрээс 23, зүүнээс 27 ирэх тул 27+9=36. (4,5)-д дээрээс 49, зүүнээс 48 тул 49+10=59; төгсгөлд 59+8=67. Мөрийг дээрээс доош, мөр дотор зүүнээс баруун явбал хоёр хөрш аль хэдийн бодогдсон байна. Нүд бүр тогтмол ажилтай учир $n$×$m$ хүснэгтэд $O(nm)$ хугацаа.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "maximum-code",
+        "title": "Сөрөг утга, саад ба зам сэргээх хэрэгжүүлэлт",
+        "blocks": [
+          {
+            "text": "Одоо нүдний утга сөрөг байж болно, “*” нүд рүү орох хориотой гэж өргөжүүлье. Хүрч болохгүй төлөв нь 0 гэсэн утга биш. Жишээ нь ганц мөр [-5,-2]-ын зөв нийлбэр -7; гаднах 0-оос шинээр эхэлбэл -2 гэсэн буруу хариу гарна. Хамгийн ихийг олохдоо боломжгүйг маш бага тусгай утгаар тэмдэглэж, зөвхөн бодит хөршөөс шилжинэ.",
+            "type": "p"
+          },
+          {
+            "text": "Дараах кодод 0-ээс индексэлнэ. 1≤$n$,$m$≤1000, |a[$i$][$j$]|≤10⁹, мөр бүр яг $m$ тэмдэгтэй, зөвхөн “.” ба “*” байна. Замын дайрах нүдний тоо $n$+$m$−1 тул нийлбэрийн абсолют утга 2×10¹²-оос эрс бага; ll хангалттай. NEG=−2⁶⁰ нь бодит ямар ч нийлбэртэй давхцахгүй. NEG дээр утга нэмэхгүй. Хоёр хэмжээст массивуудын зай $O(nm)$.",
+            "type": "p"
+          },
+          {
+            "text": "Эхлэл саадгүй бол зөвхөн dp[0][0]-г онооно. Бусад нүдэнд хүрч болох дээрх хөршийг эхлээд, дараа нь илүү сайн зүүн хөршийг шалгана. par нь тухайн нүд рүү орсон алхмыг хадгална. Тэнцвэл дээрх хөршийг үлдээнэ; хамгийн сайн зам ганц байх албагүй.",
+            "type": "p"
+          },
+          {
+            "text": "Төгсгөл боломжгүй бол IMPOSSIBLE. Үгүй бол par-ыг төгсгөлөөс дагаж, $D$ тэмдэгтэд мөрийг, $R$ тэмдэгтэд баганыг багасгана. Ингэж цуглуулсан алхмууд урвуу дараалалтай тул эргүүлнэ. Өмнөх нүд бүр зөв шилжилтээр сонгогдсон учир сэргээсэн замын нийлбэр DP-ийн хариутай тэнцэнэ. Ганц нүдтэй үед зам нь хоосон мөр.",
+            "type": "p"
+          },
+          {
+            "text": "ll нь нийлбэрт, int нь индекс/хэмжээнд хэрэглэгдэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Эхлээд $n$,$m$, дараа нь $n$×$m$ утга, эцэст нь $n$ тэмдэгт мөр уншина. Бүх нүдний утгыг, саадтай байсан ч оруулна.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    vector<vector<ll>> a(n, vector<ll>(m));\n    for (auto &row : a) {\n        for (ll &x : row) cin >> x;\n    }\n    vector<string> g(n);\n    for (string &row : g) cin >> row;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "NEG-ээр эхлүүлж, эхлэл/саад/хоёр хөршийг ялгана. par дахь $D$,$R$ нь урагш явсан алхам.",
+            "type": "p"
+          },
+          {
+            "text": "const ll NEG = -(1LL << 60);\n    vector<vector<ll>> dp(n, vector<ll>(m, NEG));\n    vector<vector<char>> par(n, vector<char>(m));\n    if (g[0][0] == '.') dp[0][0] = a[0][0];\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < m; j++) {\n            if (g[i][j] == '*' || (i == 0 && j == 0)) continue;\n            ll best = NEG;\n            if (i > 0 && dp[i - 1][j] != NEG) {\n                best = dp[i - 1][j];\n                par[i][j] = 'D';\n            }\n            if (j > 0 && dp[i][j - 1] > best) {\n                best = dp[i][j - 1];\n                par[i][j] = 'R';\n            }\n            if (best != NEG) dp[i][j] = best + a[i][j];\n        }\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Хариу хүрэх боломжтой үед л зам сэргээнэ. Нийлбэр ба $D$/$R$ мөрийг хоёр мөрөөр хэвлэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "if (dp[n - 1][m - 1] == NEG) {\n        cout << \"IMPOSSIBLE\\n\";\n        return 0;\n    }\n    string path;\n    int i = n - 1, j = m - 1;\n    while (i != 0 || j != 0) {\n        char c = par[i][j];\n        path += c;\n        if (c == 'D') i--;\n        else j--;\n    }\n    reverse(path.begin(), path.end());\n    cout << dp[n - 1][m - 1] << '\\n' << path << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    vector<vector<ll>> a(n, vector<ll>(m));\n    for (auto &row : a) {\n        for (ll &x : row) cin >> x;\n    }\n    vector<string> g(n);\n    for (string &row : g) cin >> row;\n\n    const ll NEG = -(1LL << 60);\n    vector<vector<ll>> dp(n, vector<ll>(m, NEG));\n    vector<vector<char>> par(n, vector<char>(m));\n    if (g[0][0] == '.') dp[0][0] = a[0][0];\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < m; j++) {\n            if (g[i][j] == '*' || (i == 0 && j == 0)) continue;\n            ll best = NEG;\n            if (i > 0 && dp[i - 1][j] != NEG) {\n                best = dp[i - 1][j];\n                par[i][j] = 'D';\n            }\n            if (j > 0 && dp[i][j - 1] > best) {\n                best = dp[i][j - 1];\n                par[i][j] = 'R';\n            }\n            if (best != NEG) dp[i][j] = best + a[i][j];\n        }\n    }\n\n    if (dp[n - 1][m - 1] == NEG) {\n        cout << \"IMPOSSIBLE\\n\";\n        return 0;\n    }\n    string path;\n    int i = n - 1, j = m - 1;\n    while (i != 0 || j != 0) {\n        char c = par[i][j];\n        path += c;\n        if (c == 'D') i--;\n        else j--;\n    }\n    reverse(path.begin(), path.end());\n    cout << dp[n - 1][m - 1] << '\\n' << path << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "counting",
+        "title": "Саадтай хүснэгтэд зам тоолох",
+        "blocks": [
+          {
+            "text": "Одоо нүдний утгыг хамгийн их болгох бус, саадыг тойрон хүрэх ЯЛГААТАЙ замын тоог олъё. Хоёр замын алхмын дараалал өөр бол ялгаатай. Замын тоонд хоёр хөршийн хариуг нэмнэ; хамгийн сайн утгад тэдгээрийн ихийг авдаг байсан. Төлөвийн утга өөрчлөгдсөн тул нэг кодын max-ыг сохроор + болгохоос өмнө эхлэл ба боломжгүйг дахин тодорхойлно.",
+            "type": "p"
+          },
+          {
+            "text": "ways[$i$][$j$] нь эхлэлээс тухайн нүдэд хүрэх замын тоо. Саадтай нүдэнд 0; саадгүй эхлэлд 1, учир нь огт алхам хийгээгүй нэг зам бий. Бусад нүдэнд ways[$i$−1][$j$]+ways[$i$][$j$−1]. Хоёр бүлгийн сүүлийн алхам өөр тул давхар тоологдохгүй, харин хүрэх зам бүр эдгээрийн аль нэгэнд орно.",
+            "type": "p"
+          },
+          {
+            "kind": "dp",
+            "rows": [
+              [
+                ".",
+                ".",
+                ".",
+                "."
+              ],
+              [
+                ".",
+                "*",
+                ".",
+                "."
+              ],
+              [
+                ".",
+                ".",
+                ".",
+                "."
+              ]
+            ],
+            "type": "diagram",
+            "caption": "3×4 хүснэгт: “*” нь хаалттай нүд."
+          },
+          {
+            "kind": "dp",
+            "rows": [
+              [
+                "1",
+                "1",
+                "1",
+                "1"
+              ],
+              [
+                "1",
+                "0",
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "1",
+                "2",
+                "4"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "Тооллогын хүснэгт. Баруун доод нүдэнд 4 зам хүрнэ."
+          },
+          {
+            "text": "Эхний мөр бүхэлдээ 1. Дараагийн мөрийн саадтай хоёр дахь нүд 0; гурав дахь нүд дээрээсээ 1 зам авна, дөрөв дэхэд 1+1=2. Сүүлийн мөр 1,1,2,4 болно. Хүрэх боломжгүй нүд 0 гэдэг нь тооллогод зөв, харин сөрөг нийлбэрийн бодлогод 0 гэж тэмдэглэх нь буруу байсныг ялга.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "row",
+        "title": "Нэг мөрөөр бодох ба модулийн утга",
+        "blocks": [
+          {
+            "text": "Тооллогын өмнөх мөрийг бүхэлд нь хадгалах шаардлагагүй. Зүүнээс баруун боловсруулахад dp[$j$] хараахан шинэчлэгдээгүй тул дээрх нүдний утга; dp[$j$−1] аль хэдийн шинэчлэгдсэн тул одоогийн мөрийн зүүн утга. Нэг нүдийг өнгөрөх бүрд энэ зааг баруун тийш шилжинэ. Баруунаас зүүн явбал зүүн утга нь өмнөх мөрийнх хэвээр үлдэж өөр бодлого бодно.",
+            "type": "p"
+          },
+          {
+            "text": "Эхний dp[0]=1 нь эхлэхийн өмнөх ганц боломжийг өгнө. Эхлэл өөрөө саадтай бол эхний шинэчлэлт түүнийг 0 болгоно; дараа нь бүх хариу 0. Нэг мөр, нэг багана, саадтай төгсгөл ч ижил дүрэмтэй. Эхлэлийг саад шалгасны дараа дахин 1 болгохгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Код 1≤$n$,$m$≤1000 нөхцөлтэй. Замын тоо их тул 1000000007-д хуваасан үлдэгдлийг хадгална. Хоёр нэмэгдэхүүн тус бүр модулиас эрс бага, ll дотор нэмээд модуль авна. Энэ 0 нь “зам байхгүй”-г батлахгүй: бодит тоо модулийн үржвэр байж болно. Яг тоо эсвэл тусдаа хүрэх боломж хэрэгтэй бол төлөвөө өөрөөр хадгална. DP-ийн нэмэлт зай $O(m)$, оролтын g хүснэгтийг энэ хувилбар $O(nm)$ зайд хадгалж байгааг тусад нь тооц.",
+            "type": "p"
+          },
+          {
+            "text": "ll нь модулийн тооллогод, int нь мөр/баганын индекст хэрэглэгдэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "$n$,$m$ болон $n$ ширхэг “.”/“*” мөр уншина. dp-ийн зөвхөн эхний нүдийг нэгээр эхлүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    vector<string> g(n);\n    for (string &row : g) cin >> row;\n    const ll MOD = 1000000007;\n    vector<ll> dp(m);\n    dp[0] = 1;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Саад дээр хуучин утгыг заавал 0 болгоно. Бусад нүдэнд зүүн хөршийг нэмж, модуль авна; эхний баганад зүүн хөрш байхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "for (int i = 0; i < n; i++) {\n        for (int j = 0; j < m; j++) {\n            if (g[i][j] == '*') dp[j] = 0;\n            else if (j > 0) dp[j] = (dp[j] + dp[j - 1]) % MOD;\n        }\n    }\n    cout << dp[m - 1] << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    vector<string> g(n);\n    for (string &row : g) cin >> row;\n    const ll MOD = 1000000007;\n    vector<ll> dp(m);\n    dp[0] = 1;\n\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < m; j++) {\n            if (g[i][j] == '*') dp[j] = 0;\n            else if (j > 0) dp[j] = (dp[j] + dp[j - 1]) % MOD;\n        }\n    }\n    cout << dp[m - 1] << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "Хамаарал, зөв хэрэглээ ба шалгах тохиолдлууд",
+        "blocks": [
+          {
+            "text": "Давталтын зөв дараалал нь граф циклгүй байгаатай холбоотой: алхам бүр $i$+$j$-г нэгээр өсгөнө. Иймээс нэг нүдэнд ирэх замаар буцаад өөрийнх нь хариунд хамаарахгүй. Дээш/зүүн алхмыг нэмж зөвшөөрвөл энэ баталгаа алга болно; ийм кодыг ерөнхий графын зам тоолоход хэрэглэхгүй. Саадтай холбоост хэсгийн нүдийг тоолох flood-fill ч өөр зорилготой.",
+            "type": "p"
+          },
+          {
+            "text": "Зөв эсэхээ шалгахдаа 1×1 нээлттэй/саадтай, нэг мөрийн саад, бүтэн хаасан мөр, сөрөг утгатай ганц зам, олон тэнцүү хамгийн сайн замыг үз. Жижиг хүснэгтийн бүх $D$/$R$ дарааллыг үүсгэж, хууль ёсны замын тоо ба хамгийн их нийлбэрийг тус тус тулгаж болно. Хоёр бодлогын хариуг хооронд нь тулгахгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал ба бие даалт",
+        "blocks": [
+          {
+            "text": "Өөрийгөө шалга: 1. [-5,-2] дээр 0 зааг яагаад буруу вэ? 2. Саадтай эхлэлийг 1 болговол юу эвдрэх вэ? 3. Нэг мөрийн DP-д зүүн ба дээрх утга аль үеийнх вэ? 4. Модультай хариу 0 бол үнэхээр замгүй юу?",
+            "type": "p"
+          },
+          {
+            "text": "Хариу: гаднаас шинээр эхэлж -2 сонгоно; хаалттай нүднээс зам үүсгэнэ; dp[$j$] өмнөх мөр, dp[$j$−1] одоогийн мөр; заавал биш. Үндсэн хоёр бодлогод эхлэл, саад, модуль, зөв дарааллаа тайлбарлаад хэрэгжүүл.",
+            "type": "p"
+          },
+          {
+            "text": "Сэдвийг эзэмших үндсэн бодлогууд",
+            "type": "p"
+          },
+          {
+            "text": "Grid Paths $I$: “*” саад, модулийн тооллогоо хэрэгжүүл.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "345"
+          },
+          {
+            "text": "AtCoder DP H: тэгш өнцөгт хэмжээ, нэг мөр/баганын заагаа шалга.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "684"
+          },
+          {
+            "text": "Бие даах ба ахиулах бодлогууд",
+            "type": "p"
+          },
+          {
+            "text": "Edit Distance: хоёр угтварын төлөв дээр нэмэх бус хамгийн бага зардал сонго.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "348"
+          },
+          {
+            "text": "AtCoder DP $Y$: хүснэгт маш том үед нүд бүрээр явж болохгүй; комбинаторик тооллын нэмэлт үндэслэл шаардлагатай.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "701"
+          },
+          {
+            "text": "Counting Tilings: зөвхөн координат хангалтгүй, захын дүүрэлтийн төлөв хэрэгтэй.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "357"
+          },
+          {
+            "text": "AtCoder DP G: ерөнхий циклгүй графт хамаарлын дараалал гаргаж хамгийн урт зам ол.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "683"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Grid DP — optimal paths and path counts",
+        "summary": "Derive states from two predecessors, distinguish optimal sums from path counts, and handle obstacles, signed values, one-row storage and reconstruction.",
+        "sections": [
+          {
+            "key": "objective",
+            "title": "Maximum sum through a grid",
+            "blocks": [
+              {
+                "text": "Move from the upper-left cell to the lower-right using only right and down steps. Each cell initially contains a positive number. Maximize the sum of visited cells, including both endpoints. In the following 5×5 grid the optimum is 67.",
+                "type": "p"
+              },
+              {
+                "kind": "dp",
+                "rows": [
+                  [
+                    "3",
+                    "7",
+                    "9",
+                    "2",
+                    "7"
+                  ],
+                  [
+                    "9",
+                    "8",
+                    "3",
+                    "5",
+                    "5"
+                  ],
+                  [
+                    "1",
+                    "7",
+                    "9",
+                    "8",
+                    "5"
+                  ],
+                  [
+                    "3",
+                    "8",
+                    "6",
+                    "4",
+                    "10"
+                  ],
+                  [
+                    "6",
+                    "3",
+                    "9",
+                    "7",
+                    "8"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "Cell values. One optimal path is down, right, down, right, right, right, down, down."
+              },
+              {
+                "text": "That path visits 3,9,8,7,9,8,5,10,8, totaling 67. Exhibiting a path does not prove optimality. Instead of enumerating every full path, calculate the best attainable sum at each cell. Examine its last step.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "state",
+            "title": "State, two predecessors and evaluation order",
+            "blocks": [
+              {
+                "text": "Initially number rows and columns from 1. dp[$i$][$j$] is the maximum sum from(1,1) to($i$,$j$). The preceding cell is either($i$−1,$j$) or($i$,$j$−1), so take the larger reachable predecessor sum and add a[$i$][$j$].",
+                "type": "p"
+              },
+              {
+                "text": "Remove the last step of any path: its prefix ends at one of the two predecessors. Replacing that prefix with the best one cannot hurt. Conversely, appending the current cell to a best predecessor path is legal. These two directions establish equality, not merely a lower bound.",
+                "type": "p"
+              },
+              {
+                "text": "The start has its own value. An obstacle-free first row has only a left predecessor; a first column only an upper predecessor. A zero-padded border is a shortcut when all values are positive and no cells are blocked: a genuine positive prefix always beats the artificial zero. Do not transfer this shortcut blindly to signed or blocked grids.",
+                "type": "p"
+              },
+              {
+                "kind": "dp",
+                "rows": [
+                  [
+                    "3",
+                    "10",
+                    "19",
+                    "21",
+                    "28"
+                  ],
+                  [
+                    "12",
+                    "20",
+                    "23",
+                    "28",
+                    "33"
+                  ],
+                  [
+                    "13",
+                    "27",
+                    "36",
+                    "44",
+                    "49"
+                  ],
+                  [
+                    "16",
+                    "35",
+                    "42",
+                    "48",
+                    "59"
+                  ],
+                  [
+                    "22",
+                    "38",
+                    "51",
+                    "58",
+                    "67"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "Best sum at every cell. The final67 is the optimum over all complete paths."
+              },
+              {
+                "text": "At(3,3), the upper result 23 loses to the left result 27, giving 27+9=36. At(4,5), choose 49 over 48 and add 10 to get 59; finally 59+8=67. Scan rows top to bottom and columns left to right: both dependencies are ready. Each cell takes constant work, so an $n$×$m$ grid needs $O(nm)$ time.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "maximum-code",
+            "title": "Signed values, obstacles and reconstruction",
+            "blocks": [
+              {
+                "text": "Extend the problem to signed cell values and forbidden “*” cells. Unreachable does not mean a value of zero. The single row[-5,-2] has sum−7; restarting from an artificial border zero incorrectly gives−2. Represent unreachable with a very small sentinel and transition only from a reachable predecessor.",
+                "type": "p"
+              },
+              {
+                "text": "The code uses zero-based indices. Require 1≤$n$,$m$≤1000, |a[$i$][$j$]|≤10⁹ and exactly $m$ characters, “.” or “*”, in each row. A path visits $n$+$m$−1 cells, so absolute sums stay below 2×10¹² and fit ll. NEG=−2⁶⁰ cannot equal a valid sum; never add a value to NEG. The two-dimensional arrays use $O(nm)$ space.",
+                "type": "p"
+              },
+              {
+                "text": "Initialize only dp[0][0] if the start is open. For another cell consider a reachable upper neighbor, then a strictly better left one. par stores the step used to enter that cell. Ties keep the upper predecessor; an optimal path need not be unique.",
+                "type": "p"
+              },
+              {
+                "text": "Print IMPOSSIBLE if the destination is unreachable. Otherwise follow par backward, decreasing the row for $D$ and the column for $R$, then reverse the collected steps. Each predecessor was selected by a valid optimal transition, so the reconstructed path attains the DP value. A single-cell path is an empty line.",
+                "type": "p"
+              },
+              {
+                "text": "ll stores sums; int stores indices and dimensions.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Read $n$,$m$, the $n$×$m$ values, then $n$ mask rows. Include a value even for each blocked cell.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    vector<vector<ll>> a(n, vector<ll>(m));\n    for (auto &row : a) {\n        for (ll &x : row) cin >> x;\n    }\n    vector<string> g(n);\n    for (string &row : g) cin >> row;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Initialize unreachable states with NEG and distinguish the start, obstacles and two predecessors. $D$/$R$ in par denote forward steps.",
+                "type": "p"
+              },
+              {
+                "text": "const ll NEG = -(1LL << 60);\n    vector<vector<ll>> dp(n, vector<ll>(m, NEG));\n    vector<vector<char>> par(n, vector<char>(m));\n    if (g[0][0] == '.') dp[0][0] = a[0][0];\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < m; j++) {\n            if (g[i][j] == '*' || (i == 0 && j == 0)) continue;\n            ll best = NEG;\n            if (i > 0 && dp[i - 1][j] != NEG) {\n                best = dp[i - 1][j];\n                par[i][j] = 'D';\n            }\n            if (j > 0 && dp[i][j - 1] > best) {\n                best = dp[i][j - 1];\n                par[i][j] = 'R';\n            }\n            if (best != NEG) dp[i][j] = best + a[i][j];\n        }\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Reconstruct only a reachable answer. Print the sum and $D$/$R$ path on separate lines.",
+                "type": "p"
+              },
+              {
+                "text": "if (dp[n - 1][m - 1] == NEG) {\n        cout << \"IMPOSSIBLE\\n\";\n        return 0;\n    }\n    string path;\n    int i = n - 1, j = m - 1;\n    while (i != 0 || j != 0) {\n        char c = par[i][j];\n        path += c;\n        if (c == 'D') i--;\n        else j--;\n    }\n    reverse(path.begin(), path.end());\n    cout << dp[n - 1][m - 1] << '\\n' << path << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    vector<vector<ll>> a(n, vector<ll>(m));\n    for (auto &row : a) {\n        for (ll &x : row) cin >> x;\n    }\n    vector<string> g(n);\n    for (string &row : g) cin >> row;\n\n    const ll NEG = -(1LL << 60);\n    vector<vector<ll>> dp(n, vector<ll>(m, NEG));\n    vector<vector<char>> par(n, vector<char>(m));\n    if (g[0][0] == '.') dp[0][0] = a[0][0];\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < m; j++) {\n            if (g[i][j] == '*' || (i == 0 && j == 0)) continue;\n            ll best = NEG;\n            if (i > 0 && dp[i - 1][j] != NEG) {\n                best = dp[i - 1][j];\n                par[i][j] = 'D';\n            }\n            if (j > 0 && dp[i][j - 1] > best) {\n                best = dp[i][j - 1];\n                par[i][j] = 'R';\n            }\n            if (best != NEG) dp[i][j] = best + a[i][j];\n        }\n    }\n\n    if (dp[n - 1][m - 1] == NEG) {\n        cout << \"IMPOSSIBLE\\n\";\n        return 0;\n    }\n    string path;\n    int i = n - 1, j = m - 1;\n    while (i != 0 || j != 0) {\n        char c = par[i][j];\n        path += c;\n        if (c == 'D') i--;\n        else j--;\n    }\n    reverse(path.begin(), path.end());\n    cout << dp[n - 1][m - 1] << '\\n' << path << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "counting",
+            "title": "Counting paths around obstacles",
+            "blocks": [
+              {
+                "text": "Now count distinct legal paths around obstacles instead of maximizing cell values. Paths differ if their step sequences differ. Counting adds the predecessor answers, while optimization selected their maximum. Because the state meaning changed, reconsider its base and unreachable values before replacing max with addition.",
+                "type": "p"
+              },
+              {
+                "text": "ways[$i$][$j$] counts paths from the start. A blocked cell has 0; an open start has 1, the empty sequence of moves. Another cell adds the upper and left counts. The two groups have different last steps, so they are disjoint, and every arriving path belongs to one of them.",
+                "type": "p"
+              },
+              {
+                "kind": "dp",
+                "rows": [
+                  [
+                    ".",
+                    ".",
+                    ".",
+                    "."
+                  ],
+                  [
+                    ".",
+                    "*",
+                    ".",
+                    "."
+                  ],
+                  [
+                    ".",
+                    ".",
+                    ".",
+                    "."
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "A3×4 grid: “*” is blocked."
+              },
+              {
+                "kind": "dp",
+                "rows": [
+                  [
+                    "1",
+                    "1",
+                    "1",
+                    "1"
+                  ],
+                  [
+                    "1",
+                    "0",
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "1",
+                    "2",
+                    "4"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "Counting table. Four paths reach the lower-right cell."
+              },
+              {
+                "text": "The first row contains ones. In the next row the obstacle resets the second cell to 0; the third gets 1 from above and the fourth gets 1+1=2. The last row becomes 1,1,2,4. Zero correctly represents no paths in a count, unlike unreachable signed optimization.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "row",
+            "title": "One-row storage and modular counts",
+            "blocks": [
+              {
+                "text": "Keep only one row. In a left-to-right scan, dp[$j$] still belongs to the upper cell while dp[$j$−1] has already become the current row’s left cell. The boundary between old and new entries moves right after each update. Scanning right to left would use the previous row’s left value instead and compute a different recurrence.",
+                "type": "p"
+              },
+              {
+                "text": "The initial dp[0]=1 seeds the single starting possibility. If the start is blocked, the first update resets it to 0 and all answers stay 0. Single rows, single columns and blocked destinations follow the same rule. Do not restore a blocked start to 1 after testing obstacles.",
+                "type": "p"
+              },
+              {
+                "text": "Require 1≤$n$,$m$≤1000. Store counts modulo 1000000007 because exact counts grow large. Each addend is below the modulus and their sum is safe in ll. A modular zero does not prove that no path exists: the true count might be a multiple of the modulus. Exact counts or reachability require a different representation. DP uses $O(m)$ auxiliary space; this program still stores the input grid g in $O(nm)$ space.",
+                "type": "p"
+              },
+              {
+                "text": "Use ll for modular counts and int for row/column indices.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Read $n$,$m$ and $n$ “.”/“*” rows. Seed only the first dp entry with 1.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    vector<string> g(n);\n    for (string &row : g) cin >> row;\n    const ll MOD = 1000000007;\n    vector<ll> dp(m);\n    dp[0] = 1;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "An obstacle must erase the old count. Otherwise add the current left count modulo MOD; the first column has no left neighbor.",
+                "type": "p"
+              },
+              {
+                "text": "for (int i = 0; i < n; i++) {\n        for (int j = 0; j < m; j++) {\n            if (g[i][j] == '*') dp[j] = 0;\n            else if (j > 0) dp[j] = (dp[j] + dp[j - 1]) % MOD;\n        }\n    }\n    cout << dp[m - 1] << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n, m;\n    cin >> n >> m;\n    vector<string> g(n);\n    for (string &row : g) cin >> row;\n    const ll MOD = 1000000007;\n    vector<ll> dp(m);\n    dp[0] = 1;\n\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < m; j++) {\n            if (g[i][j] == '*') dp[j] = 0;\n            else if (j > 0) dp[j] = (dp[j] + dp[j - 1]) % MOD;\n        }\n    }\n    cout << dp[m - 1] << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "Dependencies, limits and checks",
+            "blocks": [
+              {
+                "text": "The evaluation order works because the dependency graph is acyclic: each move increases $i$+$j$ by 1. No state eventually depends on itself. Allowing up or left moves destroys that argument; this code is not a general graph path counter. Flood fill counts cells in a connected region, a different objective.",
+                "type": "p"
+              },
+              {
+                "text": "Test open/blocked 1×1 grids, a barrier in a single row, a fully blocked row, a negative single path and tied optima. For small grids enumerate every $D$/$R$ sequence and independently compare its legal-path count and best sum. Do not compare the answers of the two different objectives to one another.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "text": "Check yourself:1. Why is a zero border wrong for[-5,-2]?2. What breaks if a blocked start is set to 1?3. Which row owns each of the two one-row dependencies?4. Does modular zero imply no paths?",
+                "type": "p"
+              },
+              {
+                "text": "Answers: it illegally restarts outside and selects−2; it creates paths from a blocked cell; dp[$j$] is the old row and dp[$j$−1] the current row; not necessarily. For the two core problems explain the start, obstacles, modulus and update order.",
+                "type": "p"
+              },
+              {
+                "text": "Core problems for mastering the topic",
+                "type": "p"
+              },
+              {
+                "text": "Grid Paths $I$: implement blocked cells and modular counting.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "345"
+              },
+              {
+                "text": "AtCoder DP H: handle rectangular dimensions and single-row/column boundaries.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "684"
+              },
+              {
+                "text": "Independent practice and extensions",
+                "type": "p"
+              },
+              {
+                "text": "Edit Distance: use two prefix lengths and minimum cost instead of counting.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "348"
+              },
+              {
+                "text": "AtCoder DP $Y$: the huge grid needs additional combinatorial reasoning instead of visiting every cell.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "701"
+              },
+              {
+                "text": "Counting Tilings: coordinates alone are insufficient; store a frontier occupancy state.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "357"
+              },
+              {
+                "text": "AtCoder DP G: order dependencies in a general DAG and optimize path length.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "683"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "DP states and transitions, row/column indexing. Distinguish connected-cell search from counting different paths."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Динамик программчлалын төлөв ба шилжилтийн санаа, хүснэгтийн мөр баганын индекс. Холбоост нүд тоолох хайлт ба замын тоо олохыг ялгана.",
+    "priorityLevel": "high",
+    "priorityReason": "Хоёр хэмжээсийн төлөв, давтагдах дэд бодлого, сүүлийн алхмаар салгах баталгаа, заагийн нөхцөл ба модулийн тооллогыг харагдахуйц жишээн дээр сургана. Дараагийн олон динамик программчлалын төлөвийг гаргах шууд суурь.",
+    "prerequisiteIds": [
+      "dynamic-programming",
+      "flood-fill"
+    ],
+    "learningRelations": {
+      "next": "knapsack",
+      "practice": [
+        {
+          "key": "345",
+          "stage": "Warm-up",
+          "reason": "Төлөвийн утга, боловсруулах дараалал ба баталгааг нэмэлт ахисан арга шаардахгүйгээр хэрэгжүүлэх шууд цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "684",
+          "stage": "Standard",
+          "reason": "Төлөвийн утга, боловсруулах дараалал ба баталгааг нэмэлт ахисан арга шаардахгүйгээр хэрэгжүүлэх шууд цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "348",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "701",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "357",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "683",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "dynamic-programming",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "flood-fill",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "knapsack",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  }
+}

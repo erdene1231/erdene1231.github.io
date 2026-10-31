@@ -1,0 +1,1209 @@
+{
+  "body": {
+    "id": "centroid-decomposition",
+    "level": "Ахисан шат",
+    "order": 34,
+    "title": "Centroid decomposition — модыг тэнцвэртэй хуваах",
+    "aliases": "centroid decomposition nearest marked red vertex тэнцвэртэй мод хуваалт",
+    "related": [
+      "tree-basics",
+      "tree-dp",
+      "lca",
+      "heavy-light-decomposition"
+    ],
+    "summary": "Компонентын хэмжээг таллан хувааж centroid мод байгуулан, хамгийн ойрын тэмдэглэсэн оройн асуултыг хурдан хариулна.",
+    "category": "Graphs",
+    "levelKey": "advanced",
+    "sections": [
+      {
+        "key": "definition",
+        "title": "Centroid нь модны төвтэй адил биш",
+        "blocks": [
+          {
+            "text": "Модны нэг оройг хасаад үлдсэн салбаруудыг ойролцоо хэмжээтэй болгож болох уу? $k$ оройтой компонентоос c-г хасахад үүсэх компонент бүрийн хэмжээ $\\lfloor k/2\\rfloor$-оос ихгүй байвал c-г тухайн компонентын centroid гэнэ. Энд хэмжээ гэдэг нь оройн тоо; ирмэгийн урт, модны гүн биш.",
+            "type": "p"
+          },
+          {
+            "text": "Нэг ийм орой олоод үлдсэн компонент бүрд ижил үйлдлийг давтана. Ингэснээр том модыг тэнцвэртэй жижиг хэсгүүдэд хуваасан centroid decomposition үүснэ. Өмнөх HLD нь анхны модон замыг гинжид хуваадаг бол энд компонентуудыг төв оройгоор нь салгаж шинэ туслах мод байгуулна. Хоёр арга ижил бүтэц биш.",
+            "type": "p"
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "2",
+                "3"
+              ],
+              [
+                "3",
+                "4"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "6"
+              ],
+              [
+                "2",
+                "7"
+              ],
+              [
+                "2",
+                "8"
+              ],
+              [
+                "2",
+                "9"
+              ],
+              [
+                "2",
+                "10"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 8,
+                "y": 12,
+                "id": "1",
+                "label": "1"
+              },
+              {
+                "x": 30,
+                "y": 40,
+                "id": "2",
+                "color": "#f7c873",
+                "label": "2",
+                "textColor": "#253047"
+              },
+              {
+                "x": 52,
+                "y": 40,
+                "id": "3",
+                "label": "3"
+              },
+              {
+                "x": 70,
+                "y": 40,
+                "id": "4",
+                "label": "4"
+              },
+              {
+                "x": 88,
+                "y": 40,
+                "id": "5",
+                "label": "5"
+              },
+              {
+                "x": 88,
+                "y": 80,
+                "id": "6",
+                "label": "6"
+              },
+              {
+                "x": 8,
+                "y": 40,
+                "id": "7",
+                "label": "7"
+              },
+              {
+                "x": 8,
+                "y": 68,
+                "id": "8",
+                "label": "8"
+              },
+              {
+                "x": 30,
+                "y": 12,
+                "id": "9",
+                "label": "9"
+              },
+              {
+                "x": 30,
+                "y": 68,
+                "id": "10",
+                "label": "10"
+              }
+            ],
+            "caption": "Эх мод: 2-ыг хасахад хамгийн том хэсэг {3,4,5,6}, хэмжээ 4≤10/2. Centroid нь 2; харин зайгаар тодорхойлох төвүүд нь 3 ба 4.",
+            "directed": false
+          },
+          {
+            "text": "Жишээний 10 оройтой модноос 2-ыг хасвал {1}, {3,4,5,6}, {7}, {8}, {9}, {10} гэсэн зургаан компонент үлдэнэ. Хамгийн том нь 4 оройтой тул 2 centroid мөн. Харин 3-ыг хасахад {1,2,7,8,9,10} гэсэн 6 оройтой хэсэг үлдэнэ: 3 centroid биш.",
+            "type": "p"
+          },
+          {
+            "text": "Модны төв (center) бол бусад орой хүртэлх хамгийн хол зайгаа хамгийн бага болгодог орой. 1–2–3–4–5–6 диаметрийн дунд орших 3,4-ийн хамгийн хол зай 3; centroid 2-ынх 4. Төв нь ЗАЙГ, centroid нь ХЭСГИЙН ХЭМЖЭЭГ тэнцвэржүүлнэ. Ганц оройтой модонд тэр орой centroid. Зарим модонд хоёр боломж бий: дөрвөн оройн замын дундах хоёр орой хоёулаа тохирно. Аль нэгийг сонгоход алгоритмын баталгаа хэвээр.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "find",
+        "title": "Centroid олох: хүүхдийн тал ба эцгийн тал",
+        "blocks": [
+          {
+            "text": "Centroid үргэлж олдоно. Дурын $u$ оройноос эхэл. $u$-г хасахад $k$/2-оос эрс олон оройтой хэсэг байвал түүн рүү хөршийн ирмэгээр шилжинэ. Ийм том хэсэг нэгээс олон байх боломжгүй. Шинэ оройноос буцаж хуучин тал руу харсан хэсэг $k$/2-оос эрс бага тул буцаад алхахгүй. Модонд цикл байхгүй учраас энэ шилжилт дуусна; дууссан оройд хэт том хэсэг үлдээгүй байна.",
+            "type": "p"
+          },
+          {
+            "text": "Кодод үлдсэн компонентыг түр start дээр үндэслээд centroid-ийг шууд шалгана. par нь энэ ТҮР үндэслэлийн эцэг, sz[$u$] нь түүний дэд модны хэмжээ. $u$-г хасахад хүүхэд $v$ бүрийн талд sz[$v$] орой, эцгийн талд $k$−sz[$u$] орой үлдэнэ. Иймд шалгах хамгийн том хэсэг нь mx=max($k$−sz[$u$], хүүхдийн бүх sz[$v$]). mx≤$k$/2 эхний $u$-г авна.",
+            "type": "p"
+          },
+          {
+            "text": "Эцгийн талыг орхивол жижиг навчийг centroid гэж андуурна. Өмнө сонгосон centroid-уудыг blocked гэж тэмдэглэж, компонентын бүх тойролтод тэдгээрийг алгасана. Ирмэгийг бодитоор устгахгүй: хөршийн жагсаалт хэвээр. Эх оролт холбоост, чиглэлгүй, циклгүй мод байх ёстой; зөвхөн эцгээ алгасах энэ код ерөнхий графын компонент олох код биш.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "decomposition",
+        "title": "Тэнцвэртэй хуваалт ба centroid мод",
+        "blocks": [
+          {
+            "text": "Компонентын centroid c-г сонгоод, түүнийг тухайн салбарын туслах модны үндэс болгоно. c-г blocked болгосны дараа үлдсэн компонент бүрийн centroid-ийг c-ийн хүүхэд болгон холбоно. cdpar нь энэ шинэ модны эцэг; өмнөх par массивтай утга нь өөр. Өмнө хаагдсан оройг дахин сонгохгүй, үлдсэн компонентууд салангид учраас орой бүр нэг удаа centroid болно.",
+            "type": "p"
+          },
+          {
+            "kind": "graph",
+            "type": "diagram",
+            "edges": [
+              [
+                "2",
+                "1"
+              ],
+              [
+                "2",
+                "7"
+              ],
+              [
+                "2",
+                "8"
+              ],
+              [
+                "2",
+                "9"
+              ],
+              [
+                "2",
+                "10"
+              ],
+              [
+                "2",
+                "4"
+              ],
+              [
+                "4",
+                "3"
+              ],
+              [
+                "4",
+                "5"
+              ],
+              [
+                "5",
+                "6"
+              ]
+            ],
+            "nodes": [
+              {
+                "x": 50,
+                "y": 15,
+                "id": "2",
+                "color": "#f7c873",
+                "label": "2",
+                "textColor": "#253047"
+              },
+              {
+                "x": 8,
+                "y": 40,
+                "id": "1",
+                "label": "1"
+              },
+              {
+                "x": 23,
+                "y": 40,
+                "id": "7",
+                "label": "7"
+              },
+              {
+                "x": 38,
+                "y": 40,
+                "id": "8",
+                "label": "8"
+              },
+              {
+                "x": 53,
+                "y": 40,
+                "id": "9",
+                "label": "9"
+              },
+              {
+                "x": 68,
+                "y": 40,
+                "id": "10",
+                "label": "10"
+              },
+              {
+                "x": 85,
+                "y": 40,
+                "id": "4",
+                "label": "4"
+              },
+              {
+                "x": 72,
+                "y": 65,
+                "id": "3",
+                "label": "3"
+              },
+              {
+                "x": 90,
+                "y": 65,
+                "id": "5",
+                "label": "5"
+              },
+              {
+                "x": 90,
+                "y": 90,
+                "id": "6",
+                "label": "6"
+              }
+            ],
+            "caption": "Centroid мод: 2 → 4 → 5 → 6 нь нэг өвгийн гинж. Сум нь cdpar холбоос; заавал эх модны ирмэг биш.",
+            "directed": true
+          },
+          {
+            "text": "Жишээнд эхлээд 2-ыг сонгоно. Үлдсэн дөрвөн оройн 3–4–5–6 замд 4 эсвэл 5 centroid байж болно; код 3-аас тойроход 4 түрүүлж таарна. 4-ийг хаавал {3}, {5,6} үлдэж, хоёр дахь хэсгээс 5, эцэст нь 6 сонгогдоно. Бусад ганц оройнууд 2-ын шууд хүүхэд болно.",
+            "type": "p"
+          },
+          {
+            "text": "Нэг салбарт орох бүрд хэмжээ хамгийн ихдээ тал болно: 10→4→2→1. Иймээс centroid модны гүн $O(\\log n)$, нэг орой centroid модонд $O(\\log n)$ өвөгтэй. Анхны мод 200000 оройтой гинж байсан ч centroid мод тийм гүн болохгүй. Гэхдээ компонентын эхний DFS-ийг рекурсээр хийвэл гүн нь 200000 хэвээр байж болно: зөвхөн decomposition-ий рекурс аюулгүй болсныг ялган ойлго.",
+            "type": "p"
+          },
+          {
+            "text": "Нэг түвшний идэвхтэй компонентууд салангид. Тэр түвшинд орой бүр нэг компонентод орж, анхны хөршийн бичлэгүүд нийт $O(n)$ удаа шалгагдана. Түвшин $O(\\log n)$ тул хэмжээ олох, centroid сонгох, доор хадгалах зайг тооцоолох нийлсэн бэлтгэл $O(n \\log n)$.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "nearest",
+        "title": "Хамгийн ойрын тэмдэглэсэн орой: зай ба хадгалах төлөв",
+        "blocks": [
+          {
+            "text": "Одоо хэрэгтэй асуулт сонгоё. Зарим орой тэмдэглэгдсэн; шинэ оройг тэмдэглэж болно. Дурын $u$ оройгоос хамгийн ойрын тэмдэглэсэн орой хүртэлх зайг олно. Зай нь АНХНЫ модны зам дахь ирмэгийн тоо. Эхний орой 1 тэмдэглэгдсэн байг. Устгах, өнгийг буцаах үйлдэл одоохондоо байхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Centroid c-г хаахаас өмнө одоогийн компонентын орой бүрийг ил стекээр тойрч, path[$u$]-д (c,distance($u$,c)) хос нэмнэ. Энэ тойролт анхны ирмэгүүдээр явах тул зай зөв. Хаагдсан өмнөх centroid рүү орохгүй ч нэг компонентын доторх цорын ганц зам өөр хэсгээр дамжихгүй.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "6",
+                "(2,4), (4,2), (5,1), (6,0)"
+              ],
+              [
+                "3",
+                "(2,1), (4,1), (3,0)"
+              ],
+              [
+                "8",
+                "(2,1), (8,0)"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Орой",
+              "path[$u$] дахь (centroid, эх модны зай)"
+            ]
+          },
+          {
+            "text": "path[$u$]-ийн жагсаалт centroid модны үндсээс $u$ хүртэлх өвгүүдийг агуулна, харин хосын хоёр дахь утга нь эх модны зай. 6-аас centroid үндэс 2 хүрэх cdpar алхам 3 боловч эх модны зай 4. Centroid модны гүнийг анхны зай болгож ашиглаж БОЛОХГҮЙ. Мөн энд original LCA олох хүснэгт шаардахгүй: хэрэгтэй бүх зайг бэлтгэлд хадгалсан.",
+            "type": "p"
+          },
+          {
+            "text": "best[c] нь path жагсаалтдаа c-г агуулдаг тэмдэглэсэн оройнуудын c хүртэлх хамгийн бага зай. Анх INF. $x$-г тэмдэглэхдээ path[$x$]-ийн бүх (c,$d$)-д best[c]=min(best[c],$d$) хийнэ. Энэ нь бүх centroid-д бүх тэмдэглэсэн оройн зайг хадгалдаг гэсэн үг биш: зөвхөн тухайн оройн centroid модны өвгүүд шинэчлэгдэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "$u$-ийн асуултад path[$u$]-ийн бүх c-г туршаад distance($u$,c)+best[c]-ийн хамгийн багыг авна. INF хэвээр бол тэмдэглэсэн орой хараахан байхгүй. Нэг жагсаалт $O(\\log n)$ урт учраас тэмдэглэх ба асуух үйлдэл тус бүр $O(\\log n)$. Жагсаалтууд нийт $O(n \\log n)$ хос тул санах ойн хязгаарыг үүгээр тооцно.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "correctness",
+        "title": "Хамгийн бага утга яагаад зөв бэ? Асуултын мөрдөлт",
+        "blocks": [
+          {
+            "text": "Яагаад буруу жижиг зай гарахгүй вэ? best[c] нь бодит тэмдэглэсэн $x$ оройгоос ирсэн бол distance($u$,c)+distance(c,$x$) нь c-ээр дайрсан маршрут. Гурвалжны тэнцэтгэл бишээр энэ нь distance($u$,$x$)-ээс бага биш. Харин хамгийн ойрын тэмдэглэсэн оройн зай түүнээс ч их байж болохгүй. Иймээс туршсан бүх хариу жинхэнэ хариунаас багагүй.",
+            "type": "p"
+          },
+          {
+            "text": "Яг зөв зай өгөх нэг сонголт заавал бий. Хамгийн ойрын тэмдэглэсэн $x$-г ав. Centroid модон дахь $u$ ба $x$-ийн хамгийн доод нийтлэг өвөг c дээр тэд хоёр өөр үлдсэн компонентод салсан, эсвэл аль нэг нь c өөрөө. Тэгэхээр анхны $u$–$x$ зам c-ээр дайрна. Хоёулангийн path-д c орсон тул best[c]≤distance(c,$x$), тухайн c-ээр тооцсон утга жинхэнэ зайнаас ихгүй. Хоёр талын хязгаарыг нэгтгэвэл minimum яг зөв. Энд хэрэглэсэн нийтлэг өвөг нь centroid МОДНЫХ болохыг анхаар.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "{1}",
+                "1",
+                "∞",
+                "∞",
+                "∞",
+                "5"
+              ],
+              [
+                "{1,3}",
+                "1",
+                "1",
+                "∞",
+                "∞",
+                "3"
+              ],
+              [
+                "{1,3,6}",
+                "1",
+                "1",
+                "1",
+                "0",
+                "0"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Тэмдэглэсэн оройнууд",
+              "best[2]",
+              "best[4]",
+              "best[5]",
+              "best[6]",
+              "query(6)"
+            ]
+          },
+          {
+            "text": "Эхэнд зөвхөн 1 тэмдэглэгдсэн тул 6-аас 2-оор дайрах зай 4+1=5. Дараа нь 3-ыг тэмдэглэхэд best[4]=1 болно. 2-оор дайрч тооцсон хариу 5 хэвээр боловч 4-өөр дайрах нь 2+1=3: энэ нь 6–5–4–3 зам. Эцэст нь 6-г тэмдэглэвэл өөртөө хүрэх зай 0. Тэр үед query(8)=2, учир нь 8–2–1 эсвэл 8–2–3 хоёр ирмэгтэй.",
+            "type": "p"
+          },
+          {
+            "text": "Хязгаар: хадгалсан хамгийн бага зайг зөвхөн багасгаж байгаа тул оройг буцааж тэмдэггүй болгож БОЛОХГҮЙ. Үүнийг дэмжихийн тулд centroid бүрд нэмэх/устгах боломжтой нэмэлт тооллого эсвэл multiset зэрэг өөр төлөв хэрэгтэй. Модны холбоос ч өөрчлөгдөхгүй. Энд нэг nearest-marked хэрэглээг бүрэн хэрэгжүүлж байгаа болохоос бүх centroid бодлого энэ ганц best массивт шийдэгдэнэ гэж үзэхгүй.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "implementation",
+        "title": "Ил стек бүхий Centroid struct ба бүтэн C++17",
+        "blocks": [
+          {
+            "text": "Оролт $n$ q, дараа нь $n$−1 чиглэлгүй ирмэг, q ширхэг type $u$ үйлдэл. 1 $u$ нь $u$-г тэмдэглэнэ, 2 $u$ нь хамгийн ойрын тэмдэглэсэн оройн зайг хэвлэнэ. main эхэнд 1-ийг тэмдэглэнэ; бүтцийн API-д хараахан тэмдэглээгүй үед query нь −1 буцаана. Давтан тэмдэглэхэд хариу өөрчлөгдөхгүй. 1≤$n$≤200000, 0≤q≤200000, оройнууд 1..$n$, ирмэгүүд жингүй, эх оролт зөв мод байна.",
+            "type": "p"
+          },
+          {
+            "text": "Зай $n$−1-ээс ихгүй, хоёр зайны нийлбэр хамгийн ихдээ 2($n$−1); хэмжээ ба индексүүд ч 200000-д багтана. Иймээс энэ хувилбарт int хангалттай, INF=10⁹ нь бүх бодит зайнаас эрс их. Дараах кодод ll болон бүх int-ийг өөрчилдөг macro шаардлагагүй.",
+            "type": "p"
+          },
+          {
+            "text": "Centroid($n$) нь $n$+1 хөршийн жагсаалт, зайны жагсаалт, ажлын массивуудыг бэлдэнэ. blocked анх false, best анх INF. par нь түр компонентын эцэг, cdpar нь centroid модны эцэг; хоёр өөр үүрэгтэй. add нь анхны ирмэгийг хоёр чиглэлд хадгална.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct Centroid {\n    static constexpr int INF = 1000000000;\n    int n;\n    vector<vector<int>> adj;\n    vector<vector<pair<int, int>>> path;\n    vector<int> par, sz, cdpar, best;\n    vector<char> blocked;\n    Centroid(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        path.resize(n + 1);\n        par.resize(n + 1);\n        sz.resize(n + 1);\n        cdpar.resize(n + 1);\n        best.assign(n + 1, INF);\n        blocked.resize(n + 1);\n    }\n    void add(int u, int v) {\n        adj[u].push_back(v);\n        adj[v].push_back(u);\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "find эхлээд хаагдаагүй компонентыг order-д цуглуулна. Эцэг хүүхдээс өмнө ордог тул дараагийн урвуу давталт боломжтой. start-ийн par=0-г дахин онооно; өмнөх компонентын үлдсэн түр эцэгт найдахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "int find(int start) {\n        vector<int> order = {start};\n        par[start] = 0;\n        for (int i = 0; i < (int)order.size(); i++) {\n            int u = order[i];\n            for (int v : adj[u]) {\n                if (blocked[v] || v == par[u]) continue;\n                par[v] = u;\n                order.push_back(v);\n            }\n        }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Урвуу дарааллаар sz-г шинээр 1-ээс эхлүүлээд хүүхдийн хэмжээг нэмнэ. Хаагдсан хөршийн хуучин sz-г ашиглахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "for (int i = (int)order.size() - 1; i >= 0; i--) {\n            int u = order[i];\n            sz[u] = 1;\n            for (int v : adj[u]) {\n                if (!blocked[v] && par[v] == u) sz[u] += sz[v];\n            }\n        }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "cnt нь одоогийн компонентын хэмжээ. Орой бүрийн хүүхдийн хэсэг ба cnt−sz[$u$] эцгийн хэсгийн хамгийн их утгыг шалгана. Дээр баталсан оршин байх чанараар нэг centroid заавал олдоно. Зөв мод гэсэн урьдчилсан нөхцөлд төгсгөлийн return start мөрөнд хүрэхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "int cnt = (int)order.size();\n        for (int u : order) {\n            int mx = cnt - sz[u];\n            for (int v : adj[u]) {\n                if (!blocked[v] && par[v] == u) mx = max(mx, sz[v]);\n            }\n            if (mx <= cnt / 2) return u;\n        }\n        return start;\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "decompose нь c-г сонгоод cdpar[c]=p хийнэ. c-г хаахаас ӨМНӨ ил стекээр (орой, өмнөх орой, зай) төлөв авч тойрон, path жагсаалтыг нэмнэ. Иймээс гинжин компонентын тойролт рекурсийн стект багтах эсэхээс хамаарахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "void decompose(int start, int p) {\n        int c = find(start);\n        cdpar[c] = p;\n        {\n            vector<tuple<int, int, int>> st = {{c, 0, 0}};\n            while (!st.empty()) {\n                auto [u, prev, d] = st.back();\n                st.pop_back();\n                path[u].push_back({c, d});\n                for (int v : adj[u]) {\n                    if (!blocked[v] && v != prev) st.push_back({v, u, d + 1});\n                }\n            }\n        }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Одоо c-г хааж, хаагдаагүй хөрш бүрийн компонентод рекурсээр орно. Энэ рекурсийн компонент бүр тал хүртэл жижгэрдэг тул гүн $O(\\log n)$. Зай тоолох түр стек доторх блок дуусахад чөлөөлөгдөнө.",
+            "type": "p"
+          },
+          {
+            "text": "blocked[c] = true;\n        for (int v : adj[c]) {\n            if (!blocked[v]) decompose(v, c);\n        }\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "build нь бүтцийг эхнээс нь бэлтгэнэ. Дахин дуудвал blocked, centroid эцэг, зайны жагсаалт болон бүх тэмдэглэгээний хамгийн бага зайнуудыг шинэчилнэ. Энэ бол асуулт бүрийн өмнө дуудах үйлдэл БИШ: хуучин тэмдэглэгээнүүдийг арилгана.",
+            "type": "p"
+          },
+          {
+            "text": "void build() {\n        fill(blocked.begin(), blocked.end(), false);\n        fill(cdpar.begin(), cdpar.end(), 0);\n        fill(best.begin(), best.end(), INF);\n        for (auto& a : path) a.clear();\n        decompose(1, 0);\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "mark зөвхөн тухайн оройн centroid модны өвгийн жагсаалтаар явж хамгийн бага зайнуудыг шинэчилнэ. Нэг оройг хоёр удаа тэмдэглэхэд min үйлдлийн үр дүн хэвээр байна.",
+            "type": "p"
+          },
+          {
+            "text": "void mark(int u) {\n        for (auto [c, d] : path[u]) best[c] = min(best[c], d);\n    }",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "query нь бэлэн жагсаалтын зай дээр best[c]-г нэмнэ. INF-г алгасаж, нэг ч бодит тэмдэглэгээ олдоогүй бол −1 буцаана. Энэ нь өмнөх хоёр чиглэлийн зөвийн баталгааг шууд хэрэгжүүлж байна.",
+            "type": "p"
+          },
+          {
+            "text": "int query(int u) {\n        int ans = INF;\n        for (auto [c, d] : path[u]) {\n            if (best[c] != INF) ans = min(ans, d + best[c]);\n        }\n        return ans == INF ? -1 : ans;\n    }\n};",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "main бүтцийг нэг удаа байгуулж, 1-ийг эхний тэмдэглэгээ болгоно. Дараа нь оролтын үйлдэл бүрд mark эсвэл query дуудна; модны холбоос, centroid модыг дахин байгуулахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    Centroid cd(n);\n    for (int i = 1, u, v; i < n; i++) {\n        cin >> u >> v;\n        cd.add(u, v);\n    }\n    cd.build();\n    cd.mark(1);\n    while (q--) {\n        int type, u;\n        cin >> type >> u;\n        if (type == 1) cd.mark(u);\n        else cout << cd.query(u) << '\\n';\n    }\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Тайлбарласан хэсгүүдийг дарааллаар нь нэгтгэсэн бүтэн C++17 программ:",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct Centroid {\n    static constexpr int INF = 1000000000;\n    int n;\n    vector<vector<int>> adj;\n    vector<vector<pair<int, int>>> path;\n    vector<int> par, sz, cdpar, best;\n    vector<char> blocked;\n    Centroid(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        path.resize(n + 1);\n        par.resize(n + 1);\n        sz.resize(n + 1);\n        cdpar.resize(n + 1);\n        best.assign(n + 1, INF);\n        blocked.resize(n + 1);\n    }\n    void add(int u, int v) {\n        adj[u].push_back(v);\n        adj[v].push_back(u);\n    }\n    int find(int start) {\n        vector<int> order = {start};\n        par[start] = 0;\n        for (int i = 0; i < (int)order.size(); i++) {\n            int u = order[i];\n            for (int v : adj[u]) {\n                if (blocked[v] || v == par[u]) continue;\n                par[v] = u;\n                order.push_back(v);\n            }\n        }\n        for (int i = (int)order.size() - 1; i >= 0; i--) {\n            int u = order[i];\n            sz[u] = 1;\n            for (int v : adj[u]) {\n                if (!blocked[v] && par[v] == u) sz[u] += sz[v];\n            }\n        }\n        int cnt = (int)order.size();\n        for (int u : order) {\n            int mx = cnt - sz[u];\n            for (int v : adj[u]) {\n                if (!blocked[v] && par[v] == u) mx = max(mx, sz[v]);\n            }\n            if (mx <= cnt / 2) return u;\n        }\n        return start;\n    }\n    void decompose(int start, int p) {\n        int c = find(start);\n        cdpar[c] = p;\n        {\n            vector<tuple<int, int, int>> st = {{c, 0, 0}};\n            while (!st.empty()) {\n                auto [u, prev, d] = st.back();\n                st.pop_back();\n                path[u].push_back({c, d});\n                for (int v : adj[u]) {\n                    if (!blocked[v] && v != prev) st.push_back({v, u, d + 1});\n                }\n            }\n        }\n        blocked[c] = true;\n        for (int v : adj[c]) {\n            if (!blocked[v]) decompose(v, c);\n        }\n    }\n    void build() {\n        fill(blocked.begin(), blocked.end(), false);\n        fill(cdpar.begin(), cdpar.end(), 0);\n        fill(best.begin(), best.end(), INF);\n        for (auto& a : path) a.clear();\n        decompose(1, 0);\n    }\n    void mark(int u) {\n        for (auto [c, d] : path[u]) best[c] = min(best[c], d);\n    }\n    int query(int u) {\n        int ans = INF;\n        for (auto [c, d] : path[u]) {\n            if (best[c] != INF) ans = min(ans, d + best[c]);\n        }\n        return ans == INF ? -1 : ans;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    Centroid cd(n);\n    for (int i = 1, u, v; i < n; i++) {\n        cin >> u >> v;\n        cd.add(u, v);\n    }\n    cd.build();\n    cd.mark(1);\n    while (q--) {\n        int type, u;\n        cin >> type >> u;\n        if (type == 1) cd.mark(u);\n        else cout << cd.query(u) << '\\n';\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Ганц оройтой тохиолдолд path[1] нь (1,0), эхний тэмдэглэгээний дараах бүх асуулт 0. Хоёр оройн замд аль нэг centroid сонгож болно, хариу өөрчлөгдөхгүй. Дээрх 10 оройн жишээнд дараалсан 2 6, 1 3, 2 6, 1 6, 2 6, 2 8 үйлдлийн гаралт 5,3,0,2 байна.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших дасгал, лавлах шалгалт ба бие даалт",
+        "blocks": [
+          {
+            "text": "Эзэмших дасгал: жишээний 3–4–5–6 хэсэгт 4-ийн оронд 5-ыг centroid болгоод cdpar ба path[6]-г дахин гарга. Туслах мод өөр боловч 1 ба 3 тэмдэглэгдсэн үед query(6)=3 хэвээр. Дараа нь бүх оройг тэмдэглээд асуулт бүр 0 болохыг шалга; нэг оройг олон удаа тэмдэглэсэн ч хариу хэвээр байх ёстой.",
+            "type": "p"
+          },
+          {
+            "text": "Бие даасан лавлах: жижиг модонд асуултын оройгоос BFS хийгээд хамгийн түрүүнд хүрэх тэмдэглэсэн оройн зайг ав. Centroid, түүний path жагсаалтыг огт хэрэглэхгүй. Centroid зөв эсэхийг шалгахдаа тухайн компонентоос сонгосон оройг хасаж, үлдсэн хэсэг бүрийн хэмжээг BFS-ээр тоол. Санамсаргүй мод, гинж, од, ганц орой дээр хоёр тусдаа шалгалтыг ажиллуул.",
+            "type": "p"
+          },
+          {
+            "text": "Сэдвийг эзэмших үндсэн бодлого",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "433"
+          },
+          {
+            "text": "Finding a Centroid: зөвхөн нэг centroid олохыг шаарддаг. Бүх decomposition болон best төлөвийг байгуулах шаардлагагүй; find-ийн гол шалгуурыг ялган хэрэгжүүл.",
+            "type": "p"
+          },
+          {
+            "text": "Бие даах ба ахиулах бодлогууд",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "427"
+          },
+          {
+            "text": "Distance Queries: анхны модны зайг LCA-аар олоод centroid бэлтгэлд хадгалсан зайтай жижиг жишээнд тулга.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "423"
+          },
+          {
+            "text": "Tree Distances $I$: орой бүрийн хамгийн хол зайг олж, түүгээр модны төвийг тодорхойл. Энэ нь centroid-ийн хэмжээний шалгуураас яагаад өөр болохыг харьцуул.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "434"
+          },
+          {
+            "text": "Fixed-Length Paths $I$: өгсөн урттай замын хосыг тоолдог өөр хэрэглээ. Өөр салбарын хосуудыг centroid дээр нэгтгэх санааг ашиглаж болно, гэхдээ nearest-marked best массив дангаараа хосын тоог гаргахгүй.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "435"
+          },
+          {
+            "text": "Fixed-Length Paths II: уртын интервалтай хос тоолох илүү ахисан хувилбар. Гүнүүдийн давтамж, өмнө тоолсон салбаруудын ялгааг хадгалах нэмэлт арга шаардлагатай.",
+            "type": "p"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Centroid decomposition — balanced tree components",
+        "summary": "Build a balanced component decomposition and answer nearest-marked-vertex queries efficiently.",
+        "sections": [
+          {
+            "key": "definition",
+            "title": "A centroid is not a center",
+            "blocks": [
+              {
+                "text": "Can removing one vertex split a tree into comparably sized pieces? A centroid of a component with $k$ vertices is a vertex c whose removal leaves no component larger than $\\lfloor k/2\\rfloor$. Size means vertex count, not edge length or tree depth.",
+                "type": "p"
+              },
+              {
+                "text": "Find such a vertex, then repeat independently in every remaining component. This is centroid decomposition: a balanced recursive partition of the original tree. HLD splits original paths into chains; here we separate components around chosen vertices to build an auxiliary tree. These are different structures.",
+                "type": "p"
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "3",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "6"
+                  ],
+                  [
+                    "2",
+                    "7"
+                  ],
+                  [
+                    "2",
+                    "8"
+                  ],
+                  [
+                    "2",
+                    "9"
+                  ],
+                  [
+                    "2",
+                    "10"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 8,
+                    "y": 12,
+                    "id": "1",
+                    "label": "1"
+                  },
+                  {
+                    "x": 30,
+                    "y": 40,
+                    "id": "2",
+                    "color": "#f7c873",
+                    "label": "2",
+                    "textColor": "#253047"
+                  },
+                  {
+                    "x": 52,
+                    "y": 40,
+                    "id": "3",
+                    "label": "3"
+                  },
+                  {
+                    "x": 70,
+                    "y": 40,
+                    "id": "4",
+                    "label": "4"
+                  },
+                  {
+                    "x": 88,
+                    "y": 40,
+                    "id": "5",
+                    "label": "5"
+                  },
+                  {
+                    "x": 88,
+                    "y": 80,
+                    "id": "6",
+                    "label": "6"
+                  },
+                  {
+                    "x": 8,
+                    "y": 40,
+                    "id": "7",
+                    "label": "7"
+                  },
+                  {
+                    "x": 8,
+                    "y": 68,
+                    "id": "8",
+                    "label": "8"
+                  },
+                  {
+                    "x": 30,
+                    "y": 12,
+                    "id": "9",
+                    "label": "9"
+                  },
+                  {
+                    "x": 30,
+                    "y": 68,
+                    "id": "10",
+                    "label": "10"
+                  }
+                ],
+                "caption": "Original tree: removing 2 leaves largest component {3,4,5,6}, of size 4≤10/2. Its centroid is 2, but its distance-based centers are 3 and 4.",
+                "directed": false
+              },
+              {
+                "text": "Removing 2 from the ten-vertex example leaves {1}, {3,4,5,6}, {7}, {8}, {9}, {10}. The largest piece has size 4, so 2 is a centroid. Removing 3 instead leaves the six-vertex piece {1,2,7,8,9,10}, so 3 is not a centroid.",
+                "type": "p"
+              },
+              {
+                "text": "A center minimizes the maximum distance to any vertex. Vertices 3 and 4, in the middle of diameter 1–2–3–4–5–6, have maximum distance 3, while centroid 2 has maximum distance 4. A center balances DISTANCES; a centroid balances COMPONENT SIZES. A singleton is its own centroid. Some trees have two choices, such as the two middle vertices of a four-vertex path; either choice preserves the algorithmic guarantee.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "find",
+            "title": "Finding a centroid: child sides and the parent side",
+            "blocks": [
+              {
+                "text": "A centroid always exists. Start at any vertex $u$. If deleting $u$ leaves a piece larger than $k$/2, move to the neighbor in that piece. There can be at most one such oversized piece. From the new vertex, the piece leading back is smaller than $k$/2, so the walk cannot immediately reverse. Since a tree has no cycles, it eventually stops at a vertex with no oversized piece.",
+                "type": "p"
+              },
+              {
+                "text": "The code tests vertices directly after temporarily rooting the remaining component at start. par is the parent in this TEMPORARY rooting and sz[$u$] its subtree size. Removing $u$ leaves each child side of size sz[$v$], plus a parent-side piece of size $k$−sz[$u$]. Thus mx=max($k$−sz[$u$], all child sizes sz[$v$]). Choose the first vertex with mx≤$k$/2.",
+                "type": "p"
+              },
+              {
+                "text": "Ignoring the parent-side piece would incorrectly accept small leaves. Previously selected centroids are marked blocked and skipped in every component traversal. No actual edges are erased: adjacency lists remain intact. The input must be a connected, undirected, acyclic tree; skipping only the parent is not a general-graph traversal algorithm.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "decomposition",
+            "title": "Balanced recursion and the centroid tree",
+            "blocks": [
+              {
+                "text": "Select centroid c as the auxiliary root of this component. After blocking c, recursively attach the centroid of each remaining component as a child of c. cdpar stores parents in this new tree, unlike the temporary par array. Blocked vertices are never selected again, and remaining components are disjoint, so every vertex becomes a centroid exactly once.",
+                "type": "p"
+              },
+              {
+                "kind": "graph",
+                "type": "diagram",
+                "edges": [
+                  [
+                    "2",
+                    "1"
+                  ],
+                  [
+                    "2",
+                    "7"
+                  ],
+                  [
+                    "2",
+                    "8"
+                  ],
+                  [
+                    "2",
+                    "9"
+                  ],
+                  [
+                    "2",
+                    "10"
+                  ],
+                  [
+                    "2",
+                    "4"
+                  ],
+                  [
+                    "4",
+                    "3"
+                  ],
+                  [
+                    "4",
+                    "5"
+                  ],
+                  [
+                    "5",
+                    "6"
+                  ]
+                ],
+                "nodes": [
+                  {
+                    "x": 50,
+                    "y": 15,
+                    "id": "2",
+                    "color": "#f7c873",
+                    "label": "2",
+                    "textColor": "#253047"
+                  },
+                  {
+                    "x": 8,
+                    "y": 40,
+                    "id": "1",
+                    "label": "1"
+                  },
+                  {
+                    "x": 23,
+                    "y": 40,
+                    "id": "7",
+                    "label": "7"
+                  },
+                  {
+                    "x": 38,
+                    "y": 40,
+                    "id": "8",
+                    "label": "8"
+                  },
+                  {
+                    "x": 53,
+                    "y": 40,
+                    "id": "9",
+                    "label": "9"
+                  },
+                  {
+                    "x": 68,
+                    "y": 40,
+                    "id": "10",
+                    "label": "10"
+                  },
+                  {
+                    "x": 85,
+                    "y": 40,
+                    "id": "4",
+                    "label": "4"
+                  },
+                  {
+                    "x": 72,
+                    "y": 65,
+                    "id": "3",
+                    "label": "3"
+                  },
+                  {
+                    "x": 90,
+                    "y": 65,
+                    "id": "5",
+                    "label": "5"
+                  },
+                  {
+                    "x": 90,
+                    "y": 90,
+                    "id": "6",
+                    "label": "6"
+                  }
+                ],
+                "caption": "Centroid tree: 2 → 4 → 5 → 6 is one ancestor chain. Arrows represent cdpar links, not necessarily original edges.",
+                "directed": true
+              },
+              {
+                "text": "The example first selects 2. In the remaining four-vertex path 3–4–5–6, either 4 or 5 is valid; traversal from 3 encounters 4 first. Blocking 4 leaves {3} and {5,6}; the latter chooses 5, then 6. The other singleton components become direct children of 2.",
+                "type": "p"
+              },
+              {
+                "text": "Every recursive component has at most half the preceding size: 10→4→2→1 here. The centroid tree therefore has depth $O(\\log n)$, with $O(\\log n)$ centroid ancestors per vertex. Even an original chain of 200000 vertices does not create a deep centroid tree. However, a recursive DFS used to scan the FIRST component could still have depth 200000: only the decomposition recursion is guaranteed shallow.",
+                "type": "p"
+              },
+              {
+                "text": "Active components at one level are disjoint. Each vertex belongs to one component at that level, and the original adjacency entries total $O(n)$ scans. With $O(\\log n)$ levels, finding sizes, choosing centroids and computing the distance lists below take $O(n \\log n)$ preprocessing time.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "nearest",
+            "title": "Nearest marked vertices: distances and stored state",
+            "blocks": [
+              {
+                "text": "Consider a useful online problem: some vertices are marked, and more vertices may be marked. Query the distance from $u$ to its nearest marked vertex, measured by edge count in the ORIGINAL tree. Initially vertex 1 is marked. There is no unmarking operation.",
+                "type": "p"
+              },
+              {
+                "text": "Before blocking centroid c, traverse its current component with an explicit stack and append (c,distance($u$,c)) to every path[$u$]. Distances are measured along original edges. Although previously blocked centroids are excluded, the unique path within a remaining component stays inside that component.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "6",
+                    "(2,4), (4,2), (5,1), (6,0)"
+                  ],
+                  [
+                    "3",
+                    "(2,1), (4,1), (3,0)"
+                  ],
+                  [
+                    "8",
+                    "(2,1), (8,0)"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Vertex",
+                  "(centroid, original-tree distance) pairs in path[$u$]"
+                ]
+              },
+              {
+                "text": "The list contains centroid ancestors from the auxiliary root down to $u$, but the second component is an original-tree distance. Vertex 6 is three cdpar steps from centroid root 2, while its original distance to 2 is four. Auxiliary depth is NOT an original distance. No original-tree LCA table is needed here because all required distances are cached during preprocessing.",
+                "type": "p"
+              },
+              {
+                "text": "best[c] is the minimum distance to c among marked vertices whose path list contains c. Initially it is INF. To mark $x$, process each (c,$d$) in path[$x$] and set best[c]=min(best[c],$d$). This does not store distances from every centroid to every marked vertex: only centroid ancestors of the marked vertex are updated.",
+                "type": "p"
+              },
+              {
+                "text": "For a query at $u$, minimize distance($u$,c)+best[c] over its list. If no finite value exists, no vertex has been marked yet. A list has $O(\\log n)$ entries, giving $O(\\log n)$ marking and query time. The lists contain $O(n \\log n)$ pairs overall, which determines the memory requirement.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "correctness",
+            "title": "Why the minimum is correct: a complete query trace",
+            "blocks": [
+              {
+                "text": "Why can no candidate be too small? If best[c] comes from a marked vertex $x$, distance($u$,c)+distance(c,$x$) is a route through c. By the triangle inequality it is at least distance($u$,$x$), which is at least the nearest-marked distance. Every candidate is therefore an upper bound on the true answer.",
+                "type": "p"
+              },
+              {
+                "text": "At least one candidate is exact. Let $x$ be a nearest marked vertex, and c the lowest common ancestor of $u$ and $x$ in the CENTROID tree. At c, they separated into different remaining components, or one of them is c itself. Their original path must pass through c. Both lists contain c, so best[c]≤distance(c,$x$), making this candidate no greater than the true distance. Combined with the upper-bound argument, the minimum is exact.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "{1}",
+                    "1",
+                    "∞",
+                    "∞",
+                    "∞",
+                    "5"
+                  ],
+                  [
+                    "{1,3}",
+                    "1",
+                    "1",
+                    "∞",
+                    "∞",
+                    "3"
+                  ],
+                  [
+                    "{1,3,6}",
+                    "1",
+                    "1",
+                    "1",
+                    "0",
+                    "0"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Marked vertices",
+                  "best[2]",
+                  "best[4]",
+                  "best[5]",
+                  "best[6]",
+                  "query(6)"
+                ]
+              },
+              {
+                "text": "Initially only 1 is marked, so vertex 6 obtains 4+1=5 via centroid 2. Marking 3 sets best[4]=1. The candidate via 2 remains 5, but the candidate via 4 is 2+1=3, along 6–5–4–3. Marking 6 makes its own answer 0. At that point query(8)=2, via either 8–2–1 or 8–2–3.",
+                "type": "p"
+              },
+              {
+                "text": "Limitation: because best only decreases, marks cannot be removed. Supporting removal would require additional per-centroid state, such as deletion-capable counts or multisets. The topology also stays fixed. This is a complete nearest-marked application, not a claim that one best array solves every centroid-decomposition problem.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "implementation",
+            "title": "The Centroid struct with iterative component scans and full C++17",
+            "blocks": [
+              {
+                "text": "Input is $n$ q, then $n$−1 undirected edges and q operations type $u$. Operation 1 $u$ marks $u$; 2 $u$ prints its nearest-marked distance. main initially marks vertex 1; the structure itself returns −1 if queried before any mark. Repeated marking is harmless. Assume 1≤$n$≤200000, 0≤q≤200000, vertices 1..$n$, unweighted edges, and a valid input tree.",
+                "type": "p"
+              },
+              {
+                "text": "A distance is at most $n$−1, and a candidate at most 2($n$−1). Sizes and indices also fit the stated bound, so int suffices throughout. INF=10⁹ exceeds every finite distance. This implementation needs neither ll nor a global int-redefinition macro.",
+                "type": "p"
+              },
+              {
+                "text": "Centroid($n$) allocates $n$+1 adjacency lists, distance lists and working entries. blocked starts false and best starts INF. par is a temporary component parent, while cdpar belongs to the centroid tree. add stores both directions of an original edge.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct Centroid {\n    static constexpr int INF = 1000000000;\n    int n;\n    vector<vector<int>> adj;\n    vector<vector<pair<int, int>>> path;\n    vector<int> par, sz, cdpar, best;\n    vector<char> blocked;\n    Centroid(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        path.resize(n + 1);\n        par.resize(n + 1);\n        sz.resize(n + 1);\n        cdpar.resize(n + 1);\n        best.assign(n + 1, INF);\n        blocked.resize(n + 1);\n    }\n    void add(int u, int v) {\n        adj[u].push_back(v);\n        adj[v].push_back(u);\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "find collects the unblocked component in order, with parents before children. This permits the following reverse pass. It resets par[start]=0 instead of trusting a parent from an earlier component.",
+                "type": "p"
+              },
+              {
+                "text": "int find(int start) {\n        vector<int> order = {start};\n        par[start] = 0;\n        for (int i = 0; i < (int)order.size(); i++) {\n            int u = order[i];\n            for (int v : adj[u]) {\n                if (blocked[v] || v == par[u]) continue;\n                par[v] = u;\n                order.push_back(v);\n            }\n        }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The reverse pass recomputes sz from 1 and adds child sizes. Stale sizes of blocked neighbors are never used.",
+                "type": "p"
+              },
+              {
+                "text": "for (int i = (int)order.size() - 1; i >= 0; i--) {\n            int u = order[i];\n            sz[u] = 1;\n            for (int v : adj[u]) {\n                if (!blocked[v] && par[v] == u) sz[u] += sz[v];\n            }\n        }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "cnt is the current component size. Test the maximum of all child pieces and the parent piece cnt−sz[$u$]. Existence proved above guarantees a successful vertex. Under the valid-tree precondition, the final return start is unreachable.",
+                "type": "p"
+              },
+              {
+                "text": "int cnt = (int)order.size();\n        for (int u : order) {\n            int mx = cnt - sz[u];\n            for (int v : adj[u]) {\n                if (!blocked[v] && par[v] == u) mx = max(mx, sz[v]);\n            }\n            if (mx <= cnt / 2) return u;\n        }\n        return start;\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "decompose selects c and sets cdpar[c]=p. BEFORE blocking c, an explicit stack traverses (vertex, previous vertex, distance) states and appends distance pairs. Scanning a deep chain therefore does not consume a deep call stack.",
+                "type": "p"
+              },
+              {
+                "text": "void decompose(int start, int p) {\n        int c = find(start);\n        cdpar[c] = p;\n        {\n            vector<tuple<int, int, int>> st = {{c, 0, 0}};\n            while (!st.empty()) {\n                auto [u, prev, d] = st.back();\n                st.pop_back();\n                path[u].push_back({c, d});\n                for (int v : adj[u]) {\n                    if (!blocked[v] && v != prev) st.push_back({v, u, d + 1});\n                }\n            }\n        }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Now block c and recurse into the remaining neighbor components. Each recursive component is at most half the size, so this recursion has $O(\\log n)$ depth. The temporary distance stack is released when its inner scope ends.",
+                "type": "p"
+              },
+              {
+                "text": "blocked[c] = true;\n        for (int v : adj[c]) {\n            if (!blocked[v]) decompose(v, c);\n        }\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "build initializes the decomposition from scratch. Calling it again resets blocking, centroid parents, distance lists and all marking minima. It is NOT called before every query: doing so would discard the existing marks.",
+                "type": "p"
+              },
+              {
+                "text": "void build() {\n        fill(blocked.begin(), blocked.end(), false);\n        fill(cdpar.begin(), cdpar.end(), 0);\n        fill(best.begin(), best.end(), INF);\n        for (auto& a : path) a.clear();\n        decompose(1, 0);\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "mark visits only centroid ancestors of the given vertex and decreases their minima. Marking a vertex twice leaves the same minimum.",
+                "type": "p"
+              },
+              {
+                "text": "void mark(int u) {\n        for (auto [c, d] : path[u]) best[c] = min(best[c], d);\n    }",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "query adds each cached distance to best[c], skipping INF. It returns −1 if no finite candidate exists. This directly implements the two-sided correctness argument.",
+                "type": "p"
+              },
+              {
+                "text": "int query(int u) {\n        int ans = INF;\n        for (auto [c, d] : path[u]) {\n            if (best[c] != INF) ans = min(ans, d + best[c]);\n        }\n        return ans == INF ? -1 : ans;\n    }\n};",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "main builds once and marks vertex 1 initially. It then calls mark or query for each input operation without rebuilding either tree.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    Centroid cd(n);\n    for (int i = 1, u, v; i < n; i++) {\n        cin >> u >> v;\n        cd.add(u, v);\n    }\n    cd.build();\n    cd.mark(1);\n    while (q--) {\n        int type, u;\n        cin >> type >> u;\n        if (type == 1) cd.mark(u);\n        else cout << cd.query(u) << '\\n';\n    }\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program, assembled in the explained order:",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nstruct Centroid {\n    static constexpr int INF = 1000000000;\n    int n;\n    vector<vector<int>> adj;\n    vector<vector<pair<int, int>>> path;\n    vector<int> par, sz, cdpar, best;\n    vector<char> blocked;\n    Centroid(int _n) {\n        n = _n;\n        adj.resize(n + 1);\n        path.resize(n + 1);\n        par.resize(n + 1);\n        sz.resize(n + 1);\n        cdpar.resize(n + 1);\n        best.assign(n + 1, INF);\n        blocked.resize(n + 1);\n    }\n    void add(int u, int v) {\n        adj[u].push_back(v);\n        adj[v].push_back(u);\n    }\n    int find(int start) {\n        vector<int> order = {start};\n        par[start] = 0;\n        for (int i = 0; i < (int)order.size(); i++) {\n            int u = order[i];\n            for (int v : adj[u]) {\n                if (blocked[v] || v == par[u]) continue;\n                par[v] = u;\n                order.push_back(v);\n            }\n        }\n        for (int i = (int)order.size() - 1; i >= 0; i--) {\n            int u = order[i];\n            sz[u] = 1;\n            for (int v : adj[u]) {\n                if (!blocked[v] && par[v] == u) sz[u] += sz[v];\n            }\n        }\n        int cnt = (int)order.size();\n        for (int u : order) {\n            int mx = cnt - sz[u];\n            for (int v : adj[u]) {\n                if (!blocked[v] && par[v] == u) mx = max(mx, sz[v]);\n            }\n            if (mx <= cnt / 2) return u;\n        }\n        return start;\n    }\n    void decompose(int start, int p) {\n        int c = find(start);\n        cdpar[c] = p;\n        {\n            vector<tuple<int, int, int>> st = {{c, 0, 0}};\n            while (!st.empty()) {\n                auto [u, prev, d] = st.back();\n                st.pop_back();\n                path[u].push_back({c, d});\n                for (int v : adj[u]) {\n                    if (!blocked[v] && v != prev) st.push_back({v, u, d + 1});\n                }\n            }\n        }\n        blocked[c] = true;\n        for (int v : adj[c]) {\n            if (!blocked[v]) decompose(v, c);\n        }\n    }\n    void build() {\n        fill(blocked.begin(), blocked.end(), false);\n        fill(cdpar.begin(), cdpar.end(), 0);\n        fill(best.begin(), best.end(), INF);\n        for (auto& a : path) a.clear();\n        decompose(1, 0);\n    }\n    void mark(int u) {\n        for (auto [c, d] : path[u]) best[c] = min(best[c], d);\n    }\n    int query(int u) {\n        int ans = INF;\n        for (auto [c, d] : path[u]) {\n            if (best[c] != INF) ans = min(ans, d + best[c]);\n        }\n        return ans == INF ? -1 : ans;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    Centroid cd(n);\n    for (int i = 1, u, v; i < n; i++) {\n        cin >> u >> v;\n        cd.add(u, v);\n    }\n    cd.build();\n    cd.mark(1);\n    while (q--) {\n        int type, u;\n        cin >> type >> u;\n        if (type == 1) cd.mark(u);\n        else cout << cd.query(u) << '\\n';\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "For a singleton, path[1] is (1,0), and every query after the initial mark returns 0. Either centroid of a two-vertex path gives the same answers. On the ten-vertex example, operations 2 6, 1 3, 2 6, 1 6, 2 6, 2 8 produce 5,3,0,2.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery, independent checks and further practice",
+            "blocks": [
+              {
+                "text": "Mastery exercise: choose 5 rather than 4 for component 3–4–5–6 and recompute cdpar and path[6]. The auxiliary tree changes, but with 1 and 3 marked, query(6) remains 3. Then mark every vertex and verify that every answer is 0. Repeated marks must not change an answer.",
+                "type": "p"
+              },
+              {
+                "text": "Independent oracle: BFS from the query vertex and use the distance to the first reached marked vertex, without centroid lists. To verify a centroid, remove it from its current component and BFS each remaining piece to count its size. Run both independent checks on random trees, paths, stars and singletons.",
+                "type": "p"
+              },
+              {
+                "text": "Core mastery problem",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "433"
+              },
+              {
+                "text": "Finding a Centroid needs only one valid centroid, not the full decomposition or best state. Isolate the component-size criterion.",
+                "type": "p"
+              },
+              {
+                "text": "Independent practice and extensions",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "427"
+              },
+              {
+                "text": "Distance Queries computes original-tree distances using LCA; compare them with cached centroid distances on small examples.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "423"
+              },
+              {
+                "text": "Tree Distances $I$ finds each vertex’s farthest distance, from which centers can be identified. Compare this with the size-based centroid criterion.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "434"
+              },
+              {
+                "text": "Fixed-Length Paths $I$ counts pairs at a specified distance, a different application. Combining pairs from different components at a centroid is useful, but the nearest-marked best array alone does not count pairs.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "435"
+              },
+              {
+                "text": "Fixed-Length Paths II counts pairs with distances in an interval. It needs additional depth-frequency bookkeeping and careful separation of previously processed branches.",
+                "type": "p"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Tree traversal, subtree sizes and distances"
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Модны тойролт, дэд модны хэмжээ ба зай",
+    "priorityLevel": "medium",
+    "priorityReason": "Модны зай болон салбаруудыг нэгтгэх ахисан бодлогод чухал боловч суурь DFS/DP-ийн дараах тусгай арга тул дунд ач холбогдолтой.",
+    "prerequisiteIds": [
+      "tree-basics",
+      "lca"
+    ],
+    "learningRelations": {
+      "practice": [
+        {
+          "key": "433",
+          "stage": "Warm-up",
+          "reason": "Centroid-ийн тодорхойлолт, эцгийн тал ба дэд модны хэмжээг шууд хэрэгжүүл.",
+          "priority": true
+        },
+        {
+          "key": "427",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "423",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "434",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "435",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "heavy-light-decomposition",
+          "description": "Гинжээр хуваах ба компонентоор хуваах аргыг ялга.",
+          "descriptionEn": "Distinguish path-chain partitioning from component decomposition."
+        },
+        {
+          "tutorialId": "lca",
+          "description": "Анхны модны зайг centroid модны гүнтэй андуурахгүй.",
+          "descriptionEn": "Distinguish original-tree distance from centroid-tree depth."
+        }
+      ]
+    }
+  }
+}

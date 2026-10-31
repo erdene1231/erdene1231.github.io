@@ -1,0 +1,822 @@
+{
+  "body": {
+    "id": "priority-queue",
+    "level": "Дунд шат",
+    "order": 31,
+    "title": "Priority queue — эхэлж авах утга, heap ба өрөө хуваарилалт",
+    "aliases": "priority-queue Priority queue — хамгийн бага утгыг түрүүлж авах Priority queues — taking the smallest value first",
+    "related": [
+      "stack-queue",
+      "sorting",
+      "dijkstra"
+    ],
+    "summary": "Heap-ийн хэсэгчилсэн эрэмбийг ашиглан өөрчлөгдөх олонлогоос хамгийн бага утгыг авна. Өрөө хуваарилах жишээгээр үйлдэл ба сонголтын баталгааг салгана.",
+    "category": "Data structures",
+    "levelKey": "intermediate",
+    "sections": [
+      {
+        "key": "selection",
+        "title": "Эхэлж авах утга ба heap-ийн утга",
+        "blocks": [
+          {
+            "text": "Хамгийн түрүүнд ирсэн зүйлийг биш, одоо байгаа зүйлсээс хамгийн их эсвэл хамгийн бага утгатайг авах хэрэг гардаг. Priority queue нь ийм сонголт хийдэг бүтэц. Энэ нь queue-ийн FIFO дүрэм ч биш, бүх элементээ эрэмбэлсэн дараалал болгон харах интерфейс ч биш.",
+            "type": "p"
+          },
+          {
+            "text": "C++-ийн priority_queue<ll> анхнаасаа хамгийн ИХ утгыг top дээр өгнө. 3,5,7,2 оруулбал top=7; pop хийсний дараа 5; дахин pop хийгээд 6 нэмбэл top=6. Ижил утга олон удаа орж болно. std::set шиг давхардлыг арилгадаг гэж үзэж болохгүй.",
+            "type": "p"
+          },
+          {
+            "kind": "dp",
+            "rows": [
+              [
+                "index",
+                "0",
+                "1",
+                "2",
+                "3"
+              ],
+              [
+                "one valid heap",
+                "7",
+                "3",
+                "5",
+                "2"
+              ]
+            ],
+            "type": "diagram",
+            "caption": "Нэг боломжит max-heap: эцгийн утга хүүхдийнхээс их буюу тэнцүү. Энэ нь бүхэлдээ үл өсөх дараалалтай гэсэн үг биш; дотоод байрлал стандартын амлалт биш."
+          }
+        ]
+      },
+      {
+        "key": "heap-code",
+        "title": "Max-heap, min-heap — үйлдлийн программ",
+        "blocks": [
+          {
+            "text": "push($x$) нэмнэ, top() зөвхөн хамгийн түрүүнд авах утгыг уншина, pop() түүнийг арилгана. top нь $O(1)$, heap-д элемент оруулах/арилгах үед эрэмбийг нь сэргээх ажил $O(\\log(k+1))$ өртөгтэй. Анхдагч vector суурь зарим push дээр зайгаа тэлж утгуудыг зөөдөг тул нэг push-ийн бодит ажил шугаман байж болно; олон үйлдлийн нийт өртгөөр log үнэлгээг хэрэглэнэ.",
+            "type": "p"
+          },
+          {
+            "text": "Heap нь эцэг/хүүхдийн шаардлагатай эрэмбийг хадгалдаг учир үндэс нь хамгийн их, эсвэл сонгосон харьцуулалтаар хамгийн түрүүнд авах элемент байна. Бүх хөрш утга дарааллаараа байх албагүй. Дурын индексээр авах, find, дурын элементийг арилгах/update хийх үйлдэл priority_queue-ийн энэ интерфейст байхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Хамгийн бага утга хэрэгтэй бол priority_queue<ll, vector<ll>, greater<ll>> хэрэглэнэ. Утгыг −$x$ болгон хадгалах арга LLONG_MIN дээр халилттай тул энд шууд greater хэрэглэнэ. Хоосон дээр top/pop дуудахгүй; pop нь утга буцаахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Оролт $n$≤200000 команд: PUSH $x$, PEEK, POP, SIZE; $x$ нь ll-д багтана. Max ба min heap-ийг ЗЭРЭГЦҮҮЛЭН туршина. PEEK нь хоёр top, POP нь хоёр устгах утгыг хэвлэнэ; хоосонд EMPTY. Хэмжээ нь ижил боловч pop тус бүр өөр элемент арилгах тул дараа нь агуулга ижил байх албагүй.",
+            "type": "p"
+          },
+          {
+            "text": "Том утга ll, командын тоо int.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "hi анхны less-ээр max, lo нь greater-ээр min сонгоно.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    priority_queue<ll> hi;\n    priority_queue<ll, vector<ll>, greater<ll>> lo;\n    while (n--) {\n        string cmd;\n        cin >> cmd;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "PUSH хоёуланд нэмнэ; PEEK өөрчлөхгүйгээр top-уудыг авна.",
+            "type": "p"
+          },
+          {
+            "text": "if (cmd == \"PUSH\") {\n            ll x;\n            cin >> x;\n            hi.push(x);\n            lo.push(x);\n        } else if (cmd == \"PEEK\") {\n            if (hi.empty()) cout << \"EMPTY\\n\";\n            else cout << hi.top() << ' ' << lo.top() << '\\n';",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "POP уншсаны дараа арилгаж, SIZE хадгалж байгаа тоог өгнө. Хоёр бүтэц ижил тооны push/pop хүлээн авсан нь empty шалгалтыг хуваалцах шалтгаан.",
+            "type": "p"
+          },
+          {
+            "text": "} else if (cmd == \"POP\") {\n            if (hi.empty()) cout << \"EMPTY\\n\";\n            else {\n                cout << hi.top() << ' ' << lo.top() << '\\n';\n                hi.pop();\n                lo.pop();\n            }\n        } else if (cmd == \"SIZE\") cout << hi.size() << '\\n';\n    }\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Дээрх хэсгүүдийг энэ дарааллаар нэгтгэсэн бүтэн C++17 программ. Нээлттэй үлдсэн main/давталтын хаалтууд мөн энд бүрэн хаагдана.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    priority_queue<ll> hi;\n    priority_queue<ll, vector<ll>, greater<ll>> lo;\n    while (n--) {\n        string cmd;\n        cin >> cmd;\n        if (cmd == \"PUSH\") {\n            ll x;\n            cin >> x;\n            hi.push(x);\n            lo.push(x);\n        } else if (cmd == \"PEEK\") {\n            if (hi.empty()) cout << \"EMPTY\\n\";\n            else cout << hi.top() << ' ' << lo.top() << '\\n';\n        } else if (cmd == \"POP\") {\n            if (hi.empty()) cout << \"EMPTY\\n\";\n            else {\n                cout << hi.top() << ' ' << lo.top() << '\\n';\n                hi.pop();\n                lo.pop();\n            }\n        } else if (cmd == \"SIZE\") cout << hi.size() << '\\n';\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "comparator",
+        "title": "Өөрийн эрэмбэ ба тэнцүү утгын дүрэм",
+        "blocks": [
+          {
+            "text": "Ажил бүр p гэсэн ач холбогдлын тоо, id гэсэн дугаартай байг. Эрс их p эхэлж, тэнцвэл эрс бага id эхэлж гаргахыг хүсэв. ",
+            "type": "p"
+          },
+          {
+            "text": "comp(a,b)=true гэдэг нь a нь b-ээс харьцуулалтын эрэмбээр өмнө орно гэсэн утгатай. Priority queue тэр эрэмбийн ХАМГИЙН СҮҮЛИЙН элементийг top болгодог. Тиймээс доорх Cmp-д true нь a-г b-ээс түрүүлж сонгохгүй гэсэн үг. sort-ийн “өмнө тавих” тайлбарыг шууд top-ийн “түрүүлж гарах” гэж хөрвүүлж болохгүй.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "5,1",
+                "9,2",
+                "true",
+                "b"
+              ],
+              [
+                "9,3",
+                "9,2",
+                "true",
+                "b"
+              ],
+              [
+                "9,2",
+                "9,2",
+                "false",
+                "equivalent"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "a(p,id)",
+              "b(p,id)",
+              "Cmp(a,b)",
+              "Хэн түрүүлэх вэ?"
+            ]
+          },
+          {
+            "text": "Харьцуулалт өөртэй нь false, зөрчилгүй, дамжих чанартай байх ёстой. ≤ эсвэл ≥ хэрэглэвэл comp(a,a)=true болж шаардлага зөрчинө. Нэгт p, тэнцвэл id гэсэн тогтмол эрэмбэ хэрэглэхэд эдгээр шинж хадгалагдана. Ижил priority-тэй зүйлсийг автоматаар FIFO гэж үзэхгүй; id-гаар илэрхий заасан үед л энэ жишээний тэнцүү p анхны дугаараар гарна.",
+            "type": "p"
+          },
+          {
+            "text": "Оролт $n$≤200000, дараа нь $n$ ширхэг ll priority. id нь 1..$n$ гэсэн оролтын дугаар. 5,9,9,2 дээр гарах id нь 2,3,1,4. Нийт $O(n\\log(n+1))$ хугацаа, $O(n)$ зай; priority утгыг хасаж эсвэл сөрөг болгож харьцуулахгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Стандарт сан ба ll нэршил.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Job нь өгөгдлийн хоёр талбар. Энд массив эзэмшдэг шинэ бүтэц зохиохгүй, энгийн бичлэгийг {p,id}-гаар эхлүүлнэ.",
+            "type": "p"
+          },
+          {
+            "text": "struct Job {\n    ll p;\n    int id;\n};",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Cmp функц объектын operator() нь const лавлагаа авч, объектын төлөв өөрчлөхгүй. p эрс бага бол true, p тэнцүү үед id эрс их бол true.",
+            "type": "p"
+          },
+          {
+            "text": "struct Cmp {\n    bool operator()(const Job &a, const Job &b) const {\n        if (a.p != b.p) return a.p < b.p;\n        return a.id > b.id;\n    }\n};",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "main бүх ажлыг нэмээд top-ийг Job утгаар хуулж авсны дараа pop хийнэ. Устгасан элементийн лавлагааг хэвлэхгүй.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    priority_queue<Job, vector<Job>, Cmp> q;\n    for (int i = 1; i <= n; i++) {\n        ll p;\n        cin >> p;\n        q.push({p, i});\n    }\n    while (!q.empty()) {\n        Job cur = q.top();\n        q.pop();\n        cout << cur.id << ' ' << cur.p << '\\n';\n    }\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Дээрх хэсгүүдийг энэ дарааллаар нэгтгэсэн бүтэн C++17 программ. Нээлттэй үлдсэн main/давталтын хаалтууд мөн энд бүрэн хаагдана.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Job {\n    ll p;\n    int id;\n};\n\nstruct Cmp {\n    bool operator()(const Job &a, const Job &b) const {\n        if (a.p != b.p) return a.p < b.p;\n        return a.id > b.id;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    priority_queue<Job, vector<Job>, Cmp> q;\n    for (int i = 1; i <= n; i++) {\n        ll p;\n        cin >> p;\n        q.push({p, i});\n    }\n    while (!q.empty()) {\n        Job cur = q.top();\n        q.pop();\n        cout << cur.id << ' ' << cur.p << '\\n';\n    }\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "rooms",
+        "title": "Хэрэглээ: хамгийн цөөн өрөө хуваарилах",
+        "blocks": [
+          {
+            "text": "Зочдын хоног [1,2], [2,4], [3,3], [5,6] өгөгджээ. Ирсэн болон гарсан өдөр ХОЁУЛ өрөө ашиглана. Давхцдаг хүмүүсийг өөр өрөөнд байрлуулж хамгийн цөөн өрөө олъё. Эхний хоёр хүн 2-ны өдөр давхцдаг тул нэг өрөөнд болохгүй. Хариу хоёр өрөө.",
+            "type": "p"
+          },
+          {
+            "text": "Зочдыг ирэх өдрөөр эрэмбэлнэ. Өрөө бүрийн хамгийн сүүлд байрлуулсан хүний гарах өдөр ба өрөөний дугаарыг (end,id) min-heap-д хадгална. Heap нь зөвхөн одоо завгүй өрөөнүүд биш: сул болсон өрөө ч дараагийн хэрэглээнд хэрэгтэй. Өрөө бүр яг нэг бичлэгтэй байна.",
+            "type": "p"
+          },
+          {
+            "text": "Хамгийн эрт чөлөөлөгдөх end нь шинэ start-аас ЭРС БАГА бол тэр өрөөг pop хийгээд дахин ашиглана. Үгүй бол бүх өрөө энэ өдөр завгүй тул шинэ өрөө нэмнэ. Дараа нь шинэ end, өрөөний id-г push хийнэ. end=start үед дахин ашиглаж болохгүй. end+1 тооцохгүй тул хамгийн их ll өдөр дээр ч халилтгүй.",
+            "type": "p"
+          },
+          {
+            "rows": [
+              [
+                "1",
+                "[1,2]",
+                "1",
+                "(2,1)"
+              ],
+              [
+                "2",
+                "[2,4]",
+                "2",
+                "(2,1),(4,2)"
+              ],
+              [
+                "3",
+                "[3,3]",
+                "1",
+                "(3,1),(4,2)"
+              ],
+              [
+                "4",
+                "[5,6]",
+                "1",
+                "(4,2),(6,1)"
+              ]
+            ],
+            "type": "table",
+            "headers": [
+              "Зочин",
+              "Хугацаа",
+              "Өрөө",
+              "Дараах heap бичлэгүүд"
+            ]
+          },
+          {
+            "text": "Яагаад оптимал вэ? Дахин ашиглах өрөө байвал хамгийн эрт дуусах нь заавал сул байна. Харин түүний end хүртэл start-аас их буюу тэнцүү бол бусад өрөөний end ч их буюу тэнцүү. Өмнөх зочид start-аас өмнө эсвэл яг тэр өдөр ирсэн тул шинэ хүнтэй бүгд давхцаж, одоогийн өрөөний тооноос нэгээр олон хүн зэрэг байна. Ямар ч шийдэл нэмэлт өрөөгүй болохгүй. Манай арга зөвхөн ийм үед шинэ өрөө нээдэг.",
+            "type": "p"
+          },
+          {
+            "text": "Оролт $n$≤200000, дараа нь $n$ хос l≤$r$; өдөр нь ll-ийн бүх хүрээнд байж болно. id нь анхны оролтын индекс, хэвлэхэд тэр дарааллыг сэргээнэ. $n$=0 үед өрөө 0, оноолтын мөр хоосон. $O(n\\log(n+1))$ хугацаа, $O(n)$ зай.",
+            "type": "p"
+          },
+          {
+            "text": "Өдөр ll, өрөө ба зочны индекс int.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Stay бичлэгийн тогтмол (l,$r$,id) эрэмбэ нь ижил ирсэн өдрийн тэнцүүг тодорхой шийднэ.",
+            "type": "p"
+          },
+          {
+            "text": "struct Stay {\n    ll l, r;\n    int id;\n    bool operator<(const Stay &s) const {\n        return tie(l, r, id) < tie(s.l, s.r, s.id);\n    }\n};",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "allocate оролтын хуулбарыг эрэмбэлж, (end,room)-ийн greater харьцуулалттай heap ашиглана. id нь анхны зочны индекс, ans[id] нь түүний өрөө.",
+            "type": "p"
+          },
+          {
+            "text": "pair<int, vector<int>> allocate(vector<Stay> a) {\n    sort(a.begin(), a.end());\n    priority_queue<pair<ll, int>, vector<pair<ll, int>>, greater<pair<ll, int>>> q;\n    vector<int> ans(a.size());\n    int rooms = 0;\n    for (Stay s : a) {\n        int id;\n        if (!q.empty() && q.top().first < s.l) {\n            id = q.top().second;\n            q.pop();\n        } else id = ++rooms;\n        ans[s.id] = id;\n        q.push({s.r, id});\n    }\n    return {rooms, ans};\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "main оролтын id-г үүсгээд өрөөний тоо ба оноолтыг хэвлэнэ. Зөв өөр дугаарлалттай оптимал оноолтууд бас байж болно.",
+            "type": "p"
+          },
+          {
+            "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<Stay> a(n);\n    for (int i = 0; i < n; i++) {\n        cin >> a[i].l >> a[i].r;\n        a[i].id = i;\n    }\n    auto [rooms, ans] = allocate(a);\n    cout << rooms << '\\n';\n    for (int id : ans) cout << id << ' ';\n    cout << '\\n';\n}",
+            "type": "code",
+            "language": "C++17"
+          },
+          {
+            "text": "Дээрх хэсгүүдийг энэ дарааллаар нэгтгэсэн бүтэн C++17 программ. Нээлттэй үлдсэн main/давталтын хаалтууд мөн энд бүрэн хаагдана.",
+            "type": "p"
+          },
+          {
+            "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Stay {\n    ll l, r;\n    int id;\n    bool operator<(const Stay &s) const {\n        return tie(l, r, id) < tie(s.l, s.r, s.id);\n    }\n};\n\npair<int, vector<int>> allocate(vector<Stay> a) {\n    sort(a.begin(), a.end());\n    priority_queue<pair<ll, int>, vector<pair<ll, int>>, greater<pair<ll, int>>> q;\n    vector<int> ans(a.size());\n    int rooms = 0;\n    for (Stay s : a) {\n        int id;\n        if (!q.empty() && q.top().first < s.l) {\n            id = q.top().second;\n            q.pop();\n        } else id = ++rooms;\n        ans[s.id] = id;\n        q.push({s.r, id});\n    }\n    return {rooms, ans};\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<Stay> a(n);\n    for (int i = 0; i < n; i++) {\n        cin >> a[i].l >> a[i].r;\n        a[i].id = i;\n    }\n    auto [rooms, ans] = allocate(a);\n    cout << rooms << '\\n';\n    for (int id : ans) cout << id << ' ';\n    cout << '\\n';\n}\n",
+            "type": "code",
+            "language": "C++17"
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "title": "Хэзээ сонгох, хэзээ өөр бүтэц хэрэгтэй вэ?",
+        "blocks": [
+          {
+            "text": "Дараагийн хамгийн бага/их утгыг олон удаа асуух, хугацааны дараагийн үйл явдал, зарим shortest-path аргуудад heap тохирно. Бүх утгыг эхнээс нь нэг удаа эрэмбэлээд унших л бол sort илүү энгийн. Heap-д оруулсан бичлэгийн эрэмбэд ашигласан гаднах утгыг дур мэдэн өөрчилбөл heap автоматаар засагдахгүй; update хэрэгтэй бодлогод тусдаа загвар шаардлагатай.",
+            "type": "p"
+          }
+        ]
+      },
+      {
+        "key": "practice",
+        "title": "Эзэмших ба бие даах бодлогууд",
+        "blocks": [
+          {
+            "text": "Эзэмших дасгал: өөрөө жижиг командын дараалал зохиож, алхам бүрийн төлөв ба гаралтыг гараар бич. Хоосон, ганц элемент, давхардал, сөрөг/том утга, тэнцүү сонголт, бүрэн хоосортол арилгах тохиолдлыг оруул.",
+            "type": "p"
+          },
+          {
+            "text": "Ижил p-тэй хоёр ажлын id-г солиход Cmp-ийн үр дүнг ол. Өрөөнд [1,2] ба [2,2] яагаад хоёр өрөө шаарддаг, [1,2] ба [3,3] яагаад нэг өрөөтэй болохыг батал.",
+            "type": "p"
+          },
+          {
+            "text": "Эхэлж эзэмших бодлогууд: хэрэглэх бүтэц, хадгалах төлөв, зөв сонголтын шалтгаанаа тодорхойл. Монотон стек эсвэл графын хайлт шаардсан өргөтгөлд холбогдох хичээлийн нэмэлт үндэслэл хэрэгтэй; зөвхөн үндсэн push/pop код хангалтгүй.",
+            "type": "p"
+          },
+          {
+            "text": "Төлөвийн утга, боловсруулах дараалал ба үндсэн сонголтын баталгааг хэрэгжүүлэх шууд цөм дасгал.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "329"
+          },
+          {
+            "text": "Бие дааж бодох бодлогууд: эхлээд жижиг жишээг гараар бодож, сонгосон дүрэм нь оролтын нөхцөлтэй таарч байгааг батал.",
+            "type": "p"
+          },
+          {
+            "type": "problem",
+            "problemKey": "367"
+          },
+          {
+            "type": "problem",
+            "problemKey": "370"
+          },
+          {
+            "type": "problem",
+            "problemKey": "371"
+          },
+          {
+            "type": "problem",
+            "problemKey": "673"
+          },
+          {
+            "type": "problem",
+            "problemKey": "338"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Priority queues — the earliest available room",
+        "summary": "Use heap order to retrieve minima from a changing set, with a room-allocation application separating data-structure guarantees from greedy correctness.",
+        "sections": [
+          {
+            "key": "selection",
+            "title": "Selection and the heap invariant",
+            "blocks": [
+              {
+                "text": "Sometimes the next item is the largest or smallest currently available value, not the earliest arrival. A priority queue supports that choice. It is neither FIFO nor an interface for viewing every element as a sorted sequence.",
+                "type": "p"
+              },
+              {
+                "text": "C++ priority_queue<ll> exposes the LARGEST value by default. Push 3,5,7,2: top is 7; pop gives a new top 5; pop again and push 6 gives top 6. Duplicate values remain separate, unlike a std::set.",
+                "type": "p"
+              },
+              {
+                "kind": "dp",
+                "rows": [
+                  [
+                    "index",
+                    "0",
+                    "1",
+                    "2",
+                    "3"
+                  ],
+                  [
+                    "one valid heap",
+                    "7",
+                    "3",
+                    "5",
+                    "2"
+                  ]
+                ],
+                "type": "diagram",
+                "caption": "One valid max-heap: parent≥child. The array is not globally decreasing; this internal layout is illustrative, not a promised library representation."
+              }
+            ]
+          },
+          {
+            "key": "heap-code",
+            "title": "Max-heap and min-heap operations",
+            "blocks": [
+              {
+                "text": "push adds, top reads the selected element and pop removes it. top costs $O(1)$; heap adjustment takes $O(\\log(k+1))$. The default vector can occasionally grow and relocate elements, so one push may do linear work; the logarithmic insertion cost is used amortized across operations.",
+                "type": "p"
+              },
+              {
+                "text": "A heap maintains the required parent/child order so its root is maximal under the chosen comparison. Neighboring array entries need not be sorted. This interface does not provide arbitrary indexing, find, arbitrary erase or direct priority updates.",
+                "type": "p"
+              },
+              {
+                "text": "For the smallest value use priority_queue<ll, vector<ll>, greater<ll>>. Negating values as a shortcut overflows at LLONG_MIN; use greater directly. Never top/pop an empty queue, and remember pop returns no value.",
+                "type": "p"
+              },
+              {
+                "text": "Input $n$≤200000 commands PUSH $x$, PEEK, POP, SIZE with ll values. Compare independent max/min heaps. PEEK prints both tops, POP prints/removes both selections, and empty access prints EMPTY. Their sizes agree, but different pops mean their contents need not agree afterward.",
+                "type": "p"
+              },
+              {
+                "text": "Use ll values and an int command count.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "hi selects a maximum with default less; lo selects a minimum with greater.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    priority_queue<ll> hi;\n    priority_queue<ll, vector<ll>, greater<ll>> lo;\n    while (n--) {\n        string cmd;\n        cin >> cmd;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "PUSH inserts into both; PEEK reads without mutation.",
+                "type": "p"
+              },
+              {
+                "text": "if (cmd == \"PUSH\") {\n            ll x;\n            cin >> x;\n            hi.push(x);\n            lo.push(x);\n        } else if (cmd == \"PEEK\") {\n            if (hi.empty()) cout << \"EMPTY\\n\";\n            else cout << hi.top() << ' ' << lo.top() << '\\n';",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "POP reads before removal; SIZE returns the stored count. Equal push/pop counts justify the shared emptiness check.",
+                "type": "p"
+              },
+              {
+                "text": "} else if (cmd == \"POP\") {\n            if (hi.empty()) cout << \"EMPTY\\n\";\n            else {\n                cout << hi.top() << ' ' << lo.top() << '\\n';\n                hi.pop();\n                lo.pop();\n            }\n        } else if (cmd == \"SIZE\") cout << hi.size() << '\\n';\n    }\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program assembles the preceding parts in order, including the remaining main/loop braces.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    priority_queue<ll> hi;\n    priority_queue<ll, vector<ll>, greater<ll>> lo;\n    while (n--) {\n        string cmd;\n        cin >> cmd;\n        if (cmd == \"PUSH\") {\n            ll x;\n            cin >> x;\n            hi.push(x);\n            lo.push(x);\n        } else if (cmd == \"PEEK\") {\n            if (hi.empty()) cout << \"EMPTY\\n\";\n            else cout << hi.top() << ' ' << lo.top() << '\\n';\n        } else if (cmd == \"POP\") {\n            if (hi.empty()) cout << \"EMPTY\\n\";\n            else {\n                cout << hi.top() << ' ' << lo.top() << '\\n';\n                hi.pop();\n                lo.pop();\n            }\n        } else if (cmd == \"SIZE\") cout << hi.size() << '\\n';\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "comparator",
+            "title": "Custom ordering and tie-breaking",
+            "blocks": [
+              {
+                "text": "Give each job a numeric priority p and an id. Select larger p first, then smaller id on ties. ",
+                "type": "p"
+              },
+              {
+                "text": "comp(a,b)=true places a before b in the comparison order. A priority queue exposes the LAST element under that order. Thus true in our Cmp means a should not be selected ahead of b. Do not equate sort’s “comes before” with the priority queue’s “comes out first”.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "5,1",
+                    "9,2",
+                    "true",
+                    "b"
+                  ],
+                  [
+                    "9,3",
+                    "9,2",
+                    "true",
+                    "b"
+                  ],
+                  [
+                    "9,2",
+                    "9,2",
+                    "false",
+                    "equivalent"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "a(p,id)",
+                  "b(p,id)",
+                  "Cmp(a,b)",
+                  "Selected first"
+                ]
+              },
+              {
+                "text": "The comparison must be irreflexive and transitive with consistent equivalence. Using ≤ or ≥ makes comp(a,a) true and violates the requirement. A fixed primary p order followed by an id tie-breaker satisfies it. Priority queues are not automatically FIFO on ties; this example gets input-id order only because that rule is explicit.",
+                "type": "p"
+              },
+              {
+                "text": "Input $n$≤200000 ll priorities; ids are input positions 1..$n$. Priorities 5,9,9,2 produce ids 2,3,1,4. Total time $O(n\\log(n+1))$, space $O(n)$; comparisons neither subtract nor negate priorities.",
+                "type": "p"
+              },
+              {
+                "text": "Library and ll alias.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Job is a two-field record initialized as {p,id}, not a new container owning arrays.",
+                "type": "p"
+              },
+              {
+                "text": "struct Job {\n    ll p;\n    int id;\n};",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Cmp is a function object with a const call operator and const references. Lower p returns true; tied p with larger id also returns true.",
+                "type": "p"
+              },
+              {
+                "text": "struct Cmp {\n    bool operator()(const Job &a, const Job &b) const {\n        if (a.p != b.p) return a.p < b.p;\n        return a.id > b.id;\n    }\n};",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "main inserts jobs, copies top into a Job value and only then pops; it never prints an erased reference.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    priority_queue<Job, vector<Job>, Cmp> q;\n    for (int i = 1; i <= n; i++) {\n        ll p;\n        cin >> p;\n        q.push({p, i});\n    }\n    while (!q.empty()) {\n        Job cur = q.top();\n        q.pop();\n        cout << cur.id << ' ' << cur.p << '\\n';\n    }\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program assembles the preceding parts in order, including the remaining main/loop braces.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Job {\n    ll p;\n    int id;\n};\n\nstruct Cmp {\n    bool operator()(const Job &a, const Job &b) const {\n        if (a.p != b.p) return a.p < b.p;\n        return a.id > b.id;\n    }\n};\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    priority_queue<Job, vector<Job>, Cmp> q;\n    for (int i = 1; i <= n; i++) {\n        ll p;\n        cin >> p;\n        q.push({p, i});\n    }\n    while (!q.empty()) {\n        Job cur = q.top();\n        q.pop();\n        cout << cur.id << ' ' << cur.p << '\\n';\n    }\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "rooms",
+            "title": "Application: minimum room allocation",
+            "blocks": [
+              {
+                "text": "Guests stay on [1,2],[2,4],[3,3],[5,6], including BOTH arrival and departure dates. Assign overlapping stays to different rooms using the fewest rooms. The first two overlap on day 2, so one room is insufficient; the optimum is two.",
+                "type": "p"
+              },
+              {
+                "text": "Sort guests by arrival. Keep each room’s latest departure and room id in an(end,id) min-heap. This is not merely a set of currently occupied rooms: already free rooms remain available for reuse. Each allocated room has exactly one entry.",
+                "type": "p"
+              },
+              {
+                "text": "If the earliest end is STRICTLY LESS than the next start, pop and reuse that room. Otherwise every room is occupied on that date, so allocate another. Push the new end/id afterward. Equality does not permit reuse. Compare directly instead of forming end+1, which could overflow.",
+                "type": "p"
+              },
+              {
+                "rows": [
+                  [
+                    "1",
+                    "[1,2]",
+                    "1",
+                    "(2,1)"
+                  ],
+                  [
+                    "2",
+                    "[2,4]",
+                    "2",
+                    "(2,1),(4,2)"
+                  ],
+                  [
+                    "3",
+                    "[3,3]",
+                    "1",
+                    "(3,1),(4,2)"
+                  ],
+                  [
+                    "4",
+                    "[5,6]",
+                    "1",
+                    "(4,2),(6,1)"
+                  ]
+                ],
+                "type": "table",
+                "headers": [
+                  "Guest",
+                  "Stay",
+                  "Room",
+                  "Heap entries afterward"
+                ]
+              },
+              {
+                "text": "Why is this optimal? If reuse is possible, the earliest departure is free. If even that end is not below start, every room’s last guest remains through this arrival date. Those guests arrived no later, so they all overlap the new guest. Any solution needs one more room. Our algorithm opens a room only when this lower bound forces it.",
+                "type": "p"
+              },
+              {
+                "text": "Input $n$≤200000 pairs l≤$r$ with ll dates. Keep original input ids to print assignments in the original order. For $n$=0 print 0 rooms and an empty assignment line. Time $O(n\\log(n+1))$, space $O(n)$.",
+                "type": "p"
+              },
+              {
+                "text": "Dates use ll; room/guest indices use int.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "Stay uses fixed(l,$r$,id) order, resolving simultaneous-arrival ties deterministically.",
+                "type": "p"
+              },
+              {
+                "text": "struct Stay {\n    ll l, r;\n    int id;\n    bool operator<(const Stay &s) const {\n        return tie(l, r, id) < tie(s.l, s.r, s.id);\n    }\n};",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "allocate sorts a copy and uses a greater pair heap for(end,room). The guest’s original id indexes ans, preserving output order.",
+                "type": "p"
+              },
+              {
+                "text": "pair<int, vector<int>> allocate(vector<Stay> a) {\n    sort(a.begin(), a.end());\n    priority_queue<pair<ll, int>, vector<pair<ll, int>>, greater<pair<ll, int>>> q;\n    vector<int> ans(a.size());\n    int rooms = 0;\n    for (Stay s : a) {\n        int id;\n        if (!q.empty() && q.top().first < s.l) {\n            id = q.top().second;\n            q.pop();\n        } else id = ++rooms;\n        ans[s.id] = id;\n        q.push({s.r, id});\n    }\n    return {rooms, ans};\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "main creates original ids and prints the room count/assignment. Other optimal room labelings may also be valid.",
+                "type": "p"
+              },
+              {
+                "text": "int main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<Stay> a(n);\n    for (int i = 0; i < n; i++) {\n        cin >> a[i].l >> a[i].r;\n        a[i].id = i;\n    }\n    auto [rooms, ans] = allocate(a);\n    cout << rooms << '\\n';\n    for (int id : ans) cout << id << ' ';\n    cout << '\\n';\n}",
+                "type": "code",
+                "language": "C++17"
+              },
+              {
+                "text": "The complete C++17 program assembles the preceding parts in order, including the remaining main/loop braces.",
+                "type": "p"
+              },
+              {
+                "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nstruct Stay {\n    ll l, r;\n    int id;\n    bool operator<(const Stay &s) const {\n        return tie(l, r, id) < tie(s.l, s.r, s.id);\n    }\n};\n\npair<int, vector<int>> allocate(vector<Stay> a) {\n    sort(a.begin(), a.end());\n    priority_queue<pair<ll, int>, vector<pair<ll, int>>, greater<pair<ll, int>>> q;\n    vector<int> ans(a.size());\n    int rooms = 0;\n    for (Stay s : a) {\n        int id;\n        if (!q.empty() && q.top().first < s.l) {\n            id = q.top().second;\n            q.pop();\n        } else id = ++rooms;\n        ans[s.id] = id;\n        q.push({s.r, id});\n    }\n    return {rooms, ans};\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<Stay> a(n);\n    for (int i = 0; i < n; i++) {\n        cin >> a[i].l >> a[i].r;\n        a[i].id = i;\n    }\n    auto [rooms, ans] = allocate(a);\n    cout << rooms << '\\n';\n    for (int id : ans) cout << id << ' ';\n    cout << '\\n';\n}\n",
+                "type": "code",
+                "language": "C++17"
+              }
+            ]
+          },
+          {
+            "key": "limits",
+            "title": "When to choose a different structure",
+            "blocks": [
+              {
+                "text": "Heaps suit repeated extreme selection, next-event scheduling and some shortest-path algorithms. If all values are fixed and only need one ordered traversal, sort is simpler. Mutating external comparison keys does not automatically repair a heap; priority updates require a deliberate separate model.",
+                "type": "p"
+              }
+            ]
+          },
+          {
+            "key": "practice",
+            "title": "Mastery and independent practice",
+            "blocks": [
+              {
+                "text": "Mastery exercise: invent a short command sequence and write every state/output by hand. Include empty/singleton containers, duplicates, negative/extreme values, ties and draining to empty.",
+                "type": "p"
+              },
+              {
+                "text": "Swap the ids of equal-p jobs and evaluate Cmp. Explain why [1,2] and[2,2] need two rooms but[1,2] and[3,3] need one.",
+                "type": "p"
+              },
+              {
+                "text": "Core practice: state the structure, maintained state and reason its selection rule is correct. Extensions such as monotone stacks or graph search need the corresponding further arguments, not just basic push/pop code.",
+                "type": "p"
+              },
+              {
+                "text": "Explain the invariant and operation costs for this core application.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "329"
+              },
+              {
+                "text": "Independent practice: solve a small example by hand and justify that the chosen rule matches the problem’s conditions.",
+                "type": "p"
+              },
+              {
+                "type": "problem",
+                "problemKey": "367"
+              },
+              {
+                "type": "problem",
+                "problemKey": "370"
+              },
+              {
+                "type": "problem",
+                "problemKey": "371"
+              },
+              {
+                "type": "problem",
+                "problemKey": "673"
+              },
+              {
+                "type": "problem",
+                "problemKey": "338"
+              }
+            ]
+          }
+        ],
+        "prerequisites": "Stacks, queues, sorting and pair comparison. Both arrival and departure days belong to a stay."
+      }
+    },
+    "automaticDemo": false,
+    "prerequisites": "Стек ба энгийн дараалал, эрэмбэлэх ба хос утгын харьцуулалт. Ирэх, гарах өдөр хоёулаа завсарт орно.",
+    "priorityLevel": "high",
+    "priorityReason": "Өөрчлөгдөх олонлогоос хамгийн бага эсвэл ихийг дахин дахин сонгох нийтлэг хэрэгцээтэй бүтэц. Үйл явдлын дараалал, хуваарилалт, замын алгоритмын суурь боловч өгөгдлийн бүтэц ба шунахай баталгааг ялгаж сурах шаардлагатай.",
+    "prerequisiteIds": [
+      "stack-queue",
+      "sorting"
+    ],
+    "learningRelations": {
+      "next": "dijkstra",
+      "practice": [
+        {
+          "key": "329",
+          "stage": "Warm-up",
+          "reason": "Төлөвийн утга, боловсруулах дараалал ба үндсэн сонголтын баталгааг хэрэгжүүлэх шууд цөм дасгал.",
+          "priority": true
+        },
+        {
+          "key": "367",
+          "stage": "Standard",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "370",
+          "stage": "Observation",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "371",
+          "stage": "Application",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "673",
+          "stage": "Challenge",
+          "reason": "",
+          "priority": false
+        },
+        {
+          "key": "338",
+          "stage": "Olympiad extension",
+          "reason": "",
+          "priority": false
+        }
+      ],
+      "variants": [
+        {
+          "tutorialId": "stack-queue",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "sorting",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        },
+        {
+          "tutorialId": "dijkstra",
+          "description": "Санаа болон хэрэглэх нөхцөлийг харьцуулж үз.",
+          "descriptionEn": "Compare its assumptions and use cases."
+        }
+      ]
+    }
+  }
+}
