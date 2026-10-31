@@ -1,0 +1,1444 @@
+[
+  {
+    "id": "task-753",
+    "ref": "typical90_c",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_c",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-c",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Longest Circular Road — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Модонд $u,v$ хоёр оройг шинэ ирмэгээр холбоход үүсэх цорын ганц cycle нь хуучин $u\\to v$ зам болон шинэ ирмэгээс бүрдэнэ. Түүний урт $dist(u,v)+1$. Иймээс модны diameter-ийг олоод $1$ нэмнэ."
+            }
+          ]
+        },
+        {
+          "title": "Хоёр BFS ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Дурын оройгоос BFS хийгээд хамгийн хол $u$-г ол. Дараа нь $u$-гаас BFS хийхэд хүрэх хамгийн их зай нь diameter. BFS-ийн зай нь ирмэгийн тоо; хариунд шинэ ирмэгийг нэмэхээ мартуузай."
+            },
+            {
+              "type": "p",
+              "text": "$1-2-3-4-5$ замд diameter $4$. $1,5$-ыг холбоход $5$ урттай cycle үүснэ."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Модны хоёр оройн хооронд ганц энгийн зам байдаг. Шинэ ирмэг оруулбал тэр замтай нийлсэн cycle үүсэх тул хамгийн урт cycle нь хамгийн хол хоёр оройгоос үүснэ."
+            },
+            {
+              "type": "p",
+              "text": "$s$-ээр модоо үндэслээд, хамгийн гүн оройг $u$ гэе. Diameter-ийн төгсгөлүүдийг $a,b$, тэдний хамгийн ойрын нийтлэг өвгийг $t$ гэе. $u$ нь $t$-ийн доор байвал $a,b$-ийн дор хаяж нэг нь $u$-ийн салааны гадна байна. Нөгөө төгсгөлийг түүнээс гүехэн биш $u$-гаар солиход зам богиносохгүй."
+            },
+            {
+              "type": "p",
+              "text": "Харин $u$ нь $t$-ийн subtree-ийн гадна байвал $a,b$-ийн илүү гүн төгсгөл рүү очих зам нь $t$ буюу түүний өвгөөр дамжина. $u$-ийн гүн хоёр төгсгөлийн гүнээс багагүй тул энэ замын урт ч diameter-ээс багагүй. Diameter хамгийн их урт учир хоёр тохиолдолд хоёуланд нь $u$ нь diameter-ийн төгсгөл болж чадна."
+            },
+            {
+              "type": "p",
+              "text": "Тиймээс хоёр дахь BFS $u$-гаас diameter-ийн нөгөө төгсгөлд хүрэх зайг олно. $N\\ge3$ учир diameter дор хаяж $2$; төгсгөлүүдийн хооронд өмнө нь ирмэг байгаагүй тул шинэ ирмэг нэмэх нь зөвшөөрөгдөнө."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хугацаа $O(N)$, санах ой $O(N)$. Зай $N-1$-ээс ихгүй тул int хангалттай. Queue-тай BFS ашигласан учир $100000$ оройтой урт замд recursion stack дүүрэхгүй."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "BFS-ийн хамгийн хол орой"
+            },
+            {
+              "type": "p",
+              "text": "$dist=-1$ нь хараахан ороогүй орой. Оройг queue-д хийхдээ зайг нь тогтооно. Буцаах pair нь орой болон зай."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "pair<int, int> farthest(const vector<vector<int>> &g, int start) {\n    vector<int> dist(g.size(), -1);\n    queue<int> q;\n    q.push(start);\n    dist[start] = 0;\n    int best = start;\n    while (!q.empty()) {\n        int u = q.front();\n        q.pop();\n        if (dist[u] > dist[best]) best = u;\n        for (int v : g[u]) {\n            if (dist[v] != -1) continue;\n            dist[v] = dist[u] + 1;\n            q.push(v);\n        }\n    }\n    return {best, dist[best]};\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Хоёр хайлт"
+            },
+            {
+              "type": "p",
+              "text": "Эхний хайлтаас зөвхөн төгсгөлийг авна. Хоёр дахь хайлтын хамгийн их зай дээр шинэ ирмэгийг нэмнэ."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int u = farthest(g, 0).first;\nint diameter = farthest(g, u).second;\ncout << diameter + 1 << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_c"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\npair<int, int> farthest(const vector<vector<int>> &g, int start) {\n    vector<int> dist(g.size(), -1);\n    queue<int> q;\n    q.push(start);\n    dist[start] = 0;\n    int best = start;\n    while (!q.empty()) {\n        int u = q.front();\n        q.pop();\n        if (dist[u] > dist[best]) best = u;\n        for (int v : g[u]) {\n            if (dist[v] != -1) continue;\n            dist[v] = dist[u] + 1;\n            q.push(v);\n        }\n    }\n    return {best, dist[best]};\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> g(n);\n    for (int i = 0; i < n - 1; ++i) {\n        int a, b;\n        cin >> a >> b;\n        --a;\n        --b;\n        g[a].push_back(b);\n        g[b].push_back(a);\n    }\n    int u = farthest(g, 0).first;\n    int diameter = farthest(g, u).second;\n    cout << diameter + 1 << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Longest Circular Road — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Adding an edge between tree vertices $u,v$ creates one cycle: the unique old $u$-to-$v$ path plus the new edge. Its length is $dist(u,v)+1$. Find the tree diameter and add one."
+                }
+              ]
+            },
+            {
+              "title": "Two BFS runs and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Run BFS from any vertex and choose a farthest vertex $u$. A second BFS from $u$ gives the diameter as its greatest distance. Distances count edges, so include the new edge in the final answer."
+                },
+                {
+                  "type": "p",
+                  "text": "In the path $1-2-3-4-5$, the diameter is $4$. Adding edge $1-5$ creates a cycle of length $5$."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "A tree has exactly one simple path between any two vertices. The added edge and that path form the cycle, so maximizing cycle length is equivalent to maximizing the old path length."
+                },
+                {
+                  "type": "p",
+                  "text": "Root the tree at the first BFS start $s$, and let $u$ be a deepest vertex. Take diameter endpoints $a,b$ and their lowest common ancestor $t$. If $u$ is below $t$, at least one endpoint lies outside its branch. Replacing the other endpoint by the no-shallower $u$ cannot shorten that path."
+                },
+                {
+                  "type": "p",
+                  "text": "If $u$ is outside the subtree of $t$, its path to the deeper of $a,b$ passes through $t$ or an ancestor of $t$. Since $u$ is at least as deep as both endpoints, this path is also at least as long as the diameter. No path can exceed the diameter, so in either case $u$ is an endpoint of a diameter."
+                },
+                {
+                  "type": "p",
+                  "text": "The second BFS therefore reaches the opposite endpoint at the diameter distance. Since $N\\ge3$, the diameter is at least two, so its endpoints are not already adjacent and adding their edge is permitted."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Time and space are $O(N)$. Distances are at most $N-1$, so int suffices. Queue-based BFS avoids recursion-stack overflow on a path with $100000$ vertices."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Farthest vertex by BFS"
+                },
+                {
+                  "type": "p",
+                  "text": "A distance of $-1$ marks an unvisited vertex. Assign its distance when enqueuing. Return both the farthest vertex and its distance."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "pair<int, int> farthest(const vector<vector<int>> &g, int start) {\n    vector<int> dist(g.size(), -1);\n    queue<int> q;\n    q.push(start);\n    dist[start] = 0;\n    int best = start;\n    while (!q.empty()) {\n        int u = q.front();\n        q.pop();\n        if (dist[u] > dist[best]) best = u;\n        for (int v : g[u]) {\n            if (dist[v] != -1) continue;\n            dist[v] = dist[u] + 1;\n            q.push(v);\n        }\n    }\n    return {best, dist[best]};\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Two searches"
+                },
+                {
+                  "type": "p",
+                  "text": "Use the first run only to choose an endpoint. Add the new edge to the greatest distance from the second run."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int u = farthest(g, 0).first;\nint diameter = farthest(g, u).second;\ncout << diameter + 1 << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_c"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\npair<int, int> farthest(const vector<vector<int>> &g, int start) {\n    vector<int> dist(g.size(), -1);\n    queue<int> q;\n    q.push(start);\n    dist[start] = 0;\n    int best = start;\n    while (!q.empty()) {\n        int u = q.front();\n        q.pop();\n        if (dist[u] > dist[best]) best = u;\n        for (int v : g[u]) {\n            if (dist[v] != -1) continue;\n            dist[v] = dist[u] + 1;\n            q.push(v);\n        }\n    }\n    return {best, dist[best]};\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> g(n);\n    for (int i = 0; i < n - 1; ++i) {\n        int a, b;\n        cin >> a >> b;\n        --a;\n        --b;\n        g[a].push_back(b);\n        g[b].push_back(a);\n    }\n    int u = farthest(g, 0).first;\n    int diameter = farthest(g, u).second;\n    cout << diameter + 1 << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "program_sha256": "9bc8c0d325a7b0d6429450622bb683d7a254f111e9d9ce5235064a5496512a01",
+    "status": "authored; content/native verification and publication pending"
+  },
+  {
+    "id": "task-759",
+    "ref": "typical90_n",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_n",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-n",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "We Used to Sing a Song Together — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хоёр массивыг тус тус өсөхөөр sort хийгээд ижил индексүүдийг хослуулна. Хариу нь $\\sum_i|A_i-B_i|$. Мөр дээр байрлах цэгүүдийн хамгийн бага нийлбэр зайтай matching нь огтлолцсон хослол шаарддаггүй."
+            }
+          ]
+        },
+        {
+          "title": "Жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$A=[1,7,10]$, $B=[2,6,12]$ бол дарааллаар хослуулахад зай $1+1+2=4$. Захын хослолуудыг солин $1\\to12$, $10\\to2$ болговол тэдний зай $11+8=19$ болж нэмэгдэнэ."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$a\\le b$, $x\\le y$ үед $|a-x|+|b-y|\\le|a-y|+|b-x|$. Үүнийг $f(t)=|a-t|-|b-t|$ функцээр харж болно: $t$ нь $a$-гаас зүүнд тогтмол, $[a,b]$-д өсөх, $b$-гээс баруунд дахин тогтмол. Иймээс $f(x)\\le f(y)$ бөгөөд тэнцэтгэл биш гарна."
+            },
+            {
+              "type": "p",
+              "text": "$A$-г эрэмбэлсний дараа matching дотор $B$-ийн дараалал урвуу болсон хоёр хос байвал тэдгээрийг солиход зардал нэмэгдэхгүй. Бүх урвуу дарааллыг арилгахад $B$ ч өсөхөөр таарна. Тиймээс ямар ч зөв matching-ийг манай matching болгон зардлыг нэмэхгүй хувиргаж чадна; гарсан нийлбэр хамгийн бага."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Sort-ууд $O(N\\log N)$, нийлбэр $O(N)$; массивууд $O(N)$ санах ой хэрэглэнэ. Нэг зай $10^9$, нийлбэр $N\\cdot10^9\\le10^{14}$ хүрч болох тул ll хэрэглэнэ. Оролтын хоёр массив доторх байрлалууд тус тус ялгаатай; хариунд анхны индекс шаардахгүй."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Урт нийлбэрт зориулсан массив"
+            },
+            {
+              "type": "p",
+              "text": "ll массив нь координатын зөрүү болон нийт нийлбэрийг нэг аюулгүй төрөлд тооцох боломж олгоно."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int n;\ncin >> n;\nvector<ll> a(n), b(n);\nfor (ll &x : a) cin >> x;\nfor (ll &x : b) cin >> x;"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Sort ба matching"
+            },
+            {
+              "type": "p",
+              "text": "Хоёр талын эрэмбийг тус тус тогтоогоод ижил индексүүдийн абсолют зөрүүг нэмнэ."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "sort(a.begin(), a.end());\nsort(b.begin(), b.end());\nll ans = 0;\nfor (int i = 0; i < n; ++i) ans += abs(a[i] - b[i]);\ncout << ans << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_n"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<ll> a(n), b(n);\n    for (ll &x : a) cin >> x;\n    for (ll &x : b) cin >> x;\n    sort(a.begin(), a.end());\n    sort(b.begin(), b.end());\n    ll ans = 0;\n    for (int i = 0; i < n; ++i) ans += abs(a[i] - b[i]);\n    cout << ans << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "We Used to Sing a Song Together — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Sort both arrays independently and match equal indices. The answer is $\\sum_i|A_i-B_i|$. An optimal matching of points on a line can preserve their order."
+                }
+              ]
+            },
+            {
+              "title": "Example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "For $A=[1,7,10]$ and $B=[2,6,12]$, matching in order costs $1+1+2=4$. Crossing the outer matches to $1\\to12$ and $10\\to2$ makes those two distances $11+8=19$."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "For $a\\le b$ and $x\\le y$, $|a-x|+|b-y|\\le|a-y|+|b-x|$. To see this, consider $f(t)=|a-t|-|b-t|$: it is constant left of $a$, increasing on $[a,b]$, and constant right of $b$. Thus $f(x)\\le f(y)$, which rearranges to the inequality."
+                },
+                {
+                  "type": "p",
+                  "text": "After sorting $A$, swap any pair of inverted matches in $B$. The inequality shows that the cost cannot increase. Removing all inversions yields sorted-order matching. Every feasible matching can therefore be transformed into ours without increasing its cost, proving optimality."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Sorting takes $O(N\\log N)$ time and summation $O(N)$; arrays use $O(N)$ space. A distance can reach $10^9$, and the total can reach $N\\cdot10^9\\le10^{14}$, so use ll. Each input array has distinct coordinates; original matching indices are not requested."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Arrays for large totals"
+                },
+                {
+                  "type": "p",
+                  "text": "ll arrays keep coordinate differences and the total in one safe numeric type."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int n;\ncin >> n;\nvector<ll> a(n), b(n);\nfor (ll &x : a) cin >> x;\nfor (ll &x : b) cin >> x;"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Sort and match"
+                },
+                {
+                  "type": "p",
+                  "text": "Sort each side, then add the absolute difference of equal-index coordinates."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "sort(a.begin(), a.end());\nsort(b.begin(), b.end());\nll ans = 0;\nfor (int i = 0; i < n; ++i) ans += abs(a[i] - b[i]);\ncout << ans << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_n"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<ll> a(n), b(n);\n    for (ll &x : a) cin >> x;\n    for (ll &x : b) cin >> x;\n    sort(a.begin(), a.end());\n    sort(b.begin(), b.end());\n    ll ans = 0;\n    for (int i = 0; i < n; ++i) ans += abs(a[i] - b[i]);\n    cout << ans << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "program_sha256": "4e5080ed6a0fde16ea9903186c51822d5109792f256f0b768d22eb9a5d67c8fa",
+    "status": "authored; content/native verification and publication pending"
+  },
+  {
+    "id": "task-760",
+    "ref": "typical90_p",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_p",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-p",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Minimum Coins — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хамгийн сайн хариу $9999$-өөс ихгүй гэдэг баталгаа өгөгдсөн. Хоёр төрлийн зоосны тоог enumerate хийгээд гурав дахь тоог үлдэгдлээс шууд олно. Гурван давхар loop хэрэггүй."
+            }
+          ]
+        },
+        {
+          "title": "Тооцоолол ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$i$ ширхэг $A$, $j$ ширхэг $B$ авбал $rest=N-iA-jB$. $rest\\ge0$ бөгөөд $C$-д хуваагдвал гурав дахь зоосны тоо $rest/C$. Нийт $i+j+rest/C$-ийн хамгийн багыг авна."
+            },
+            {
+              "type": "p",
+              "text": "$N=17$, зооснууд $3,5,7$ бол $7+5+5$ гэсэн $3$ зоос хүрнэ. Хоёр зоосны нийт хамгийн ихдээ $14$ тул $3$ нь хамгийн бага."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Зөв шийдэл бүрийн эхний хоёр зоосны тоо нь нэг $i,j$ хос. Эдгээрийг тогтооход үлдсэн дүнгээс гурав дахь тоо ганцаар тодорхойлогдоно; хуваагдахгүй бол тэр хосоор шийдэл байхгүй."
+            },
+            {
+              "type": "p",
+              "text": "Эхний best $10000$ нь баталгаатай боломжит optimum-оос их. $i+j\\ge best$ хос нь гурав дахь зоос нэмэхэд ч best-ээс бага болж чадахгүй тул шалгах шаардлагагүй. Мөн төлсөн дүн $N$-ээс хэтэрсэн хосыг орхино."
+            },
+            {
+              "type": "p",
+              "text": "Илүү сайн шийдэл байсан бол түүний $i+j$ тухайн best-ээс бага, дүн нь $N$-ээс хэтрээгүй тул хос нь шалгагдана. Тиймээс pruning optimum-ийг орхихгүй, бүх боломжит хосын хамгийн бага нийлбэрийг хэвлэнэ."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$B=10000$ гэвэл хамгийн муу хугацаа $O(B^2)$, нэмэлт санах ой $O(1)$. Зоосны тоо int-д багтана. Харин $iA,jB$ нь $10^{13}$ орчим хүрч болох тул оролтын дүн, зоосны утга, үржвэр болон үлдэгдлийг ll-д тооцно."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Хязгаар ба өргөн төрөл"
+            },
+            {
+              "type": "p",
+              "text": "best нь одоогийн хамгийн сайн тоо. Бодит хариу $9999$-өөс ихгүй учир $10000$-аас эхэлнэ."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "ll n, a, b, c;\ncin >> n >> a >> b >> c;\nint best = 10000;"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Хоёр тоо, нэг үлдэгдэл"
+            },
+            {
+              "type": "p",
+              "text": "$a,b,c$ нь ll тул int тоолууртай үржихэд ч ll үржвэр гарна. Хуваагдах үед олдсон нийтээр best-ийг бууруулна."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "for (int i = 0; i < best && i * a <= n; ++i) {\n    ll rem = n - i * a;\n    for (int j = 0; i + j < best && j * b <= rem; ++j) {\n        ll rest = rem - j * b;\n        if (rest % c == 0) {\n            ll count = i + j + rest / c;\n            best = int(min<ll>(best, count));\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_p"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    ll n, a, b, c;\n    cin >> n >> a >> b >> c;\n    int best = 10000;\n    for (int i = 0; i < best && i * a <= n; ++i) {\n        ll rem = n - i * a;\n        for (int j = 0; i + j < best && j * b <= rem; ++j) {\n            ll rest = rem - j * b;\n            if (rest % c == 0) {\n                ll count = i + j + rest / c;\n                best = int(min<ll>(best, count));\n            }\n        }\n    }\n    cout << best << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Minimum Coins — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "The optimum is guaranteed to be at most $9999$ coins. Enumerate counts of two denominations and determine the third count directly from the remaining amount, avoiding a third loop."
+                }
+              ]
+            },
+            {
+              "title": "Formula and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "For $i$ coins of value $A$ and $j$ of value $B$, let $rest=N-iA-jB$. If it is nonnegative and divisible by $C$, the third count is $rest/C$. Minimize $i+j+rest/C$."
+                },
+                {
+                  "type": "p",
+                  "text": "For amount $17$ and denominations $3,5,7$, use $7+5+5$, totaling three coins. Two coins total at most $14$, so three is optimal."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Every feasible solution has a definite pair $i,j$. Once these counts are fixed, the remaining amount uniquely determines the third count; a nondivisible remainder gives no solution for that pair."
+                },
+                {
+                  "type": "p",
+                  "text": "Initially best is $10000$, larger than the guaranteed optimum. If $i+j\\ge best$, adding a nonnegative third count cannot improve best, so this pair may be skipped. Counts already exceeding the target amount may also be skipped."
+                },
+                {
+                  "type": "p",
+                  "text": "Any strictly better solution would have $i+j<best$ and a nonnegative remainder, so its pair is examined. The pruning cannot discard an improving optimum, and minimizing the examined feasible totals returns the minimum."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "With $B=10000$, worst-case time is $O(B^2)$ and auxiliary space $O(1)$. Coin counts fit int, but products such as $iA$ and $jB$ may approach $10^{13}$. Store amounts, denomination values, products and remainders in ll."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Bound and wide arithmetic"
+                },
+                {
+                  "type": "p",
+                  "text": "best stores the current minimum count. The guaranteed bound permits the initial sentinel10000."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "ll n, a, b, c;\ncin >> n >> a >> b >> c;\nint best = 10000;"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Two counts and a remainder"
+                },
+                {
+                  "type": "p",
+                  "text": "Since $a,b,c$ are ll, multiplication by the int counters remains wide. A divisible remainder supplies a candidate total that may lower best."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "for (int i = 0; i < best && i * a <= n; ++i) {\n    ll rem = n - i * a;\n    for (int j = 0; i + j < best && j * b <= rem; ++j) {\n        ll rest = rem - j * b;\n        if (rest % c == 0) {\n            ll count = i + j + rest / c;\n            best = int(min<ll>(best, count));\n        }\n    }\n}"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_p"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    ll n, a, b, c;\n    cin >> n >> a >> b >> c;\n    int best = 10000;\n    for (int i = 0; i < best && i * a <= n; ++i) {\n        ll rem = n - i * a;\n        for (int j = 0; i + j < best && j * b <= rem; ++j) {\n            ll rest = rem - j * b;\n            if (rest % c == 0) {\n                ll count = i + j + rest / c;\n                best = int(min<ll>(best, count));\n            }\n        }\n    }\n    cout << best << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "program_sha256": "600f7d0b6421d90d0a33b481fd1258a17a1c7347010ef2adf791d567342e4c95",
+    "status": "authored; content/native verification and publication pending"
+  },
+  {
+    "id": "task-764",
+    "ref": "typical90_z",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_z",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-z",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Independent Set on a Tree — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Модыг гүний parity-аар хоёр өнгөөр будна. Ирмэг бүр хоёр өөр өнгийг холбоно. Иймээс нэг өнгийн бүх орой independent set болно. Хоёр бүлгийн ядаж нэг нь $N/2$ буюу түүнээс олон оройтой."
+            }
+          ]
+        },
+        {
+          "title": "Байгуулалт ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "BFS-ээр эхний оройг $0$ өнгөтэй, шинэ хөршийг эсрэг өнгөтэй болгоно. Өнгө бүрийн оройг тусдаа vector-т хураана. Хүрэлцэх бүлгээс эхний $N/2$ оройг хэвлэнэ."
+            },
+            {
+              "type": "p",
+              "text": "$1-2-3-4-5-6$ замд $\\{1,3,5\\}$ болон $\\{2,4,6\\}$ гэсэн бүлгүүд гарна. Аль нэгийг сонгоход яг $3$ оройтой бөгөөд хоорондоо ирмэггүй. Хариу ганц биш."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Модонд үндсээс орой бүрд хүрэх ганц замтай. Ирмэгийн хоёр талын гүн $1$-ээр ялгаатай тул parity эсрэг. Тэгэхээр нэг өнгийн хоёр оройн хооронд ирмэг байхгүй."
+            },
+            {
+              "type": "p",
+              "text": "Хоёр бүлгийн хэмжээнүүдийн нийлбэр $N$. $N$ тэгш учир дор хаяж нэг бүлэг $N/2$-оос цөөнгүй. Түүнээс $N/2$ ялгаатай орой сонгоход independent байх шинж хадгалагдана. Иймээс хэвлэсэн хариу шаардлагыг хангана."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хугацаа $O(N)$, санах ой $O(N)$. Оройн индекс, өнгө болон тоололд int хангалттай. Дотроо $0$-индекс ашиглаад хэвлэхдээ $1$ нэмнэ. Queue ашигласнаар урт модонд recursion хэрэггүй."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "BFS-ээр хоёр өнгө"
+            },
+            {
+              "type": "p",
+              "text": "$-1$ нь ороогүй орой. Хөршийн өнгийг xor $1$-ээр сольж, queue-д нэмэхийн өмнө тогтооно."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<int> color(n, -1);\narray<vector<int>, 2> group;\nqueue<int> q;\nq.push(0);\ncolor[0] = 0;\nwhile (!q.empty()) {\n    int u = q.front();\n    q.pop();\n    group[color[u]].push_back(u);\n    for (int v : g[u]) {\n        if (color[v] != -1) continue;\n        color[v] = color[u] ^ 1;\n        q.push(v);\n    }\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Хүрэлцэх бүлгээс сонгох"
+            },
+            {
+              "type": "p",
+              "text": "Өнгө $0$ хүрэлцэхгүй бол өнгө $1$ заавал хүрэлцэнэ. Хэвлэсэн орой бүр нэг бүлгийн өөр индексээс ирнэ."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int side = group[0].size() >= size_t(n / 2) ? 0 : 1;\nfor (int i = 0; i < n / 2; ++i) {\n    cout << group[side][i] + 1 << (i + 1 == n / 2 ? '\\n' : ' ');\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_z"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> g(n);\n    for (int i = 0; i < n - 1; ++i) {\n        int a, b;\n        cin >> a >> b;\n        --a;\n        --b;\n        g[a].push_back(b);\n        g[b].push_back(a);\n    }\n    vector<int> color(n, -1);\n    array<vector<int>, 2> group;\n    queue<int> q;\n    q.push(0);\n    color[0] = 0;\n    while (!q.empty()) {\n        int u = q.front();\n        q.pop();\n        group[color[u]].push_back(u);\n        for (int v : g[u]) {\n            if (color[v] != -1) continue;\n            color[v] = color[u] ^ 1;\n            q.push(v);\n        }\n    }\n    int side = group[0].size() >= size_t(n / 2) ? 0 : 1;\n    for (int i = 0; i < n / 2; ++i) {\n        cout << group[side][i] + 1 << (i + 1 == n / 2 ? '\\n' : ' ');\n    }\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Independent Set on a Tree — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Color vertices by depth parity. Every tree edge joins opposite colors, so either color class is an independent set. At least one of the two classes has at least $N/2$ vertices."
+                }
+              ]
+            },
+            {
+              "title": "Construction and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Use BFS, coloring the start zero and every newly visited neighbor with the opposite color. Collect vertices of each color in separate vectors. Print any $N/2$ vertices from a large enough class."
+                },
+                {
+                  "type": "p",
+                  "text": "The path $1-2-3-4-5-6$ has classes $\\{1,3,5\\}$ and $\\{2,4,6\\}$. Either is a valid set of three pairwise nonadjacent vertices. The answer is not unique."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "The unique root-to-vertex paths in a tree make the depths at the endpoints of each edge differ by one. Their parities are opposite, so no edge has both endpoints in one color class."
+                },
+                {
+                  "type": "p",
+                  "text": "The class sizes sum to $N$. Since $N$ is even, at least one has size at least $N/2$. Taking a subset of exactly that size preserves independence and gives the required number of distinct vertices."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Time and space are $O(N)$. int suffices for vertex indices, colors and counts. Internal indices are zero-based; add one when printing. Queue-based traversal avoids recursion on a deep tree."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Two colors by BFS"
+                },
+                {
+                  "type": "p",
+                  "text": "Use $-1$ for an unvisited vertex. Flip the parent color with xor one and assign it before enqueuing the neighbor."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<int> color(n, -1);\narray<vector<int>, 2> group;\nqueue<int> q;\nq.push(0);\ncolor[0] = 0;\nwhile (!q.empty()) {\n    int u = q.front();\n    q.pop();\n    group[color[u]].push_back(u);\n    for (int v : g[u]) {\n        if (color[v] != -1) continue;\n        color[v] = color[u] ^ 1;\n        q.push(v);\n    }\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Choose from a sufficient class"
+                },
+                {
+                  "type": "p",
+                  "text": "If color zero is too small, color one must suffice. Each printed vertex is a distinct entry from the chosen class."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int side = group[0].size() >= size_t(n / 2) ? 0 : 1;\nfor (int i = 0; i < n / 2; ++i) {\n    cout << group[side][i] + 1 << (i + 1 == n / 2 ? '\\n' : ' ');\n}"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_z"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> g(n);\n    for (int i = 0; i < n - 1; ++i) {\n        int a, b;\n        cin >> a >> b;\n        --a;\n        --b;\n        g[a].push_back(b);\n        g[b].push_back(a);\n    }\n    vector<int> color(n, -1);\n    array<vector<int>, 2> group;\n    queue<int> q;\n    q.push(0);\n    color[0] = 0;\n    while (!q.empty()) {\n        int u = q.front();\n        q.pop();\n        group[color[u]].push_back(u);\n        for (int v : g[u]) {\n            if (color[v] != -1) continue;\n            color[v] = color[u] ^ 1;\n            q.push(v);\n        }\n    }\n    int side = group[0].size() >= size_t(n / 2) ? 0 : 1;\n    for (int i = 0; i < n / 2; ++i) {\n        cout << group[side][i] + 1 << (i + 1 == n / 2 ? '\\n' : ' ');\n    }\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "program_sha256": "1393a52b4f891684cc35b05750cbf13a7ee234f0f415990a2356a528a21d4c5f",
+    "status": "authored; content/native verification and publication pending"
+  },
+  {
+    "id": "task-765",
+    "ref": "typical90_aa",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_aa",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-aa",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Sign Up Requests — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Өмнө нь гарсан нэрүүдийг Set-д хадгална. Өдөр бүрийн нэрийг оруулахад шинээр нэмэгдсэн бол тухайн өдрийг хэвлэнэ. Нэрүүдийг бүхэл string-ээр харьцуулна."
+            }
+          ]
+        },
+        {
+          "title": "Жишээ",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Нэрүүд ",
+                  "marks": []
+                },
+                {
+                  "text": "a1,b2,a1,c3,b2",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " гэсэн дараалалтай бол анх гарсан өдрүүд $1,2,4$. Ижил нэр дахин ирэхэд шинэ хүсэлт мэт хэвлэхгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$i$-р өдрийн өмнө Set нь эхний $i-1$ өдөрт гарсан нэрүүдтэй яг тэнцүү байг. Одоогийн нэр байхгүй бол тэр өдөр анхны хүсэлт мөн, insert амжилттай шинээр нэмнэ. Байвал өмнө нь гарсан нэр тул хэвлэхгүй."
+            },
+            {
+              "type": "p",
+              "text": "Аль ч тохиолдолд insert-ийн дараа Set нь эхний $i$ өдрийн бүх ялгаатай нэрийг агуулна. Хоосон эхлэлээс induction-оор бүх өдрийн шийдвэр зөв. Өдрүүдийг оролтын дарааллаар шалгах тул хэвлэсэн өдрүүд өсөх дараалалтай."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Нэрийн хамгийн их уртыг $L\\le15$ гэвэл std::set-ийн string харьцуулалттай хугацаа $O(NL\\log N)$, санах ой $O(NL)$. Өдрийн индекс $N\\le10^5$ тул int хангалттай. Нэрэнд жижиг латин үсэг болон цифр орж болно."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Нэрүүдийн сан"
+            },
+            {
+              "type": "p",
+              "text": "Set зөвхөн ялгаатай нэрүүдийг хадгална. Хоосон сан нь эхний өдрийн өмнөх зөв төлөв."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int n;\ncin >> n;\nset<string> seen;"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Insert-ийн үр дүн"
+            },
+            {
+              "type": "p",
+              "text": "insert нь iterator,bool хос буцаана. .second нь нэр шинээр нэмэгдсэн эсэх тул тусдаа find хийх шаардлагагүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "for (int day = 1; day <= n; ++day) {\n    string s;\n    cin >> s;\n    if (seen.insert(s).second) cout << day << '\\n';\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_aa"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    set<string> seen;\n    for (int day = 1; day <= n; ++day) {\n        string s;\n        cin >> s;\n        if (seen.insert(s).second) cout << day << '\\n';\n    }\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Sign Up Requests — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Store previously encountered names in a Set. Insert each day’s name and print the day only if the insertion adds a new entry. Compare complete strings."
+                }
+              ]
+            },
+            {
+              "title": "Example",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "For names ",
+                      "marks": []
+                    },
+                    {
+                      "text": "a1,b2,a1,c3,b2",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ", the first-occurrence days are $1,2,4$. A repeated name does not produce another printed day.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Before day $i$, suppose the set contains exactly the names from the first $i-1$ days. If today’s name is absent, this is its first occurrence and insertion succeeds as a new entry. If present, it appeared earlier and must not be printed."
+                },
+                {
+                  "type": "p",
+                  "text": "After either insertion, the set contains exactly the distinct names from the first $i$ days. Induction from the empty set proves every decision correct. Processing days in order also prints the selected days in increasing order."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "For maximum name length $L\\le15$, std::set with string comparisons takes $O(NL\\log N)$ time and $O(NL)$ space. Day indices fit int since $N\\le10^5$. Names may contain lowercase English letters and digits."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Set of names"
+                },
+                {
+                  "type": "p",
+                  "text": "The set stores distinct names. An empty set is the correct state before the first day."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int n;\ncin >> n;\nset<string> seen;"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Insertion result"
+                },
+                {
+                  "type": "p",
+                  "text": "insert returns an iterator/bool pair. Its .second indicates a new entry, avoiding a separate find."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "for (int day = 1; day <= n; ++day) {\n    string s;\n    cin >> s;\n    if (seen.insert(s).second) cout << day << '\\n';\n}"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_aa"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    set<string> seen;\n    for (int day = 1; day <= n; ++day) {\n        string s;\n        cin >> s;\n        if (seen.insert(s).second) cout << day << '\\n';\n    }\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "program_sha256": "38ab235d86a0ad2b94c9448b75114553cb0c413cddd228dc604bf1567a5785f1",
+    "status": "authored; content/native verification and publication pending"
+  },
+  {
+    "id": "task-768",
+    "ref": "typical90_ad",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_ad",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-ad",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "K Factors — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Sieve ашиглан тоо бүрийн ялгаатай анхны хуваагчийн тоог олно. Анхны $p$ бүрээр түүний бүх үржвэрийн $cnt$-г нэг удаа нэмнэ. Эцэст нь $cnt[x]\\ge K$ тоонуудыг тоолно."
+            }
+          ]
+        },
+        {
+          "title": "Анхны тоо ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Өсөх дарааллаар $p$-г шалгахад $cnt[p]=0$ байвал $p$ анхны. Нийлмэл байсан бол өмнөх жижиг анхны хуваагчийн алхамд аль хэдийн нэмэгдсэн байх ёстой."
+            },
+            {
+              "type": "p",
+              "text": "$N=12,K=2$ үед тохирох тоонууд $6,10,12$, хариу $3$. $12=2^2\\cdot3$ нь ялгаатай хоёр анхны хуваагчтай; $2$-ын зэрэг хоёр байгаа нь давхар тоологдохгүй."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Өсөх scan нь анхны тоо бүрийг яг нэг удаа танина. Тэр анхны тоо өөрийгөө хуваадаг тул түүний үржвэрүүдэд өөрийг нь ч оруулж нэмнэ."
+            },
+            {
+              "type": "p",
+              "text": "Тогтсон $x$ тооны хувьд дотоод loop түүнийг яг $x$-ийг хуваадаг анхны $p$ бүр дээр нэг удаа нэмнэ. Нэг $p$-ийн зэрэг өндөр байсан ч scan түүнийг нэг л удаа боловсруулна. Иймээс $cnt[x]$ нь ялгаатай анхны хуваагчийн тоотой яг тэнцэнэ. Босгоор шалгасан нийлбэр нь шаардсан хариу."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Sieve-ийн хугацаа $O(N\\log\\log N)$, санах ой $O(N)$. $N\\le10^7$ тул int индекс болон хариу хангалттай; хүснэгт нь ойролцоогоор $4(N+1)$ byte. $1$ нь анхны хуваагчгүй, $K\\ge1$ учир тоолохгүй."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Ялгаатай анхны хуваагчдыг тоолох"
+            },
+            {
+              "type": "p",
+              "text": "$cnt$ бүгд $0$-оос эхэлнэ. Шинэ анхны тоо олдвол үржвэр бүрт ганц нэмнэ; факторын зэргээр давтахгүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<int> cnt(n + 1);\nfor (int p = 2; p <= n; ++p) {\n    if (cnt[p] != 0) continue;\n    for (int x = p; x <= n; x += p) ++cnt[x];\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Босго шалгах"
+            },
+            {
+              "type": "p",
+              "text": "$2$-оос $N$ хүртэл ялгаатай факторын тоо хүрсэн эсэхийг шалгана."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int ans = 0;\nfor (int x = 2; x <= n; ++x) {\n    if (cnt[x] >= k) ++ans;\n}\ncout << ans << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ad"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    vector<int> cnt(n + 1);\n    for (int p = 2; p <= n; ++p) {\n        if (cnt[p] != 0) continue;\n        for (int x = p; x <= n; x += p) ++cnt[x];\n    }\n    int ans = 0;\n    for (int x = 2; x <= n; ++x) {\n        if (cnt[x] >= k) ++ans;\n    }\n    cout << ans << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "K Factors — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Use a Sieve to count distinct prime divisors of every number. For each prime $p$, increment cnt once at each multiple of $p$. Then count values with $cnt[x]\\ge K$."
+                }
+              ]
+            },
+            {
+              "title": "Prime detection and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "During the increasing scan, $cnt[p]=0$ means $p$ is prime: a composite would already have been incremented by a smaller prime divisor."
+                },
+                {
+                  "type": "p",
+                  "text": "For $N=12,K=2$, the qualifying values are $6,10,12$, so the answer is $3$. Although $12=2^2\\cdot3$, its number of distinct prime divisors is two, not three."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "The increasing scan recognizes each prime exactly once. Include the prime itself among its multiples because it divides itself."
+                },
+                {
+                  "type": "p",
+                  "text": "For a fixed $x$, the inner loop increments its counter once for each prime divisor $p$ of $x$. Higher powers do not cause extra increments because each prime is processed once. Thus cnt equals the number of distinct prime divisors, and applying the threshold counts exactly the required values."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "The Sieve takes $O(N\\log\\log N)$ time and $O(N)$ memory. int suffices for indices and the answer since $N\\le10^7$; the table uses approximately $4(N+1)$ bytes. One has no prime divisors and cannot qualify because $K\\ge1$."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Count distinct prime divisors"
+                },
+                {
+                  "type": "p",
+                  "text": "Initialize counters to zero. Each newly detected prime adds one to each multiple, without repeating for higher powers."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<int> cnt(n + 1);\nfor (int p = 2; p <= n; ++p) {\n    if (cnt[p] != 0) continue;\n    for (int x = p; x <= n; x += p) ++cnt[x];\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Apply the threshold"
+                },
+                {
+                  "type": "p",
+                  "text": "Scan two through $N$ and count counters that meet the required number of distinct factors."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int ans = 0;\nfor (int x = 2; x <= n; ++x) {\n    if (cnt[x] >= k) ++ans;\n}\ncout << ans << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ad"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    vector<int> cnt(n + 1);\n    for (int p = 2; p <= n; ++p) {\n        if (cnt[p] != 0) continue;\n        for (int x = p; x <= n; x += p) ++cnt[x];\n    }\n    int ans = 0;\n    for (int x = 2; x <= n; ++x) {\n        if (cnt[x] >= k) ++ans;\n    }\n    cout << ans << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "program_sha256": "7ed1dba07b58933a8596341b6ab8b86e06181befaf565de0fa30dec560c0fa51",
+    "status": "authored; content/native verification and publication pending"
+  }
+]
