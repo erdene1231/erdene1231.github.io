@@ -17,7 +17,7 @@ Storage access, or user data is added. The new validator is private to ordinary
 clients. Inline image uploads remain unsupported. Both native readiness probes
 are guaranteed validation failures before allocation or catalog writes.
 
-Validation: seven targeted Node tests including actual PGlite publication/CAS/
+Validation: eleven targeted Node tests including actual PGlite publication/CAS/
 rollback/roles/ACL/policy preservation, actual admin native-component independent
 save/reload/error/logout tests, and first-three editorial reader/editor checks
 (12 MN/EN mobile-light/desktop-dark reader combinations and three exact native
@@ -38,3 +38,8 @@ Evidence: `audit/native-problem-editorials/`,
 `tests/native-inline-editorials.test.mjs`,
 `tests/browser/native-problem-doc-actions.py`,
 `tests/browser/native-editorial-batch01.py`.
+
+Migration039 is now installed once as20261031140841. Its45-second response
+timeout was resolved by readonly inspection without retry. Exact schema/data/ACL
+comparison and anonymous readback are recorded in
+`audit/native-problem-editorials/integration-receipt.json`.
