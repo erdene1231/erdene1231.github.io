@@ -43,6 +43,17 @@ Input/output clipboard values retain exact literal whitespace. The separate
 allocator, and rolls back an injected failure after25 edits. The corrected CP
 Classes mobile I/O panel pixels were inspected. No frontend or schema change.
 
+Source PR #218 merged as `cce33892f4f29870e793aacb6558a87a5f7064ea`.
+The one atomic operation committed51 edits, history1101–1151. The client's
+45-second response read timed out; the operation was not replayed. Fresh
+read-only row/history/allocator/native-body inspection proves exact committed
+success. Every original literal/whitespace value and all1,013 unrelated rows
+are exact, with protected state and authority fingerprints unchanged. Anonymous
+retrieval confirms all51 revised documents. Pages41205386753 succeeded;
+19 deployed assets match under normal TLS. See the exact
+[publication receipt](atcoder-io-format/publication-receipt.json). Never replay
+this SQL,038 or any prior publication/import.
+
 The separately authorized independent Statement/Editorial controls and original
 51-editorial request is retained in
 [ATCODER-FOLLOWUP-CHECKLIST.md](ATCODER-FOLLOWUP-CHECKLIST.md). That phase begins
