@@ -56,7 +56,8 @@ public before-images in [before-targets.json](atcoder-expansion/before-targets.j
 
 Optional migrations 032–034 are not replayed. Minimal new migration 038 modifies
 only the existing problem validator, admin save and two catalog functions, and
-adds an owner-private validator. Existing table/RPC privileges, policies, RLS,
+adds an app-private validator (the existing postgres/service_role helper access
+pattern, without anon/authenticated execution). Existing table/RPC privileges, policies, RLS,
 authentication checks, stable IDs, shared revisions and edit history remain.
 Native documents/provenance live inside the existing problem body; public/admin
 catalog RPCs expose only `hasStatement`. The lazy reader/editor uses the table's
@@ -101,5 +102,32 @@ fixture. Nine original example pairs, 299 independent factor-splitting cases and
 a no-cycle case pass. All 135 fresh source sample pairs in the reused documents
 are exact. See the reports in [atcoder-expansion](atcoder-expansion).
 
-Live schema installation, atomic publication, anonymous readback and deployed
-asset verification are recorded in the publication receipt after execution.
+Migration `038_native_inline_problem_statements` committed as version
+`20261031095842`; fresh metadata confirms every existing ACL and every
+table/column/index/policy/trigger/constraint/view unchanged. Only the four
+intended definitions changed and the app-private validator was added.
+
+The single content/import operation committed exactly once: 54 creates and
+51 edits, history **996–1100**. The client's 45-second response read timed out;
+the operation was **not replayed**. Fresh catalog, history, allocator, exact
+native bodies and old-history/protected fingerprints prove the committed
+result. Actual new IDs are `task-1011` through `task-1064`, allocated normally.
+All 959 unrelated original rows are exact, and every original rating, priority,
+tag, ID and reference is preserved. All 74 stored/73 public tutorials, eight
+private drafts and tutorial history through 405 remain unchanged.
+
+Anonymous retrieval verifies all 1,064 catalog rows and 51 exact lazy native
+documents/provenance; the catalog carries no rich document payloads. Additional
+actual-app route checks use these production payloads and the unchanged deployed
+config: eight MN/EN/mobile/desktop cases show the real Medium ABC005 D and High
+Yokan statements without hint actions. Actual target priorities remain 50 High
+and one Medium. No target is Low; four explicitly synthetic Low regression
+cases also pass. Mobile statement pixels were inspected. These checks do not
+claim a live authenticated browser session.
+
+Source PR [#216](https://github.com/erdene1231/erdene1231.github.io/pull/216)
+merged at `22450c33d4c956f8658ff6a039d4b7a101556fc1`. Pages 41190751298 succeeded;
+19 deployed runtime/JSON/config assets match with normal TLS. See the exact
+[publication receipt](atcoder-expansion/publication-receipt.json) for source and
+SQL hashes, actual row/history mappings, protected fingerprints, timeout
+resolution and verification reports. Never replay 038 or the content SQL.
