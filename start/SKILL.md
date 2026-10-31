@@ -1078,3 +1078,21 @@ items. Retain their exact scope/order/Library references and safeguards from
 `audit/ATCODER-FOLLOWUP-CHECKLIST.md`. Do not stop at this formatting receipt or
 drop those active requests. No new grants/RLS/Auth/credentials, real-user test
 fixture mutation, APPROVE review or historical SQL replay is authorized.
+
+## 2026-10-31 current release baseline — do not replay
+
+Native Statement/Editorial controls and all51 original MN/EN editorials are
+published and verified (problem history through1202, PR220–238). Migration039
+was installed once as20261031140841;038,039 and historical content SQL MUST NOT
+be replayed. Total1064 problems/132AtCoder;51 native statement/editorial targets,
+74 stored/73 public tutorials,8 private drafts remain protected.
+
+Dated reading UI is live (PR240–242):040 installed once as20261031172833,
+learningActivityVersion1. NEVER replay040. Actual server view days/completion
+timestamps are distinct from mastery; old undated records stay unknown. No new
+app grants/RLS were added. Olympiad URL audit PR239 retains all161 URLs:111
+existing oj.uz,50 access-inconclusive after genuine403, no false absence or
+fallback inferred. See audit/olympiad-url-audit and ATCODER-FOLLOWUP-CHECKLIST.
+Six bounded UI items were authorized; dated reading is complete. Profile rating,
+weekly metrics and white home surface are the current release unit, followed
+without pause by Groups today opt-ins and Minimalist-only status/columns.
