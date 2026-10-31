@@ -1,0 +1,1594 @@
+[
+  {
+    "id": "task-772",
+    "ref": "typical90_aj",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_aj",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-aj",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Max Manhattan Distance — Бодолт",
+      "sections": [
+        {
+          "title": "Координатын хувиргалт",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$u=x+y$, $v=x-y$ гэж хувиргая. Хоёр цэгийн Manhattan distance нь $\\max(|u_1-u_2|,|v_1-v_2|)$ болно. Тэгэхээр асуултын цэгээс хамгийн хол цэгийг олоход бүх $u,v$-ийн min/max дөрвөн утга л хэрэгтэй."
+            }
+          ]
+        },
+        {
+          "title": "Тооцоолол ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Асуултын цэгийн $(u,v)$ утгад $u-u_{min}$, $u_{max}-u$, $v-v_{min}$, $v_{max}-v$ дөрвийн хамгийн ихийг хэвлэнэ."
+            },
+            {
+              "type": "p",
+              "text": "Цэгүүд $(0,0),(2,1),(-1,3)$ байг. Эхний цэгээс зай $3$ ба $4$, тэгэхээр хариу $4$. Хувиргасан $u$ утгууд $0,3,2$, $v$ утгууд $0,1,-4$ тул дөрвөн зөрүүний хамгийн их нь мөн $4$."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$dx,dy$ ижил тэмдэгтэй бол $|dx+dy|=|dx|+|dy|$; эсрэг тэмдэгтэй бол $|dx-dy|=|dx|+|dy|$. Triangle inequality-гаар нөгөө утга энэ нийлбэрээс ихгүй. Тиймээс хувиргасан max нь Manhattan distance-тэй яг тэнцэнэ."
+            },
+            {
+              "type": "p",
+              "text": "Бүх цэг дээр $|u-u_i|$-г хамгийн их болгоход $u_i$-ийн хамгийн бага эсвэл хамгийн их утга хангалттай. $v$-д мөн адил. Нийт max нь хоёр координатын эдгээр дөрвөн туйлын зөрүүнээс олдоно; бүх цэгийг асуулт бүрд дахин шалгах шаардлагагүй."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хувиргалт ба min/max $O(N)$, асуулт бүр $O(1)$; нийт $O(N+Q)$ хугацаа, $O(N)$ санах ой. $x,y$ нь $\\pm10^9$ хүрэх тул distance $4\\cdot10^9$ болж болно. Координатын хувиргалт болон зөрүүнүүдийг ll-д хадгална. Цэгүүд болон асуултын индексүүд тус тус ялгаатай."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Хувиргаж хадгалах"
+            },
+            {
+              "type": "p",
+              "text": "$u,v$ нь эхний цэгүүдтэй ижил индексээр хадгалагдана. Асуултын индексээр хувиргасан утгыг шууд авна."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<ll> u(n), v(n);\nfor (int i = 0; i < n; ++i) {\n    ll x, y;\n    cin >> x >> y;\n    u[i] = x + y;\n    v[i] = x - y;\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Туйлын дөрвөн зөрүү"
+            },
+            {
+              "type": "p",
+              "text": "minmax_element-ийн iterator-ууд vector өөрчлөгдөхгүй тул хүчинтэй хэвээр. $1$-индексийг уншаад $0$-индекс рүү шилжүүлнэ."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "auto ub = minmax_element(u.begin(), u.end());\nauto vb = minmax_element(v.begin(), v.end());\nwhile (q--) {\n    int k;\n    cin >> k;\n    --k;\n    ll ans = max({u[k] - *ub.first, *ub.second - u[k],\n        v[k] - *vb.first, *vb.second - v[k]});\n    cout << ans << '\\n';\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_aj"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<ll> u(n), v(n);\n    for (int i = 0; i < n; ++i) {\n        ll x, y;\n        cin >> x >> y;\n        u[i] = x + y;\n        v[i] = x - y;\n    }\n    auto ub = minmax_element(u.begin(), u.end());\n    auto vb = minmax_element(v.begin(), v.end());\n    while (q--) {\n        int k;\n        cin >> k;\n        --k;\n        ll ans = max({u[k] - *ub.first, *ub.second - u[k],\n            v[k] - *vb.first, *vb.second - v[k]});\n        cout << ans << '\\n';\n    }\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Max Manhattan Distance — Editorial",
+          "sections": [
+            {
+              "title": "Coordinate transform",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Set $u=x+y$ and $v=x-y$. Manhattan distance becomes $\\max(|u_1-u_2|,|v_1-v_2|)$. Only the global minimum and maximum of each transformed coordinate are needed for every query."
+                }
+              ]
+            },
+            {
+              "title": "Formula and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "For query coordinates $(u,v)$, take the maximum of $u-u_{min}$, $u_{max}-u$, $v-v_{min}$ and $v_{max}-v$."
+                },
+                {
+                  "type": "p",
+                  "text": "For points $(0,0),(2,1),(-1,3)$, distances from the first are $3$ and $4$. The transformed coordinates are $u=[0,3,2]$ and $v=[0,1,-4]$, whose four extreme differences also give $4$."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "When $dx,dy$ have the same sign, $|dx+dy|=|dx|+|dy|$; with opposite signs, $|dx-dy|$ equals that sum. The triangle inequality bounds the other expression by the same sum, proving the transform identity."
+                },
+                {
+                  "type": "p",
+                  "text": "The greatest $|u-u_i|$ over all points is attained at the minimum or maximum $u_i$, and likewise for $v$. Maximizing the distance over all points therefore reduces exactly to the four extreme differences."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Preprocessing takes $O(N)$, each query $O(1)$, total $O(N+Q)$ time and $O(N)$ space. With coordinates as large as $\\pm10^9$, a distance reaches $4\\cdot10^9$, so transformed values and differences use ll. Points and query indices are each pairwise distinct."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Store transformed coordinates"
+                },
+                {
+                  "type": "p",
+                  "text": "Keep $u,v$ in original point order so query indices access them directly."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<ll> u(n), v(n);\nfor (int i = 0; i < n; ++i) {\n    ll x, y;\n    cin >> x >> y;\n    u[i] = x + y;\n    v[i] = x - y;\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Four extreme differences"
+                },
+                {
+                  "type": "p",
+                  "text": "The minmax_element iterators remain valid because the vectors are not modified. Convert each one-based query index to zero-based."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "auto ub = minmax_element(u.begin(), u.end());\nauto vb = minmax_element(v.begin(), v.end());\nwhile (q--) {\n    int k;\n    cin >> k;\n    --k;\n    ll ans = max({u[k] - *ub.first, *ub.second - u[k],\n        v[k] - *vb.first, *vb.second - v[k]});\n    cout << ans << '\\n';\n}"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_aj"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<ll> u(n), v(n);\n    for (int i = 0; i < n; ++i) {\n        ll x, y;\n        cin >> x >> y;\n        u[i] = x + y;\n        v[i] = x - y;\n    }\n    auto ub = minmax_element(u.begin(), u.end());\n    auto vb = minmax_element(v.begin(), v.end());\n    while (q--) {\n        int k;\n        cin >> k;\n        --k;\n        ll ans = max({u[k] - *ub.first, *ub.second - u[k],\n            v[k] - *vb.first, *vb.second - v[k]});\n        cout << ans << '\\n';\n    }\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "program_sha256": "4e5a47cd6eb7cbc2026bd1f09c0b46b74245648d1838ea20cf1590f7628364bb",
+    "status": "authored; content/native verification and publication pending"
+  },
+  {
+    "id": "task-773",
+    "ref": "typical90_al",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_al",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-al",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Large LCM — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$g=\\gcd(A,B)$ гэвэл $\\operatorname{lcm}(A,B)=(A/g)B$. Эхлээд gcd-ээр хуваагаад, үлдсэн үржвэр $10^{18}$-аас хэтрэх эсэхийг үржүүлэхээсээ өмнө шалгана."
+            }
+          ]
+        },
+        {
+          "title": "Overflow-гүй шалгалт ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$x=A/g$, $L=10^{18}$ гэе. Бүх утга эерэг тул $xB>L$ байх нь $x>\\lfloor L/B\\rfloor$-тэй тэнцүү. Энэ нөхцөл үнэн бол Large; үгүй бол үржвэр аюулгүй бөгөөд түүнийг хэвлэнэ."
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$A=6,B=15$ үед $g=3$, $x=2$, хариу $30$. $A=10^{18},B=1$ үед хариу яг хязгаартай тэнцүү тул тоогоор хэвлэнэ. Шалгалтад ",
+                  "marks": []
+                },
+                {
+                  "text": ">=",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " хэрэглэж болохгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$A=ga$, $B=gb$ гэж бичвэл $a,b$ харилцан анхны. Хоёуланд нь хуваагдах хамгийн бага эерэг тоо $gab=(A/g)B$ болно."
+            },
+            {
+              "type": "p",
+              "text": "Эерэг бүхэл тоон хуваалтын шалгалт нь үржвэр хязгаараас хэтрэх нөхцөлийг яг шийднэ. Хэтэрсэн үед бодит том үржвэрийг огт тооцохгүй. Хэтрээгүй үед үржвэр $10^{18}$-аас ихгүй тул ll-д багтаж, зөв LCM хэвлэгдэнэ."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "GCD-ийн хугацаа $O(\\log\\min(A,B))$, нэмэлт санах ой $O(1)$. $A,B\\le10^{18}$ тул ll хэрэглэнэ. $AB$ өөрөө $10^{36}$ орчим болж болох учир эхлээд үржүүлээд дараа нь шалгах нь буруу. Floating point шаардлагагүй."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "GCD-ээр багасгах"
+            },
+            {
+              "type": "p",
+              "text": "Хязгаарыг ll literal-аар бичиж, $A$-г gcd-ээр хуваасан $x$-ийг олно."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "ll a, b;\ncin >> a >> b;\nconst ll limit = 1000000000000000000LL;\nll x = a / gcd(a, b);"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Үржүүлэхээс өмнө харьцуулах"
+            },
+            {
+              "type": "p",
+              "text": "$B>0$ тул limit/b зөв тодорхойлогдоно. Хэтрээгүй branch дотор л $xB$-г тооцно."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "if (x > limit / b) cout << \"Large\\n\";\nelse cout << x * b << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_al"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    ll a, b;\n    cin >> a >> b;\n    const ll limit = 1000000000000000000LL;\n    ll x = a / gcd(a, b);\n    if (x > limit / b) cout << \"Large\\n\";\n    else cout << x * b << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Large LCM — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "For $g=\\gcd(A,B)$, $\\operatorname{lcm}(A,B)=(A/g)B$. Divide first, then test the remaining product against $10^{18}$ before multiplying."
+                }
+              ]
+            },
+            {
+              "title": "Safe comparison and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Let $x=A/g$ and $L=10^{18}$. Positive integers satisfy $xB>L$ exactly when $x>\\lfloor L/B\\rfloor$. Print Large in that case; otherwise the product is safe to compute and print."
+                },
+                {
+                  "type": "p",
+                  "text": "For $A=6,B=15$, $g=3$ and $x=2$, giving $30$. For $A=10^{18},B=1$, equality with the limit requires numeric output, so the comparison must be strict."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Write $A=ga$ and $B=gb$ with coprime $a,b$. The least positive common multiple is $gab=(A/g)B$."
+                },
+                {
+                  "type": "p",
+                  "text": "The integer-division comparison exactly detects products above the limit. In that case the oversized product is never evaluated. Otherwise it is at most $10^{18}$, fits ll and is the correct LCM."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "GCD takes $O(\\log\\min(A,B))$ time and $O(1)$ auxiliary space. Inputs up to $10^{18}$ use ll, but their raw product may approach $10^{36}$, so multiplying first would overflow. Floating point is unnecessary."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Reduce by GCD"
+                },
+                {
+                  "type": "p",
+                  "text": "Use an ll literal for the limit and compute $x$ by dividing $A$ by the GCD."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "ll a, b;\ncin >> a >> b;\nconst ll limit = 1000000000000000000LL;\nll x = a / gcd(a, b);"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Compare before multiplying"
+                },
+                {
+                  "type": "p",
+                  "text": "Since $B>0$, limit/b is defined. Evaluate $xB$ only in the branch where it is known safe."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "if (x > limit / b) cout << \"Large\\n\";\nelse cout << x * b << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_al"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    ll a, b;\n    cin >> a >> b;\n    const ll limit = 1000000000000000000LL;\n    ll x = a / gcd(a, b);\n    if (x > limit / b) cout << \"Large\\n\";\n    else cout << x * b << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "program_sha256": "b05ece70ab2245fe85fd1c49c76c2a724e33fc697e19c371dfca4ee61ebed42a",
+    "status": "authored; content/native verification and publication pending"
+  },
+  {
+    "id": "task-774",
+    "ref": "typical90_am",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_am",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-am",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Tree Distance — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хос бүрийн замыг тус тус бодохын оронд ирмэг бүр хэдэн хосын замд ордогийг тоолно. Нэг ирмэгийг авахад мод $s$ ба $N-s$ оройтой хоёр хэсэгт хуваагдана. Тэр ирмэгийн хувь нэмэр $s(N-s)$."
+            }
+          ]
+        },
+        {
+          "title": "Жишээ ба тооцоолол",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$1-2-3-4$ замын гурван ирмэгийн хуваалтууд $1/3$, $2/2$, $3/1$. Хувь нэмрүүд $3,4,3$, нийлбэр $10$. Энэ нь зургаан unordered хосын зай $1+2+3+1+2+1$-тэй тэнцүү."
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Модыг нэг оройгоор үндэслээд child бүрийн subtree size-ийг олно. Child-ийн parent руу очих ирмэгт ",
+                  "marks": []
+                },
+                {
+                  "text": "sub[u]*(n-sub[u])",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нэмнэ.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Модны хоёр оройн зам ганц. Тухайн ирмэг энэ замд орох нь хоёр орой ирмэгийн хоёр өөр талд байхтай яг тэнцүү. Нэг талаас $s$, нөгөө талаас $N-s$ сонголт тул $s(N-s)$ unordered хос байна. Хоёрт дахин хуваахгүй."
+            },
+            {
+              "type": "p",
+              "text": "Бүх ирмэгийн хувь нэмрийг нэмэхэд хос бүрийн хувьд замынх нь ирмэг бүр нэг удаа тоологдоно. Тиймээс тухайн хосын distance нэмэгдэж, нийт нь шаардсан нийлбэр болно."
+            },
+            {
+              "type": "p",
+              "text": "Parent-ийг child-ээс өмнө order-д нэмээд, урвуу order-оор size-уудыг parent руу дамжуулна. Ингэснээр орой бүр дээр бүх child-ийн size бэлэн байх тул subtree size зөв тооцогдоно."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Хугацаа $O(N)$, санах ой $O(N)$. Traversal iterative тул урт замд recursion stack хэрэггүй. ",
+                  "marks": []
+                },
+                {
+                  "text": "sub[u]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь ll тул үржвэр тооцохоос өмнө өргөн төрөлтэй. $N=100000$ замын нийлбэр $N(N^2-1)/6=166666666650000$ хүрэх учир int хангалтгүй.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Parent ба traversal order"
+            },
+            {
+              "type": "p",
+              "text": "Модонд parent-ээс өөр хөрш нь child. Order-ийг vector queue мэт өсгөж, орой бүрийг нэг удаа нэмнэ."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<int> parent(n, -1), order{0};\nfor (int i = 0; i < n; ++i) {\n    int u = order[i];\n    for (int v : g[u]) {\n        if (v == parent[u]) continue;\n        parent[v] = u;\n        order.push_back(v);\n    }\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Урвуу нэгтгэл"
+            },
+            {
+              "type": "p",
+              "text": "Root-ийг алгасаад child-edge хувь нэмрийг нэмнэ. Дараа нь child-ийн size-ийг parent-д дамжуулна."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<ll> sub(n, 1);\nll ans = 0;\nfor (int i = n - 1; i > 0; --i) {\n    int u = order[i];\n    ans += sub[u] * (n - sub[u]);\n    sub[parent[u]] += sub[u];\n}\ncout << ans << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_am"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> g(n);\n    for (int i = 0; i < n - 1; ++i) {\n        int a, b;\n        cin >> a >> b;\n        --a;\n        --b;\n        g[a].push_back(b);\n        g[b].push_back(a);\n    }\n    vector<int> parent(n, -1), order{0};\n    for (int i = 0; i < n; ++i) {\n        int u = order[i];\n        for (int v : g[u]) {\n            if (v == parent[u]) continue;\n            parent[v] = u;\n            order.push_back(v);\n        }\n    }\n    vector<ll> sub(n, 1);\n    ll ans = 0;\n    for (int i = n - 1; i > 0; --i) {\n        int u = order[i];\n        ans += sub[u] * (n - sub[u]);\n        sub[parent[u]] += sub[u];\n    }\n    cout << ans << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Tree Distance — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Count contributions of edges instead of finding a path for every pair. Removing one tree edge splits the vertices into sizes $s$ and $N-s$, so that edge contributes $s(N-s)$."
+                }
+              ]
+            },
+            {
+              "title": "Example and computation",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "The path $1-2-3-4$ has edge splits $1/3$, $2/2$, and $3/1$, contributing $3,4,3$ for total $10$. This equals the six unordered-pair distances $1+2+3+1+2+1$."
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Root the tree and compute each child subtree size. For the edge from child $u$ to its parent, add ",
+                      "marks": []
+                    },
+                    {
+                      "text": "sub[u]*(n-sub[u])",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ".",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "A tree has one path between each pair. An edge lies on that path exactly when the two endpoints lie on opposite sides of its removal. Choosing one vertex on each side gives $s(N-s)$ unordered pairs, with no further division by two."
+                },
+                {
+                  "type": "p",
+                  "text": "Summing over edges counts every edge of every pair’s path once. Each pair therefore contributes exactly its distance, giving the required total."
+                },
+                {
+                  "type": "p",
+                  "text": "The traversal order places parents before children. Processing it backward passes child sizes to their parents only after those child subtrees are complete, so all subtree sizes are correct."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Time and space are $O(N)$. Iterative traversal avoids deep recursion. The ll subtree size promotes the product before multiplication. A path of $100000$ vertices has sum $N(N^2-1)/6=166666666650000$, which does not fit int."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Parents and traversal order"
+                },
+                {
+                  "type": "p",
+                  "text": "In a tree, every neighbor except the parent is a child. Grow order as a vector queue, appending each vertex once."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<int> parent(n, -1), order{0};\nfor (int i = 0; i < n; ++i) {\n    int u = order[i];\n    for (int v : g[u]) {\n        if (v == parent[u]) continue;\n        parent[v] = u;\n        order.push_back(v);\n    }\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Reverse accumulation"
+                },
+                {
+                  "type": "p",
+                  "text": "Skip the root, add each child-edge contribution, then pass its subtree size to the parent."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<ll> sub(n, 1);\nll ans = 0;\nfor (int i = n - 1; i > 0; --i) {\n    int u = order[i];\n    ans += sub[u] * (n - sub[u]);\n    sub[parent[u]] += sub[u];\n}\ncout << ans << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_am"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    vector<vector<int>> g(n);\n    for (int i = 0; i < n - 1; ++i) {\n        int a, b;\n        cin >> a >> b;\n        --a;\n        --b;\n        g[a].push_back(b);\n        g[b].push_back(a);\n    }\n    vector<int> parent(n, -1), order{0};\n    for (int i = 0; i < n; ++i) {\n        int u = order[i];\n        for (int v : g[u]) {\n            if (v == parent[u]) continue;\n            parent[v] = u;\n            order.push_back(v);\n        }\n    }\n    vector<ll> sub(n, 1);\n    ll ans = 0;\n    for (int i = n - 1; i > 0; --i) {\n        int u = order[i];\n        ans += sub[u] * (n - sub[u]);\n        sub[parent[u]] += sub[u];\n    }\n    cout << ans << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "program_sha256": "3f5d76ea4fda3eb2309bf19ed23cdc54fea416ba46782dc74a3e4a73a8956724",
+    "status": "authored; content/native verification and publication pending"
+  },
+  {
+    "id": "task-775",
+    "ref": "typical90_ap",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_ap",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-ap",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Multiple of 9 — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тооны $9$-д хуваагдах эсэх нь цифрүүдийн нийлбэрээр шийдэгдэнэ. $K$ нь $9$-д хуваагдахгүй бол хариу $0$. Хуваагдвал $1\\ldots9$ цифрүүдийн нийлбэр $K$ болох бүх дарааллыг DP-ээр тоолно."
+            }
+          ]
+        },
+        {
+          "title": "Төлөв ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$dp[s]$ нь нийлбэр $s$-тэй цифрийн дарааллын тоо. $dp[0]=1$ нь хоосон prefix байгуулах ганц арга; эцсийн $K\\ge1$ учир хоосон тоо хариунд орохгүй. Сүүлийн цифр $d$ бүрээр $dp[s-d]$ нэмнэ."
+            },
+            {
+              "type": "p",
+              "text": "$K=9$ үед $9$ ширхэг нэгийг таслалуудтай бүлэглэх аргаар бүх positive composition үүснэ. Найман завсар бүрт таслах/таслахгүй сонголт байгаа тул $2^8=256$. Аль ч хэсэг $9$-өөс ихгүй. $K=8$ бол digit sum нь $9$-д хуваагдахгүй тул $0$."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Цифрийн дараалал бүрийн сүүлийн цифр ганц $d\\in[1,9]$ утгатай. Түүнийг хасвал нийлбэр $s-d$-тэй prefix үлдэнэ. Эсрэгээр ийм prefix бүрд $d$-г залгахад нэг шинэ дараалал үүснэ. Сүүлийн цифрийн бүлгүүд давхцахгүй тул recurrence бүх дарааллыг яг нэг удаа тоолно."
+            },
+            {
+              "type": "p",
+              "text": "Тэг цифр зөвшөөрөгдөөгүй учир бүх цифр эерэг, leading zero ч байхгүй. Иймээс дараалал бүр нэг эерэг бүхэл тоог төлөөлнө. $K$ нь $9$-д хуваагдсан үед тоологдсон бүх тоо divisible by $9$ байх ба өөр нэмэлт шалгалт хэрэггүй."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хугацаа $O(9K)$, санах ой $O(K)$. dp нь modulo $10^9+7$ утгууд тул int-д багтана. Харин нэг төлөвт есөн residue-ийн нийлбэр int-ээс их болж болох тул ways-ийг ll авч, mod-ийн дараа int болгоно."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Divisibility gate"
+            },
+            {
+              "type": "p",
+              "text": "$K$-ийн divisibility-ийг DP хүснэгт үүсгэхээс өмнө шалгана."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int k;\ncin >> k;\nif (k % 9 != 0) {\n    cout << 0 << '\\n';\n    return 0;\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Сүүлийн цифрийн DP"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "sum өсөхөөр явахад бүх ",
+                  "marks": []
+                },
+                {
+                  "text": "sum-d",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " өмнө нь бодогдсон. $d=0$ гэсэн шилжилт огт оруулахгүй.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "const int mod = 1000000007;\nvector<int> dp(k + 1);\ndp[0] = 1;\nfor (int sum = 1; sum <= k; ++sum) {\n    ll ways = 0;\n    for (int d = 1; d <= 9 && d <= sum; ++d) ways += dp[sum - d];\n    dp[sum] = int(ways % mod);\n}\ncout << dp[k] << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ap"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int k;\n    cin >> k;\n    if (k % 9 != 0) {\n        cout << 0 << '\\n';\n        return 0;\n    }\n    const int mod = 1000000007;\n    vector<int> dp(k + 1);\n    dp[0] = 1;\n    for (int sum = 1; sum <= k; ++sum) {\n        ll ways = 0;\n        for (int d = 1; d <= 9 && d <= sum; ++d) ways += dp[sum - d];\n        dp[sum] = int(ways % mod);\n    }\n    cout << dp[k] << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Multiple of 9 — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Divisibility by $9$ depends on the digit sum. If $K$ is not divisible by $9$, return zero. Otherwise count sequences of digits $1$ through $9$ summing to $K$ using DP."
+                }
+              ]
+            },
+            {
+              "title": "State and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Let $dp[s]$ count digit sequences with sum $s$. Set $dp[0]=1$ for the unique empty prefix; since the final $K\\ge1$, this does not count an empty integer. Append each possible last digit $d$, adding $dp[s-d]$."
+                },
+                {
+                  "type": "p",
+                  "text": "For $K=9$, group nine ones by choosing cuts among eight gaps. Every resulting positive part is at most nine, so there are $2^8=256$ sequences. For $K=8$, divisibility fails and the answer is zero."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Every nonempty sequence has a unique last digit $d\\in[1,9]$. Removing it leaves a prefix of sum $s-d$, and appending it reverses this operation. Groups for different last digits are disjoint, so the recurrence counts every sequence exactly once."
+                },
+                {
+                  "type": "p",
+                  "text": "Zero digits are forbidden, so every digit is positive and no leading zero exists. Each sequence represents one positive integer. When $K$ is divisible by $9$, every counted integer automatically satisfies the divisibility requirement."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Time is $O(9K)$ and space $O(K)$. Modular dp values fit int. The sum of nine residues can exceed int, so accumulate ways in ll and convert after taking the modulus."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Divisibility gate"
+                },
+                {
+                  "type": "p",
+                  "text": "Check divisibility before allocating the DP table."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int k;\ncin >> k;\nif (k % 9 != 0) {\n    cout << 0 << '\\n';\n    return 0;\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Last-digit DP"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Increasing sums ensure every ",
+                      "marks": []
+                    },
+                    {
+                      "text": "sum-d",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " state is ready. There is no transition for digit zero.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "const int mod = 1000000007;\nvector<int> dp(k + 1);\ndp[0] = 1;\nfor (int sum = 1; sum <= k; ++sum) {\n    ll ways = 0;\n    for (int d = 1; d <= 9 && d <= sum; ++d) ways += dp[sum - d];\n    dp[sum] = int(ways % mod);\n}\ncout << dp[k] << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ap"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int k;\n    cin >> k;\n    if (k % 9 != 0) {\n        cout << 0 << '\\n';\n        return 0;\n    }\n    const int mod = 1000000007;\n    vector<int> dp(k + 1);\n    dp[0] = 1;\n    for (int sum = 1; sum <= k; ++sum) {\n        ll ways = 0;\n        for (int d = 1; d <= 9 && d <= sum; ++d) ways += dp[sum - d];\n        dp[sum] = int(ways % mod);\n    }\n    cout << dp[k] << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "program_sha256": "09a57510d78e094a6cd2598cb3926474ee46c42fb6c0ee00cdcec1bea0c4889d",
+    "status": "authored; content/native verification and publication pending"
+  },
+  {
+    "id": "task-776",
+    "ref": "typical90_ar",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_ar",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-ar",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Shift and Swapping — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Массивыг rotate бүрд зөөхгүй. Логик эхний элементийн хадгалагдаж буй физик индексийг head-д хадгална. Нэг-индекстэй логик $x$ байрлал нь ",
+                  "marks": []
+                },
+                {
+                  "text": "(head+x-1)%n",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " физик индекс болно.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Үйлдлүүд ба жишээ",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Баруун тийш нэг rotate хийхэд өмнөх сүүлийн элемент эхэнд ирнэ. Иймээс head-ийг ",
+                  "marks": []
+                },
+                {
+                  "text": "(head+n-1)%n",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " болгоно. Swap болон value query-д логик индексүүдээ физик индекс рүү хөрвүүлнэ.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "p",
+              "text": "Массив $[10,20,30,40]$-ийг баруун эргүүлэхэд $[40,10,20,30]$. Дараа нь логик $1,3$ байрлалыг соливол $[20,10,40,30]$, гурав дахь утга $40$. Type $2$-ын хоёр dummy координат $0$-г ашиглахгүй."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Invariant: логик эхний элемент физик head-д, дараагийн элементүүд cyclic дарааллаар хадгалагдана. Эхэнд head $0$ үед энэ нь зөв."
+            },
+            {
+              "type": "p",
+              "text": "Баруун rotate нь шинэ эхлэлийг хуучин эхлэлийн өмнөх физик индекс рүү шилжүүлдэг тул invariant хадгалагдана. Swap нь хөрвүүлсэн хоёр зөв байршлын утгыг л сольж, бусад байрлалыг хэвээр үлдээнэ. Query нь invariant-аас зөв утгыг авна. Иймээс бүх үйлдлийн дараалал зөв."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эхний уншилттайгаа нийт хугацаа $O(N+Q)$, үйлдэл бүр $O(1)$, санах ой $O(N)$. Утгууд $10^9$-аас ихгүй, индексийн нийлбэр $2N$-ээс бага тул int хангалттай. Type $3$-ын $y=0$, type $2$-ын $x=y=0$ нь индекс биш гэдгийг branch-аар ялгана."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Хадгалалт ба head"
+            },
+            {
+              "type": "p",
+              "text": "Массивын физик дараалал эхэнд оролтын дараалалтай таарна. head дангаараа rotation-ийг төлөөлнө."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int n, q;\ncin >> n >> q;\nvector<int> a(n);\nfor (int &x : a) cin >> x;\nint head = 0;"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Логик индексийг хөрвүүлэх"
+            },
+            {
+              "type": "p",
+              "text": "Зөвхөн swap/query branch-д байрлалын хөрвүүлэлт хийнэ. Rotate branch нь dummy утгаар массив руу хандахгүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "while (q--) {\n    int type, x, y;\n    cin >> type >> x >> y;\n    if (type == 1) swap(a[(head + x - 1) % n], a[(head + y - 1) % n]);\n    else if (type == 2) head = (head + n - 1) % n;\n    else cout << a[(head + x - 1) % n] << '\\n';\n}"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ar"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<int> a(n);\n    for (int &x : a) cin >> x;\n    int head = 0;\n    while (q--) {\n        int type, x, y;\n        cin >> type >> x >> y;\n        if (type == 1) swap(a[(head + x - 1) % n], a[(head + y - 1) % n]);\n        else if (type == 2) head = (head + n - 1) % n;\n        else cout << a[(head + x - 1) % n] << '\\n';\n    }\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Shift and Swapping — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Avoid physically rotating the array. Store the physical index of the logical first element in head. Logical one-based position $x$ maps to ",
+                      "marks": []
+                    },
+                    {
+                      "text": "(head+x-1)%n",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ".",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Operations and example",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "A right rotation moves the old last element to the front, so update head to ",
+                      "marks": []
+                    },
+                    {
+                      "text": "(head+n-1)%n",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ". Convert logical indices before swaps and value queries.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "p",
+                  "text": "Rotating $[10,20,30,40]$ gives $[40,10,20,30]$. Swapping logical positions $1,3$ then gives $[20,10,40,30]$, whose third value is $40$. The zero dummy coordinates of type $2$ are ignored."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Maintain the invariant that the logical first element is stored at head and subsequent elements follow cyclically. It holds initially with head zero."
+                },
+                {
+                  "type": "p",
+                  "text": "A right rotation changes the first position to the preceding physical index, preserving the invariant. A swap changes exactly the two mapped positions, and a query reads the mapped value. Induction over the operations proves all answers correct."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Including input, total time is $O(N+Q)$, each operation $O(1)$, and storage $O(N)$. Values at most $10^9$ and index sums below $2N$ fit int. Branch before using indices: type $3$ has unused $y=0$, and type $2$ has unused $x=y=0$."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Storage and head"
+                },
+                {
+                  "type": "p",
+                  "text": "Initially physical order equals input order. head alone represents the rotation."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int n, q;\ncin >> n >> q;\nvector<int> a(n);\nfor (int &x : a) cin >> x;\nint head = 0;"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Map logical positions"
+                },
+                {
+                  "type": "p",
+                  "text": "Map positions only in swap/query branches. Rotation never accesses the array through dummy coordinates."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "while (q--) {\n    int type, x, y;\n    cin >> type >> x >> y;\n    if (type == 1) swap(a[(head + x - 1) % n], a[(head + y - 1) % n]);\n    else if (type == 2) head = (head + n - 1) % n;\n    else cout << a[(head + x - 1) % n] << '\\n';\n}"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ar"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, q;\n    cin >> n >> q;\n    vector<int> a(n);\n    for (int &x : a) cin >> x;\n    int head = 0;\n    while (q--) {\n        int type, x, y;\n        cin >> type >> x >> y;\n        if (type == 1) swap(a[(head + x - 1) % n], a[(head + y - 1) % n]);\n        else if (type == 2) head = (head + n - 1) % n;\n        else cout << a[(head + x - 1) % n] << '\\n';\n    }\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "program_sha256": "a8acb5210519394e10987b010eb5a7cbb7109ce52d2fbba3c8acc6a349d694dc",
+    "status": "authored; content/native verification and publication pending"
+  },
+  {
+    "id": "task-777",
+    "ref": "typical90_at",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_at",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-at",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "I Love 46 — Бодолт",
+      "sections": [
+        {
+          "title": "Гол санаа",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тоо бүрээс $46$-д хуваасан үлдэгдлийг нь л хадгална. Массив бүрийн residue-ийн давтамжийг ол. Эхний хоёр residue $i,j$ тогтвол гурав дахь нь $k=(-i-j)\\bmod46$ гэж ганцаар тодорхойлогдоно."
+            }
+          ]
+        },
+        {
+          "title": "Тооцоолол ба жишээ",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Тухайн residue-уудын хувь нэмэр $cnt_A[i]cnt_B[j]cnt_C[k]$. Бүх $46^2$ хосыг нэмнэ. Үлдэгдэл $0$-ийг зөв гаргахын тулд ",
+                  "marks": []
+                },
+                {
+                  "text": "(46-(i+j)%46)%46",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " гэж бичнэ.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "p",
+              "text": "$A=[0,1]$, $B=[0,45]$, $C=[0,46]$ гэе. $C$-ийн хоёр утга хоёулаа residue $0$. $(i,j)=(0,0)$ болон $(1,45)$ тус бүр хоёр сонголт өгнө; нийт $4$. Давхардсан residue-уудын индекс бүр тусдаа сонголт."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Нийлбэр $46$-д хуваагдах нь зөвхөн гурван үлдэгдлийн нийлбэрээр шийдэгдэнэ. Эхний хоёр үлдэгдэлд тохирох гурав дахь residue ганц байдаг."
+            },
+            {
+              "type": "p",
+              "text": "Өөр өөр массиваас индексүүдийг бие даан сонгох тул тухайн гурван бүлгийн сонголтын тоо давтамжуудын үржвэр. Residue-ийн хос бүр өөр triple бүлгийг төлөөлөх учир давхардалгүй, орхигдолгүйгээр бүх зөв индексийн triple тоологдоно."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хугацаа $O(N+46^2)$, нэмэлт санах ой $O(46)$ буюу тогтмол. Хариу $N^3\\le10^{15}$ хүрнэ. cnt массивын элементүүдийг ll авснаар гурван давтамжийг үржүүлэхээс өмнө өргөн төрөлтэй; дараа нь int үржвэрийг ll рүү хувиргах нь хангалтгүй."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Гурван residue histogram"
+            },
+            {
+              "type": "p",
+              "text": "Гурван массивыг тус тус уншиж, утгыг бүхэлд нь хадгалахгүйгээр residue-ийн тоог нэмнэ. {} нь бүх counter-ийг тэглэнэ."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "array<array<ll, 46>, 3> cnt{};\nfor (int group = 0; group < 3; ++group) {\n    for (int i = 0; i < n; ++i) {\n        int x;\n        cin >> x;\n        ++cnt[group][x % 46];\n    }\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Хоёр loop ба үржвэр"
+            },
+            {
+              "type": "p",
+              "text": "Гурав дахь loop хэрэггүй: $k$ нь $i,j$-ээс шууд олдоно. Counter-ууд ll тул бүх үржвэр аюулгүй төрөлд тооцогдоно."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "ll ans = 0;\nfor (int i = 0; i < 46; ++i) {\n    for (int j = 0; j < 46; ++j) {\n        int k = (46 - (i + j) % 46) % 46;\n        ans += cnt[0][i] * cnt[1][j] * cnt[2][k];\n    }\n}\ncout << ans << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_at"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    array<array<ll, 46>, 3> cnt{};\n    for (int group = 0; group < 3; ++group) {\n        for (int i = 0; i < n; ++i) {\n            int x;\n            cin >> x;\n            ++cnt[group][x % 46];\n        }\n    }\n    ll ans = 0;\n    for (int i = 0; i < 46; ++i) {\n        for (int j = 0; j < 46; ++j) {\n            int k = (46 - (i + j) % 46) % 46;\n            ans += cnt[0][i] * cnt[1][j] * cnt[2][k];\n        }\n    }\n    cout << ans << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "I Love 46 — Editorial",
+          "sections": [
+            {
+              "title": "Idea",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Only residues modulo $46$ matter. Count each residue in each array. For fixed residues $i,j$ from the first two arrays, the third is uniquely $k=(-i-j)\\bmod46$."
+                }
+              ]
+            },
+            {
+              "title": "Formula and example",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Add $cnt_A[i]cnt_B[j]cnt_C[k]$ for every one of the $46^2$ residue pairs. Compute $k$ as ",
+                      "marks": []
+                    },
+                    {
+                      "text": "(46-(i+j)%46)%46",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " so residue zero is handled correctly.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "p",
+                  "text": "For $A=[0,1]$, $B=[0,45]$, $C=[0,46]$, both C entries have residue zero. Pairs $(0,0)$ and $(1,45)$ each contribute two choices, giving four total. Equal residues still represent separate index choices."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Divisibility of the sum depends only on the three residues, and each pair of first/second residues requires exactly one third residue."
+                },
+                {
+                  "type": "p",
+                  "text": "Indices are chosen independently from the arrays, so the number of triples in these three groups is the product of their frequencies. Distinct residue pairs partition the possible triples, counting every qualifying index triple exactly once."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Time is $O(N+46^2)$ and auxiliary space is $O(46)$, a constant. The answer may reach $N^3\\le10^{15}$. Store frequencies in ll so promotion occurs before multiplication; converting an already-overflowed int product afterward would be too late."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Three residue histograms"
+                },
+                {
+                  "type": "p",
+                  "text": "Read the three arrays separately, incrementing residue counters without storing the original values. {} zero-initializes every counter."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "array<array<ll, 46>, 3> cnt{};\nfor (int group = 0; group < 3; ++group) {\n    for (int i = 0; i < n; ++i) {\n        int x;\n        cin >> x;\n        ++cnt[group][x % 46];\n    }\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Two loops and products"
+                },
+                {
+                  "type": "p",
+                  "text": "No third loop is needed because $k$ follows from $i,j$. The ll counters keep every product in the safe type."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "ll ans = 0;\nfor (int i = 0; i < 46; ++i) {\n    for (int j = 0; j < 46; ++j) {\n        int k = (46 - (i + j) % 46) % 46;\n        ans += cnt[0][i] * cnt[1][j] * cnt[2][k];\n    }\n}\ncout << ans << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_at"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    array<array<ll, 46>, 3> cnt{};\n    for (int group = 0; group < 3; ++group) {\n        for (int i = 0; i < n; ++i) {\n            int x;\n            cin >> x;\n            ++cnt[group][x % 46];\n        }\n    }\n    ll ans = 0;\n    for (int i = 0; i < 46; ++i) {\n        for (int j = 0; j < 46; ++j) {\n            int k = (46 - (i + j) % 46) % 46;\n            ans += cnt[0][i] * cnt[1][j] * cnt[2][k];\n        }\n    }\n    cout << ans << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "program_sha256": "a7ff95bc6e89da7e371f401ef3c69665680527d4966362e8055eb874e3554708",
+    "status": "authored; content/native verification and publication pending"
+  }
+]
