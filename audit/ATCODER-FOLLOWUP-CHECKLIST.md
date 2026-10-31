@@ -21,7 +21,7 @@ compaction. Finish the I/O phase first with its own receipt.
 - [x] Inventory all51 targets/methods and reusable original code/oracles.
 - [x] Provide independent Statement and Editorial controls inside the problem
   editor, both using the actual tutorial schema/components and save/load/CAS.
-Batches01–08:45/51 editorials are published and exact-readback verified;6 remain.
+Batches01–09:51/51 editorials are published and exact-readback verified;0 remain.
 Batch01: task749/750/751. Batch02: task752/754/755/756/762/763.
 Batch03: task753/759/760/764/765/768.
 Batch04: task757/758/761/769/770/771.
@@ -29,22 +29,23 @@ Batch05: task772/773/774/775/776/777.
 Batch06: task778/779/780/781/782/783.
 Batch07: task784/785/786/787/788/789.
 Batch08: task747/766/791/792/793/796.
-Remaining IDs: task767/790/794/795/797/798.
+Batch09: task767/790/794/795/797/798.
+Remaining editorial IDs: none.
 Native integration039 is live; see its separate installation receipt.
 
 - [x] One required shared-runtime Node aggregate: 398/398 checks across 143 files,
   zero failures/skips, 8m40s; see native-problem-editorials/full-node-aggregate.json.
   Later pure-content batches use targeted checks.
 
-- [ ] Independently reason, author, test and publish original MN/EN editorials
+- [x] Independently reason, author, test and publish original MN/EN editorials
   for all50 existing Typical90 tasks and ABC005D in genuinely finished batches.
-- [ ] Explain algorithms, correctness, complexity and meaningful fragments first;
+- [x] Explain algorithms, correctness, complexity and meaningful fragments first;
   final complete concise C++17 program last,4-space style, no global int macro.
-- [ ] Natural Mongolian, matching English and MathJax; retain familiar English
+- [x] Natural Mongolian, matching English and MathJax; retain familiar English
   algorithm names (DP,Bitmask DP,Greedy,Knapsack,Stack,Two Pointers,etc.).
-- [ ] Meaningful source-sample, independent naive/edge and program checks with
+- [x] Meaningful source-sample, independent naive/edge and program checks with
   explicit limits; content completeness is not established by code tests alone.
-- [ ] Guarded publication, anonymous readback and receipts for every batch;
+- [x] Guarded publication, anonymous readback and receipts for every batch;
   finish all51 unless a real blocker is documented.
 
 The editorial deferral is superseded only for these51 targets. No new problems,
