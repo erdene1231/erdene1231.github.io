@@ -987,3 +987,58 @@ runtime/JSON files match with normal TLS. Evidence and exact before/after URLs:
 `audit/EGOI-OJUZ-URLS.md`, `audit/egoi-ojuz/manifest.json` and
 `audit/egoi-ojuz/publication-receipt.json`. No migration, new problem import,
 tutorial publication, credentials/access change or APPROVE review occurred.
+
+## Native AtCoder statements and 54 ABC additions — committed 2026-10-31
+
+All 78 existing AtCoder individual pages were audited. Exactly 51 are
+Japanese-only: all 50 existing Typical90 tasks and ABC005 D. Their MN/EN
+documents are now public in the actual tutorial schema/native block editor.
+The other 27 already have official English. All 54 newly curated ABC tasks have
+English and were imported as verified metadata, without new statement/editorial
+authoring for those tasks. Actual allocated IDs are task-1011 through task-1064.
+Catalog is now 1,064 problems, including 132 AtCoder tasks. Existing IDs,
+ratings, priorities, tags, hints and references remain exact.
+
+Source PR #216 merged at `22450c33d4c956f8658ff6a039d4b7a101556fc1`.
+Minimal `038_native_inline_problem_statements` is installed as
+`20261031095842`; migration SQL SHA256
+`78f8e5ad6eef2ba3980f90f80d49bdca8ffc109d26a8ef6ff49498a73aeba72e`.
+NEVER REPLAY. Optional 032–034 remain unapplied; do not treat them as a queue.
+038 modifies four existing definitions and adds an app-private validator while
+preserving every existing ACL, table, RLS policy, trigger and constraint. Native
+documents/provenance are stored inside problem_catalog.body, exposed lazily
+through its existing RLS-protected SELECT permission; catalog RPCs carry only
+hasStatement. Config keeps backend32 plus `catalog-inline-v1`; editorial and
+bulk-import gates remain off. No new read RPC, auth identity or access grant.
+
+The one atomic content/import statement committed 54 creates +51 edits, problem
+history 996–1100. SQL SHA256
+`dbad9d7ff8739394ef32b7f125108fb4f524e9bfe00f1087313d89168625bab5`.
+The client's 45-second read timed out, but fresh read-only catalog/history/
+allocator/body inspection proved exact committed success; it was not replayed.
+NEVER REPLAY. One-time intents, recovery and timeout resolution are in
+`/workspace/atcoder-expansion/`. All 959 unrelated original rows, 74 stored/
+73 public tutorials, eight private drafts, learner/profile state and the
+post-038 authority fingerprints remain exact. Tutorial history through 405 and
+EGOI history 960–995 remain committed.
+
+Forty-two prior authored repository documents were reused only after all fresh
+task text matched; 135 current source sample pairs are exact. Nine original
+factual mathematical restatements use independently calculated examples and
+explicit source/rights provenance, not official/story translations. AtCoder's
+terms reserve rights; do not copy full source narratives. All 54 ABC additions
+have exact source identities (including observed shared ARC aliases), individual
+tags/priority reasons and explicitly estimated CF-like ratings.
+
+Validation: 38 focused Node checks; 204 MN/EN reader cases and 51 actual native
+block-editor serialization/save/reload roundtrips; nine original examples and
+299 factor-splitting cases; exact 1,010-row rehearsal with late rollback and
+retained allocator gaps. Anonymous retrieval validates all 1,064 metadata rows
+and 51 exact native documents. Eight full app-route cases with actual public
+payloads/deployed config cover real High/Medium targets without hint actions;
+four synthetic Low cases also pass. Existing target priorities remain 50 High/
+one Medium. No live authenticated browser claim. Pages 41190751298 succeeded;
+19 deployed assets match under normal TLS. Evidence:
+`audit/ATCODER-NATIVE-STATEMENTS-ABC.md` and
+`audit/atcoder-expansion/publication-receipt.json`. No private draft publication,
+tutorial mutation, credentials/access change or APPROVE review occurred.
