@@ -150,3 +150,11 @@ All12 active assets byte-exact over default TLS; real protected data unchanged.
 Native MN/EN save/reload paths use synthetic Auth and isolated PostgreSQL tests;
 no authenticated live-user fixture mutation is claimed. Continue the remaining
 five UI items without a permission pause.
+
+Current profile/weekly/white source unit:18 targeted model/activity checks and
+actual renderer375/1200light/dark pass; private other-user dates remain private,
+legacy dates unknown, challenge cumulativeX/100. All four remaining UI Library
+references have now been materialized and actual pixels inspected; the old
+queued/unviewed note above is historical. See ui-followup/PROFILE-PROGRESS.md.
+Release/deployment receipt pending; Groups today opt-ins and Minimalist-only
+status/columns remain active afterward without reconfirmation.
