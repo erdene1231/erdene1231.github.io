@@ -1,3 +1,4 @@
+import {todayProblemItems,todayTutorialItems,appendActivity,loadOwnerActivity} from './report-activity.js?v=1';
 import {createReportLatex, createReportPdf} from './group-document.js?v=52';
 import {rpc} from './accounts.js?v=52';
 import {createReportWorkbook, todayInMongolia, validDate, weekday, shiftDate, dateRange, filterWeekdays, selectReportRows} from './group-export.js?v=52';
@@ -17,7 +18,7 @@ const MARKUP = `
 </div>
 <dialog id="group-editor" aria-labelledby="group-editor-title"><div class="dialog-head"><h2 id="group-editor-title">Групп үүсгэх</h2><button data-group-close="group-editor" type="button" aria-label="Хаах">✕</button></div><form id="group-editor-form"><label>Группын нэр<input id="group-name" maxlength="100" required></label><label>Тайлбар<textarea id="group-description-input" maxlength="2000" rows="3"></textarea></label><label>Харагдах хүрээ<select id="group-visibility"><option value="private">Private — гишүүд болон сайтын админ</option><option value="public">Public — нэвтэрсэн хүн бүр уншина</option></select></label><p class="muted">Гишүүд бусдыг username-аар нэмж чадна. Public сонговол тэмдэглэлүүд нэвтэрсэн бүх хэрэглэгчид харагдана.</p><button id="group-editor-save" class="primary" type="submit">Хадгалах</button><p id="group-editor-message" role="status" aria-live="polite"></p></form></dialog>
 <dialog id="group-members-dialog" aria-labelledby="group-members-title"><div class="dialog-head"><h2 id="group-members-title">Группын гишүүд</h2><button data-group-close="group-members-dialog" type="button" aria-label="Хаах">✕</button></div><form id="group-add-form"><label>Нэмэх хэрэглэгчийн username<input id="group-add-username" minlength="3" maxlength="24" pattern="[a-zA-Z0-9_]{3,24}" placeholder="username" required></label><button id="group-add-submit" class="primary" type="submit">Гишүүн нэмэх</button></form><p id="group-members-message" class="muted" role="status" aria-live="polite"></p><ul id="group-members-list" class="group-member-list"></ul></dialog>
-<dialog id="group-report-editor" aria-labelledby="group-report-title"><div class="dialog-head"><h2 id="group-report-title">Өдрийн тэмдэглэл</h2><button data-group-close="group-report-editor" type="button" aria-label="Хаах">✕</button></div><p id="group-report-person"></p><p id="group-report-date" class="muted"></p><p class="muted">Бүх талбар сонголттой. Бодлогын нэр, ID эсвэл холбоосыг мөр бүрт нэгээр бичээрэй. Энэ тэмдэглэл бодлогын сан дахь progress-ийг автоматаар өөрчлөхгүй.</p><form id="group-report-form"><label>Бодсон бодлогууд<textarea id="group-report-problems" maxlength="12000" rows="5" placeholder="CSES — Counting Rooms\nCF 1661B — Getting Zero"></textarea></label><div class="group-count-field"><label>Нийт бодлогын тоо<input id="group-report-count" type="number" min="0" max="100000" step="1" placeholder="Бөглөөгүй"></label><button id="group-count-lines" type="button">Жагсаалтын мөрөөр тоолох</button></div><label>Хэр хэцүү бодлогууд бодсон бэ?<textarea id="group-report-difficulty" maxlength="1200" rows="2" placeholder="Жишээ: CF 1400–1700; хоёр нь бие даан, нэг нь hint-тэй"></textarea></label><label>Судалсан сэдвүүд<textarea id="group-report-topics" maxlength="2000" rows="2" placeholder="BFS, grid, path сэргээх"></textarea></label><label>Нэмэлт тэмдэглэл<textarea id="group-report-notes" maxlength="8000" rows="3" placeholder="Хаана гацсан, юу ойлгосон, дараа юу үргэлжлүүлэх вэ?"></textarea></label><button id="group-report-save" class="primary" type="submit">Тэмдэглэл хадгалах</button><p id="group-report-message" role="status" aria-live="polite"></p></form></dialog>
+<dialog id="group-report-editor" aria-labelledby="group-report-title"><div class="dialog-head"><h2 id="group-report-title">Өдрийн тэмдэглэл</h2><button data-group-close="group-report-editor" type="button" aria-label="Хаах">✕</button></div><p id="group-report-person"></p><p id="group-report-date" class="muted"></p><p class="muted">Бүх талбар сонголттой. Бодлогын нэр, ID эсвэл холбоосыг мөр бүрт нэгээр бичээрэй. Энэ тэмдэглэл бодлогын сан дахь progress-ийг автоматаар өөрчлөхгүй.</p><div id="group-report-today" class="group-today-actions" hidden><p id="group-report-today-date" class="muted"></p><button id="group-report-add-problems" type="button">Өнөөдөр бодсон бодлогуудыг нэмэх үү?</button><button id="group-report-add-tutorials" type="button">Өнөөдөр үзсэн хичээлүүдийг нэмэх үү?</button><p id="group-report-today-message" role="status" aria-live="polite"></p></div><form id="group-report-form"><label>Бодсон бодлогууд<textarea id="group-report-problems" maxlength="12000" rows="5" placeholder="CSES — Counting Rooms\nCF 1661B — Getting Zero"></textarea></label><div class="group-count-field"><label>Нийт бодлогын тоо<input id="group-report-count" type="number" min="0" max="100000" step="1" placeholder="Бөглөөгүй"></label><button id="group-count-lines" type="button">Жагсаалтын мөрөөр тоолох</button></div><label>Хэр хэцүү бодлогууд бодсон бэ?<textarea id="group-report-difficulty" maxlength="1200" rows="2" placeholder="Жишээ: CF 1400–1700; хоёр нь бие даан, нэг нь hint-тэй"></textarea></label><label>Судалсан сэдвүүд<textarea id="group-report-topics" maxlength="2000" rows="2" placeholder="BFS, grid, path сэргээх"></textarea></label><label>Нэмэлт тэмдэглэл<textarea id="group-report-notes" maxlength="8000" rows="3" placeholder="Хаана гацсан, юу ойлгосон, дараа юу үргэлжлүүлэх вэ?"></textarea></label><button id="group-report-save" class="primary" type="submit">Тэмдэглэл хадгалах</button><p id="group-report-message" role="status" aria-live="polite"></p></form></dialog>
 <dialog id="group-teacher-editor" aria-labelledby="group-teacher-title"><div class="dialog-head"><h2 id="group-teacher-title">Багшийн тэмдэглэл</h2><button data-group-close="group-teacher-editor" type="button" aria-label="Хаах">✕</button></div><p id="group-teacher-person"></p><p id="group-teacher-date" class="muted"></p><p class="muted">Группын болон сайтын админ засна. Группийг харах эрхтэй хүмүүс уншина. Сурагчийн өөрийн тэмдэглэл тусдаа хадгалагдана.</p><form id="group-teacher-form"><label>Багшийн тэмдэглэл<textarea id="group-teacher-note" maxlength="8000" rows="7" placeholder="Сурагчийн ахиц, зөвлөгөө, дараагийн ажил…"></textarea></label><button id="group-teacher-save" class="primary" type="submit">Багшийн тэмдэглэл хадгалах</button><p id="group-teacher-message" role="status" aria-live="polite"></p></form></dialog>
 <dialog id="group-export-dialog" aria-labelledby="group-export-title"><div class="dialog-head"><h2 id="group-export-title">Тайлан export хийх</h2><button data-group-close="group-export-dialog" type="button" aria-label="Хаах">✕</button></div><p>Өдөр, гараг, сурагчдаа сонгоод тайлангаа татна. Excel-д өдөр бүр тусдаа sheet үүснэ. PDF нь A4 хэвтээ, 3 баганатай.</p><div class="group-export-range"><label>Эхлэх өдөр<input id="group-export-start" type="date"></label><label>Дуусах өдөр<input id="group-export-end" type="date"></label><button id="group-export-range-add" type="button">Эдгээр өдрийг нэмэх</button></div><div class="group-toolbar"><label>Тусдаа өдөр нэмэх<input id="group-export-date" type="date"></label><button id="group-export-date-add" type="button">Өдөр нэмэх</button><button id="group-export-clear" type="button">Сонголт цэвэрлэх</button></div><fieldset class="group-export-weekdays"><legend>Export хийх гаргууд</legend><label><input type="checkbox" data-export-weekday value="1" checked>Даваа</label><label><input type="checkbox" data-export-weekday value="2" checked>Мягмар</label><label><input type="checkbox" data-export-weekday value="3" checked>Лхагва</label><label><input type="checkbox" data-export-weekday value="4" checked>Пүрэв</label><label><input type="checkbox" data-export-weekday value="5" checked>Баасан</label><label><input type="checkbox" data-export-weekday value="6" checked>Бямба</label><label><input type="checkbox" data-export-weekday value="0" checked>Ням</label></fieldset><fieldset class="group-export-students"><legend>Export хийх сурагчид</legend><p class="muted">Анх нээхэд бүгд сонгогдоно. Сонголт нь Excel, PDF, LaTeX болон бүх сонгосон өдөрт хамаарна. Өмнөх гишүүний хадгалсан тэмдэглэлийг мөн сонгож болно.</p><label>Сурагч хайх<input id="group-export-student-search" type="search" placeholder="Овог, нэр эсвэл username…" maxlength="120"></label><div class="group-export-student-actions"><button id="group-export-students-all" type="button">Бүгдийг сонгох</button><button id="group-export-students-none" type="button">Сурагчдын сонголтыг цэвэрлэх</button><button id="group-export-students-retry" type="button" hidden>Жагсаалтыг дахин ачаалах</button></div><p id="group-export-students-count" class="muted" role="status" aria-live="polite"></p><div id="group-export-students-list" class="group-export-students-list"></div></fieldset><label>Файлын төрөл<select id="group-export-format"><option value="xlsx">Excel (.xlsx)</option><option value="latex">A4 LaTeX (.tex)</option><option value="pdf">A4 PDF (.pdf)</option></select></label><div id="group-export-dates" class="group-date-chips"></div><p id="group-export-count" class="muted"></p><p class="muted">Нэг export-д гаргийн шүүлтүүрт таарсан 1–62 өдөр. Овог, нэр, бодлогууд, тоо, хүндрэл, сэдэв, сурагчийн болон багшийн тэмдэглэл багтана. </p><button id="group-export-download" class="primary" type="button">Excel (.xlsx) татах</button><p id="group-export-message" role="status" aria-live="polite"></p></dialog>`;
 
@@ -38,6 +39,7 @@ export function setupGroups(ctx) {
     const $ = id => root.querySelector('#' + id);
     let accountId, version = 0, detailToken = 0, dayToken = 0, listToken = 0;
     let currentId = null, detail = null, rows = [], groups = [], editing = null, teacherEditing = null, editingGroup = false;
+    let todayBusy = false, todayRequest = 0;
     let mutating = false, exporting = false, loadedDay = null, downloadUrl = null;
     const selectedDates = new Set();
     const selectedStudents = new Set();
@@ -178,8 +180,42 @@ export function setupGroups(ctx) {
         $('group-report-count').value = row.problem_count ?? '';
         $('group-report-difficulty').value = row.difficulty;
         $('group-report-topics').value = row.topics; $('group-report-notes').value = row.notes;
-        $('group-report-message').textContent = ''; $('group-report-editor').showModal();
+        $('group-report-message').textContent = ''; todayRequest++; todayBusy = false;
+        $('group-report-today').hidden = row.user_id !== ctx.user()?.id;
+        $('group-report-add-problems').disabled = $('group-report-add-tutorials').disabled = false;
+        $('group-report-save').disabled = false;
+        $('group-report-today-message').textContent = '';
+        todayDateLabel(); $('group-report-editor').showModal();
     }
+    function todayDateLabel() {
+        $('group-report-today-date').textContent = 'Өнөөдрийн үйлдэл: '+todayInMongolia()+' · Улаанбаатарын цагаар. Тэмдэглэлийн огноо: '+editing.report_date+'. Нэмсний дараа шалгаж, тусад нь хадгална. Тоон талбарыг өөрчлөхгүй. Бодлого: анх бодсон хадгалсан огноо; хичээл: үзсэн/дууссан бодит огноо.';
+    }
+    async function addToday(kind) {
+        if (mutating || todayBusy || !online() || !editing || editing.user_id !== ctx.user().id) return;
+        const target=editing,actor=ctx.user().id,token=version,request=++todayRequest,today=todayInMongolia(),client=ctx.client();
+        const active=()=>current(token)&&request===todayRequest&&editing===target&&currentId===target.group_id&&ctx.user()?.id===actor&&$('group-report-editor').open;
+        todayBusy=true;todayDateLabel();$('group-report-add-problems').disabled=$('group-report-add-tutorials').disabled=$('group-report-save').disabled=true;
+        $('group-report-today-message').textContent='Өнөөдрийн хадгалсан үйлдлийг ачаалж байна…';
+        try {
+            const base=location.origin+location.pathname;let items;
+            if(kind==='problems') {
+                const data=await loadOwnerActivity(client,'progress','problem_id,status,first_solved_at',actor);
+                if(!ctx.problems)throw new Error('Бодлогын сан бэлэн болоогүй.');
+                items=todayProblemItems(data,ctx.problems(),today,base);
+            } else {
+                const [records,tutorials]=await Promise.all([loadOwnerActivity(client,'learning_records','kind,key,value',actor),client.rpc('get_tutorials')]);
+                if(tutorials.error)throw tutorials.error;
+                if(!Array.isArray(tutorials.data))throw new Error('Хичээлийн үйлдлийг бүрэн ачаалж чадсангүй.');
+                items=todayTutorialItems(records,tutorials.data,today,base);
+            }
+            if(!active())return;if(today!==todayInMongolia())throw new Error('Улаанбаатарын өдөр солигдсон байна. Өнөөдрийн үйлдлээ дахин ачаална уу.');
+            const field=$(kind==='problems'?'group-report-problems':'group-report-topics'),result=appendActivity(field.value,items,field.maxLength);
+            field.value=result.value;$('group-report-today-message').textContent=result.added?result.added+' мөр нэмлээ. Шалгаад «Тэмдэглэл хадгалах» товчоор хадгална.':'Өнөөдрийн шинэ, давхардаагүй үйлдэл алга. Талбарууд өөрчлөгдөөгүй.';
+        } catch(error) {if(active())$('group-report-today-message').textContent=errorText(error);}
+        finally {if(active()){todayBusy=false;$('group-report-add-problems').disabled=$('group-report-add-tutorials').disabled=$('group-report-save').disabled=false;todayDateLabel();}}
+    }
+    $('group-report-add-problems').onclick=()=>void addToday('problems');
+    $('group-report-add-tutorials').onclick=()=>void addToday('tutorials');
     function editTeacher(row) {
         if (mutating || !row.can_edit_teacher || loadedDay !== $('group-day').value) return;
         teacherEditing = {...row, group_id: currentId};
@@ -316,7 +352,7 @@ export function setupGroups(ctx) {
         finally {mutating = false; $('group-teacher-save').disabled = false;}
     };
     $('group-report-form').onsubmit = async event => {
-        event.preventDefault(); if (mutating || !editing || !$('group-report-form').reportValidity()) return;
+        event.preventDefault(); if (mutating || todayBusy || !editing || !$('group-report-form').reportValidity()) return;
         const target = editing, token = version; mutating = true; $('group-report-save').disabled = true;
         $('group-report-message').textContent = 'Хадгалж байна…';
         const count = $('group-report-count').value;
@@ -418,7 +454,7 @@ export function setupGroups(ctx) {
             const id = ctx.user()?.id || null;
             $('group-create').hidden = !online(); $('group-login').hidden = online();
             if (id === accountId) return;
-            accountId = id; version++; detailToken++; dayToken++; listToken++;
+            accountId = id; todayRequest++; todayBusy=false; version++; detailToken++; dayToken++; listToken++;
             closeDialogs(); clearDownload(); resetExportStudents(); detail = null; rows = []; groups = []; currentId = null; editing = null; teacherEditing = null; loadedDay = null; selectedDates.clear();
             for (const form of root.querySelectorAll('form')) form.reset();
             for (const id of ['group-title','group-description','group-access-note','group-report-person','group-report-date','group-day-summary','group-privacy','group-teacher-person','group-teacher-date']) $(id).textContent = '';
