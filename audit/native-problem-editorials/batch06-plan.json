@@ -1,0 +1,1715 @@
+[
+  {
+    "id": "task-778",
+    "number": 778,
+    "ref": "typical90_av",
+    "expected_revision": 3,
+    "expected_body_sha256": "339f873501c2dca303ae6eacddd6136e86b25987940c7385eba9028a37a3d08f",
+    "editorial_sha256": "499b90a6d2b9c85f9f0a3cb78f61c1b51e420c87470cf0e339a8a44da9a9d536",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_av",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-av",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "I will not drop out — Бодолт",
+      "sections": [
+        {
+          "title": "Минутын нэмэгдэл оноо",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Нэг бодлогын эхний минут $B_i$, хоёр дахь минут $A_i-B_i$ нэмэгдэл оноо өгнө. $A_i$ нь хоёр минутын нийт оноо гэдгийг анхаарна. Эх сурвалжийн хатуу нөхцөл $A_i/2<B_i<A_i$ тул $B_i>A_i-B_i>0$."
+            }
+          ]
+        },
+        {
+          "title": "Greedy ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Бүх $2N$ нэмэгдлийг өсөхийн эсрэг sort хийгээд эхний $K$-г нэмнэ. Хоёр дахь минутыг эхнийхгүй авах эрхгүй; энэ хамаарал яагаад зөрчигдөхгүйг доорх exchange argument батална."
+            },
+            {
+              "type": "p",
+              "text": "$(A,B)=(10,7),(8,5)$, $K=2$ байг. Нэмэгдлүүд $7,3,5,3$; хамгийн сайн нь хоёр бодлогоос тус бүр эхний минутыг авч $7+5=12$. Нэгийг хоёр минут бодсон $10$-аас их."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Бүх нэмэгдэл эерэг, $K\\le2N$ тул optimum яг $K$ минут ашиглаж чадна. Prerequisite-ийг түр үл тооцсон ч ямар ч $K$ сонголтын оноо хамгийн том $K$ нэмэгдлийн нийлбэрээс хэтрэхгүй. Энэ нь дээд хязгаар."
+            },
+            {
+              "type": "p",
+              "text": "Дээд нийлбэртэй сонголтод нэг бодлогын хоёр дахь нэмэгдэл орсон атлаа эхнийх нь ороогүй гэж үзье. Хоёр дахь нэмэгдлийг түүнээс хатуу их $B_i$-ээр сольбол сонголтын тоо хэвээр боловч оноо өснө. Энэ нь хамгийн том $K$ нэмэгдэл гэсэн нөхцөлтэй зөрчилдөнө."
+            },
+            {
+              "type": "p",
+              "text": "Тиймээс сонгогдсон хоёр дахь минут бүрийн эхний минут бас сонгогдсон. Бодлого бүр дээр эхний минутыг хоёр дахь минутын өмнө хийхээр байрлуулж болно; нийт хугацаа $K$. Иймээс unconstrained дээд хязгаарт хүрэх хүчинтэй төлөвлөгөө байдаг бөгөөд Greedy optimum."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хугацаа $O(N\\log N)$, санах ой $O(N)$. $N\\le2\\cdot10^5$, $A_i\\le10^9$ тул нийт оноо $2\\cdot10^{14}$ хүрч болно; нэмэгдэл ба нийлбэрийг ll-д хадгална. Минутын тоо, индексүүдэд int хангалттай."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Хоёр marginal gain"
+            },
+            {
+              "type": "p",
+              "text": "Хоёр дахь нэмэгдэлд $A$-г бүтнээр нь дахин нэмэхгүй, зөвхөн $A-B$-г оруулна. reserve нь $2N$ утгын зайг урьдчилж авна."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<ll> gain;\ngain.reserve(2 * n);\nfor (int i = 0; i < n; ++i) {\n    ll a, b;\n    cin >> a >> b;\n    gain.push_back(b);\n    gain.push_back(a - b);\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Дээд K нийлбэр"
+            },
+            {
+              "type": "p",
+              "text": "Source-ийн хатуу decreasing gains нөхцөл сонгосон set-ийг prerequisite-тэй нийцтэй болгодог."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "sort(gain.begin(), gain.end(), greater<ll>());\nll ans = 0;\nfor (int i = 0; i < k; ++i) ans += gain[i];\ncout << ans << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_av"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    vector<ll> gain;\n    gain.reserve(2 * n);\n    for (int i = 0; i < n; ++i) {\n        ll a, b;\n        cin >> a >> b;\n        gain.push_back(b);\n        gain.push_back(a - b);\n    }\n    sort(gain.begin(), gain.end(), greater<ll>());\n    ll ans = 0;\n    for (int i = 0; i < k; ++i) ans += gain[i];\n    cout << ans << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "I will not drop out — Editorial",
+          "sections": [
+            {
+              "title": "Marginal gains",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "The first minute on task $i$ gains $B_i$; the second gains $A_i-B_i$, since $A_i$ is the two-minute total. The source’s strict inequality $A_i/2<B_i<A_i$ gives $B_i>A_i-B_i>0$."
+                }
+              ]
+            },
+            {
+              "title": "Greedy and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Sort all $2N$ gains in descending order and sum the first $K$. A second minute requires its first minute; the exchange argument below proves that this prerequisite is respected."
+                },
+                {
+                  "type": "p",
+                  "text": "For tasks $(A,B)=(10,7),(8,5)$ and $K=2$, the gains are $7,3,5,3$. Taking the first minute on each task scores $12$, exceeding the $10$ from completing only the first task."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "All gains are positive and $K\\le2N$, so an optimum can use exactly $K$ minutes. Ignoring prerequisites gives an upper bound: no selection of $K$ gains can exceed the sum of the largest $K$."
+                },
+                {
+                  "type": "p",
+                  "text": "Suppose a maximum-gain selection contains a task’s second gain but omits its first. Replacing the second gain by the strictly larger $B_i$ preserves the number of choices and increases the score, contradicting maximality."
+                },
+                {
+                  "type": "p",
+                  "text": "Thus every selected second minute has its first minute selected too. Schedule the first before the second on each task, using exactly $K$ minutes. The upper bound is attainable by a feasible plan, proving the Greedy optimum."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Time is $O(N\\log N)$ and space $O(N)$. With $N\\le2\\cdot10^5$ and $A_i\\le10^9$, the total may reach $2\\cdot10^{14}$, so gains and the sum use ll. Minute counts and indices fit int."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Two marginal gains"
+                },
+                {
+                  "type": "p",
+                  "text": "Store only $A-B$ as the second gain. reserve preallocates room for the $2N$ entries."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<ll> gain;\ngain.reserve(2 * n);\nfor (int i = 0; i < n; ++i) {\n    ll a, b;\n    cin >> a >> b;\n    gain.push_back(b);\n    gain.push_back(a - b);\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Largest K gains"
+                },
+                {
+                  "type": "p",
+                  "text": "The source’s strictly decreasing gains make the selected set prerequisite-feasible."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "sort(gain.begin(), gain.end(), greater<ll>());\nll ans = 0;\nfor (int i = 0; i < k; ++i) ans += gain[i];\ncout << ans << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_av"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, k;\n    cin >> n >> k;\n    vector<ll> gain;\n    gain.reserve(2 * n);\n    for (int i = 0; i < n; ++i) {\n        ll a, b;\n        cin >> a >> b;\n        gain.push_back(b);\n        gain.push_back(a - b);\n    }\n    sort(gain.begin(), gain.end(), greater<ll>());\n    ll ans = 0;\n    for (int i = 0; i < k; ++i) ans += gain[i];\n    cout << ans << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-779",
+    "number": 779,
+    "ref": "typical90_ax",
+    "expected_revision": 3,
+    "expected_body_sha256": "8f09cb9814dd474d9da3e55da5a764890913093d84db388f7a979c9ccc265d0d",
+    "editorial_sha256": "a717a6b0dadd111bd4c84d80d1a022c22efac2c58fb33cf4ce2e273a6347e828",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_ax",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-ax",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Stair Jump — Бодолт",
+      "sections": [
+        {
+          "title": "DP төлөв",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$dp[i]$ нь $0$-ээс яг $i$-р гишгүүрт хүрэх алхмын дарааллын тоо. $dp[0]=1$ нь юу ч хийгээгүй ганц дараалал. Сүүлийн алхам $1$ эсвэл $L$ урттай байна."
+            }
+          ]
+        },
+        {
+          "title": "Шилжилт ба жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$dp[i]=dp[i-1]$ дээр $i\\ge L$ бол $dp[i-L]$ нэмнэ. $L\\ge2$ тул хоёр сүүлийн алхам ялгаатай; давхар тоолохгүй. Хэрэв $L>N$ бол зөвхөн нэг нэгээр өгсөх ганц зам бий."
+            },
+            {
+              "type": "p",
+              "text": "$N=4,L=3$ үед дарааллууд $[1,1,1,1]$, $[1,3]$, $[3,1]$, нийт $3$. $N=L$ үед бүх нэг алхам болон ганц $L$ алхам гэсэн хоёр сонголт байна."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Яг $i$ дээр төгссөн дарааллыг сүүлийн алхмаар нь хоёр бүлэгт хуваая. $1$ алхмыг хасвал $i-1$-д хүрсэн дараалал, $L$ алхмыг хасвал $i-L$-д хүрсэн дараалал үлдэнэ. Эсрэгээр эдгээр prefix дээр тухайн сүүлийн алхмыг нэмэх нь нэг-нэг харгалзаа."
+            },
+            {
+              "type": "p",
+              "text": "Хоёр бүлэг давхцахгүй, бүх хүчинтэй дараалал тэдгээрийн нэгэнд орно. Иймээс recurrence зөв. $i$ өсөхөөр тооцоход хэрэгтэй бүх өмнөх төлөв бэлэн тул induction-оор $dp[N]$ зөв."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хугацаа $O(N)$, санах ой $O(N)$. Хоёр residue-ийн нийлбэр хамгийн ихдээ $2(10^9+7)-2<2^{31}$ тул int-д багтана. Нэмсний дараа mod-оос их буюу тэнцүү бол нэг удаа хасахад хангалттай."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Эхлэл ба recurrence"
+            },
+            {
+              "type": "p",
+              "text": "Сөрөг гишгүүрийн индекс рүү орохгүй: $i\\ge l$ үед л том алхмын өмнөх төлөвийг уншина."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "const int mod = 1000000007;\nvector<int> dp(n + 1);\ndp[0] = 1;\nfor (int i = 1; i <= n; ++i) {\n    dp[i] = dp[i - 1];\n    if (i >= l) {\n        dp[i] += dp[i - l];\n        if (dp[i] >= mod) dp[i] -= mod;\n    }\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Оролтын хоёр хэмжээ"
+            },
+            {
+              "type": "p",
+              "text": "$L$ нь $N$-ээс их байж болно. Үүнийг тусад нь хасахгүй, recurrence-ийн нөхцөл өөрөө зөв шийднэ."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int n, l;\ncin >> n >> l;"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ax"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, l;\n    cin >> n >> l;\n    const int mod = 1000000007;\n    vector<int> dp(n + 1);\n    dp[0] = 1;\n    for (int i = 1; i <= n; ++i) {\n        dp[i] = dp[i - 1];\n        if (i >= l) {\n            dp[i] += dp[i - l];\n            if (dp[i] >= mod) dp[i] -= mod;\n        }\n    }\n    cout << dp[n] << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Stair Jump — Editorial",
+          "sections": [
+            {
+              "title": "DP state",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Let $dp[i]$ count move sequences reaching stair $i$ exactly from zero. Initialize $dp[0]=1$ for the unique empty sequence. The last move has length either $1$ or $L$."
+                }
+              ]
+            },
+            {
+              "title": "Transition and example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Start with $dp[i-1]$ and add $dp[i-L]$ when $i\\ge L$. Since $L\\ge2$, these are distinct last moves. If $L>N$, only the all-one sequence is possible."
+                },
+                {
+                  "type": "p",
+                  "text": "For $N=4,L=3$, the sequences are $[1,1,1,1]$, $[1,3]$, and $[3,1]$, giving three. When $N=L$, the all-one sequence and the single-$L$ move give two."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Partition sequences ending at $i$ by their last move. Removing a final one gives a sequence ending at $i-1$; removing a final $L$ gives one ending at $i-L$. Appending that move reverses each correspondence."
+                },
+                {
+                  "type": "p",
+                  "text": "The groups are disjoint and exhaust all valid sequences, proving the recurrence. Processing stairs increasingly makes every predecessor state ready, so induction gives the correct $dp[N]$."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Time and space are $O(N)$. Adding two residues gives at most $2(10^9+7)-2<2^{31}$, so int is safe. One subtraction of the modulus after addition restores the residue range."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Initialization and recurrence"
+                },
+                {
+                  "type": "p",
+                  "text": "Read the long-move predecessor only when $i\\ge l$, avoiding negative indices."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "const int mod = 1000000007;\nvector<int> dp(n + 1);\ndp[0] = 1;\nfor (int i = 1; i <= n; ++i) {\n    dp[i] = dp[i - 1];\n    if (i >= l) {\n        dp[i] += dp[i - l];\n        if (dp[i] >= mod) dp[i] -= mod;\n    }\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Input dimensions"
+                },
+                {
+                  "type": "p",
+                  "text": "$L$ may exceed $N$; the recurrence guard handles this directly."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int n, l;\ncin >> n >> l;"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_ax"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, l;\n    cin >> n >> l;\n    const int mod = 1000000007;\n    vector<int> dp(n + 1);\n    dp[0] = 1;\n    for (int i = 1; i <= n; ++i) {\n        dp[i] = dp[i - 1];\n        if (i >= l) {\n            dp[i] += dp[i - l];\n            if (dp[i] >= mod) dp[i] -= mod;\n        }\n    }\n    cout << dp[n] << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-780",
+    "number": 780,
+    "ref": "typical90_az",
+    "expected_revision": 3,
+    "expected_body_sha256": "4f4f4a4b8426c860888ca6fb9d7c3012c0ce77c3edf894183ab16c247c08e604",
+    "editorial_sha256": "bbcec5de7cd9aa0d9014091c9890b0fb26bd57f0c547ee27e5b2e7aef03ee02e",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_az",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-az",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Dice Product — Бодолт",
+      "sections": [
+        {
+          "title": "Үржвэрүүдийн нийлбэр",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Шоо бүрийн зургаан талын нийлбэрийг $S_i=\\sum_{j=1}^{6}A_{i,j}$ гэе. Шаардсан бүх outcome-ийн онооны нийлбэр нь $S_1S_2\\cdots S_N$. Дундаж биш нийлбэр асууж байгаа тул $6^N$-ээр хуваахгүй."
+            }
+          ]
+        },
+        {
+          "title": "Жишээ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Эхний шооны талууд $1,2,3,4,5,6$, хоёр дахь нь $7,8,9,10,11,12$ бол нийлбэрүүд $21$ ба $57$. Нийт $36$ outcome-ийн үржвэрүүдийн нийлбэр $21\\cdot57=1197$."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$(A_{1,1}+\\cdots+A_{1,6})\\cdots(A_{N,1}+\\cdots+A_{N,6})$ үржвэрийг distributive law-аар задлахад шоо бүрээс яг нэг гишүүн сонгосон үржвэр бүр нэг удаа гарна."
+            },
+            {
+              "type": "p",
+              "text": "Энэ сонголт нь outcome-ийн $N$ талын индекстэй нэг-нэгээр харгалзана. Шоонууд ялгаатай тул ямар ч permutation-ээр дахин хуваахгүй. Иймээс задлалын нийлбэр яг бодлогын хүссэн нийт оноо. Mod нь нэмэх, үржүүлэхтэй нийцдэг тул алхам бүрд mod авч болно."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хугацаа $O(6N)$, нэмэлт санах ой $O(1)$. Source-д $N\\le100$, талууд $1\\ldots100$ дотор хатуу өсөх зургаан утга. Нэг шооны нийлбэр int-д багтах боловч modulo хариутай үржүүлэхэд ll хэрэгтэй. Код зөвхөн тухайн шооны нийлбэрийг хадгална."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Үржвэрийн эхлэл"
+            },
+            {
+              "type": "p",
+              "text": "$ans=1$ нь үржих үйлдлийн эхлэл. Нэг ч шооны үржвэр оруулаагүй үед зөв нейтрал утга."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "const ll mod = 1000000007;\nll ans = 1;"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Шоо бүрийн нийлбэрээр үржүүлэх"
+            },
+            {
+              "type": "p",
+              "text": "Зургаан утгыг нэмээд ans-тай үржүүлнэ. ans ll учир үржүүлэхээс өмнө өргөн төрөлд тооцогдоно."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "for (int i = 0; i < n; ++i) {\n    int sum = 0;\n    for (int j = 0; j < 6; ++j) {\n        int x;\n        cin >> x;\n        sum += x;\n    }\n    ans = ans * sum % mod;\n}\ncout << ans << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_az"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    const ll mod = 1000000007;\n    ll ans = 1;\n    for (int i = 0; i < n; ++i) {\n        int sum = 0;\n        for (int j = 0; j < 6; ++j) {\n            int x;\n            cin >> x;\n            sum += x;\n        }\n        ans = ans * sum % mod;\n    }\n    cout << ans << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Dice Product — Editorial",
+          "sections": [
+            {
+              "title": "Sum of products",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Let $S_i=\\sum_{j=1}^{6}A_{i,j}$ be the face sum of die $i$. The required total over all outcomes is $S_1S_2\\cdots S_N$. This is a sum, so there is no division by $6^N$."
+                }
+              ]
+            },
+            {
+              "title": "Example",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "For face rows $1,2,3,4,5,6$ and $7,8,9,10,11,12$, the sums are $21$ and $57$. The product scores of all $36$ outcomes sum to $21\\cdot57=1197$."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Expanding $(A_{1,1}+\\cdots+A_{1,6})\\cdots(A_{N,1}+\\cdots+A_{N,6})$ by the distributive law produces each product formed by choosing one face from every die exactly once."
+                },
+                {
+                  "type": "p",
+                  "text": "These choices correspond bijectively to outcome tuples. Dice are distinguishable, so no permutation division is needed. The expansion is exactly the requested total, and modular reduction may be applied after each addition or multiplication."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Time is $O(6N)$ and auxiliary space $O(1)$. The source has $N\\le100$ and six strictly increasing values in $1\\ldots100$ per die. A face sum fits int, but multiplying it by the modular answer needs ll. Only one row sum is stored at a time."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Product initialization"
+                },
+                {
+                  "type": "p",
+                  "text": "$ans=1$ is the neutral product before processing any die."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "const ll mod = 1000000007;\nll ans = 1;"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Multiply by each face sum"
+                },
+                {
+                  "type": "p",
+                  "text": "Sum six values and multiply the running answer. Its ll type promotes the multiplication before evaluation."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "for (int i = 0; i < n; ++i) {\n    int sum = 0;\n    for (int j = 0; j < 6; ++j) {\n        int x;\n        cin >> x;\n        sum += x;\n    }\n    ans = ans * sum % mod;\n}\ncout << ans << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_az"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    cin >> n;\n    const ll mod = 1000000007;\n    ll ans = 1;\n    for (int i = 0; i < n; ++i) {\n        int sum = 0;\n        for (int j = 0; j < 6; ++j) {\n            int x;\n            cin >> x;\n            sum += x;\n        }\n        ans = ans * sum % mod;\n    }\n    cout << ans << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-781",
+    "number": 781,
+    "ref": "typical90_bc",
+    "expected_revision": 3,
+    "expected_body_sha256": "0ef27d9eda504f507627fcc04379ed2fb8b13d651f2653baa85fb15211eb560b",
+    "editorial_sha256": "c2b6e1bab928b913390c043f39b0027d17a2eeb987d50afd95ccfe3bc4007e7d",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_bc",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-bc",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Select 5 — Бодолт",
+      "sections": [
+        {
+          "title": "Таван индексийг enumerate хийх",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$N\\le100$ тул $i<j<k<l<m$ гэсэн бүх таван индексийг шалгана. Үржвэрийг алхам бүрд $P$-аар mod авч хадгална. $P$ анхны байх албагүй тул division эсвэл modular inverse хэрэглэхгүй."
+            }
+          ]
+        },
+        {
+          "title": "Жишээ ба residue",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Зургаан утга бүгд $2$, $P=4,Q=0$ байг. Ямар ч тавын үржвэр $32$, үлдэгдэл $0$, тэгэхээр $\\binom{6}{5}=6$ сонголт зөв. Ижил утгатай байсан ч өөр индексүүд тусдаа сонголт."
+            },
+            {
+              "type": "p",
+              "text": "$(xy)\\bmod P=((x\\bmod P)(y\\bmod P))\\bmod P$ нь дурын эерэг $P$-д үнэн. $P=1$ үед бүх residue $0$; source-ийн $Q=0$-той бүх таван индекс тохирно."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Таван ялгаатай индексийн unordered сонголт бүр өсөх дарааллаар ганц $i,j,k,l,m$ tuple-тэй. Тиймээс nested loop сонголт бүрийг яг нэг удаа шалгаж, утгууд давхардсан ч индексийн сонголтыг зөв ялгана."
+            },
+            {
+              "type": "p",
+              "text": "Prefix үржвэрийг mod авах нь дараагийн үржүүлэлтүүдийн эцсийн residue-ийг өөрчлөхгүй. Иймээс шалгаж буй residue нь бодит таван утгын үржвэрийн residue-тэй тэнцүү. $Q$-той тэнцсэн сонголт бүрийг нэмэх нь яг шаардсан тоо."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хугацаа $O(N^5)$, санах ой $O(N)$. Хамгийн их сонголт $\\binom{100}{5}=75287520$ тул answer int-д багтана. Харин хоёр residue-ийн үржвэр $10^{18}$ орчим хүрэх тул утга, prefix product-ууд ll. Бүтэн таван тоог mod-гүй үржүүлэх нь overflow үүсгэнэ."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Оролтыг residue болгох"
+            },
+            {
+              "type": "p",
+              "text": "Source-ийн $0\\le Q<P$ нөхцөлөөс $P\\ge1$. Тэг утга болон composite modulus-д ч mod авах үйлдэл хүчинтэй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int n;\nll p, q;\ncin >> n >> p >> q;\nvector<ll> a(n);\nfor (ll &x : a) {\n    cin >> x;\n    x %= p;\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Өсөх индексүүд ба prefix product"
+            },
+            {
+              "type": "p",
+              "text": "p2,p3,p4 нь тухайн эхний хоёр, гурав, дөрвөн индексийн residue product. Сүүлийн loop тав дахь индексийг шалгана."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int ans = 0;\nfor (int i = 0; i < n - 4; ++i) {\n    for (int j = i + 1; j < n - 3; ++j) {\n        ll p2 = a[i] * a[j] % p;\n        for (int k = j + 1; k < n - 2; ++k) {\n            ll p3 = p2 * a[k] % p;\n            for (int l = k + 1; l < n - 1; ++l) {\n                ll p4 = p3 * a[l] % p;\n                for (int m = l + 1; m < n; ++m) {\n                    if (p4 * a[m] % p == q) ++ans;\n                }\n            }\n        }\n    }\n}\ncout << ans << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bc"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    ll p, q;\n    cin >> n >> p >> q;\n    vector<ll> a(n);\n    for (ll &x : a) {\n        cin >> x;\n        x %= p;\n    }\n    int ans = 0;\n    for (int i = 0; i < n - 4; ++i) {\n        for (int j = i + 1; j < n - 3; ++j) {\n            ll p2 = a[i] * a[j] % p;\n            for (int k = j + 1; k < n - 2; ++k) {\n                ll p3 = p2 * a[k] % p;\n                for (int l = k + 1; l < n - 1; ++l) {\n                    ll p4 = p3 * a[l] % p;\n                    for (int m = l + 1; m < n; ++m) {\n                        if (p4 * a[m] % p == q) ++ans;\n                    }\n                }\n            }\n        }\n    }\n    cout << ans << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Select 5 — Editorial",
+          "sections": [
+            {
+              "title": "Enumerate five indices",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Since $N\\le100$, enumerate all $i<j<k<l<m$. Reduce prefix products modulo $P$ after each multiplication. The modulus need not be prime, so no division or modular inverse is used."
+                }
+              ]
+            },
+            {
+              "title": "Example and residues",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "For six values all equal to $2$, with $P=4,Q=0$, every product of five is $32$ and has residue zero. All $\\binom{6}{5}=6$ choices qualify; equal values at distinct indices are different choices."
+                },
+                {
+                  "type": "p",
+                  "text": "The identity $(xy)\\bmod P=((x\\bmod P)(y\\bmod P))\\bmod P$ holds for every positive $P$. For $P=1$, all residues and the required $Q$ are zero."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Every unordered choice of five distinct indices has exactly one increasing tuple $i,j,k,l,m$. The loops therefore examine each choice once, including different choices with equal values."
+                },
+                {
+                  "type": "p",
+                  "text": "Reducing a prefix product does not change the residue after later multiplications. The computed residue consequently equals that of the actual five-value product, so incrementing exactly when it equals $Q$ counts precisely the required choices."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Time is $O(N^5)$ and space $O(N)$. At most $\\binom{100}{5}=75287520$ choices exist, so the answer fits int. Products of two residues may approach $10^{18}$, requiring ll values and prefix products. Multiplying all five raw values would overflow."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Reduce input residues"
+                },
+                {
+                  "type": "p",
+                  "text": "The source condition $0\\le Q<P$ ensures $P\\ge1$. Reduction is valid with zero values and composite moduli."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int n;\nll p, q;\ncin >> n >> p >> q;\nvector<ll> a(n);\nfor (ll &x : a) {\n    cin >> x;\n    x %= p;\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Increasing indices and prefix products"
+                },
+                {
+                  "type": "p",
+                  "text": "p2,p3,p4 store products for the selected first two, three and four indices. The innermost loop checks the fifth."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int ans = 0;\nfor (int i = 0; i < n - 4; ++i) {\n    for (int j = i + 1; j < n - 3; ++j) {\n        ll p2 = a[i] * a[j] % p;\n        for (int k = j + 1; k < n - 2; ++k) {\n            ll p3 = p2 * a[k] % p;\n            for (int l = k + 1; l < n - 1; ++l) {\n                ll p4 = p3 * a[l] % p;\n                for (int m = l + 1; m < n; ++m) {\n                    if (p4 * a[m] % p == q) ++ans;\n                }\n            }\n        }\n    }\n}\ncout << ans << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bc"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    ll p, q;\n    cin >> n >> p >> q;\n    vector<ll> a(n);\n    for (ll &x : a) {\n        cin >> x;\n        x %= p;\n    }\n    int ans = 0;\n    for (int i = 0; i < n - 4; ++i) {\n        for (int j = i + 1; j < n - 3; ++j) {\n            ll p2 = a[i] * a[j] % p;\n            for (int k = j + 1; k < n - 2; ++k) {\n                ll p3 = p2 * a[k] % p;\n                for (int l = k + 1; l < n - 1; ++l) {\n                    ll p4 = p3 * a[l] % p;\n                    for (int m = l + 1; m < n; ++m) {\n                        if (p4 * a[m] % p == q) ++ans;\n                    }\n                }\n            }\n        }\n    }\n    cout << ans << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-782",
+    "number": 782,
+    "ref": "typical90_bd",
+    "expected_revision": 3,
+    "expected_body_sha256": "9c81c46f4da2c8d2e28a4822005aa50fc62c7eb14e2a03b6c75c5f7cbee3baa0",
+    "editorial_sha256": "01f56eaf325db2d668b4f6d31eea5b1022705ec57e37cd45cddaea2abb76a4ce",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_bd",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-bd",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Lucky Bag — Бодолт",
+      "sections": [
+        {
+          "title": "Knapsack төлөв",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "$dp[i][s]$ нь эхний $i$ өдөр тус бүр яг нэг сонголт хийж нийт $s$ хүрч болох эсэх. $dp[0][0]=true$. Өдөр бүр $A_i$ эсвэл $B_i$-г нэмж дараагийн мөрийг байгуулна. Нэг өдрийг алгасах, хоёр сонголтыг зэрэг авах шилжилт байхгүй."
+            }
+          ]
+        },
+        {
+          "title": "Жишээ ба witness",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$(A,B)=(2,3),(4,5),(2,3)$, $S=10$ бол ",
+                  "marks": []
+                },
+                {
+                  "text": "ABB",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " буюу $2+5+3=10$ нэг зөв төлөвлөгөө. ",
+                  "marks": []
+                },
+                {
+                  "text": "BBA",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " ч $3+5+2=10$ тул хариу ганц биш. Ямар ч зөв $N$ үсэгтэй A/B мөрийг хэвлэж болно.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "p",
+              "text": "Эцсийн төлөв хүрэхгүй бол Impossible. Хүрвэл сүүлээс нь явж, өмнөх өдөрт $rem-A_i$ хүрэх боломжтой бол A-г авна; үгүй бол B-г авна."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Өдөр бүрийн төлөвлөгөө нь өмнөх өдрийн хүчинтэй төлөвлөгөө дээр тухайн өдрийн яг нэг сонголтыг нэмсэн хэлбэртэй. Хоёр шилжилт бүх ийм боломжийг хамарна. Эхлэл зөв тул induction-оор reachability хүснэгт зөв. Бүх үнэ эерэг тул $S$-ээс давсан нийлбэрийг хадгалах шаардлагагүй."
+            },
+            {
+              "type": "p",
+              "text": "Reconstruction-ийн одоогийн төлөв reachable бол дор хаяж нэг өмнөх A эсвэл B шилжилт бий. A-г боломжтой үед нь сонгох, бусад үед заавал байгаа B-г сонгох нь reachable өмнөх төлөвт буцаана. Эцэст нь $dp[0][0]$-д хүрч, нийт $S$-тэй яг $N$ сонголт гарна. Lexicographical хамгийн бага байх шаардлагагүй."
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Хугацаа болон санах ой $O(NS)$. Source-д $N\\le100$, $S\\le10^5$ учир char хүснэгт ойролцоогоор $10$ MB. Үнэ ба индексүүд int-д багтана. Mod тооцохгүй: төлөв нь аргын тоо биш, хүрч болох эсэх boolean."
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Boolean DP"
+            },
+            {
+              "type": "p",
+              "text": "Шинэ өдрийн мөр рүү л шилжинэ. Ингэснээр нэг өдрөөс хоёр сонголт авч нэг төлөвт давхар нэмэхгүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<vector<char>> dp(n + 1, vector<char>(s + 1));\ndp[0][0] = true;\nfor (int i = 0; i < n; ++i) {\n    for (int sum = 0; sum <= s; ++sum) {\n        if (!dp[i][sum]) continue;\n        if (sum + a[i] <= s) dp[i + 1][sum + a[i]] = true;\n        if (sum + b[i] <= s) dp[i + 1][sum + b[i]] = true;\n    }\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Хариуг буцааж байгуулах"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Сөрөг индексээс хамгаалж ",
+                  "marks": []
+                },
+                {
+                  "text": "rem>=a[i]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-г эхлээд шалгана. Буцаахдаа сонгосон үнийн дүнг rem-ээс хасна.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "if (!dp[n][s]) {\n    cout << \"Impossible\\n\";\n    return 0;\n}\nstring ans(n, 'A');\nint rem = s;\nfor (int i = n - 1; i >= 0; --i) {\n    if (rem >= a[i] && dp[i][rem - a[i]]) rem -= a[i];\n    else {\n        ans[i] = 'B';\n        rem -= b[i];\n    }\n}\ncout << ans << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bd"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, s;\n    cin >> n >> s;\n    vector<int> a(n), b(n);\n    for (int i = 0; i < n; ++i) cin >> a[i] >> b[i];\n    vector<vector<char>> dp(n + 1, vector<char>(s + 1));\n    dp[0][0] = true;\n    for (int i = 0; i < n; ++i) {\n        for (int sum = 0; sum <= s; ++sum) {\n            if (!dp[i][sum]) continue;\n            if (sum + a[i] <= s) dp[i + 1][sum + a[i]] = true;\n            if (sum + b[i] <= s) dp[i + 1][sum + b[i]] = true;\n        }\n    }\n    if (!dp[n][s]) {\n        cout << \"Impossible\\n\";\n        return 0;\n    }\n    string ans(n, 'A');\n    int rem = s;\n    for (int i = n - 1; i >= 0; --i) {\n        if (rem >= a[i] && dp[i][rem - a[i]]) rem -= a[i];\n        else {\n            ans[i] = 'B';\n            rem -= b[i];\n        }\n    }\n    cout << ans << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Lucky Bag — Editorial",
+          "sections": [
+            {
+              "title": "Knapsack state",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Let $dp[i][s]$ mean that choosing exactly one option on each of the first $i$ days can total $s$. Start with $dp[0][0]=true$ and extend by either $A_i$ or $B_i$. There is no skip or take-both transition."
+                }
+              ]
+            },
+            {
+              "title": "Example and witness",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "For pairs $(2,3),(4,5),(2,3)$ and $S=10$, ",
+                      "marks": []
+                    },
+                    {
+                      "text": "ABB",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " gives $2+5+3=10$. ",
+                      "marks": []
+                    },
+                    {
+                      "text": "BBA",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " also works, so the answer is not unique. Any valid length-$N$ A/B string is accepted.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "p",
+                  "text": "If the final state is unreachable, print Impossible. Otherwise reconstruct backward: choose A when $rem-A_i$ was reachable on the previous day; choose B otherwise."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Every valid plan extends a previous-day plan by exactly one of today’s options. The two transitions cover all such extensions. Induction from the base state proves the reachability table correct. Positive prices let us discard totals above $S$."
+                },
+                {
+                  "type": "p",
+                  "text": "A reachable reconstruction state has at least one valid A or B predecessor. Taking A when available, otherwise the guaranteed B predecessor, preserves reachability backward. Reaching $dp[0][0]$ yields exactly $N$ choices totaling $S$. No lexicographical minimum is required."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Time and space are $O(NS)$. With $N\\le100$ and $S\\le10^5$, the char table occupies about $10$ MB. Prices and indices fit int. No modulus is needed because states record feasibility rather than counts."
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Boolean DP"
+                },
+                {
+                  "type": "p",
+                  "text": "Transitions go only to the next day’s row, preventing two choices from the same day."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<vector<char>> dp(n + 1, vector<char>(s + 1));\ndp[0][0] = true;\nfor (int i = 0; i < n; ++i) {\n    for (int sum = 0; sum <= s; ++sum) {\n        if (!dp[i][sum]) continue;\n        if (sum + a[i] <= s) dp[i + 1][sum + a[i]] = true;\n        if (sum + b[i] <= s) dp[i + 1][sum + b[i]] = true;\n    }\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Reconstruct the plan"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Check ",
+                      "marks": []
+                    },
+                    {
+                      "text": "rem>=a[i]",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " before indexing a predecessor. Subtract each chosen price from rem while moving backward.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "if (!dp[n][s]) {\n    cout << \"Impossible\\n\";\n    return 0;\n}\nstring ans(n, 'A');\nint rem = s;\nfor (int i = n - 1; i >= 0; --i) {\n    if (rem >= a[i] && dp[i][rem - a[i]]) rem -= a[i];\n    else {\n        ans[i] = 'B';\n        rem -= b[i];\n    }\n}\ncout << ans << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bd"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n, s;\n    cin >> n >> s;\n    vector<int> a(n), b(n);\n    for (int i = 0; i < n; ++i) cin >> a[i] >> b[i];\n    vector<vector<char>> dp(n + 1, vector<char>(s + 1));\n    dp[0][0] = true;\n    for (int i = 0; i < n; ++i) {\n        for (int sum = 0; sum <= s; ++sum) {\n            if (!dp[i][sum]) continue;\n            if (sum + a[i] <= s) dp[i + 1][sum + a[i]] = true;\n            if (sum + b[i] <= s) dp[i + 1][sum + b[i]] = true;\n        }\n    }\n    if (!dp[n][s]) {\n        cout << \"Impossible\\n\";\n        return 0;\n    }\n    string ans(n, 'A');\n    int rem = s;\n    for (int i = n - 1; i >= 0; --i) {\n        if (rem >= a[i] && dp[i][rem - a[i]]) rem -= a[i];\n        else {\n            ans[i] = 'B';\n            rem -= b[i];\n        }\n    }\n    cout << ans << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "task-783",
+    "number": 783,
+    "ref": "typical90_bf",
+    "expected_revision": 3,
+    "expected_body_sha256": "c8287de4db107134271c208c2215cadc9f30e49d28381fd3050f820dacb93cbb",
+    "editorial_sha256": "577a2812d45fc3446ff147611e52f2761fcf568c4c545af5f676f63a4e1b6786",
+    "source_problem_url": "https://atcoder.jp/contests/typical90/tasks/typical90_bf",
+    "rights_basis": "independent-original-solution",
+    "editorial": {
+      "id": "problem-editorial-atcoder-typical90-bf",
+      "levelKey": "intermediate",
+      "order": 1,
+      "category": "Problem editorial",
+      "title": "Original Calculator — Бодолт",
+      "sections": [
+        {
+          "title": "Functional graph",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Төлөв $0\\ldots99999$ гэсэн ердөө $100000$ боломжтой, төлөв бүрийн дараагийнх ганц. Тиймээс дарааллыг дагахад нэг төлөв дахин гарч, цааш cycle давтагдана. $K$ хүртэл бүх үйлдлийг шууд хийх шаардлагагүй."
+            }
+          ]
+        },
+        {
+          "title": "Prefix, cycle ба жишээ",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Төлөвийн анхны индексийг ",
+                  "marks": []
+                },
+                {
+                  "text": "seen",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ", дарааллыг ",
+                  "marks": []
+                },
+                {
+                  "text": "path",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-д хадгална. ",
+                  "marks": []
+                },
+                {
+                  "text": "path[0]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " нь эхний төлөв. Хадгалсан урт $m$, дахин гарсан төлөвийн анхны индекс $p$ бол cycle урт $T=m-p$.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "p",
+              "text": "Эхний төлөв $5$ бол $5\\to10\\to11\\to13$, тэгэхээр гурван үйлдлийн дараа $13$. $0$-ийн digit sum $0$ тул $0$ өөр рүүгээ явдаг нэг урттай cycle."
+            }
+          ]
+        },
+        {
+          "title": "Яагаад зөв бэ",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Дараагийн төлөв зөвхөн одоогийнхоос хамаардаг тул нэг төлөв давтагдмагц түүний дараах бүх дараалал мөн давтагдана. Анхны давталтын өмнөх path нь давхардалгүй бөгөөд эхний $p$ төлөвүүд prefix, үлдсэн нь cycle."
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "$K<m$ бол хариу ",
+                  "marks": []
+                },
+                {
+                  "text": "path[K]",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": ". Бусад үед prefix-ийг давсан алхмын тоо $K-p$; бүтэн эргэлтүүдийг хасахад индекс $p+((K-p)\\bmod T)$ болно. Энэ нь cycle доторх зөв төлөвт очно.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "seen",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": "-д анхны индексийг л хадгалдаг тул $p,T$ нь зөв. Төлөвийн орон зай finite учир loop хамгийн ихдээ $100000$ өөр төлөв хадгалаад заавал зогсоно.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Complexity ба төрөл",
+          "blocks": [
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Цифрийн нийлбэрт ихдээ таван цифр орно. Нийт хугацаа, санах ой $O(100000)$ бөгөөд $K$-аас хамаарахгүй. Төлөв ба индекс int-д багтах ч $K\\le10^{18}$ тул ",
+                  "marks": []
+                },
+                {
+                  "text": "k",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " болон cycle modulo тооцооллын түр индекс ll. Хариуны индекс багассаныхаа дараа path-ийн хүрээнд байна.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Кодын хэсгүүд",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Дараагийн төлөв"
+            },
+            {
+              "type": "p",
+              "text": "Decimal цифрүүдийг нэг нэгээр нь нэмээд $100000$-аар mod авна. $x=0$ үед sum эхний $0$ хэвээр."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "int nextState(int x) {\n    int sum = 0;\n    for (int t = x; t > 0; t /= 10) sum += t % 10;\n    return (x + sum) % 100000;\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Анхны давталтыг олох"
+            },
+            {
+              "type": "p",
+              "text": "Төлөвийг хадгалахаасаа өмнө индексийг нь тэмдэглэнэ. Дараагийн давталтад cur өмнө нь харагдсан бол path-д дахин нэмэхгүй."
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "vector<int> seen(100000, -1), path;\nint cur = n;\nwhile (seen[cur] == -1) {\n    seen[cur] = int(path.size());\n    path.push_back(cur);\n    cur = nextState(cur);\n}"
+            },
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Том K-г cycle рүү бууруулах"
+            },
+            {
+              "type": "rich",
+              "content": [
+                {
+                  "text": "Энэ branch-д $K$ нь path-ийн уртаас багагүй учир ",
+                  "marks": []
+                },
+                {
+                  "text": "k-start",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " сөрөг биш. ",
+                  "marks": []
+                },
+                {
+                  "text": "length",
+                  "marks": [
+                    "code"
+                  ]
+                },
+                {
+                  "text": " эерэг бөгөөд бууруулсан индекс int-д багтана.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "ll at = k;\nif (k >= ll(path.size())) {\n    int start = seen[cur];\n    int length = int(path.size()) - start;\n    at = start + (k - start) % length;\n}\ncout << path[int(at)] << '\\n';"
+            }
+          ]
+        },
+        {
+          "title": "Эх сурвалж",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Тусад нь боловсруулсан бодолт ба хэрэгжүүлэлт."
+            },
+            {
+              "type": "links",
+              "items": [
+                {
+                  "label": "AtCoder task",
+                  "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bf"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Бүтэн C++17 код",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "C++17",
+              "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint nextState(int x) {\n    int sum = 0;\n    for (int t = x; t > 0; t /= 10) sum += t % 10;\n    return (x + sum) % 100000;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    ll k;\n    cin >> n >> k;\n    vector<int> seen(100000, -1), path;\n    int cur = n;\n    while (seen[cur] == -1) {\n        seen[cur] = int(path.size());\n        path.push_back(cur);\n        cur = nextState(cur);\n    }\n    ll at = k;\n    if (k >= ll(path.size())) {\n        int start = seen[cur];\n        int length = int(path.size()) - start;\n        at = start + (k - start) % length;\n    }\n    cout << path[int(at)] << '\\n';\n}\n"
+            }
+          ]
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Original Calculator — Editorial",
+          "sections": [
+            {
+              "title": "Functional graph",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "There are only $100000$ states, zero through $99999$, and each has exactly one successor. Following successors must eventually repeat a state, after which a cycle repeats. Simulating all $K$ operations is unnecessary."
+                }
+              ]
+            },
+            {
+              "title": "Prefix, cycle and example",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Store first-visit indices in ",
+                      "marks": []
+                    },
+                    {
+                      "text": "seen",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " and the trajectory in ",
+                      "marks": []
+                    },
+                    {
+                      "text": "path",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ". ",
+                      "marks": []
+                    },
+                    {
+                      "text": "path[0]",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " is the initial state. If the stored length is $m$ and the repeated state first appeared at $p$, the cycle length is $T=m-p$.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "p",
+                  "text": "Starting at $5$ gives $5\\to10\\to11\\to13$, so three operations yield $13$. State zero maps to itself, forming a cycle of length one."
+                }
+              ]
+            },
+            {
+              "title": "Correctness",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "The successor depends only on the current state. Repeating a state therefore repeats the entire subsequent trajectory. Before the first repetition, path contains distinct states: a prefix of length $p$ followed by the cycle."
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "If $K<m$, return ",
+                      "marks": []
+                    },
+                    {
+                      "text": "path[K]",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": ". Otherwise remove the prefix and complete rotations, giving index $p+((K-p)\\bmod T)$. This selects exactly the state after $K$ operations.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "p",
+                  "text": "First-visit indices identify the correct cycle start and length. The finite state space guarantees termination after at most $100000$ stored states."
+                }
+              ]
+            },
+            {
+              "title": "Complexity and types",
+              "blocks": [
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "Each digit sum uses at most five digits. Time and space are $O(100000)$, independent of $K$. States and stored indices fit int, but $K\\le10^{18}$ requires ll for ",
+                      "marks": []
+                    },
+                    {
+                      "text": "k",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " and the temporary modular index. The reduced index is always within path.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Code fragments",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Successor function"
+                },
+                {
+                  "type": "p",
+                  "text": "Add decimal digits and reduce modulo $100000$. For zero, the initial digit sum remains zero."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "int nextState(int x) {\n    int sum = 0;\n    for (int t = x; t > 0; t /= 10) sum += t % 10;\n    return (x + sum) % 100000;\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Find the first repetition"
+                },
+                {
+                  "type": "p",
+                  "text": "Record the index before appending a state. When cur was already seen, stop without appending it again."
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "vector<int> seen(100000, -1), path;\nint cur = n;\nwhile (seen[cur] == -1) {\n    seen[cur] = int(path.size());\n    path.push_back(cur);\n    cur = nextState(cur);\n}"
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Reduce a large K into the cycle"
+                },
+                {
+                  "type": "rich",
+                  "content": [
+                    {
+                      "text": "In this branch $K$ is at least the path length, so ",
+                      "marks": []
+                    },
+                    {
+                      "text": "k-start",
+                      "marks": [
+                        "code"
+                      ]
+                    },
+                    {
+                      "text": " is nonnegative. The cycle length is positive and the reduced index fits int.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "ll at = k;\nif (k >= ll(path.size())) {\n    int start = seen[cur];\n    int length = int(path.size()) - start;\n    at = start + (k - start) % length;\n}\ncout << path[int(at)] << '\\n';"
+                }
+              ]
+            },
+            {
+              "title": "Source",
+              "blocks": [
+                {
+                  "type": "p",
+                  "text": "Original solution analysis and implementation."
+                },
+                {
+                  "type": "links",
+                  "items": [
+                    {
+                      "label": "AtCoder task",
+                      "url": "https://atcoder.jp/contests/typical90/tasks/typical90_bf"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Complete C++17 program",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "C++17",
+                  "text": "#include <bits/stdc++.h>\nusing namespace std;\nusing ll = long long;\n\nint nextState(int x) {\n    int sum = 0;\n    for (int t = x; t > 0; t /= 10) sum += t % 10;\n    return (x + sum) % 100000;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    int n;\n    ll k;\n    cin >> n >> k;\n    vector<int> seen(100000, -1), path;\n    int cur = n;\n    while (seen[cur] == -1) {\n        seen[cur] = int(path.size());\n        path.push_back(cur);\n        cur = nextState(cur);\n    }\n    ll at = k;\n    if (k >= ll(path.size())) {\n        int start = seen[cur];\n        int length = int(path.size()) - start;\n        at = start + (k - start) % length;\n    }\n    cout << path[int(at)] << '\\n';\n}\n"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+]
