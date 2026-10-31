@@ -2,6 +2,7 @@ import {assertProblemStatementReady,STATEMENT_CHECKS} from './problem-statement-
 import {validateTutorial} from './tutorial-model.js?v=63';
 import {drawArticle,typeset} from './tutorials.js?v=84';
 import {mountBlockEditor} from './tutorial-block-editor.js?v=84';
+import {readProblemStatement,problemBackend} from './problem-backend.js?v=85';
 import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=63';
 const node=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const clearMath=root=>{try{window.MathJax?.typesetClear?.([root]);}catch{}};
@@ -21,7 +22,7 @@ export function setupProblemStatement(root,ctx){
    try{await typeset([target],()=>drawArticle(doc,target,lang,{client:ctx.client(),viewerId:ctx.user?.()?.id||'public'}),()=>valid()&&language.value===lang&&target.isConnected);}catch{if(valid())message.textContent='Томьёог дүрсэлж чадсангүй; эх бичвэрийг харуулж байна.';}
   }
   async function load(){if(pending)return;if(doc){await paint();return;}if(!problem.statement&&!problem.hasStatement){message.textContent='Монгол/English statement хараахан бүрдээгүй. Эх бодлогын холбоосоор бүрэн нөхцөлийг үзнэ үү.';return;}pending=true;message.textContent='Statement ачаалж байна…';
-   try{let body=problem.statement,provenance=problem.statementProvenance;if(!body){if(!ctx.client())throw Error('Онлайн statement холболт шаардлагатай.');const result=await ctx.client().rpc('get_problem_statement',{p_problem_id:problem.id});if(result.error)throw result.error;body=result.data?.body;provenance=result.data?.provenance;}
+   try{let body=problem.statement,provenance=problem.statementProvenance;if(!body){if(!ctx.client())throw Error('Онлайн statement холболт шаардлагатай.');const result=await readProblemStatement(ctx.client(),problem.id);body=result?.body;provenance=result?.provenance;}
     if(!valid())return;if(!body){message.textContent='Монгол/English statement хараахан бүрдээгүй. Эх бодлогын холбоосоор бүрэн нөхцөлийг үзнэ үү.';return;}assertProblemStatementReady({statement:body,statementProvenance:provenance});const source=node('a','Эх сурвалж / Source');source.href=provenance.sourceUrl;source.target='_blank';source.rel='noopener noreferrer';attribution.replaceChildren(source,document.createTextNode(provenance.rightsBasis==='original-functional-restatement'?' · Original functional restatement':' · '+provenance.rightsBasis));doc=structuredClone(body);label.hidden=false;await paint();
    }catch{if(valid())message.textContent='Statement ачаалсангүй. Дахин нээж оролдоно уу.';}finally{pending=false;}
   }
@@ -46,15 +47,15 @@ export function setupProblemStatementEditor(root,ctx){
  function version(){if(lang==='mn')return doc;doc.translations??={};return doc.translations.en??={title:'',sections:['Task','Input','Output','Constraints','Samples'].map(title=>({title,blocks:[]}))};}
  function paint(){metadata.hidden=!doc;for(const input of metadata.querySelectorAll('input,select'))input.disabled=locked();editor?.destroy();editor=null;body.replaceChildren();titleLabel.hidden=remove.hidden=label.hidden=!doc;create.hidden=!!doc;create.disabled=locked();remove.disabled=locked();language.disabled=locked();title.disabled=locked();if(!doc)return;const v=version();title.value=v.title||'';const generation=turn,actor=ctx.user()?.id,id=doc.id;
   editor=mountBlockEditor(body,v.sections,{locked,changed:()=>{touched=true;reviewed.checked=false;},message:t=>message.textContent=t,problems:ctx.problems,progress:ctx.progress,
-   uploadImage:async(file,current)=>{await ctx.requireBackend?.();return uploadTutorialImage(ctx.client(),id,file,actor,()=>generation===turn&&!locked()&&ctx.user()?.id===actor&&doc?.id===id&&current());},
+   uploadImage:async(file,current)=>{if(problemBackend().inlineStatement)throw Error('Энэ statement хадгалалтад зураг дэмжигдээгүй.');await ctx.requireBackend?.();return uploadTutorialImage(ctx.client(),id,file,actor,()=>generation===turn&&!locked()&&ctx.user()?.id===actor&&doc?.id===id&&current());},
    imageUrl:path=>tutorialImageUrl(ctx.client(),path,ctx.user()?.id,true)});
  }
  async function edit(problem){const generation=++turn;editor?.destroy();doc=null;target=problem;setProvenance(problem?.statementProvenance);lang='mn';language.value=lang;touched=false;failed=false;loading=!!problem?.hasStatement&&!problem.statement;message.textContent=loading?'Statement ачаалж байна…':'Priority-гаас үл хамааран statement нь Монгол/English task, I/O, constraints, samples-тай байна.';details.open=false;paint();
   if(problem?.statement){doc=structuredClone(problem.statement);paint();return;}
   if(!loading)return;
   const actor=ctx.user()?.id;
-  try{const result=await ctx.client().rpc('get_problem_statement',{p_problem_id:problem.id});if(result.error)throw result.error;if(generation!==turn||actor!==ctx.user()?.id)return;
-   if(result.data?.problemRevision!==problem.revision)throw Error('REVISION_CONFLICT');validateTutorial(result.data?.body);doc=structuredClone(result.data.body);setProvenance(result.data.provenance);message.textContent='Хадгалах үед бодлого болон statement хамт шинэчлэгдэнэ.';
+  try{const result=await readProblemStatement(ctx.client(),problem.id);if(generation!==turn||actor!==ctx.user()?.id)return;
+   if(result?.problemRevision!==problem.revision)throw Error('REVISION_CONFLICT');validateTutorial(result?.body);doc=structuredClone(result.body);setProvenance(result.provenance);message.textContent='Хадгалах үед бодлого болон statement хамт шинэчлэгдэнэ.';
   }catch{if(generation===turn){failed=true;message.textContent='Statement ачаалсангүй. Өгөгдөл алдахгүйн тулд бодлого хадгалахыг түр хориглолоо; дахин ачаална уу.';}}
   finally{if(generation===turn){loading=false;paint();}}
  }

@@ -2,7 +2,9 @@
 window.THINK_CP_CONFIG = {
   supabaseUrl: 'https://njedykefqzlkomhuywcv.supabase.co',
   supabaseKey: 'sb_publishable_Am1HlpP-4LnmCZX-IZqERA_a32ZNLqt',
-  // Capability support verified against installed 035/036; optional 033/034 remain gated.
+  // 038 adds native inline statements using existing catalog permissions.
+  // Optional editorial and bulk-import backends 033/034 remain gated.
   problemBackendVersion: 32,
+  problemStatementStorage: 'catalog-inline-v1',
   adminProfileEditorEnabled: true
 };
