@@ -49,7 +49,7 @@ try:
    assert page.locator('script[src*="vendor/mathjax/tex-svg.js"]').count()==1
    page.locator('#tutorial-language').select_option('en');page.wait_for_function('document.querySelectorAll("#tutorial-content mjx-container").length>100');assert page.locator('#tutorial-content mjx-merror').count()==0
    page.evaluate('location.hash="#tutorial/complexity"');page.wait_for_function('document.querySelectorAll("#tutorial-content mjx-container").length>20');page.wait_for_function('document.querySelector("#tutorial-content").getAttribute("aria-busy")==="false"')
-   page.evaluate('''async()=>{const {renderBlock,typeset}=await import('./tutorials.js?v=99');const e=document.createElement('div');e.id='literal-sample-test';document.body.append(e);for(const language of ['Input','Output'])renderBlock({type:'code',language,text:'$n$\\n1  2\\n'},e,'mn');await typeset([e]);}''');assert page.locator('#literal-sample-test mjx-container').count()==0;assert page.locator('#literal-sample-test code').all_text_contents()==['$n$\n1  2\n']*2
+   page.evaluate('''async()=>{const {renderBlock,typeset}=await import('./tutorials.js?v=100');const e=document.createElement('div');e.id='literal-sample-test';document.body.append(e);for(const language of ['Input','Output'])renderBlock({type:'code',language,text:'$n$\\n1  2\\n'},e,'mn');await typeset([e]);}''');assert page.locator('#literal-sample-test mjx-container').count()==0;assert page.locator('#literal-sample-test code').all_text_contents()==['$n$\n1  2\n']*2
    results.append({'mode':mode,'introduction_svg':209,'single_script':True,'core_requests':counts['core'],'safe_requests':counts['safe'],'literal_samples_preserved':True,'page_errors':errors});assert not errors,errors;page.close()
   b.close()
 finally:s.shutdown()
