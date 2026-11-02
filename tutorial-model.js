@@ -1,6 +1,6 @@
 import {validateGridPresentation} from './tutorial-grid.js?v=62';
 import {validatePriority} from './priority.js?v=52';
-import {validateExtendedBlock} from './tutorial-blocks.js?v=63';
+import {validateExtendedBlock} from './tutorial-blocks.js?v=95';
 export const levels=['beginner','intermediate','advanced'];
 export const levelNames={mn:['Анхан шат','Дунд шат','Ахисан шат'],en:['Beginner','Intermediate','Advanced']};
 export function validateTutorial(t){
@@ -26,6 +26,7 @@ export function validateTutorial(t){
    else if(!validateExtendedBlock(b))fail('Дэмжигдээгүй агуулгын төрөл.');
   }}
  }
+ for(const doc of [t,t.translations?.en].filter(Boolean)){const ids=new Set();for(const b of doc.sections.flatMap(s=>s.blocks)){if(b.type!=='quiz')continue;if(ids.has(b.quizId))fail('Quiz ID давхардсан.');ids.add(b.quizId);}}
  if(JSON.stringify(t).length>1000000)fail('Хичээл хэт том байна.');return t;
 }
 export const view=(t,lang)=>lang==='en'&&t.translations?.en?(t.translations.en.title?t.translations.en:{...t.translations.en,title:t.title}):t;

@@ -1,4 +1,4 @@
-import {dateKey} from './learning-model.js?v=87';
+import {dateKey} from './learning-model.js?v=95';
 import {validActivityDay} from './profile-progress.js?v=1';
 const datedToday=(stamp,today)=>typeof stamp==='string'&&Number.isFinite(Date.parse(stamp))&&dateKey(stamp)===today;
 export function todayProblemItems(rows,problems,today,base){

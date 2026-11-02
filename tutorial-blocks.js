@@ -1,10 +1,12 @@
+import {validateQuiz,createQuiz} from './tutorial-quiz.js?v=95';
 import {validateGridPresentation} from './tutorial-grid.js?v=62';
 import {validateGraphStyle} from './tutorial-graph.js?v=63';
 // Typed content, never arbitrary HTML. Old block shapes stay valid.
-export const BLOCK_TYPES=['p','rich','heading','code','math','list','ordered','checklist','table','links','quote','callout','note','divider','image','diagram','problem','tutorial'];
+export const BLOCK_TYPES=['p','rich','heading','code','math','list','ordered','checklist','table','links','quote','callout','note','divider','image','diagram','problem','tutorial','quiz'];
 export const MARKS=['bold','italic','underline','strike','code'];
 export const TONES=['note','important','warning','example','proof','observation','complexity','mistake'];
 export const MEDIA_BUCKET='tutorial-media';
+export const validTutorialAsset=value=>typeof value==='string'&&/^tutorial-assets\/cpp-environment\/(?:cpp-extension|msys2-toolchain|devcpp-historical)\.webp$/.test(value);
 export const validMediaPath=value=>typeof value==='string'&&/^[a-z0-9-]{1,80}\/[0-9a-f-]{36}\/[0-9a-f-]{36}\.webp$/.test(value);
 export function safeLink(value){
  if(typeof value!=='string'||value.length>1000||/[\s\\]/.test(value))return null;
@@ -22,12 +24,13 @@ export function validateExtendedBlock(b){
  if(!b||typeof b!=='object'||Array.isArray(b))throw new Error('Block бүтэц буруу.');
  if(b.caption!==undefined&&(typeof b.caption!=='string'||b.caption.length>2000))throw new Error('Caption буруу.');
  const text=(value,max=40000)=>{if(typeof value!=='string'||!value.trim()||value.length>max)throw new Error('Агуулга хоосон эсвэл хэт урт байна.');};
+ if(b.type==='quiz')return validateQuiz(b);
  if(b.type==='rich'){validateInline(b.content);return true;}
  if(b.type==='heading'){if(!Number.isInteger(b.level)||b.level<1||b.level>4)throw new Error('H1–H4 гарчиг сонгоно уу.');text(b.text,200);return true;}
  if(b.type==='divider')return true;
  if(b.type==='quote'||b.type==='callout'){if('content' in b)validateInline(b.content);else text(b.text);if(b.title!==undefined&&(typeof b.title!=='string'||b.title.length>200))throw new Error('Callout гарчиг хэт урт.');if(b.type==='callout'&&!TONES.includes(b.tone))throw new Error('Callout төрөл буруу.');return true;}
  if(b.type==='checklist'){if(!Array.isArray(b.items)||!b.items.length||b.items.length>100)throw new Error('Checklist 1–100 мөртэй байна.');for(const item of b.items){text(item.text,8000);if(typeof item.checked!=='boolean')throw new Error('Checklist төлөв буруу.');}return true;}
- if(b.type==='image'){if(!validMediaPath(b.path))throw new Error('Tutorial Storage зураг сонгоно уу.');text(b.alt,500);if(b.caption!==undefined&&String(b.caption).length>2000)throw new Error('Caption хэт урт.');if(!['left','center','right'].includes(b.align)||!Number.isInteger(b.width)||b.width<20||b.width>100)throw new Error('Зургийн байрлал/өргөн буруу.');return true;}
+ if(b.type==='image'){if(!(validMediaPath(b.path)&&b.assetPath===undefined)&&!(validTutorialAsset(b.assetPath)&&!b.path))throw new Error('Tutorial Storage зураг сонгоно уу.');text(b.alt,500);if(b.caption!==undefined&&String(b.caption).length>2000)throw new Error('Caption хэт урт.');if(!['left','center','right'].includes(b.align)||!Number.isInteger(b.width)||b.width<20||b.width>100)throw new Error('Зургийн байрлал/өргөн буруу.');return true;}
  if(b.type==='problem'){text(b.problemKey,200);if(!/^(?:[1-9][0-9]{0,15}|[a-z0-9 ._-]+\|[a-z0-9_\/-]+)$/i.test(b.problemKey))throw new Error('Problem key буруу.');return true;}
  if(b.type==='tutorial'){if(!/^[a-z0-9-]{1,80}$/.test(b.tutorialId))throw new Error('Tutorial ID буруу.');if(b.label!==undefined)text(b.label,300);return true;}
  if(b.type==='diagram'){
@@ -41,6 +44,7 @@ export function validateExtendedBlock(b){
 }
 export function createBlock(type){
  const key=crypto.randomUUID();const common={key,type};
+ if(type==='quiz')return createQuiz(key);
  if(type==='rich')return {...common,content:[{text:'',marks:[]}]};
  if(type==='heading')return {...common,level:3,text:'Шинэ гарчиг'};
  if(type==='math')return {...common,tex:'a_{i+1}=a_i+1'};

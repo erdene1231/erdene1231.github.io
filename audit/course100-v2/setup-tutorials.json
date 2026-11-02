@@ -1,0 +1,1348 @@
+[
+  {
+    "id": "cpp-windows-vscode",
+    "order": 1,
+    "category": "C++ орчин",
+    "levelKey": "beginner",
+    "priorityLevel": "high",
+    "title": "Windows дээр VS Code, terminal, C++",
+    "summary": "Нэг practice folder-оос C++17 программаа compile/run хийх; CMD, PowerShell, UCRT64 Bash-ийг ялгах.",
+    "related": [
+      "introduction",
+      "cpp-terminal-ioi",
+      "cpp-devcpp"
+    ],
+    "automaticDemo": false,
+    "sections": [
+      {
+        "title": "1. Editor, terminal, shell, compiler",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "VS Code нь editor. Integrated Terminal бол shell ажиллах самбар; shell нь командыг тайлбарлана. g++ бол C++-ийг executable болгох compiler. C/C++ extension суулгах нь g++ суулгасан гэсэн үг биш. Энэ заавар Visual Studio IDE биш, VS Code-д зориулагдсан."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "directed": true,
+            "nodes": [
+              {
+                "id": "0",
+                "label": "main.cpp",
+                "x": 15,
+                "y": 50
+              },
+              {
+                "id": "1",
+                "label": "g++",
+                "x": 50,
+                "y": 50
+              },
+              {
+                "id": "2",
+                "label": "a.exe",
+                "x": 85,
+                "y": 50
+              }
+            ],
+            "edges": [
+              [
+                "0",
+                "1"
+              ],
+              [
+                "1",
+                "2"
+              ]
+            ],
+            "caption": "Нэг эх кодоос ажиллах программ хүртэл"
+          },
+          {
+            "type": "p",
+            "text": "Эхлэгчийн богино зам: MSYS2 UCRT64-ийн compiler-ийг суулгаад, VS Code дотор Command Prompt (CMD) ашигла. CMD нь <, > file redirection-ийг шууд дэмждэг. Linux-тэй ойр дасгал хийх бол сүүлд UCRT64 Bash сонго. PowerShell мөн compiler ажиллуулж чадна; харин input redirection нь өөр. Windows Terminal тусдаа суулгах шаардлагагүй."
+          }
+        ]
+      },
+      {
+        "title": "2. Албан toolchain суулгах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "VS Code болон Microsoft-ийн C/C++ extension-ийг албан эхээс суулга. Доорх зурагт extension-ийн publisher ба Install товч харагдана; зураг дахь хуучин version-ийг зориуд сонгох шаардлагагүй."
+          },
+          {
+            "type": "image",
+            "assetPath": "tutorial-assets/cpp-environment/cpp-extension.webp",
+            "alt": "Microsoft C/C++ extension-ийн publisher, Install товч",
+            "caption": "Microsoft VS Code docs · CC BY3.0 US. Албан screenshot; зөвхөн WebP болгосон. UI/version нь одоогийнхоос ялгаатай байж болно. / Official screenshot, re-encoded only; UI/version may differ.",
+            "align": "center",
+            "width": 100
+          },
+          {
+            "type": "p",
+            "text": "MSYS2-ийн албан installer-ийг ашигла. Одоогийн заавар 64-bit Windows 10/11-д UCRT64 орчныг сонгодог. MSYS2 UCRT64 terminal-ийг нээж бүх update-ийг хий. Core update terminal-аа хаахыг хүсвэл зөвшөөрөөд дахин нээж update-ийг давт."
+          },
+          {
+            "type": "code",
+            "language": "Text",
+            "text": "pacman -Suy\npacman -S --needed base-devel mingw-w64-ucrt-x86_64-toolchain\n"
+          },
+          {
+            "type": "image",
+            "assetPath": "tutorial-assets/cpp-environment/msys2-toolchain.webp",
+            "alt": "UCRT64 toolchain group-ийг суулгах MSYS2 terminal-ийн албан зураг",
+            "caption": "Microsoft VS Code docs · CC BY3.0 US. Албан screenshot; зөвхөн WebP болгосон. UI/version нь одоогийнхоос ялгаатай байж болно. / Official screenshot, re-encoded only; UI/version may differ.",
+            "align": "center",
+            "width": 100
+          },
+          {
+            "type": "p",
+            "text": "Package list зурагтай яг адил байх албагүй. Default group-ийг Enter-ээр сонгож, install prompt-ийг унш. PATH-д default суулгасан бол C:\\msys64\\ucrt64\\bin нэмнэ. C:\\msys64\\usr\\bin-ийг Windows compiler PATH гэж бүү андуур. Шинэ PATH авахын тулд terminal болон VS Code-оо дахин нээ."
+          }
+        ]
+      },
+      {
+        "title": "3. Аль folder дээр ажиллаж байна вэ?",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Terminal → Select Default Profile → Command Prompt сонгоод шинэ terminal нээ. Командуудыг тус тусад нь ажиллуул. mkdir practice нь одоогийн folder дотор practice үүсгэнэ. code practice нь тэр folder-ийг VS Code-д нээнэ; эх terminal-ийн folder-ийг өөрчлөхгүй. cd practice нь харин эх terminal-ийг дотор нь оруулна."
+          },
+          {
+            "type": "code",
+            "language": "Text",
+            "text": "mkdir practice\ncode practice\ncd practice\ncd\ncode .\n"
+          },
+          {
+            "type": "p",
+            "text": "CMD-ийн cd дангаараа одоогийн замыг харуулна. code . нь одоогийн folder-ийг VS Code-д нээнэ. Шинээр нээгдсэн workspace-ийн Terminal → New Terminal ихэнхдээ тэр folder-оос эхэлнэ; terminal.integrated.cwd зэрэг тохиргоогоор өөр байж болох тул замаа шалга. Зайтай нэрийг quote хийнэ: mkdir \"CP Practice\", cd \"CP Practice\". Өөр drive руу орох бол cd /d \"D:\\CP Practice\"."
+          },
+          {
+            "type": "p",
+            "text": "code танигдахгүй бол VS Code-ийг нээгээд File → Open Folder-оор practice-ийг сонго. Windows installer-ийн Add to PATH сонголт, шинэ terminal ашиглаж байгаа эсэхээ шалга; compiler эсвэл VS Code-ийг санамсаргүй сайтаас дахин татах хэрэггүй."
+          }
+        ]
+      },
+      {
+        "title": "4. Compile ба run хоёр өөр алхам",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Explorer дээр main.cpp үүсгэж хадгал. Доорх нь compiler-ийн language mode-ийг хэвлэнэ. #include нь stream-ийг авчирна; main нь эхлэх функц; __cplusplus нь сонгосон стандартын тоон macro."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <iostream>\n\nint main() {\n    std::cout << __cplusplus << '\\n';\n}\n"
+          },
+          {
+            "type": "code",
+            "language": "Text",
+            "text": "where g++\ng++ --version\ng++ -std=c++17 -O2 -Wall -Wextra main.cpp -o a.exe\na.exe\n"
+          },
+          {
+            "type": "p",
+            "text": "where g++ нь PATH-аас олсон хувилбаруудыг харуулна. -std=c++17 нь build-ийн горим; -O2 нь optimization; -Wall -Wextra нь анхааруулга; -o a.exe нь executable-ийн нэр. C++17 mode-д 201703 гарна. Шинэ compiler C++20 дэмждэг бол -std=c++20 горимд 202002 гарч болно; macro нь бүх language/library feature бүрэн хэрэгжсэн баталгаа биш. Compile алдаатай бол хуучин a.exe-г ажиллуулаад шинэ код амжилттай гэж бүү үз."
+          }
+        ]
+      },
+      {
+        "title": "5. Input/output файлууд",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Эхлээд a,b-г уншиж, дараа нийлбэрийг нь хэвлэнэ. Энэ жижиг дасгалд a,b нь -1000-аас 1000 тул int хангалттай; том нийлбэрийн ерөнхий шаблон болгож бүү ойлго. Бүтэн программ:"
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <iostream>\n\nusing namespace std;\n\nint main() {\n    int a, b;\n    cin >> a >> b;\n    cout << a + b << '\\n';\n}\n"
+          },
+          {
+            "type": "p",
+            "text": "a.in гэдэг text файлд 2 3 гэж бичээд хадгал. CMD дээр дараах нь compile амжилттай үед л ажиллуулна. a.exe нь программ; a.out нь гаралтын text файл."
+          },
+          {
+            "type": "code",
+            "language": "Text",
+            "text": "g++ -std=c++17 -O2 -Wall -Wextra main.cpp -o a.exe && a.exe < a.in > a.out 2> a.err\ntype a.out\n"
+          },
+          {
+            "type": "p",
+            "text": "< нь stdin-ийг файлаас, > нь stdout-ийг файл руу чиглүүлнэ; байгаа гаралтын файлыг дарж бичнэ. 2> нь stderr-ийг тусад нь авна. Зөв хариу 5 болон шинэ мөр. Input файл ба executable-аа output файлтай ижил нэрлэж болохгүй."
+          }
+        ]
+      },
+      {
+        "title": "6. PowerShell ба UCRT64 Bash",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "PowerShell дээр < нь Bash/CMD шиг stdin redirect биш. Тоон текстийг Get-Content-аар pipe хийж болох ч encoding/newline өөрчлөгдөх боломжтой. Яг file redirection хэрэгтэй эхлэгчид CMD profile ашиглах, эсвэл PowerShell-оос CMD-г тодорхой дуудах нь ойлгомжтой."
+          },
+          {
+            "type": "code",
+            "language": "Text",
+            "text": "g++ -std=c++17 -O2 -Wall -Wextra main.cpp -o a.exe\nif ($LASTEXITCODE -eq 0) { cmd /c \".\\a.exe < a.in > a.out 2> a.err\" }\nGet-Content .\\a.out\n"
+          },
+          {
+            "type": "p",
+            "text": "Linux-ийн командтай ижил хэв маяг хүсвэл MSYS2 UCRT64 terminal-ийн Bash-ийг ашигла. VS Code-д profile тохируулахдаа MSYS2-ийн UCRT64 startup environment-ийг дагуул; зүгээр usr/bin/bash.exe нээхэд MSYS орчинд орох эрсдэлтэй. Эхлээд албан MSYS2 UCRT64 shortcut-аас дасгал хийж болно."
+          },
+          {
+            "type": "code",
+            "language": "Text",
+            "text": "pwd\ncommand -v g++\ng++ --version\ng++ -std=c++17 -O2 -Wall -Wextra main.cpp -o a.exe && ./a.exe < a.in > a.out 2> a.err\ncat a.out\n"
+          }
+        ]
+      },
+      {
+        "title": "7. Түгээмэл гацалт",
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "g++ not found: compiler package, ucrt64/bin PATH, шинэ terminal-аа шалга.",
+              "main.cpp олдохгүй: cd/pwd-ээр замаа шалга; файл хадгалагдсан, .cpp өргөтгөлтэй эсэхийг хар.",
+              "Улаан underline ба build хоёр өөр: cppStandard нь IntelliSense; бодит build-ийн -std flag-ийг мөн тохируул.",
+              "DLL missing: сонгосон coherent toolchain-ийн bin PATH-даа байгаа эсэхийг шалга. Санамсаргүй DLL татаж хуулж болохгүй.",
+              "Программ хүлээгээд байвал input дутуу эсэхийг шалга; input-оо оруул эсвэл зөв a.in redirect хий."
+            ]
+          },
+          {
+            "type": "links",
+            "items": [
+              {
+                "label": "VS Code: GCC on Windows",
+                "url": "https://code.visualstudio.com/docs/cpp/config-mingw"
+              },
+              {
+                "label": "MSYS2 environments",
+                "url": "https://www.msys2.org/docs/environments/"
+              },
+              {
+                "label": "MSYS2 full upgrades",
+                "url": "https://www.msys2.org/docs/updating/"
+              },
+              {
+                "label": "Microsoft documentation license",
+                "url": "https://raw.githubusercontent.com/microsoft/vscode-docs/main/LICENSE.md"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Өөрийгөө шалгах",
+        "blocks": [
+          {
+            "type": "quiz",
+            "quizId": "windows-shell-input",
+            "question": "PowerShell дээр a.in-ийг яг stdin болгох энэ зааврын тохирох арга аль вэ?",
+            "options": [
+              {
+                "id": "0",
+                "text": "CMD profile эсвэл cmd /c-г тодорхой дуудах"
+              },
+              {
+                "id": "1",
+                "text": "< нь бүх shell-д ижил"
+              },
+              {
+                "id": "2",
+                "text": "Input-ийг C++ source руу paste хийх"
+              }
+            ],
+            "answerId": "0",
+            "explanation": "PowerShell-ийн < нь Bash/CMD шиг stdin redirect биш. Яг файлыг дамжуулахдаа CMD-г тодорхой ашигла."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Windows: VS Code, terminal and C++",
+        "summary": "Compile/run a C++17 program from one practice folder; distinguish CMD, PowerShell and UCRT64 Bash.",
+        "sections": [
+          {
+            "title": "1. Editor, terminal, shell and compiler",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "VS Code is an editor. Its integrated terminal hosts a shell that interprets commands. g++ compiles C++ into an executable. Installing the C/C++ extension does not install g++. This guide is for VS Code, not the Visual Studio IDE."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "directed": true,
+                "nodes": [
+                  {
+                    "id": "0",
+                    "label": "main.cpp",
+                    "x": 15,
+                    "y": 50
+                  },
+                  {
+                    "id": "1",
+                    "label": "g++",
+                    "x": 50,
+                    "y": 50
+                  },
+                  {
+                    "id": "2",
+                    "label": "a.exe",
+                    "x": 85,
+                    "y": 50
+                  }
+                ],
+                "edges": [
+                  [
+                    "0",
+                    "1"
+                  ],
+                  [
+                    "1",
+                    "2"
+                  ]
+                ],
+                "caption": "From source to a running program"
+              },
+              {
+                "type": "p",
+                "text": "A short beginner path: install the MSYS2 UCRT64 compiler and use Command Prompt (CMD) inside VS Code. CMD supports < and > file redirection directly. Choose UCRT64 Bash later for Linux-like practice. PowerShell can also invoke the compiler, but input redirection differs. A separate Windows Terminal installation is unnecessary."
+              }
+            ]
+          },
+          {
+            "title": "2. Install the official toolchain",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Install VS Code and Microsoft’s C/C++ extension from official sources. The image identifies the publisher and Install button; you need not install the historical version shown."
+              },
+              {
+                "type": "image",
+                "assetPath": "tutorial-assets/cpp-environment/cpp-extension.webp",
+                "alt": "Microsoft C/C++ extension publisher and Install button",
+                "caption": "Microsoft VS Code docs · CC BY3.0 US. Албан screenshot; зөвхөн WebP болгосон. UI/version нь одоогийнхоос ялгаатай байж болно. / Official screenshot, re-encoded only; UI/version may differ.",
+                "align": "center",
+                "width": 100
+              },
+              {
+                "type": "p",
+                "text": "Use the official MSYS2 installer. The current Windows 10/11 64-bit workflow uses UCRT64. Open its terminal and perform a full update. If a core update asks to close the terminal, reopen it and repeat the update."
+              },
+              {
+                "type": "code",
+                "language": "Text",
+                "text": "pacman -Suy\npacman -S --needed base-devel mingw-w64-ucrt-x86_64-toolchain\n"
+              },
+              {
+                "type": "image",
+                "assetPath": "tutorial-assets/cpp-environment/msys2-toolchain.webp",
+                "alt": "Official MSYS2 terminal screenshot installing the UCRT64 toolchain group",
+                "caption": "Microsoft VS Code docs · CC BY3.0 US. Албан screenshot; зөвхөн WebP болгосон. UI/version нь одоогийнхоос ялгаатай байж болно. / Official screenshot, re-encoded only; UI/version may differ.",
+                "align": "center",
+                "width": 100
+              },
+              {
+                "type": "p",
+                "text": "The package list may differ from the image. Select the default group with Enter and read the installation prompt. For the default install, add C:\\msys64\\ucrt64\\bin to the Windows user PATH. Do not confuse C:\\msys64\\usr\\bin with the native Windows compiler location. Reopen terminals and VS Code after changing PATH."
+              }
+            ]
+          },
+          {
+            "title": "3. Which folder are you working in?",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Choose Terminal → Select Default Profile → Command Prompt, then open a new terminal. Run the commands separately. mkdir practice creates a directory inside the current one. code practice opens it in VS Code but does not change the originating shell’s directory. cd practice changes that shell’s directory."
+              },
+              {
+                "type": "code",
+                "language": "Text",
+                "text": "mkdir practice\ncode practice\ncd practice\ncd\ncode .\n"
+              },
+              {
+                "type": "p",
+                "text": "In CMD, cd alone prints the current path. code . opens that directory in VS Code. Terminal → New Terminal in the opened workspace normally starts there, though settings such as terminal.integrated.cwd can override it; check the path. Quote names containing spaces: mkdir \"CP Practice\", cd \"CP Practice\". To change drive, use cd /d \"D:\\CP Practice\"."
+              },
+              {
+                "type": "p",
+                "text": "If code is not found, open VS Code and use File → Open Folder for practice. Check the Windows installer’s Add to PATH option and use a fresh terminal; do not fetch replacement tools from random sites."
+              }
+            ]
+          },
+          {
+            "title": "4. Compilation and execution are different",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Create and save main.cpp in Explorer. This probe prints the compiler’s selected language mode. #include supplies streams; main is the entry point; __cplusplus is the numeric language-mode macro."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <iostream>\n\nint main() {\n    std::cout << __cplusplus << '\\n';\n}\n"
+              },
+              {
+                "type": "code",
+                "language": "Text",
+                "text": "where g++\ng++ --version\ng++ -std=c++17 -O2 -Wall -Wextra main.cpp -o a.exe\na.exe\n"
+              },
+              {
+                "type": "p",
+                "text": "where g++ lists PATH matches. -std=c++17 selects build mode; -O2 enables optimization; -Wall -Wextra enable warnings; -o a.exe names the executable. C++17 mode reports 201703. A supporting compiler may report 202002 for -std=c++20; the macro does not prove complete language/library conformance. If compilation fails, do not run a stale a.exe and mistake it for the new program."
+              }
+            ]
+          },
+          {
+            "title": "5. Input/output files",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Read a,b, then print their sum. In this small exercise a,b lie between -1000 and 1000, so int is sufficient; this is not a universal type choice for large sums. Complete program:"
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <iostream>\n\nusing namespace std;\n\nint main() {\n    int a, b;\n    cin >> a >> b;\n    cout << a + b << '\\n';\n}\n"
+              },
+              {
+                "type": "p",
+                "text": "Save 2 3 in a text file named a.in. In CMD, the following runs only after successful compilation. a.exe is the program; a.out is an output text file."
+              },
+              {
+                "type": "code",
+                "language": "Text",
+                "text": "g++ -std=c++17 -O2 -Wall -Wextra main.cpp -o a.exe && a.exe < a.in > a.out 2> a.err\ntype a.out\n"
+              },
+              {
+                "type": "p",
+                "text": "< reads stdin from a file; > redirects stdout and overwrites an existing destination. 2> separates stderr. The expected output is 5 and a newline. Never reuse the input or executable filename as the output destination."
+              }
+            ]
+          },
+          {
+            "title": "6. PowerShell and UCRT64 Bash",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "In PowerShell, < is not Bash/CMD-style stdin redirection. Get-Content pipelines may transform encoding/newlines. For exact file redirection, use the CMD profile or explicitly invoke CMD from PowerShell."
+              },
+              {
+                "type": "code",
+                "language": "Text",
+                "text": "g++ -std=c++17 -O2 -Wall -Wextra main.cpp -o a.exe\nif ($LASTEXITCODE -eq 0) { cmd /c \".\\a.exe < a.in > a.out 2> a.err\" }\nGet-Content .\\a.out\n"
+              },
+              {
+                "type": "p",
+                "text": "For Linux-like commands, use Bash in the MSYS2 UCRT64 terminal. A VS Code profile must preserve the UCRT64 startup environment; merely opening usr/bin/bash.exe can select the MSYS environment. You can first practice from the official MSYS2 UCRT64 shortcut."
+              },
+              {
+                "type": "code",
+                "language": "Text",
+                "text": "pwd\ncommand -v g++\ng++ --version\ng++ -std=c++17 -O2 -Wall -Wextra main.cpp -o a.exe && ./a.exe < a.in > a.out 2> a.err\ncat a.out\n"
+              }
+            ]
+          },
+          {
+            "title": "7. Troubleshooting",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "g++ not found: check the compiler package, ucrt64/bin PATH and a new terminal.",
+                  "main.cpp not found: inspect cwd with cd/pwd, save the file and verify its .cpp extension.",
+                  "Red underlines and compilation differ: cppStandard controls IntelliSense; the build also needs the actual -std flag.",
+                  "Missing DLL: check the coherent toolchain bin directory on PATH; do not download random DLL files.",
+                  "A waiting program may need more input; supply it or redirect the correct a.in file."
+                ]
+              },
+              {
+                "type": "links",
+                "items": [
+                  {
+                    "label": "VS Code: GCC on Windows",
+                    "url": "https://code.visualstudio.com/docs/cpp/config-mingw"
+                  },
+                  {
+                    "label": "MSYS2 environments",
+                    "url": "https://www.msys2.org/docs/environments/"
+                  },
+                  {
+                    "label": "MSYS2 full upgrades",
+                    "url": "https://www.msys2.org/docs/updating/"
+                  },
+                  {
+                    "label": "Microsoft documentation license",
+                    "url": "https://raw.githubusercontent.com/microsoft/vscode-docs/main/LICENSE.md"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Check your understanding",
+            "blocks": [
+              {
+                "type": "quiz",
+                "quizId": "windows-shell-input",
+                "question": "Which method in this guide supplies a.in as stdin from PowerShell?",
+                "options": [
+                  {
+                    "id": "0",
+                    "text": "Use the CMD profile or invoke cmd /c explicitly"
+                  },
+                  {
+                    "id": "1",
+                    "text": "< works identically in every shell"
+                  },
+                  {
+                    "id": "2",
+                    "text": "Paste input into the C++ source"
+                  }
+                ],
+                "answerId": "0",
+                "explanation": "PowerShell does not provide Bash/CMD-style < stdin redirection. Invoke CMD explicitly for the file."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "cpp-devcpp",
+    "order": 1,
+    "category": "C++ орчин",
+    "levelKey": "beginner",
+    "priorityLevel": "medium",
+    "title": "Dev-C++: compiler, стандарт, ажиллуулах",
+    "summary": "Bloodshed, Orwell, Embarcadero хувилбарууд; C++17 mode ба compiler шинэчлэхийн ялгаа.",
+    "related": [
+      "cpp-windows-vscode",
+      "cpp-terminal-ioi"
+    ],
+    "automaticDemo": false,
+    "sections": [
+      {
+        "title": "1. Ижил нэртэй өөр хувилбарууд",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Dev-C++ гэдэг нэр нэг ижил compiler гэсэн үг биш. Bloodshed нь анхны төсөл; Orwell нь fork; Embarcadero нь тэдгээрийн дараах fork. Албан Embarcadero release жагсаалтад v6.3 (2021-01-30) latest гэж байна; bundled compiler нь TDM-GCC 9.2.0. Orwell-ийн 5.11 bundle нь TDM-GCC 4.9.2 (2015). Хуучин IDE-ийн шинэ нэртэй installer бүрийг шинэ toolchain гэж үзэж болохгүй."
+          },
+          {
+            "type": "image",
+            "assetPath": "tutorial-assets/cpp-environment/devcpp-historical.webp",
+            "alt": "Dev-C++5.1.1.0-ийн түүхэн interface; дээрээ Tools, Execute menu-тэй",
+            "caption": "Dev-C++ 5.1.1.0 (2012) · AsbakWiki · CC BY-SA3.0. Historical screenshot, re-encoded to WebP; not Embarcadero6.3 settings.",
+            "align": "center",
+            "width": 100
+          },
+          {
+            "type": "links",
+            "items": [
+              {
+                "label": "AsbakWiki: source image and attribution",
+                "url": "https://commons.wikimedia.org/wiki/File:Devcpp5110.png"
+              },
+              {
+                "label": "Image license: CC BY-SA3.0",
+                "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+              }
+            ]
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "directed": true,
+            "nodes": [
+              {
+                "id": "0",
+                "label": "Bloodshed",
+                "x": 15,
+                "y": 50
+              },
+              {
+                "id": "1",
+                "label": "Orwell",
+                "x": 50,
+                "y": 50
+              },
+              {
+                "id": "2",
+                "label": "Embarcadero",
+                "x": 85,
+                "y": 50
+              }
+            ],
+            "edges": [
+              [
+                "0",
+                "1"
+              ],
+              [
+                "1",
+                "2"
+              ]
+            ],
+            "caption": "Түүхэн fork-уудын схем; UI screenshot биш"
+          },
+          {
+            "type": "p",
+            "text": "Энэ зааврын menu нэрс Embarcadero-ийн албан UI source-оор тулгагдсан; Windows дээр өөрийн capture хийсэн зураг биш. Version болон орчуулсан UI-гаас харагдах нэр бага зэрэг өөр байж болно."
+          }
+        ]
+      },
+      {
+        "title": "2. Эхний файл ба товчнууд",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "File → New → Source File ашиглаад main.cpp нэрээр хадгал. .c гэж хадгалбал C compiler сонгогдож болно. Доорх программын include, main, stream output хэсгийг VS Code заавартай ижил утгаар уншина."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <iostream>\n\nint main() {\n    std::cout << __cplusplus << '\\n';\n}\n"
+          },
+          {
+            "type": "p",
+            "text": "Embarcadero-ийн shortcut: F9 Compile, F10 Run, F11 Compile & Run, F12 Rebuild All. Тодорхой IDE/version дээр өөр shortcut харагдвал Execute menu-ийн өөрийн бичгийг баримтал. Compile log дээр сонгосон compiler ба алдааг хар; build алдаатай байхад өмнөх executable-ийг ажиллуулахгүй."
+          }
+        ]
+      },
+      {
+        "title": "3. C++17 mode тохируулах",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Tools → Compiler Options нээгээд Compiler set to configure дээр ашиглаж буй set-ээ сонго. General tab-ийн Add the following commands when calling the compiler талбарыг идэвхжүүлж -std=c++17 оруулж болно. Энэ нь source дахь #define биш, compiler-ийн argument. Settings tab-д language standard сонголт байгаа бол ижил flag-ийг давхар зөрүүлж нэмэхгүй. Project-ийн тусгай option глобал set-ийг дарж байгаа эсэхийг compile log-оор шалга."
+          },
+          {
+            "type": "code",
+            "language": "Text",
+            "text": "-std=c++17 -O2 -Wall -Wextra\n"
+          },
+          {
+            "type": "p",
+            "text": "Rebuild хийгээд probe-оо ажиллуул: C++17 mode-д 201703 гарна. Энэ тоо нь сонгосон mode; бүрэн library conformance-ийн гэрчилгээ биш. TDM-GCC 9.2-д C++17-ийг үндсэн зорилт болго. C++20-ийн бүх feature ажиллана гэж үзэхгүй; шинэ compiler дээр өөр flag, library шаардлагатай байж болно."
+          }
+        ]
+      },
+      {
+        "title": "4. Flag нэмэх нь compiler шинэчлэх биш",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "GCC 4.9-д -std=c++17 бичлээ гээд parser болон standard library нь шинэ болохгүй. Шинэ compiler хэрэгтэй бол албан maintained toolchain-ийг бүхлээр нь суулгаж, тусдаа compiler set үүсгэ. Programs дахь g++, gcc, make, gdb болон Directories дахь bin/include/lib нь нэг toolchain-д таарах ёстой. g++.exe ганцыг хуулж солих нь headers, libraries, DLL, debugger-ийг зөрүүлнэ."
+          },
+          {
+            "type": "p",
+            "text": "Эхлээд шинэ toolchain-аа өөрийн terminal-д g++ --version, language-mode probe, энгийн input/output программаар шалга. Дараа нь IDE-д тусдаа set холбож log дахь замыг батал. MSYS2-г Dev-C++-д нэг товчоор заавал холбогдоно гэж энэ заавар амлахгүй. Орчин үеийн default зам хэрэгтэй бол VS Code + MSYS2 UCRT64 зааврыг сонго."
+          }
+        ]
+      },
+      {
+        "title": "5. Файлаас input өгөх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "Console нээгдээд хаагдах нь pause нэмэх шалтгаан биш. Existing terminal-оос executable-аа ажиллуулбал гаралт харагдана. Compile log-оос бодит .exe нэр, folder-ийг аваад CMD-д тэр folder руу ор."
+          },
+          {
+            "type": "code",
+            "language": "Text",
+            "text": "cd /d \"C:\\CP Practice\"\na.exe < a.in > a.out 2> a.err\ntype a.out\n"
+          },
+          {
+            "type": "p",
+            "text": "a.exe гэдэг нь жишээ нэр; өөрийн build-ийн нэрээр солино. Тэмцээний input/output-д нэмэлт prompt, pause, debug stdout хэрэггүй. Grader function шаарддаг бодлогыг дурын main-тай standalone гэж бүү хөрвүүл."
+          },
+          {
+            "type": "links",
+            "items": [
+              {
+                "label": "Official Dev-C++ releases",
+                "url": "https://github.com/Embarcadero/Dev-Cpp/releases"
+              },
+              {
+                "label": "Compiler Options UI source",
+                "url": "https://github.com/Embarcadero/Dev-Cpp/blob/master/Source/CompOptionsFrm.dfm"
+              },
+              {
+                "label": "Orwell original releases",
+                "url": "https://sourceforge.net/projects/orwelldevcpp/files/Setup%20Releases/"
+              },
+              {
+                "label": "Embarcadero project",
+                "url": "https://www.embarcadero.com/free-tools/dev-cpp"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Өөрийгөө шалгах",
+        "blocks": [
+          {
+            "type": "quiz",
+            "quizId": "devcpp-compiler-flag",
+            "question": "Хуучин GCC-д -std=c++17 нэмэх нь compiler шинэчлэх үү?",
+            "options": [
+              {
+                "id": "0",
+                "text": "Үгүй; parser/library өөрчлөгдөхгүй"
+              },
+              {
+                "id": "1",
+                "text": "Тийм; бүх feature суулгана"
+              },
+              {
+                "id": "2",
+                "text": "Зөвхөн IDE theme солиход болно"
+              }
+            ],
+            "answerId": "0",
+            "explanation": "Flag нь байгаа compiler-ийн дэмжсэн mode-ийг сонгоно. Шинэ feature-д coherent toolchain шинэчлэх хэрэгтэй."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Dev-C++: compiler, standard and running",
+        "summary": "Distinguish Bloodshed, Orwell and Embarcadero; C++17 mode versus upgrading a compiler.",
+        "sections": [
+          {
+            "title": "1. Different products with a shared name",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Dev-C++ does not identify one compiler. Bloodshed is the original project, Orwell a fork, and Embarcadero a later fork. The official Embarcadero release list marks v6.3 (2021-01-30) latest with TDM-GCC 9.2.0. Orwell 5.11 bundled TDM-GCC 4.9.2 in2015. A differently branded installer does not necessarily contain a modern toolchain."
+              },
+              {
+                "type": "image",
+                "assetPath": "tutorial-assets/cpp-environment/devcpp-historical.webp",
+                "alt": "Historical Dev-C++5.1.1.0 interface showing Tools and Execute menus",
+                "caption": "Dev-C++ 5.1.1.0 (2012) · AsbakWiki · CC BY-SA3.0. Historical screenshot, re-encoded to WebP; not Embarcadero6.3 settings.",
+                "align": "center",
+                "width": 100
+              },
+              {
+                "type": "links",
+                "items": [
+                  {
+                    "label": "AsbakWiki: source image and attribution",
+                    "url": "https://commons.wikimedia.org/wiki/File:Devcpp5110.png"
+                  },
+                  {
+                    "label": "Image license: CC BY-SA3.0",
+                    "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+                  }
+                ]
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "directed": true,
+                "nodes": [
+                  {
+                    "id": "0",
+                    "label": "Bloodshed",
+                    "x": 15,
+                    "y": 50
+                  },
+                  {
+                    "id": "1",
+                    "label": "Orwell",
+                    "x": 50,
+                    "y": 50
+                  },
+                  {
+                    "id": "2",
+                    "label": "Embarcadero",
+                    "x": 85,
+                    "y": 50
+                  }
+                ],
+                "edges": [
+                  [
+                    "0",
+                    "1"
+                  ],
+                  [
+                    "1",
+                    "2"
+                  ]
+                ],
+                "caption": "Fork lineage; schematic, not a UI screenshot"
+              },
+              {
+                "type": "p",
+                "text": "Menu names below are checked against Embarcadero’s official UI source. They are not self-captured Windows screenshots; labels may differ by version/localization."
+              }
+            ]
+          },
+          {
+            "title": "2. First file and actions",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Create a Source File and save it as main.cpp. Saving as .c can select the C compiler. The include, main and stream output have the same meaning as in the VS Code guide."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <iostream>\n\nint main() {\n    std::cout << __cplusplus << '\\n';\n}\n"
+              },
+              {
+                "type": "p",
+                "text": "Embarcadero shortcuts: F9 Compile, F10 Run, F11 Compile & Run, F12 Rebuild All. Follow the actual Execute menu if your version uses different shortcuts. Inspect the compiler and errors in the compile log; do not run an old executable after a failed build."
+              }
+            ]
+          },
+          {
+            "title": "3. Select C++17 mode",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Open Tools → Compiler Options and choose the active Compiler set to configure. In General, enable Add the following commands when calling the compiler and add -std=c++17. This is a compiler argument, not a source #define. If Settings has a language-standard selector, avoid conflicting duplicate flags. Inspect the compile log for project options overriding the global set."
+              },
+              {
+                "type": "code",
+                "language": "Text",
+                "text": "-std=c++17 -O2 -Wall -Wextra\n"
+              },
+              {
+                "type": "p",
+                "text": "Rebuild and run the probe: C++17 mode reports 201703. This reports the mode, not complete library conformance. Use C++17 as the baseline for TDM-GCC 9.2. Do not assume full C++20 support; newer features may require a newer compiler and library."
+              }
+            ]
+          },
+          {
+            "title": "4. A flag is not a compiler upgrade",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Adding -std=c++17 to GCC 4.9 cannot upgrade its parser or standard library. Install a coherent maintained toolchain and create a separate compiler set if you need a newer compiler. Programs (g++, gcc, make, gdb) and Directories (bin/include/lib) must agree. Replacing only g++.exe mismatches headers, libraries, DLLs and debugger."
+              },
+              {
+                "type": "p",
+                "text": "First validate the new toolchain in its terminal using g++ --version, the language-mode probe and a simple input/output program. Then connect a separate IDE set and confirm its path in the log. This guide does not promise one-click MSYS2 integration into Dev-C++. For a current default workflow, use the VS Code + MSYS2 UCRT64 guide."
+              }
+            ]
+          },
+          {
+            "title": "5. Read input from a file",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "A console closing does not require system(\"pause\"). Run the executable from an existing terminal to keep output visible. Use the actual .exe name and directory from the compile log, then enter that directory in CMD."
+              },
+              {
+                "type": "code",
+                "language": "Text",
+                "text": "cd /d \"C:\\CP Practice\"\na.exe < a.in > a.out 2> a.err\ntype a.out\n"
+              },
+              {
+                "type": "p",
+                "text": "a.exe is an example name; replace it with your build’s executable. Contest input/output needs no extra prompts, pause commands or debug stdout. A grader-function task must not be treated as an arbitrary standalone main program."
+              },
+              {
+                "type": "links",
+                "items": [
+                  {
+                    "label": "Official Dev-C++ releases",
+                    "url": "https://github.com/Embarcadero/Dev-Cpp/releases"
+                  },
+                  {
+                    "label": "Compiler Options UI source",
+                    "url": "https://github.com/Embarcadero/Dev-Cpp/blob/master/Source/CompOptionsFrm.dfm"
+                  },
+                  {
+                    "label": "Orwell original releases",
+                    "url": "https://sourceforge.net/projects/orwelldevcpp/files/Setup%20Releases/"
+                  },
+                  {
+                    "label": "Embarcadero project",
+                    "url": "https://www.embarcadero.com/free-tools/dev-cpp"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Check your understanding",
+            "blocks": [
+              {
+                "type": "quiz",
+                "quizId": "devcpp-compiler-flag",
+                "question": "Does adding -std=c++17 upgrade an old GCC compiler?",
+                "options": [
+                  {
+                    "id": "0",
+                    "text": "No; the parser/library do not change"
+                  },
+                  {
+                    "id": "1",
+                    "text": "Yes; it installs every feature"
+                  },
+                  {
+                    "id": "2",
+                    "text": "Only after changing the IDE theme"
+                  }
+                ],
+                "answerId": "0",
+                "explanation": "A flag selects a mode supported by the installed compiler. New features may require a coherent newer toolchain."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "cpp-terminal-ioi",
+    "order": 1,
+    "category": "C++ орчин",
+    "levelKey": "beginner",
+    "priorityLevel": "high",
+    "title": "Terminal: файл, compile/run, IOI Ubuntu",
+    "summary": "Bash-ийн cwd, ./a, stdin/stdout/stderr; IOI2026-ийн нийтэлсэн орчны мэдээлэл.",
+    "related": [
+      "cpp-windows-vscode",
+      "cpp-devcpp",
+      "interactive-communication"
+    ],
+    "automaticDemo": false,
+    "sections": [
+      {
+        "title": "1. IOI-ийн орчин ба shell",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "IOI2026-ийн албан Grading Equipment хуудсанд Ubuntu 24.04 LTS, GCC 13.3.0, GNOME Terminal 3.52.0, Konsole 23.08.5 гэж жагсаасан. Хуудас нь planned/minimum setup гэж тайлбарладаг тул яг эцсийн workstation image-ийг өөрөө туршсан баталгаа биш. Жил бүрийн compiler/VM, grading command-ийг тухайн тэмцээний заавраас дахин шалга."
+          },
+          {
+            "type": "p",
+            "text": "GNOME Terminal, Konsole нь terminal emulator; Bash нь shell; g++ нь compiler. Доорх command-ууд Bash-д зориулагдсан. Ubuntu гэдгээс terminal-ийн brand эсвэл shell-ийн яг хувилбарыг тааж болохгүй."
+          },
+          {
+            "type": "code",
+            "language": "Text",
+            "text": "echo \"$0\"\nbash --version\ng++ --version\ncommand -v g++\n"
+          }
+        ]
+      },
+      {
+        "title": "2. Folder үүсгээд нээх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "pwd одоогийн folder-ийг харуулна. mkdir practice дотор нь шинэ folder үүсгэнэ. code practice editor нээхээс shell-ийн cwd-г солихгүй. cd practice нь shell-ийг тэр folder руу оруулна; code . нь одоо байгаа folder-ийг нээнэ."
+          },
+          {
+            "type": "code",
+            "language": "Text",
+            "text": "pwd\nmkdir practice\ncode practice\ncd practice\npwd\ncode .\n"
+          },
+          {
+            "type": "p",
+            "text": "Folder аль хэдийн байвал mkdir алдаа өгч болох ч байгаа folder-оо устгах хэрэггүй. ls-ээр шалгаад cd practice хий. Зайтай замыг quote хийнэ: cd \"CP Practice\". code байхгүй бол installed editor-ийн File → Open Folder ашиглаж болно. Ubuntu дээр системийн тохиргоог дур мэдэн өөрчлөхөөс өмнө тухайн суулгалтын албан VS Code зааврыг шалга; IOI workstation дээр software суулгах эрхтэй гэж бүү таамагла."
+          }
+        ]
+      },
+      {
+        "title": "3. Compile хийж executable үүсгэх",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "main.cpp-аа хадгалсны дараа compile хийнэ. -o a гэж executable-аа ил тод нэрлэснээр default a.out executable-ийг output text файлаар дарж устгах алдаанаас зайлсхийнэ."
+          },
+          {
+            "type": "code",
+            "language": "Text",
+            "text": "g++ -std=c++17 -O2 -Wall -Wextra main.cpp -o a\n./a\n"
+          },
+          {
+            "type": "p",
+            "text": "./ нь одоогийн folder доторх executable-ийг заана; зөвхөн a гэвэл PATH-аас хайдаг тул олдохгүй байж болно. C++20 хэрэгтэй, compiler дэмжиж байвал -std=c++20 сонго. Тэмцээний бодит build command өөр байж болно. Include/main/I/O хэсэг нь ижил; дараах бүтэн программ хоёр жижиг тоог нэмнэ."
+          },
+          {
+            "type": "code",
+            "language": "C++17",
+            "text": "#include <iostream>\n\nusing namespace std;\n\nint main() {\n    int a, b;\n    cin >> a >> b;\n    cout << a + b << '\\n';\n}\n"
+          }
+        ]
+      },
+      {
+        "title": "4. a.in-ээс a.out руу",
+        "blocks": [
+          {
+            "type": "p",
+            "text": "a.in-д 2 3 болон шинэ мөр хадгал. Run нь compiler-оос тусдаа алхам. Bash дээр зөв command нь ./a < a.in > a.out; run a ... гэдэг universal command байхгүй."
+          },
+          {
+            "type": "diagram",
+            "kind": "graph",
+            "directed": true,
+            "nodes": [
+              {
+                "id": "0",
+                "label": "a.in",
+                "x": 15,
+                "y": 25
+              },
+              {
+                "id": "1",
+                "label": "./a",
+                "x": 50,
+                "y": 50
+              },
+              {
+                "id": "2",
+                "label": "a.out",
+                "x": 85,
+                "y": 25
+              },
+              {
+                "id": "3",
+                "label": "a.err",
+                "x": 85,
+                "y": 80
+              }
+            ],
+            "edges": [
+              [
+                "0",
+                "1"
+              ],
+              [
+                "1",
+                "2"
+              ],
+              [
+                "1",
+                "3"
+              ]
+            ],
+            "caption": "Файлын урсгал; a.out нь executable биш"
+          },
+          {
+            "type": "code",
+            "language": "Text",
+            "text": "g++ -std=c++17 -O2 -Wall -Wextra main.cpp -o a && ./a < a.in > a.out 2> a.err\ncat a.out\n"
+          },
+          {
+            "type": "p",
+            "text": "&& нь compile амжилттай үед л run хийнэ. < stdin, > stdout, 2> stderr-ийг чиглүүлнэ. > нь байгаа файлыг эхлээд хоосолдог: ./a.out > a.out гэж executable-аа өөр дээр нь дарж болохгүй. Мөн ./a < a.in > a.in гэж input-оо устгаж болохгүй."
+          },
+          {
+            "type": "p",
+            "text": "Жишээний утга literal хэвээр:"
+          },
+          {
+            "type": "code",
+            "language": "Input",
+            "text": "2 3\n"
+          },
+          {
+            "type": "code",
+            "language": "Output",
+            "text": "5\n"
+          }
+        ]
+      },
+      {
+        "title": "5. Алдааг ялгах ба файл харьцуулах",
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "No such file: pwd, ls, зөв нэр, uppercase/lowercase-аа шалга; Linux case-sensitive.",
+              "Permission denied: executable үүссэн эсэх, зөв folder, compiler result-аа шалга. Хамгаалалтыг унтраах гэж бүү оролд.",
+              "Программ хүлээгээд байвал input дутуу эсвэл буруу файл нээсэн байж болно.",
+              "a.out хоосон байвал compiler log, exit status, a.err-ээ шалга; prompt-оо stdout-д нэмэхгүй.",
+              "Interactive бодлогод файл redirect хийснээр жинхэнэ judge орлохгүй; mock judge эсвэл өгсөн grader хэрэгтэй."
+            ]
+          },
+          {
+            "type": "code",
+            "language": "Text",
+            "text": "cat a.err\ndiff -u expected.out a.out\n"
+          },
+          {
+            "type": "p",
+            "text": "diff нь яг text ялгааг харуулна; judge-ийн whitespace tolerance-ийг өөрөө тааж болохгүй. Энэ командуудыг Linux Bash орчинд шалгана; энд Windows GUI эсвэл IOI VM ажиллуулсан гэж үзэхгүй."
+          },
+          {
+            "type": "links",
+            "items": [
+              {
+                "label": "IOI2026 official environment",
+                "url": "https://www.ioi2026.uz/grading-equipment"
+              },
+              {
+                "label": "GCC language-mode macro",
+                "url": "https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html"
+              },
+              {
+                "label": "Bash redirections",
+                "url": "https://www.gnu.org/software/bash/manual/html_node/Redirections.html"
+              },
+              {
+                "label": "PowerShell stdin limitation",
+                "url": "https://github.com/PowerShell/PowerShell/issues/19392"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Өөрийгөө шалгах",
+        "blocks": [
+          {
+            "type": "quiz",
+            "quizId": "bash-output-name",
+            "question": "./a.out > a.out яагаад буруу вэ?",
+            "options": [
+              {
+                "id": "0",
+                "text": "Shell output файлыг эхлээд хоосолж executable-ийг дарна"
+              },
+              {
+                "id": "1",
+                "text": "Bash C++ ажиллуулдаггүй"
+              },
+              {
+                "id": "2",
+                "text": "Compiler үргэлж prompt шаарддаг"
+              }
+            ],
+            "answerId": "0",
+            "explanation": "Executable-аа -o a гэж тусад нь нэрлээд ./a < a.in > a.out хэрэглэ. Input ба output мөн тусдаа байна."
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Terminal: files, compile/run and IOI Ubuntu",
+        "summary": "Bash cwd, ./a, stdin/stdout/stderr and the published IOI2026 environment.",
+        "sections": [
+          {
+            "title": "1. IOI environment and shell",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "The official IOI2026 Grading Equipment page lists Ubuntu 24.04 LTS, GCC 13.3.0, GNOME Terminal 3.52.0 and Konsole 23.08.5. It describes a planned/minimum setup, not an independently tested final workstation image. Check each edition’s compiler/VM and grading command in its own instructions."
+              },
+              {
+                "type": "p",
+                "text": "GNOME Terminal and Konsole are terminal emulators, Bash is a shell, and g++ is a compiler. Commands below are for Bash. Ubuntu alone does not establish the exact terminal brand or shell version."
+              },
+              {
+                "type": "code",
+                "language": "Text",
+                "text": "echo \"$0\"\nbash --version\ng++ --version\ncommand -v g++\n"
+              }
+            ]
+          },
+          {
+            "title": "2. Create and open a folder",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "pwd prints the current directory. mkdir practice creates a child directory. code practice opens the editor without changing the shell’s cwd. cd practice enters that directory; code . opens the current directory."
+              },
+              {
+                "type": "code",
+                "language": "Text",
+                "text": "pwd\nmkdir practice\ncode practice\ncd practice\npwd\ncode .\n"
+              },
+              {
+                "type": "p",
+                "text": "If the directory exists, mkdir may complain; do not delete it. Inspect with ls and enter it. Quote paths with spaces: cd \"CP Practice\". If code is unavailable, use the installed editor’s File → Open Folder. Check the official installation instructions before altering system setup; do not assume software-installation rights on an IOI workstation."
+              }
+            ]
+          },
+          {
+            "title": "3. Compile an executable",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Save main.cpp before compiling. Naming the executable explicitly with -o a avoids overwriting the default a.out executable with output text."
+              },
+              {
+                "type": "code",
+                "language": "Text",
+                "text": "g++ -std=c++17 -O2 -Wall -Wextra main.cpp -o a\n./a\n"
+              },
+              {
+                "type": "p",
+                "text": "./ names an executable in the current directory; bare a searches PATH and may fail. Select -std=c++20 only if needed and supported. Actual contest build commands may differ. Include/main/I/O have the same meaning; this complete program adds two small integers."
+              },
+              {
+                "type": "code",
+                "language": "C++17",
+                "text": "#include <iostream>\n\nusing namespace std;\n\nint main() {\n    int a, b;\n    cin >> a >> b;\n    cout << a + b << '\\n';\n}\n"
+              }
+            ]
+          },
+          {
+            "title": "4. From a.in to a.out",
+            "blocks": [
+              {
+                "type": "p",
+                "text": "Save 2 3 and a newline in a.in. Running is a separate step from compilation. In Bash the command is ./a < a.in > a.out; there is no universal run a command."
+              },
+              {
+                "type": "diagram",
+                "kind": "graph",
+                "directed": true,
+                "nodes": [
+                  {
+                    "id": "0",
+                    "label": "a.in",
+                    "x": 15,
+                    "y": 25
+                  },
+                  {
+                    "id": "1",
+                    "label": "./a",
+                    "x": 50,
+                    "y": 50
+                  },
+                  {
+                    "id": "2",
+                    "label": "a.out",
+                    "x": 85,
+                    "y": 25
+                  },
+                  {
+                    "id": "3",
+                    "label": "a.err",
+                    "x": 85,
+                    "y": 80
+                  }
+                ],
+                "edges": [
+                  [
+                    "0",
+                    "1"
+                  ],
+                  [
+                    "1",
+                    "2"
+                  ],
+                  [
+                    "1",
+                    "3"
+                  ]
+                ],
+                "caption": "File streams; a.out is not the executable"
+              },
+              {
+                "type": "code",
+                "language": "Text",
+                "text": "g++ -std=c++17 -O2 -Wall -Wextra main.cpp -o a && ./a < a.in > a.out 2> a.err\ncat a.out\n"
+              },
+              {
+                "type": "p",
+                "text": "&& runs only after successful compilation. < redirects stdin, > stdout, and2> stderr. > truncates its destination first: never write ./a.out > a.out over the executable or ./a < a.in > a.in over the input."
+              },
+              {
+                "type": "p",
+                "text": "Literal example:"
+              },
+              {
+                "type": "code",
+                "language": "Input",
+                "text": "2 3\n"
+              },
+              {
+                "type": "code",
+                "language": "Output",
+                "text": "5\n"
+              }
+            ]
+          },
+          {
+            "title": "5. Diagnose and compare",
+            "blocks": [
+              {
+                "type": "list",
+                "items": [
+                  "No such file: inspect pwd, ls, filenames and capitalization; Linux is case-sensitive.",
+                  "Permission denied: verify a real executable, cwd and build result. Do not disable protections.",
+                  "A waiting program may need more input or be reading the wrong file.",
+                  "For empty a.out, inspect compiler output, exit status and a.err; do not add prompts to stdout.",
+                  "Redirected files do not replace an interactive judge; use a mock judge or the supplied grader."
+                ]
+              },
+              {
+                "type": "code",
+                "language": "Text",
+                "text": "cat a.err\ndiff -u expected.out a.out\n"
+              },
+              {
+                "type": "p",
+                "text": "diff shows exact text differences; do not guess a judge’s whitespace policy. These commands are validated in Linux Bash; this does not imply Windows GUI or IOI VM testing."
+              },
+              {
+                "type": "links",
+                "items": [
+                  {
+                    "label": "IOI2026 official environment",
+                    "url": "https://www.ioi2026.uz/grading-equipment"
+                  },
+                  {
+                    "label": "GCC language-mode macro",
+                    "url": "https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html"
+                  },
+                  {
+                    "label": "Bash redirections",
+                    "url": "https://www.gnu.org/software/bash/manual/html_node/Redirections.html"
+                  },
+                  {
+                    "label": "PowerShell stdin limitation",
+                    "url": "https://github.com/PowerShell/PowerShell/issues/19392"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Check your understanding",
+            "blocks": [
+              {
+                "type": "quiz",
+                "quizId": "bash-output-name",
+                "question": "Why is ./a.out > a.out wrong?",
+                "options": [
+                  {
+                    "id": "0",
+                    "text": "The shell truncates the executable as its output destination"
+                  },
+                  {
+                    "id": "1",
+                    "text": "Bash cannot run C++ programs"
+                  },
+                  {
+                    "id": "2",
+                    "text": "The compiler always needs a prompt"
+                  }
+                ],
+                "answerId": "0",
+                "explanation": "Name the executable separately with -o a, then use ./a < a.in > a.out. Keep input and output files distinct too."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

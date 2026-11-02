@@ -28,8 +28,10 @@ export function tutorialMastery(id, record, practice, progress) {
 export function dayCompletion(day, index, records, progress, checks = []) {
   const required = day.required.map(key => index.get(key));
   const missing = required.some(p => !p), solved = required.filter(p => p && progress[p.id]?.status === 'solved').length;
-  const understood = day.tutorials.every(id => CHECKS.every(c => (records[id]?.checks || []).includes(c)));
-  return {missing, solved, total: required.length,
+  const understood = day.completionMode === 'daily-practice'
+    ? day.tutorials.every(id => (day.tutorialSections?.[id] || []).length > 0 && day.tutorialSections[id].every(i => (records[id]?.readSections || []).includes(i)))
+    : day.tutorials.every(id => CHECKS.every(c => (records[id]?.checks || []).includes(c)));
+  return {missing, solved, understood, total: required.length,
     complete: !missing && solved === required.length && understood && day.checklist.every((_, i) => checks.includes(i))};
 }
 export function dateKey(date, timeZone = 'Asia/Ulaanbaatar') {
@@ -83,5 +85,5 @@ export function stableStringify(value) { if (Array.isArray(value)) return '[' + 
 export async function bodyHash(value) { const result = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(stableStringify(value))); return [...new Uint8Array(result)].map(x => x.toString(16).padStart(2,'0')).join(''); }
 let contentPromise;
 export function loadLearningContent() {
-  return contentPromise ??= Promise.all(['curriculum.json','study-plan.json','tutorial-editions.json','learning-problems.json'].map(async name => { const response = await fetch('./' + name + (name==='curriculum.json'?'?v=84':'?v=23')); if (!response.ok) throw new Error('Сургалтын агуулга ачаалсангүй.'); return response.json(); })).then(([curriculum,plan,editions,catalog]) => {if(!Array.isArray(curriculum.order)||!curriculum.lessons||!Array.isArray(plan.days)||plan.days.length!==100||!editions.editions||!Array.isArray(catalog.problems))throw new Error('Сургалтын агуулгын бүтэц буруу байна.');return {curriculum,plan,editions,catalog};});
+  return contentPromise ??= Promise.all(['curriculum.json','study-plan.json','tutorial-editions.json','learning-problems.json'].map(async name => { const resource=name==='study-plan.json'&&globalThis.THINK_CP_CONFIG?.course100Version!==2?'audit/course100-v2/legacy-plan.json':name; const response = await fetch('./' + resource + (name==='curriculum.json'?'?v=95':name==='study-plan.json'?'?v=95':'?v=23')); if (!response.ok) throw new Error('Сургалтын агуулга ачаалсангүй.'); return response.json(); })).then(([curriculum,plan,editions,catalog]) => {if(!Array.isArray(curriculum.order)||!curriculum.lessons||!Array.isArray(plan.days)||plan.days.length!==100||!editions.editions||!Array.isArray(catalog.problems))throw new Error('Сургалтын агуулгын бүтэц буруу байна.');return {curriculum,plan,editions,catalog};});
 }

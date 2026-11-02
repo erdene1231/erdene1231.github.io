@@ -1,7 +1,7 @@
 // Handbook chapter order, with existing focused lessons beside their containing chapter.
 // These are lesson positions, not new chapter numbers; no IDs or progress are changed.
 export const handbookTutorialOrder = [
- 'introduction','complexity','sorting','binary-search','lower-bound','upper-bound','hash-compression',
+ 'introduction','cpp-windows-vscode','cpp-devcpp','cpp-terminal-ioi','complexity','sorting','binary-search','lower-bound','upper-bound','hash-compression',
  'set-map','stack-queue','priority-queue',
  'brute-force','recursion','greedy','binary-search-answer',
  'dynamic-programming','grid-dp','knapsack','lis','interval-dp','digit-dp','dp-optimizations',

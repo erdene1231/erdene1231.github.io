@@ -1,14 +1,14 @@
-import {orderTutorials,handbookChapterNumbers} from './tutorial-order.js?v=84';
+import {orderTutorials,handbookChapterNumbers} from './tutorial-order.js?v=95';
 import {renderGridRows,prepareGridTable} from './tutorial-grid.js?v=62';
 import {refreshInlineMath} from './tutorial-math-layout.js?v=56';
 import {priorityLevel,priorityLabel,priorityRank} from './priority.js?v=52';
-import {renderExtendedBlock} from './tutorial-block-renderer.js?v=63';
-import {clearMediaCache} from './tutorial-media.js?v=63';
-import {loadLearningContent,bodyHash} from './learning-model.js?v=87';
+import {renderExtendedBlock} from './tutorial-block-renderer.js?v=95';
+import {clearMediaCache} from './tutorial-media.js?v=95';
+import {loadLearningContent,bodyHash} from './learning-model.js?v=95';
 import {algorithmDemo} from './algorithm-demos.js?v=52';
 import {segmentTreeDemo} from './segment-tree-demo.js?v=52';
-import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=63';
-import {setupTutorialEditor} from './tutorial-editor.js?v=94';
+import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=95';
+import {setupTutorialEditor} from './tutorial-editor.js?v=95';
 const $=id=>document.getElementById(id);
 export const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
 let mathPromise=null,mathQueue=Promise.resolve();
@@ -24,7 +24,7 @@ function mathjax(){
  });return mathPromise;
 }
 export function renderBlock(b,parent,lang='mn',options={}){
- if(renderExtendedBlock(b,parent,lang,options))return;
+ if(renderExtendedBlock(b,parent,lang,{...options,typeset}))return;
  if(b.type==='p')parent.append(node('p',b.text));
  else if(b.type==='note'){const a=node(b.collapsible?'details':'aside',undefined,'tutorial-note'+(b.collapsible?' tutorial-disclosure':''));if(b.collapsible)a.append(node('summary',b.label||(lang==='en'?'Show explanation':'Тайлбар харах')));a.append(node('p',b.text));parent.append(a);}
  else if(b.type==='math')parent.append(node('div','$$'+b.tex+'$$','tutorial-math'));
