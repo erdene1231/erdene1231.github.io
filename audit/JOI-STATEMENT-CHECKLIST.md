@@ -25,4 +25,6 @@ independent preparation continues. Never replay migrations or historical SQL.
 
 Current bounded batch: 880–883 drafted and semantically reviewed; 11 official
 samples recomputed plus 29 edge checks. All24 sources captured; 20 documents
-remain to author. Published0/24 pending batch01 release/readback.
+remain to author. Published4/24: batch01 PR251 / Pages41376972245, histories1219–1222;
+exact anonymous24 readback and all protected/native51 preservation verified.
+Remaining20 retain their post-URL URLs and revisions.

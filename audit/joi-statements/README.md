@@ -37,3 +37,9 @@ are synthetic; these tests do not claim a real authenticated production save.
 See the batch01 verification JSON files for exact results. Publication counts
 remain zero until a committed guarded write and exact anonymous readback are
 recorded in a publication receipt.
+
+Batch01 is now published and exactly verified: histories1219–1222, PR251 /
+Pages41376972245 success. All1060 other rows, prior51 native pairs, protected
+records, authority and approved URLs are exact. The 45-second client timeout
+was resolved by read-only inspection, without a retry. Remaining20 statements
+continue under the same approved scope. See batch01-publication-receipt.json.
