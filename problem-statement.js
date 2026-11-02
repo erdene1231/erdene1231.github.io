@@ -1,6 +1,6 @@
 import {assertProblemStatementReady,STATEMENT_CHECKS} from './problem-statement-policy.js?v=95';
 import {validateTutorial} from './tutorial-model.js?v=95';
-import {drawArticle,typeset} from './tutorials.js?v=99';
+import {drawArticle,typeset} from './tutorials.js?v=100';
 import {mountBlockEditor} from './tutorial-block-editor.js?v=95';
 import {readProblemStatement,problemBackend} from './problem-backend.js?v=86';
 import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=95';
