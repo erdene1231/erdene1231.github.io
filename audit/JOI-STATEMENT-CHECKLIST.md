@@ -44,3 +44,8 @@ large event-count check pass. Five editor /20 reader cases pass. Release pending
 Batch03 published and verified: PR255 / Pages41378602479 success;
 histories1227–1231. Exact all24 anonymous readback and all native/protected/URL
 preservation. Verified total13/24; remaining11.
+
+Batch03 receipt PR256 / Pages41379189712 succeeded. Batch04 targets720,
+892–895: five source-reviewed MN/EN statements; all17 source samples and six
+edge cases pass, five editor /20 reader cases and six SQL/content cases pass.
+Publication pending. Remaining six final targets721,723,896–899 retained.
