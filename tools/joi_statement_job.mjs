@@ -4,7 +4,7 @@ import{bodyHash}from'./part04_tutorial_proposals.mjs';import{protectedSql,author
 export{preflightSql};
 const policySql="SELECT md5(coalesce(jsonb_agg(to_jsonb(p) ORDER BY schemaname,tablename,policyname)::text,'[]')) FROM pg_policies p WHERE schemaname IN('public','study_private','storage')";
 const learningTriggersSql="SELECT md5(coalesce(jsonb_agg(pg_get_triggerdef(oid) ORDER BY tgname)::text,'[]')) FROM pg_trigger WHERE tgrelid='public.learning_records'::regclass AND NOT tgisinternal";
-const batches={'01':{file:'batch01-plans.json',sha:'33303989635d84f50f02eb22c7785536a2e45aa12dbb32c1727b1a7ea4fee06e',ids:['task-880','task-881','task-882','task-883']}};
+const batches={'02':{file:'batch02-plans.json',sha:'dd65ea56e5ef8e9d5d11196d0e0ed0320cf1173435ff46cc7a9839ffca089c23',ids:['task-884','task-885','task-886','task-887']},'01':{file:'batch01-plans.json',sha:'33303989635d84f50f02eb22c7785536a2e45aa12dbb32c1727b1a7ea4fee06e',ids:['task-880','task-881','task-882','task-883']}};
 export function joiStatementBatch(batch='01'){
  const spec=batches[batch];if(!spec)throw Error('Unreviewed statement batch');
  const raw=fs.readFileSync(new URL('../audit/joi-statements/'+spec.file,import.meta.url),'utf8');
