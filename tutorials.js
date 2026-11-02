@@ -1,3 +1,4 @@
+import {createMathJaxLoader} from './mathjax-loader.js?v=1';
 import {orderTutorials,handbookChapterNumbers} from './tutorial-order.js?v=95';
 import {renderGridRows,prepareGridTable} from './tutorial-grid.js?v=62';
 import {refreshInlineMath} from './tutorial-math-layout.js?v=56';
@@ -8,21 +9,13 @@ import {loadLearningContent,bodyHash} from './learning-model.js?v=95';
 import {algorithmDemo} from './algorithm-demos.js?v=52';
 import {segmentTreeDemo} from './segment-tree-demo.js?v=52';
 import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=95';
-import {setupTutorialEditor} from './tutorial-editor.js?v=98';
+import {setupTutorialEditor} from './tutorial-editor.js?v=99';
 const $=id=>document.getElementById(id);
 export const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
-let mathPromise=null,mathQueue=Promise.resolve();
-function mathjax(){
- if(window.MathJax?.typesetPromise)return Promise.resolve(window.MathJax);
- if(mathPromise)return mathPromise;
- mathPromise=new Promise((resolve,reject)=>{
-  window.MathJax={loader:{paths:{mathjax:new URL('./vendor/mathjax',location.href).href},load:['ui/safe']},options:{safeOptions:{allow:{URLs:'none',classes:'none',cssIDs:'none',styles:'none'}}},tex:{packages:['base','ams','newcommand','noundefined','configmacros'],inlineMath:[['\\(','\\)'],['$','$']],displayMath:[['\\[','\\]'],['$$','$$']],processEscapes:true,maxBuffer:20000},svg:{fontCache:'local'},startup:{typeset:false}};
-  const script=document.createElement('script');script.src='./vendor/mathjax/tex-svg.js';script.async=true;
-  const timer=setTimeout(fail,15000);
-  function fail(){clearTimeout(timer);script.remove();mathPromise=null;reject(new Error('MathJax ачаалсангүй / Could not load MathJax.'));}
-  script.onerror=fail;script.onload=()=>{clearTimeout(timer);if(!window.MathJax?.startup?.promise)return fail();window.MathJax.startup.promise.then(()=>resolve(window.MathJax)).catch(fail);};document.head.append(script);
- });return mathPromise;
-}
+let mathLoader=null,mathQueue=Promise.resolve();
+function loader(){return mathLoader??=createMathJaxLoader({window,document,onLateReady:()=>window.dispatchEvent(new Event('erdene-mathjax-ready'))});}
+function mathjax(){return loader().ready();}
+
 export function renderBlock(b,parent,lang='mn',options={}){
  if(renderExtendedBlock(b,parent,lang,{...options,typeset}))return;
  if(b.type==='p')parent.append(node('p',b.text));
@@ -143,12 +136,12 @@ export function setupTutorials(ctx){
  }
  function renderTopic(t,part){
   current=t;requestedPart=part;const turn=++renderTurn,selectedLang=lang==='en'&&!t.translations?.en?'mn':lang,v=view(t,selectedLang);labels();$('tutorial-browser').hidden=true;$('tutorial-reader').hidden=false;$('tutorial-level').closest('label').hidden=true;
-  document.title=v.title+' — Erdene Club';$('tutorial-message').textContent='';$('tutorial-content').setAttribute('aria-busy','true');$('tutorial-math-message').textContent=tr('Томъёог дүрсэлж байна…','Rendering mathematics…');$('tutorial-math-retry').hidden=true;
+  document.title=v.title+' — Erdene Club';$('tutorial-message').textContent='';$('tutorial-content').setAttribute('aria-busy','true');$('tutorial-math-message').textContent=tr('Томьёог дүрсэлж байна…','Rendering mathematics…');$('tutorial-math-retry').hidden=true;
   const elements=[$('tutorial-title'),$('tutorial-summary'),$('tutorial-prerequisites'),$('tutorial-prerequisite-links'),$('tutorial-lesson-navigation'),$('tutorial-content'),$('tutorial-learning-extras')];
   // Build readable lesson content independently of the MathJax work queue.
   void Promise.resolve().then(()=>{if(turn!==renderTurn)return false;$('tutorial-title').textContent=v.title;$('tutorial-summary').textContent=v.summary||'';$('tutorial-summary').hidden=!v.summary?.trim();$('tutorial-prerequisites').textContent=v.prerequisites?(selectedLang==='en'?'Prerequisites: ':'Урьдчилан мэдэх: ')+v.prerequisites:'';$('tutorial-prerequisites').hidden=!v.prerequisites?.trim();$('tutorial-meta').textContent=(lang==='en'&&!t.translations?.en?'English translation is not published yet. Монгол хувилбар · ':'')+(t.category?categoryName(t.category)+' · ':'')+levelNames[selectedLang][levels.indexOf(t.levelKey)]+' · '+priorityName(t,selectedLang)+(v.sections.length?' · ≈ '+Math.max(10,Math.round(JSON.stringify(v.sections).length/1500))+(selectedLang==='en'?' min reading':' минут унших'):'');learningLinks(t,selectedLang);drawArticle(t,$('tutorial-content'),selectedLang,{client:ctx.client(),viewerId:ctx.user()?.id||'public',learning:ctx.learning()});$('tutorial-learning-extras').replaceChildren();ctx.learning()?.renderTutorial(t,selectedLang,$('tutorial-learning-extras'));$('tutorial-content').lang=selectedLang;$('tutorial-toc').replaceChildren(node('strong',selectedLang==='en'?'In this tutorial':'Энэ хичээлд'));v.sections.forEach((s,i)=>{const a=node('a',s.title||((selectedLang==='en'?'Section ':'Хэсэг ')+(i+1)));a.href='#tutorial/'+t.id+'/part/'+i;$('tutorial-toc').append(a);});$('tutorial-related').replaceChildren(node('h3',selectedLang==='en'?'Related topics':'Холбоотой сэдвүүд'));$('tutorial-related').hidden=!(t.related||[]).length;for(const id of t.related||[]){const o=topics.find(x=>x.id===id);if(o){const a=node('a',view(o,selectedLang).title);a.href='#tutorial/'+id;$('tutorial-related').append(a);}}reading(requestedPart);return typeset(elements,undefined,()=>turn===renderTurn);})
   .then(()=>{if(turn!==renderTurn)return false;$('tutorial-math-message').textContent='';reading(requestedPart);const target=Number.isInteger(requestedPart)?$('tutorial-'+t.id+'-'+activePart):$('tutorial-title');target?.scrollIntoView({block:'start',behavior:'instant'});$('tutorial-title').focus({preventScroll:true});})
-  .catch(e=>{if(turn===renderTurn){$('tutorial-math-message').textContent=e.message+tr(' Томъёог түр LaTeX хэлбэрээр харуулж байна.',' Showing raw LaTeX temporarily.');$('tutorial-math-retry').hidden=false;}}).finally(()=>{if(turn===renderTurn)$('tutorial-content').setAttribute('aria-busy','false');});
+  .catch(e=>{if(turn===renderTurn){$('tutorial-math-message').textContent=e.message+tr(' Томьёог түр LaTeX хэлбэрээр харуулж байна.',' Showing raw LaTeX temporarily.');$('tutorial-math-retry').hidden=false;}}).finally(()=>{if(turn===renderTurn)$('tutorial-content').setAttribute('aria-busy','false');});
  }
  function route(){
   labels();if(!topics.length){++renderTurn;current=null;$('tutorial-reader').hidden=true;$('tutorial-browser').hidden=false;results();return;}const m=location.hash.match(/^#tutorial\/([a-z0-9-]+)(?:\/part\/(\d+))?$/);
@@ -163,7 +156,8 @@ export function setupTutorials(ctx){
  }
  $('tutorial-language').onchange=()=>{lang=$('tutorial-language').value;try{localStorage.setItem('erdene:tutorial-language',lang);}catch{}current=null;results();route();};$('tutorial-search').addEventListener('input',results);$('tutorial-category').onchange=results;$('tutorial-level').onchange=results;$('tutorial-priority-filter').onchange=results;$('tutorial-priority-sort').onchange=results;
  $('tutorial-reading-mode').onchange=()=>{readingMode=$('tutorial-reading-mode').value;try{localStorage.setItem('erdene:tutorial-reading-mode',readingMode);}catch{}requestedPart=activePart;reading(activePart,true);};$('tutorial-section-prev').onclick=()=>goPart(activePart-1);$('tutorial-section-next').onclick=()=>goPart(activePart+1);
- $('tutorial-copy-link').onclick=()=>void copy(location.href,$('tutorial-copy-link'),tr('Хуулагдлаа','Copied'));$('tutorial-math-retry').onclick=()=>{if(current)renderTopic(current,activePart);};window.addEventListener('hashchange',route);
+ $('tutorial-copy-link').onclick=()=>void copy(location.href,$('tutorial-copy-link'),tr('Хуулагдлаа','Copied'));$('tutorial-math-retry').onclick=()=>{void loader().retry().catch(()=>{});if(current)renderTopic(current,activePart);};
+ window.addEventListener('erdene-mathjax-ready',()=>{if(!current||$('tutorial-math-retry').hidden)return;const turn=renderTurn;void typeset([$ ('tutorial-content')],undefined,()=>turn===renderTurn).then(()=>{if(turn!==renderTurn)return;$('tutorial-math-message').textContent='';$('tutorial-math-retry').hidden=true;$('tutorial-content').setAttribute('aria-busy','false');}).catch(()=>{});});window.addEventListener('hashchange',route);
  editor=setupTutorialEditor({...ctx,topics:()=>topics,ready:()=>onlineReady,reload:connected,saved(row){accept([...topics.filter(t=>t.id!==row.body.id).map(t=>({body:t,revision:t.revision})),...(row.published===false?[]:[row])],true);},deleted(id){accept(topics.filter(t=>t.id!==id).map(t=>({body:t,revision:t.revision})),true);}});
  if(requiresOnline)$('tutorial-message').textContent=tr('Хичээлийн санг ачаалж байна…','Loading the tutorial library…');
  void lessonSeed.then(list=>{if(!requiresOnline&&!hasLive&&!ctx.client())return accept(list);}).catch(()=>{$('tutorial-grid').textContent='Tutorials ачаалсангүй / Could not load tutorials.';});
