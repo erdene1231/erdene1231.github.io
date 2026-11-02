@@ -19,7 +19,7 @@
 - [x] Narrow provenance preservation fix PR251 and single-MathJax-module fix
       PR260 tested/deployed. PR260 Pages41383035015 and10 assets verified.
 - [x] Final all24 revision/history/body-hash reconciliation in
-      audit/joi-statements/final-state.json and README.md. Final receipt PR
+      audit/joi-statements/final-state.json and README.md. Final receipt PR261
       records the publication and deployment closure; no content work remains.
 
 Do not replay successful URL/statement jobs or migrations038/039/040. Current

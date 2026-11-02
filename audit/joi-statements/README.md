@@ -135,7 +135,7 @@ a live authenticated browser or production-pixel claim.
 | 02 | [253](https://github.com/erdene1231/erdene1231.github.io/pull/253) | [254](https://github.com/erdene1231/erdene1231.github.io/pull/254) | 1223–1226 |
 | 03 | [255](https://github.com/erdene1231/erdene1231.github.io/pull/255) | [256](https://github.com/erdene1231/erdene1231.github.io/pull/256) | 1227–1231 |
 | 04 | [257](https://github.com/erdene1231/erdene1231.github.io/pull/257) | [258](https://github.com/erdene1231/erdene1231.github.io/pull/258) | 1232–1236 |
-| 05 | [259](https://github.com/erdene1231/erdene1231.github.io/pull/259) | Final receipt pending merge | 1237–1242 |
+| 05 | [259](https://github.com/erdene1231/erdene1231.github.io/pull/259) | [261](https://github.com/erdene1231/erdene1231.github.io/pull/261) | 1237–1242 |
 
 Individual `batchNN-publication-receipt.json` files retain exact guards, SQL/plan
 hashes, source merge/Pages runs, anonymous readback and deployed asset evidence.
