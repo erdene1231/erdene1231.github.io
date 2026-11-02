@@ -8,7 +8,7 @@ import {loadLearningContent,bodyHash} from './learning-model.js?v=95';
 import {algorithmDemo} from './algorithm-demos.js?v=52';
 import {segmentTreeDemo} from './segment-tree-demo.js?v=52';
 import {levels,levelNames,validateTutorial,view} from './tutorial-model.js?v=95';
-import {setupTutorialEditor} from './tutorial-editor.js?v=95';
+import {setupTutorialEditor} from './tutorial-editor.js?v=97';
 const $=id=>document.getElementById(id);
 export const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
 let mathPromise=null,mathQueue=Promise.resolve();
@@ -62,7 +62,11 @@ export function typeset(elements,build,valid=()=>true){
 async function copy(text,button,success){try{await navigator.clipboard.writeText(text);const previous=button.textContent;button.textContent=success;setTimeout(()=>button.textContent=previous,1800);}catch{$('tutorial-message').textContent='Хуулах боломжгүй байна / Copy unavailable.';}}
 export function setupTutorials(ctx){
  const requiresOnline=ctx.requiresOnline??!!ctx.client();
- const lessonSeed=fetch('./tutorials.json?v=24').then(r=>{if(!r.ok)throw new Error('Tutorials ачаалсангүй.');return r.json();}).then(d=>d.tutorials),contentReady=Promise.all([loadLearningContent().catch(()=>({curriculum:{order:[]},editions:{editions:{}}})),lessonSeed]);let acceptTurn=0;
+ // Authoritative public tutorials must not wait for the unrelated 100-day plan
+ // or the legacy 2 MB offline seed. Their published bodies/order are complete.
+ const fallbackContent={curriculum:{order:[]},editions:{editions:{}}};
+ const lessonSeed=requiresOnline?Promise.resolve([]):fetch('./tutorials.json?v=24').then(r=>{if(!r.ok)throw new Error('Tutorials ачаалсангүй.');return r.json();}).then(d=>d.tutorials);
+ const contentReady=requiresOnline?Promise.resolve([fallbackContent,[]]):Promise.all([loadLearningContent().catch(()=>fallbackContent),lessonSeed]);let acceptTurn=0;
 
  let topics=[],current=null,renderTurn=0,resultTurn=0,loadTurn=0,lang='mn',readingMode='full',activePart=0,requestedPart,onlineReady=false,hasLive=false,editor,mediaAccountId=ctx.user()?.id||null;
  try{lang=localStorage.getItem('erdene:tutorial-language')==='en'?'en':'mn';}catch{}$('tutorial-language').value=lang;
@@ -149,7 +153,7 @@ export function setupTutorials(ctx){
  }
  async function connected(){
   if(!ctx.client())return;const turn=++loadTurn;
-  try{const {data,error}=await ctx.client().rpc('get_tutorials');if(error)throw error;if(turn!==loadTurn)return;if(!Array.isArray(data))throw new Error('Tutorial data missing');onlineReady=true;hasLive=true;await accept(data,true);}
+  try{const {data,error}=await ctx.client().rpc('get_tutorials');if(error)throw error;if(turn!==loadTurn)return;if(!Array.isArray(data))throw new Error('Tutorial data missing');$('tutorial-message').textContent='';await accept(data,true);if(turn!==loadTurn)return;onlineReady=true;hasLive=true;editor?.refresh();}
   catch{if(turn===loadTurn){onlineReady=false;editor?.refresh();if(!hasLive){await accept([],true);$('tutorial-message').textContent=tr('Хичээлийн санг баталгаажуулж чадсангүй. Холболтоо шалгаад хуудсаа дахин ачаална уу.','Could not verify the tutorial library. Check your connection and reload.');}}}
   editor?.accountChanged(true);
  }
