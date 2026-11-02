@@ -12,7 +12,7 @@ Full newly authored day1–100 curriculum, not a patch of the previous ordering.
 
 ## Research and illustrations
 
-`research/notes.json` records primary CP/platform/compiler sources and retrieval/distributed-practice rationale. Setup lessons distinguish editor/shell/terminal/compiler, C++ language mode versus toolchain, CMD/PowerShell/Bash and exact compile/redirection commands. IOI2026 equipment is the official published planned/minimum configuration, not a tested VM.
+`research-sources.json` records primary CP/platform/compiler sources and retrieval/distributed-practice rationale. Setup lessons distinguish editor/shell/terminal/compiler, C++ language mode versus toolchain, CMD/PowerShell/Bash and exact compile/redirection commands. IOI2026 equipment is the official published planned/minimum configuration, not a tested VM.
 
 Microsoft VS Code docs screenshots are CC BY3.0 US. AsbakWiki's Dev-C++5.1.1.0 screenshot is historical CC BY-SA3.0, not Embarcadero6.3 settings. Actual pixels were inspected, version captions retained; images re-encoded only. Sources and image-specific licenses are in `tutorial-assets/cpp-environment/LICENSE.txt` and native lesson links. No fabricated UI or Windows capture claim.
 
