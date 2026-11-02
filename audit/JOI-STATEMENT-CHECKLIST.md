@@ -40,3 +40,7 @@ Batch02 receipt PR254 / Pages41378374827 succeeded. Batch03 targets722,
 888–891 have five reviewed MN/EN drafts; all18 source samples recomputed,
 130/90/30 independent Semiexpress/Kingdom/Soccer small oracles and Coach
 large event-count check pass. Five editor /20 reader cases pass. Release pending.
+
+Batch03 published and verified: PR255 / Pages41378602479 success;
+histories1227–1231. Exact all24 anonymous readback and all native/protected/URL
+preservation. Verified total13/24; remaining11.
