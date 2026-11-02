@@ -1,6 +1,6 @@
 # JOI URL update
 
-Current publication phase: the16 verified changes are authorized. Fresh catalog/schema checks match the prepared mapping;5 targeted tests pass again. Production has not yet been written. The receipt will record the final outcome.
+Publication complete:16 verified URLs changed,4 already-correct and4 unmatched2015 entries unchanged. Source PR249/e922824, Pages41372606262 success; histories1203–1218, exact anonymous24-row readback and19 normal-TLS assets verified. The client read timed out once; read-only inspection proved full commit and the statement was never retried. See [publication receipt](publication-receipt.json). The preparation flags and pending text below are historical, superseded by this verified receipt.
 
 ## Preparation record — before publication
 

@@ -1104,3 +1104,13 @@ assets exact. Full Node439/439 across153 files. Fresh1064/all51/protected/access
 snapshot unchanged since040. See audit/ui-followup/final-deployment-receipt.json.
 No UI scope remains pending; the50-row olympiad URL source-access gap is an
 honest external403 blocker, not evidence of absence. No guessed fallback/replay.
+
+JOI URL-only update completed2026-11-02: sourcePR249/e922824,16 verified URLs
+changed;4 already-correct and4 unmatched2015 Final Round tasks retained. One
+atomic operation/history1203–1218,1064 rows unchanged in count; all51 native
+documents/protected/access/allocator fingerprints exact. The45-second client
+read timeout was resolved by read-only active-job/history/catalog inspection;
+NEVER REPLAY this successful operation. See audit/joi-ojuz/publication-receipt.json.
+Statement-specific scope is separately approved next: native MN/EN statements
+for all24 existing JOI problems, no editorials/new problems/access changes.
+Use fresh post-URL bodies/revisions (16 atrev2,8 atrev1); preserve approved URLs.
