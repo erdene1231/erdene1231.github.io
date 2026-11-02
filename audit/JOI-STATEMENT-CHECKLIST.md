@@ -32,4 +32,6 @@ Remaining20 retain their post-URL URLs and revisions.
 Batch01 receipt PR252 merged as3aee2f3; Pages41377357144 success.
 Batch02: IDs884–887 (2016), four MN/EN drafts reviewed against full source;
 14 official sample pairs and five definition-based edges pass; two guarded SQL
-cases and four native editor /16 reader combinations pass. Publication pending.
+cases and four native editor /16 reader combinations pass. Batch02 published: PR253 / Pages41377633868 success; histories1223–1226.
+Exact24 anonymous readback, all prior native/protected/metadata preservation.
+Verified total8/24; remaining16.
