@@ -1114,3 +1114,24 @@ NEVER REPLAY this successful operation. See audit/joi-ojuz/publication-receipt.j
 Statement-specific scope is separately approved next: native MN/EN statements
 for all24 existing JOI problems, no editorials/new problems/access changes.
 Use fresh post-URL bodies/revisions (16 atrev2,8 atrev1); preserve approved URLs.
+
+## JOI native statements closure — 2026-11-02
+
+All24 existing JOI problems now have native MN/EN statements (48 language versions,
+332 actual Input/Output code blocks); no JOI editorials or new problems were added.
+Five single-submission batches committed histories1219–1242 after the16-URL job
+(histories1203–1218). Catalog1064; native statements75, existing native editorials51.
+All24 bodies/revisions/history and1040 unrelated rows are reconciled in
+`audit/joi-statements/final-state.json`; full evidence and receipt PRs are in
+`audit/joi-statements/README.md`. URL outcome remains16 changed/4 already correct/
+4 unmatched retained. Original JOI CC BY-SA4.0 grant covers all24; Coach and Unique
+Cities canonical PDF pages were visually checked, including the lost not-equal
+glyph. All80 source sample pairs and446 bounded independent checks pass.
+A genuine concurrent learner-progress change was captured and preserved through
+fresh guards; do not restore older progress. Timeouts in batches01/04/05 were
+resolved by read-only inspection without replay. No migration/access change.
+PR260 (608305031add8fa04318a9eaa9a549ceb94e3ecd; Pages41383035015 success) unifies
+all renderer consumers/entry caches at v94, preventing duplicate MathJax bootstrap.
+Actual app-entry singleton, native/editorial/tutorial rendering and document-action
+fixtures pass;10 deployed assets match default TLS. Never replay successful
+statement/URL SQL or migrations038/039/040. No remaining authorized JOI content work.
