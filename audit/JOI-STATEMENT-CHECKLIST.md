@@ -8,10 +8,10 @@ for this scope. Source/rights/semantic blockers must be reported per task, while
 independent preparation continues. Never replay migrations or historical SQL.
 
 - [x]16 URL changes verified live, histories1203–1218;4 correct/4 unmatched kept.
-- [ ] URL receipt merge/deployment closure.
-- [ ] Fresh post-URL24-target inventory/revisions/source/rights assessment and
+- [x] URL receipt merge/deployment closure: PR250 / Pages41373570738 success.
+- [x] Fresh post-URL24-target inventory/revisions/source/rights assessment and
       bounded workload report before lengthy authoring.
-- [ ] Exact authoritative task/input/output/constraints/samples identified;
+- [x] Exact authoritative task/input/output/constraints/samples identified;
       source freshness/PDF extraction and genuine gaps documented.
 - [ ] Independently worded factual native MN/EN documents unless verified license
       permits reproduction; preserve story-essential semantics and sample/I-O
@@ -22,3 +22,7 @@ independent preparation continues. Never replay migrations or historical SQL.
 - [ ] Tested scoped source PR/merge, fresh guards/scoped recovery, single guarded
       publication with uncertainty inspection before retry, anonymous exact
       readback/deployed verification and final receipt closure.
+
+Current bounded batch: 880–883 drafted and semantically reviewed; 11 official
+samples recomputed plus 29 edge checks. All24 sources captured; 20 documents
+remain to author. Published0/24 pending batch01 release/readback.
