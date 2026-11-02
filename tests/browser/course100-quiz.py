@@ -31,7 +31,10 @@ try:
   page.evaluate('editor.destroy();editorHost.remove()')
   for t in setup:
    page.goto(base+'/index.html#tutorial/'+t['id'],wait_until='networkidle');page.wait_for_selector('#tutorial-content section');assert page.locator('#tutorial-content img').count()==sum(b['type']=='image'for s in t['sections']for b in s['blocks']);page.wait_for_function('Array.from(document.querySelectorAll("#tutorial-content img")).every(i=>i.complete&&i.naturalWidth>0)');assert page.locator('#tutorial-content mjx-merror').count()==0
-  checks.append('three real tutorial routes, licensed static illustrations load without Storage/auth permissions')
+   for width,theme in [(375,'light'),(375,'dark'),(1200,'light'),(1200,'dark')]:
+    page.set_viewport_size({'width':width,'height':1000});page.evaluate('(v)=>document.documentElement.dataset.theme=v',theme);assert page.evaluate('document.documentElement.scrollWidth<=innerWidth');assert page.locator('#tutorial-content img').evaluate_all('(imgs)=>imgs.every(i=>i.getBoundingClientRect().width<=innerWidth)')
+   if t['id']=='cpp-devcpp':page.locator('#tutorial-content').screenshot(path=str(work/'devcpp-rendered.png'))
+  checks.append('three real tutorial routes, licensed static illustrations load without Storage/auth permissions;375/1200 and both themes')
   page.goto(base+'/index.html#tutorial/cpp-windows-vscode/part/0',wait_until='networkidle');page.wait_for_selector('#tutorial-content section');page.locator('#tutorial-reading-mode').select_option('step')
   for i in range(4):
    page.evaluate('(i)=>location.hash="#tutorial/cpp-windows-vscode/part/"+i',i);page.wait_for_function('(i)=>document.querySelectorAll("#tutorial-content>section")[i].hidden===false',arg=i);page.locator('[data-read-current]').click()

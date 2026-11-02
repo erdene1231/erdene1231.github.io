@@ -21,3 +21,8 @@ test('new daily reading criterion is separate from full lesson mastery; legacy m
  const reading=Object.fromEntries(day.tutorials.map(id=>[id,{readSections:day.tutorialSections[id]}]));assert(dayCompletion(day,idx,reading,progress,[0,1,2]).complete);assert(!dayCompletion(day,idx,reading,{},[0,1,2]).complete);assert(!dayCompletion(day,idx,reading,progress,[0,1]).complete);
  const legacy={...day,completionMode:undefined};assert(!dayCompletion(legacy,idx,reading,progress,[0,1,2]).complete);assert(dayCompletion(legacy,idx,masteryOnly,progress,[0,1,2]).complete);
 });
+test('approved rollout enables new native course and quizzes after setup readback',async()=>{
+ const config=fs.readFileSync('config.js','utf8');assert.match(config,/nativeQuizVersion:\s*1/);assert.match(config,/course100Version:\s*2/);assert.match(fs.readFileSync('index.html','utf8'),/config\.js\?v=96/);
+ const oldConfig=globalThis.THINK_CP_CONFIG,oldFetch=globalThis.fetch,requests=[];globalThis.THINK_CP_CONFIG={course100Version:2};globalThis.fetch=async url=>{requests.push(url);return{ok:true,json:async()=>read(String(url).replace(/^\.\//,'').split('?')[0])};};
+ try{const{loadLearningContent}=await import('../learning-model.js?course100-final');const data=await loadLearningContent();assert.equal(data.plan.version,2);assert.equal(data.plan.days.length,100);assert(!requests.some(x=>x.includes('legacy-plan')));}finally{globalThis.THINK_CP_CONFIG=oldConfig;globalThis.fetch=oldFetch;}
+});
