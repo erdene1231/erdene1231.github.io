@@ -29,4 +29,4 @@ Staged rollout keeps courseVersion1 and quiz authoring disabled until runtime/as
 - C++:five complete programs,24 compile/run cases in C++17/C++20, quoted cwd and Bash stdin/stdout/stderr files, compile-failure stale-binary prevention. Windows shells/GUI and final IOI VM were not executed.
 - PGlite uses actual current validation definitions, tests041 and all103 documents, preserved old data/ACL, invalid inputs and replay rejection. Publication fixture checks exact three-ID scope, stale guard, injected atomic rollback, old-row preservation and replay rejection.
 
-Publication receipts and deployed checks are added after completion. No earlier JOI/content transaction or migration is replayed.
+Publication receipt:setup revisions1/history406–408, migration041 version20261102125159, runtime PR264 merged/Pages41448130106 successful;76 public tutorials.463/463 aggregate tests passed. Final activation is a config-only release after exact public-body readback. Chromium live-route verification hit ERR_CERT_AUTHORITY_INVALID and was not bypassed;36 deployed assets were byte-verified. No earlier JOI/content transaction or migration is replayed.
