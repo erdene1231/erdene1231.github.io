@@ -49,3 +49,7 @@ Batch03 receipt PR256 / Pages41379189712 succeeded. Batch04 targets720,
 892–895: five source-reviewed MN/EN statements; all17 source samples and six
 edge cases pass, five editor /20 reader cases and six SQL/content cases pass.
 Publication pending. Remaining six final targets721,723,896–899 retained.
+
+Batch04 published and verified: PR257 / Pages41379570937 success;
+histories1232–1236. Exact all24 anonymous readback and all native/protected/URL
+preservation. Verified total18/24; remaining6.
