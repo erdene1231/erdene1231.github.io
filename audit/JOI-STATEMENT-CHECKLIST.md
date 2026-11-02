@@ -53,3 +53,10 @@ Publication pending. Remaining six final targets721,723,896–899 retained.
 Batch04 published and verified: PR257 / Pages41379570937 success;
 histories1232–1236. Exact all24 anonymous readback and all native/protected/URL
 preservation. Verified total18/24; remaining6.
+
+Batch04 receipt PR258 / Pages41380236151 succeeded. Final batch05 targets
+721,723,896–899: all six reviewed MN/EN drafts, six native editor /24 reader
+cases and12 targeted cases pass. All80 source sample pairs and446 bounded
+independent oracle/edge checks are reproducible in the tracked Python runner.
+Unique Cities canonical PDF page2 visibly resolves A_i≠B_i; all4 pages viewed.
+Verified live18/24 until the final six publication/readback.
