@@ -1,6 +1,6 @@
 import {priorityLevel} from './priority.js?v=52';
 import {validateTutorial} from './tutorial-model.js?v=63';
-import {drawArticle,typeset} from './tutorials.js?v=84';
+import {drawArticle,typeset} from './tutorials.js?v=94';
 import {mountBlockEditor} from './tutorial-block-editor.js?v=84';
 import {readProblemEditorial,problemBackend} from './problem-backend.js?v=86';
 import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=63';
