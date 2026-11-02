@@ -7,6 +7,8 @@ window.THINK_CP_CONFIG = {
   problemBackendVersion: 32,
   problemStatementStorage: 'catalog-inline-v1',
   problemEditorialStorage: 'catalog-inline-v1',
+  nativeQuizVersion: 0, // Enable only after041 validation is installed.
+  course100Version: 1, // Flip to2 only after the three new setup lessons are verified live.
   learningActivityVersion: 1, // 040 installed and data/access preservation verified.
   adminProfileEditorEnabled: true
 };

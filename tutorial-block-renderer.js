@@ -1,7 +1,8 @@
+import {renderQuiz} from './tutorial-quiz.js?v=95';
 import {renderGridRows,prepareGridTable} from './tutorial-grid.js?v=62';
 import {positionGraphLabels,positionGraphArrows} from './tutorial-graph.js?v=63';
-import {safeLink,validateExtendedBlock} from './tutorial-blocks.js?v=63';
-import {tutorialImageUrl} from './tutorial-media.js?v=63';
+import {safeLink,validateExtendedBlock} from './tutorial-blocks.js?v=95';
+import {tutorialImageUrl} from './tutorial-media.js?v=95';
 const node=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 export function appendInline(parent,content){
  for(const run of content||[]){let e=document.createTextNode(run.text);for(const mark of run.marks||[]){const tag={bold:'strong',italic:'em',underline:'u',strike:'s',code:'code'}[mark];if(tag){const wrap=node(tag);wrap.append(e);e=wrap;}}
@@ -10,9 +11,10 @@ export function appendInline(parent,content){
 }
 export function renderExtendedBlock(b,parent,lang='mn',options={}){
  if(!b||typeof b!=='object'){parent.append(node('aside',lang==='en'?'This content needs a review.':'Энэ агуулгын хэсгийг шалгах шаардлагатай.','tutorial-note'));return true;}
- if(!['rich','heading','quote','callout','checklist','divider','image','diagram','problem','tutorial'].includes(b.type))return false;
+ if(!['rich','heading','quote','callout','checklist','divider','image','diagram','problem','tutorial','quiz'].includes(b.type))return false;
  try{validateExtendedBlock(b);}catch{parent.append(node('aside',lang==='en'?'This block needs an editor review.':'Энэ block-ийн тохиргоог editor дээр шалгана уу.','tutorial-note'));return true;}
- if(b.type==='rich'){const p=node('p',undefined,'rich-text');appendInline(p,b.content);parent.append(p);}
+ if(b.type==='quiz')renderQuiz(b,parent,lang,options.typeset);
+ else if(b.type==='rich'){const p=node('p',undefined,'rich-text');appendInline(p,b.content);parent.append(p);}
  else if(b.type==='heading'){// Article title remains the only page-level H1.
   const h=node('h'+Math.max(2,b.level),b.text,'block-heading level-'+b.level);parent.append(h);
  }
@@ -23,7 +25,7 @@ export function renderExtendedBlock(b,parent,lang='mn',options={}){
  else if(b.type==='image'){
   const figure=node('figure',undefined,'tutorial-image align-'+b.align);figure.style.width=b.width+'%';const img=node('img');img.alt=b.alt;img.loading='lazy';img.decoding='async';const status=node('p',lang==='en'?'Loading image…':'Зургийг ачаалж байна…','muted');figure.append(img,status);if(b.caption)figure.append(node('figcaption',b.caption));parent.append(figure);
   function showFailure(){status.replaceChildren(node('span',lang==='en'?'Image unavailable. ':'Зураг одоогоор боломжгүй. '));if(!status.isConnected)figure.append(status);const retry=node('button',lang==='en'?'Retry':'Дахин оролдох');retry.type='button';retry.onclick=load;status.append(retry);}
-  function load(){status.textContent=lang==='en'?'Loading image…':'Зургийг ачаалж байна…';void tutorialImageUrl(options.client,b.path,options.viewerId,options.adminPreview).then(url=>{if(!figure.isConnected)return;img.onload=()=>status.remove();img.onerror=showFailure;img.src=url;}).catch(showFailure);}load();
+  function load(){if(b.assetPath){img.onload=()=>status.remove();img.onerror=showFailure;img.src=new URL('./'+b.assetPath,import.meta.url).href;return;}status.textContent=lang==='en'?'Loading image…':'Зургийг ачаалж байна…';void tutorialImageUrl(options.client,b.path,options.viewerId,options.adminPreview).then(url=>{if(!figure.isConnected)return;img.onload=()=>status.remove();img.onerror=showFailure;img.src=url;}).catch(showFailure);}load();
  }
  else if(b.type==='tutorial'){const a=node('a',b.label||b.tutorialId,'inline-tutorial-link');a.href='#tutorial/'+b.tutorialId;parent.append(a);}
  else if(b.type==='problem'){if(options.learning?.renderEmbeddedProblem)options.learning.renderEmbeddedProblem(b.problemKey,parent,lang);else parent.append(node('p',(lang==='en'?'Linked problem is unavailable: ':'Холбосон бодлого одоогоор боломжгүй: ')+b.problemKey,'learning-note'));}

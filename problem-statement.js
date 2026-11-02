@@ -1,9 +1,9 @@
-import {assertProblemStatementReady,STATEMENT_CHECKS} from './problem-statement-policy.js?v=63';
-import {validateTutorial} from './tutorial-model.js?v=63';
-import {drawArticle,typeset} from './tutorials.js?v=94';
-import {mountBlockEditor} from './tutorial-block-editor.js?v=84';
+import {assertProblemStatementReady,STATEMENT_CHECKS} from './problem-statement-policy.js?v=95';
+import {validateTutorial} from './tutorial-model.js?v=95';
+import {drawArticle,typeset} from './tutorials.js?v=95';
+import {mountBlockEditor} from './tutorial-block-editor.js?v=95';
 import {readProblemStatement,problemBackend} from './problem-backend.js?v=86';
-import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=63';
+import {uploadTutorialImage,tutorialImageUrl} from './tutorial-media.js?v=95';
 const node=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const clearMath=root=>{try{window.MathJax?.typesetClear?.([root]);}catch{}};
 

@@ -1,4 +1,4 @@
-import {dateKey} from './learning-model.js?v=87';
+import {dateKey} from './learning-model.js?v=95';
 // Explicit reading events are independent of mastery checks and practice solves.
 export function readState(record={},count=0){
  const sections=new Set((record.readSections||[]).filter(i=>Number.isInteger(i)&&i>=0&&i<count));

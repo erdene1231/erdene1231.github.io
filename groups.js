@@ -1,4 +1,4 @@
-import {todayProblemItems,todayTutorialItems,appendActivity,loadOwnerActivity} from './report-activity.js?v=1';
+import {todayProblemItems,todayTutorialItems,appendActivity,loadOwnerActivity} from './report-activity.js?v=95';
 import {createReportLatex, createReportPdf} from './group-document.js?v=52';
 import {rpc} from './accounts.js?v=52';
 import {createReportWorkbook, todayInMongolia, validDate, weekday, shiftDate, dateRange, filterWeekdays, selectReportRows} from './group-export.js?v=52';
