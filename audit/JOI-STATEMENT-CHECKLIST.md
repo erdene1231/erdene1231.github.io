@@ -28,3 +28,8 @@ samples recomputed plus 29 edge checks. All24 sources captured; 20 documents
 remain to author. Published4/24: batch01 PR251 / Pages41376972245, histories1219–1222;
 exact anonymous24 readback and all protected/native51 preservation verified.
 Remaining20 retain their post-URL URLs and revisions.
+
+Batch01 receipt PR252 merged as3aee2f3; Pages41377357144 success.
+Batch02: IDs884–887 (2016), four MN/EN drafts reviewed against full source;
+14 official sample pairs and five definition-based edges pass; two guarded SQL
+cases and four native editor /16 reader combinations pass. Publication pending.

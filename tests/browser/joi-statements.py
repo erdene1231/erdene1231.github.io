@@ -1,12 +1,12 @@
 """Native MN/EN problem statement viewer/admin; synthetic RPC/Auth, actual MathJax/editor."""
-import functools,http.server,json,threading,re
+import functools,http.server,json,threading,re,os
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[2]
 class Quiet(http.server.SimpleHTTPRequestHandler):
  def log_message(self,*a):pass
 server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(Quiet,directory=str(ROOT)));threading.Thread(target=server.serve_forever,daemon=True).start();base=f'http://127.0.0.1:{server.server_port}'
-entries=json.loads((ROOT/'audit/joi-statements/batch01-plans.json').read_text());pool=[];docs={}
+batch=os.environ.get('JOI_BATCH','01');entries=json.loads((ROOT/('audit/joi-statements/batch'+batch+'-plans.json')).read_text());pool=[];docs={}
 for p in entries:p.update(title=p['catalog_title'],ref=p['catalog_ref'],source_url=p['statementProvenance']['sourceUrl'])
 for i,p in enumerate(entries,1):
  pid='statement-'+str(i);docs[pid]={'body':p['statement'],'provenance':p['statementProvenance'],'problemRevision':1,'revision':1};meta={**p,'source':'JOI','url':p['source_url'],'rating':1400,'ratingKind':'estimated','hints':[],'hintsEn':[],'level':'Practice','id':pid,'number':i,'revision':1,'priorityLevel':'low'if i==1 else'high','priority':i!=1,'tags':['secret-tag'],'hasStatement':True,'hasEditorial':False};meta.pop('statement');meta.pop('statementProvenance');meta.pop('editorial',None);pool.append(meta)
@@ -41,7 +41,7 @@ try:
       assert wide.evaluate('e=>{e.scrollLeft=e.scrollWidth;const moved=e.scrollLeft>0;e.scrollLeft=0;return moved;}')
    if i==1:
     assert page.locator('#problem-hints-button').is_hidden()
-    shots=Path('/workspace/joi-statements/browser');shots.mkdir(exist_ok=True);page.screenshot(path=str(shots/'first4-en-desktop.png'),full_page=True);page.set_viewport_size({'width':375,'height':950});page.evaluate("document.documentElement.dataset.theme='light'");root.locator('select').select_option('mn');page.wait_for_timeout(150);page.screenshot(path=str(shots/'first4-mn-mobile.png'),full_page=True)
+    shots=Path('/workspace/joi-statements/browser');shots.mkdir(exist_ok=True);page.screenshot(path=str(shots/('batch'+batch+'-en-desktop.png')),full_page=True);page.set_viewport_size({'width':375,'height':950});page.evaluate("document.documentElement.dataset.theme='light'");root.locator('select').select_option('mn');page.wait_for_timeout(150);page.screenshot(path=str(shots/('batch'+batch+'-mn-mobile.png')),full_page=True)
   checks.append(f'{len(entries)} actual native documents:{len(entries)*4}language/theme/width combinations; exact literal input/sample code, MathJax, attribution; Low statement visible without hints; hidden tags and spoiler actions unaffected')
   page.goto(base+'/index.html#library',wait_until='networkidle');page.evaluate("statementMode='defer'");page.get_by_role('button',name=entries[0]['title'],exact=False).first.click();page.wait_for_function("typeof resolveStatement==='function'");page.locator('#problem-back').click();page.evaluate("statementMode='normal'");page.get_by_role('button',name=entries[1]['title'],exact=False).first.click();page.wait_for_selector('#problem-statement article section');before=page.locator('#problem-statement article').inner_text();page.evaluate("resolveStatement({data:{body:{statement:docs['statement-1'].body,statementProvenance:docs['statement-1'].provenance},revision:1}})");page.wait_for_timeout(100);assert page.locator('#problem-statement article').inner_text()==before
   page.goto(base+'/index.html#library',wait_until='networkidle');page.evaluate("statementMode='error'");page.get_by_role('button',name=entries[0]['title'],exact=False).first.click();page.wait_for_function("document.querySelector('#problem-statement').textContent.includes('ачаалсангүй')");assert 'private backend error'not in page.locator('#problem-statement').inner_text();page.evaluate("statementMode='normal'");root=page.locator('#problem-statement');root.locator('summary').click();root.locator('summary').click();page.wait_for_selector('#problem-statement article section')
@@ -57,4 +57,4 @@ try:
   assert not errors,errors;browser.close()
 finally:server.shutdown()
 report={'status':'passed','statement_documents':len(entries),'checks':checks,'limits':'Synthetic RPC/Auth only; actual tutorial block editor/renderer and bundled MathJax; no production writes or new permission application.'}
-(ROOT/'audit/joi-statements/batch01-native-browser.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report))
+(ROOT/('audit/joi-statements/batch'+batch+'-native-browser.json')).write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report))
