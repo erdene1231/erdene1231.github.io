@@ -35,3 +35,8 @@ Batch02: IDs884–887 (2016), four MN/EN drafts reviewed against full source;
 cases and four native editor /16 reader combinations pass. Batch02 published: PR253 / Pages41377633868 success; histories1223–1226.
 Exact24 anonymous readback, all prior native/protected/metadata preservation.
 Verified total8/24; remaining16.
+
+Batch02 receipt PR254 / Pages41378374827 succeeded. Batch03 targets722,
+888–891 have five reviewed MN/EN drafts; all18 source samples recomputed,
+130/90/30 independent Semiexpress/Kingdom/Soccer small oracles and Coach
+large event-count check pass. Five editor /20 reader cases pass. Release pending.
