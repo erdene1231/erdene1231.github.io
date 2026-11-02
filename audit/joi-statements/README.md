@@ -1,45 +1,56 @@
 # JOI native MN/EN statements
 
-The approved scope is all 24 existing JOI entries, statements only. The preceding
-16-URL publication is closed by PR250; every candidate starts from that committed
-post-URL catalog. No editorial, new problem, metadata, access or schema change is
-included.
+Current live count is18/24. The final six are source-reviewed and tested, awaiting
+their scoped guarded publication and exact readback. No editorials, new problems,
+metadata/URL changes, schema changes or access changes are part of this work.
+The preceding JOI URL release is closed by PR249/250:16 changed,4 already correct,
+4 unmatched2015 tasks retained. Every statement candidate starts from that
+committed post-URL catalog.
 
-All 24 original sources are captured: 23 Japanese AtCoder task pages and the
-original JOI 2017 Day 3 English PDF for Long Distance Coach. The Coach pages 1–4
-were rendered and visually inspected, including the sample tables. Source
-freshness, hashes, sample extraction and PDF layout adaptation are recorded in
-`source-contracts.json` and `rights.json`. There are 80 source sample pairs.
+All24 primary sources are captured:23 Japanese AtCoder task pages and the
+original JOI2017 Day3 English PDF for Long Distance Coach. All80 sample pairs are
+retained:77 literal HTML pre.text_content pairs and3 visually inspected Coach
+PDF table pairs. The PDF table adaptation uses one ASCII space between displayed
+numbers and LF rows with a final LF; it is explicitly recorded rather than
+claimed as raw PDF-byte equivalence. Coach pages1–4 of its13-page bundle were
+rendered and viewed. The canonical Unique Cities English PDF pages1–4 were also
+viewed: page2 visibly prints A_i≠B_i, a glyph lost by both HTML and PDF text
+extraction. Exact source URLs, hashes, capture times, bounds/subtasks, sample
+strings and this clarification appear in the source/provenance artifacts.
 
 The original JOI archive explicitly licenses these Final Round and Spring Camp
-years under CC BY-SA 4.0. The exact original grant and covered years are retained
-in `rights.json` and document provenance. Each adapted statement visibly credits
-the Japanese Committee for IOI, links its source/grant/license, identifies our
-translation and restructuring, and applies CC BY-SA 4.0 to that statement only.
+years under CC BY-SA4.0. `rights.json` retains its exact grant and covered years.
+Every statement visibly credits the Japanese Committee for IOI, links the source,
+grant and license, and identifies our translation/condensing/restructuring as an
+unofficial adaptation. CC BY-SA4.0 applies to the adapted statement content only,
+not unrelated application code or catalog metadata.
 
-Batch01 contains Railroad Trip, Cake 2, JOI Park and Ball (the dance event),
-IDs880–883. Their per-task semantic checklists record the actual operations,
-objective, inequalities, full and subtask bounds, input/output and samples. Both
-languages use real tutorial document blocks, MathJax and Code Input/Output
-subtypes. The 11 official sample pairs are preserved literally from HTML and
-independently recomputed; 29 extra definition-based edge checks pass. No solution
-or algorithm explanation is included in the statements.
+Prepared content consists of24 real tutorial-schema documents,48 language
+versions and332 Code blocks using the actual Input/Output subtypes (172 Input,
+160 Output). The extra12 Input blocks preserve six original input-format blocks
+in both languages. Task, input, output, full/subtask constraints, examples and
+source/license sections are native editable blocks with MathJax. No solution or
+algorithm explanation is added to the application statements.
 
-A necessary editor preservation fix retains uneditable provenance fields through
-actual native editor and admin Statement saves, while supported fields retain
-the existing validation and review-attestation behavior. The base is cleared on
-invalidation/target changes. No permission or storage contract changes.
+The narrow PR251 editor fix preserves uneditable provenance fields through the
+actual native editor and admin Statement action, while supported fields retain
+validation and review attestation. Target invalidation clears the private base.
+The existing dual-document browser fixture confirms sibling editorial/metadata
+drafts, undo-capable components and external CAS conflicts remain intact.
 
-Validation: four targeted Node/SQL cases, actual installed backend validation,
-atomic rollback/replay/stale/allowlist/protected-state guards; four native editor
-round trips and 16 reader language/theme/width combinations. Browser Auth/RPC
-are synthetic; these tests do not claim a real authenticated production save.
-See the batch01 verification JSON files for exact results. Publication counts
-remain zero until a committed guarded write and exact anonymous readback are
-recorded in a publication receipt.
+Validation:445/445 Node aggregate after that core fix;12 final targeted
+native/backend/atomic cases;24 distinct native editor round trips and96 reader
+combinations (MN/EN at375px light and1200px dark); and all80 official sample pairs
+plus446 bounded independent oracle/edge checks. The complete sample checks are
+reproducible with `python3 tests/joi-statement-samples.py`. These are source/math
+checks, not a full-constraint solution performance claim. Browser Auth/RPC use
+isolated synthetic fixtures with the actual components and bundled MathJax;
+production readback and deployed bytes are independently checked over default
+TLS. No authenticated real-user mutation is claimed.
 
-Batch01 is now published and exactly verified: histories1219–1222, PR251 /
-Pages41376972245 success. All1060 other rows, prior51 native pairs, protected
-records, authority and approved URLs are exact. The 45-second client timeout
-was resolved by read-only inspection, without a retry. Remaining20 statements
-continue under the same approved scope. See batch01-publication-receipt.json.
+Each publication uses fresh revisions/body hashes, an immutable batch allowlist,
+current protected/authority/policy/allocator/history fingerprints, a single
+transaction and exact public readback. A real learner-progress change between
+batches03 and04 was captured in the fresh guard and preserved; older progress was
+never restored. Client timeouts in batches01 and04 were resolved read-only, with
+no replay. Individual publication receipts contain exact histories and hashes.
