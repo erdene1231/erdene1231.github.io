@@ -1,4 +1,4 @@
-# JOI format/sample presentation — approved, not yet published
+# JOI format/sample presentation — published and verified
 
 User's revised direction (2026-11-02): native Input/Output boxes remain literal
 plain text, including samples. Remove the uncomfortable green text background.
@@ -60,9 +60,22 @@ SDK/Auth transport and the local prepared proposals. This is not a production
 save or live visual verification. `browser.json` records the exact tested scope.
 
 Owner explicitly approved this exact version at2026-11-02 03:49:01 UTC.
-Publication is in progress; not yet counted live. Fresh guards were captured,
-and a full1064-row local rehearsal verifies6 statement-only changes,1058 exact
-unrelated rows, midway rollback, replay rejection and protected/access equality.
-Before the production submission obtain fresh guards again; never execute the earlier JOI import/URL SQL or
-reuse old statement jobs. Only these6 statement-body fields may change; ordinary
-samples and all unrelated fields must read back exactly.
+PR262 merged as d4330f4; Pages41385383941 succeeded. The exact deployed entry,
+sample stylesheet and singleton renderer were verified over default TLS before
+one guarded content submission. Histories1243–1248 committed successfully;
+read-only outcome inspection found no active job. No retry or migration.
+
+All24 anonymous JOI rows match exactly:6 new statement bodies,18 unchanged.
+The full post-snapshot verifies1058 other catalog rows, all sample text,
+provenance/metadata/URLs/editorials, protected data/access/allocator/functions
+against the fresh pre-write snapshot. Format math now sits outside the sample
+panels;320 remaining code blocks are the160 Input and160 Output sample blocks.
+The48-case actual-app/native fixture was rerun against fresh anonymous post-write
+statements;6 editor roundtrips, plain delimiters/markup/copy and singleton
+MathJax all pass. These browser saves use synthetic transport, not real user
+mutations. See publication-receipt.json for exact revisions, hashes and job SHA.
+
+The full1064-row local rehearsal also verifies midway rollback, replay rejection
+and protected/access equality. NEVER REPLAY this operation or earlier JOI jobs.
+Earlier JOI receipts retain their historical body hashes; this receipt records
+the12 explicitly authorized presentation-block changes.
