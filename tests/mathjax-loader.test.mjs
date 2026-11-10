@@ -1,4 +1,12 @@
-import test from 'node:test';import assert from 'node:assert/strict';import{createMathJaxLoader,mathJaxComponents}from'../mathjax-loader.js';
+import test from 'node:test';import assert from 'node:assert/strict';import{createMathJaxLoader,mathJaxComponents,fixSvgTogglePlacement}from'../mathjax-loader.js';
+test('pinned SVG toggle workaround preserves tooltip offsets and is idempotent',()=>{
+ class Maction {getParameters(){this.dx=0.2;this.dy=-0.2;}}
+ const mj={version:'3.2.2',_:{output:{svg:{Wrappers:{maction:{SVGmaction:Maction}}}}}};
+ fixSvgTogglePlacement(mj);const once=Maction.prototype.getParameters;fixSvgTogglePlacement(mj);assert.equal(Maction.prototype.getParameters,once);
+ for(const action of ['toggle','tooltip','statusline']){const node=new Maction();node.node={attributes:{get:()=>action}};node.getParameters();assert.equal(node.dx,action==='toggle'?0:0.2);assert.equal(node.dy,-0.2);}
+ assert.doesNotThrow(()=>fixSvgTogglePlacement({version:'4.0.0'}));
+ assert.doesNotThrow(()=>fixSvgTogglePlacement({version:'3.2.2'}));
+});
 function fixture(){const win={},scripts=[],timers=new Map();let seq=0;const doc={baseURI:'https://example.test/index.html#tutorial/introduction',createElement:()=>({remove(){this.removed=true}}),head:{append:s=>scripts.push(s)}};const loader=createMathJaxLoader({window:win,document:doc,setTimer:cb=>{timers.set(++seq,cb);return seq},clearTimer:id=>timers.delete(id)});return{win,scripts,timers,loader};}
 function deferred(){let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b});return{promise,resolve,reject};}
 test('saved menu choices choose their renderer without mutating preferences',()=>{

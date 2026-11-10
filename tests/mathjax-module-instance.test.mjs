@@ -1,7 +1,7 @@
 import test from'node:test';import assert from'node:assert/strict';import fs from'node:fs';
 const read=name=>fs.readFileSync(new URL('../'+name,import.meta.url),'utf8');
 test('all public/native/tutorial consumers share one MathJax loader/queue module and refreshed cache chain',()=>{
- for(const name of['app.js','learning.js','problem-statement.js','problem-editorial.js','tutorial-editor.js']){const paths=[...read(name).matchAll(/from ['"]\.\/(tutorials\.js\?v=\d+)['"]/g)].map(m=>m[1]);assert.deepEqual(paths,['tutorials.js?v=100'],name);}
- for(const [file,imports]of[['app.js',['learning.js?v=100','problem-statement.js?v=100','problem-editorial.js?v=100','admin.js?v=100']],['admin.js',['problem-statement.js?v=100','problem-editorial.js?v=100']],['tutorials.js',['tutorial-editor.js?v=100']]])for(const path of imports)assert(read(file).includes("'./"+path+"'"),file+' cache '+path);
- assert(read('index.html').includes('src="app.js?v=100"'));
+ for(const name of['app.js','learning.js','problem-statement.js','problem-editorial.js','tutorial-editor.js']){const paths=[...read(name).matchAll(/from ['"]\.\/(tutorials\.js\?v=\d+)['"]/g)].map(m=>m[1]);assert.deepEqual(paths,['tutorials.js?v=101'],name);}
+ for(const [file,imports]of[['app.js',['learning.js?v=101','problem-statement.js?v=101','problem-editorial.js?v=101','admin.js?v=101']],['admin.js',['problem-statement.js?v=101','problem-editorial.js?v=101']],['tutorials.js',['tutorial-editor.js?v=101']]])for(const path of imports)assert(read(file).includes("'./"+path+"'"),file+' cache '+path);
+ assert(read('index.html').includes('src="app.js?v=101"'));
 });
