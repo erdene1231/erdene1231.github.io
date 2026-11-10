@@ -66,7 +66,7 @@ try:
    page.screenshot(path=str(W/('math-menu-'+mode+'.png')),full_page=False)
    page.locator('#tutorial-language').select_option('en');page.wait_for_function('document.querySelector("#tutorial-content").lang==="en" && document.querySelectorAll("#tutorial-content mjx-container").length>100 && document.querySelector("#tutorial-content").getAttribute("aria-busy")==="false"')
    page.evaluate('location.hash="#tutorial/complexity"');page.wait_for_function('document.querySelector("#tutorial-complexity-0") && document.querySelectorAll("#tutorial-content mjx-container").length>20 && document.querySelector("#tutorial-content").getAttribute("aria-busy")==="false"')
-   page.evaluate('''async()=>{const {renderBlock,typeset}=await import('./tutorials.js?v=100');const e=document.createElement('div');e.id='literal-sample-test';document.body.append(e);for(const language of ['Input','Output'])renderBlock({type:'code',language,text:'$n$\\n1  2\\n'},e,'mn');await typeset([e]);}''')
+   page.evaluate('''async()=>{const {renderBlock,typeset}=await import('./tutorials.js?v=101');const e=document.createElement('div');e.id='literal-sample-test';document.body.append(e);for(const language of ['Input','Output'])renderBlock({type:'code',language,text:'$n$\\n1  2\\n'},e,'mn');await typeset([e]);}''')
    assert page.locator('#literal-sample-test mjx-container').count()==0
    assert page.locator('#literal-sample-test code').all_text_contents()==['$n$\n1  2\n']*2
    if mode in ['chtml','combined']:

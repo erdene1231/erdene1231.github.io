@@ -1,3 +1,21 @@
+const svgTogglePlacementFixed = Symbol('svgTogglePlacementFixed');
+
+// MathJax 3.2.2's CommonMactionMixin puts the tooltip offset in `dx`, which
+// SVGWrapper.place() also uses as a layout offset. Toggle actions never use a
+// tooltip, but inherit its 0.2em offset without reserving that space in the bbox.
+// Keep the pinned vendor intact and correct only SVG toggles before construction.
+export function fixSvgTogglePlacement(mathjax) {
+    if (mathjax.version !== '3.2.2') return;
+    const proto = mathjax._?.output?.svg?.Wrappers?.maction?.SVGmaction?.prototype;
+    if (!proto || proto[svgTogglePlacementFixed]) return;
+    const getParameters = proto.getParameters;
+    proto.getParameters = function () {
+        getParameters.call(this);
+        if (this.node.attributes.get('actiontype') === 'toggle') this.dx = 0;
+    };
+    Object.defineProperty(proto, svgTogglePlacementFixed, {value: true});
+}
+
 // A single bootstrap, with readiness covering dependencies as well as the core file.
 // A timeout does not remove a still-loading script or start a competing bootstrap.
 export function mathJaxComponents(storage) {
@@ -41,7 +59,13 @@ export function createMathJaxLoader({window: win, document: doc, timeoutMs = 300
                 loader: {paths: {mathjax: new URL('./vendor/mathjax', doc.baseURI).href, sre: new URL('./vendor/mathjax/sre/mathmaps', doc.baseURI).href}, load: components, failed: fail},
                 options: {safeOptions: {allow: {URLs: 'none', classes: 'none', cssIDs: 'none', styles: 'none'}}},
                 tex: {packages: ['base', 'ams', 'newcommand', 'noundefined', 'configmacros'], inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$', '$$']], processEscapes: true, maxBuffer: 20000},
-                svg: {fontCache: 'local'}, startup: {typeset: false, output: components.includes('output/chtml') ? 'chtml' : 'svg'}
+                svg: {fontCache: 'local'}, startup: {
+                    ready() {
+                        fixSvgTogglePlacement(win.MathJax);
+                        win.MathJax.startup.defaultReady();
+                    },
+                    typeset: false, output: components.includes('output/chtml') ? 'chtml' : 'svg'
+                }
             };
             script = doc.createElement('script');
             script.src = new URL('./vendor/mathjax/tex-svg.js', doc.baseURI).href;

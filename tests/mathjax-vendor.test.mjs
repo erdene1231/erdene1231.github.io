@@ -10,5 +10,5 @@ test('optional MathJax components, fonts and speech maps match the pinned offici
 });
 test('every current reverse importer shares the renderer singleton and fresh loader',()=>{
  const closure=JSON.parse(fs.readFileSync('audit/mathjax-saved-settings/cache-closure.json'));
- for(const file of fs.readdirSync('.').filter(p=>/\.(js|html)$/.test(p))){const text=fs.readFileSync(file,'utf8');for(const match of text.matchAll(/([\w.-]+\.js)\?v=(\d+)/g)){if(closure.includes(match[1]))assert.equal(match[2],'100',file+' -> '+match[1]);if(match[1]==='mathjax-loader.js')assert.equal(match[2],'2');}}
+ for(const file of fs.readdirSync('.').filter(p=>/\.(js|html)$/.test(p))){const text=fs.readFileSync(file,'utf8');for(const match of text.matchAll(/([\w.-]+\.js)\?v=(\d+)/g)){if(closure.includes(match[1]))assert.equal(match[2],'101',file+' -> '+match[1]);if(match[1]==='mathjax-loader.js')assert.equal(match[2],'3');}}
 });
